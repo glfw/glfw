@@ -67,7 +67,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             {
                 const char* string;
 
-                string = glfwGetClipboardString(window);
+                string = glfwGetClipboardString(NULL);
                 if (string)
                     printf("Clipboard contains \"%s\"\n", string);
                 else
@@ -79,7 +79,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             if (mods == MODIFIER)
             {
                 const char* string = "Hello GLFW World!";
-                glfwSetClipboardString(window, string);
+                glfwSetClipboardString(NULL, string);
                 printf("Setting clipboard to \"%s\"\n", string);
             }
             break;

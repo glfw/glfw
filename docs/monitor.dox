@@ -86,14 +86,16 @@ void monitor_callback(GLFWmonitor* monitor, int event)
 @endcode
 
 If a monitor is disconnected, all windows that are full screen on it will be
-switched to windowed mode.
+switched to windowed mode before the callback is called.  Only @ref
+glfwGetMonitorName and @ref glfwGetMonitorUserPointer will return useful values
+for a disconnected monitor and only before the monitor callback returns.
 
 
 @section monitor_properties Monitor properties
 
 Each monitor has a current video mode, a list of supported video modes,
-a virtual position, a human-readable name, an estimated physical size and
-a gamma ramp.
+a virtual position, a human-readable name, a user pointer, an estimated physical
+size and a gamma ramp.
 
 
 @subsection monitor_modes Video modes
@@ -157,7 +159,7 @@ any UI elements.
 
 The content scale may depend on both the monitor resolution and pixel density
 and on user settings.  It may be very different from the raw DPI calculated from
-the physical size and current resolution.    
+the physical size and current resolution.
 
 
 @subsection monitor_pos Virtual position
@@ -185,6 +187,17 @@ const char* name = glfwGetMonitorName(monitor);
 Monitor names are not guaranteed to be unique.  Two monitors of the same model
 and make may have the same name.  Only the monitor handle is guaranteed to be
 unique, and only until that monitor is disconnected.
+
+
+@subsection monitor_userptr User pointer
+
+Each monitor has a user pointer that can be set with @ref
+glfwSetMonitorUserPointer and queried with @ref glfwGetMonitorUserPointer.  This
+can be used for any purpose you need and will not be modified by GLFW.  The
+value will be kept until the monitor is disconnected or until the library is
+terminated.
+
+The initial value of the pointer is `NULL`.
 
 
 @subsection monitor_gamma Gamma ramp

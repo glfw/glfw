@@ -113,9 +113,11 @@ void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement)
         {
             if (window->monitor == monitor)
             {
-                int width, height;
+                int width, height, xoff, yoff;
                 _glfwPlatformGetWindowSize(window, &width, &height);
                 _glfwPlatformSetWindowMonitor(window, NULL, 0, 0, width, height, 0);
+                _glfwPlatformGetWindowFrameSize(window, &xoff, &yoff, NULL, NULL);
+                _glfwPlatformSetWindowPos(window, xoff, yoff);
             }
         }
 
@@ -349,6 +351,24 @@ GLFWAPI const char* glfwGetMonitorName(GLFWmonitor* handle)
     return monitor->name;
 }
 
+GLFWAPI void glfwSetMonitorUserPointer(GLFWmonitor* handle, void* pointer)
+{
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    assert(monitor != NULL);
+
+    _GLFW_REQUIRE_INIT();
+    monitor->userPointer = pointer;
+}
+
+GLFWAPI void* glfwGetMonitorUserPointer(GLFWmonitor* handle)
+{
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    assert(monitor != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    return monitor->userPointer;
+}
+
 GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
@@ -404,16 +424,16 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
 
     for (i = 0;  i < 256;  i++)
     {
-        double value;
+        float value;
 
         // Calculate intensity
-        value = i / 255.0;
+        value = i / 255.f;
         // Apply gamma curve
-        value = pow(value, 1.0 / gamma) * 65535.0 + 0.5;
+        value = powf(value, 1.f / gamma) * 65535.f + 0.5f;
 
         // Clamp to value range
-        if (value > 65535.0)
-            value = 65535.0;
+        if (value > 65535.f)
+            value = 65535.f;
 
         values[i] = (unsigned short) value;
     }

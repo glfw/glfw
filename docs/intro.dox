@@ -1,7 +1,7 @@
-/*! 
+/*!
 
 @page intro_guide Introduction to the API
- 
+
 @tableofcontents
 
 This guide introduces the basic concepts of GLFW and describes initialization,
@@ -33,7 +33,6 @@ successfully initialized, and only from the main thread.
  - @ref glfwGetError
  - @ref glfwSetErrorCallback
  - @ref glfwInitHint
- - @ref glfwInitHintString
  - @ref glfwInit
  - @ref glfwTerminate
 
@@ -67,8 +66,7 @@ settings and these might not be restored without termination.
 @subsection init_hints Initialization hints
 
 Initialization hints are set before @ref glfwInit and affect how the library
-behaves until termination.  Integer type hints are set with @ref glfwInitHint
-and string type hints with @ref glfwInitHintString.
+behaves until termination.  Hints are set with @ref glfwInitHint.
 
 @code
 glfwInitHint(GLFW_JOYSTICK_HAT_BUTTONS, GLFW_FALSE);
@@ -104,15 +102,6 @@ a nib or manually, when the first window is created, which is when AppKit is
 initialized.  Set this with @ref glfwInitHint.
 
 
-@subsubsection init_hints_x11 X11 specific init hints
-
-@anchor GLFW_X11_WM_CLASS_NAME
-@anchor GLFW_X11_WM_CLASS_CLASS
-__GLFW_X11_WM_CLASS_NAME__ and __GLFW_X11_WM_CLASS_CLASS__ specifies the desired
-ASCII encoded name and class parts of the ICCCM `WM_CLASS` hint for all windows.
-Set this with @ref glfwInitHintString.
-
-
 @subsubsection init_hints_values Supported and default values
 
 Initialization hint             | Default value | Supported values
@@ -120,8 +109,6 @@ Initialization hint             | Default value | Supported values
 @ref GLFW_JOYSTICK_HAT_BUTTONS  | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_COCOA_CHDIR_RESOURCES | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_COCOA_MENUBAR         | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_X11_WM_CLASS_NAME     | `""`          | An ASCII encoded `WM_CLASS` name
-@ref GLFW_X11_WM_CLASS_CLASS    | `""`          | An ASCII encoded `WM_CLASS` class
 
 
 @subsection intro_init_terminate Terminating GLFW
@@ -140,7 +127,7 @@ any other resources allocated by GLFW.
 Once the library is terminated, it is as if it had never been initialized and
 you will need to initialize it again before being able to use GLFW.  If the
 library was not initialized or had already been terminated, it return
-immediately. 
+immediately.
 
 
 @section error_handling Error handling
@@ -307,7 +294,7 @@ calls main), but some may be called from any thread once the library has been
 initialized.  Before initialization the whole library is thread-unsafe.
 
 The reference documentation for every GLFW function states whether it is limited
-to the main thread.                                                        
+to the main thread.
 
 Initialization, termination, event processing and the creation and
 destruction of windows, cursors and OpenGL and OpenGL ES contexts are all

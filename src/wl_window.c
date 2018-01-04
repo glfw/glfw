@@ -393,10 +393,12 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
     if (window->wl.title)
         xdg_toplevel_set_title(window->wl.xdg.toplevel, window->wl.title);
 
-    xdg_toplevel_set_min_size(window->wl.xdg.toplevel,
-                              window->minwidth, window->minheight);
-    xdg_toplevel_set_max_size(window->wl.xdg.toplevel,
-                              window->maxwidth, window->maxheight);
+    if (window->minwidth != GLFW_DONT_CARE && window->minheight != GLFW_DONT_CARE)
+        xdg_toplevel_set_min_size(window->wl.xdg.toplevel,
+                                  window->minwidth, window->minheight);
+    if (window->maxwidth != GLFW_DONT_CARE && window->maxheight != GLFW_DONT_CARE)
+        xdg_toplevel_set_max_size(window->wl.xdg.toplevel,
+                                  window->maxwidth, window->maxheight);
 
     if (window->monitor)
     {

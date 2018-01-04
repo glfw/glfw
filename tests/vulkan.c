@@ -738,7 +738,7 @@ static void demo_prepare_buffers(struct demo *demo) {
         } else if (swapchainExtent.width > surfCapabilities.maxImageExtent.width) {
             swapchainExtent.width = surfCapabilities.maxImageExtent.width;
         }
-        
+
         if (swapchainExtent.height < surfCapabilities.minImageExtent.height) {
             swapchainExtent.height = surfCapabilities.minImageExtent.height;
         } else if (swapchainExtent.height > surfCapabilities.maxImageExtent.height) {

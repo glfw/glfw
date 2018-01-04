@@ -334,7 +334,7 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_DOUBLEBUFFER:
             _glfw.hints.framebuffer.doublebuffer = value ? GLFW_TRUE : GLFW_FALSE;
             return;
-        case GLFW_TRANSPARENT:
+        case GLFW_TRANSPARENT_FRAMEBUFFER:
             _glfw.hints.framebuffer.transparent = value ? GLFW_TRUE : GLFW_FALSE;
             return;
         case GLFW_SAMPLES:
@@ -366,9 +366,6 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             return;
         case GLFW_COCOA_RETINA_FRAMEBUFFER:
             _glfw.hints.window.ns.retina = value ? GLFW_TRUE : GLFW_FALSE;
-            return;
-        case GLFW_COCOA_FRAME_AUTOSAVE:
-            _glfw.hints.window.ns.frame = value ? GLFW_TRUE : GLFW_FALSE;
             return;
         case GLFW_COCOA_GRAPHICS_SWITCHING:
             _glfw.hints.context.nsgl.offline = value ? GLFW_TRUE : GLFW_FALSE;
@@ -412,6 +409,31 @@ GLFWAPI void glfwWindowHint(int hint, int value)
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint 0x%08X", hint);
+}
+
+GLFWAPI void glfwWindowHintString(int hint, const char* value)
+{
+    assert(value != NULL);
+
+    _GLFW_REQUIRE_INIT();
+
+    switch (hint)
+    {
+        case GLFW_COCOA_FRAME_NAME:
+            strncpy(_glfw.hints.window.ns.frameName, value,
+                    sizeof(_glfw.hints.window.ns.frameName) - 1);
+            return;
+        case GLFW_X11_CLASS_NAME:
+            strncpy(_glfw.hints.window.x11.className, value,
+                    sizeof(_glfw.hints.window.x11.className) - 1);
+            return;
+        case GLFW_X11_INSTANCE_NAME:
+            strncpy(_glfw.hints.window.x11.instanceName, value,
+                    sizeof(_glfw.hints.window.x11.instanceName) - 1);
+            return;
+    }
+
+    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint string 0x%08X", hint);
 }
 
 GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
@@ -666,6 +688,34 @@ GLFWAPI void glfwGetWindowContentScale(GLFWwindow* handle,
     _glfwPlatformGetWindowContentScale(window, xscale, yscale);
 }
 
+GLFWAPI float glfwGetWindowOpacity(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(1.f);
+    return _glfwPlatformGetWindowOpacity(window);
+}
+
+GLFWAPI void glfwSetWindowOpacity(GLFWwindow* handle, float opacity)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+    assert(opacity == opacity);
+    assert(opacity >= 0.f);
+    assert(opacity <= 1.f);
+
+    _GLFW_REQUIRE_INIT();
+
+    if (opacity != opacity || opacity < 0.f || opacity > 1.f)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid window opacity %f", opacity);
+        return;
+    }
+
+    _glfwPlatformSetWindowOpacity(window, opacity);
+}
+
 GLFWAPI void glfwIconifyWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -761,7 +811,7 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return _glfwPlatformWindowVisible(window);
         case GLFW_MAXIMIZED:
             return _glfwPlatformWindowMaximized(window);
-        case GLFW_TRANSPARENT:
+        case GLFW_TRANSPARENT_FRAMEBUFFER:
             return _glfwPlatformFramebufferTransparent(window);
         case GLFW_RESIZABLE:
             return window->resizable;

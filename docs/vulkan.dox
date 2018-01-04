@@ -1,7 +1,7 @@
 /*!
 
 @page vulkan_guide Vulkan guide
- 
+
 @tableofcontents
 
 This guide is intended to fill the gaps between the [Vulkan
@@ -180,7 +180,7 @@ ici.ppEnabledExtensionNames = extensions;
 Additional extensions may be required by future versions of GLFW.  You should
 check whether any extensions you wish to enable are already in the returned
 array, as it is an error to specify an extension more than once in the
-`VkInstanceCreateInfo` struct. 
+`VkInstanceCreateInfo` struct.
 
 
 @section vulkan_present Querying for Vulkan presentation support
@@ -197,7 +197,7 @@ if (glfwGetPhysicalDevicePresentationSupport(instance, physical_device, queue_fa
 }
 @endcode
 
-The `VK_KHR_surface` extension additionally provides the 
+The `VK_KHR_surface` extension additionally provides the
 `vkGetPhysicalDeviceSurfaceSupportKHR` function, which performs the same test on
 an existing Vulkan surface.
 

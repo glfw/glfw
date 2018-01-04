@@ -1,7 +1,7 @@
 /*!
 
 @page input_guide Input guide
- 
+
 @tableofcontents
 
 This guide introduces the input related functions of GLFW.  For details on
@@ -170,6 +170,19 @@ When sticky keys mode is enabled, the pollable state of a key will remain
 it has been polled, if a key release event had been processed in the meantime,
 the state will reset to `GLFW_RELEASE`, otherwise it will remain `GLFW_PRESS`.
 
+@anchor GLFW_LOCK_KEY_MODS
+If you wish to know what the state of the Caps Lock and Num Lock keys was when
+input events were generated, set the `GLFW_LOCK_KEY_MODS` input mode.
+
+@code
+glfwSetInputMode(window, GLFW_LOCK_KEY_MODS, 1);
+@endcode
+
+When this input mode is enabled, any callback that receives
+[modifier bits](@ref mods) will have the @ref GLFW_MOD_CAPS_LOCK bit set if Caps
+Lock was on when the event occurred and the @ref GLFW_MOD_NUM_LOCK bit set if
+Num Lock was on.
+
 The `GLFW_KEY_LAST` constant holds the highest value of any
 [named key](@ref keys).
 
@@ -186,8 +199,7 @@ encode the code points into UTF-8 or any other encoding you prefer.
 Because an `unsigned int` is 32 bits long on all platforms supported by GLFW,
 you can treat the code point argument as native endian UTF-32.
 
-There are two callbacks for receiving Unicode code points.  If you wish to
-offer regular text input, set a character callback.
+If you wish to offer regular text input, set a character callback.
 
 @code
 glfwSetCharCallback(window, character_callback);
@@ -199,23 +211,6 @@ that platform.
 
 @code
 void character_callback(GLFWwindow* window, unsigned int codepoint)
-{
-}
-@endcode
-
-If you also wish to receive those Unicode code points generated with modifier
-key combinations that a plain text field would ignore, or want to know exactly
-what modifier keys were used, set a character with modifiers callback.
-
-@code
-glfwSetCharModsCallback(window, charmods_callback);
-@endcode
-
-The callback function receives Unicode code points and
-[modifier bits](@ref mods).
-
-@code
-void charmods_callback(GLFWwindow* window, unsigned int codepoint, int mods)
 {
 }
 @endcode
@@ -516,6 +511,9 @@ present with @ref glfwJoystickPresent.
 int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
 @endcode
 
+Each joystick has zero or more axes, zero or more buttons, zero or more hats,
+a human-readable name, a user pointer and an SDL compatible GUID.
+
 When GLFW is initialized, detected joysticks are added to to the beginning of
 the array.  Once a joystick is detected, it keeps its assigned ID until it is
 disconnected or the library is terminated, so as joysticks are connected and
@@ -607,7 +605,7 @@ See the reference documentation for @ref glfwGetJoystickButtons for details.
 
 The human-readable, UTF-8 encoded name of a joystick is returned by @ref
 glfwGetJoystickName.  See the reference documentation for the lifetime of the
-returned string.           
+returned string.
 
 @code
 const char* name = glfwGetJoystickName(GLFW_JOYSTICK_4);
@@ -616,6 +614,17 @@ const char* name = glfwGetJoystickName(GLFW_JOYSTICK_4);
 Joystick names are not guaranteed to be unique.  Two joysticks of the same model
 and make may have the same name.  Only the [joystick token](@ref joysticks) is
 guaranteed to be unique, and only until that joystick is disconnected.
+
+
+@subsection joystick_userptr Joystick user pointer
+
+Each joystick has a user pointer that can be set with @ref
+glfwSetJoystickUserPointer and queried with @ref glfwGetJoystickUserPointer.
+This can be used for any purpose you need and will not be modified by GLFW.  The
+value will be kept until the joystick is disconnected or until the library is
+terminated.
+
+The initial value of the pointer is `NULL`.
 
 
 @subsection joystick_event Joystick configuration changes
@@ -649,6 +658,10 @@ platforms, you need to call one of the [event processing](@ref events)
 functions.  Joystick disconnection may also be detected and the callback
 called by joystick functions.  The function will then return whatever it
 returns for a disconnected joystick.
+
+Only @ref glfwGetJoystickName and @ref glfwGetJoystickUserPointer will return
+useful values for a disconnected joystick and only before the monitor callback
+returns.
 
 
 @subsection gamepad Gamepad input
@@ -846,7 +859,7 @@ converted to one, you can retrieve it with @ref glfwGetClipboardString.  See the
 reference documentation for the lifetime of the returned string.
 
 @code
-const char* text = glfwGetClipboardString(window);
+const char* text = glfwGetClipboardString(NULL);
 if (text)
 {
     insert_text(text);
@@ -860,12 +873,8 @@ The contents of the system clipboard can be set to a UTF-8 encoded string with
 @ref glfwSetClipboardString.
 
 @code
-glfwSetClipboardString(window, "A string with words in it");
+glfwSetClipboardString(NULL, "A string with words in it");
 @endcode
-
-The clipboard functions take a window handle argument because some window
-systems require a window to communicate with the system clipboard.  Any valid
-window may be used.
 
 
 @section path_drop Path drop input

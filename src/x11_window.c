@@ -212,6 +212,10 @@ static int translateState(int state)
         mods |= GLFW_MOD_ALT;
     if (state & Mod4Mask)
         mods |= GLFW_MOD_SUPER;
+    if (state & LockMask)
+        mods |= GLFW_MOD_CAPS_LOCK;
+    if (state & Mod2Mask)
+        mods |= GLFW_MOD_NUM_LOCK;
 
     return mods;
 }
@@ -707,21 +711,26 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     {
         XClassHint* hint = XAllocClassHint();
 
-        if (strlen(_glfw.hints.init.x11.className) &&
-            strlen(_glfw.hints.init.x11.classClass))
+        if (strlen(wndconfig->x11.instanceName) &&
+            strlen(wndconfig->x11.className))
         {
-            hint->res_name = (char*) _glfw.hints.init.x11.className;
-            hint->res_class = (char*) _glfw.hints.init.x11.classClass;
-        }
-        else if (strlen(wndconfig->title))
-        {
-            hint->res_name = (char*) wndconfig->title;
-            hint->res_class = (char*) wndconfig->title;
+            hint->res_name = (char*) wndconfig->x11.instanceName;
+            hint->res_class = (char*) wndconfig->x11.className;
         }
         else
         {
-            hint->res_name = (char*) "glfw-application";
-            hint->res_class = (char*) "GLFW-Application";
+            const char* resourceName = getenv("RESOURCE_NAME");
+            if (resourceName && strlen(resourceName))
+                hint->res_name = (char*) resourceName;
+            else if (strlen(wndconfig->title))
+                hint->res_name = (char*) wndconfig->title;
+            else
+                hint->res_name = (char*) "glfw-application";
+
+            if (strlen(wndconfig->title))
+                hint->res_class = (char*) wndconfig->title;
+            else
+                hint->res_class = (char*) "GLFW-Application";
         }
 
         XSetClassHint(_glfw.x11.display, window->x11.handle, hint);
@@ -2449,11 +2458,7 @@ int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
     if (!window->x11.transparent)
         return GLFW_FALSE;
 
-    // Check whether a compositing manager is running
-    char name[32];
-    snprintf(name, sizeof(name), "_NET_WM_CM_S%u", _glfw.x11.screen);
-    const Atom selection = XInternAtom(_glfw.x11.display, name, False);
-    return XGetSelectionOwner(_glfw.x11.display, selection) != None;
+    return XGetSelectionOwner(_glfw.x11.display, _glfw.x11.NET_WM_CM_Sx) != None;
 }
 
 void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
@@ -2557,6 +2562,37 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
     }
 
     XFlush(_glfw.x11.display);
+}
+
+float _glfwPlatformGetWindowOpacity(_GLFWwindow* window)
+{
+    float opacity = 1.f;
+
+    if (XGetSelectionOwner(_glfw.x11.display, _glfw.x11.NET_WM_CM_Sx))
+    {
+        CARD32* value = NULL;
+
+        if (_glfwGetWindowPropertyX11(window->x11.handle,
+                                      _glfw.x11.NET_WM_WINDOW_OPACITY,
+                                      XA_CARDINAL,
+                                      (unsigned char**) &value))
+        {
+            opacity = (float) (*value / (double) 0xffffffffu);
+        }
+
+        if (value)
+            XFree(value);
+    }
+
+    return opacity;
+}
+
+void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
+{
+    const CARD32 value = (CARD32) (0xffffffffu * (double) opacity);
+    XChangeProperty(_glfw.x11.display, window->x11.handle,
+                    _glfw.x11.NET_WM_WINDOW_OPACITY, XA_CARDINAL, 32,
+                    PropModeReplace, (unsigned char*) &value, 1);
 }
 
 void _glfwPlatformPollEvents(void)
@@ -2773,7 +2809,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
     }
 }
 
-void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
+void _glfwPlatformSetClipboardString(const char* string)
 {
     free(_glfw.x11.clipboardString);
     _glfw.x11.clipboardString = strdup(string);
@@ -2791,7 +2827,7 @@ void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
     }
 }
 
-const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
+const char* _glfwPlatformGetClipboardString(void)
 {
     return getSelectionString(_glfw.x11.CLIPBOARD);
 }

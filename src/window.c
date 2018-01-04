@@ -785,6 +785,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return _glfwPlatformWindowVisible(window);
         case GLFW_MAXIMIZED:
             return _glfwPlatformWindowMaximized(window);
+        case GLFW_HOVERED:
+            return _glfwPlatformWindowHovered(window);
         case GLFW_TRANSPARENT_FRAMEBUFFER:
             return _glfwPlatformFramebufferTransparent(window);
         case GLFW_RESIZABLE:

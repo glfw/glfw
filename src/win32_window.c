@@ -1578,6 +1578,11 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
     return IsZoomed(window->win32.handle);
 }
 
+int _glfwPlatformWindowHovered(_GLFWwindow* window)
+{
+    return cursorInClientArea(window);
+}
+
 int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
 {
     return window->win32.transparent && _glfwIsCompositionEnabledWin32();

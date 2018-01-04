@@ -1220,6 +1220,11 @@ See @ref window_iconify for details.
 __GLFW_MAXIMIZED__ indicates whether the specified window is maximized.  See
 @ref window_maximize for details.
 
+@anchor GLFW_HOVERED_attrib
+__GLFW_HOVERED__ indicates whether the cursor is currently directly over the
+client area of the window, with no other windows between.  See @ref cursor_enter
+for details.
+
 @anchor GLFW_VISIBLE_attrib
 __GLFW_VISIBLE__ indicates whether the specified window is visible.  See @ref
 window_hide for details.

@@ -419,6 +419,16 @@ void cursor_enter_callback(GLFWwindow* window, int entered)
 }
 @endcode
 
+You can query whether the cursor is currently inside the client area of the
+window with the [GLFW_HOVERED](@ref GLFW_HOVERED_attrib) window attribute.
+
+@code
+if (glfwGetWindowAttrib(window, GLFW_HOVERED))
+{
+    highlight_interface();
+}
+@endcode
+
 
 @subsection input_mouse_button Mouse button input
 

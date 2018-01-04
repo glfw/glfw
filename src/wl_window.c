@@ -692,6 +692,11 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
     return window->wl.maximized;
 }
 
+int _glfwPlatformWindowHovered(_GLFWwindow* window)
+{
+    return window->wl.hovered;
+}
+
 int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
 {
     return window->wl.transparent;

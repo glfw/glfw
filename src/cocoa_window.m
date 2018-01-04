@@ -1488,6 +1488,20 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
     return [window->ns.object isZoomed];
 }
 
+int _glfwPlatformWindowHovered(_GLFWwindow* window)
+{
+    const NSPoint point = [NSEvent mouseLocation];
+
+    if ([NSWindow windowNumberAtPoint:point belowWindowWithWindowNumber:0] !=
+        [window->ns.object windowNumber])
+    {
+        return GLFW_FALSE;
+    }
+
+    return NSPointInRect(point,
+        [window->ns.object convertRectToScreen:[window->ns.view bounds]]);
+}
+
 int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
 {
     return ![window->ns.object isOpaque] && ![window->ns.view isOpaque];

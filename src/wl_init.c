@@ -54,6 +54,8 @@ static void pointerHandleEnter(void* data,
     _glfw.wl.pointerSerial = serial;
     _glfw.wl.pointerFocus = window;
 
+    window->wl.hovered = GLFW_TRUE;
+
     _glfwPlatformSetCursor(window, window->wl.currentCursor);
     _glfwInputCursorEnter(window, GLFW_TRUE);
 }
@@ -67,6 +69,8 @@ static void pointerHandleLeave(void* data,
 
     if (!window)
         return;
+
+    window->wl.hovered = GLFW_FALSE;
 
     _glfw.wl.pointerSerial = serial;
     _glfw.wl.pointerFocus = NULL;

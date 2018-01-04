@@ -162,6 +162,7 @@ information on what to include when reporting a bug.
 - Added definition of `GLAPIENTRY` to public header
 - Added `GLFW_TRANSPARENT_FRAMEBUFFER` window hint and attribute for controlling
   per-pixel framebuffer transparency (#197,#663,#715,#723,#1078)
+- Added `GLFW_HOVERED` window attribute for polling cursor hover state (#1166)
 - Added `GLFW_CENTER_CURSOR` window hint for controlling cursor centering
   (#749,#842)
 - Added `GLFW_JOYSTICK_HAT_BUTTONS` init hint (#889)

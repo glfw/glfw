@@ -420,6 +420,7 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
     }
 
     wl_surface_commit(window->wl.surface);
+    wl_display_roundtrip(_glfw.wl.display);
 
     return GLFW_TRUE;
 }

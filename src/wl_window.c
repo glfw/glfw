@@ -816,11 +816,14 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
-    if (_glfw.wl.wmBase && !window->wl.xdg.toplevel)
-        createXdgSurface(window);
-    else if (!window->wl.shellSurface)
-        createShellSurface(window);
-    window->wl.visible = GLFW_TRUE;
+    if (!window->wl.visible)
+    {
+        if (_glfw.wl.wmBase)
+            createXdgSurface(window);
+        else if (!window->wl.shellSurface)
+            createShellSurface(window);
+        window->wl.visible = GLFW_TRUE;
+    }
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)

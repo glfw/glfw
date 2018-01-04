@@ -318,22 +318,25 @@ static void xdgToplevelHandleConfigure(void* data,
         }
     }
 
-    if (!maximized && !fullscreen)
+    if (width != 0 && height != 0)
     {
-        if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
+        if (!maximized && !fullscreen)
         {
-            aspectRatio = (float)width / (float)height;
-            targetRatio = (float)window->numer / (float)window->denom;
-            if (aspectRatio < targetRatio)
-                height = width / targetRatio;
-            else if (aspectRatio > targetRatio)
-                width = height * targetRatio;
+            if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
+            {
+                aspectRatio = (float)width / (float)height;
+                targetRatio = (float)window->numer / (float)window->denom;
+                if (aspectRatio < targetRatio)
+                    height = width / targetRatio;
+                else if (aspectRatio > targetRatio)
+                    width = height * targetRatio;
+            }
         }
-    }
 
-    _glfwInputWindowSize(window, width, height);
-    _glfwPlatformSetWindowSize(window, width, height);
-    _glfwInputWindowDamage(window);
+        _glfwInputWindowSize(window, width, height);
+        _glfwPlatformSetWindowSize(window, width, height);
+        _glfwInputWindowDamage(window);
+    }
 
     if (!activated && window->autoIconify)
         _glfwPlatformIconifyWindow(window);

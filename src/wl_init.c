@@ -34,7 +34,6 @@
 #include <sys/mman.h>
 #include <sys/timerfd.h>
 #include <unistd.h>
-#include <wayland-client.h>
 
 
 static inline int min(int n1, int n2)
@@ -951,6 +950,37 @@ static void createKeyTables(void)
 
 int _glfwPlatformInit(void)
 {
+    _glfw.wl.client.handle = _glfw_dlopen("libwayland-client.so.0");
+    if (!_glfw.wl.client.handle)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to open libwayland-client.");
+        return GLFW_FALSE;
+    }
+
+    _glfw.wl.client.display.cancel_read = (PFN_wl_display_cancel_read)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_cancel_read");
+    _glfw.wl.client.display.connect = (PFN_wl_display_connect)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_connect");
+    _glfw.wl.client.display.disconnect = (PFN_wl_display_disconnect)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_disconnect");
+    _glfw.wl.client.display.dispatch_pending = (PFN_wl_display_dispatch_pending)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_dispatch_pending");
+    _glfw.wl.client.display.flush = (PFN_wl_display_flush)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_flush");
+    _glfw.wl.client.display.get_fd = (PFN_wl_display_get_fd)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_get_fd");
+    _glfw.wl.client.display.prepare_read = (PFN_wl_display_prepare_read)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_prepare_read");
+    _glfw.wl.client.display.read_events = (PFN_wl_display_read_events)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_read_events");
+    _glfw.wl.client.display.roundtrip = (PFN_wl_display_roundtrip)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_roundtrip");
+
+    // TODO:
+    //_glfw.wl.client.proxy.marshal_constructor_versioned = (PFN_wl_proxy_marshal_constructor_versioned)
+    //    _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_marshal_constructor_versioned");
+
     _glfw.wl.cursor.handle = _glfw_dlopen("libwayland-cursor.so.0");
     if (!_glfw.wl.cursor.handle)
     {

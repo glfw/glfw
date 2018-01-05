@@ -24,7 +24,6 @@
 //
 //========================================================================
 
-#include <wayland-client.h>
 #include <xkbcommon/xkbcommon.h>
 #ifdef HAVE_XKBCOMMON_COMPOSE_H
 #include <xkbcommon/xkbcommon-compose.h>
@@ -56,6 +55,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #include "egl_context.h"
 #include "osmesa_context.h"
 
+#include "wayland-base-client-protocol.h"
 #include "wayland-xdg-shell-client-protocol.h"
 #include "wayland-viewporter-client-protocol.h"
 #include "wayland-relative-pointer-unstable-v1-client-protocol.h"
@@ -76,6 +76,42 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 
 #define _GLFW_PLATFORM_CONTEXT_STATE
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
+
+typedef void (* PFN_wl_display_cancel_read)(struct wl_display*);
+typedef struct wl_display* (* PFN_wl_display_connect)(const char*);
+typedef void (* PFN_wl_display_disconnect)(struct wl_display*);
+typedef int (* PFN_wl_display_dispatch_pending)(struct wl_display*);
+typedef int (* PFN_wl_display_flush)(struct wl_display*);
+typedef int (* PFN_wl_display_get_fd)(struct wl_display*);
+typedef int (* PFN_wl_display_prepare_read)(struct wl_display*);
+typedef int (* PFN_wl_display_read_events)(struct wl_display*);
+typedef int (* PFN_wl_display_roundtrip)(struct wl_display*);
+#define wl_display_cancel_read _glfw.wl.client.display.cancel_read
+#define wl_display_connect _glfw.wl.client.display.connect
+#define wl_display_disconnect _glfw.wl.client.display.disconnect
+#define wl_display_dispatch_pending _glfw.wl.client.display.dispatch_pending
+#define wl_display_flush _glfw.wl.client.display.flush
+#define wl_display_get_fd _glfw.wl.client.display.get_fd
+#define wl_display_prepare_read _glfw.wl.client.display.prepare_read
+#define wl_display_read_events _glfw.wl.client.display.read_events
+#define wl_display_roundtrip _glfw.wl.client.display.roundtrip
+
+typedef void (* PFN_wl_proxy_marshal)(struct wl_proxy*, uint32_t, ...);
+typedef struct wl_proxy* (* PFN_wl_proxy_marshal_constructor)(struct wl_proxy*, uint32_t, const struct wl_interface*, ...);
+typedef struct wl_proxy* (* PFN_wl_proxy_marshal_constructor_versioned)(struct wl_proxy*, uint32_t, const struct wl_interface*, uint32_t, ...);
+typedef void (* PFN_wl_proxy_destroy)(struct wl_proxy*);
+typedef int (* PFN_wl_proxy_add_listener)(struct wl_proxy*, void(**)(void), void*);
+typedef void (* PFN_wl_proxy_set_user_data)(struct wl_proxy*, void*);
+typedef void* (* PFN_wl_proxy_get_user_data)(struct wl_proxy*);
+typedef uint32_t (* PFN_wl_proxy_get_version)(struct wl_proxy*);
+#define wl_proxy_marshal _glfw.wl.client.proxy.marshal
+#define wl_proxy_marshal_constructor _glfw.wl.client.proxy.marshal_constructor
+#define wl_proxy_marshal_constructor_versioned _glfw.wl.client.proxy.marshal_constructor_versioned
+#define wl_proxy_destroy _glfw.wl.client.proxy.destroy
+#define wl_proxy_add_listener _glfw.wl.client.proxy.add_listener
+#define wl_proxy_set_user_data _glfw.wl.client.proxy.set_user_data
+#define wl_proxy_get_user_data _glfw.wl.client.proxy.get_user_data
+#define wl_proxy_get_version _glfw.wl.client.proxy.get_version
 
 struct wl_cursor_image {
     uint32_t width;
@@ -296,6 +332,33 @@ typedef struct _GLFWlibraryWayland
 
     _GLFWwindow*                pointerFocus;
     _GLFWwindow*                keyboardFocus;
+
+    struct {
+        void*                   handle;
+
+        struct {
+            PFN_wl_display_cancel_read cancel_read;
+            PFN_wl_display_connect connect;
+            PFN_wl_display_disconnect disconnect;
+            PFN_wl_display_dispatch_pending dispatch_pending;
+            PFN_wl_display_flush flush;
+            PFN_wl_display_get_fd get_fd;
+            PFN_wl_display_prepare_read prepare_read;
+            PFN_wl_display_read_events read_events;
+            PFN_wl_display_roundtrip roundtrip;
+        } display;
+
+        struct {
+            PFN_wl_proxy_marshal marshal;
+            PFN_wl_proxy_marshal_constructor marshal_constructor;
+            PFN_wl_proxy_marshal_constructor_versioned marshal_constructor_versioned;
+            PFN_wl_proxy_destroy destroy;
+            PFN_wl_proxy_add_listener add_listener;
+            PFN_wl_proxy_set_user_data set_user_data;
+            PFN_wl_proxy_get_user_data get_user_data;
+            PFN_wl_proxy_get_version get_version;
+        } proxy;
+    } client;
 
     struct {
         void*                   handle;

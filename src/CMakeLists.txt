@@ -33,6 +33,10 @@ elseif (_GLFW_WAYLAND)
 
     ecm_add_wayland_client_protocol(glfw_SOURCES
         PROTOCOL
+        "${WAYLAND_PKGDATADIR}/wayland.xml"
+        BASENAME base)
+    ecm_add_wayland_client_protocol(glfw_SOURCES
+        PROTOCOL
         "${WAYLAND_PROTOCOLS_PKGDATADIR}/stable/xdg-shell/xdg-shell.xml"
         BASENAME xdg-shell)
     ecm_add_wayland_client_protocol(glfw_SOURCES

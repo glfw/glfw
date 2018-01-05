@@ -277,7 +277,7 @@ if (_GLFW_WAYLAND)
 
     find_package(Wayland REQUIRED Client Cursor Egl)
     find_package(WaylandScanner REQUIRED)
-    find_package(WaylandProtocols 1.6 REQUIRED)
+    find_package(WaylandProtocols 1.12 REQUIRED)
 
     list(APPEND glfw_PKG_DEPS "wayland-egl")
 

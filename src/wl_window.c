@@ -37,8 +37,6 @@
 #include <sys/mman.h>
 #include <poll.h>
 
-#include <wayland-cursor.h>
-
 
 static void handlePing(void* data,
                        struct wl_shell_surface* shellSurface,

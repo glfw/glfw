@@ -71,6 +71,27 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #define _GLFW_PLATFORM_CONTEXT_STATE
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
 
+struct wl_cursor_image {
+    uint32_t width;
+    uint32_t height;
+    uint32_t hotspot_x;
+    uint32_t hotspot_y;
+    uint32_t delay;
+};
+struct wl_cursor {
+    unsigned int image_count;
+    struct wl_cursor_image** images;
+    char* name;
+};
+typedef struct wl_cursor_theme* (* PFN_wl_cursor_theme_load)(const char*, int, struct wl_shm*);
+typedef void (* PFN_wl_cursor_theme_destroy)(struct wl_cursor_theme*);
+typedef struct wl_cursor* (* PFN_wl_cursor_theme_get_cursor)(struct wl_cursor_theme*, const char*);
+typedef struct wl_buffer* (* PFN_wl_cursor_image_get_buffer)(struct wl_cursor_image*);
+#define wl_cursor_theme_load _glfw.wl.cursor.theme_load
+#define wl_cursor_theme_destroy _glfw.wl.cursor.theme_destroy
+#define wl_cursor_theme_get_cursor _glfw.wl.cursor.theme_get_cursor
+#define wl_cursor_image_get_buffer _glfw.wl.cursor.image_get_buffer
+
 typedef struct wl_egl_window* (* PFN_wl_egl_window_create)(struct wl_surface*, int, int);
 typedef void (* PFN_wl_egl_window_destroy)(struct wl_egl_window*);
 typedef void (* PFN_wl_egl_window_resize)(struct wl_egl_window*, int, int, int, int);
@@ -219,6 +240,15 @@ typedef struct _GLFWlibraryWayland
 
     _GLFWwindow*                pointerFocus;
     _GLFWwindow*                keyboardFocus;
+
+    struct {
+        void*                   handle;
+
+        PFN_wl_cursor_theme_load theme_load;
+        PFN_wl_cursor_theme_destroy theme_destroy;
+        PFN_wl_cursor_theme_get_cursor theme_get_cursor;
+        PFN_wl_cursor_image_get_buffer image_get_buffer;
+    } cursor;
 
     struct {
         void*                   handle;

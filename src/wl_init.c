@@ -34,7 +34,6 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <wayland-client.h>
-#include <wayland-cursor.h>
 
 
 static inline int min(int n1, int n2)
@@ -683,6 +682,23 @@ static void createKeyTables(void)
 
 int _glfwPlatformInit(void)
 {
+    _glfw.wl.cursor.handle = _glfw_dlopen("libwayland-cursor.so.0");
+    if (!_glfw.wl.cursor.handle)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to open libwayland-cursor.");
+        return GLFW_FALSE;
+    }
+
+    _glfw.wl.cursor.theme_load = (PFN_wl_cursor_theme_load)
+        _glfw_dlsym(_glfw.wl.cursor.handle, "wl_cursor_theme_load");
+    _glfw.wl.cursor.theme_destroy = (PFN_wl_cursor_theme_destroy)
+        _glfw_dlsym(_glfw.wl.cursor.handle, "wl_cursor_theme_destroy");
+    _glfw.wl.cursor.theme_get_cursor = (PFN_wl_cursor_theme_get_cursor)
+        _glfw_dlsym(_glfw.wl.cursor.handle, "wl_cursor_theme_get_cursor");
+    _glfw.wl.cursor.image_get_buffer = (PFN_wl_cursor_image_get_buffer)
+        _glfw_dlsym(_glfw.wl.cursor.handle, "wl_cursor_image_get_buffer");
+
     _glfw.wl.egl.handle = _glfw_dlopen("libwayland-egl.so.1");
     if (!_glfw.wl.egl.handle)
     {
@@ -818,6 +834,11 @@ void _glfwPlatformTerminate(void)
     {
         _glfw_dlclose(_glfw.wl.egl.handle);
         _glfw.wl.egl.handle = NULL;
+    }
+    if (_glfw.wl.cursor.handle)
+    {
+        _glfw_dlclose(_glfw.wl.cursor.handle);
+        _glfw.wl.cursor.handle = NULL;
     }
 
     if (_glfw.wl.cursorTheme)

@@ -683,7 +683,7 @@ static void createKeyTables(void)
 
 int _glfwPlatformInit(void)
 {
-    _glfw.wl.xkb.handle = dlopen("libxkbcommon.so.0", RTLD_LAZY | RTLD_GLOBAL);
+    _glfw.wl.xkb.handle = _glfw_dlopen("libxkbcommon.so.0");
     if (!_glfw.wl.xkb.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -692,41 +692,41 @@ int _glfwPlatformInit(void)
     }
 
     _glfw.wl.xkb.context_new = (PFN_xkb_context_new)
-        dlsym(_glfw.wl.xkb.handle, "xkb_context_new");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_context_new");
     _glfw.wl.xkb.context_unref = (PFN_xkb_context_unref)
-        dlsym(_glfw.wl.xkb.handle, "xkb_context_unref");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_context_unref");
     _glfw.wl.xkb.keymap_new_from_string = (PFN_xkb_keymap_new_from_string)
-        dlsym(_glfw.wl.xkb.handle, "xkb_keymap_new_from_string");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_keymap_new_from_string");
     _glfw.wl.xkb.keymap_unref = (PFN_xkb_keymap_unref)
-        dlsym(_glfw.wl.xkb.handle, "xkb_keymap_unref");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_keymap_unref");
     _glfw.wl.xkb.keymap_mod_get_index = (PFN_xkb_keymap_mod_get_index)
-        dlsym(_glfw.wl.xkb.handle, "xkb_keymap_mod_get_index");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_keymap_mod_get_index");
     _glfw.wl.xkb.state_new = (PFN_xkb_state_new)
-        dlsym(_glfw.wl.xkb.handle, "xkb_state_new");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_new");
     _glfw.wl.xkb.state_unref = (PFN_xkb_state_unref)
-        dlsym(_glfw.wl.xkb.handle, "xkb_state_unref");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_unref");
     _glfw.wl.xkb.state_key_get_syms = (PFN_xkb_state_key_get_syms)
-        dlsym(_glfw.wl.xkb.handle, "xkb_state_key_get_syms");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_key_get_syms");
     _glfw.wl.xkb.state_update_mask = (PFN_xkb_state_update_mask)
-        dlsym(_glfw.wl.xkb.handle, "xkb_state_update_mask");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_update_mask");
     _glfw.wl.xkb.state_serialize_mods = (PFN_xkb_state_serialize_mods)
-        dlsym(_glfw.wl.xkb.handle, "xkb_state_serialize_mods");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_serialize_mods");
 
 #ifdef HAVE_XKBCOMMON_COMPOSE_H
     _glfw.wl.xkb.compose_table_new_from_locale = (PFN_xkb_compose_table_new_from_locale)
-        dlsym(_glfw.wl.xkb.handle, "xkb_compose_table_new_from_locale");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_table_new_from_locale");
     _glfw.wl.xkb.compose_table_unref = (PFN_xkb_compose_table_unref)
-        dlsym(_glfw.wl.xkb.handle, "xkb_compose_table_unref");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_table_unref");
     _glfw.wl.xkb.compose_state_new = (PFN_xkb_compose_state_new)
-        dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_new");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_new");
     _glfw.wl.xkb.compose_state_unref = (PFN_xkb_compose_state_unref)
-        dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_unref");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_unref");
     _glfw.wl.xkb.compose_state_feed = (PFN_xkb_compose_state_feed)
-        dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_feed");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_feed");
     _glfw.wl.xkb.compose_state_get_status = (PFN_xkb_compose_state_get_status)
-        dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_get_status");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_get_status");
     _glfw.wl.xkb.compose_state_get_one_sym = (PFN_xkb_compose_state_get_one_sym)
-        dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_get_one_sym");
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_get_one_sym");
 #endif
 
     _glfw.wl.display = wl_display_connect(NULL);

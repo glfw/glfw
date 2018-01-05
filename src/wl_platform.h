@@ -71,6 +71,13 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #define _GLFW_PLATFORM_CONTEXT_STATE
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
 
+typedef struct wl_egl_window* (* PFN_wl_egl_window_create)(struct wl_surface*, int, int);
+typedef void (* PFN_wl_egl_window_destroy)(struct wl_egl_window*);
+typedef void (* PFN_wl_egl_window_resize)(struct wl_egl_window*, int, int, int, int);
+#define wl_egl_window_create _glfw.wl.egl.window_create
+#define wl_egl_window_destroy _glfw.wl.egl.window_destroy
+#define wl_egl_window_resize _glfw.wl.egl.window_resize
+
 typedef struct xkb_context* (* PFN_xkb_context_new)(enum xkb_context_flags);
 typedef void (* PFN_xkb_context_unref)(struct xkb_context*);
 typedef struct xkb_keymap* (* PFN_xkb_keymap_new_from_string)(struct xkb_context*, const char*, enum xkb_keymap_format, enum xkb_keymap_compile_flags);
@@ -212,6 +219,14 @@ typedef struct _GLFWlibraryWayland
 
     _GLFWwindow*                pointerFocus;
     _GLFWwindow*                keyboardFocus;
+
+    struct {
+        void*                   handle;
+
+        PFN_wl_egl_window_create window_create;
+        PFN_wl_egl_window_destroy window_destroy;
+        PFN_wl_egl_window_resize window_resize;
+    } egl;
 
 } _GLFWlibraryWayland;
 

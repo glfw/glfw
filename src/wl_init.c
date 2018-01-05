@@ -683,6 +683,21 @@ static void createKeyTables(void)
 
 int _glfwPlatformInit(void)
 {
+    _glfw.wl.egl.handle = _glfw_dlopen("libwayland-egl.so.1");
+    if (!_glfw.wl.egl.handle)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to open libwayland-egl.");
+        return GLFW_FALSE;
+    }
+
+    _glfw.wl.egl.window_create = (PFN_wl_egl_window_create)
+        _glfw_dlsym(_glfw.wl.egl.handle, "wl_egl_window_create");
+    _glfw.wl.egl.window_destroy = (PFN_wl_egl_window_destroy)
+        _glfw_dlsym(_glfw.wl.egl.handle, "wl_egl_window_destroy");
+    _glfw.wl.egl.window_resize = (PFN_wl_egl_window_resize)
+        _glfw_dlsym(_glfw.wl.egl.handle, "wl_egl_window_resize");
+
     _glfw.wl.xkb.handle = _glfw_dlopen("libxkbcommon.so.0");
     if (!_glfw.wl.xkb.handle)
     {
@@ -798,6 +813,11 @@ void _glfwPlatformTerminate(void)
     {
         _glfw_dlclose(_glfw.wl.xkb.handle);
         _glfw.wl.xkb.handle = NULL;
+    }
+    if (_glfw.wl.egl.handle)
+    {
+        _glfw_dlclose(_glfw.wl.egl.handle);
+        _glfw.wl.egl.handle = NULL;
     }
 
     if (_glfw.wl.cursorTheme)

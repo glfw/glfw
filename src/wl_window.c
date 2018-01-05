@@ -37,7 +37,6 @@
 #include <sys/mman.h>
 #include <poll.h>
 
-#include <wayland-egl.h>
 #include <wayland-cursor.h>
 
 

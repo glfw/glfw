@@ -48,7 +48,6 @@ static void error_callback(int error, const char* description)
 
 int main(int argc, char** argv)
 {
-    GLFWmonitor* monitor = NULL;
     GLFWwindow* window;
     struct nk_context* nk;
     struct nk_font_atlas* atlas;

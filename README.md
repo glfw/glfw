@@ -216,7 +216,7 @@ information on what to include when reporting a bug.
 - [Win32] Bugfix: Window was resized twice when entering full screen (#1085)
 - [Win32] Bugfix: The HID device notification was not unregistered (#1170)
 - [Win32] Bugfix: `glfwCreateWindow` activated window even with `GLFW_FOCUSED`
-                  hint set to false (#1179)
+                  hint set to false (#1179,#1180)
 - [X11] Moved to XI2 `XI_RawMotion` for disable cursor mode motion input (#125)
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
 - [X11] Bugfix: `glfwGetVideoMode` would segfault on Cygwin/X

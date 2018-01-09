@@ -125,6 +125,7 @@ static void checkScaleChange(_GLFWwindow* window)
         wl_surface_set_buffer_scale(window->wl.surface, scale);
         wl_egl_window_resize(window->wl.native, scaledWidth, scaledHeight, 0, 0);
         _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
+        _glfwInputWindowContentScale(window, scale, scale);
     }
 }
 

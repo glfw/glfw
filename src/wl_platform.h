@@ -117,6 +117,7 @@ typedef struct _GLFWwindowWayland
     int                         width, height;
     GLFWbool                    visible;
     GLFWbool                    maximized;
+    GLFWbool                    hovered;
     GLFWbool                    transparent;
     struct wl_surface*          surface;
     struct wl_egl_window*       native;
@@ -183,6 +184,8 @@ typedef struct _GLFWlibraryWayland
         xkb_mod_mask_t          altMask;
         xkb_mod_mask_t          shiftMask;
         xkb_mod_mask_t          superMask;
+        xkb_mod_mask_t          capsLockMask;
+        xkb_mod_mask_t          numLockMask;
         unsigned int            modifiers;
 
         PFN_xkb_context_new context_new;

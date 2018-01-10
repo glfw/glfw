@@ -49,7 +49,7 @@ elseif (_GLFW_WAYLAND)
         BASENAME pointer-constraints-unstable-v1)
     ecm_add_wayland_client_protocol(glfw_SOURCES
         PROTOCOL
-        ${WAYLAND_PROTOCOLS_PKGDATADIR}/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml
+        "${WAYLAND_PROTOCOLS_PKGDATADIR}/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml"
         BASENAME idle-inhibit-unstable-v1)
 elseif (_GLFW_MIR)
     set(glfw_HEADERS ${common_HEADERS} mir_platform.h linux_joystick.h

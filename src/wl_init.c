@@ -54,6 +54,8 @@ static void pointerHandleEnter(void* data,
     _glfw.wl.pointerSerial = serial;
     _glfw.wl.pointerFocus = window;
 
+    window->wl.hovered = GLFW_TRUE;
+
     _glfwPlatformSetCursor(window, window->wl.currentCursor);
     _glfwInputCursorEnter(window, GLFW_TRUE);
 }
@@ -67,6 +69,8 @@ static void pointerHandleLeave(void* data,
 
     if (!window)
         return;
+
+    window->wl.hovered = GLFW_FALSE;
 
     _glfw.wl.pointerSerial = serial;
     _glfw.wl.pointerFocus = NULL;
@@ -137,6 +141,9 @@ static void pointerHandleAxis(void* data,
     if (!window)
         return;
 
+    assert(axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL ||
+           axis == WL_POINTER_AXIS_VERTICAL_SCROLL);
+
     /* Wayland scroll events are in pointer motion coordinate space (think
      * two finger scroll). The factor 10 is commonly used to convert to
      * "scroll step means 1.0. */
@@ -151,9 +158,6 @@ static void pointerHandleAxis(void* data,
         case WL_POINTER_AXIS_VERTICAL_SCROLL:
             x = 0.0;
             y = wl_fixed_to_double(value) * scrollFactor;
-            break;
-        default:
-            assert(GLFW_FALSE);
             break;
     }
 
@@ -264,6 +268,10 @@ static void keyboardHandleKeymap(void* data,
         1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Shift");
     _glfw.wl.xkb.superMask =
         1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod4");
+    _glfw.wl.xkb.capsLockMask =
+        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Lock");
+    _glfw.wl.xkb.numLockMask =
+        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod2");
 }
 
 static void keyboardHandleEnter(void* data,
@@ -409,6 +417,10 @@ static void keyboardHandleModifiers(void* data,
         modifiers |= GLFW_MOD_SHIFT;
     if (mask & _glfw.wl.xkb.superMask)
         modifiers |= GLFW_MOD_SUPER;
+    if (mask & _glfw.wl.xkb.capsLockMask)
+        modifiers |= GLFW_MOD_CAPS_LOCK;
+    if (mask & _glfw.wl.xkb.numLockMask)
+        modifiers |= GLFW_MOD_NUM_LOCK;
     _glfw.wl.xkb.modifiers = modifiers;
 }
 
@@ -763,15 +775,22 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateJoysticksLinux();
 
 #ifdef HAVE_XKBCOMMON_COMPOSE_H
-    xkb_compose_state_unref(_glfw.wl.xkb.composeState);
+    if (_glfw.wl.xkb.composeState)
+        xkb_compose_state_unref(_glfw.wl.xkb.composeState);
 #endif
 
-    xkb_keymap_unref(_glfw.wl.xkb.keymap);
-    xkb_state_unref(_glfw.wl.xkb.state);
-    xkb_context_unref(_glfw.wl.xkb.context);
+    if (_glfw.wl.xkb.keymap)
+        xkb_keymap_unref(_glfw.wl.xkb.keymap);
+    if (_glfw.wl.xkb.state)
+        xkb_state_unref(_glfw.wl.xkb.state);
+    if (_glfw.wl.xkb.context)
+        xkb_context_unref(_glfw.wl.xkb.context);
 
-    dlclose(_glfw.wl.xkb.handle);
-    _glfw.wl.xkb.handle = NULL;
+    if (_glfw.wl.xkb.handle)
+    {
+        _glfw_dlclose(_glfw.wl.xkb.handle);
+        _glfw.wl.xkb.handle = NULL;
+    }
 
     if (_glfw.wl.cursorTheme)
         wl_cursor_theme_destroy(_glfw.wl.cursorTheme);

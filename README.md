@@ -12,7 +12,7 @@ creating windows, contexts and surfaces, reading input, handling events, etc.
 
 GLFW natively supports Windows, macOS and Linux and other Unix-like systems.
 Experimental implementations for the Wayland protocol and the Mir display server
-are available but not yet officially supported.                             
+are available but not yet officially supported.
 
 GLFW is licensed under the [zlib/libpng
 license](http://www.glfw.org/license.html).
@@ -136,8 +136,9 @@ information on what to include when reporting a bug.
   gamepad mapping (#900)
 - Added `glfwGetGamepadState` function, `GLFW_GAMEPAD_*` and `GLFWgamepadstate`
   for retrieving gamepad input state (#900)
-- Added `glfwGetWindowContentScale` and `glfwGetMonitorContentScale` for
-  DPI-aware rendering (#235,#439,#677,#845,#898)
+- Added `glfwGetWindowContentScale`, `glfwGetMonitorContentScale` and
+  `glfwSetWindowContentScaleCallback` for DPI-aware rendering
+  (#235,#439,#677,#845,#898)
 - Added `glfwRequestWindowAttention` function for requesting attention from the
   user (#732,#988)
 - Added `glfwGetKeyScancode` function that allows retrieving platform dependent
@@ -147,30 +148,38 @@ information on what to include when reporting a bug.
 - Added `glfwSetWindowAttrib` function for changing window attributes (#537)
 - Added `glfwGetJoystickHats` function for querying joystick hats
   (#889,#906,#934)
-- Added `glfwInitHint` and `glfwInitHintString` for setting initialization hints
+- Added `glfwInitHint` for setting initialization hints
+- Added `glfwWindowHintString` for setting string type window hints (#893,#1139)
 - Added `glfwGetWindowOpacity` and `glfwSetWindowOpacity` for controlling whole
   window transparency (#1089)
+- Added `glfwSetMonitorUserPointer` and `glfwGetMonitorUserPointer` for
+  per-monitor user pointers
+- Added `glfwSetJoystickUserPointer` and `glfwGetJoystickUserPointer` for
+  per-joystick user pointers
 - Added `glfwGetX11SelectionString` and `glfwSetX11SelectionString`
   functions for accessing X11 primary selection (#894,#1056)
 - Added headless [OSMesa](http://mesa3d.org/osmesa.html) backend (#850)
 - Added definition of `GLAPIENTRY` to public header
 - Added `GLFW_TRANSPARENT_FRAMEBUFFER` window hint and attribute for controlling
   per-pixel framebuffer transparency (#197,#663,#715,#723,#1078)
+- Added `GLFW_HOVERED` window attribute for polling cursor hover state (#1166)
 - Added `GLFW_CENTER_CURSOR` window hint for controlling cursor centering
   (#749,#842)
 - Added `GLFW_JOYSTICK_HAT_BUTTONS` init hint (#889)
+- Added `GLFW_LOCK_KEY_MODS` input mode and `GLFW_MOD_*_LOCK` mod bits (#946)
 - Added macOS specific `GLFW_COCOA_RETINA_FRAMEBUFFER` window hint
-- Added macOS specific `GLFW_COCOA_FRAME_AUTOSAVE` window hint (#195)
+- Added macOS specific `GLFW_COCOA_FRAME_NAME` window hint (#195)
 - Added macOS specific `GLFW_COCOA_GRAPHICS_SWITCHING` window hint (#377,#935)
 - Added macOS specific `GLFW_COCOA_CHDIR_RESOURCES` init hint
 - Added macOS specific `GLFW_COCOA_MENUBAR` init hint
-- Added X11 specific `GLFW_X11_WM_CLASS_NAME` and `GLFW_X11_WM_CLASS_CLASS` init
-  hints (#893)
+- Added X11 specific `GLFW_X11_CLASS_NAME` and `GLFW_X11_INSTANCE_NAME` window
+  hints (#893,#1139)
 - Added `GLFW_INCLUDE_ES32` for including the OpenGL ES 3.2 header
 - Added `GLFW_OSMESA_CONTEXT_API` for creating OpenGL contexts with
   [OSMesa](https://www.mesa3d.org/osmesa.html) (#281)
 - Added `GenerateMappings.cmake` script for updating gamepad mappings
 - Deprecated window parameter of clipboard string functions
+- Deprecated charmods callback
 - Removed `GLFW_USE_RETINA` compile-time option
 - Removed `GLFW_USE_CHDIR` compile-time option
 - Removed `GLFW_USE_MENUBAR` compile-time option
@@ -205,6 +214,9 @@ information on what to include when reporting a bug.
 - [Win32] Bugfix: Returned key names did not match other platforms (#943)
 - [Win32] Bugfix: Undecorated windows did not maximize to workarea (#899)
 - [Win32] Bugfix: Window was resized twice when entering full screen (#1085)
+- [Win32] Bugfix: The HID device notification was not unregistered (#1170)
+- [Win32] Bugfix: `glfwCreateWindow` activated window even with `GLFW_FOCUSED`
+                  hint set to false (#1179,#1180)
 - [X11] Moved to XI2 `XI_RawMotion` for disable cursor mode motion input (#125)
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
 - [X11] Bugfix: `glfwGetVideoMode` would segfault on Cygwin/X
@@ -323,6 +335,8 @@ skills.
  - Mário Freitas
  - GeO4d
  - Marcus Geelnard
+ - Stephen Gowen
+ - Kovid Goyal
  - Eloi Marín Gratacós
  - Stefan Gustavson
  - Jonathan Hale
@@ -388,6 +402,7 @@ skills.
  - Keith Pitt
  - Stanislav Podgorskiy
  - Alexandre Pretyman
+ - przemekmirek
  - Philip Rideout
  - Eddie Ringle
  - Jorge Rodriguez

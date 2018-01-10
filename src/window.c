@@ -93,6 +93,12 @@ void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height)
         window->callbacks.fbsize((GLFWwindow*) window, width, height);
 }
 
+void _glfwInputWindowContentScale(_GLFWwindow* window, float xscale, float yscale)
+{
+    if (window->callbacks.scale)
+        window->callbacks.scale((GLFWwindow*) window, xscale, yscale);
+}
+
 void _glfwInputWindowDamage(_GLFWwindow* window)
 {
     if (window->callbacks.refresh)
@@ -126,7 +132,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     _GLFWctxconfig ctxconfig;
     _GLFWwndconfig wndconfig;
     _GLFWwindow* window;
-    _GLFWwindow* previous;
 
     assert(title != NULL);
     assert(width >= 0);
@@ -190,33 +195,20 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->numer       = GLFW_DONT_CARE;
     window->denom       = GLFW_DONT_CARE;
 
-    // Save the currently current context so it can be restored later
-    previous = _glfwPlatformGetTls(&_glfw.contextSlot);
-    if (ctxconfig.client != GLFW_NO_API)
-        glfwMakeContextCurrent(NULL);
-
     // Open the actual window and create its context
     if (!_glfwPlatformCreateWindow(window, &wndconfig, &ctxconfig, &fbconfig))
     {
-        glfwMakeContextCurrent((GLFWwindow*) previous);
         glfwDestroyWindow((GLFWwindow*) window);
         return NULL;
     }
 
     if (ctxconfig.client != GLFW_NO_API)
     {
-        window->context.makeCurrent(window);
-
-        // Retrieve the actual (as opposed to requested) context attributes
-        if (!_glfwRefreshContextAttribs(&ctxconfig))
+        if (!_glfwRefreshContextAttribs(window, &ctxconfig))
         {
-            glfwMakeContextCurrent((GLFWwindow*) previous);
             glfwDestroyWindow((GLFWwindow*) window);
             return NULL;
         }
-
-        // Restore the previously current context (or NULL)
-        glfwMakeContextCurrent((GLFWwindow*) previous);
     }
 
     if (!window->monitor)
@@ -348,9 +340,6 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_COCOA_RETINA_FRAMEBUFFER:
             _glfw.hints.window.ns.retina = value ? GLFW_TRUE : GLFW_FALSE;
             return;
-        case GLFW_COCOA_FRAME_AUTOSAVE:
-            _glfw.hints.window.ns.frame = value ? GLFW_TRUE : GLFW_FALSE;
-            return;
         case GLFW_COCOA_GRAPHICS_SWITCHING:
             _glfw.hints.context.nsgl.offline = value ? GLFW_TRUE : GLFW_FALSE;
             return;
@@ -393,6 +382,31 @@ GLFWAPI void glfwWindowHint(int hint, int value)
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint 0x%08X", hint);
+}
+
+GLFWAPI void glfwWindowHintString(int hint, const char* value)
+{
+    assert(value != NULL);
+
+    _GLFW_REQUIRE_INIT();
+
+    switch (hint)
+    {
+        case GLFW_COCOA_FRAME_NAME:
+            strncpy(_glfw.hints.window.ns.frameName, value,
+                    sizeof(_glfw.hints.window.ns.frameName) - 1);
+            return;
+        case GLFW_X11_CLASS_NAME:
+            strncpy(_glfw.hints.window.x11.className, value,
+                    sizeof(_glfw.hints.window.x11.className) - 1);
+            return;
+        case GLFW_X11_INSTANCE_NAME:
+            strncpy(_glfw.hints.window.x11.instanceName, value,
+                    sizeof(_glfw.hints.window.x11.instanceName) - 1);
+            return;
+    }
+
+    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint string 0x%08X", hint);
 }
 
 GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
@@ -770,6 +784,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return _glfwPlatformWindowVisible(window);
         case GLFW_MAXIMIZED:
             return _glfwPlatformWindowMaximized(window);
+        case GLFW_HOVERED:
+            return _glfwPlatformWindowHovered(window);
         case GLFW_TRANSPARENT_FRAMEBUFFER:
             return _glfwPlatformFramebufferTransparent(window);
         case GLFW_RESIZABLE:
@@ -1001,6 +1017,17 @@ GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* handle
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     _GLFW_SWAP_POINTERS(window->callbacks.fbsize, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWwindowcontentscalefun glfwSetWindowContentScaleCallback(GLFWwindow* handle,
+                                                                    GLFWwindowcontentscalefun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(window->callbacks.scale, cbfun);
     return cbfun;
 }
 

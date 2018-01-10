@@ -36,7 +36,6 @@
 #include <math.h>
 
 #include "linmath.h"
-#include "getopt.h"
 
 static const struct
 {
@@ -68,14 +67,6 @@ static const char* fragment_shader_text =
 static int swap_tear;
 static int swap_interval;
 static double frame_rate;
-
-static void usage(void)
-{
-    printf("Usage: tearing [-h] [-f]\n");
-    printf("Options:\n");
-    printf("  -f create full screen window\n");
-    printf("  -h show this help\n");
-}
 
 static void update_window_title(GLFWwindow* window)
 {
@@ -138,64 +129,50 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         case GLFW_KEY_ESCAPE:
             glfwSetWindowShouldClose(window, 1);
             break;
+
+        case GLFW_KEY_F11:
+        case GLFW_KEY_ENTER:
+        {
+            static int x, y, width, height;
+
+            if (mods != GLFW_MOD_ALT)
+                return;
+
+            if (glfwGetWindowMonitor(window))
+                glfwSetWindowMonitor(window, NULL, x, y, width, height, 0);
+            else
+            {
+                GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+                const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+                glfwGetWindowPos(window, &x, &y);
+                glfwGetWindowSize(window, &width, &height);
+                glfwSetWindowMonitor(window, monitor,
+                                     0, 0, mode->width, mode->height,
+                                     mode->refreshRate);
+            }
+
+            break;
+        }
     }
 }
 
 int main(int argc, char** argv)
 {
-    int ch, width, height;
     unsigned long frame_count = 0;
     double last_time, current_time;
-    int fullscreen = GLFW_FALSE;
-    GLFWmonitor* monitor = NULL;
     GLFWwindow* window;
     GLuint vertex_buffer, vertex_shader, fragment_shader, program;
     GLint mvp_location, vpos_location;
-
-    while ((ch = getopt(argc, argv, "fh")) != -1)
-    {
-        switch (ch)
-        {
-            case 'h':
-                usage();
-                exit(EXIT_SUCCESS);
-
-            case 'f':
-                fullscreen = GLFW_TRUE;
-                break;
-        }
-    }
 
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    if (fullscreen)
-    {
-        const GLFWvidmode* mode;
-
-        monitor = glfwGetPrimaryMonitor();
-        mode = glfwGetVideoMode(monitor);
-
-        glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-        glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-        glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-        glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-
-        width = mode->width;
-        height = mode->height;
-    }
-    else
-    {
-        width = 640;
-        height = 480;
-    }
-
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    window = glfwCreateWindow(width, height, "", monitor, NULL);
+    window = glfwCreateWindow(640, 480, "Tearing detector", NULL, NULL);
     if (!window)
     {
         glfwTerminate();

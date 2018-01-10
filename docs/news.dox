@@ -64,14 +64,16 @@ GLFW now supports querying the window and monitor content scale, i.e. the ratio
 between the current DPI and the platform's default DPI, with @ref
 glfwGetWindowContentScale and @ref glfwGetMonitorContentScale.
 
+Changes of the content scale of a window can be received with the window content
+scale callback, set with @ref glfwSetWindowCloseCallback.
+
 @see @ref window_scale
 
 
 @subsection news_33_inithint Support for initialization hints
 
-GLFW now supports setting library initialization hints with @ref glfwInitHint
-or @ref glfwInitHintString.  These must be set before initialization to take
-effect.
+GLFW now supports setting library initialization hints with @ref glfwInitHint.
+These must be set before initialization to take effect.
 
 @see @ref init_hints
 
@@ -138,6 +140,13 @@ GLFW now supports creating offscreen OpenGL contexts using
 There is also a new null backend that uses OSMesa as its native context
 creation API, intended for automated testing.  This backend does not provide
 input.
+
+
+@subsection news_33_userptr Monitor and joystick user pointers
+
+GLFW now supports setting and querying user pointers for connected monitors and
+joysticks with @ref glfwSetMonitorUserPointer, @ref glfwGetMonitorUserPointer,
+@ref glfwSetJoystickUserPointer and @ref glfwGetJoystickUserPointer.
 
 
 @subsection news_33_primary X11 primary selection access

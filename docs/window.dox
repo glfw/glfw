@@ -1,7 +1,7 @@
 /*!
 
 @page window_guide Window guide
- 
+
 @tableofcontents
 
 This guide introduces the window related functions of GLFW.  For details on
@@ -48,7 +48,7 @@ the event.
 
 To create a full screen window, you need to specify which monitor the window
 should use.  In most cases, the user's primary monitor is a good choice.
-For more information about retrieving monitors, see @ref monitor_monitors. 
+For more information about retrieving monitors, see @ref monitor_monitors.
 
 @code
 GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", glfwGetPrimaryMonitor(), NULL);
@@ -146,16 +146,18 @@ is restored, but the gamma ramp is left untouched.
 There are a number of hints that can be set before the creation of a window and
 context.  Some affect the window itself, others affect the framebuffer or
 context.  These hints are set to their default values each time the library is
-initialized with @ref glfwInit, can be set individually with @ref glfwWindowHint
-and reset all at once to their defaults with @ref glfwDefaultWindowHints.
+initialized with @ref glfwInit.  Integer value hints can be set individually
+with @ref glfwWindowHint and string value hints with @ref glfwWindowHintString.
+You can reset all at once to their defaults with @ref glfwDefaultWindowHints.
 
 Some hints are platform specific.  These are always valid to set on any
 platform but they will only affect their specific platform.  Other platforms
 will ignore them.  Setting these hints requires no platform specific headers or
 calls.
 
-Note that hints need to be set _before_ the creation of the window and context
-you wish to have the specified attributes.
+@note Window hints need to be set before the creation of the window and context
+you wish to have the specified attributes.  They function as additional
+arguments to @ref glfwCreateWindow.
 
 
 @subsubsection window_hints_hard Hard and soft constraints
@@ -441,10 +443,10 @@ __GLFW_COCOA_RETINA_FRAMEBUFFER__ specifies whether to use full resolution
 framebuffers on Retina displays.  Possible values are `GLFW_TRUE` and
 `GLFW_FALSE`.  This is ignored on other platforms.
 
-@anchor GLFW_COCOA_FRAME_AUTOSAVE_hint
-__GLFW_COCOA_FRAME_AUTOSAVE__ specifies whether to activate frame autosaving
-using the window title specified at window creation.  Possible values are
-`GLFW_TRUE` and `GLFW_FALSE`.  This is ignored on other platforms.
+@anchor GLFW_COCOA_FRAME_NAME_hint
+__GLFW_COCOA_FRAME_NAME__ specifies the UTF-8 encoded name to use for autosaving
+the window frame, or if empty disables frame autosaving for the window.  This is
+ignored on other platforms.  This is set with @ref glfwWindowHintString.
 
 @anchor GLFW_COCOA_GRAPHICS_SWITCHING_hint
 __GLFW_COCOA_GRAPHICS_SWITCHING__ specifies whether to in Automatic Graphics
@@ -463,6 +465,15 @@ disabled.
 A bundled application that wishes to participate in Automatic Graphics Switching
 should also declare this in its `Info.plist` by setting the
 `NSSupportsAutomaticGraphicsSwitching` key to `true`.
+
+
+@subsubsection window_hints_x11 X11 specific window hints
+
+@anchor GLFW_X11_CLASS_NAME
+@anchor GLFW_X11_INSTANCE_NAME
+__GLFW_X11_CLASS_NAME__ and __GLFW_X11_INSTANCE_NAME__ specifies the desired
+ASCII encoded class and instance parts of the ICCCM `WM_CLASS` window property.
+These are set with @ref glfwWindowHintString.
 
 
 @subsubsection window_hints_values Supported and default values
@@ -504,8 +515,10 @@ GLFW_OPENGL_FORWARD_COMPAT    | `GLFW_FALSE`                | `GLFW_TRUE` or `GL
 GLFW_OPENGL_DEBUG_CONTEXT     | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_OPENGL_PROFILE           | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE`
 GLFW_COCOA_RETINA_FRAMEBUFFER | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_COCOA_FRAME_AUTOSAVE     | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_COCOA_FRAME_NAME         | `""`                        | A UTF-8 encoded frame autosave name
 GLFW_COCOA_GRAPHICS_SWITCHING | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_X11_CLASS_NAME           | `""`                        | An ASCII encoded `WM_CLASS` class name
+GLFW_X11_INSTANCE_NAME        | `""`                        | An ASCII encoded `WM_CLASS` instance name
 
 
 @section window_events Window event processing
@@ -518,7 +531,7 @@ See @ref events.
 @subsection window_userptr User pointer
 
 Each window has a user pointer that can be set with @ref
-glfwSetWindowUserPointer and fetched with @ref glfwGetWindowUserPointer.  This
+glfwSetWindowUserPointer and queried with @ref glfwGetWindowUserPointer.  This
 can be used for any purpose you need and will not be modified by GLFW throughout
 the life-time of the window.
 
@@ -681,6 +694,23 @@ for text and any UI elements.
 On systems where each monitors can have its own content scale, the window
 content scale will depend on which monitor the system considers the window to be
 on.
+
+If you wish to be notified when the content scale of a window changes, whether
+because of a system setting change or because it was moved to a monitor with
+a different scale, set a content scale callback.
+
+@code
+glfwSetWindowContentScaleCallback(window, window_content_scale_callback);
+@endcode
+
+The callback function receives the new content scale of the window.
+
+@code
+void window_content_scale_callback(GLFWwindow* window, float xscale, float yscale)
+{
+    set_interface_scale(xscale, yscale);
+}
+@endcode
 
 
 @subsection window_sizelimits Window size limits
@@ -1189,6 +1219,11 @@ See @ref window_iconify for details.
 @anchor GLFW_MAXIMIZED_attrib
 __GLFW_MAXIMIZED__ indicates whether the specified window is maximized.  See
 @ref window_maximize for details.
+
+@anchor GLFW_HOVERED_attrib
+__GLFW_HOVERED__ indicates whether the cursor is currently directly over the
+client area of the window, with no other windows between.  See @ref cursor_enter
+for details.
 
 @anchor GLFW_VISIBLE_attrib
 __GLFW_VISIBLE__ indicates whether the specified window is visible.  See @ref

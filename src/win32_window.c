@@ -386,14 +386,18 @@ static int getKeyMods(void)
 {
     int mods = 0;
 
-    if (GetKeyState(VK_SHIFT) & (1 << 31))
+    if (GetKeyState(VK_SHIFT) & 0x8000)
         mods |= GLFW_MOD_SHIFT;
-    if (GetKeyState(VK_CONTROL) & (1 << 31))
+    if (GetKeyState(VK_CONTROL) & 0x8000)
         mods |= GLFW_MOD_CONTROL;
-    if (GetKeyState(VK_MENU) & (1 << 31))
+    if (GetKeyState(VK_MENU) & 0x8000)
         mods |= GLFW_MOD_ALT;
-    if ((GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & (1 << 31))
+    if ((GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & 0x8000)
         mods |= GLFW_MOD_SUPER;
+    if (GetKeyState(VK_CAPITAL) & 1)
+        mods |= GLFW_MOD_CAPS_LOCK;
+    if (GetKeyState(VK_NUMLOCK) & 1)
+        mods |= GLFW_MOD_NUM_LOCK;
 
     return mods;
 }
@@ -404,14 +408,18 @@ static int getAsyncKeyMods(void)
 {
     int mods = 0;
 
-    if (GetAsyncKeyState(VK_SHIFT) & (1 << 31))
+    if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
         mods |= GLFW_MOD_SHIFT;
-    if (GetAsyncKeyState(VK_CONTROL) & (1 << 31))
+    if (GetAsyncKeyState(VK_CONTROL) & 0x8000)
         mods |= GLFW_MOD_CONTROL;
-    if (GetAsyncKeyState(VK_MENU) & (1 << 31))
+    if (GetAsyncKeyState(VK_MENU) & 0x8000)
         mods |= GLFW_MOD_ALT;
-    if ((GetAsyncKeyState(VK_LWIN) | GetAsyncKeyState(VK_RWIN)) & (1 << 31))
+    if ((GetAsyncKeyState(VK_LWIN) | GetAsyncKeyState(VK_RWIN)) & 0x8000)
         mods |= GLFW_MOD_SUPER;
+    if (GetAsyncKeyState(VK_CAPITAL) & 1)
+        mods |= GLFW_MOD_CAPS_LOCK;
+    if (GetAsyncKeyState(VK_NUMLOCK) & 1)
+        mods |= GLFW_MOD_NUM_LOCK;
 
     return mods;
 }
@@ -1051,6 +1059,14 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         return 0;
     }
 
+    case WM_DPICHANGED:
+    {
+        const float xscale = HIWORD(wParam) / 96.f;
+        const float yscale = LOWORD(wParam) / 96.f;
+        _glfwInputWindowContentScale(window, xscale, yscale);
+        break;
+    }
+
     case WM_SETCURSOR:
     {
         if (LOWORD(lParam) == HTCLIENT)
@@ -1506,7 +1522,7 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
-    ShowWindow(window->win32.handle, SW_SHOW);
+    ShowWindow(window->win32.handle, SW_SHOWNA);
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)
@@ -1623,6 +1639,11 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
 int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 {
     return IsZoomed(window->win32.handle);
+}
+
+int _glfwPlatformWindowHovered(_GLFWwindow* window)
+{
+    return cursorInClientArea(window);
 }
 
 int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)

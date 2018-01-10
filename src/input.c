@@ -293,6 +293,16 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
         window->callbacks.mouseButton((GLFWwindow*) window, button, action, mods);
 }
 
+void _glfwInputPenPressure(_GLFWwindow* window, double pressure, int x, int y)
+{
+    window->penPressure = pressure;
+    window->penXposition = x;
+    window->penYposition = y;
+
+    if (window->callbacks.penPressure)
+        window->callbacks.penPressure((GLFWwindow*)window, pressure, x, y);
+}
+
 void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos)
 {
     if (window->virtualCursorPosX == xpos && window->virtualCursorPosY == ypos)
@@ -578,6 +588,19 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* handle, int button)
     return (int) window->mouseButtons[button];
 }
 
+
+/***************************PEN**************************************************/
+GLFWAPI double glfwGetPenPressure(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*)handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(0);
+
+    return window->penPressure;
+}
+/**************************PEN***************************************************/
+
 GLFWAPI void glfwGetCursorPos(GLFWwindow* handle, double* xpos, double* ypos)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -770,6 +793,17 @@ GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* handle,
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     _GLFW_SWAP_POINTERS(window->callbacks.mouseButton, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWpenpressurefun glfwSetPenPressureCallback(GLFWwindow* handle,
+    GLFWpenpressurefun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*)handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(window->callbacks.penPressure, cbfun);
     return cbfun;
 }
 

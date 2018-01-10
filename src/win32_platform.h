@@ -104,6 +104,89 @@
  #define _WIN32_WINNT_WINBLUE 0x0602
 #endif
 
+#if WINVER < 0x0604
+#define WM_POINTERUPDATE                0x0245
+#define WM_POINTERDOWN                  0x0246
+#define WM_POINTERUP                    0x0247
+#define POINTER_MESSAGE_FLAG_INCONTACT          0x00000004 // Pointer is in contact
+
+#define GET_POINTERID_WPARAM(wParam)                (LOWORD(wParam))
+#define IS_POINTER_INCONTACT_WPARAM(wParam)         IS_POINTER_FLAG_SET_WPARAM(wParam, POINTER_MESSAGE_FLAG_INCONTACT)
+#define IS_POINTER_FLAG_SET_WPARAM(wParam, flag)    (((DWORD)HIWORD(wParam) & (flag)) == (flag))
+
+typedef enum
+{
+    POINTER_CHANGE_NONE,
+    POINTER_CHANGE_FIRSTBUTTON_DOWN,
+    POINTER_CHANGE_FIRSTBUTTON_UP,
+    POINTER_CHANGE_SECONDBUTTON_DOWN,
+    POINTER_CHANGE_SECONDBUTTON_UP,
+    POINTER_CHANGE_THIRDBUTTON_DOWN,
+    POINTER_CHANGE_THIRDBUTTON_UP,
+    POINTER_CHANGE_FOURTHBUTTON_DOWN,
+    POINTER_CHANGE_FOURTHBUTTON_UP,
+    POINTER_CHANGE_FIFTHBUTTON_DOWN,
+    POINTER_CHANGE_FIFTHBUTTON_UP,
+} POINTER_BUTTON_CHANGE_TYPE;
+
+typedef struct
+{
+    DWORD           pointerType;
+    UINT32          pointerId;
+    UINT32          frameId;
+    UINT32          pointerFlags;
+    HANDLE          sourceDevice;
+    HWND            hwndTarget;
+    POINT           ptPixelLocation;
+    POINT           ptHimetricLocation;
+    POINT           ptPixelLocationRaw;
+    POINT           ptHimetricLocationRaw;
+    DWORD           dwTime;
+    UINT32          historyCount;
+    INT32           InputData;
+    DWORD           dwKeyStates;
+    UINT64          PerformanceCount;
+    POINTER_BUTTON_CHANGE_TYPE ButtonChangeType;
+} POINTER_INFO;
+
+typedef struct
+{
+    POINTER_INFO    pointerInfo;
+    UINT32          penFlags;
+    UINT32          penMask;
+    UINT32          pressure;
+    UINT32          rotation;
+    INT32           tiltX;
+    INT32           tiltY;
+} POINTER_PEN_INFO;
+
+typedef struct
+{
+    POINTER_INFO    pointerInfo;
+    UINT32          touchFlags;
+    UINT32          touchMask;
+    RECT            rcContact;
+    RECT            rcContactRaw;
+    UINT32          orientation;
+    UINT32          pressure;
+} POINTER_TOUCH_INFO;
+
+enum {
+    PT_POINTER  = 0x00000001,   // Generic pointer
+    PT_TOUCH    = 0x00000002,   // Touch
+    PT_PEN      = 0x00000003,   // Pen
+    PT_MOUSE    = 0x00000004,   // Mouse
+#if WINVER >= 0x0603
+    PT_TOUCHPAD = 0x00000005,   // Touchpad
+#endif /* WINVER >= 0x0603 */
+};
+
+WINUSERAPI BOOL WINAPI GetPointerType(UINT32,DWORD*);
+WINUSERAPI BOOL WINAPI GetPointerPenInfo(UINT32,POINTER_PEN_INFO*);
+WINUSERAPI BOOL WINAPI GetPointerInfo(UINT32,POINTER_INFO*);
+
+#endif /*Windows 8 and above*/
+
 #if WINVER < 0x0601
 typedef struct
 {
@@ -189,7 +272,7 @@ BOOL IsWindowsVersionOrGreater(WORD major, WORD minor, WORD sp);
 
 // HACK: Define macros that some dinput.h variants don't
 #ifndef DIDFT_OPTIONAL
- #define DIDFT_OPTIONAL	0x80000000
+ #define DIDFT_OPTIONAL 0x80000000
 #endif
 
 // winmm.dll function pointer typedefs

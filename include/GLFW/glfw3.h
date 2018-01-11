@@ -814,6 +814,10 @@ extern "C" {
  *  [window attribute](@ref GLFW_TRANSPARENT_FRAMEBUFFER_attrib).
  */
 #define GLFW_TRANSPARENT_FRAMEBUFFER 0x0002000A
+/*! @brief Mouse cursor hover window attribute.
+ *
+ *  Mouse cursor hover [window attribute](@ref GLFW_HOVERED_attrib).
+ */
 #define GLFW_HOVERED                0x0002000B
 
 /*! @brief Framebuffer bit depth hint.

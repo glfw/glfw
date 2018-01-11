@@ -116,6 +116,13 @@ full screen windows with the [GLFW_CENTER_CURSOR](@ref GLFW_CENTER_CURSOR_hint)
 window hint.  It is enabled by default.
 
 
+@subsection news_33_hover Mouse cursor hover window attribute
+
+GLFW now supports polling whether the cursor is hovering over the window client
+area with the [GLFW_HOVERED](@ref GLFW_HOVERED_attrib) window attribute.  This
+attribute corresponds to the [cursor enter/leave](@ref cursor_enter) event.
+
+
 @subsection news_33_rawmotion Support for raw mouse motion
 
 GLFW now uses raw (unscaled and unaccelerated) mouse motion in disabled cursor

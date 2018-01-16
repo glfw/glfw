@@ -40,8 +40,8 @@
 #define _glfw_dlsym(handle, name) dlsym(handle, name)
 
 #define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->android->window)
-#define _GLFW_PLATFORM_WINDOW_STATE         struct android_app*  android
-#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE struct android_app* app
+#define _GLFW_PLATFORM_WINDOW_STATE         struct android_app* android;
+#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE android_gstate gstate;
 #define _GLFW_PLATFORM_MONITOR_STATE
 #define _GLFW_PLATFORM_CURSOR_STATE
 
@@ -50,6 +50,11 @@
 #define _GLFW_EGL_NATIVE_DISPLAY EGL_DEFAULT_DISPLAY
 
 float x,y;
+
+typedef struct android_gstate {
+    struct android_app* app;
+    struct android_poll_source* source;
+} android_gstate;
 
 typedef VkFlags VkAndroidSurfaceCreateFlagsKHR;
 

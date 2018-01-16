@@ -41,6 +41,15 @@ static int32_t handle_input(struct android_app* app, AInputEvent* event)
     return 0;
 }
 
+static void handleEvents(int timeout) {
+    ALooper_pollOnce(0, NULL, NULL,(void**)&_glfw.gstate.source);
+
+    if (_glfw.gstate.source != NULL) {
+        _glfw.gstate.source->process(_glfw.gstate.app, _glfw.gstate.source);
+    }
+    _glfwInputCursorPos(_glfw.windowListHead, x, y);
+}
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -50,10 +59,15 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    window->android = _glfw.app;
+    // wait for window to become ready
+    while (_glfw.gstate.app->window == NULL) {
+        handleEvents(-1);
+    }
+    // hmmm maybe should be ANative_Window only?
+    window->android = _glfw.gstate.app;
     window->android->onInputEvent = handle_input;
 
-    ANativeWindow_setBuffersGeometry(window->android->window, wndconfig->width, wndconfig->height, 0);
+    //ANativeWindow_setBuffersGeometry(window->android->window, wndconfig->width, wndconfig->height, 0);
 
     if (ctxconfig->client != GLFW_NO_API)
     {
@@ -136,7 +150,10 @@ void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int n, int d)
 
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
-
+    // the underlying buffergeometry is currently being initialized from the
+    // window width and height...so high resolution displays are currently
+    // not supported...so it is safe to just call GetWindowSize() for now
+    _glfwPlatformGetWindowSize(window, width, height);
 }
 
 void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
@@ -212,16 +229,17 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
 
 void _glfwPlatformPollEvents(void)
 {
-    _glfwInputCursorPos(_glfw.windowListHead, x, y);
+    handleEvents(0);
 }
 
 void _glfwPlatformWaitEvents(void)
 {
-    _glfwPlatformPollEvents();
+    handleEvents(-1);
 }
 
 void _glfwPlatformWaitEventsTimeout(double timeout)
 {
+    handleEvents(timeout * 1e3);
 }
 
 void _glfwPlatformPostEmptyEvent(void)

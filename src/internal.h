@@ -745,3 +745,5 @@ GLFWbool _glfwInitVulkan(int mode);
 void _glfwTerminateVulkan(void);
 const char* _glfwGetVulkanResultString(VkResult result);
 
+char* _glfw_strdup(const char* source);
+

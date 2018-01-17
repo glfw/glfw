@@ -437,7 +437,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     }
 
     if (wndconfig->title)
-        window->wl.title = strdup(wndconfig->title);
+        window->wl.title = _glfw_strdup(wndconfig->title);
 
     if (wndconfig->visible)
     {
@@ -497,7 +497,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
     if (window->wl.title)
         free(window->wl.title);
-    window->wl.title = strdup(title);
+    window->wl.title = _glfw_strdup(title);
     if (window->wl.shellSurface)
         wl_shell_surface_set_title(window->wl.shellSurface, title);
 }

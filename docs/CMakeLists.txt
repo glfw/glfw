@@ -14,13 +14,8 @@ set(glfw_DOCS_SOURCES
     "${GLFW_SOURCE_DIR}/docs/window.dox"
     "${GLFW_SOURCE_DIR}/docs/input.dox"
     "${GLFW_SOURCE_DIR}/docs/vulkan.dox"
-    "${GLFW_SOURCE_DIR}/docs/compat.dox")
-
-if (GLFW_DOCUMENT_INTERNALS)
-    list(APPEND glfw_DOCS_SOURCES
-        "${GLFW_SOURCE_DIR}/docs/internal.dox"
-        "${GLFW_SOURCE_DIR}/src/internal.h")
-endif()
+    "${GLFW_SOURCE_DIR}/docs/compat.dox"
+    "${GLFW_SOURCE_DIR}/docs/internal.dox")
 
 foreach(arg ${glfw_DOCS_SOURCES})
     set(GLFW_DOCS_SOURCES "${GLFW_DOCS_SOURCES} \\\n\"${arg}\"")

@@ -35,8 +35,9 @@
 #include <assert.h>
 
 
-// The global variables below comprise all global data in GLFW.
-// Any other global variable is a bug.
+// The global variables below comprise all mutable global data in GLFW
+//
+// Any other global variable is a bug
 
 // Global state shared between compilation units of GLFW
 //

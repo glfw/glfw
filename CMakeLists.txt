@@ -30,7 +30,6 @@ option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" ON)
 option(GLFW_INSTALL "Generate installation target" ON)
 option(GLFW_VULKAN_STATIC "Use the Vulkan loader statically linked into application" OFF)
-option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
 if (UNIX)
     option(GLFW_USE_OSMESA "Use OSMesa for offscreen context creation" OFF)

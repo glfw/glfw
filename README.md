@@ -191,6 +191,7 @@ information on what to include when reporting a bug.
 - Bugfix: Invalid library paths were used in test and example CMake files (#930)
 - Bugfix: The scancode for synthetic key release events was always zero
 - Bugfix: The generated Doxyfile did not handle paths with spaces (#1081)
+- [Win32] Added `glfwAttachWin32Window` for wrapping an existing `HWND` (#25)
 - [Win32] Added system error strings to relevant GLFW error descriptions (#733)
 - [Win32] Moved to `WM_INPUT` for disabled cursor mode motion input (#125)
 - [Win32] Removed XInput circular deadzone from joystick axis data (#1045)

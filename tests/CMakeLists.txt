@@ -39,6 +39,12 @@ add_executable(timeout WIN32 MACOSX_BUNDLE timeout.c ${GLAD})
 add_executable(title WIN32 MACOSX_BUNDLE title.c ${GLAD})
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GETOPT} ${GLAD})
 
+if (WIN32)
+    add_executable(native WIN32 native.c ${GLAD})
+else()
+    message(FATAL_ERROR "This branch only makes sense on Win32 at the moment")
+endif()
+
 target_link_libraries(empty "${CMAKE_THREAD_LIBS_INIT}")
 target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}")
 if (RT_LIBRARY)
@@ -46,7 +52,7 @@ if (RT_LIBRARY)
     target_link_libraries(threads "${RT_LIBRARY}")
 endif()
 
-set(WINDOWS_BINARIES empty gamma icon inputlag joysticks opacity tearing
+set(WINDOWS_BINARIES empty gamma icon inputlag joysticks native opacity tearing
                      threads timeout title windows)
 set(CONSOLE_BINARIES clipboard events msaa glfwinfo iconify monitors reopen
                      cursor)

@@ -1261,10 +1261,19 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     if (_glfw.win32.disabledCursorWindow == window)
         _glfw.win32.disabledCursorWindow = NULL;
 
-    if (window->win32.handle && !window->win32.external)
+    if (window->win32.handle)
     {
         RemovePropW(window->win32.handle, L"GLFW");
-        DestroyWindow(window->win32.handle);
+
+        if (window->win32.external)
+        {
+            SetWindowLongPtrW(window->win32.handle,
+                              GWLP_WNDPROC,
+                              window->win32.externalWindowProc);
+        }
+        else
+            DestroyWindow(window->win32.handle);
+
         window->win32.handle = NULL;
     }
 
@@ -2039,10 +2048,12 @@ GLFWAPI GLFWwindow* glfwAttachWin32Window(HWND handle, GLFWwindow* share)
     window->numer       = GLFW_DONT_CARE;
     window->denom       = GLFW_DONT_CARE;
 
-    window->win32.handle   = handle;
-    window->win32.external = GLFW_TRUE;
-
+    window->win32.handle = handle;
     SetPropW(window->win32.handle, L"GLFW", window);
+
+    window->win32.external = GLFW_TRUE;
+    window->win32.externalWindowProc =
+        GetWindowLongPtrW(window->win32.handle, GWLP_WNDPROC);
     SetWindowLongPtrW(window->win32.handle, GWLP_WNDPROC, (LONG_PTR) windowProc);
 
     {

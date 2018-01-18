@@ -338,9 +338,10 @@ static void xdgToplevelHandleConfigure(void* data,
         _glfwInputWindowDamage(window);
     }
 
-    if (!activated && window->autoIconify)
+    if (!window->wl.justCreated && !activated && window->autoIconify)
         _glfwPlatformIconifyWindow(window);
     _glfwInputWindowFocus(window, activated);
+    window->wl.justCreated = GLFW_FALSE;
 }
 
 static void xdgToplevelHandleClose(void* data,
@@ -561,6 +562,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
+    window->wl.justCreated = GLFW_TRUE;
     window->wl.transparent = fbconfig->transparent;
 
     if (!createSurface(window, wndconfig))

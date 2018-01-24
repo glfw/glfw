@@ -49,6 +49,10 @@ static void pointerHandleEnter(void* data,
                                wl_fixed_t sx,
                                wl_fixed_t sy)
 {
+    // Happens in the case we just destroyed the surface.
+    if (!surface)
+        return;
+
     _GLFWwindow* window = wl_surface_get_user_data(surface);
 
     _glfw.wl.pointerSerial = serial;
@@ -280,6 +284,10 @@ static void keyboardHandleEnter(void* data,
                                 struct wl_surface* surface,
                                 struct wl_array* keys)
 {
+    // Happens in the case we just destroyed the surface.
+    if (!surface)
+        return;
+
     _GLFWwindow* window = wl_surface_get_user_data(surface);
 
     _glfw.wl.keyboardFocus = window;

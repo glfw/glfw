@@ -203,8 +203,7 @@ void _glfwPollMonitorsX11(void)
 
         free(disconnected);
     }
-
-    if (!_glfw.monitorCount)
+    else
     {
         const int widthMM = DisplayWidthMM(_glfw.x11.display, _glfw.x11.screen);
         const int heightMM = DisplayHeightMM(_glfw.x11.display, _glfw.x11.screen);
@@ -336,6 +335,15 @@ void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
         XRRFreeCrtcInfo(ci);
         XRRFreeScreenResources(sr);
     }
+}
+
+void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
+                                         float* xscale, float* yscale)
+{
+    if (xscale)
+        *xscale = _glfw.x11.contentScaleX;
+    if (yscale)
+        *yscale = _glfw.x11.contentScaleY;
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)

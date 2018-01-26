@@ -47,6 +47,10 @@ elseif (_GLFW_WAYLAND)
         PROTOCOL
         "${WAYLAND_PROTOCOLS_PKGDATADIR}/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml"
         BASENAME pointer-constraints-unstable-v1)
+    ecm_add_wayland_client_protocol(glfw_SOURCES
+        PROTOCOL
+        "${WAYLAND_PROTOCOLS_PKGDATADIR}/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml"
+        BASENAME idle-inhibit-unstable-v1)
 elseif (_GLFW_MIR)
     set(glfw_HEADERS ${common_HEADERS} mir_platform.h linux_joystick.h
                      posix_time.h posix_thread.h xkb_unicode.h egl_context.h
@@ -91,9 +95,7 @@ set_target_properties(glfw PROPERTIES
                       POSITION_INDEPENDENT_CODE ON
                       FOLDER "GLFW3")
 
-target_compile_definitions(glfw PRIVATE
-                           _GLFW_USE_CONFIG_H
-                           $<$<BOOL:${UNIX}>:_XOPEN_SOURCE=600>)
+target_compile_definitions(glfw PRIVATE _GLFW_USE_CONFIG_H)
 target_include_directories(glfw PUBLIC
                            "$<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>"
                            "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>")

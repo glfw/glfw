@@ -139,6 +139,15 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
 {
 }
 
+void _glfwPlatformGetWindowContentScale(_GLFWwindow* window,
+                                        float* xscale, float* yscale)
+{
+    if (xscale)
+        *xscale = 1.f;
+    if (yscale)
+        *yscale = 1.f;
+}
+
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
 }
@@ -152,6 +161,11 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 }
 
 int _glfwPlatformWindowMaximized(_GLFWwindow* window)
+{
+    return GLFW_FALSE;
+}
+
+int _glfwPlatformWindowHovered(_GLFWwindow* window)
 {
     return GLFW_FALSE;
 }
@@ -170,6 +184,15 @@ void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
 }
 
 void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
+{
+}
+
+float _glfwPlatformGetWindowOpacity(_GLFWwindow* window)
+{
+    return 1.f;
+}
+
+void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
 {
 }
 
@@ -257,11 +280,11 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 {
 }
 
-void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
+void _glfwPlatformSetClipboardString(const char* string)
 {
 }
 
-const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
+const char* _glfwPlatformGetClipboardString(void)
 {
     return NULL;
 }

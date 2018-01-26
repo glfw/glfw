@@ -52,7 +52,7 @@ static void geometry(void* data,
     monitor->heightMM = physicalHeight;
 
     snprintf(name, sizeof(name), "%s %s", make, model);
-    monitor->name = strdup(name);
+    monitor->name = _glfw_strdup(name);
 }
 
 static void mode(void* data,
@@ -151,6 +151,15 @@ void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
         *xpos = monitor->wl.x;
     if (ypos)
         *ypos = monitor->wl.y;
+}
+
+void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
+                                         float* xscale, float* yscale)
+{
+    if (xscale)
+        *xscale = (float) monitor->wl.scale;
+    if (yscale)
+        *yscale = (float) monitor->wl.scale;
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)

@@ -35,8 +35,9 @@
 #include <assert.h>
 
 
-// The global variables below comprise all global data in GLFW.
-// Any other global variable is a bug.
+// The global variables below comprise all mutable global data in GLFW
+//
+// Any other global variable is a bug
 
 // Global state shared between compilation units of GLFW
 //
@@ -53,10 +54,6 @@ static _GLFWinitconfig _glfwInitHints =
     {
         GLFW_TRUE,  // macOS menu bar
         GLFW_TRUE   // macOS bundle chdir
-    },
-    {
-        "",         // X11 WM_CLASS name
-        ""          // X11 WM_CLASS class
     }
 };
 
@@ -142,9 +139,24 @@ static void terminate(void)
 
 
 //////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+char* _glfw_strdup(const char* source)
+{
+    const size_t length = strlen(source);
+    char* result = calloc(length + 1, 1);
+    strcpy(result, source);
+    return result;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 //////                         GLFW event API                       //////
 //////////////////////////////////////////////////////////////////////////
 
+// Notifies shared code of an error
+//
 void _glfwInputError(int code, const char* format, ...)
 {
     _GLFWerror* error;
@@ -205,12 +217,13 @@ GLFWAPI int glfwInit(void)
         return GLFW_FALSE;
     }
 
-    if (!_glfwPlatformCreateMutex(&_glfw.errorLock))
+    if (!_glfwPlatformCreateMutex(&_glfw.errorLock) ||
+        !_glfwPlatformCreateTls(&_glfw.errorSlot) ||
+        !_glfwPlatformCreateTls(&_glfw.contextSlot))
+    {
+        terminate();
         return GLFW_FALSE;
-    if (!_glfwPlatformCreateTls(&_glfw.errorSlot))
-        return GLFW_FALSE;
-    if (!_glfwPlatformCreateTls(&_glfw.contextSlot))
-        return GLFW_FALSE;
+    }
 
     _glfwPlatformSetTls(&_glfw.errorSlot, &_glfwMainThreadError);
 
@@ -218,7 +231,19 @@ GLFWAPI int glfwInit(void)
     _glfw.timer.offset = _glfwPlatformGetTimerValue();
 
     glfwDefaultWindowHints();
-    glfwUpdateGamepadMappings(_glfwDefaultMappings);
+
+    {
+        int i;
+
+        for (i = 0;  _glfwDefaultMappings[i];  i++)
+        {
+            if (!glfwUpdateGamepadMappings(_glfwDefaultMappings[i]))
+            {
+                terminate();
+                return GLFW_FALSE;
+            }
+        }
+    }
 
     return GLFW_TRUE;
 }
@@ -247,27 +272,7 @@ GLFWAPI void glfwInitHint(int hint, int value)
     }
 
     _glfwInputError(GLFW_INVALID_ENUM,
-                    "Invalid integer type init hint 0x%08X", hint);
-}
-
-GLFWAPI void glfwInitHintString(int hint, const char* value)
-{
-    assert(value != NULL);
-
-    switch (hint)
-    {
-        case GLFW_X11_WM_CLASS_NAME:
-            strncpy(_glfwInitHints.x11.className, value,
-                    sizeof(_glfwInitHints.x11.className) - 1);
-            break;
-        case GLFW_X11_WM_CLASS_CLASS:
-            strncpy(_glfwInitHints.x11.classClass, value,
-                    sizeof(_glfwInitHints.x11.classClass) - 1);
-            break;
-    }
-
-    _glfwInputError(GLFW_INVALID_ENUM,
-                    "Invalid string type init hint 0x%08X", hint);
+                    "Invalid init hint 0x%08X", hint);
 }
 
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)

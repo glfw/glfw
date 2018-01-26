@@ -67,11 +67,6 @@
 #include <xinput.h>
 #include <dbt.h>
 
-#if defined(_MSC_VER)
- #include <malloc.h>
- #define strdup _strdup
-#endif
-
 // HACK: Define macros that some windows.h variants don't
 #ifndef WM_MOUSEHWHEEL
  #define WM_MOUSEHWHEEL 0x020E
@@ -105,12 +100,11 @@
 #endif
 
 #if WINVER < 0x0601
-typedef struct tagCHANGEFILTERSTRUCT
+typedef struct
 {
     DWORD cbSize;
     DWORD ExtStatus;
-
-} CHANGEFILTERSTRUCT, *PCHANGEFILTERSTRUCT;
+} CHANGEFILTERSTRUCT;
 #ifndef MSGFLT_ALLOW
  #define MSGFLT_ALLOW 1
 #endif
@@ -129,12 +123,19 @@ typedef struct
 #endif /*Windows Vista*/
 
 #ifndef DPI_ENUMS_DECLARED
-typedef enum PROCESS_DPI_AWARENESS
+typedef enum
 {
     PROCESS_DPI_UNAWARE = 0,
     PROCESS_SYSTEM_DPI_AWARE = 1,
     PROCESS_PER_MONITOR_DPI_AWARE = 2
 } PROCESS_DPI_AWARENESS;
+typedef enum
+{
+    MDT_EFFECTIVE_DPI = 0,
+    MDT_ANGULAR_DPI = 1,
+    MDT_RAW_DPI = 2,
+    MDT_DEFAULT = MDT_EFFECTIVE_DPI
+} MONITOR_DPI_TYPE;
 #endif /*DPI_ENUMS_DECLARED*/
 
 // HACK: Define versionhelpers.h functions manually as MinGW lacks the header
@@ -202,7 +203,7 @@ typedef HRESULT (WINAPI * PFN_DirectInput8Create)(HINSTANCE,DWORD,REFIID,LPVOID*
 
 // user32.dll function pointer typedefs
 typedef BOOL (WINAPI * PFN_SetProcessDPIAware)(void);
-typedef BOOL (WINAPI * PFN_ChangeWindowMessageFilterEx)(HWND,UINT,DWORD,PCHANGEFILTERSTRUCT);
+typedef BOOL (WINAPI * PFN_ChangeWindowMessageFilterEx)(HWND,UINT,DWORD,CHANGEFILTERSTRUCT*);
 #define SetProcessDPIAware _glfw.win32.user32.SetProcessDPIAware_
 #define ChangeWindowMessageFilterEx _glfw.win32.user32.ChangeWindowMessageFilterEx_
 
@@ -216,7 +217,9 @@ typedef HRESULT(WINAPI * PFN_DwmEnableBlurBehindWindow)(HWND,const DWM_BLURBEHIN
 
 // shcore.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_SetProcessDpiAwareness)(PROCESS_DPI_AWARENESS);
+typedef HRESULT (WINAPI * PFN_GetDpiForMonitor)(HMONITOR,MONITOR_DPI_TYPE,UINT*,UINT*);
 #define SetProcessDpiAwareness _glfw.win32.shcore.SetProcessDpiAwareness_
+#define GetDpiForMonitor _glfw.win32.shcore.GetDpiForMonitor_
 
 typedef VkFlags VkWin32SurfaceCreateFlagsKHR;
 
@@ -280,6 +283,7 @@ typedef struct _GLFWwindowWin32
 typedef struct _GLFWlibraryWin32
 {
     HWND                helperWindowHandle;
+    HDEVNOTIFY          deviceNotificationHandle;
     DWORD               foregroundLockTimeout;
     int                 acquiredMonitorCount;
     char*               clipboardString;
@@ -326,6 +330,7 @@ typedef struct _GLFWlibraryWin32
     struct {
         HINSTANCE                       instance;
         PFN_SetProcessDpiAwareness      SetProcessDpiAwareness_;
+        PFN_GetDpiForMonitor            GetDpiForMonitor_;
     } shcore;
 
 } _GLFWlibraryWin32;
@@ -338,8 +343,8 @@ typedef struct _GLFWmonitorWin32
     // This size matches the static size of DISPLAY_DEVICE.DeviceName
     WCHAR               adapterName[32];
     WCHAR               displayName[32];
-    char                publicAdapterName[64];
-    char                publicDisplayName[64];
+    char                publicAdapterName[32];
+    char                publicDisplayName[32];
     GLFWbool            modesPruned;
     GLFWbool            modeChanged;
 
@@ -395,4 +400,5 @@ void _glfwInitTimerWin32(void);
 void _glfwPollMonitorsWin32(void);
 GLFWbool _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoModeWin32(_GLFWmonitor* monitor);
+void _glfwGetMonitorContentScaleWin32(HMONITOR handle, float* xscale, float* yscale);
 

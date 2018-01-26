@@ -151,6 +151,8 @@ static GLFWbool loadLibraries(void)
     {
         _glfw.win32.shcore.SetProcessDpiAwareness_ = (PFN_SetProcessDpiAwareness)
             GetProcAddress(_glfw.win32.shcore.instance, "SetProcessDpiAwareness");
+        _glfw.win32.shcore.GetDpiForMonitor_ = (PFN_GetDpiForMonitor)
+            GetProcAddress(_glfw.win32.shcore.instance, "GetDpiForMonitor");
     }
 
     return GLFW_TRUE;
@@ -349,9 +351,10 @@ static HWND createHelperWindow(void)
         dbi.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
         dbi.dbcc_classguid = GUID_DEVINTERFACE_HID;
 
-        RegisterDeviceNotificationW(window,
-                                    (DEV_BROADCAST_HDR*) &dbi,
-                                    DEVICE_NOTIFY_WINDOW_HANDLE);
+        _glfw.win32.deviceNotificationHandle =
+            RegisterDeviceNotificationW(window,
+                                        (DEV_BROADCAST_HDR*) &dbi,
+                                        DEVICE_NOTIFY_WINDOW_HANDLE);
     }
 
     while (PeekMessageW(&msg, _glfw.win32.helperWindowHandle, 0, 0, PM_REMOVE))
@@ -541,6 +544,9 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
+    if (_glfw.win32.deviceNotificationHandle)
+        UnregisterDeviceNotification(_glfw.win32.deviceNotificationHandle);
+
     if (_glfw.win32.helperWindowHandle)
         DestroyWindow(_glfw.win32.helperWindowHandle);
 

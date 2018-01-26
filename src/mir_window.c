@@ -117,12 +117,16 @@ static int mirModToGLFWMod(uint32_t mods)
 
     if (mods & mir_input_event_modifier_alt)
         publicMods |= GLFW_MOD_ALT;
-    else if (mods & mir_input_event_modifier_shift)
+    if (mods & mir_input_event_modifier_shift)
         publicMods |= GLFW_MOD_SHIFT;
-    else if (mods & mir_input_event_modifier_ctrl)
+    if (mods & mir_input_event_modifier_ctrl)
         publicMods |= GLFW_MOD_CONTROL;
-    else if (mods & mir_input_event_modifier_meta)
+    if (mods & mir_input_event_modifier_meta)
         publicMods |= GLFW_MOD_SUPER;
+    if (mods & mir_input_event_modifier_caps_lock)
+        publicMods |= GLFW_MOD_CAPS_LOCK;
+    if (mods & mir_input_event_modifier_num_lock)
+        publicMods |= GLFW_MOD_NUM_LOCK;
 
     return publicMods;
 }
@@ -515,6 +519,15 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
         *height = window->mir.height;
 }
 
+void _glfwPlatformGetWindowContentScale(_GLFWwindow* window,
+                                        float* xscale, float* yscale)
+{
+    if (xscale)
+        *xscale = 1.f;
+    if (yscale)
+        *yscale = 1.f;
+}
+
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
     MirWindowSpec* spec;
@@ -614,6 +627,13 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
     return mir_window_get_state(window->mir.window) == mir_window_state_maximized;
 }
 
+int _glfwPlatformWindowHovered(_GLFWwindow* window)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
+    return GLFW_FALSE;
+}
+
 int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -637,6 +657,15 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
+}
+
+float _glfwPlatformGetWindowOpacity(_GLFWwindow* window)
+{
+    return 1.f;
+}
+
+void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
+{
 }
 
 void _glfwPlatformPollEvents(void)
@@ -849,13 +878,13 @@ int _glfwPlatformGetKeyScancode(int key)
     return _glfw.mir.scancodes[key];
 }
 
-void _glfwPlatformSetClipboardString(_GLFWwindow* window, const char* string)
+void _glfwPlatformSetClipboardString(const char* string)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "Mir: Unsupported function %s", __PRETTY_FUNCTION__);
 }
 
-const char* _glfwPlatformGetClipboardString(_GLFWwindow* window)
+const char* _glfwPlatformGetClipboardString(void)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "Mir: Unsupported function %s", __PRETTY_FUNCTION__);

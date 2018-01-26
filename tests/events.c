@@ -244,6 +244,10 @@ static const char* get_mods_name(int mods)
         strcat(name, " alt");
     if (mods & GLFW_MOD_SUPER)
         strcat(name, " super");
+    if (mods & GLFW_MOD_CAPS_LOCK)
+        strcat(name, " capslock-on");
+    if (mods & GLFW_MOD_NUM_LOCK)
+        strcat(name, " numlock-on");
 
     return name;
 }
@@ -287,6 +291,13 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
            counter++, slot->number, glfwGetTime(), width, height);
 
     glViewport(0, 0, width, height);
+}
+
+static void window_content_scale_callback(GLFWwindow* window, float xscale, float yscale)
+{
+    Slot* slot = glfwGetWindowUserPointer(window);
+    printf("%08x to %i at %0.3f: Window content scale: %0.3f %0.3f\n",
+           counter++, slot->number, glfwGetTime(), xscale, yscale);
 }
 
 static void window_close_callback(GLFWwindow* window)
@@ -398,6 +409,15 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             slot->closeable = !slot->closeable;
 
             printf("(( closing %s ))\n", slot->closeable ? "enabled" : "disabled");
+            break;
+        }
+
+        case GLFW_KEY_L:
+        {
+            const int state = glfwGetInputMode(window, GLFW_LOCK_KEY_MODS);
+            glfwSetInputMode(window, GLFW_LOCK_KEY_MODS, !state);
+
+            printf("(( lock key mods %s ))\n", !state ? "enabled" : "disabled");
             break;
         }
     }
@@ -586,6 +606,7 @@ int main(int argc, char** argv)
         glfwSetWindowPosCallback(slots[i].window, window_pos_callback);
         glfwSetWindowSizeCallback(slots[i].window, window_size_callback);
         glfwSetFramebufferSizeCallback(slots[i].window, framebuffer_size_callback);
+        glfwSetWindowContentScaleCallback(slots[i].window, window_content_scale_callback);
         glfwSetWindowCloseCallback(slots[i].window, window_close_callback);
         glfwSetWindowRefreshCallback(slots[i].window, window_refresh_callback);
         glfwSetWindowFocusCallback(slots[i].window, window_focus_callback);

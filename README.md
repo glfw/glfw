@@ -234,6 +234,7 @@ information on what to include when reporting a bug.
 - [X11] Bugfix: Latin-1 text read from selections was not converted to UTF-8
 - [X11] Bugfix: NVidia EGL would segfault if unloaded before closing the display
 - [Linux] Moved to evdev for joystick input (#906,#1005)
+- [Linux] Added manual definition of joystick `SYN_DROPPED` to support kernels < v2.6.39 (#1196)
 - [Linux] Bugfix: Event processing did not detect joystick disconnection (#932)
 - [Linux] Bugfix: The joystick device path could be truncated (#1025)
 - [Linux] Bugfix: `glfwInit` would fail if inotify creation failed (#833)

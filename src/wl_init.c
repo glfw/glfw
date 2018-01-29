@@ -224,49 +224,76 @@ static void pointerHandleButton(void* data,
     _GLFWwindow* window = _glfw.wl.pointerFocus;
     int glfwButton;
 
+    // Both xdg-shell and wl_shell use the same values.
+    uint32_t edges = WL_SHELL_SURFACE_RESIZE_NONE;
+
     if (!window)
         return;
-    switch (window->wl.decorations.focus)
+    if (button == BTN_LEFT)
     {
-        case mainWindow:
-            break;
-        case topDecoration:
-            if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
-                wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
-                                        serial, WL_SHELL_SURFACE_RESIZE_TOP);
+        switch (window->wl.decorations.focus)
+        {
+            case mainWindow:
+                break;
+            case topDecoration:
+                if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
+                    edges = WL_SHELL_SURFACE_RESIZE_TOP;
+                else
+                {
+                    if (window->wl.xdg.toplevel)
+                        xdg_toplevel_move(window->wl.xdg.toplevel, _glfw.wl.seat, serial);
+                    else
+                        wl_shell_surface_move(window->wl.shellSurface, _glfw.wl.seat, serial);
+                }
+                break;
+            case leftDecoration:
+                if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
+                    edges = WL_SHELL_SURFACE_RESIZE_TOP_LEFT;
+                else
+                    edges = WL_SHELL_SURFACE_RESIZE_LEFT;
+                break;
+            case rightDecoration:
+                if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
+                    edges = WL_SHELL_SURFACE_RESIZE_TOP_RIGHT;
+                else
+                    edges = WL_SHELL_SURFACE_RESIZE_RIGHT;
+                break;
+            case bottomDecoration:
+                if (window->wl.cursorPosX < _GLFW_DECORATION_WIDTH)
+                    edges = WL_SHELL_SURFACE_RESIZE_BOTTOM_LEFT;
+                else if (window->wl.cursorPosX > window->wl.width + _GLFW_DECORATION_WIDTH)
+                    edges = WL_SHELL_SURFACE_RESIZE_BOTTOM_RIGHT;
+                else
+                    edges = WL_SHELL_SURFACE_RESIZE_BOTTOM;
+                break;
+            default:
+                assert(0);
+        }
+        if (edges != WL_SHELL_SURFACE_RESIZE_NONE)
+        {
+            if (window->wl.xdg.toplevel)
+                xdg_toplevel_resize(window->wl.xdg.toplevel, _glfw.wl.seat,
+                                    serial, edges);
             else
-                wl_shell_surface_move(window->wl.shellSurface, _glfw.wl.seat, serial);
-            return;
-        case leftDecoration:
-            if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
                 wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
-                                        serial, WL_SHELL_SURFACE_RESIZE_TOP_LEFT);
-            else
-                wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
-                                        serial, WL_SHELL_SURFACE_RESIZE_LEFT);
-            return;
-        case rightDecoration:
-            if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
-                wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
-                                        serial, WL_SHELL_SURFACE_RESIZE_TOP_RIGHT);
-            else
-                wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
-                                        serial, WL_SHELL_SURFACE_RESIZE_RIGHT);
-            return;
-        case bottomDecoration:
-            if (window->wl.cursorPosX < _GLFW_DECORATION_WIDTH)
-                wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
-                                        serial, WL_SHELL_SURFACE_RESIZE_BOTTOM_LEFT);
-            else if (window->wl.cursorPosX > window->wl.width + _GLFW_DECORATION_WIDTH)
-                wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
-                                        serial, WL_SHELL_SURFACE_RESIZE_BOTTOM_RIGHT);
-            else
-                wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
-                                        serial, WL_SHELL_SURFACE_RESIZE_BOTTOM);
-            return;
-        default:
-            assert(0);
+                                        serial, edges);
+        }
     }
+    else if (button == BTN_RIGHT)
+    {
+        if (window->wl.decorations.focus != mainWindow && window->wl.xdg.toplevel)
+        {
+            xdg_toplevel_show_window_menu(window->wl.xdg.toplevel,
+                                          _glfw.wl.seat, serial,
+                                          window->wl.cursorPosX,
+                                          window->wl.cursorPosY);
+            return;
+        }
+    }
+
+    // Don’t pass the button to the user if it was related to a decoration.
+    if (window->wl.decorations.focus != mainWindow)
+        return;
 
     _glfw.wl.pointerSerial = serial;
 

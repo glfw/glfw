@@ -827,39 +827,38 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
-    _glfwTerminateEGL();
     _glfwTerminateJoysticksLinux();
+    _glfwTerminateEGL();
+    if (_glfw.wl.egl.handle)
+    {
+        _glfw_dlclose(_glfw.wl.egl.handle);
+        _glfw.wl.egl.handle = NULL;
+    }
 
 #ifdef HAVE_XKBCOMMON_COMPOSE_H
     if (_glfw.wl.xkb.composeState)
         xkb_compose_state_unref(_glfw.wl.xkb.composeState);
 #endif
-
     if (_glfw.wl.xkb.keymap)
         xkb_keymap_unref(_glfw.wl.xkb.keymap);
     if (_glfw.wl.xkb.state)
         xkb_state_unref(_glfw.wl.xkb.state);
     if (_glfw.wl.xkb.context)
         xkb_context_unref(_glfw.wl.xkb.context);
-
     if (_glfw.wl.xkb.handle)
     {
         _glfw_dlclose(_glfw.wl.xkb.handle);
         _glfw.wl.xkb.handle = NULL;
     }
-    if (_glfw.wl.egl.handle)
-    {
-        _glfw_dlclose(_glfw.wl.egl.handle);
-        _glfw.wl.egl.handle = NULL;
-    }
+
+    if (_glfw.wl.cursorTheme)
+        wl_cursor_theme_destroy(_glfw.wl.cursorTheme);
     if (_glfw.wl.cursor.handle)
     {
         _glfw_dlclose(_glfw.wl.cursor.handle);
         _glfw.wl.cursor.handle = NULL;
     }
 
-    if (_glfw.wl.cursorTheme)
-        wl_cursor_theme_destroy(_glfw.wl.cursorTheme);
     if (_glfw.wl.cursorSurface)
         wl_surface_destroy(_glfw.wl.cursorSurface);
     if (_glfw.wl.compositor)

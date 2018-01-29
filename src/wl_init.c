@@ -686,7 +686,7 @@ int _glfwPlatformInit(void)
     if (!_glfw.wl.cursor.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Failed to open libwayland-cursor.");
+                        "Wayland: Failed to open libwayland-cursor");
         return GLFW_FALSE;
     }
 
@@ -703,7 +703,7 @@ int _glfwPlatformInit(void)
     if (!_glfw.wl.egl.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Failed to open libwayland-egl.");
+                        "Wayland: Failed to open libwayland-egl");
         return GLFW_FALSE;
     }
 
@@ -718,7 +718,7 @@ int _glfwPlatformInit(void)
     if (!_glfw.wl.xkb.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Failed to open libxkbcommon.");
+                        "Wayland: Failed to open libxkbcommon");
         return GLFW_FALSE;
     }
 
@@ -798,7 +798,7 @@ int _glfwPlatformInit(void)
         if (!_glfw.wl.cursorTheme)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Wayland: Unable to load default cursor theme\n");
+                            "Wayland: Unable to load default cursor theme");
             return GLFW_FALSE;
         }
         _glfw.wl.cursorSurface =

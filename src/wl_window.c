@@ -63,6 +63,10 @@ static void handleConfigure(void* data,
             width -= _GLFW_DECORATION_HORIZONTAL;
             height -= _GLFW_DECORATION_VERTICAL;
         }
+        if (width < 1)
+            width = 1;
+        if (height < 1)
+            height = 1;
 
         if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
         {

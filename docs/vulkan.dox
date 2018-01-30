@@ -230,6 +230,10 @@ if (err)
 }
 @endcode
 
+If an OpenGL or OpenGL ES context was created on the window, the context has
+ownership of the presentation on the window and a Vulkan surface cannot be
+created.
+
 It is your responsibility to destroy the surface.  GLFW does not destroy it for
 you.  Call `vkDestroySurfaceKHR` function from the same extension to destroy it.
 

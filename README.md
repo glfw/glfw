@@ -178,6 +178,8 @@ information on what to include when reporting a bug.
 - Added `GLFW_OSMESA_CONTEXT_API` for creating OpenGL contexts with
   [OSMesa](https://www.mesa3d.org/osmesa.html) (#281)
 - Added `GenerateMappings.cmake` script for updating gamepad mappings
+- Made `glfwCreateWindowSurface` emit an error when the window has a context
+  (#1194,#1205)
 - Deprecated window parameter of clipboard string functions
 - Deprecated charmods callback
 - Removed `GLFW_USE_RETINA` compile-time option
@@ -442,6 +444,7 @@ skills.
  - Ricardo Vieira
  - Nicholas Vitovitch
  - Simon Voordouw
+ - Corentin Wallez
  - Torsten Walluhn
  - Patrick Walton
  - Xo Wang

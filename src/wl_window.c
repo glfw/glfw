@@ -35,6 +35,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <sys/timerfd.h>
 #include <poll.h>
 
 
@@ -442,7 +443,9 @@ handleEvents(int timeout)
     struct wl_display* display = _glfw.wl.display;
     struct pollfd fds[] = {
         { wl_display_get_fd(display), POLLIN },
+        { _glfw.wl.timerfd, POLLIN },
     };
+    char buf[8];
 
     while (wl_display_prepare_read(display) != 0)
         wl_display_dispatch_pending(display);
@@ -462,10 +465,27 @@ handleEvents(int timeout)
         return;
     }
 
-    if (poll(fds, 1, timeout) > 0)
+    if (poll(fds, 2, timeout) > 0)
     {
-        wl_display_read_events(display);
-        wl_display_dispatch_pending(display);
+        if (fds[0].revents & POLLIN)
+        {
+            wl_display_read_events(display);
+            wl_display_dispatch_pending(display);
+        }
+        else
+        {
+            wl_display_cancel_read(display);
+        }
+
+        if (fds[1].revents & POLLIN)
+        {
+            _glfwInputKey(_glfw.wl.keyboardFocus, _glfw.wl.keyboardLastKey,
+                          _glfw.wl.keyboardLastScancode, GLFW_REPEAT,
+                          _glfw.wl.xkb.modifiers);
+
+            // Required to mark the fd as clean.
+            read(_glfw.wl.timerfd, &buf, 8);
+        }
     }
     else
     {

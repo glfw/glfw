@@ -296,7 +296,6 @@ static void xdgToplevelHandleConfigure(void* data,
     uint32_t* state;
     GLFWbool maximized = GLFW_FALSE;
     GLFWbool fullscreen = GLFW_FALSE;
-    GLFWbool resizing = GLFW_FALSE;
     GLFWbool activated = GLFW_FALSE;
 
     wl_array_for_each(state, states)
@@ -310,7 +309,6 @@ static void xdgToplevelHandleConfigure(void* data,
                 fullscreen = GLFW_TRUE;
                 break;
             case XDG_TOPLEVEL_STATE_RESIZING:
-                resizing = GLFW_TRUE;
                 break;
             case XDG_TOPLEVEL_STATE_ACTIVATED:
                 activated = GLFW_TRUE;

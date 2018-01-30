@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
+#include <sys/timerfd.h>
 #include <unistd.h>
 #include <wayland-client.h>
 
@@ -365,6 +366,7 @@ static void keyboardHandleKey(void* data,
     int keyCode;
     int action;
     _GLFWwindow* window = _glfw.wl.keyboardFocus;
+    struct itimerspec timer = {};
 
     if (!window)
         return;
@@ -377,7 +379,20 @@ static void keyboardHandleKey(void* data,
                   _glfw.wl.xkb.modifiers);
 
     if (action == GLFW_PRESS)
+    {
         inputChar(window, key);
+
+        if (_glfw.wl.keyboardRepeatRate > 0)
+        {
+            _glfw.wl.keyboardLastKey = keyCode;
+            _glfw.wl.keyboardLastScancode = key;
+            timer.it_interval.tv_sec = _glfw.wl.keyboardRepeatRate / 1000;
+            timer.it_interval.tv_nsec = (_glfw.wl.keyboardRepeatRate % 1000) * 1000000;
+            timer.it_value.tv_sec = _glfw.wl.keyboardRepeatDelay / 1000;
+            timer.it_value.tv_nsec = (_glfw.wl.keyboardRepeatDelay % 1000) * 1000000;
+        }
+    }
+    timerfd_settime(_glfw.wl.timerfd, 0, &timer, NULL);
 }
 
 static void keyboardHandleModifiers(void* data,
@@ -821,6 +836,10 @@ int _glfwPlatformInit(void)
         return GLFW_FALSE;
 
     _glfwInitTimerPOSIX();
+
+    _glfw.wl.timerfd = -1;
+    if (_glfw.wl.seatVersion >= 4)
+        _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, 0);
 
     if (_glfw.wl.pointer && _glfw.wl.shm)
     {

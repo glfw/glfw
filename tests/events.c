@@ -289,8 +289,6 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     Slot* slot = glfwGetWindowUserPointer(window);
     printf("%08x to %i at %0.3f: Framebuffer size: %i %i\n",
            counter++, slot->number, glfwGetTime(), width, height);
-
-    glViewport(0, 0, width, height);
 }
 
 static void window_content_scale_callback(GLFWwindow* window, float xscale, float yscale)

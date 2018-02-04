@@ -182,16 +182,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     wndconfig.title   = title;
     ctxconfig.share   = (_GLFWwindow*) share;
 
-    if (ctxconfig.share)
-    {
-        if (ctxconfig.client == GLFW_NO_API ||
-            ctxconfig.share->context.client == GLFW_NO_API)
-        {
-            _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
-            return NULL;
-        }
-    }
-
     if (!_glfwIsValidContextConfig(&ctxconfig))
         return NULL;
 

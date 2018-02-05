@@ -1416,6 +1416,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
 
     const NSUInteger styleMask = getStyleMask(window);
     [window->ns.object setStyleMask:styleMask];
+    // HACK: Changing the style mask can cause the first responder to be cleared
     [window->ns.object makeFirstResponder:window->ns.view];
 
     if (monitor)

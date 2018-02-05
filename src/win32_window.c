@@ -473,10 +473,9 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
 
 // Make the specified window and its video mode active on its monitor
 //
-static GLFWbool acquireMonitor(_GLFWwindow* window)
+static void acquireMonitor(_GLFWwindow* window)
 {
     GLFWvidmode mode;
-    GLFWbool status;
     int xpos, ypos;
 
     if (!_glfw.win32.acquiredMonitorCount)
@@ -484,7 +483,7 @@ static GLFWbool acquireMonitor(_GLFWwindow* window)
     if (!window->monitor->window)
         _glfw.win32.acquiredMonitorCount++;
 
-    status = _glfwSetVideoModeWin32(window->monitor, &window->videoMode);
+    _glfwSetVideoModeWin32(window->monitor, &window->videoMode);
 
     _glfwPlatformGetVideoMode(window->monitor, &mode);
     _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
@@ -494,7 +493,6 @@ static GLFWbool acquireMonitor(_GLFWwindow* window)
                  SWP_NOACTIVATE | SWP_NOCOPYBITS);
 
     _glfwInputMonitorWindow(window->monitor, window);
-    return status;
 }
 
 // Remove the window and restore the original video mode
@@ -1240,8 +1238,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     {
         _glfwPlatformShowWindow(window);
         _glfwPlatformFocusWindow(window);
-        if (!acquireMonitor(window))
-            return GLFW_FALSE;
+        acquireMonitor(window);
 
         if (wndconfig->centerCursor)
             centerCursor(window);

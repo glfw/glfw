@@ -1975,9 +1975,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         _glfwPlatformShowWindow(window);
         updateWindowMode(window);
         acquireMonitor(window);
-
-        if (wndconfig->centerCursor)
-            centerCursor(window);
     }
 
     XFlush(_glfw.x11.display);

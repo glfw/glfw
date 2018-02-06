@@ -1178,9 +1178,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         _glfwPlatformShowWindow(window);
         _glfwPlatformFocusWindow(window);
         acquireMonitor(window);
-
-        if (wndconfig->centerCursor)
-            centerCursor(window);
     }
 
     return GLFW_TRUE;

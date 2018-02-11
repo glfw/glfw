@@ -437,6 +437,7 @@ static void keyboardHandleModifiers(void* data,
     _glfw.wl.xkb.modifiers = modifiers;
 }
 
+#ifdef WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION
 static void keyboardHandleRepeatInfo(void* data,
                                      struct wl_keyboard* keyboard,
                                      int32_t rate,
@@ -448,6 +449,7 @@ static void keyboardHandleRepeatInfo(void* data,
     _glfw.wl.keyboardRepeatRate = rate;
     _glfw.wl.keyboardRepeatDelay = delay;
 }
+#endif
 
 static const struct wl_keyboard_listener keyboardListener = {
     keyboardHandleKeymap,
@@ -455,7 +457,9 @@ static const struct wl_keyboard_listener keyboardListener = {
     keyboardHandleLeave,
     keyboardHandleKey,
     keyboardHandleModifiers,
+#ifdef WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION
     keyboardHandleRepeatInfo,
+#endif
 };
 
 static void seatHandleCapabilities(void* data,

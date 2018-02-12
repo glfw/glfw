@@ -329,7 +329,7 @@ static xkb_keysym_t composeSymbol(xkb_keysym_t sym)
 }
 #endif
 
-static void inputChar(_GLFWwindow* window, uint32_t key)
+static GLFWbool inputChar(_GLFWwindow* window, uint32_t key)
 {
     uint32_t code, numSyms;
     long cp;
@@ -354,6 +354,8 @@ static void inputChar(_GLFWwindow* window, uint32_t key)
             _glfwInputChar(window, cp, mods, plain);
         }
     }
+
+    return xkb_keymap_key_repeats(_glfw.wl.xkb.keymap, syms[0]);
 }
 
 static void keyboardHandleKey(void* data,
@@ -366,6 +368,7 @@ static void keyboardHandleKey(void* data,
     int keyCode;
     int action;
     _GLFWwindow* window = _glfw.wl.keyboardFocus;
+    GLFWbool shouldRepeat;
     struct itimerspec timer = {};
 
     if (!window)
@@ -380,9 +383,9 @@ static void keyboardHandleKey(void* data,
 
     if (action == GLFW_PRESS)
     {
-        inputChar(window, key);
+        shouldRepeat = inputChar(window, key);
 
-        if (_glfw.wl.keyboardRepeatRate > 0)
+        if (shouldRepeat && _glfw.wl.keyboardRepeatRate > 0)
         {
             _glfw.wl.keyboardLastKey = keyCode;
             _glfw.wl.keyboardLastScancode = key;

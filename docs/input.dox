@@ -804,6 +804,12 @@ a hat bitmask or empty.  Joystick buttons are specified as `bN`, for example
 example `h0.8` for left on the first hat.  More than one bit may be set in the
 mask.
 
+Before an axis there may be a `+` or `-` range modifier, for example `+a3` for
+the positive half of the fourth axis.  This restricts input to only the positive
+or negative halves of the joystick axis.  After an axis or half-axis there may
+be the `~` inversion modifier, for example `a2~` or `-a7~`.  This negates the
+values of the gamepad axis.
+
 The hat bit mask match the [hat states](@ref hat_state) in the joystick
 functions.
 
@@ -822,8 +828,9 @@ rightstick:b9,leftx:a0,lefty:a1,rightx:a2,righty:a3,lefttrigger:a4,
 righttrigger:a5,dpup:h0.1,dpright:h0.2,dpdown:h0.4,dpleft:h0.8,
 @endcode
 
-@note GLFW does not yet support the range and inversion modifiers `+`, `-` and
-`~` that were recently added to SDL.
+@note GLFW does not yet support the output range and modifiers `+` and `-` that
+were recently added to SDL.  The input modifiers `+`, `-` and `~` are supported
+and described above.
 
 
 @section time Time input

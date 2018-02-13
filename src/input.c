@@ -167,6 +167,10 @@ static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
 
     while (*c)
     {
+        // TODO: Implement output modifiers
+        if (*c == '+' || *c == '-')
+            return GLFW_FALSE;
+
         for (i = 0;  i < sizeof(fields) / sizeof(fields[0]);  i++)
         {
             length = strlen(fields[i].name);
@@ -177,23 +181,50 @@ static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
 
             if (fields[i].element)
             {
+                _GLFWmapelement* e = fields[i].element;
+                int8_t minimum = -1;
+                int8_t maximum = 1;
+
+                if (*c == '+')
+                {
+                    minimum = 0;
+                    c += 1;
+                }
+                else if (*c == '-')
+                {
+                    maximum = 0;
+                    c += 1;
+                }
+
                 if (*c == 'a')
-                    fields[i].element->type = _GLFW_JOYSTICK_AXIS;
+                    e->type = _GLFW_JOYSTICK_AXIS;
                 else if (*c == 'b')
-                    fields[i].element->type = _GLFW_JOYSTICK_BUTTON;
+                    e->type = _GLFW_JOYSTICK_BUTTON;
                 else if (*c == 'h')
-                    fields[i].element->type = _GLFW_JOYSTICK_HATBIT;
+                    e->type = _GLFW_JOYSTICK_HATBIT;
                 else
                     break;
 
-                if (fields[i].element->type == _GLFW_JOYSTICK_HATBIT)
+                if (e->type == _GLFW_JOYSTICK_HATBIT)
                 {
                     const unsigned long hat = strtoul(c + 1, (char**) &c, 10);
                     const unsigned long bit = strtoul(c + 1, (char**) &c, 10);
-                    fields[i].element->value = (uint8_t) ((hat << 4) | bit);
+                    e->value = (uint8_t) ((hat << 4) | bit);
                 }
                 else
-                    fields[i].element->value = (uint8_t) strtoul(c + 1, (char**) &c, 10);
+                    e->value = (uint8_t) strtoul(c + 1, (char**) &c, 10);
+
+                if (e->type == _GLFW_JOYSTICK_AXIS)
+                {
+                    e->axisScale = 2 / (maximum - minimum);
+                    e->axisOffset = -(maximum + minimum);
+
+                    if (*c == '~')
+                    {
+                        e->axisScale = -e->axisScale;
+                        e->axisOffset = -e->axisOffset;
+                    }
+                }
             }
             else
             {
@@ -1188,35 +1219,41 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state)
 
     for (i = 0;  i <= GLFW_GAMEPAD_BUTTON_LAST;  i++)
     {
-        if (js->mapping->buttons[i].type == _GLFW_JOYSTICK_AXIS)
+        const _GLFWmapelement* e = js->mapping->buttons + i;
+        if (e->type == _GLFW_JOYSTICK_AXIS)
         {
-            if (fabsf(js->axes[js->mapping->buttons[i].value]) > 0.5f)
+            const float value = js->axes[e->value] * e->axisScale + e->axisOffset;
+            if (value > 0.f)
                 state->buttons[i] = GLFW_PRESS;
         }
-        else if (js->mapping->buttons[i].type == _GLFW_JOYSTICK_HATBIT)
+        else if (e->type == _GLFW_JOYSTICK_HATBIT)
         {
-            const unsigned int hat = js->mapping->buttons[i].value >> 4;
-            const unsigned int bit = js->mapping->buttons[i].value & 0xf;
+            const unsigned int hat = e->value >> 4;
+            const unsigned int bit = e->value & 0xf;
             if (js->hats[hat] & bit)
                 state->buttons[i] = GLFW_PRESS;
         }
-        else if (js->mapping->buttons[i].type == _GLFW_JOYSTICK_BUTTON)
-            state->buttons[i] = js->buttons[js->mapping->buttons[i].value];
+        else if (e->type == _GLFW_JOYSTICK_BUTTON)
+            state->buttons[i] = js->buttons[e->value];
     }
 
     for (i = 0;  i <= GLFW_GAMEPAD_AXIS_LAST;  i++)
     {
-        if (js->mapping->axes[i].type == _GLFW_JOYSTICK_AXIS)
-            state->axes[i] = js->axes[js->mapping->axes[i].value];
-        else if (js->mapping->buttons[i].type == _GLFW_JOYSTICK_HATBIT)
+        const _GLFWmapelement* e = js->mapping->axes + i;
+        if (e->type == _GLFW_JOYSTICK_AXIS)
         {
-            const unsigned int hat = js->mapping->axes[i].value >> 4;
-            const unsigned int bit = js->mapping->axes[i].value & 0xf;
+            const float value = js->axes[e->value] * e->axisScale + e->axisOffset;
+            state->axes[i] = fminf(fmaxf(value, -1.f), 1.f);
+        }
+        else if (e->type == _GLFW_JOYSTICK_HATBIT)
+        {
+            const unsigned int hat = e->value >> 4;
+            const unsigned int bit = e->value & 0xf;
             if (js->hats[hat] & bit)
                 state->axes[i] = 1.f;
         }
-        else if (js->mapping->buttons[i].type == _GLFW_JOYSTICK_BUTTON)
-            state->axes[i] = (float) js->buttons[js->mapping->axes[i].value];
+        else if (e->type == _GLFW_JOYSTICK_BUTTON)
+            state->axes[i] = (float) js->buttons[e->value];
     }
 
     return GLFW_TRUE;

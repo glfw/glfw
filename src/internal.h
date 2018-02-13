@@ -457,6 +457,8 @@ struct _GLFWmapelement
 {
     uint8_t         type;
     uint8_t         value;
+    int8_t          axisScale;
+    int8_t          axisOffset;
 };
 
 // Gamepad mapping structure

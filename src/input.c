@@ -62,11 +62,11 @@ static _GLFWmapping* findMapping(const char* guid)
 static GLFWbool isValidElementForJoystick(const _GLFWmapelement* e,
                                           const _GLFWjoystick* js)
 {
-    if (e->type == _GLFW_JOYSTICK_HATBIT && (e->value >> 4) >= js->hatCount)
+    if (e->type == _GLFW_JOYSTICK_HATBIT && (e->index >> 4) >= js->hatCount)
         return GLFW_FALSE;
-    else if (e->type == _GLFW_JOYSTICK_BUTTON && e->value >= js->buttonCount)
+    else if (e->type == _GLFW_JOYSTICK_BUTTON && e->index >= js->buttonCount)
         return GLFW_FALSE;
-    else if (e->type == _GLFW_JOYSTICK_AXIS && e->value >= js->axisCount)
+    else if (e->type == _GLFW_JOYSTICK_AXIS && e->index >= js->axisCount)
         return GLFW_FALSE;
 
     return GLFW_TRUE;
@@ -209,10 +209,10 @@ static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
                 {
                     const unsigned long hat = strtoul(c + 1, (char**) &c, 10);
                     const unsigned long bit = strtoul(c + 1, (char**) &c, 10);
-                    e->value = (uint8_t) ((hat << 4) | bit);
+                    e->index = (uint8_t) ((hat << 4) | bit);
                 }
                 else
-                    e->value = (uint8_t) strtoul(c + 1, (char**) &c, 10);
+                    e->index = (uint8_t) strtoul(c + 1, (char**) &c, 10);
 
                 if (e->type == _GLFW_JOYSTICK_AXIS)
                 {
@@ -1222,19 +1222,19 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state)
         const _GLFWmapelement* e = js->mapping->buttons + i;
         if (e->type == _GLFW_JOYSTICK_AXIS)
         {
-            const float value = js->axes[e->value] * e->axisScale + e->axisOffset;
+            const float value = js->axes[e->index] * e->axisScale + e->axisOffset;
             if (value > 0.f)
                 state->buttons[i] = GLFW_PRESS;
         }
         else if (e->type == _GLFW_JOYSTICK_HATBIT)
         {
-            const unsigned int hat = e->value >> 4;
-            const unsigned int bit = e->value & 0xf;
+            const unsigned int hat = e->index >> 4;
+            const unsigned int bit = e->index & 0xf;
             if (js->hats[hat] & bit)
                 state->buttons[i] = GLFW_PRESS;
         }
         else if (e->type == _GLFW_JOYSTICK_BUTTON)
-            state->buttons[i] = js->buttons[e->value];
+            state->buttons[i] = js->buttons[e->index];
     }
 
     for (i = 0;  i <= GLFW_GAMEPAD_AXIS_LAST;  i++)
@@ -1242,18 +1242,18 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state)
         const _GLFWmapelement* e = js->mapping->axes + i;
         if (e->type == _GLFW_JOYSTICK_AXIS)
         {
-            const float value = js->axes[e->value] * e->axisScale + e->axisOffset;
+            const float value = js->axes[e->index] * e->axisScale + e->axisOffset;
             state->axes[i] = fminf(fmaxf(value, -1.f), 1.f);
         }
         else if (e->type == _GLFW_JOYSTICK_HATBIT)
         {
-            const unsigned int hat = e->value >> 4;
-            const unsigned int bit = e->value & 0xf;
+            const unsigned int hat = e->index >> 4;
+            const unsigned int bit = e->index & 0xf;
             if (js->hats[hat] & bit)
                 state->axes[i] = 1.f;
         }
         else if (e->type == _GLFW_JOYSTICK_BUTTON)
-            state->axes[i] = (float) js->buttons[e->value];
+            state->axes[i] = (float) js->buttons[e->index];
     }
 
     return GLFW_TRUE;

@@ -456,7 +456,7 @@ struct _GLFWcursor
 struct _GLFWmapelement
 {
     uint8_t         type;
-    uint8_t         value;
+    uint8_t         index;
     int8_t          axisScale;
     int8_t          axisOffset;
 };

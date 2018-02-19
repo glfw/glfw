@@ -1090,6 +1090,37 @@ static void acquireMonitor(_GLFWwindow* window)
         // Disable screen saver
         XSetScreenSaver(_glfw.x11.display, 0, 0, DontPreferBlanking,
                         DefaultExposures);
+
+        if (_glfw.x11.dbus.session)
+        {
+            DBusError error;
+            DBusMessage* call;
+            DBusMessage* reply;
+            const char* name = "GLFW";
+            const char* reason = "Active fullscreen window";
+
+            call = dbus_message_new_method_call("org.freedesktop.ScreenSaver",
+                                                "/org/freedesktop/ScreenSaver",
+                                                "org.freedesktop.ScreenSaver",
+                                                "Inhibit");
+            dbus_message_append_args(call,
+                                     DBUS_TYPE_STRING, &name,
+                                     DBUS_TYPE_STRING, &reason,
+                                     DBUS_TYPE_INVALID);
+            dbus_error_init(&error);
+            reply = dbus_connection_send_with_reply_and_block(_glfw.x11.dbus.session,
+                                                              call, 100, &error);
+            dbus_message_unref(call);
+
+            if (!dbus_error_is_set(&error))
+            {
+                dbus_error_init(&error);
+                dbus_message_get_args(reply, &error,
+                                      DBUS_TYPE_UINT32, &_glfw.x11.dbus.cookie,
+                                      DBUS_TYPE_INVALID);
+                dbus_message_unref(reply);
+            }
+        }
     }
 
     if (!window->monitor->window)
@@ -1133,6 +1164,20 @@ static void releaseMonitor(_GLFWwindow* window)
                         _glfw.x11.saver.interval,
                         _glfw.x11.saver.blanking,
                         _glfw.x11.saver.exposure);
+
+        if (_glfw.x11.dbus.session)
+        {
+            DBusMessage* call;
+
+            call = dbus_message_new_method_call("org.freedesktop.ScreenSaver",
+                                                "/org/freedesktop/ScreenSaver",
+                                                "org.freedesktop.ScreenSaver",
+                                                "UnInhibit");
+            dbus_message_append_args(call,
+                                     DBUS_TYPE_UINT32, &_glfw.x11.dbus.cookie,
+                                     DBUS_TYPE_INVALID);
+            dbus_message_unref(call);
+        }
     }
 }
 

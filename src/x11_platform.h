@@ -47,6 +47,9 @@
 // The XInput extension provides raw mouse motion input
 #include <X11/extensions/XInput2.h>
 
+// DBus is used to inhibit the screensaver
+#include <dbus/dbus.h>
+
 typedef XRRCrtcGamma* (* PFN_XRRAllocGamma)(int);
 typedef void (* PFN_XRRFreeCrtcInfo)(XRRCrtcInfo*);
 typedef void (* PFN_XRRFreeGamma)(XRRCrtcGamma*);
@@ -122,6 +125,29 @@ typedef XRenderPictFormat* (* PFN_XRenderFindVisualFormat)(Display*,Visual const
 #define XRenderQueryExtension _glfw.x11.xrender.QueryExtension
 #define XRenderQueryVersion _glfw.x11.xrender.QueryVersion
 #define XRenderFindVisualFormat _glfw.x11.xrender.FindVisualFormat
+
+typedef void (*PFN_dbus_error_init)(DBusError*);
+typedef dbus_bool_t (*PFN_dbus_error_is_set)(const DBusError*);
+typedef DBusConnection* (*PFN_dbus_bus_get_private)(DBusBusType,DBusError*);
+typedef void (*PFN_dbus_connection_set_exit_on_disconnect)(DBusConnection*,dbus_bool_t);
+typedef void (*PFN_dbus_connection_close)(DBusConnection*);
+typedef void (*PFN_dbus_connection_unref)(DBusConnection*);
+typedef DBusMessage* (*PFN_dbus_connection_send_with_reply_and_block)(DBusConnection*,DBusMessage*,int,DBusError*);
+typedef DBusMessage* (*PFN_dbus_message_new_method_call)(const char*,const char*,const char*,const char*);
+typedef dbus_bool_t (*PFN_dbus_message_append_args)(DBusMessage*,int,...);
+typedef dbus_bool_t (*PFN_dbus_message_get_args)(DBusMessage*,DBusError*,int,...);
+typedef void (*PFN_dbus_message_unref)(DBusMessage*);
+#define dbus_error_init _glfw.x11.dbus.error_init
+#define dbus_error_is_set _glfw.x11.dbus.error_is_set
+#define dbus_bus_get_private _glfw.x11.dbus.bus_get_private
+#define dbus_connection_set_exit_on_disconnect _glfw.x11.dbus.connection_set_exit_on_disconnect
+#define dbus_connection_close _glfw.x11.dbus.connection_close
+#define dbus_connection_unref _glfw.x11.dbus.connection_unref
+#define dbus_connection_send_with_reply_and_block _glfw.x11.dbus.connection_send_with_reply_and_block
+#define dbus_message_new_method_call _glfw.x11.dbus.message_new_method_call
+#define dbus_message_append_args _glfw.x11.dbus.message_append_args
+#define dbus_message_get_args _glfw.x11.dbus.message_get_args
+#define dbus_message_unref _glfw.x11.dbus.message_unref
 
 typedef VkFlags VkXlibSurfaceCreateFlagsKHR;
 typedef VkFlags VkXcbSurfaceCreateFlagsKHR;
@@ -398,6 +424,23 @@ typedef struct _GLFWlibraryX11
         PFN_XRenderQueryVersion QueryVersion;
         PFN_XRenderFindVisualFormat FindVisualFormat;
     } xrender;
+
+    struct {
+        void*           handle;
+        DBusConnection* session;
+        uint32_t        cookie;
+        PFN_dbus_error_init error_init;
+        PFN_dbus_error_is_set error_is_set;
+        PFN_dbus_bus_get_private bus_get_private;
+        PFN_dbus_connection_set_exit_on_disconnect connection_set_exit_on_disconnect;
+        PFN_dbus_connection_close connection_close;
+        PFN_dbus_connection_unref connection_unref;
+        PFN_dbus_connection_send_with_reply_and_block connection_send_with_reply_and_block;
+        PFN_dbus_message_new_method_call message_new_method_call;
+        PFN_dbus_message_append_args message_append_args;
+        PFN_dbus_message_get_args message_get_args;
+        PFN_dbus_message_unref message_unref;
+    } dbus;
 
 } _GLFWlibraryX11;
 

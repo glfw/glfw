@@ -674,6 +674,45 @@ static GLFWbool initExtensions(void)
         }
     }
 
+#if defined(__CYGWIN__)
+    _glfw.x11.dbus.handle = _glfw_dlopen("libdbus-1-3.so");
+#else
+    _glfw.x11.dbus.handle = _glfw_dlopen("libdbus-1.so.3");
+#endif
+    if (_glfw.x11.dbus.handle)
+    {
+        DBusError error;
+
+        _glfw.x11.dbus.error_init =
+            _glfw_dlsym(_glfw.x11.dbus.handle, "dbus_error_init");
+        _glfw.x11.dbus.error_is_set =
+            _glfw_dlsym(_glfw.x11.dbus.handle, "dbus_error_is_set");
+        _glfw.x11.dbus.bus_get_private =
+            _glfw_dlsym(_glfw.x11.dbus.handle, "dbus_bus_get_private");
+        _glfw.x11.dbus.connection_set_exit_on_disconnect =
+            _glfw_dlsym(_glfw.x11.dbus.handle, "dbus_connection_set_exit_on_disconnect");
+        _glfw.x11.dbus.connection_send_with_reply_and_block =
+            _glfw_dlsym(_glfw.x11.dbus.handle, "dbus_connection_send_with_reply_and_block");
+        _glfw.x11.dbus.connection_close =
+            _glfw_dlsym(_glfw.x11.dbus.handle, "dbus_connection_close");
+        _glfw.x11.dbus.connection_unref =
+            _glfw_dlsym(_glfw.x11.dbus.handle, "dbus_connection_unref");
+        _glfw.x11.dbus.message_new_method_call =
+            _glfw_dlsym(_glfw.x11.dbus.handle, "dbus_message_new_method_call");
+        _glfw.x11.dbus.message_append_args =
+            _glfw_dlsym(_glfw.x11.dbus.handle, "dbus_message_append_args");
+        _glfw.x11.dbus.message_get_args =
+            _glfw_dlsym(_glfw.x11.dbus.handle, "dbus_message_get_args");
+        _glfw.x11.dbus.message_unref =
+            _glfw_dlsym(_glfw.x11.dbus.handle, "dbus_message_unref");
+
+        dbus_error_init(&error);
+
+        _glfw.x11.dbus.session = dbus_bus_get_private(DBUS_BUS_SESSION, &error);
+        if (!dbus_error_is_set(&error))
+            dbus_connection_set_exit_on_disconnect(_glfw.x11.dbus.session, FALSE);
+    }
+
     // Update the key code LUT
     // FIXME: We should listen to XkbMapNotify events to track changes to
     // the keyboard mapping.
@@ -1023,6 +1062,15 @@ void _glfwPlatformTerminate(void)
         _glfw_dlclose(_glfw.x11.xinerama.handle);
         _glfw.x11.xinerama.handle = NULL;
     }
+
+    if (_glfw.x11.dbus.session)
+    {
+        dbus_connection_close(_glfw.x11.dbus.session);
+        dbus_connection_unref(_glfw.x11.dbus.session);
+    }
+
+    if (_glfw.x11.dbus.handle)
+        _glfw_dlclose(_glfw.x11.dbus.handle);
 
     // NOTE: These need to be unloaded after XCloseDisplay, as they register
     //       cleanup callbacks that get called by that function

@@ -215,6 +215,11 @@ if (UNIX AND NOT APPLE)
         list(APPEND glfw_LIBRARIES "${CMAKE_DL_LIBS}")
         list(APPEND glfw_PKG_LIBS "-l${CMAKE_DL_LIBS}")
     endif()
+
+    find_package(DBus)
+    if (DBUS_FOUND)
+        list(APPEND glfw_INCLUDE_DIRS ${DBUS_INCLUDE_DIRS})
+    endif()
 endif()
 
 #--------------------------------------------------------------------

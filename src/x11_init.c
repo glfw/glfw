@@ -627,9 +627,9 @@ static GLFWbool initExtensions(void)
     if (_glfw.x11.xss.handle)
     {
         _glfw.x11.xss.QueryExtension = (PFN_XScreenSaverQueryExtension)
-            dlsym(_glfw.x11.xss.handle, "XScreenSaverQueryExtension");
+            _glfw_dlsym(_glfw.x11.xss.handle, "XScreenSaverQueryExtension");
         _glfw.x11.xss.Suspend = (PFN_XScreenSaverSuspend)
-            dlsym(_glfw.x11.xss.handle, "XScreenSaverSuspend");
+            _glfw_dlsym(_glfw.x11.xss.handle, "XScreenSaverSuspend");
 
         if (XScreenSaverQueryExtension(_glfw.x11.display,
                                        &_glfw.x11.xss.eventBase,
@@ -1078,6 +1078,12 @@ void _glfwPlatformTerminate(void)
     {
         _glfw_dlclose(_glfw.x11.xinerama.handle);
         _glfw.x11.xinerama.handle = NULL;
+    }
+
+    if (_glfw.x11.xss.handle)
+    {
+        _glfw_dlclose(_glfw.x11.xss.handle);
+        _glfw.x11.xss.handle = NULL;
     }
 
     if (_glfw.x11.dbus.session)

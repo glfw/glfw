@@ -1093,7 +1093,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         if (wndconfig->resizable)
         {
             const NSWindowCollectionBehavior behavior =
-                NSWindowCollectionBehaviorFullScreenPrimary |
+                NSWindowCollectionBehaviorFullScreenAuxiliary |
                 NSWindowCollectionBehaviorManaged;
             [window->ns.object setCollectionBehavior:behavior];
         }

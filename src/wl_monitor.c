@@ -136,6 +136,7 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
 
     monitor->wl.scale = 1;
     monitor->wl.output = output;
+    monitor->wl.name = name;
 
     wl_output_add_listener(output, &outputListener, monitor);
 }

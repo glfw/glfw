@@ -848,7 +848,7 @@ int _glfwPlatformInit(void)
 
     _glfw.wl.timerfd = -1;
     if (_glfw.wl.seatVersion >= 4)
-        _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, 0);
+        _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
 
     if (_glfw.wl.pointer && _glfw.wl.shm)
     {

@@ -445,7 +445,8 @@ handleEvents(int timeout)
         { wl_display_get_fd(display), POLLIN },
         { _glfw.wl.timerfd, POLLIN },
     };
-    char buf[8];
+    ssize_t read_ret;
+    uint64_t repeats, i;
 
     while (wl_display_prepare_read(display) != 0)
         wl_display_dispatch_pending(display);
@@ -479,12 +480,14 @@ handleEvents(int timeout)
 
         if (fds[1].revents & POLLIN)
         {
-            _glfwInputKey(_glfw.wl.keyboardFocus, _glfw.wl.keyboardLastKey,
-                          _glfw.wl.keyboardLastScancode, GLFW_REPEAT,
-                          _glfw.wl.xkb.modifiers);
+            read_ret = read(_glfw.wl.timerfd, &repeats, sizeof(repeats));
+            if (read_ret != 8)
+                return;
 
-            // Required to mark the fd as clean.
-            read(_glfw.wl.timerfd, &buf, 8);
+            for (i = 0; i < repeats; ++i)
+                _glfwInputKey(_glfw.wl.keyboardFocus, _glfw.wl.keyboardLastKey,
+                              _glfw.wl.keyboardLastScancode, GLFW_REPEAT,
+                              _glfw.wl.xkb.modifiers);
         }
     }
     else

@@ -1107,12 +1107,16 @@ void _glfwPlatformTerminate(void)
 
     if (_glfw.wl.cursorSurface)
         wl_surface_destroy(_glfw.wl.cursorSurface);
+    if (_glfw.wl.subcompositor)
+        wl_subcompositor_destroy(_glfw.wl.subcompositor);
     if (_glfw.wl.compositor)
         wl_compositor_destroy(_glfw.wl.compositor);
     if (_glfw.wl.shm)
         wl_shm_destroy(_glfw.wl.shm);
     if (_glfw.wl.shell)
         wl_shell_destroy(_glfw.wl.shell);
+    if (_glfw.wl.viewporter)
+        wp_viewporter_destroy(_glfw.wl.viewporter);
     if (_glfw.wl.wmBase)
         xdg_wm_base_destroy(_glfw.wl.wmBase);
     if (_glfw.wl.pointer)

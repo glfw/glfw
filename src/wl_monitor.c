@@ -146,6 +146,12 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
+void _glfwPlatformFreeMonitor(_GLFWmonitor* monitor)
+{
+    if (monitor->wl.output)
+        wl_output_destroy(monitor->wl.output);
+}
+
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {
     if (xpos)

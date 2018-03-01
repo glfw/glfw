@@ -264,6 +264,7 @@ information on what to include when reporting a bug.
 - [Cocoa] Bugfix: Window title was lost when full screen or undecorated (#1082)
 - [Cocoa] Bugfix: Window was resized twice when entering full screen (#1085)
 - [Cocoa] Bugfix: Duplicate size events were not filtered (#1085)
+- [Cocoa] Bugfix: Event polling did not initialize AppKit if necessary (#1218)
 - [WGL] Added support for `WGL_EXT_colorspace` for OpenGL ES contexts
 - [WGL] Added support for `WGL_ARB_create_context_no_error`
 - [GLX] Added support for `GLX_ARB_create_context_no_error`

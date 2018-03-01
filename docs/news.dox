@@ -132,7 +132,7 @@ mode on platforms where this is available, specifically Windows and X11.
 @subsection news_33_moltenvk Support for Vulkan on macOS via MoltenVK
 
 GLFW now supports the `VK_MVK_macos_surface` window surface creation extension
-provided by [MoltenVK](https://moltengl.com/moltenvk/).
+provided by MoltenVK in the [LunarG Vulkan SDK](https://vulkan.lunarg.com/).
 
 @see @ref vulkan_guide
 

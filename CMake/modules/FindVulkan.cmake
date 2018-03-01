@@ -28,12 +28,10 @@ if (WIN32)
             "$ENV{VK_SDK_PATH}/Bin32")
     endif()
 elseif (APPLE)
-    set(CMAKE_FIND_FRAMEWORK NEVER)
-    find_library(VULKAN_LIBRARY MoltenVK)
-    set(CMAKE_FIND_FRAMEWORK ONLY)
-    find_library(VULKAN_STATIC_LIBRARY MoltenVK)
+    find_library(VULKAN_LIBRARY vulkan.1 HINTS
+        "$ENV{VULKAN_SDK}/macOS/lib")
     find_path(VULKAN_INCLUDE_DIR NAMES vulkan/vulkan.h HINTS
-        "${VULKAN_LIBRARY}/Headers")
+        "$ENV{VULKAN_SDK}/macOS/include")
 else()
     find_path(VULKAN_INCLUDE_DIR NAMES vulkan/vulkan.h HINTS
         "$ENV{VULKAN_SDK}/include")

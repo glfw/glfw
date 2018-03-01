@@ -141,15 +141,6 @@ if (MINGW)
     endif()
 endif()
 
-if (APPLE)
-    # Dependencies required by the MoltenVK static library
-    set(GLFW_VULKAN_DEPS
-        "-lc++"
-        "-framework Cocoa"
-        "-framework Metal"
-        "-framework QuartzCore")
-endif()
-
 #--------------------------------------------------------------------
 # Detect and select backend APIs
 #--------------------------------------------------------------------
@@ -180,7 +171,7 @@ endif()
 #--------------------------------------------------------------------
 if (GLFW_VULKAN_STATIC)
     if (VULKAN_FOUND AND VULKAN_STATIC_LIBRARY)
-        list(APPEND glfw_LIBRARIES "${VULKAN_STATIC_LIBRARY}" ${GLFW_VULKAN_DEPS})
+        list(APPEND glfw_LIBRARIES "${VULKAN_STATIC_LIBRARY}")
         if (BUILD_SHARED_LIBS)
             message(WARNING "Linking Vulkan loader static library into GLFW")
         endif()

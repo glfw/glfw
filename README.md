@@ -106,9 +106,9 @@ located in the `deps/` directory.
  - [stb\_image\_write](https://github.com/nothings/stb) for writing images to disk
  - [Vulkan headers](https://www.khronos.org/registry/vulkan/) for Vulkan tests
 
-The Vulkan example additionally requires the Vulkan SDK to be installed, or it
-will not be included in the build.  On macOS you need to provide the path to the
-MoltenVK SDK manually as it has no standard installation location.
+The Vulkan example additionally requires the LunarG Vulkan SDK to be installed,
+or it will not be included in the build.  On macOS you need to provide the path
+to the SDK manually as it has no standard installation location.
 
 The documentation is generated with [Doxygen](http://doxygen.org/) if CMake can
 find that tool.

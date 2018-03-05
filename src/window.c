@@ -282,8 +282,10 @@ void glfwDefaultWindowHints(void)
     // The default is to select the highest available refresh rate
     _glfw.hints.refreshRate = GLFW_DONT_CARE;
 
+#if defined(_GLFW_COCOA)
     // The default is to use full Retina resolution framebuffers
     _glfw.hints.window.ns.retina = GLFW_TRUE;
+#endif
 }
 
 GLFWAPI void glfwWindowHint(int hint, int value)
@@ -361,12 +363,14 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_VISIBLE:
             _glfw.hints.window.visible = value ? GLFW_TRUE : GLFW_FALSE;
             return;
+#if defined(_GLFW_COCOA)
         case GLFW_COCOA_RETINA_FRAMEBUFFER:
             _glfw.hints.window.ns.retina = value ? GLFW_TRUE : GLFW_FALSE;
             return;
         case GLFW_COCOA_GRAPHICS_SWITCHING:
             _glfw.hints.context.nsgl.offline = value ? GLFW_TRUE : GLFW_FALSE;
             return;
+#endif
         case GLFW_CENTER_CURSOR:
             _glfw.hints.window.centerCursor = value ? GLFW_TRUE : GLFW_FALSE;
             return;
@@ -416,10 +420,13 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value)
 
     switch (hint)
     {
+#if defined(_GLFW_COCOA)
         case GLFW_COCOA_FRAME_NAME:
             strncpy(_glfw.hints.window.ns.frameName, value,
                     sizeof(_glfw.hints.window.ns.frameName) - 1);
             return;
+#endif
+#if defined(_GLFW_X11)
         case GLFW_X11_CLASS_NAME:
             strncpy(_glfw.hints.window.x11.className, value,
                     sizeof(_glfw.hints.window.x11.className) - 1);
@@ -428,6 +435,7 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value)
             strncpy(_glfw.hints.window.x11.instanceName, value,
                     sizeof(_glfw.hints.window.x11.instanceName) - 1);
             return;
+#endif
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint string 0x%08X", hint);

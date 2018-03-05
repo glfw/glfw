@@ -51,10 +51,12 @@ static GLFWerrorfun _glfwErrorCallback;
 static _GLFWinitconfig _glfwInitHints =
 {
     GLFW_TRUE,      // hat buttons
+#if defined(_GLFW_COCOA)
     {
         GLFW_TRUE,  // macOS menu bar
         GLFW_TRUE   // macOS bundle chdir
     }
+#endif
 };
 
 // Returns a generic string representation of the specified error
@@ -263,12 +265,14 @@ GLFWAPI void glfwInitHint(int hint, int value)
         case GLFW_JOYSTICK_HAT_BUTTONS:
             _glfwInitHints.hatButtons = value;
             return;
+#if defined(_GLFW_COCOA)
         case GLFW_COCOA_CHDIR_RESOURCES:
             _glfwInitHints.ns.chdir = value;
             return;
         case GLFW_COCOA_MENUBAR:
             _glfwInitHints.ns.menubar = value;
             return;
+#endif
     }
 
     _glfwInputError(GLFW_INVALID_ENUM,

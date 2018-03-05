@@ -242,10 +242,12 @@ struct _GLFWerror
 struct _GLFWinitconfig
 {
     GLFWbool      hatButtons;
+#if defined(_GLFW_COCOA)
     struct {
         GLFWbool  menubar;
         GLFWbool  chdir;
     } ns;
+#endif
 };
 
 // Window configuration
@@ -267,14 +269,18 @@ struct _GLFWwndconfig
     GLFWbool      floating;
     GLFWbool      maximized;
     GLFWbool      centerCursor;
+#if defined(_GLFW_COCOA)
     struct {
         GLFWbool  retina;
         char      frameName[256];
     } ns;
+#endif
+#if defined(_GLFW_X11)
     struct {
         char      className[256];
         char      instanceName[256];
     } x11;
+#endif
 };
 
 // Context configuration
@@ -296,9 +302,11 @@ struct _GLFWctxconfig
     int           robustness;
     int           release;
     _GLFWwindow*  share;
+#if defined(_GLFW_COCOA)
     struct {
         GLFWbool  offline;
     } nsgl;
+#endif
 };
 
 // Framebuffer configuration

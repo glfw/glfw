@@ -872,7 +872,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)loadMainMenu
 {
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 100800
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1080
     [[NSBundle mainBundle] loadNibNamed:@"MainMenu"
                                   owner:NSApp
                         topLevelObjects:&nibObjects];

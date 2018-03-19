@@ -280,6 +280,14 @@ if (_GLFW_WAYLAND)
 
     include(CheckIncludeFiles)
     check_include_files(xkbcommon/xkbcommon-compose.h HAVE_XKBCOMMON_COMPOSE_H)
+
+    if (NOT ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux"))
+        find_package(EpollShim)
+        if (EPOLLSHIM_FOUND)
+            list(APPEND glfw_INCLUDE_DIRS "${EPOLLSHIM_INCLUDE_DIRS}")
+            list(APPEND glfw_LIBRARIES "${EPOLLSHIM_LIBRARIES}")
+        endif()
+    endif()
 endif()
 
 #--------------------------------------------------------------------

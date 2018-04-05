@@ -341,6 +341,11 @@ struct _GLFWcontext
     int                 profile;
     int                 robustness;
     int                 release;
+#ifdef _GLFW_OPENGL_SINGLE_GLRC
+    // Specifies whether this _GLFWcontext has its own GLRC object.
+    // If not, it must not delete the GLRC object on destruction.
+    GLFWbool            customctx;
+#endif
 
     PFNGLGETSTRINGIPROC GetStringi;
     PFNGLGETINTEGERVPROC GetIntegerv;

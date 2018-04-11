@@ -17,7 +17,7 @@ are available but not yet officially supported.
 GLFW is licensed under the [zlib/libpng
 license](http://www.glfw.org/license.html).
 
-The latest stable release is version 3.2.1.
+The latest version is 3.2.1.
 
 See the [downloads](http://www.glfw.org/download.html) page for details and
 files, or fetch the `latest` branch, which always points to the latest stable
@@ -86,7 +86,7 @@ in the documentation for more information.
 
 ## Dependencies
 
-GLFW itself depends only on the headers and libraries for your window system.
+GLFW depends only on the headers and libraries of window system.
 
 The (experimental) Wayland backend also depends on the `extra-cmake-modules`
 package, which is used to generated Wayland protocol headers.
@@ -106,9 +106,9 @@ located in the `deps/` directory.
  - [stb\_image\_write](https://github.com/nothings/stb) for writing images to disk
  - [Vulkan headers](https://www.khronos.org/registry/vulkan/) for Vulkan tests
 
-The Vulkan example additionally requires the LunarG Vulkan SDK to be installed,
-or it will not be included in the build.  On macOS you need to provide the path
-to the SDK manually as it has no standard installation location.
+The Vulkan example requires the installation of LunarG Vulkan SDK,
+otherwise it will not be included in the build.  On macOS, the path
+to the SDK manually needs to be provided as it has no standard installation location.
 
 The documentation is generated with [Doxygen](http://doxygen.org/) if CMake can
 find that tool.

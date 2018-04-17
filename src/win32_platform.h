@@ -121,7 +121,7 @@ typedef struct
     BOOL fTransitionOnMaximized;
 } DWM_BLURBEHIND;
 #else
-#include <Dwmapi.h>
+ #include <dwmapi.h>
 #endif /*Windows Vista*/
 
 #ifndef DPI_ENUMS_DECLARED

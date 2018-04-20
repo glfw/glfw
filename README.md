@@ -178,6 +178,7 @@ information on what to include when reporting a bug.
 - Added `GLFW_OSMESA_CONTEXT_API` for creating OpenGL contexts with
   [OSMesa](https://www.mesa3d.org/osmesa.html) (#281)
 - Added `GenerateMappings.cmake` script for updating gamepad mappings
+- Added `GLFW_MULTI` key/button state for handling of double-click/multi-press
 - Made `glfwCreateWindowSurface` emit an error when the window has a context
   (#1194,#1205)
 - Deprecated window parameter of clipboard string functions
@@ -194,6 +195,7 @@ information on what to include when reporting a bug.
 - Bugfix: The scancode for synthetic key release events was always zero
 - Bugfix: The generated Doxyfile did not handle paths with spaces (#1081)
 - [Win32] Added system error strings to relevant GLFW error descriptions (#733)
+- [Win32] Added 'WM_NBUTTONDBLCLK' message support
 - [Win32] Moved to `WM_INPUT` for disabled cursor mode motion input (#125)
 - [Win32] Removed XInput circular deadzone from joystick axis data (#1045)
 - [Win32] Bugfix: Undecorated windows could not be iconified by the user (#861)
@@ -386,6 +388,7 @@ skills.
  - Jack Moffitt
  - Jeff Molofee
  - Pierre Morel
+ - Romain Moret
  - Jon Morton
  - Pierre Moulon
  - Martins Mozeiko

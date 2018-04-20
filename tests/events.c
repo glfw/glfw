@@ -203,6 +203,8 @@ static const char* get_action_name(int action)
             return "released";
         case GLFW_REPEAT:
             return "repeated";
+        case GLFW_MULTI:
+            return "multi";
     }
 
     return "caused unknown action";

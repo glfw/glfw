@@ -1024,6 +1024,24 @@ void _glfwPlatformTerminate(void)
         _glfw.x11.xinerama.handle = NULL;
     }
 
+    if (_glfw.x11.xrender.handle)
+    {
+        _glfw_dlclose(_glfw.x11.xrender.handle);
+        _glfw.x11.xrender.handle = NULL;
+    }
+
+    if (_glfw.x11.vidmode.handle)
+    {
+        _glfw_dlclose(_glfw.x11.vidmode.handle);
+        _glfw.x11.vidmode.handle = NULL;
+    }
+
+    if (_glfw.x11.xi.handle)
+    {
+        _glfw_dlclose(_glfw.x11.xi.handle);
+        _glfw.x11.xi.handle = NULL;
+    }
+
     // NOTE: These need to be unloaded after XCloseDisplay, as they register
     //       cleanup callbacks that get called by that function
     _glfwTerminateEGL();

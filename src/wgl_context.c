@@ -697,7 +697,23 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
     }
     else
     {
+#ifdef _GLFW_OPENGL_SINGLE_GLRC
+        if (share)
+        {
+            // Use shared context instead of creating a new one
+            window->context.wgl.handle = share;
+            window->context.customctx = GLFW_FALSE;
+        }
+        else
+        {
+            // Create new GL render context
+            window->context.wgl.handle = wglCreateContext(window->context.wgl.dc);
+            window->context.customctx = GLFW_TRUE;
+        }
+#else
         window->context.wgl.handle = wglCreateContext(window->context.wgl.dc);
+#endif
+
         if (!window->context.wgl.handle)
         {
             _glfwInputErrorWin32(GLFW_VERSION_UNAVAILABLE,
@@ -705,6 +721,7 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
             return GLFW_FALSE;
         }
 
+#ifndef _GLFW_OPENGL_SINGLE_GLRC
         if (share)
         {
             if (!wglShareLists(share, window->context.wgl.handle))
@@ -714,6 +731,7 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                 return GLFW_FALSE;
             }
         }
+#endif
     }
 
     window->context.makeCurrent = makeContextCurrentWGL;

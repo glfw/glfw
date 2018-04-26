@@ -506,7 +506,7 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
     if(share)
     {
         // Use shared context instead of creating a new one
-        window->context.wgl.handle = share;
+        window->context.glx.handle = share;
         window->context.customctx = GLFW_FALSE;
     }
     else

@@ -455,6 +455,7 @@ int main(int argc, char* argv[])
         glfwPollEvents();
     }
 
+    glfwTerminate();
     exit(EXIT_SUCCESS);
 }
 

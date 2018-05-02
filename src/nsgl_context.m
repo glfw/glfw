@@ -30,7 +30,12 @@
 static void makeContextCurrentNSGL(_GLFWwindow* window)
 {
     if (window)
+    {
+#ifdef _GLFW_OPENGL_SINGLE_GLRC
+        [window->context.nsgl.object setView:window->ns.view];
+#endif
         [window->context.nsgl.object makeCurrentContext];
+    }
     else
         [NSOpenGLContext clearCurrentContext];
 
@@ -79,7 +84,12 @@ static void destroyContextNSGL(_GLFWwindow* window)
     [window->context.nsgl.pixelFormat release];
     window->context.nsgl.pixelFormat = nil;
 
+#ifdef _GLFW_OPENGL_SINGLE_GLRC
+    if (window->context.customctx)
+        [window->context.nsgl.object release];
+#else
     [window->context.nsgl.object release];
+#endif
     window->context.nsgl.object = nil;
 }
 
@@ -281,6 +291,22 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
+#ifdef _GLFW_OPENGL_SINGLE_GLRC
+    if (ctxconfig->share)
+    {
+        // Use shared context instead of creating a new one
+        window->context.nsgl.object = ctxconfig->share->context.nsgl.object;
+        window->context.customctx = GLFW_FALSE;
+    }
+    else
+    {
+        // Create new GL context
+        window->context.nsgl.object =
+            [[NSOpenGLContext alloc] initWithFormat:window->context.nsgl.pixelFormat
+                                       shareContext:nil];
+        window->context.customctx = GLFW_TRUE;
+    }
+#else
     NSOpenGLContext* share = NULL;
 
     if (ctxconfig->share)
@@ -289,13 +315,15 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     window->context.nsgl.object =
         [[NSOpenGLContext alloc] initWithFormat:window->context.nsgl.pixelFormat
                                    shareContext:share];
+#endif
+
     if (window->context.nsgl.object == nil)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "NSGL: Failed to create OpenGL context");
         return GLFW_FALSE;
     }
-
+    
     if (fbconfig->transparent)
     {
         GLint opaque = 0;

@@ -323,7 +323,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                         "NSGL: Failed to create OpenGL context");
         return GLFW_FALSE;
     }
-    
+
     if (fbconfig->transparent)
     {
         GLint opaque = 0;

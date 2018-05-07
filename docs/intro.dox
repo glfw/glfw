@@ -365,10 +365,10 @@ allow calls from any thread in future releases.
 
 @subsection compatibility Version compatibility
 
-GLFW guarantees source and binary backward compatibility with earlier minor
-versions of the API.  This means that you can drop in a newer version of the
-library and existing programs will continue to compile and existing binaries
-will continue to run.
+GLFW uses [Semantic Versioning](https://semver.org/).  This guarantees source
+and binary backward compatibility with earlier minor versions of the API.  This
+means that you can drop in a newer version of the library and existing programs
+will continue to compile and existing binaries will continue to run.
 
 Once a function or constant has been added, the signature of that function or
 value of that constant will remain unchanged until the next major version of

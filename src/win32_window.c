@@ -235,26 +235,6 @@ static void centerCursor(_GLFWwindow* window)
     _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
 }
 
-// Returns whether the cursor is in the client area of the specified window
-//
-static GLFWbool cursorInClientArea(_GLFWwindow* window)
-{
-    RECT area;
-    POINT pos;
-
-    if (!GetCursorPos(&pos))
-        return GLFW_FALSE;
-
-    if (WindowFromPoint(pos) != window->win32.handle)
-        return GLFW_FALSE;
-
-    GetClientRect(window->win32.handle, &area);
-    ClientToScreen(window->win32.handle, (POINT*) &area.left);
-    ClientToScreen(window->win32.handle, (POINT*) &area.right);
-
-    return PtInRect(&area, pos);
-}
-
 // Updates the cursor image according to its cursor mode
 //
 static void updateCursorImage(_GLFWwindow* window)
@@ -284,6 +264,67 @@ static void updateClipRect(_GLFWwindow* window)
     }
     else
         ClipCursor(NULL);
+}
+
+// Apply disabled cursor mode to a focused window
+//
+static void disableCursor(_GLFWwindow* window)
+{
+    const RAWINPUTDEVICE rid = { 0x01, 0x02, 0, window->win32.handle };
+
+    _glfw.win32.disabledCursorWindow = window;
+    _glfwPlatformGetCursorPos(window,
+                              &_glfw.win32.restoreCursorPosX,
+                              &_glfw.win32.restoreCursorPosY);
+    updateCursorImage(window);
+    centerCursor(window);
+    updateClipRect(window);
+
+    if (!RegisterRawInputDevices(&rid, 1, sizeof(rid)))
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to register raw input device");
+    }
+}
+
+// Exit disabled cursor mode for the specified window
+//
+static void enableCursor(_GLFWwindow* window)
+{
+    const RAWINPUTDEVICE rid = { 0x01, 0x02, RIDEV_REMOVE, NULL };
+
+    _glfw.win32.disabledCursorWindow = NULL;
+    updateClipRect(NULL);
+    _glfwPlatformSetCursorPos(window,
+                              _glfw.win32.restoreCursorPosX,
+                              _glfw.win32.restoreCursorPosY);
+    updateCursorImage(window);
+
+    if (!RegisterRawInputDevices(&rid, 1, sizeof(rid)))
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to remove raw input device");
+    }
+}
+
+// Returns whether the cursor is in the client area of the specified window
+//
+static GLFWbool cursorInClientArea(_GLFWwindow* window)
+{
+    RECT area;
+    POINT pos;
+
+    if (!GetCursorPos(&pos))
+        return GLFW_FALSE;
+
+    if (WindowFromPoint(pos) != window->win32.handle)
+        return GLFW_FALSE;
+
+    GetClientRect(window->win32.handle, &area);
+    ClientToScreen(window->win32.handle, (POINT*) &area.left);
+    ClientToScreen(window->win32.handle, (POINT*) &area.right);
+
+    return PtInRect(&area, pos);
 }
 
 // Update native window styles to match attributes
@@ -471,30 +512,29 @@ static int translateKey(WPARAM wParam, LPARAM lParam)
     return _glfw.win32.keycodes[HIWORD(lParam) & 0x1FF];
 }
 
+static void fitToMonitor(_GLFWwindow* window)
+{
+    MONITORINFO mi = { sizeof(mi) };
+    GetMonitorInfo(window->monitor->win32.handle, &mi);
+    SetWindowPos(window->win32.handle, HWND_TOPMOST,
+                 mi.rcMonitor.left,
+                 mi.rcMonitor.top,
+                 mi.rcMonitor.right - mi.rcMonitor.left,
+                 mi.rcMonitor.bottom - mi.rcMonitor.top,
+                 SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOCOPYBITS);
+}
+
 // Make the specified window and its video mode active on its monitor
 //
-static GLFWbool acquireMonitor(_GLFWwindow* window)
+static void acquireMonitor(_GLFWwindow* window)
 {
-    GLFWvidmode mode;
-    GLFWbool status;
-    int xpos, ypos;
-
     if (!_glfw.win32.acquiredMonitorCount)
         SetThreadExecutionState(ES_CONTINUOUS | ES_DISPLAY_REQUIRED);
     if (!window->monitor->window)
         _glfw.win32.acquiredMonitorCount++;
 
-    status = _glfwSetVideoModeWin32(window->monitor, &window->videoMode);
-
-    _glfwPlatformGetVideoMode(window->monitor, &mode);
-    _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
-
-    SetWindowPos(window->win32.handle, HWND_TOPMOST,
-                 xpos, ypos, mode.width, mode.height,
-                 SWP_NOACTIVATE | SWP_NOCOPYBITS);
-
+    _glfwSetVideoModeWin32(window->monitor, &window->videoMode);
     _glfwInputMonitorWindow(window->monitor, window);
-    return status;
 }
 
 // Remove the window and restore the original video mode
@@ -576,7 +616,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (lParam == 0 && window->win32.frameAction)
             {
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                    _glfwPlatformSetCursorMode(window, GLFW_CURSOR_DISABLED);
+                    disableCursor(window);
 
                 window->win32.frameAction = GLFW_FALSE;
             }
@@ -594,7 +634,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 break;
 
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_DISABLED);
+                disableCursor(window);
 
             return 0;
         }
@@ -602,7 +642,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_KILLFOCUS:
         {
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_NORMAL);
+                enableCursor(window);
 
             if (window->monitor && window->autoIconify)
                 _glfwPlatformIconifyWindow(window);
@@ -858,10 +898,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_ENTERSIZEMOVE:
         case WM_ENTERMENULOOP:
         {
-            // HACK: Postpone cursor disabling while the user is moving or
-            //       resizing the window or using the menu
+            // HACK: Enable the cursor while the user is moving or
+            //       resizing the window or using the window menu
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_NORMAL);
+                enableCursor(window);
 
             break;
         }
@@ -872,7 +912,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             // HACK: Disable the cursor once the user is done moving or
             //       resizing the window or using the menu
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                _glfwPlatformSetCursorMode(window, GLFW_CURSOR_DISABLED);
+                disableCursor(window);
 
             break;
         }
@@ -901,7 +941,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 if (iconified)
                     releaseMonitor(window);
                 else
+                {
                     acquireMonitor(window);
+                    fitToMonitor(window);
+                }
             }
 
             window->win32.iconified = iconified;
@@ -994,6 +1037,14 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (window->win32.transparent)
                 updateFramebufferTransparency(window);
             return 0;
+        }
+
+        case WM_DPICHANGED:
+        {
+            const float xscale = HIWORD(wParam) / 96.f;
+            const float yscale = LOWORD(wParam) / 96.f;
+            _glfwInputWindowContentScale(window, xscale, yscale);
+            break;
         }
 
         case WM_SETCURSOR:
@@ -1232,11 +1283,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     {
         _glfwPlatformShowWindow(window);
         _glfwPlatformFocusWindow(window);
-        if (!acquireMonitor(window))
-            return GLFW_FALSE;
-
-        if (wndconfig->centerCursor)
-            centerCursor(window);
+        acquireMonitor(window);
+        fitToMonitor(window);
     }
 
     return GLFW_TRUE;
@@ -1352,7 +1400,10 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     if (window->monitor)
     {
         if (window->monitor->window == window)
+        {
             acquireMonitor(window);
+            fitToMonitor(window);
+        }
     }
     else
     {
@@ -1451,7 +1502,7 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
-    ShowWindow(window->win32.handle, SW_SHOW);
+    ShowWindow(window->win32.handle, SW_SHOWNA);
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)
@@ -1482,7 +1533,10 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
         if (monitor)
         {
             if (monitor->window == window)
+            {
                 acquireMonitor(window);
+                fitToMonitor(window);
+            }
         }
         else
         {
@@ -1505,20 +1559,27 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
 
     if (monitor)
     {
+        MONITORINFO mi = { sizeof(mi) };
+        UINT flags = SWP_SHOWWINDOW | SWP_NOACTIVATE | SWP_NOCOPYBITS;
+
         if (window->decorated)
         {
             DWORD style = GetWindowLongW(window->win32.handle, GWL_STYLE);
-            UINT flags = SWP_FRAMECHANGED | SWP_SHOWWINDOW |
-                         SWP_NOACTIVATE | SWP_NOCOPYBITS |
-                         SWP_NOZORDER | SWP_NOMOVE | SWP_NOSIZE;
-
             style &= ~WS_OVERLAPPEDWINDOW;
             style |= getWindowStyle(window);
             SetWindowLongW(window->win32.handle, GWL_STYLE, style);
-            SetWindowPos(window->win32.handle, HWND_TOPMOST, 0, 0, 0, 0, flags);
+            flags |= SWP_FRAMECHANGED;
         }
 
         acquireMonitor(window);
+
+        GetMonitorInfo(window->monitor->win32.handle, &mi);
+        SetWindowPos(window->win32.handle, HWND_TOPMOST,
+                     mi.rcMonitor.left,
+                     mi.rcMonitor.top,
+                     mi.rcMonitor.right - mi.rcMonitor.left,
+                     mi.rcMonitor.bottom - mi.rcMonitor.top,
+                     flags);
     }
     else
     {
@@ -1568,6 +1629,11 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
 int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 {
     return IsZoomed(window->win32.handle);
+}
+
+int _glfwPlatformWindowHovered(_GLFWwindow* window)
+{
+    return cursorInClientArea(window);
 }
 
 int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
@@ -1747,39 +1813,12 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
     if (mode == GLFW_CURSOR_DISABLED)
     {
-        const RAWINPUTDEVICE rid = { 0x01, 0x02, 0, window->win32.handle };
-
-        _glfw.win32.disabledCursorWindow = window;
-        _glfwPlatformGetCursorPos(window,
-                                  &_glfw.win32.restoreCursorPosX,
-                                  &_glfw.win32.restoreCursorPosY);
-        centerCursor(window);
-        updateClipRect(window);
-
-        if (!RegisterRawInputDevices(&rid, 1, sizeof(rid)))
-        {
-            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                                 "Win32: Failed to register raw input device");
-        }
+        if (_glfwPlatformWindowFocused(window))
+            disableCursor(window);
     }
     else if (_glfw.win32.disabledCursorWindow == window)
-    {
-        const RAWINPUTDEVICE rid = { 0x01, 0x02, RIDEV_REMOVE, NULL };
-
-        _glfw.win32.disabledCursorWindow = NULL;
-        updateClipRect(NULL);
-        _glfwPlatformSetCursorPos(window,
-                                  _glfw.win32.restoreCursorPosX,
-                                  _glfw.win32.restoreCursorPosY);
-
-        if (!RegisterRawInputDevices(&rid, 1, sizeof(rid)))
-        {
-            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                                 "Win32: Failed to remove raw input device");
-        }
-    }
-
-    if (cursorInClientArea(window))
+        enableCursor(window);
+    else if (cursorInClientArea(window))
         updateCursorImage(window);
 }
 

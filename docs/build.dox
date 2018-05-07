@@ -226,7 +226,7 @@ If OpenGL is found, the `OPENGL_FOUND` variable is true and the
 `OPENGL_INCLUDE_DIR` and `OPENGL_gl_LIBRARY` cache variables can be used.
 
 @code{.cmake}
-target_include_directories(myapp ${OPENGL_INCLUDE_DIR})
+target_include_directories(myapp PUBLIC ${OPENGL_INCLUDE_DIR})
 target_link_libraries(myapp ${OPENGL_gl_LIBRARY})
 @endcode
 
@@ -279,7 +279,7 @@ If OpenGL is found, the `OPENGL_FOUND` variable is true and the
 `OPENGL_INCLUDE_DIR` and `OPENGL_gl_LIBRARY` cache variables can be used.
 
 @code{.cmake}
-target_include_directories(myapp ${OPENGL_INCLUDE_DIR})
+target_include_directories(myapp PUBLIC ${OPENGL_INCLUDE_DIR})
 target_link_libraries(myapp ${OPENGL_gl_LIBRARY})
 @endcode
 

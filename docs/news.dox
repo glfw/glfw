@@ -64,6 +64,9 @@ GLFW now supports querying the window and monitor content scale, i.e. the ratio
 between the current DPI and the platform's default DPI, with @ref
 glfwGetWindowContentScale and @ref glfwGetMonitorContentScale.
 
+Changes of the content scale of a window can be received with the window content
+scale callback, set with @ref glfwSetWindowCloseCallback.
+
 @see @ref window_scale
 
 
@@ -113,6 +116,13 @@ full screen windows with the [GLFW_CENTER_CURSOR](@ref GLFW_CENTER_CURSOR_hint)
 window hint.  It is enabled by default.
 
 
+@subsection news_33_hover Mouse cursor hover window attribute
+
+GLFW now supports polling whether the cursor is hovering over the window client
+area with the [GLFW_HOVERED](@ref GLFW_HOVERED_attrib) window attribute.  This
+attribute corresponds to the [cursor enter/leave](@ref cursor_enter) event.
+
+
 @subsection news_33_rawmotion Support for raw mouse motion
 
 GLFW now uses raw (unscaled and unaccelerated) mouse motion in disabled cursor
@@ -122,7 +132,7 @@ mode on platforms where this is available, specifically Windows and X11.
 @subsection news_33_moltenvk Support for Vulkan on macOS via MoltenVK
 
 GLFW now supports the `VK_MVK_macos_surface` window surface creation extension
-provided by [MoltenVK](https://moltengl.com/moltenvk/).
+provided by MoltenVK in the [LunarG Vulkan SDK](https://vulkan.lunarg.com/).
 
 @see @ref vulkan_guide
 

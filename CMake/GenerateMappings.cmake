@@ -1,7 +1,7 @@
 # Usage:
 # cmake -P GenerateMappings.cmake <path/to/mappings.h.in> <path/to/mappings.h>
 
-set(source_url "https://raw.githubusercontent.com/gabomdq/SDL_GameControllerDB/master/gamecontrollerdb_204.txt")
+set(source_url "https://raw.githubusercontent.com/gabomdq/SDL_GameControllerDB/master/gamecontrollerdb.txt")
 set(source_path "${CMAKE_CURRENT_BINARY_DIR}/gamecontrollerdb.txt")
 set(template_path "${CMAKE_ARGV3}")
 set(target_path "${CMAKE_ARGV4}")

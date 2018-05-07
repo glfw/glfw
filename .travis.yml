@@ -14,15 +14,16 @@ addons:
             - libxinerama-dev
             - libxcursor-dev
             - libxi-dev
-env:
-    global:
-        - CFLAGS=-Werror
 matrix:
     include:
         - os: linux
-          env: BUILD_SHARED_LIBS=ON
+          env:
+              - BUILD_SHARED_LIBS=ON
+              - CFLAGS=-Werror
         - os: linux
-          env: BUILD_SHARED_LIBS=OFF
+          env:
+              - BUILD_SHARED_LIBS=OFF
+              - CFLAGS=-Werror
         - os: linux
           sudo: required
           addons:
@@ -34,6 +35,7 @@ matrix:
           env:
               - USE_WAYLAND=ON
               - BUILD_SHARED_LIBS=ON
+              - CFLAGS=-Werror
         - os: linux
           sudo: required
           addons:
@@ -45,10 +47,15 @@ matrix:
           env:
               - USE_WAYLAND=ON
               - BUILD_SHARED_LIBS=OFF
+              - CFLAGS=-Werror
         - os: osx
-          env: BUILD_SHARED_LIBS=ON
+          env:
+              - BUILD_SHARED_LIBS=ON
+              - CFLAGS=-Werror
         - os: osx
-          env: BUILD_SHARED_LIBS=OFF
+          env:
+              - BUILD_SHARED_LIBS=OFF
+              - CFLAGS=-Werror
 script:
     - if grep -Inr '\s$' src include docs tests examples CMake *.md .gitattributes .gitignore; then echo Trailing whitespace found, aborting.; exit 1; fi
     - mkdir build
@@ -58,7 +65,7 @@ script:
           sudo dpkg -i extra-cmake-modules_5.38.0a-0ubuntu1_amd64.deb;
           git clone git://anongit.freedesktop.org/wayland/wayland-protocols;
           pushd wayland-protocols;
-          git checkout 1.6 && ./autogen.sh --prefix=/usr && make && sudo make install;
+          git checkout 1.12 && ./autogen.sh --prefix=/usr && make && sudo make install;
           popd;
       fi
     - cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} -DGLFW_USE_WAYLAND=${USE_WAYLAND} ..

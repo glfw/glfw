@@ -695,6 +695,23 @@ On systems where each monitors can have its own content scale, the window
 content scale will depend on which monitor the system considers the window to be
 on.
 
+If you wish to be notified when the content scale of a window changes, whether
+because of a system setting change or because it was moved to a monitor with
+a different scale, set a content scale callback.
+
+@code
+glfwSetWindowContentScaleCallback(window, window_content_scale_callback);
+@endcode
+
+The callback function receives the new content scale of the window.
+
+@code
+void window_content_scale_callback(GLFWwindow* window, float xscale, float yscale)
+{
+    set_interface_scale(xscale, yscale);
+}
+@endcode
+
 
 @subsection window_sizelimits Window size limits
 
@@ -1202,6 +1219,11 @@ See @ref window_iconify for details.
 @anchor GLFW_MAXIMIZED_attrib
 __GLFW_MAXIMIZED__ indicates whether the specified window is maximized.  See
 @ref window_maximize for details.
+
+@anchor GLFW_HOVERED_attrib
+__GLFW_HOVERED__ indicates whether the cursor is currently directly over the
+client area of the window, with no other windows between.  See @ref cursor_enter
+for details.
 
 @anchor GLFW_VISIBLE_attrib
 __GLFW_VISIBLE__ indicates whether the specified window is visible.  See @ref

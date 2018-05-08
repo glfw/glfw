@@ -33,6 +33,7 @@ static void makeContextCurrentNSGL(_GLFWwindow* window)
     {
 #ifdef _GLFW_OPENGL_SINGLE_GLRC
         [window->context.nsgl.object setView:window->ns.view];
+        [window->context.nsgl.object update];
 #endif
         [window->context.nsgl.object makeCurrentContext];
     }

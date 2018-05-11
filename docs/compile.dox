@@ -52,9 +52,9 @@ example, Cygwin has the `mingw64-i686-gcc` and `mingw64-x86_64-gcc` packages
 for 32- and 64-bit version of MinGW-w64, while Debian GNU/Linux and derivatives
 like Ubuntu have the `mingw-w64` package for both.
 
-GLFW has CMake toolchain files in the `CMake/` directory that allow for easy
-cross-compilation of Windows binaries.  To use these files you need to add a
-special parameter when generating the project files or makefiles:
+GLFW has CMake toolchain files in the `CMake/` directory that set up
+cross-compilation of Windows binaries.  To use these files you add an option
+when running `cmake` to generate the project files or makefiles:
 
 @code{.sh}
 cmake -DCMAKE_TOOLCHAIN_FILE=<toolchain-file> .
@@ -286,8 +286,8 @@ _GLFW_GLESV2_LIBRARY.  Otherwise, GLFW will use the built-in default names.
 
 For the EGL context creation API, the following options are available:
 
- - @b _GLFW_USE_EGLPLATFORM_H to use `EGL/eglplatform.h` for native handle
-   definitions (fallback)
+ - @b _GLFW_USE_EGLPLATFORM_H to use an existing `EGL/eglplatform.h` header file
+   for native handle types (fallback)
 
 @note None of the @ref build_macros may be defined during the compilation of
 GLFW.  If you define any of these in your build files, make sure they are not

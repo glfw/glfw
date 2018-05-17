@@ -201,6 +201,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->decorated   = wndconfig.decorated;
     window->autoIconify = wndconfig.autoIconify;
     window->floating    = wndconfig.floating;
+    window->focusOnShow = wndconfig.focusOnShow;
     window->cursorMode  = GLFW_CURSOR_NORMAL;
 
     window->minwidth    = GLFW_DONT_CARE;
@@ -267,6 +268,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.window.focused      = GLFW_TRUE;
     _glfw.hints.window.autoIconify  = GLFW_TRUE;
     _glfw.hints.window.centerCursor = GLFW_TRUE;
+    _glfw.hints.window.focusOnShow  = GLFW_TRUE;
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
     // double buffered
@@ -370,6 +372,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_CENTER_CURSOR:
             _glfw.hints.window.centerCursor = value ? GLFW_TRUE : GLFW_FALSE;
             return;
+		case GLFW_FOCUS_ON_SHOW:
+            _glfw.hints.window.focusOnShow = value ? GLFW_TRUE : GLFW_FALSE;
+			return;
         case GLFW_CLIENT_API:
             _glfw.hints.context.client = value;
             return;
@@ -755,7 +760,9 @@ GLFWAPI void glfwShowWindow(GLFWwindow* handle)
         return;
 
     _glfwPlatformShowWindow(window);
-    _glfwPlatformFocusWindow(window);
+
+	if(window->focusOnShow)
+        _glfwPlatformFocusWindow(window);
 }
 
 GLFWAPI void glfwRequestWindowAttention(GLFWwindow* handle)
@@ -810,6 +817,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return _glfwPlatformWindowMaximized(window);
         case GLFW_HOVERED:
             return _glfwPlatformWindowHovered(window);
+        case GLFW_FOCUS_ON_SHOW:
+            return window->focusOnShow;
         case GLFW_TRANSPARENT_FRAMEBUFFER:
             return _glfwPlatformFramebufferTransparent(window);
         case GLFW_RESIZABLE:

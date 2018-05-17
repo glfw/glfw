@@ -59,7 +59,7 @@ static void usage(void)
     printf("Usage: windows [-h] [-b] [-f] \n");
     printf("Options:\n");
     printf("  -b create decorated windows\n");
-	printf("  -f set focus on show off for all but first window\n");
+    printf("  -f set focus on show off for all but first window\n");
     printf("  -h show this help\n");
 }
 
@@ -127,7 +127,7 @@ int main(int argc, char** argv)
     for (i = 0;  i < 4;  i++)
     {
         int left, top, right, bottom;
-		if(i)
+        if(i)
             glfwWindowHint(GLFW_FOCUS_ON_SHOW, focusOnShow);
 
         windows[i] = glfwCreateWindow(200, 200, titles[i], NULL, NULL);

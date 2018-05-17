@@ -372,9 +372,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_CENTER_CURSOR:
             _glfw.hints.window.centerCursor = value ? GLFW_TRUE : GLFW_FALSE;
             return;
-		case GLFW_FOCUS_ON_SHOW:
+        case GLFW_FOCUS_ON_SHOW:
             _glfw.hints.window.focusOnShow = value ? GLFW_TRUE : GLFW_FALSE;
-			return;
+            return;
         case GLFW_CLIENT_API:
             _glfw.hints.context.client = value;
             return;
@@ -761,7 +761,7 @@ GLFWAPI void glfwShowWindow(GLFWwindow* handle)
 
     _glfwPlatformShowWindow(window);
 
-	if(window->focusOnShow)
+    if(window->focusOnShow)
         _glfwPlatformFocusWindow(window);
 }
 

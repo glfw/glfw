@@ -24,9 +24,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_cocoa_platform_h_
-#define _glfw3_cocoa_platform_h_
-
 #include <stdint.h>
 #include <dlfcn.h>
 
@@ -51,10 +48,11 @@ typedef struct VkMacOSSurfaceCreateInfoMVK
 
 typedef VkResult (APIENTRY *PFN_vkCreateMacOSSurfaceMVK)(VkInstance,const VkMacOSSurfaceCreateInfoMVK*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 
-#include "posix_tls.h"
+#include "posix_thread.h"
 #include "cocoa_joystick.h"
 #include "nsgl_context.h"
 #include "egl_context.h"
+#include "osmesa_context.h"
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)
@@ -65,7 +63,7 @@ typedef VkResult (APIENTRY *PFN_vkCreateMacOSSurfaceMVK)(VkInstance,const VkMacO
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  ns
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS ns
-#define _GLFW_PLATFORM_LIBRARY_TIME_STATE   _GLFWtimeNS    ns_time
+#define _GLFW_PLATFORM_LIBRARY_TIMER_STATE  _GLFWtimerNS   ns
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorNS ns
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorNS  ns
 
@@ -90,6 +88,11 @@ typedef struct _GLFWwindowNS
 
     GLFWbool        maximized;
 
+    // Cached window properties to filter out duplicate events
+    int             width, height;
+    int             fbWidth, fbHeight;
+    float           xscale, yscale;
+
     // The total sum of the distances the cursor has been warped
     // since the last cursor motion event was processed
     // This is kept to counteract Cocoa doing the same internally
@@ -104,7 +107,7 @@ typedef struct _GLFWlibraryNS
     CGEventSourceRef    eventSource;
     id                  delegate;
     id                  autoreleasePool;
-    id                  cursor;
+    GLFWbool            cursorHidden;
     TISInputSourceRef   inputSource;
     IOHIDManagerRef     hidManager;
     id                  unicodeData;
@@ -137,6 +140,7 @@ typedef struct _GLFWmonitorNS
     CGDirectDisplayID   displayID;
     CGDisplayModeRef    previousMode;
     uint32_t            unitNumber;
+    id                  screen;
 
 } _GLFWmonitorNS;
 
@@ -150,17 +154,16 @@ typedef struct _GLFWcursorNS
 
 // Cocoa-specific global timer data
 //
-typedef struct _GLFWtimeNS
+typedef struct _GLFWtimerNS
 {
     uint64_t        frequency;
 
-} _GLFWtimeNS;
+} _GLFWtimerNS;
 
 
 void _glfwInitTimerNS(void);
 
 void _glfwPollMonitorsNS(void);
-GLFWbool _glfwSetVideoModeNS(_GLFWmonitor* monitor, const GLFWvidmode* desired);
+void _glfwSetVideoModeNS(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoModeNS(_GLFWmonitor* monitor);
 
-#endif // _glfw3_cocoa_platform_h_

@@ -13,7 +13,7 @@ build applications that use GLFW, see @ref build_guide.
 GLFW uses [CMake](http://www.cmake.org/) to generate project files or makefiles
 for a particular development environment.  If you are on a Unix-like system such
 as Linux or FreeBSD or have a package system like Fink, MacPorts, Cygwin or
-Homebrew, you can simply install its CMake package.  If not, you can download
+Homebrew, you can install its CMake package.  If not, you can download
 installers for Windows and macOS from the
 [CMake website](http://www.cmake.org/).
 
@@ -33,9 +33,9 @@ below.
 
 @subsubsection compile_deps_msvc Dependencies for Visual C++ on Windows
 
-The Microsoft Platform SDK that is installed along with Visual C++ already
-contains all the necessary headers, link libraries and tools except for CMake.
-Move on to @ref compile_generate.
+The Windows SDK bundled with Visual C++ already contains all the necessary
+headers, link libraries and tools except for CMake.  Move on to @ref
+compile_generate.
 
 
 @subsubsection compile_deps_mingw Dependencies for MinGW or MinGW-w64 on Windows
@@ -92,6 +92,19 @@ To compile GLFW for X11, you need to have the X11 packages installed, as well as
 the basic development tools like GCC and make.  For example, on Ubuntu and other
 distributions based on Debian GNU/Linux, you need to install the `xorg-dev`
 package, which pulls in all X.org header packages.
+
+Once you have installed the necessary packages, move on to @ref
+compile_generate.
+
+
+@subsubsection compile_deps_wayland Dependencies for Linux and Wayland
+
+To compile GLFW for Wayland, you need to have the Wayland packages installed,
+as well as the basic development tools like GCC and make.  For example, on
+Ubuntu and other distributions based on Debian GNU/Linux, you need to install
+the `libwayland-dev` package, which contains all Wayland headers and pulls in
+wayland-scanner, as well as the `wayland-protocols` and `extra-cmake-modules`
+packages.
 
 Once you have installed the necessary packages, move on to @ref
 compile_generate.
@@ -219,17 +232,6 @@ __GLFW_VULKAN_STATIC__ determines whether to use the Vulkan loader linked
 statically into the application.
 
 
-@subsubsection compile_options_osx macOS specific CMake options
-
-@anchor GLFW_USE_CHDIR
-__GLFW_USE_CHDIR__ determines whether @ref glfwInit changes the current
-directory of bundled applications to the `Contents/Resources` directory.
-
-@anchor GLFW_USE_MENUBAR
-__GLFW_USE_MENUBAR__ determines whether the first call to @ref glfwCreateWindow
-sets up a minimal menu bar.
-
-
 @subsubsection compile_options_win32 Windows specific CMake options
 
 @anchor USE_MSVC_RUNTIME_LIBRARY_DLL
@@ -276,18 +278,16 @@ If you are linking the Vulkan loader statically into your application then you
 must also define @b _GLFW_VULKAN_STATIC.  Otherwise, GLFW will attempt to use the
 external version.
 
+If you are using a custom name for the Vulkan, EGL, GLX, OSMesa, OpenGL, GLESv1
+or GLESv2 library, you can override the default names by defining those you need
+of @b _GLFW_VULKAN_LIBRARY, @b _GLFW_EGL_LIBRARY, @b _GLFW_GLX_LIBRARY, @b
+_GLFW_OSMESA_LIBRARY, @b _GLFW_OPENGL_LIBRARY, @b _GLFW_GLESV1_LIBRARY and @b
+_GLFW_GLESV2_LIBRARY.  Otherwise, GLFW will use the built-in default names.
+
 For the EGL context creation API, the following options are available:
 
  - @b _GLFW_USE_EGLPLATFORM_H to use `EGL/eglplatform.h` for native handle
    definitions (fallback)
-
-If you are using the Cocoa window creation API, the following options are
-available:
-
- - @b _GLFW_USE_CHDIR to `chdir` to the `Resources` subdirectory of the
-   application bundle during @ref glfwInit (recommended)
- - @b _GLFW_USE_MENUBAR to create and populate the menu bar when the first window
-   is created (recommended)
 
 @note None of the @ref build_macros may be defined during the compilation of
 GLFW.  If you define any of these in your build files, make sure they are not

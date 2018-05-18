@@ -36,25 +36,26 @@ static void makeContextCurrentOSMesa(_GLFWwindow* window)
 {
     if (window)
     {
+        int width, height;
+        _glfwPlatformGetFramebufferSize(window, &width, &height);
+
         // Check to see if we need to allocate a new buffer
         if ((window->context.osmesa.buffer == NULL) ||
-            (window->osmesa.width != window->context.osmesa.width) ||
-            (window->osmesa.height != window->context.osmesa.height))
+            (width != window->context.osmesa.width) ||
+            (height != window->context.osmesa.height))
         {
             free(window->context.osmesa.buffer);
 
             // Allocate the new buffer (width * height * 8-bit RGBA)
-            window->context.osmesa.buffer =
-                calloc(4, window->osmesa.width * window->osmesa.height);
-
-            window->context.osmesa.width = window->osmesa.width;
-            window->context.osmesa.height = window->osmesa.height;
+            window->context.osmesa.buffer = calloc(4, width * height);
+            window->context.osmesa.width  = width;
+            window->context.osmesa.height = height;
         }
 
         if (!OSMesaMakeCurrent(window->context.osmesa.handle,
-                            window->context.osmesa.buffer,
-                            GL_UNSIGNED_BYTE,
-                            window->osmesa.width, window->osmesa.height))
+                               window->context.osmesa.buffer,
+                               GL_UNSIGNED_BYTE,
+                               width, height))
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "OSMesa: Failed to make context current");
@@ -62,7 +63,7 @@ static void makeContextCurrentOSMesa(_GLFWwindow* window)
         }
     }
 
-    _glfwPlatformSetCurrentContext(window);
+    _glfwPlatformSetTls(&_glfw.contextSlot, window);
 }
 
 static GLFWglproc getProcAddressOSMesa(const char* procname)
@@ -112,7 +113,9 @@ GLFWbool _glfwInitOSMesa(void)
     int i;
     const char* sonames[] =
     {
-#if defined(_WIN32)
+#if defined(_GLFW_OSMESA_LIBRARY)
+        _GLFW_OSMESA_LIBRARY,
+#elif defined(_WIN32)
         "libOSMesa.dll",
         "OSMesa.dll",
 #elif defined(__APPLE__)
@@ -183,11 +186,11 @@ void _glfwTerminateOSMesa(void)
     }
 }
 
-#define setAttrib(attribName, attribValue) \
+#define setAttrib(a, v) \
 { \
-    attribs[index++] = attribName; \
-    attribs[index++] = attribValue; \
-    assert((size_t) index < sizeof(attribs) / sizeof(attribs[0])); \
+    assert((size_t) (index + 1) < sizeof(attribs) / sizeof(attribs[0])); \
+    attribs[index++] = a; \
+    attribs[index++] = v; \
 }
 
 GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,

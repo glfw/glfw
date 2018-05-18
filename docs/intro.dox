@@ -1,7 +1,7 @@
-/*! 
+/*!
 
 @page intro_guide Introduction to the API
- 
+
 @tableofcontents
 
 This guide introduces the basic concepts of GLFW and describes initialization,
@@ -30,7 +30,9 @@ successfully initialized, and only from the main thread.
 
  - @ref glfwGetVersion
  - @ref glfwGetVersionString
+ - @ref glfwGetError
  - @ref glfwSetErrorCallback
+ - @ref glfwInitHint
  - @ref glfwInit
  - @ref glfwTerminate
 
@@ -52,13 +54,61 @@ if (!glfwInit())
 
 If any part of initialization fails, any parts that succeeded are terminated as
 if @ref glfwTerminate had been called.  The library only needs to be initialized
-once and additional calls to an already initialized library will simply return
+once and additional calls to an already initialized library will return
 `GLFW_TRUE` immediately.
 
 Once the library has been successfully initialized, it should be terminated
 before the application exits.  Modern systems are very good at freeing resources
-allocated by programs that simply exit, but GLFW sometimes has to change global
-system settings and these might not be restored without termination.
+allocated by programs that exit, but GLFW sometimes has to change global system
+settings and these might not be restored without termination.
+
+
+@subsection init_hints Initialization hints
+
+Initialization hints are set before @ref glfwInit and affect how the library
+behaves until termination.  Hints are set with @ref glfwInitHint.
+
+@code
+glfwInitHint(GLFW_JOYSTICK_HAT_BUTTONS, GLFW_FALSE);
+@endcode
+
+The values you set hints to are never reset by GLFW, but they only take effect
+during initialization.  Once GLFW has been initialized, any values you set will
+be ignored until the library is terminated and initialized again.
+
+Some hints are platform specific.  These may be set on any platform but they
+will only affect their specific platform.  Other platforms will ignore them.
+Setting these hints requires no platform specific headers or functions.
+
+
+@subsubsection init_hints_shared Shared init hints
+
+@anchor GLFW_JOYSTICK_HAT_BUTTONS
+__GLFW_JOYSTICK_HAT_BUTTONS__ specifies whether to also expose joystick hats as
+buttons, for compatibility with earlier versions of GLFW that did not have @ref
+glfwGetJoystickHats.  Set this with @ref glfwInitHint.
+
+
+@subsubsection init_hints_osx macOS specific init hints
+
+@anchor GLFW_COCOA_CHDIR_RESOURCES
+__GLFW_COCOA_CHDIR_RESOURCES__ specifies whether to set the current directory to
+the application to the `Contents/Resources` subdirectory of the application's
+bundle, if present.  Set this with @ref glfwInitHint.
+
+@anchor GLFW_COCOA_MENUBAR
+__GLFW_COCOA_MENUBAR__ specifies whether to create a basic menu bar, either from
+a nib or manually, when the first window is created, which is when AppKit is
+initialized.  Set this with @ref glfwInitHint.
+
+
+@subsubsection init_hints_values Supported and default values
+
+Initialization hint             | Default value | Supported values
+------------------------------- | ------------- | ----------------
+@ref GLFW_JOYSTICK_HAT_BUTTONS  | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_COCOA_CHDIR_RESOURCES | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_COCOA_MENUBAR         | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
 
 
 @subsection intro_init_terminate Terminating GLFW
@@ -77,53 +127,82 @@ any other resources allocated by GLFW.
 Once the library is terminated, it is as if it had never been initialized and
 you will need to initialize it again before being able to use GLFW.  If the
 library was not initialized or had already been terminated, it return
-immediately. 
+immediately.
 
 
 @section error_handling Error handling
 
 Some GLFW functions have return values that indicate an error, but this is often
-not very helpful when trying to figure out _why_ the error occurred.  Other
-functions have no return value reserved for errors, so error notification needs
-a separate channel.  Finally, far from all GLFW functions have return values.
+not very helpful when trying to figure out what happened or why it occurred.
+Other functions have no return value reserved for errors, so error notification
+needs a separate channel.  Finally, far from all GLFW functions have return
+values.
 
-This is where the error callback comes in.  This callback is called whenever an
-error occurs.  It is set with @ref glfwSetErrorCallback, a function that may be
-called regardless of whether GLFW is initialized.
-
-@code
-glfwSetErrorCallback(error_callback);
-@endcode
-
-The error callback receives a human-readable description of the error and (when
-possible) its cause.  The description encoded as UTF-8.  The callback is also
-provided with an [error code](@ref errors). 
+The last [error code](@ref errors) for the calling thread can be queried at any
+time with @ref glfwGetError.
 
 @code
-void error_callback(int error, const char* description)
-{
-    puts(description);
-}
+int code = glfwGetError(NULL);
+
+if (code != GLFW_NO_ERROR)
+    handle_error(code);
 @endcode
+
+If no error has occurred since the last call, @ref GLFW_NO_ERROR (zero) is
+returned.  The error is cleared before the function returns.
 
 The error code indicates the general category of the error.  Some error codes,
 such as @ref GLFW_NOT_INITIALIZED has only a single meaning, whereas others like
 @ref GLFW_PLATFORM_ERROR are used for many different errors.
 
-Reported errors are never fatal.  As long as GLFW was successfully initialized,
-it will remain initialized and in a safe state until terminated regardless of
-how many errors occur.  If an error occurs during initialization that causes
-@ref glfwInit to fail, any part of the library that was initialized will be
-safely terminated.
+GLFW often has more information about an error than its general category.  You
+can retrieve a UTF-8 encoded human-readable description along with the error
+code.  If no error has occurred since the last call, the description is set to
+`NULL`.
 
-The description string is only valid until the error callback returns, as it may
-have been generated specifically for that error.  This lets GLFW provide much
-more specific error descriptions but means you must make a copy if you want to
-keep the description string.
+@code
+const char* description;
+int code = glfwGetError(&description);
 
-@note Relying on erroneous behavior is not forward compatible.  In other words,
-do not rely on a currently invalid call to generate a specific error, as that
-same call may in future versions generate a different error or become valid.
+if (description)
+    display_error_message(code, description);
+@endcode
+
+The retrieved description string is only valid until the next error occurs.
+This means you must make a copy of it if you want to keep it.
+
+You can also set an error callback, which will be called each time an error
+occurs.  It is set with @ref glfwSetErrorCallback.
+
+@code
+glfwSetErrorCallback(error_callback);
+@endcode
+
+The error callback receives the same error code and human-readable description
+returned by @ref glfwGetError.
+
+@code
+void error_callback(int code, const char* description)
+{
+    display_error_message(code, description);
+}
+@endcode
+
+The error callback is called after the error is stored, so calling @ref
+glfwGetError from within the error callback returns the same values as the
+callback argument.
+
+The description string passed to the callback is only valid until the error
+callback returns.  This means you must make a copy of it if you want to keep it.
+
+__Reported errors are never fatal.__  As long as GLFW was successfully
+initialized, it will remain initialized and in a safe state until terminated
+regardless of how many errors occur.  If an error occurs during initialization
+that causes @ref glfwInit to fail, any part of the library that was initialized
+will be safely terminated.
+
+Do not rely on a currently invalid call to generate a specific error, as in the
+future that same call may generate a different error or become valid.
 
 
 @section coordinate_systems Coordinate systems
@@ -194,14 +273,10 @@ releases.
 
 @subsection reentrancy Reentrancy
 
-GLFW event processing and object creation and destruction are not reentrant.
-This means that the following functions must not be called from any callback
-function:
+GLFW event processing and object destruction are not reentrant.  This means that
+the following functions must not be called from any callback function:
 
- - @ref glfwCreateWindow
  - @ref glfwDestroyWindow
- - @ref glfwCreateCursor
- - @ref glfwCreateStandardCursor
  - @ref glfwDestroyCursor
  - @ref glfwPollEvents
  - @ref glfwWaitEvents
@@ -214,35 +289,39 @@ functions not on this list will not be made non-reentrant.
 
 @subsection thread_safety Thread safety
 
-Most GLFW functions must only be called from the main thread, but some may be
-called from any thread.  However, no GLFW function may be called from any thread
-but the main thread until GLFW has been successfully initialized, including
-functions that may called before initialization.
+Most GLFW functions must only be called from the main thread (the thread that
+calls main), but some may be called from any thread once the library has been
+initialized.  Before initialization the whole library is thread-unsafe.
 
 The reference documentation for every GLFW function states whether it is limited
-to the main thread.                                                        
+to the main thread.
 
-Initialization and termination, event processing and the creation and
-destruction of windows, contexts and cursors are all limited to the main thread
-due to limitations of one or several platforms.
+Initialization, termination, event processing and the creation and
+destruction of windows, cursors and OpenGL and OpenGL ES contexts are all
+restricted to the main thread due to limitations of one or several platforms.
 
 Because event processing must be performed on the main thread, all callbacks
 except for the error callback will only be called on that thread.  The error
 callback may be called on any thread, as any GLFW function may generate errors.
 
-The posting of empty events may be done from any thread.  The window user
-pointer and close flag may also be accessed and modified from any thread, but
-this is not synchronized by GLFW.  The following window related functions may
-be called from any thread:
+The error code and description may be queried from any thread.
+
+ - @ref glfwGetError
+
+Empty events may be posted from any thread.
 
  - @ref glfwPostEmptyEvent
+
+The window user pointer and close flag may be read and written from any thread,
+but this is not synchronized by GLFW.
+
  - @ref glfwGetWindowUserPointer
  - @ref glfwSetWindowUserPointer
  - @ref glfwWindowShouldClose
  - @ref glfwSetWindowShouldClose
 
-Rendering may be done on any thread.  The following context related functions
-may be called from any thread:
+These functions for working with OpenGL and OpenGL ES contexts may be called
+from any thread, but the window object is not synchronized by GLFW.
 
  - @ref glfwMakeContextCurrent
  - @ref glfwGetCurrentContext
@@ -251,27 +330,23 @@ may be called from any thread:
  - @ref glfwExtensionSupported
  - @ref glfwGetProcAddress
 
-The raw timer may be queried from any thread.  The following raw timer related
-functions may be called from any thread:
+The raw timer functions may be called from any thread.
 
  - @ref glfwGetTimerFrequency
  - @ref glfwGetTimerValue
 
-The regular timer may be used from any thread, but the reading and writing of
-the timer offset is not synchronized by GLFW.  The following timer related
-functions may be called from any thread:
+The regular timer may be used from any thread, but reading and writing the timer
+offset is not synchronized by GLFW.
 
  - @ref glfwGetTime
  - @ref glfwSetTime
 
-Library version information may be queried from any thread.  The following
-version related functions may be called from any thread:
+Library version information may be queried from any thread.
 
  - @ref glfwGetVersion
  - @ref glfwGetVersionString
 
-Vulkan objects may be created and information queried from any thread.  The
-following Vulkan related functions may be called from any thread:
+All Vulkan related functions may be called from any thread.
 
  - @ref glfwVulkanSupported
  - @ref glfwGetRequiredInstanceExtensions
@@ -279,9 +354,9 @@ following Vulkan related functions may be called from any thread:
  - @ref glfwGetPhysicalDevicePresentationSupport
  - @ref glfwCreateWindowSurface
 
-GLFW uses no synchronization objects internally except for thread-local storage
-to keep track of the current context for each thread.  Synchronization is left
-to the application.
+GLFW uses synchronization objects internally only to manage the per-thread
+context and error states.  Additional synchronization is left to the
+application.
 
 Functions that may currently be called from any thread will always remain so,
 but functions that are currently limited to the main thread may be updated to
@@ -290,10 +365,10 @@ allow calls from any thread in future releases.
 
 @subsection compatibility Version compatibility
 
-GLFW guarantees source and binary backward compatibility with earlier minor
-versions of the API.  This means that you can drop in a newer version of the
-library and existing programs will continue to compile and existing binaries
-will continue to run.
+GLFW uses [Semantic Versioning](https://semver.org/).  This guarantees source
+and binary backward compatibility with earlier minor versions of the API.  This
+means that you can drop in a newer version of the library and existing programs
+will continue to compile and existing binaries will continue to run.
 
 Once a function or constant has been added, the signature of that function or
 value of that constant will remain unchanged until the next major version of
@@ -303,8 +378,9 @@ Undocumented behavior, i.e. behavior that is not described in the documentation,
 may change at any time until it is documented.
 
 If the reference documentation and the implementation differ, the reference
-documentation is correct and the implementation will be fixed in the next
-release.
+documentation will almost always take precedence and the implementation will be
+fixed in the next release.  The reference documentation will also take
+precedence over anything stated in a guide.
 
 
 @subsection event_order Event order

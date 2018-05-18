@@ -51,6 +51,27 @@ __Don't worry about adding too much information__.  Unimportant information can
 be abbreviated or removed later, but missing information can stall bug fixing,
 especially when your schedule doesn't align with that of the maintainer.
 
+__Please provide text as text, not as images__.  This includes code, error
+messages and any other text.  Text in images cannot be found by other users
+searching for the same problem and may have to be re-typed by maintainers when
+debugging.
+
+You don't need to manually indent your code or other text to quote it with
+GitHub Markdown; just surround it with triple backticks:
+
+    ```
+    Some quoted text.
+    ```
+
+You can also add syntax highlighting by appending the common file extension:
+
+    ```c
+    int five(void)
+    {
+        return 5;
+    }
+    ```
+
 There are issue labels for both platforms and GPU manufacturers, so there is no
 need to mention these in the subject line.  If you do, it will be removed when
 the issue is labeled.
@@ -139,6 +160,9 @@ Always include the __operating system name and version__ (e.g. `Windows
 include the __GLFW release version__ (e.g. `3.1.2`), otherwise include the
 __GLFW commit ID__ (e.g.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
 
+If you are running your program in a virtual machine, please mention this and
+include the __VM name and version__ (e.g. `VirtualBox 5.1`).
+
 Please also include the __GLFW version string__ (`3.2.0 X11 EGL clock_gettime
 /dev/js`), as described
 [here](http://www.glfw.org/docs/latest/intro.html#intro_version_string), the
@@ -178,6 +202,9 @@ Always include the __operating system name and version__ (e.g. `Windows
 include the __GLFW release version__ (e.g. `3.1.2`), otherwise include the
 __GLFW commit ID__ (e.g.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
 
+If you are running your program in a virtual machine, please mention this and
+include the __VM name and version__ (e.g. `VirtualBox 5.1`).
+
 Please also include any __error messages__ provided to your application via the
 [error
 callback](http://www.glfw.org/docs/latest/intro_guide.html#error_handling) and
@@ -214,6 +241,9 @@ Always include the __operating system name and version__ (e.g. `Windows
 7 64-bit` or `Ubuntu 15.10`).  If you are using an official release of GLFW,
 include the __GLFW release version__ (e.g. `3.1.2`), otherwise include the
 __GLFW commit ID__ (e.g.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
+
+If you are running your program in a virtual machine, please mention this and
+include the __VM name and version__ (e.g. `VirtualBox 5.1`).
 
 Please also include any __error messages__ provided to your application via the
 [error
@@ -306,6 +336,9 @@ other bugs and features to work on.
 If the patch fixes a bug introduced after the last release, it should not get
 a change log entry.
 
+If you haven't already, read the excellent article [How to Write a Git Commit
+Message](https://chris.beams.io/posts/git-commit/).
+
 
 ## Contributing a feature
 
@@ -342,6 +375,9 @@ If it adds a new monitor property, support for it must be added to
 If it adds a new OpenGL, OpenGL ES or Vulkan option or extension, support
 for it must be added to `tests/glfwinfo.c` and the behavior of the library when
 the extension is missing documented in `docs/compat.dox`.
+
+If you haven't already, read the excellent article [How to Write a Git Commit
+Message](https://chris.beams.io/posts/git-commit/).
 
 Features will not be rejected because they don't include all the above parts,
 but please keep in mind that maintainer time is finite and that there are many

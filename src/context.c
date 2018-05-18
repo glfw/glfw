@@ -38,13 +38,30 @@
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
+// Checks whether the desired context attributes are valid
+//
+// This function checks things like whether the specified client API version
+// exists and whether all relevant options have supported and non-conflicting
+// values
+//
 GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
 {
+    if (ctxconfig->share)
+    {
+        if (ctxconfig->client == GLFW_NO_API ||
+            ctxconfig->share->context.client == GLFW_NO_API)
+        {
+            _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
+            return GLFW_FALSE;
+        }
+    }
+
     if (ctxconfig->source != GLFW_NATIVE_CONTEXT_API &&
-        ctxconfig->source != GLFW_EGL_CONTEXT_API)
+        ctxconfig->source != GLFW_EGL_CONTEXT_API &&
+        ctxconfig->source != GLFW_OSMESA_CONTEXT_API)
     {
         _glfwInputError(GLFW_INVALID_ENUM,
-                        "Invalid context creation API %i",
+                        "Invalid context creation API 0x%08X",
                         ctxconfig->source);
         return GLFW_FALSE;
     }
@@ -54,7 +71,7 @@ GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
         ctxconfig->client != GLFW_OPENGL_ES_API)
     {
         _glfwInputError(GLFW_INVALID_ENUM,
-                        "Invalid client API %i",
+                        "Invalid client API 0x%08X",
                         ctxconfig->client);
         return GLFW_FALSE;
     }
@@ -84,7 +101,7 @@ GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
                 ctxconfig->profile != GLFW_OPENGL_COMPAT_PROFILE)
             {
                 _glfwInputError(GLFW_INVALID_ENUM,
-                                "Invalid OpenGL profile %i",
+                                "Invalid OpenGL profile 0x%08X",
                                 ctxconfig->profile);
                 return GLFW_FALSE;
             }
@@ -133,7 +150,7 @@ GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
             ctxconfig->robustness != GLFW_LOSE_CONTEXT_ON_RESET)
         {
             _glfwInputError(GLFW_INVALID_ENUM,
-                            "Invalid context robustness mode %i",
+                            "Invalid context robustness mode 0x%08X",
                             ctxconfig->robustness);
             return GLFW_FALSE;
         }
@@ -145,7 +162,7 @@ GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
             ctxconfig->release != GLFW_RELEASE_BEHAVIOR_FLUSH)
         {
             _glfwInputError(GLFW_INVALID_ENUM,
-                            "Invalid context release behavior %i",
+                            "Invalid context release behavior 0x%08X",
                             ctxconfig->release);
             return GLFW_FALSE;
         }
@@ -154,6 +171,8 @@ GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
     return GLFW_TRUE;
 }
 
+// Chooses the framebuffer config that best matches the desired one
+//
 const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
                                          const _GLFWfbconfig* alternatives,
                                          unsigned int count)
@@ -207,6 +226,9 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
                 // not important to us here, so we count them as one
                 missing++;
             }
+
+            if (desired->transparent != current->transparent)
+                missing++;
         }
 
         // These polynomials make many small channel size differences matter
@@ -317,10 +339,13 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
     return closest;
 }
 
-GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
+// Retrieves the attributes of the current context
+//
+GLFWbool _glfwRefreshContextAttribs(_GLFWwindow* window,
+                                    const _GLFWctxconfig* ctxconfig)
 {
     int i;
-    _GLFWwindow* window;
+    _GLFWwindow* previous;
     const char* version;
     const char* prefixes[] =
     {
@@ -330,10 +355,11 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
         NULL
     };
 
-    window = _glfwPlatformGetCurrentContext();
-
     window->context.source = ctxconfig->source;
     window->context.client = GLFW_OPENGL_API;
+
+    previous = _glfwPlatformGetTls(&_glfw.contextSlot);;
+    glfwMakeContextCurrent((GLFWwindow*) window);
 
     window->context.GetIntegerv = (PFNGLGETINTEGERVPROC)
         window->context.getProcAddress("glGetIntegerv");
@@ -342,6 +368,7 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
     if (!window->context.GetIntegerv || !window->context.GetString)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Entry point retrieval is broken");
+        glfwMakeContextCurrent((GLFWwindow*) previous);
         return GLFW_FALSE;
     }
 
@@ -359,6 +386,7 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
                             "OpenGL ES version string retrieval is broken");
         }
 
+        glfwMakeContextCurrent((GLFWwindow*) previous);
         return GLFW_FALSE;
     }
 
@@ -390,6 +418,7 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
                             "No version found in OpenGL ES version string");
         }
 
+        glfwMakeContextCurrent((GLFWwindow*) previous);
         return GLFW_FALSE;
     }
 
@@ -419,6 +448,7 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
                             window->context.major, window->context.minor);
         }
 
+        glfwMakeContextCurrent((GLFWwindow*) previous);
         return GLFW_FALSE;
     }
 
@@ -434,6 +464,7 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Entry point retrieval is broken");
+            glfwMakeContextCurrent((GLFWwindow*) previous);
             return GLFW_FALSE;
         }
     }
@@ -540,9 +571,12 @@ GLFWbool _glfwRefreshContextAttribs(const _GLFWctxconfig* ctxconfig)
         window->context.swapBuffers(window);
     }
 
+    glfwMakeContextCurrent((GLFWwindow*) previous);
     return GLFW_TRUE;
 }
 
+// Searches an extension string for the specified extension
+//
 GLFWbool _glfwStringInExtensionString(const char* string, const char* extensions)
 {
     const char* start = extensions;
@@ -577,13 +611,14 @@ GLFWbool _glfwStringInExtensionString(const char* string, const char* extensions
 GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-    _GLFWwindow* previous = _glfwPlatformGetCurrentContext();
+    _GLFWwindow* previous = _glfwPlatformGetTls(&_glfw.contextSlot);
 
     _GLFW_REQUIRE_INIT();
 
     if (window && window->context.client == GLFW_NO_API)
     {
-        _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
+        _glfwInputError(GLFW_NO_WINDOW_CONTEXT,
+                        "Cannot make current with a window that has no OpenGL or OpenGL ES context");
         return;
     }
 
@@ -600,7 +635,7 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
 GLFWAPI GLFWwindow* glfwGetCurrentContext(void)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    return (GLFWwindow*) _glfwPlatformGetCurrentContext();
+    return _glfwPlatformGetTls(&_glfw.contextSlot);
 }
 
 GLFWAPI void glfwSwapBuffers(GLFWwindow* handle)
@@ -612,7 +647,8 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow* handle)
 
     if (window->context.client == GLFW_NO_API)
     {
-        _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
+        _glfwInputError(GLFW_NO_WINDOW_CONTEXT,
+                        "Cannot swap buffers of a window that has no OpenGL or OpenGL ES context");
         return;
     }
 
@@ -625,10 +661,11 @@ GLFWAPI void glfwSwapInterval(int interval)
 
     _GLFW_REQUIRE_INIT();
 
-    window = _glfwPlatformGetCurrentContext();
+    window = _glfwPlatformGetTls(&_glfw.contextSlot);
     if (!window)
     {
-        _glfwInputError(GLFW_NO_CURRENT_CONTEXT, NULL);
+        _glfwInputError(GLFW_NO_CURRENT_CONTEXT,
+                        "Cannot set swap interval without a current OpenGL or OpenGL ES context");
         return;
     }
 
@@ -638,21 +675,21 @@ GLFWAPI void glfwSwapInterval(int interval)
 GLFWAPI int glfwExtensionSupported(const char* extension)
 {
     _GLFWwindow* window;
-
     assert(extension != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
 
-    window = _glfwPlatformGetCurrentContext();
+    window = _glfwPlatformGetTls(&_glfw.contextSlot);
     if (!window)
     {
-        _glfwInputError(GLFW_NO_CURRENT_CONTEXT, NULL);
+        _glfwInputError(GLFW_NO_CURRENT_CONTEXT,
+                        "Cannot query extension without a current OpenGL or OpenGL ES context");
         return GLFW_FALSE;
     }
 
     if (*extension == '\0')
     {
-        _glfwInputError(GLFW_INVALID_VALUE, "Extension name is empty string");
+        _glfwInputError(GLFW_INVALID_VALUE, "Extension name cannot be an empty string");
         return GLFW_FALSE;
     }
 
@@ -708,10 +745,11 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname)
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
-    window = _glfwPlatformGetCurrentContext();
+    window = _glfwPlatformGetTls(&_glfw.contextSlot);
     if (!window)
     {
-        _glfwInputError(GLFW_NO_CURRENT_CONTEXT, NULL);
+        _glfwInputError(GLFW_NO_CURRENT_CONTEXT,
+                        "Cannot query entry point without a current OpenGL or OpenGL ES context");
         return NULL;
     }
 

@@ -24,9 +24,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_cocoa_joystick_h_
-#define _glfw3_cocoa_joystick_h_
-
 #include <IOKit/IOKitLib.h>
 #include <IOKit/IOCFPlugIn.h>
 #include <IOKit/hid/IOHIDLib.h>
@@ -35,6 +32,7 @@
 #define _GLFW_PLATFORM_JOYSTICK_STATE         _GLFWjoystickNS ns
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE
 
+#define _GLFW_PLATFORM_MAPPING_NAME "Mac OS X"
 
 // Cocoa-specific per-joystick data
 //
@@ -50,4 +48,3 @@ typedef struct _GLFWjoystickNS
 void _glfwInitJoysticksNS(void);
 void _glfwTerminateJoysticksNS(void);
 
-#endif // _glfw3_cocoa_joystick_h_

@@ -61,7 +61,7 @@ information.  The name and number of this chapter unfortunately varies between
 versions and APIs, but has at times been named _Shared Objects and Multiple
 Contexts_.
 
-GLFW comes with a simple object sharing test program called `sharing`.
+GLFW comes with a barebones object sharing example program called `sharing`.
 
 
 @subsection context_offscreen Offscreen contexts
@@ -84,10 +84,9 @@ objects are recommended for rendering with such contexts.
 You should still [process events](@ref events) as long as you have at least one
 window, even if none of them are visible.
 
-@macos The first time a window is created the menu bar is populated with
-common commands like Hide, Quit and About.  This is not desirable for example
-when writing a command-line only application.  The menu bar setup can be
-disabled with a [compile-time option](@ref compile_options_osx).
+@macos The first time a window is created the menu bar is created.  This is not
+desirable for example when writing a command-line only application.  Menu bar
+creation can be disabled with the @ref GLFW_COCOA_MENUBAR init hint.
 
 
 @subsection context_less Windows without contexts
@@ -103,6 +102,9 @@ glfwSwapBuffers.
 Before you can make OpenGL or OpenGL ES calls, you need to have a current
 context of the correct type.  A context can only be current for a single thread
 at a time, and a thread can only have a single context current at a time.
+
+When moving a context between threads, you must make it non-current on the old
+thread before making it current on the new one.
 
 The context of a window is made current with @ref glfwMakeContextCurrent.
 
@@ -127,8 +129,7 @@ error.
 
 @section context_swap Buffer swapping
 
-Buffer swapping is part of the window and framebuffer, not the context.  See
-@ref buffer_swap.
+See @ref buffer_swap in the window guide.
 
 
 @section context_glext OpenGL and OpenGL ES extensions
@@ -160,7 +161,7 @@ An extension loader library is the easiest and best way to access both OpenGL an
 OpenGL ES extensions and modern versions of the core OpenGL or OpenGL ES APIs.
 They will take care of all the details of declaring and loading everything you
 need.  One such library is [glad](https://github.com/Dav1dde/glad) and there are
-several others.  
+several others.
 
 The following example will use glad but all extension loader libraries work
 similarly.

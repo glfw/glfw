@@ -52,7 +52,7 @@ static void geometry(void* data,
     monitor->heightMM = physicalHeight;
 
     snprintf(name, sizeof(name), "%s %s", make, model);
-    monitor->name = strdup(name);
+    monitor->name = _glfw_strdup(name);
 }
 
 static void mode(void* data,
@@ -136,6 +136,7 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
 
     monitor->wl.scale = 1;
     monitor->wl.output = output;
+    monitor->wl.name = name;
 
     wl_output_add_listener(output, &outputListener, monitor);
 }
@@ -145,12 +146,27 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
+void _glfwPlatformFreeMonitor(_GLFWmonitor* monitor)
+{
+    if (monitor->wl.output)
+        wl_output_destroy(monitor->wl.output);
+}
+
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {
     if (xpos)
         *xpos = monitor->wl.x;
     if (ypos)
         *ypos = monitor->wl.y;
+}
+
+void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
+                                         float* xscale, float* yscale)
+{
+    if (xscale)
+        *xscale = (float) monitor->wl.scale;
+    if (yscale)
+        *yscale = (float) monitor->wl.scale;
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)

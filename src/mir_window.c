@@ -713,6 +713,10 @@ void _glfwPlatformPostEmptyEvent(void)
 {
 }
 
+void _glfwPlatformSetTouchInput(_GLFWwindow* window, int enabled)
+{
+}
+
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
 {
     if (width)

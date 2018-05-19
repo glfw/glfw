@@ -63,7 +63,7 @@ if (VULKAN_FOUND)
 endif()
 
 set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
-                      FOLDER "GLFW3/Tests")
+                      FOLDER "${GLFW_TARGETS_FOLDER}/Tests")
 
 if (MSVC)
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables

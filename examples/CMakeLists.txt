@@ -49,7 +49,7 @@ set(WINDOWS_BINARIES boing gears heightmap particles sharing simple splitview wa
 set(CONSOLE_BINARIES offscreen)
 
 set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
-                      FOLDER "GLFW3/Examples")
+                      FOLDER "${GLFW_TARGETS_FOLDER}/Examples")
 
 if (MSVC)
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables

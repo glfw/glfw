@@ -126,6 +126,14 @@ wayland-protocols 1.6, and mandatory at build time.  If the running compositor
 does not support this protocol, the screensaver may start even for full screen
 windows.
 
+GLFW uses the [viewporter
+protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/stable/viewporter/viewporter.xml)
+alongside
+[subsurfaces](https://cgit.freedesktop.org/wayland/wayland/tree/protocol/wayland.xml#n2598)
+to draw decorations around windows.  This protocol is part of wayland-protocols
+1.4, and mandatory at build time.  If the running compositor does not support
+this protocol, no decorations will be drawn around windows.
+
 
 @section compat_glx GLX extensions
 

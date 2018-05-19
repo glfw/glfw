@@ -231,6 +231,10 @@ with the library.
 __GLFW_VULKAN_STATIC__ determines whether to use the Vulkan loader linked
 statically into the application.
 
+@anchor GLFW_TARGETS_FOLDER
+__GLFW_TARGETS_FOLDER__ specifies where to store the generated targets on
+platforms that support the CMake USE_FOLDERS option.
+
 
 @subsubsection compile_options_win32 Windows specific CMake options
 

@@ -124,6 +124,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+- Added `GLFW_TARGETS_FOLDER` variable for specifying where to store generated targets
 - Added `glfwGetError` function for querying the last error code and its
   description (#970)
 - Added `glfwUpdateGamepadMappings` function for importing gamepad mappings in
@@ -458,6 +459,7 @@ skills.
  - Santi Zupancic
  - Jonas Ådahl
  - Lasse Öörni
+ - Johan Rönnkvist
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

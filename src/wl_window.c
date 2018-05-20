@@ -46,6 +46,20 @@ static void shellSurfaceHandlePing(void* data,
     wl_shell_surface_pong(shellSurface, serial);
 }
 
+static void resizeWindow(_GLFWwindow* window);
+
+static void computeFullscreenSize(_GLFWwindow* window, float* width, float* height)
+{
+    float aspectRatio = *width / *height;
+    float targetRatio = (float)window->wl.width / (float)window->wl.height;
+    if (aspectRatio < targetRatio)
+        *height = *width / targetRatio;
+    else if (aspectRatio > targetRatio)
+        *width = *height * targetRatio;
+
+    window->wl.cursorScale = (float)window->wl.width / *width;
+}
+
 static void shellSurfaceHandleConfigure(void* data,
                                         struct wl_shell_surface* shellSurface,
                                         uint32_t edges,
@@ -56,6 +70,7 @@ static void shellSurfaceHandleConfigure(void* data,
     float aspectRatio;
     float targetRatio;
 
+    printf("before: configure=%dx%d window->wl=%dx%d videoMode=%dx%d\n", width, height, window->wl.width, window->wl.height, window->videoMode.width, window->videoMode.height);
     if (!window->monitor)
     {
         if (_glfw.wl.viewporter && window->decorated)
@@ -87,10 +102,23 @@ static void shellSurfaceHandleConfigure(void* data,
             height = window->minheight;
         else if (window->maxheight != GLFW_DONT_CARE && height > window->maxheight)
             height = window->maxheight;
+
+        window->wl.cursorScale = 1.0;
+        window->wl.width = width;
+        window->wl.height = height;
+        resizeWindow(window);
+    }
+    else if (window->wl.viewport)
+    {
+        float floatWidth = width, floatHeight = height;
+        computeFullscreenSize(window, &floatWidth, &floatHeight);
+        width = floatWidth;
+        height = floatHeight;
+        wp_viewport_set_destination(window->wl.viewport, width, height);
     }
 
+    printf("after: configure=%dx%d window->wl=%dx%d videoMode=%dx%d\n", width, height, window->wl.width, window->wl.height, window->videoMode.width, window->videoMode.height);
     _glfwInputWindowSize(window, width, height);
-    _glfwPlatformSetWindowSize(window, width, height);
     _glfwInputWindowDamage(window);
 }
 
@@ -355,9 +383,30 @@ static void setOpaqueRegion(_GLFWwindow* window)
 
 static void resizeWindow(_GLFWwindow* window)
 {
+    int width = window->wl.width;
+    int height = window->wl.height;
     int scale = window->wl.scale;
-    int scaledWidth = window->wl.width * scale;
-    int scaledHeight = window->wl.height * scale;
+
+    printf("resizeWindow\n");
+    if (window->monitor)
+    {
+        if (window->wl.xdg.toplevel)
+        {
+            xdg_toplevel_set_fullscreen(
+                window->wl.xdg.toplevel,
+                window->monitor->wl.output);
+        }
+        else if (window->wl.shellSurface)
+        {
+            wl_shell_surface_set_fullscreen(
+                window->wl.shellSurface,
+                WL_SHELL_SURFACE_FULLSCREEN_METHOD_DEFAULT,
+                0, window->monitor->wl.output);
+        }
+    }
+
+    int scaledWidth = width * scale;
+    int scaledHeight = height * scale;
     wl_egl_window_resize(window->wl.native, scaledWidth, scaledHeight, 0, 0);
     if (!window->wl.transparent)
         setOpaqueRegion(window);
@@ -369,26 +418,26 @@ static void resizeWindow(_GLFWwindow* window)
 
     // Top decoration.
     wp_viewport_set_destination(window->wl.decorations.top.viewport,
-                                window->wl.width, _GLFW_DECORATION_TOP);
+                                width, _GLFW_DECORATION_TOP);
     wl_surface_commit(window->wl.decorations.top.surface);
 
     // Left decoration.
     wp_viewport_set_destination(window->wl.decorations.left.viewport,
-                                _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
+                                _GLFW_DECORATION_WIDTH, height + _GLFW_DECORATION_TOP);
     wl_surface_commit(window->wl.decorations.left.surface);
 
     // Right decoration.
     wl_subsurface_set_position(window->wl.decorations.right.subsurface,
-                               window->wl.width, -_GLFW_DECORATION_TOP);
+                               width, -_GLFW_DECORATION_TOP);
     wp_viewport_set_destination(window->wl.decorations.right.viewport,
-                                _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
+                                _GLFW_DECORATION_WIDTH, height + _GLFW_DECORATION_TOP);
     wl_surface_commit(window->wl.decorations.right.surface);
 
     // Bottom decoration.
     wl_subsurface_set_position(window->wl.decorations.bottom.subsurface,
-                               -_GLFW_DECORATION_WIDTH, window->wl.height);
+                               -_GLFW_DECORATION_WIDTH, height);
     wp_viewport_set_destination(window->wl.decorations.bottom.viewport,
-                                window->wl.width + _GLFW_DECORATION_HORIZONTAL, _GLFW_DECORATION_WIDTH);
+                                width + _GLFW_DECORATION_HORIZONTAL, _GLFW_DECORATION_WIDTH);
     wl_surface_commit(window->wl.decorations.bottom.surface);
 }
 
@@ -398,6 +447,7 @@ static void checkScaleChange(_GLFWwindow* window)
     int i;
     int monitorScale;
 
+    printf("checkScaleChange\n");
     // Check if we will be able to set the buffer scale or not.
     if (_glfw.wl.compositorVersion < 3)
         return;
@@ -513,6 +563,7 @@ static GLFWbool createSurface(_GLFWwindow* window,
 }
 
 static void setFullscreen(_GLFWwindow* window, _GLFWmonitor* monitor,
+                          int width, int height,
                           int refreshRate)
 {
     if (window->wl.xdg.toplevel)
@@ -532,9 +583,13 @@ static void setFullscreen(_GLFWwindow* window, _GLFWmonitor* monitor,
     setIdleInhibitor(window, GLFW_TRUE);
     if (!window->wl.decorations.serverSide)
         destroyDecorations(window);
+    if (_glfw.wl.viewporter) {
+        window->wl.viewport =
+            wp_viewporter_get_viewport(_glfw.wl.viewporter, window->wl.surface);
+    }
 }
 
-static GLFWbool createShellSurface(_GLFWwindow* window)
+static GLFWbool createShellSurface(_GLFWwindow* window, int width, int height)
 {
     if (!_glfw.wl.shell)
     {
@@ -561,7 +616,7 @@ static GLFWbool createShellSurface(_GLFWwindow* window)
 
     if (window->monitor)
     {
-        setFullscreen(window, window->monitor, 0);
+        setFullscreen(window, window->monitor, width, height, 0);
     }
     else if (window->wl.maximized)
     {
@@ -615,21 +670,39 @@ static void xdgToplevelHandleConfigure(void* data,
 
     if (width != 0 && height != 0)
     {
-        if (!maximized && !fullscreen)
+        if (fullscreen)
         {
-            if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
+            if (window->wl.viewport)
             {
                 aspectRatio = (float)width / (float)height;
-                targetRatio = (float)window->numer / (float)window->denom;
+                targetRatio = (float)window->wl.width / (float)window->wl.height;
                 if (aspectRatio < targetRatio)
                     height = width / targetRatio;
                 else if (aspectRatio > targetRatio)
                     width = height * targetRatio;
+
+                wp_viewport_set_destination(window->wl.viewport, width, height);
+                width = window->wl.width;
+                height = window->wl.height;
+            }
+        }
+        else
+        {
+            if (!maximized)
+            {
+                if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
+                {
+                    aspectRatio = (float)width / (float)height;
+                    targetRatio = (float)window->numer / (float)window->denom;
+                    if (aspectRatio < targetRatio)
+                        height = width / targetRatio;
+                    else if (aspectRatio > targetRatio)
+                        width = height * targetRatio;
+                }
             }
         }
 
         _glfwInputWindowSize(window, width, height);
-        _glfwPlatformSetWindowSize(window, width, height);
         _glfwInputWindowDamage(window);
     }
 
@@ -683,7 +756,7 @@ static void setXdgDecorations(_GLFWwindow* window)
     }
 }
 
-static GLFWbool createXdgSurface(_GLFWwindow* window)
+static GLFWbool createXdgSurface(_GLFWwindow* window, int width, int height)
 {
     window->wl.xdg.surface = xdg_wm_base_get_xdg_surface(_glfw.wl.wmBase,
                                                          window->wl.surface);
@@ -722,9 +795,7 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
 
     if (window->monitor)
     {
-        xdg_toplevel_set_fullscreen(window->wl.xdg.toplevel,
-                                    window->monitor->wl.output);
-        setIdleInhibitor(window, GLFW_TRUE);
+        setFullscreen(window, window->monitor, width, height, 0);
     }
     else if (window->wl.maximized)
     {
@@ -937,12 +1008,12 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     {
         if (_glfw.wl.wmBase)
         {
-            if (!createXdgSurface(window))
+            if (!createXdgSurface(window, wndconfig->width, wndconfig->height))
                 return GLFW_FALSE;
         }
         else
         {
-            if (!createShellSurface(window))
+            if (!createShellSurface(window, wndconfig->width, wndconfig->height))
                 return GLFW_FALSE;
         }
 
@@ -1055,6 +1126,7 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
+    printf("SetWindowSize\n");
     window->wl.width = width;
     window->wl.height = height;
     resizeWindow(window);
@@ -1178,9 +1250,9 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
     if (!window->wl.visible)
     {
         if (_glfw.wl.wmBase)
-            createXdgSurface(window);
+            createXdgSurface(window, window->wl.width, window->wl.height);
         else if (!window->wl.shellSurface)
-            createShellSurface(window);
+            createShellSurface(window, window->wl.width, window->wl.height);
         window->wl.visible = GLFW_TRUE;
     }
 }
@@ -1223,7 +1295,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
 {
     if (monitor)
     {
-        setFullscreen(window, monitor, refreshRate);
+        setFullscreen(window, monitor, width, height, refreshRate);
     }
     else
     {
@@ -1232,8 +1304,10 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
         else if (window->wl.shellSurface)
             wl_shell_surface_set_toplevel(window->wl.shellSurface);
         setIdleInhibitor(window, GLFW_FALSE);
-        if (!_glfw.wl.decorationManager)
+        if (!_glfw.wl.decorationManager && window->decorated)
             createDecorations(window);
+        if (window->wl.viewport)
+            wp_viewport_destroy(window->wl.viewport);
     }
     _glfwInputWindowMonitor(window, monitor);
 }

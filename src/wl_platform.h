@@ -191,6 +191,7 @@ typedef struct _GLFWwindowWayland
 
     _GLFWcursor*                currentCursor;
     double                      cursorPosX, cursorPosY;
+    double                      cursorScale;
 
     char*                       title;
 
@@ -217,6 +218,8 @@ typedef struct _GLFWwindowWayland
         _GLFWdecorationWayland             top, left, right, bottom;
         int                                focus;
     } decorations;
+
+    struct wp_viewport*         viewport;
 
 } _GLFWwindowWayland;
 

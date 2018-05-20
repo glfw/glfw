@@ -183,18 +183,17 @@ static void pointerHandleMotion(void* data,
 
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
         return;
-    else
-    {
-        window->wl.cursorPosX = wl_fixed_to_double(sx);
-        window->wl.cursorPosY = wl_fixed_to_double(sy);
-    }
+
+    window->wl.cursorPosX = wl_fixed_to_double(sx) * window->wl.cursorScale;
+    window->wl.cursorPosY = wl_fixed_to_double(sy) * window->wl.cursorScale;
+    printf("cursor: %fx%f @%f\n", window->wl.cursorPosX, window->wl.cursorPosY, window->wl.cursorScale);
 
     switch (window->wl.decorations.focus)
     {
         case mainWindow:
             _glfwInputCursorPos(window,
-                                wl_fixed_to_double(sx),
-                                wl_fixed_to_double(sy));
+                                window->wl.cursorPosX,
+                                window->wl.cursorPosY);
             return;
         case topDecoration:
             if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)

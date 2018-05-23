@@ -3093,7 +3093,7 @@ GLFWAPI void glfwMaximizeWindow(GLFWwindow* window);
  *
  *  By default, windowed mode windows are focused when shown
  *  Set the [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_hint) to
- *  disable this behavior.
+ *  change this behavior.
  *
  *  @param[in] window The window to make visible.
  *
@@ -3320,8 +3320,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* window, int attrib);
  *
  *  The supported attributes are [GLFW_DECORATED](@ref GLFW_DECORATED_attrib),
  *  [GLFW_RESIZABLE](@ref GLFW_RESIZABLE_attrib),
- *  [GLFW_FLOATING](@ref GLFW_FLOATING_attrib) and
- *  [GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib).
+ *  [GLFW_FLOATING](@ref GLFW_FLOATING_attrib),
+ *  [GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib) and
  *  [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_attrib).
  *
  *  Some of these attributes are ignored for full screen windows.  The new

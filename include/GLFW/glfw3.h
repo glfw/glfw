@@ -3092,8 +3092,9 @@ GLFWAPI void glfwMaximizeWindow(GLFWwindow* window);
  *  function does nothing.
  *
  *  By default, windowed mode windows are focused when shown
- *  Set the [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_hint) to
- *  change this behavior.
+ *  Set the [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_hint) window hint
+ *  to change this behavior for all newly created windows, or change the 
+ *  behaviour for an existing window with @ref glfwSetWindowAttrib.
  *
  *  @param[in] window The window to make visible.
  *

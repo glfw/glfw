@@ -124,6 +124,8 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+- Added `GLFW_FOCUS_ON_SHOW` window hint and attribute to control input focus
+  on calling show window (#1189)
 - Added `glfwGetError` function for querying the last error code and its
   description (#970)
 - Added `glfwUpdateGamepadMappings` function for importing gamepad mappings in

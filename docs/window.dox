@@ -1015,7 +1015,7 @@ glfwShowWindow(window);
 
 By default, this function will also set the input focus to that window. Set
 the [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_hint) window hint to change
-this behavior for all newly created windows, or change the behaviour for an
+this behavior for all newly created windows, or change the behavior for an
 existing window with @ref glfwSetWindowAttrib.
 
 You can also get the current visibility state with @ref glfwGetWindowAttrib.

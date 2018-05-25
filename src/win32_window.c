@@ -230,9 +230,7 @@ static void applyAspectRatio(_GLFWwindow* window, int edge, RECT* area)
 //
 static void centerCursor(_GLFWwindow* window)
 {
-    int width, height;
-    _glfwPlatformGetWindowSize(window, &width, &height);
-    _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
+    _glfwPlatformSetCursorPos(window, window->win32.centerX, window->win32.centerY);
 }
 
 // Updates the cursor image according to its cursor mode
@@ -247,7 +245,7 @@ static void updateCursorImage(_GLFWwindow* window)
             SetCursor(LoadCursorW(NULL, IDC_ARROW));
     }
     else
-        SetCursor(NULL);
+        SetCursor(window->win32.blankCursor);
 }
 
 // Updates the cursor clip rect
@@ -856,11 +854,32 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             data = _glfw.win32.rawInput;
             if (data->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
             {
-                dx = data->data.mouse.lLastX - window->win32.lastCursorPosX;
-                dy = data->data.mouse.lLastY - window->win32.lastCursorPosY;
+                // As per https://github.com/Microsoft/DirectXTK/commit/ef56b63f3739381e451f7a5a5bd2c9779d2a7555
+                // MOUSE_MOVE_ABSOLUTE is a range from 0 through 65535, based on the screen size.
+                // As far as I can tell, absolute mode only occurs over RDP though.
+                const int width  = GetSystemMetrics((data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) ? SM_CXVIRTUALSCREEN : SM_CXSCREEN);
+                const int height = GetSystemMetrics((data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) ? SM_CYVIRTUALSCREEN : SM_CYSCREEN);
+                POINT pos;
+                pos.x = (int) ((data->data.mouse.lLastX / 65535.0f) * width);
+                pos.y = (int) ((data->data.mouse.lLastY / 65535.0f) * height);
+                ScreenToClient(window->win32.handle, &pos);
+
+                // One other unfortunate thing is that re-centering the cursor will still fire an
+                // input event; assume that any motion to the center is our re-centering and ignore it
+                if (pos.x == window->win32.centerX && pos.y == window->win32.centerY)
+                    break;
+
+                dx = pos.x - window->win32.lastCursorPosX;
+                dy = pos.y - window->win32.lastCursorPosY;
             }
             else
             {
+                if (data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP)
+                {
+                    _glfwInputError(GLFW_PLATFORM_ERROR,
+                                    "Win32: Unexpected raw input combination MOUSE_VIRTUAL_DESKTOP but not MOUSE_MOVE_ABSOLUTE");
+                    break;
+                }
                 dx = data->data.mouse.lLastX;
                 dy = data->data.mouse.lLastY;
             }
@@ -923,6 +942,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             const GLFWbool maximized = wParam == SIZE_MAXIMIZED ||
                                        (window->win32.maximized &&
                                         wParam != SIZE_RESTORED);
+            int width, height;
+            _glfwPlatformGetWindowSize(window, &width, &height);
 
             if (_glfw.win32.disabledCursorWindow == window)
                 updateClipRect(window);
@@ -949,6 +970,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             window->win32.iconified = iconified;
             window->win32.maximized = maximized;
+
+            window->win32.centerX = width / 2;
+            window->win32.centerY = height / 2;
             return 0;
         }
 
@@ -1176,6 +1200,19 @@ static int createNativeWindow(_GLFWwindow* window,
         window->win32.transparent = GLFW_TRUE;
     }
 
+    // HACK: Create a transparent cursor as using the NULL cursor breaks
+    //       using SetCursorPos when connected over RDP
+    int cursorWidth = GetSystemMetrics(SM_CXCURSOR);
+    int cursorHeight = GetSystemMetrics(SM_CYCURSOR);
+    unsigned char* andMask = calloc(cursorWidth * cursorHeight / 8, sizeof(unsigned char));
+    memset(andMask, 0xFF, cursorWidth * cursorHeight / 8);
+    unsigned char* xorMask = calloc(cursorWidth * cursorHeight / 8, sizeof(unsigned char));
+    // Cursor creation might fail, but that's fine as we get NULL in that case,
+    // which serves as an acceptable fallback blank cursor (other than on RDP)
+    window->win32.blankCursor = CreateCursor(NULL, 0, 0, cursorWidth, cursorHeight, andMask, xorMask);
+    free(andMask);
+    free(xorMask);
+
     return GLFW_TRUE;
 }
 
@@ -1313,6 +1350,9 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 
     if (window->win32.smallIcon)
         DestroyIcon(window->win32.smallIcon);
+
+    if (window->win32.blankCursor)
+        DestroyCursor(window->win32.blankCursor);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
@@ -1750,15 +1790,12 @@ void _glfwPlatformPollEvents(void)
     window = _glfw.win32.disabledCursorWindow;
     if (window)
     {
-        int width, height;
-        _glfwPlatformGetWindowSize(window, &width, &height);
-
         // NOTE: Re-center the cursor only if it has moved since the last call,
         //       to avoid breaking glfwWaitEvents with WM_MOUSEMOVE
-        if (window->win32.lastCursorPosX != width / 2 ||
-            window->win32.lastCursorPosY != height / 2)
+        if (window->win32.lastCursorPosX != window->win32.centerX ||
+            window->win32.lastCursorPosY != window->win32.centerY)
         {
-            _glfwPlatformSetCursorPos(window, width / 2, height / 2);
+            centerCursor(window);
         }
     }
 }
@@ -1806,7 +1843,11 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos)
     window->win32.lastCursorPosY = pos.y;
 
     ClientToScreen(window->win32.handle, &pos);
-    SetCursorPos(pos.x, pos.y);
+    if (!SetCursorPos(pos.x, pos.y))
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to set cursor position");
+    }
 }
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)

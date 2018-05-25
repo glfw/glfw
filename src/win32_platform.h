@@ -279,6 +279,10 @@ typedef struct _GLFWwindowWin32
 
     // The last received cursor position, regardless of source
     int                 lastCursorPosX, lastCursorPosY;
+    // Cached center positions
+    int                 centerX, centerY;
+    // An invisible cursor, needed for special cases (see WM_INPUT handler)
+    HCURSOR             blankCursor;
 
 } _GLFWwindowWin32;
 

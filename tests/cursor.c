@@ -205,6 +205,14 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         case GLFW_KEY_6:
             glfwSetCursor(window, standard_cursors[5]);
             break;
+
+        case GLFW_KEY_M:
+        {
+            int width, height;
+            glfwGetWindowSize(window, &width, &height);
+            glfwSetCursorPos(window, width / 2, height / 2);
+            break;
+        }
     }
 }
 

@@ -44,11 +44,13 @@ a compile-time error.
 @macos Because the Vulkan loader and ICD are not installed globally on macOS,
 you need to set up the application bundle according to the LunarG SDK
 documentation.  To help the GLFW CMake files find the SDK, you can set the
-`VULKAN_SDK` environment variable.
+`VULKAN_SDK` environment variable to the `macOS` subdirectory of the SDK.
 
 @code{.sh}
-env VULKAN_SDK=/example/path/to/vulkansdk-macos cmake .
+env VULKAN_SDK=/example/path/to/vulkansdk/macOS cmake .
 @endcode
+
+This is explained in more detail in the LunarG Vulkan SDK release notes.
 
 
 @section vulkan_include Including the Vulkan and GLFW header files

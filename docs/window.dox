@@ -234,6 +234,9 @@ alpha channel will be used to combine the framebuffer with the background.  This
 does not affect window decorations.  Possible values are `GLFW_TRUE` and
 `GLFW_FALSE`.
 
+@anchor GLFW_FOCUS_ON_SHOW_hint
+__GLFW_FOCUS_ON_SHOW__ specifies whether the window will be given input
+focus when @ref glfwShowWindow is called. Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 
 @subsubsection window_hints_fb Framebuffer related hints
 
@@ -489,6 +492,7 @@ GLFW_FLOATING                 | `GLFW_FALSE`                | `GLFW_TRUE` or `GL
 GLFW_MAXIMIZED                | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_CENTER_CURSOR            | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_TRANSPARENT_FRAMEBUFFER  | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_FOCUS_ON_SHOW            | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_RED_BITS                 | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 GLFW_GREEN_BITS               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 GLFW_BLUE_BITS                | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
@@ -1009,6 +1013,10 @@ Hidden windows can be shown with @ref glfwShowWindow.
 glfwShowWindow(window);
 @endcode
 
+By default, this function will also set the input focus to that window. Set
+the [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_hint) window hint to change
+this behavior for all newly created windows, or change the behavior for an
+existing window with @ref glfwSetWindowAttrib.
 
 You can also get the current visibility state with @ref glfwGetWindowAttrib.
 
@@ -1196,8 +1204,9 @@ if (glfwGetWindowAttrib(window, GLFW_FOCUSED))
 
 The [GLFW_DECORATED](@ref GLFW_DECORATED_attrib),
 [GLFW_RESIZABLE](@ref GLFW_RESIZABLE_attrib),
-[GLFW_FLOATING](@ref GLFW_FLOATING_attrib) and
-[GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib) window attributes can be
+[GLFW_FLOATING](@ref GLFW_FLOATING_attrib),
+[GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib) and
+[GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_attrib) window attributes can be
 changed with @ref glfwSetWindowAttrib.
 
 @code
@@ -1259,6 +1268,11 @@ a transparent framebuffer, i.e. the window contents is composited with the
 background using the window framebuffer alpha channel.  See @ref
 window_transparency for details.
 
+@anchor GLFW_FOCUS_ON_SHOW_attrib
+__GLFW_FOCUS_ON_SHOW__ specifies whether the window will be given input
+focus when @ref glfwShowWindow is called. This can be set before creation
+with the [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_hint) window hint or
+after with @ref glfwSetWindowAttrib.
 
 @subsubsection window_attribs_ctx Context related attributes
 

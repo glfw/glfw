@@ -4,6 +4,12 @@
 
 @section news_33 Release notes for 3.3
 
+@subsection news_33_focusonshow GLFW_FOCUS_ON_SHOW window hint and attribute
+
+GLFW now supports the [GLFW_FOCUS_ON_SHOW](@ref GLFW_DECORATED_hint) window hint
+and attribute for controlling input focus when calling @ref glfwShowWindow
+
+@see @ref window_hide
 
 @subsection news_33_geterror Error query
 

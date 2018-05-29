@@ -127,7 +127,7 @@ int main(int argc, char** argv)
     for (i = 0;  i < 4;  i++)
     {
         int left, top, right, bottom;
-        if(i)
+        if (i)
             glfwWindowHint(GLFW_FOCUS_ON_SHOW, focusOnShow);
 
         windows[i] = glfwCreateWindow(200, 200, titles[i], NULL, NULL);

@@ -761,7 +761,7 @@ GLFWAPI void glfwShowWindow(GLFWwindow* handle)
 
     _glfwPlatformShowWindow(window);
 
-    if(window->focusOnShow)
+    if (window->focusOnShow)
         _glfwPlatformFocusWindow(window);
 }
 

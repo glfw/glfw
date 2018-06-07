@@ -25,7 +25,9 @@
 //
 //========================================================================
 
+#define _GNU_SOURCE
 #include "internal.h"
+#include "unix_commons.h"
 
 #include <X11/Xresource.h>
 
@@ -34,6 +36,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include <locale.h>
+#include <fcntl.h>
 
 
 // Translate an X11 key code to a GLFW key code.
@@ -913,7 +916,6 @@ Cursor _glfwCreateCursorX11(const GLFWimage* image, int xhot, int yhot)
     return cursor;
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -950,6 +952,31 @@ int _glfwPlatformInit(void)
 
         return GLFW_FALSE;
     }
+
+    if(initWakeup(_glfw.x11.eventLoopData.wakeupFds) != 0)
+    {
+      _glfwInputError(GLFW_PLATFORM_ERROR,
+                      "X11: failed to create self pipe");
+      return GLFW_FALSE;
+    }
+
+    _glfw.x11.eventLoopData.nFds = 2;
+
+    _glfw.x11.eventLoopData.fds[0].events = POLLIN;
+    _glfw.x11.eventLoopData.fds[0].fd = _glfw.x11.eventLoopData.wakeupFds[0];
+
+    _glfw.x11.eventLoopData.fds[1].events = POLLIN;
+    _glfw.x11.eventLoopData.fds[1].fd = ConnectionNumber(_glfw.x11.display);
+
+    _glfw.x11.eventLoopData.fds[2].events = POLLIN;
+    _glfw.x11.eventLoopData.fds[2].fd = 0;
+#if defined (__linux__)
+    if(_glfw.linjs.inotify > 0)
+    {
+        _glfw.x11.eventLoopData.nFds = 3;
+        _glfw.x11.eventLoopData.fds[2].fd = _glfw.linjs.inotify;
+    }
+#endif
 
     _glfw.x11.screen = DefaultScreen(_glfw.x11.display);
     _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
@@ -1018,10 +1045,16 @@ void _glfwPlatformTerminate(void)
         _glfw.x11.im = NULL;
     }
 
+    closeFds(_glfw.x11.eventLoopData.wakeupFds
+             , sizeof(_glfw.x11.eventLoopData.wakeupFds)/
+                sizeof(_glfw.x11.eventLoopData.wakeupFds[0]));
+
+
     if (_glfw.x11.display)
     {
         XCloseDisplay(_glfw.x11.display);
         _glfw.x11.display = NULL;
+        _glfw.x11.eventLoopData.fds[0].fd = -1;
     }
 
     if (_glfw.x11.x11xcb.handle)

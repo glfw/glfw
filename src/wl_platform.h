@@ -30,6 +30,7 @@
 #include <xkbcommon/xkbcommon-compose.h>
 #endif
 #include <dlfcn.h>
+#include <poll.h>
 
 typedef VkFlags VkWaylandSurfaceCreateFlagsKHR;
 
@@ -311,6 +312,12 @@ typedef struct _GLFWlibraryWayland
         PFN_wl_egl_window_destroy window_destroy;
         PFN_wl_egl_window_resize window_resize;
     } egl;
+
+    struct {
+        nfds_t nFds; // the number of fds that need to be polled
+        struct pollfd fds[3];
+        int wakeupFds[2];
+    } eventLoopData;
 
 } _GLFWlibraryWayland;
 

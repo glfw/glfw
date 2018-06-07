@@ -24,7 +24,9 @@
 //
 //========================================================================
 
+#define _GNU_SOURCE
 #include "internal.h"
+#include "unix_commons.h"
 
 #include <assert.h>
 #include <linux/input.h>
@@ -34,6 +36,7 @@
 #include <sys/mman.h>
 #include <sys/timerfd.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <wayland-client.h>
 
 
@@ -939,6 +942,13 @@ static void createKeyTables(void)
 
 int _glfwPlatformInit(void)
 {
+    if(initWakeup(_glfw.wl.eventLoopData.wakeupFds) != 0)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: failed to create self pipe");
+        return GLFW_FALSE;
+    }
+
     _glfw.wl.cursor.handle = _glfw_dlopen("libwayland-cursor.so.0");
     if (!_glfw.wl.cursor.handle)
     {
@@ -1054,8 +1064,29 @@ int _glfwPlatformInit(void)
     _glfwInitTimerPOSIX();
 
     _glfw.wl.timerfd = -1;
+    // The repeat_info event is only available since wl_keyboard version 4,
+    // so there is no need to create a timer if we won’t have any way to use it,
+    // see: https://cgit.freedesktop.org/wayland/wayland/tree/protocol/wayland.xml#n2184
     if (_glfw.wl.seatVersion >= 4)
         _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
+
+    _glfw.wl.eventLoopData.fds[0].events = POLLIN;
+    _glfw.wl.eventLoopData.fds[0].fd = _glfw.wl.eventLoopData.wakeupFds[0];
+
+    _glfw.wl.eventLoopData.fds[1].events = POLLIN;
+    _glfw.wl.eventLoopData.fds[1].fd = wl_display_get_fd(_glfw.wl.display);
+
+    _glfw.wl.eventLoopData.fds[2].events = POLLIN;
+    if (_glfw.wl.seatVersion >= 4)
+    {
+        _glfw.wl.eventLoopData.nFds = 3;
+        _glfw.wl.eventLoopData.fds[2].fd = _glfw.wl.timerfd;
+    }
+    else
+    {
+      _glfw.wl.eventLoopData.nFds = 2;
+      _glfw.wl.eventLoopData.fds[2].fd = 0;
+    }
 
     if (_glfw.wl.pointer && _glfw.wl.shm)
     {
@@ -1142,6 +1173,8 @@ void _glfwPlatformTerminate(void)
         wl_display_flush(_glfw.wl.display);
         wl_display_disconnect(_glfw.wl.display);
     }
+    closeFds(_glfw.wl.eventLoopData.wakeupFds
+           , sizeof(_glfw.wl.eventLoopData.wakeupFds)/sizeof(_glfw.wl.eventLoopData.wakeupFds[0]));
 }
 
 const char* _glfwPlatformGetVersionString(void)

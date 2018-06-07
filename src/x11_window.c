@@ -25,12 +25,12 @@
 //
 //========================================================================
 
+#define _GNU_SOURCE
 #include "internal.h"
+#include "unix_commons.h"
 
 #include <X11/cursorfont.h>
 #include <X11/Xmd.h>
-
-#include <sys/select.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -50,50 +50,57 @@
 
 #define _GLFW_XDND_VERSION 5
 
+static int waitForEventOnceWithPpoll(double* pTimeout)
+{
+    if (pTimeout)
+    {
+        const uint64_t base = _glfwPlatformGetTimerValue();
 
-// Wait for data to arrive using select
+        int r = ppollWithTimeout(_glfw.x11.eventLoopData.fds
+                               , _glfw.x11.eventLoopData.nFds
+                               , *pTimeout);
+
+        const uint64_t now = _glfwPlatformGetTimerValue();
+        *pTimeout -= (now - base) / (double) _glfwPlatformGetTimerFrequency();
+        return r;
+    }
+    else
+    {
+        return ppollWithTimeout(_glfw.x11.eventLoopData.fds
+                              , _glfw.x11.eventLoopData.nFds
+                              , -1.0);
+    }
+}
+
+// Wait for data to arrive using ppoll
 // This avoids blocking other threads via the per-display Xlib lock that also
 // covers GLX functions
 //
-static GLFWbool waitForEvent(double* timeout)
+static GLFWbool waitForEvent(double* pTimeout)
 {
-    fd_set fds;
-    const int fd = ConnectionNumber(_glfw.x11.display);
-    int count = fd + 1;
-
-#if defined(__linux__)
-    if (_glfw.linjs.inotify > fd)
-        count = _glfw.linjs.inotify + 1;
-#endif
     for (;;)
     {
-        FD_ZERO(&fds);
-        FD_SET(fd, &fds);
-#if defined(__linux__)
-        if (_glfw.linjs.inotify > 0)
-            FD_SET(_glfw.linjs.inotify, &fds);
-#endif
+        int res = waitForEventOnceWithPpoll(pTimeout);
 
-        if (timeout)
+        if(res > 0)
         {
-            const long seconds = (long) *timeout;
-            const long microseconds = (long) ((*timeout - seconds) * 1e6);
-            struct timeval tv = { seconds, microseconds };
-            const uint64_t base = _glfwPlatformGetTimerValue();
-
-            const int result = select(count, &fds, NULL, NULL, &tv);
-            const int error = errno;
-
-            *timeout -= (_glfwPlatformGetTimerValue() - base) /
-                (double) _glfwPlatformGetTimerFrequency();
-
-            if (result > 0)
-                return GLFW_TRUE;
-            if ((result == -1 && error == EINTR) || *timeout <= 0.0)
-                return GLFW_FALSE;
-        }
-        else if (select(count, &fds, NULL, NULL, NULL) != -1 || errno != EINTR)
+            // ppoll was successfull
             return GLFW_TRUE;
+        }
+        else if (res == 0)
+        {
+            // ppoll timed out
+            return GLFW_FALSE;
+        }
+        else if (errno != EINTR && errno != EAGAIN)
+        {
+            return GLFW_FALSE;
+        }
+        else if (pTimeout && *pTimeout <= 0.0)
+        {
+            // the timeout expired
+            return GLFW_FALSE;
+        }
     }
 }
 
@@ -2730,6 +2737,11 @@ void _glfwPlatformPostEmptyEvent(void)
 
     XSendEvent(_glfw.x11.display, _glfw.x11.helperWindowHandle, False, 0, &event);
     XFlush(_glfw.x11.display);
+
+    // To avoid a race condition between glfwPostEmptyEvent and glfwWaitEvents[Timeout]
+    // (see https://github.com/glfw/glfw/issues/1281),
+    // we use a secondary mechanism to notify that an empty event has been posted:
+    wakeUp(_glfw.x11.eventLoopData.wakeupFds[1]);
 }
 
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)

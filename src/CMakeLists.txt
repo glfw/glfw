@@ -18,13 +18,13 @@ elseif (_GLFW_WIN32)
                      win32_monitor.c win32_time.c win32_thread.c win32_window.c
                      wgl_context.c egl_context.c osmesa_context.c)
 elseif (_GLFW_X11)
-    set(glfw_HEADERS ${common_HEADERS} x11_platform.h xkb_unicode.h posix_time.h
+    set(glfw_HEADERS ${common_HEADERS} x11_platform.h xkb_unicode.h unix_commons.h posix_time.h
                      posix_thread.h glx_context.h egl_context.h osmesa_context.h)
     set(glfw_SOURCES ${common_SOURCES} x11_init.c x11_monitor.c x11_window.c
                      xkb_unicode.c posix_time.c posix_thread.c glx_context.c
                      egl_context.c osmesa_context.c)
 elseif (_GLFW_WAYLAND)
-    set(glfw_HEADERS ${common_HEADERS} wl_platform.h
+    set(glfw_HEADERS ${common_HEADERS} wl_platform.h unix_commons.h
                      posix_time.h posix_thread.h xkb_unicode.h egl_context.h
                      osmesa_context.h)
     set(glfw_SOURCES ${common_SOURCES} wl_init.c wl_monitor.c wl_window.c

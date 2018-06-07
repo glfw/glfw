@@ -27,16 +27,14 @@
 #define _GNU_SOURCE
 
 #include "internal.h"
+#include "unix_commons.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <unistd.h>
 #include <string.h>
-#include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/timerfd.h>
-#include <poll.h>
 
 
 static void handlePing(void* data,
@@ -691,15 +689,9 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
 }
 
 static void
-handleEvents(int timeout)
+handleEvents(double timeout)
 {
     struct wl_display* display = _glfw.wl.display;
-    struct pollfd fds[] = {
-        { wl_display_get_fd(display), POLLIN },
-        { _glfw.wl.timerfd, POLLIN },
-    };
-    ssize_t read_ret;
-    uint64_t repeats, i;
 
     while (wl_display_prepare_read(display) != 0)
         wl_display_dispatch_pending(display);
@@ -719,33 +711,36 @@ handleEvents(int timeout)
         return;
     }
 
-    if (poll(fds, 2, timeout) > 0)
+    if (ppollWithTimeout(_glfw.wl.eventLoopData.fds
+                       , _glfw.wl.eventLoopData.nFds
+                       , timeout) <= 0)
     {
-        if (fds[0].revents & POLLIN)
-        {
-            wl_display_read_events(display);
-            wl_display_dispatch_pending(display);
-        }
-        else
-        {
-            wl_display_cancel_read(display);
-        }
+        // ppoll errored or timeout-ed
+        wl_display_cancel_read(display);
+        return;
+    }
 
-        if (fds[1].revents & POLLIN)
-        {
-            read_ret = read(_glfw.wl.timerfd, &repeats, sizeof(repeats));
-            if (read_ret != 8)
-                return;
-
-            for (i = 0; i < repeats; ++i)
-                _glfwInputKey(_glfw.wl.keyboardFocus, _glfw.wl.keyboardLastKey,
-                              _glfw.wl.keyboardLastScancode, GLFW_REPEAT,
-                              _glfw.wl.xkb.modifiers);
-        }
+    if(_glfw.wl.eventLoopData.fds[1].revents & POLLIN)
+    {
+        wl_display_read_events(display);
+        wl_display_dispatch_pending(display);
     }
     else
     {
         wl_display_cancel_read(display);
+    }
+
+    if (_glfw.wl.seatVersion >= 4 &&
+        (_glfw.wl.eventLoopData.fds[2].revents & POLLIN))
+    {
+        uint64_t repeats;
+        ssize_t read_ret = read(_glfw.wl.timerfd, &repeats, sizeof(repeats));
+        if (read_ret != sizeof(repeats))
+            return;
+        for (uint64_t i = 0; i < repeats; ++i)
+            _glfwInputKey(_glfw.wl.keyboardFocus, _glfw.wl.keyboardLastKey,
+                          _glfw.wl.keyboardLastScancode, GLFW_REPEAT,
+                          _glfw.wl.xkb.modifiers);
     }
 }
 
@@ -1176,22 +1171,26 @@ void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
 
 void _glfwPlatformPollEvents(void)
 {
-    handleEvents(0);
+    handleEvents(0.0);
 }
 
 void _glfwPlatformWaitEvents(void)
 {
-    handleEvents(-1);
+    handleEvents(-1.0);
 }
 
 void _glfwPlatformWaitEventsTimeout(double timeout)
 {
-    handleEvents((int) (timeout * 1e3));
+    handleEvents(timeout);
 }
 
 void _glfwPlatformPostEmptyEvent(void)
 {
     wl_display_sync(_glfw.wl.display);
+    // To avoid a race condition between glfwPostEmptyEvent and glfwWaitEvents[Timeout]
+    // (see https://github.com/glfw/glfw/issues/1281),
+    // we use a secondary mechanism to notify that an empty event has been posted:
+    wakeUp(_glfw.wl.eventLoopData.wakeupFds[1]);
 }
 
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)

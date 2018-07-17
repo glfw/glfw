@@ -141,19 +141,19 @@ typedef enum
 #endif /*DPI_ENUMS_DECLARED*/
 
 // HACK: Define versionhelpers.h functions manually as MinGW lacks the header
-BOOL IsWindowsVersionOrGreater(WORD major, WORD minor, WORD sp);
+BOOL IsWindowsVersionOrGreater(WORD major, WORD minor);
 #define IsWindowsVistaOrGreater()                              \
     IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_VISTA),      \
-                              LOBYTE(_WIN32_WINNT_VISTA), 0)
+                              LOBYTE(_WIN32_WINNT_VISTA))
 #define IsWindows7OrGreater()                                  \
     IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN7),       \
-                              LOBYTE(_WIN32_WINNT_WIN7), 0)
+                              LOBYTE(_WIN32_WINNT_WIN7))
 #define IsWindows8OrGreater()                                  \
     IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN8),       \
-                              LOBYTE(_WIN32_WINNT_WIN8), 0)
+                              LOBYTE(_WIN32_WINNT_WIN8))
 #define IsWindows8Point1OrGreater()                            \
     IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINBLUE),    \
-                              LOBYTE(_WIN32_WINNT_WINBLUE), 0)
+                              LOBYTE(_WIN32_WINNT_WINBLUE))
 
 // HACK: Define macros that some xinput.h variants don't
 #ifndef XINPUT_CAPS_WIRELESS

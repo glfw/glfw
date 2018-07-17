@@ -62,15 +62,42 @@ BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
 
 #endif // _GLFW_BUILD_DLL
 
+typedef LONG NTSTATUS, *PNTSTATUS;
+#define STATUS_SUCCESS ((NTSTATUS)0x00000000)
+#define STATUS_REVISION_MISMATCH ((NTSTATUS)0xC0000059)
+typedef NTSTATUS(WINAPI* RtlVerifyVersionInfoFn)(PRTL_OSVERSIONINFOEXW, ULONG, ULONGLONG);
+
 // HACK: Define versionhelpers.h functions manually as MinGW lacks the header
-BOOL IsWindowsVersionOrGreater(WORD major, WORD minor, WORD sp)
+BOOL IsWindowsVersionOrGreater(WORD major, WORD minor)
 {
-    OSVERSIONINFOEXW osvi = { sizeof(osvi), major, minor, 0, 0, {0}, sp };
-    DWORD mask = VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR;
-    ULONGLONG cond = VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL);
-    cond = VerSetConditionMask(cond, VER_MINORVERSION, VER_GREATER_EQUAL);
-    cond = VerSetConditionMask(cond, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
-    return VerifyVersionInfoW(&osvi, mask, cond);
+	static RtlVerifyVersionInfoFn RtlVerifyVersionInfoFn = NULL;
+	if (!RtlVerifyVersionInfoFn)
+	{
+		HMODULE ntdllModule = GetModuleHandleW(L"ntdll.dll");
+		if (ntdllModule)
+		{
+			RtlVerifyVersionInfoFn = GetProcAddress(ntdllModule, "RtlVerifyVersionInfo");
+		}
+	}
+
+	RTL_OSVERSIONINFOEXW versionInfo = { 0 };
+	NTSTATUS status;
+	ULONGLONG conditionMask = 0;
+	versionInfo.dwOSVersionInfoSize = sizeof(RTL_OSVERSIONINFOEXW);
+	versionInfo.dwMajorVersion = major;
+	versionInfo.dwMinorVersion = minor;
+
+	VER_SET_CONDITION(conditionMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
+	VER_SET_CONDITION(conditionMask, VER_MINORVERSION, VER_GREATER_EQUAL);
+
+	status = RtlVerifyVersionInfoFn(&versionInfo,
+		VER_MAJORVERSION | VER_MINORVERSION,
+		conditionMask);
+
+	if (status == STATUS_SUCCESS)
+		return TRUE;
+
+	return FALSE;
 }
 
 // Load necessary libraries (DLLs)

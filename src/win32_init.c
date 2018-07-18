@@ -65,18 +65,18 @@ BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
 typedef LONG NTSTATUS, *PNTSTATUS;
 #define STATUS_SUCCESS ((NTSTATUS)0x00000000)
 #define STATUS_REVISION_MISMATCH ((NTSTATUS)0xC0000059)
-typedef NTSTATUS(WINAPI* RtlVerifyVersionInfoFn)(PRTL_OSVERSIONINFOEXW, ULONG, ULONGLONG);
+typedef NTSTATUS(WINAPI* PFN_RtlVerifyVersionInfoFn)(PRTL_OSVERSIONINFOEXW, ULONG, ULONGLONG);
 
 // HACK: Define versionhelpers.h functions manually as MinGW lacks the header
 BOOL IsWindowsVersionOrGreater(WORD major, WORD minor)
 {
-	static RtlVerifyVersionInfoFn RtlVerifyVersionInfoFn = NULL;
+	static PFN_RtlVerifyVersionInfoFn RtlVerifyVersionInfoFn = NULL;
 	if (!RtlVerifyVersionInfoFn)
 	{
 		HMODULE ntdllModule = GetModuleHandleW(L"ntdll.dll");
 		if (ntdllModule)
 		{
-			RtlVerifyVersionInfoFn = GetProcAddress(ntdllModule, "RtlVerifyVersionInfo");
+			RtlVerifyVersionInfoFn = (PFN_RtlVerifyVersionInfoFn)GetProcAddress(ntdllModule, "RtlVerifyVersionInfo");
 		}
 	}
 

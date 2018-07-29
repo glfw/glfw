@@ -148,6 +148,8 @@ information on what to include when reporting a bug.
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
  - Export CMake `GLFW_PKG_DEPS` and `GLFW_PKG_LIBS` to parent scope for use
   in client pkg-configs (#1307)
+- Added a `glfw_objlib` CMake OBJECT library target for embedding into static
+  libraries (#1307)
 
 
 ## Contact

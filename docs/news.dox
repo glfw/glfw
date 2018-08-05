@@ -71,7 +71,7 @@ between the current DPI and the platform's default DPI, with @ref
 glfwGetWindowContentScale and @ref glfwGetMonitorContentScale.
 
 Changes of the content scale of a window can be received with the window content
-scale callback, set with @ref glfwSetWindowCloseCallback.
+scale callback, set with @ref glfwSetWindowContentScaleCallback.
 
 @see @ref window_scale
 

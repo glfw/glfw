@@ -4901,6 +4901,8 @@ GLFWAPI const char* glfwGetGamepadName(int jid);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_INVALID_ENUM.
  *
+ *  @thread_safety This function must only be called from the main thread.
+ *
  *  @sa @ref gamepad
  *  @sa @ref glfwUpdateGamepadMappings
  *  @sa @ref glfwJoystickIsGamepad

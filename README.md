@@ -304,6 +304,7 @@ skills.
  - David Avedissian
  - Keith Bauer
  - John Bartholomew
+ - Coşku Baş
  - Niklas Behrens
  - Niklas Bergström
  - Denis Bernard

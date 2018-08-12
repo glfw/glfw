@@ -351,10 +351,12 @@ static void updateWindowStyles(const _GLFWwindow* window)
 //
 static void updateFramebufferTransparency(const _GLFWwindow* window)
 {
+    BOOL enabled;
+
     if (!IsWindowsVistaOrGreater())
         return;
 
-    if (_glfwIsCompositionEnabledWin32())
+    if (SUCCEEDED(DwmIsCompositionEnabled(&enabled)) && enabled)
     {
         HRGN region = CreateRectRgn(0, 0, -1, -1);
         DWM_BLURBEHIND bb = {0};
@@ -1221,20 +1223,6 @@ void _glfwUnregisterWindowClassWin32(void)
     UnregisterClassW(_GLFW_WNDCLASSNAME, GetModuleHandleW(NULL));
 }
 
-// Returns whether desktop compositing is enabled
-//
-GLFWbool _glfwIsCompositionEnabledWin32(void)
-{
-    if (IsWindowsVistaOrGreater())
-    {
-        BOOL enabled;
-        if (SUCCEEDED(DwmIsCompositionEnabled(&enabled)))
-            return enabled;
-    }
-
-    return FALSE;
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -1632,7 +1620,15 @@ int _glfwPlatformWindowHovered(_GLFWwindow* window)
 
 int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
 {
-    return window->win32.transparent && _glfwIsCompositionEnabledWin32();
+    BOOL enabled;
+
+    if (!window->win32.transparent)
+        return GLFW_FALSE;
+
+    if (!IsWindowsVistaOrGreater())
+        return GLFW_FALSE;
+
+    return SUCCEEDED(DwmIsCompositionEnabled(&enabled)) && enabled;
 }
 
 void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)

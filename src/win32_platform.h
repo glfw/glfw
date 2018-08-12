@@ -396,7 +396,6 @@ typedef struct _GLFWmutexWin32
 
 GLFWbool _glfwRegisterWindowClassWin32(void);
 void _glfwUnregisterWindowClassWin32(void);
-GLFWbool _glfwIsCompositionEnabledWin32(void);
 
 WCHAR* _glfwCreateWideStringFromUTF8Win32(const char* source);
 char* _glfwCreateUTF8FromWideStringWin32(const WCHAR* source);

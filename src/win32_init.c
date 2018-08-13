@@ -339,8 +339,8 @@ static HWND createHelperWindow(void)
         return NULL;
     }
 
-    // HACK: The first call to ShowWindow is ignored if the parent process
-    //       passed along a STARTUPINFO, so clear that flag with a no-op call
+    // HACK: The command to the first ShowWindow call is ignored if the parent
+    //       process passed along a STARTUPINFO, so clear that with a no-op call
     ShowWindow(window, SW_HIDE);
 
     // Register for HID device notifications

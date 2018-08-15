@@ -396,29 +396,6 @@ static void updateFramebufferTransparency(const _GLFWwindow* window)
     }
 }
 
-// Translates a GLFW standard cursor to a resource ID
-//
-static LPWSTR translateCursorShape(int shape)
-{
-    switch (shape)
-    {
-        case GLFW_ARROW_CURSOR:
-            return IDC_ARROW;
-        case GLFW_IBEAM_CURSOR:
-            return IDC_IBEAM;
-        case GLFW_CROSSHAIR_CURSOR:
-            return IDC_CROSS;
-        case GLFW_HAND_CURSOR:
-            return IDC_HAND;
-        case GLFW_HRESIZE_CURSOR:
-            return IDC_SIZEWE;
-        case GLFW_VRESIZE_CURSOR:
-            return IDC_SIZENS;
-    }
-
-    return NULL;
-}
-
 // Retrieves and translates modifier keys
 //
 static int getKeyMods(void)
@@ -1862,8 +1839,24 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
-    cursor->win32.handle =
-        CopyCursor(LoadCursorW(NULL, translateCursorShape(shape)));
+    LPCWSTR name = NULL;
+
+    if (shape == GLFW_ARROW_CURSOR)
+        name = IDC_ARROW;
+    else if (shape == GLFW_IBEAM_CURSOR)
+        name = IDC_IBEAM;
+    else if (shape == GLFW_CROSSHAIR_CURSOR)
+        name = IDC_CROSS;
+    else if (shape == GLFW_HAND_CURSOR)
+        name = IDC_HAND;
+    else if (shape == GLFW_HRESIZE_CURSOR)
+        name = IDC_SIZEWE;
+    else if (shape == GLFW_VRESIZE_CURSOR)
+        name = IDC_SIZENS;
+    else
+        return GLFW_FALSE;
+
+    cursor->win32.handle = CopyCursor(LoadCursorW(NULL, name));
     if (!cursor->win32.handle)
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,

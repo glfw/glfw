@@ -175,29 +175,6 @@ static Bool isSelPropNewValueNotify(Display* display, XEvent* event, XPointer po
            event->xproperty.atom == notification->xselection.property;
 }
 
-// Translates a GLFW standard cursor to a font cursor shape
-//
-static int translateCursorShape(int shape)
-{
-    switch (shape)
-    {
-        case GLFW_ARROW_CURSOR:
-            return XC_left_ptr;
-        case GLFW_IBEAM_CURSOR:
-            return XC_xterm;
-        case GLFW_CROSSHAIR_CURSOR:
-            return XC_crosshair;
-        case GLFW_HAND_CURSOR:
-            return XC_hand1;
-        case GLFW_HRESIZE_CURSOR:
-            return XC_sb_h_double_arrow;
-        case GLFW_VRESIZE_CURSOR:
-            return XC_sb_v_double_arrow;
-    }
-
-    return 0;
-}
-
 // Translates an X event modifier state mask
 //
 static int translateState(int state)
@@ -2799,8 +2776,24 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
-    cursor->x11.handle = XCreateFontCursor(_glfw.x11.display,
-                                           translateCursorShape(shape));
+    int native = 0;
+
+    if (shape == GLFW_ARROW_CURSOR)
+        native = XC_left_ptr;
+    else if (shape == GLFW_IBEAM_CURSOR)
+        native = XC_xterm;
+    else if (shape == GLFW_CROSSHAIR_CURSOR)
+        native = XC_crosshair;
+    else if (shape == GLFW_HAND_CURSOR)
+        native = XC_hand1;
+    else if (shape == GLFW_HRESIZE_CURSOR)
+        native = XC_sb_h_double_arrow;
+    else if (shape == GLFW_VRESIZE_CURSOR)
+        native = XC_sb_v_double_arrow;
+    else
+        return GLFW_FALSE;
+
+    cursor->x11.handle = XCreateFontCursor(_glfw.x11.display, native);
     if (!cursor->x11.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,

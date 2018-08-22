@@ -231,23 +231,6 @@ static int translateKey(int scancode)
     return _glfw.x11.keycodes[scancode];
 }
 
-// Return the GLFW window corresponding to the specified X11 window
-//
-static _GLFWwindow* findWindowByHandle(Window handle)
-{
-    _GLFWwindow* window;
-
-    if (XFindContext(_glfw.x11.display,
-                     handle,
-                     _glfw.x11.context,
-                     (XPointer*) &window) != 0)
-    {
-        return NULL;
-    }
-
-    return window;
-}
-
 // Sends an EWMH or ICCCM event to the window manager
 //
 static void sendEventToWM(_GLFWwindow* window, Atom type,
@@ -1264,8 +1247,10 @@ static void processEvent(XEvent *event)
         return;
     }
 
-    window = findWindowByHandle(event->xany.window);
-    if (window == NULL)
+    if (XFindContext(_glfw.x11.display,
+                     event->xany.window,
+                     _glfw.x11.context,
+                     (XPointer*) &window) != 0)
     {
         // This is an event for a window that has already been destroyed
         return;

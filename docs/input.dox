@@ -366,8 +366,7 @@ glfwDestroyCursor(cursor);
 
 Cursor destruction always succeeds.  If the cursor is current for any window,
 that window will revert to the default cursor.  This does not affect the cursor
-mode.  All remaining cursors remaining are destroyed when @ref glfwTerminate is
-called.
+mode.  All remaining cursors are destroyed when @ref glfwTerminate is called.
 
 
 @subsubsection cursor_set Cursor setting

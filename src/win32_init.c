@@ -309,6 +309,7 @@ static void createKeyTables(void)
     _glfw.win32.keycodes[0x053] = GLFW_KEY_KP_DECIMAL;
     _glfw.win32.keycodes[0x135] = GLFW_KEY_KP_DIVIDE;
     _glfw.win32.keycodes[0x11C] = GLFW_KEY_KP_ENTER;
+    _glfw.win32.keycodes[0x059] = GLFW_KEY_KP_EQUAL;
     _glfw.win32.keycodes[0x037] = GLFW_KEY_KP_MULTIPLY;
     _glfw.win32.keycodes[0x04A] = GLFW_KEY_KP_SUBTRACT;
 

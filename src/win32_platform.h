@@ -192,6 +192,35 @@ BOOL IsWindowsVersionOrGreater(WORD major, WORD minor, WORD sp);
  #define DIDFT_OPTIONAL	0x80000000
 #endif
 
+// touch functionality
+#if WINVER < 0x0601
+
+#define WM_TOUCH 0x0240
+
+DECLARE_HANDLE(HTOUCHINPUT);
+
+typedef struct tagTOUCHINPUT
+{
+	LONG x;
+	LONG y;
+	HANDLE hSource;
+	DWORD dwID;
+	DWORD dwFlags;
+	DWORD dwMask;
+	DWORD dwTime;
+	ULONG_PTR dwExtraInfo;
+	DWORD cxContact;
+	DWORD cyContext;
+} TOUCHINPUT, *PTOUCHINPUT;
+
+#define TOUCH_COORD_TO_PIXEL(x) ((x) / 100)
+
+#define TOUCHEVENTF_MOVE    0x0001
+#define TOUCHEVENTF_DOWN    0x0002
+#define TOUCHEVENTF_UP      0x0004
+
+#endif /*WINVER < 0x0601*/
+
 // winmm.dll function pointer typedefs
 typedef DWORD (WINAPI * PFN_timeGetTime)(void);
 #define timeGetTime _glfw.win32.winmm.GetTime
@@ -209,8 +238,16 @@ typedef HRESULT (WINAPI * PFN_DirectInput8Create)(HINSTANCE,DWORD,REFIID,LPVOID*
 // user32.dll function pointer typedefs
 typedef BOOL (WINAPI * PFN_SetProcessDPIAware)(void);
 typedef BOOL (WINAPI * PFN_ChangeWindowMessageFilterEx)(HWND,UINT,DWORD,CHANGEFILTERSTRUCT*);
+typedef BOOL(WINAPI * PFN_GetTouchInputInfo)(HTOUCHINPUT, UINT, PTOUCHINPUT, int);
+typedef BOOL(WINAPI * PFN_CloseTouchInputHandle)(HTOUCHINPUT);
+typedef BOOL(WINAPI * PFN_RegisterTouchWindow)(HWND, LONG);
+typedef BOOL(WINAPI * PFN_UnregisterTouchWindow)(HWND);
 #define SetProcessDPIAware _glfw.win32.user32.SetProcessDPIAware_
 #define ChangeWindowMessageFilterEx _glfw.win32.user32.ChangeWindowMessageFilterEx_
+#define GetTouchInputInfo     _glfw.win32.user32.GetTouchInputInfo_
+#define CloseTouchInputHandle _glfw.win32.user32.CloseTouchInputHandle_
+#define RegisterTouchWindow   _glfw.win32.user32.RegisterTouchWindow_
+#define UnregisterTouchWindow _glfw.win32.user32.UnregisterTouchWindow_
 
 // dwmapi.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_DwmIsCompositionEnabled)(BOOL*);
@@ -326,7 +363,15 @@ typedef struct _GLFWlibraryWin32
         HINSTANCE                       instance;
         PFN_SetProcessDPIAware          SetProcessDPIAware_;
         PFN_ChangeWindowMessageFilterEx ChangeWindowMessageFilterEx_;
+		PFN_GetTouchInputInfo           GetTouchInputInfo_;
+		PFN_CloseTouchInputHandle       CloseTouchInputHandle_;
+		PFN_RegisterTouchWindow         RegisterTouchWindow_;
+		PFN_UnregisterTouchWindow       UnregisterTouchWindow_;
     } user32;
+
+	struct {
+		GLFWbool                        available;
+	} touch;
 
     struct {
         HINSTANCE                       instance;

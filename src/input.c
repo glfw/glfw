@@ -108,6 +108,18 @@ static _GLFWmapping* findValidMapping(const _GLFWjoystick* js)
     return mapping;
 }
 
+// Set touch input for the specified window
+static void setTouchInput(_GLFWwindow* window, int enabled)
+{
+	if (window->touchInput == enabled)
+		return;
+
+	_glfwPlatformSetTouchInput(window, enabled);
+
+	window->touchInput = enabled;
+}
+
+
 // Parses an SDL_GameControllerDB line and adds it to the mapping list
 //
 static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
@@ -401,6 +413,13 @@ void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value)
     js->hats[hat] = value;
 }
 
+// Notifies shared code of the new value of a touch event
+//
+void _glfwInputTouch(_GLFWwindow* window, GLFWtouch* touchPoints, int count)
+{
+	if (window->callbacks.touch)
+		window->callbacks.touch((GLFWwindow*)window, touchPoints, count);
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -475,6 +494,8 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* handle, int mode)
             return window->stickyMouseButtons;
         case GLFW_LOCK_KEY_MODS:
             return window->lockKeyMods;
+		case GLFW_TOUCH:
+			return window->touchInput;
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode 0x%08X", mode);
@@ -1072,6 +1093,15 @@ GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun cbfun)
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     _GLFW_SWAP_POINTERS(_glfw.callbacks.joystick, cbfun);
     return cbfun;
+}
+
+GLFWAPI GLFWtouchfun glfwSetTouchCallback(GLFWwindow* handle, GLFWtouchfun cbfun)
+{
+	_GLFWwindow* window = (_GLFWwindow*)handle;
+	_GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+	_GLFW_SWAP_POINTERS(window->callbacks.touch, cbfun);
+	setTouchInput(window, 1);
+	return cbfun;
 }
 
 GLFWAPI int glfwUpdateGamepadMappings(const char* string)

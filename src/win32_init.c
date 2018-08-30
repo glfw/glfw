@@ -100,6 +100,22 @@ static GLFWbool loadLibraries(void)
         GetProcAddress(_glfw.win32.user32.instance, "SetProcessDPIAware");
     _glfw.win32.user32.ChangeWindowMessageFilterEx_ = (PFN_ChangeWindowMessageFilterEx)
         GetProcAddress(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
+    _glfw.win32.user32.GetTouchInputInfo_ = (PFN_GetTouchInputInfo)
+        GetProcAddress(_glfw.win32.user32.instance, "GetTouchInputInfo");
+    _glfw.win32.user32.CloseTouchInputHandle_ = (PFN_CloseTouchInputHandle)
+        GetProcAddress(_glfw.win32.user32.instance, "CloseTouchInputHandle");
+    _glfw.win32.user32.RegisterTouchWindow_ = (PFN_RegisterTouchWindow)
+        GetProcAddress(_glfw.win32.user32.instance, "RegisterTouchWindow");
+    _glfw.win32.user32.UnregisterTouchWindow_ = (PFN_UnregisterTouchWindow)
+        GetProcAddress(_glfw.win32.user32.instance, "UnregisterTouchWindow");
+
+    if (_glfw.win32.user32.GetTouchInputInfo_ &&
+        _glfw.win32.user32.CloseTouchInputHandle_ &&
+        _glfw.win32.user32.RegisterTouchWindow_ &&
+        _glfw.win32.user32.UnregisterTouchWindow_)
+    {
+        _glfw.win32.touch.available = GLFW_TRUE;
+    }
 
     _glfw.win32.dinput8.instance = LoadLibraryA("dinput8.dll");
     if (_glfw.win32.dinput8.instance)

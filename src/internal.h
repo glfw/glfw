@@ -387,6 +387,7 @@ struct _GLFWwindow
     GLFWbool            stickyKeys;
     GLFWbool            stickyMouseButtons;
     GLFWbool            lockKeyMods;
+	GLFWbool            touchInput;
     int                 cursorMode;
     char                mouseButtons[GLFW_MOUSE_BUTTON_LAST + 1];
     char                keys[GLFW_KEY_LAST + 1];
@@ -413,6 +414,7 @@ struct _GLFWwindow
         GLFWcharfun             character;
         GLFWcharmodsfun         charmods;
         GLFWdropfun             drop;
+		GLFWtouchfun            touch;
     } callbacks;
 
     // This is defined in the window API's platform.h
@@ -596,6 +598,7 @@ extern _GLFWlibrary _glfw;
 int _glfwPlatformInit(void);
 void _glfwPlatformTerminate(void);
 const char* _glfwPlatformGetVersionString(void);
+void _glfwPlatformSetTouchInput(_GLFWwindow* window, int enabled);
 
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos);
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos);
@@ -725,6 +728,7 @@ void _glfwInputJoystick(_GLFWjoystick* js, int event);
 void _glfwInputJoystickAxis(_GLFWjoystick* js, int axis, float value);
 void _glfwInputJoystickButton(_GLFWjoystick* js, int button, char value);
 void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value);
+void _glfwInputTouch(_GLFWwindow* window, GLFWtouch* touchPoints, int count);
 
 void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement);
 void _glfwInputMonitorWindow(_GLFWmonitor* monitor, _GLFWwindow* window);

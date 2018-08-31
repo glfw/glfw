@@ -73,6 +73,10 @@ glfwGetWindowContentScale and @ref glfwGetMonitorContentScale.
 Changes of the content scale of a window can be received with the window content
 scale callback, set with @ref glfwSetWindowContentScaleCallback.
 
+The @ref GLFW_SCALE_TO_MONITOR window hint enables automatic resizing of a
+window by the content scale of the monitor it is placed, on platforms like
+Windows and X11 where this is necessary.
+
 @see @ref window_scale
 
 

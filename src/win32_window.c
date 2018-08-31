@@ -1063,6 +1063,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_GETDPISCALEDSIZE:
         {
+            if (window->win32.scaleToMonitor)
+                break;
+
             // Adjust the window size to keep the client area size constant
             if (_glfwIsWindows10CreatorsUpdateOrGreaterWin32())
             {
@@ -1230,15 +1233,34 @@ static int createNativeWindow(_GLFWwindow* window,
                                     WM_COPYGLOBALDATA, MSGFLT_ALLOW, NULL);
     }
 
-    // Adjust window size to account for the DPI scaled window frame
+    window->win32.scaleToMonitor = wndconfig->scaleToMonitor;
+
+    // Adjust window size to account for DPI scaling of the window frame and
+    // optionally DPI scaling of the client area
     // This cannot be done until we know what monitor it was placed on
-    if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32() && !window->monitor)
+    if (!window->monitor)
     {
         RECT rect = { 0, 0, wndconfig->width, wndconfig->height };
+
+        if (wndconfig->scaleToMonitor)
+        {
+            float xscale, yscale;
+            _glfwPlatformGetWindowContentScale(window, &xscale, &yscale);
+            rect.right = (int) (rect.right * xscale);
+            rect.bottom = (int) (rect.bottom * yscale);
+        }
+
         ClientToScreen(window->win32.handle, (POINT*) &rect.left);
         ClientToScreen(window->win32.handle, (POINT*) &rect.right);
-        AdjustWindowRectExForDpi(&rect, style, FALSE, exStyle,
-                                 GetDpiForWindow(window->win32.handle));
+
+        if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+        {
+            AdjustWindowRectExForDpi(&rect, style, FALSE, exStyle,
+                                     GetDpiForWindow(window->win32.handle));
+        }
+        else
+            AdjustWindowRectEx(&rect, style, FALSE, exStyle);
+
         SetWindowPos(window->win32.handle, NULL,
                      rect.left, rect.top,
                      rect.right - rect.left, rect.bottom - rect.top,

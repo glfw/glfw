@@ -238,6 +238,17 @@ does not affect window decorations.  Possible values are `GLFW_TRUE` and
 __GLFW_FOCUS_ON_SHOW__ specifies whether the window will be given input
 focus when @ref glfwShowWindow is called. Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 
+@anchor GLFW_SCALE_TO_MONITOR
+__GLFW_SCALE_TO_MONITOR__ specified whether the window content area should be
+resized based on the [monitor content scale](@ref monitor_scale) of any monitor
+it is placed on.  This includes the initial placement when the window is
+created.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+
+This hint only has an effect on platforms where screen coordinates and pixels
+always map 1:1 such as Windows and X11.  On platforms like macOS the resolution
+of the framebuffer is changed independently of the window size.
+
+
 @subsubsection window_hints_fb Framebuffer related hints
 
 @anchor GLFW_RED_BITS
@@ -493,6 +504,7 @@ GLFW_MAXIMIZED                | `GLFW_FALSE`                | `GLFW_TRUE` or `GL
 GLFW_CENTER_CURSOR            | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_TRANSPARENT_FRAMEBUFFER  | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_FOCUS_ON_SHOW            | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_SCALE_TO_MONITOR         | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_RED_BITS                 | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 GLFW_GREEN_BITS               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 GLFW_BLUE_BITS                | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
@@ -715,6 +727,12 @@ void window_content_scale_callback(GLFWwindow* window, float xscale, float yscal
     set_interface_scale(xscale, yscale);
 }
 @endcode
+
+On platforms where pixels and screen coordinates always map 1:1, the window
+will need to be resized to appear the same size when it is moved to a monitor
+with a different content scale.  To have this done automatically both when the
+window is created and when its content scale later changes, set the @ref
+GLFW_SCALE_TO_MONITOR window hint.
 
 
 @subsection window_sizelimits Window size limits

@@ -592,6 +592,15 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                                    const _GLFWwndconfig* wndconfig,
                                    Visual* visual, int depth)
 {
+    int width = wndconfig->width;
+    int height = wndconfig->height;
+
+    if (wndconfig->scaleToMonitor)
+    {
+        width *= _glfw.x11.contentScaleX;
+        height *= _glfw.x11.contentScaleY;
+    }
+
     // Create a colormap based on the visual used by the current context
     window->x11.colormap = XCreateColormap(_glfw.x11.display,
                                            _glfw.x11.root,
@@ -617,7 +626,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         window->x11.handle = XCreateWindow(_glfw.x11.display,
                                            _glfw.x11.root,
                                            0, 0,
-                                           wndconfig->width, wndconfig->height,
+                                           width, height,
                                            0,      // Border width
                                            depth,  // Color depth
                                            InputOutput,
@@ -720,7 +729,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         XFree(hints);
     }
 
-    updateNormalHints(window, wndconfig->width, wndconfig->height);
+    updateNormalHints(window, width, height);
 
     // Set ICCCM WM_CLASS property
     {

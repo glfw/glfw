@@ -268,6 +268,7 @@ struct _GLFWwndconfig
     GLFWbool      maximized;
     GLFWbool      centerCursor;
     GLFWbool      focusOnShow;
+    GLFWbool      scaleToMonitor;
     struct {
         GLFWbool  retina;
         char      frameName[256];

@@ -57,6 +57,8 @@ int main(int argc, char** argv)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
+    glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
+
     window = glfwCreateWindow(400, 400, "Opacity", NULL, NULL);
     if (!window)
     {

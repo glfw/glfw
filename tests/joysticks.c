@@ -180,6 +180,8 @@ int main(void)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
+    glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
+
     window = glfwCreateWindow(800, 600, "Joystick Test", NULL, NULL);
     if (!window)
     {

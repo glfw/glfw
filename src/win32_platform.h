@@ -146,10 +146,10 @@ typedef enum
 } MONITOR_DPI_TYPE;
 #endif /*DPI_ENUMS_DECLARED*/
 
-#ifndef _DPI_AWARENESS_CONTEXTS_
+#ifndef DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
 DECLARE_HANDLE(DPI_AWARENESS_CONTEXT);
 #define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 ((DPI_AWARENESS_CONTEXT) -4)
-#endif /*_DPI_AWARENESS_CONTEXTS_*/
+#endif /*DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2*/
 
 // HACK: Define versionhelpers.h functions manually as MinGW lacks the header
 #define IsWindowsXPOrGreater()                                 \

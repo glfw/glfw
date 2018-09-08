@@ -24,9 +24,6 @@
 //
 //========================================================================
 
-#ifndef _glfw3_mir_platform_h_
-#define _glfw3_mir_platform_h_
-
 #include <sys/queue.h>
 #include <pthread.h>
 #include <dlfcn.h>
@@ -47,7 +44,7 @@ typedef struct VkMirWindowCreateInfoKHR
 typedef VkResult (APIENTRY *PFN_vkCreateMirWindowKHR)(VkInstance,const VkMirWindowCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceMirPresentationSupportKHR)(VkPhysicalDevice,uint32_t,MirConnection*);
 
-#include "posix_tls.h"
+#include "posix_thread.h"
 #include "posix_time.h"
 #include "linux_joystick.h"
 #include "xkb_unicode.h"
@@ -134,4 +131,3 @@ extern void _glfwPollMonitorsMir(void);
 extern void _glfwInitEventQueueMir(EventQueue* queue);
 extern void _glfwDeleteEventQueueMir(EventQueue* queue);
 
-#endif // _glfw3_mir_platform_h_

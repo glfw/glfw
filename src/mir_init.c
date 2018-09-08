@@ -231,7 +231,7 @@ const char* _glfwPlatformGetVersionString(void)
 #else
         " gettimeofday"
 #endif
-        " /dev/js"
+        " evdev"
 #if defined(_GLFW_BUILD_DLL)
         " shared"
 #endif

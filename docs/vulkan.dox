@@ -1,7 +1,7 @@
 /*!
 
 @page vulkan_guide Vulkan guide
- 
+
 @tableofcontents
 
 This guide is intended to fill the gaps between the [Vulkan
@@ -10,11 +10,9 @@ documentation and is not a replacement for either.  It assumes some familiarity
 with Vulkan concepts like loaders, devices, queues and surfaces and leaves it to
 the Vulkan documentation to explain the details of Vulkan functions.
 
-To develop for Vulkan you should install an SDK for your platform, for example
-the [LunarG Vulkan SDK](https://vulkan.lunarg.com/) for Windows and Linux or
-[MoltenVK](https://moltengl.com/moltenvk/) for macOS.  Apart from headers and
-link libraries, they should also provide the validation layers necessary for
-development.
+To develop for Vulkan you should download the [LunarG Vulkan
+SDK](https://vulkan.lunarg.com/) for your platform.  Apart from headers and link
+libraries, they also provide the validation layers necessary for development.
 
 The GLFW library does not need the Vulkan SDK to enable support for Vulkan.
 However, any Vulkan-specific test and example programs are built only if the
@@ -34,19 +32,25 @@ are also guides for the other areas of the GLFW API.
 
 By default, GLFW will look for the Vulkan loader on demand at runtime via its
 standard name (`vulkan-1.dll` on Windows, `libvulkan.so.1` on Linux and other
-Unix-like systems).  This means that GLFW does not need to be linked against the
-loader.  However, it also means that if you are using the static library form of
-the Vulkan loader GLFW will either fail to find it or (worse) use the wrong one.
+Unix-like systems and `libvulkan.1.dylib` on macOS).  This means that GLFW does
+not need to be linked against the loader.  However, it also means that if you
+are using the static library form of the Vulkan loader GLFW will either fail to
+find it or (worse) use the wrong one.
 
 The @ref GLFW_VULKAN_STATIC CMake option makes GLFW link directly against the
-static form.  Not linking against the Vulkan loader will then be a compile-time
-error.
+static library form.  Not linking against the Vulkan loader will then be
+a compile-time error.
 
-@macos MoltenVK only provides the static library form of the Vulkan loader, but
-GLFW is able to find it without @ref GLFW_VULKAN_STATIC as long as it is linked
-into any of the binaries already loaded into the process.  As it is a static
-library, you must also link against its dependencies: the `Cocoa`, `Metal` and
-`QuartzCore` frameworks and the `libc++` library.
+@macos Because the Vulkan loader and ICD are not installed globally on macOS,
+you need to set up the application bundle according to the LunarG SDK
+documentation.  To help the GLFW CMake files find the SDK, you can set the
+`VULKAN_SDK` environment variable to the `macOS` subdirectory of the SDK.
+
+@code{.sh}
+env VULKAN_SDK=/example/path/to/vulkansdk/macOS cmake .
+@endcode
+
+This is explained in more detail in the LunarG Vulkan SDK release notes.
 
 
 @section vulkan_include Including the Vulkan and GLFW header files
@@ -160,9 +164,9 @@ If it fails it will return `NULL` and GLFW will not be able to create Vulkan
 window surfaces.  You can still use Vulkan for off-screen rendering and compute
 work.
 
-The returned array will always contain `VK_KHR_surface`, so if you don't
-require any additional extensions you can pass this list directly to the
-`VkInstanceCreateInfo` struct.
+If successful the returned array will always include `VK_KHR_surface`, so if
+you don't require any additional extensions you can pass this list directly to
+the `VkInstanceCreateInfo` struct.
 
 @code
 VkInstanceCreateInfo ici;
@@ -176,7 +180,7 @@ ici.ppEnabledExtensionNames = extensions;
 Additional extensions may be required by future versions of GLFW.  You should
 check whether any extensions you wish to enable are already in the returned
 array, as it is an error to specify an extension more than once in the
-`VkInstanceCreateInfo` struct. 
+`VkInstanceCreateInfo` struct.
 
 
 @section vulkan_present Querying for Vulkan presentation support
@@ -193,7 +197,7 @@ if (glfwGetPhysicalDevicePresentationSupport(instance, physical_device, queue_fa
 }
 @endcode
 
-The `VK_KHR_surface` extension additionally provides the 
+The `VK_KHR_surface` extension additionally provides the
 `vkGetPhysicalDeviceSurfaceSupportKHR` function, which performs the same test on
 an existing Vulkan surface.
 
@@ -225,6 +229,10 @@ if (err)
     // Window surface creation failed
 }
 @endcode
+
+If an OpenGL or OpenGL ES context was created on the window, the context has
+ownership of the presentation on the window and a Vulkan surface cannot be
+created.
 
 It is your responsibility to destroy the surface.  GLFW does not destroy it for
 you.  Call `vkDestroySurfaceKHR` function from the same extension to destroy it.

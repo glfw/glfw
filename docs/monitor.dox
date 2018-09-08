@@ -85,15 +85,17 @@ void monitor_callback(GLFWmonitor* monitor, int event)
 }
 @endcode
 
-If a monitor is disconnected, any windows that are full screen on it get forced
-into windowed mode.
+If a monitor is disconnected, all windows that are full screen on it will be
+switched to windowed mode before the callback is called.  Only @ref
+glfwGetMonitorName and @ref glfwGetMonitorUserPointer will return useful values
+for a disconnected monitor and only before the monitor callback returns.
 
 
 @section monitor_properties Monitor properties
 
 Each monitor has a current video mode, a list of supported video modes,
-a virtual position, a human-readable name, an estimated physical size and
-a gamma ramp.
+a virtual position, a human-readable name, a user pointer, an estimated physical
+size and a gamma ramp.
 
 
 @subsection monitor_modes Video modes
@@ -131,16 +133,33 @@ current _resolution_, i.e. the width and height of its current
 [video mode](@ref monitor_modes).
 
 @code
-int widthMM, heightMM;
-glfwGetMonitorPhysicalSize(monitor, &widthMM, &heightMM);
+int width_mm, height_mm;
+glfwGetMonitorPhysicalSize(monitor, &width_mm, &height_mm);
 @endcode
 
-This can, for example, be used together with the current video mode to calculate
-the DPI of a monitor. 
+While this can be used to calculate the raw DPI of a monitor, this is often not
+useful.  Instead use the [monitor content scale](@ref monitor_scale) and
+[window content scale](@ref window_scale) to scale your content.
+
+
+@subsection monitor_scale Content scale
+
+The content scale for a monitor can be retrieved with @ref
+glfwGetMonitorContentScale.
 
 @code
-const double dpi = mode->width / (widthMM / 25.4);
+float xscale, yscale;
+glfwGetMonitorContentScale(monitor, &xscale, &yscale);
 @endcode
+
+The content scale is the ratio between the current DPI and the platform's
+default DPI.  If you scale all pixel dimensions by this scale then your content
+should appear at an appropriate size.  This is especially important for text and
+any UI elements.
+
+The content scale may depend on both the monitor resolution and pixel density
+and on user settings.  It may be very different from the raw DPI calculated from
+the physical size and current resolution.
 
 
 @subsection monitor_pos Virtual position
@@ -170,6 +189,17 @@ and make may have the same name.  Only the monitor handle is guaranteed to be
 unique, and only until that monitor is disconnected.
 
 
+@subsection monitor_userptr User pointer
+
+Each monitor has a user pointer that can be set with @ref
+glfwSetMonitorUserPointer and queried with @ref glfwGetMonitorUserPointer.  This
+can be used for any purpose you need and will not be modified by GLFW.  The
+value will be kept until the monitor is disconnected or until the library is
+terminated.
+
+The initial value of the pointer is `NULL`.
+
+
 @subsection monitor_gamma Gamma ramp
 
 The gamma ramp of a monitor can be set with @ref glfwSetGammaRamp, which accepts
@@ -195,8 +225,8 @@ glfwSetGammaRamp(monitor, &ramp);
 The gamma ramp data is copied before the function returns, so there is no need
 to keep it around once the ramp has been set.
 
-@note It is recommended to use gamma ramps of size 256, as that is the size
-supported by all graphics cards on all platforms.
+It is recommended that your gamma ramp have the same size as the current gamma
+ramp for that monitor.
 
 The current gamma ramp for a monitor is returned by @ref glfwGetGammaRamp.  See
 the reference documentation for the lifetime of the returned structure.

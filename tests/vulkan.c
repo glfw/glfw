@@ -738,7 +738,7 @@ static void demo_prepare_buffers(struct demo *demo) {
         } else if (swapchainExtent.width > surfCapabilities.maxImageExtent.width) {
             swapchainExtent.width = surfCapabilities.maxImageExtent.width;
         }
-        
+
         if (swapchainExtent.height < surfCapabilities.minImageExtent.height) {
             swapchainExtent.height = surfCapabilities.minImageExtent.height;
         } else if (swapchainExtent.height > surfCapabilities.maxImageExtent.height) {
@@ -1721,7 +1721,7 @@ static void demo_init_vk(struct demo *demo) {
         err = vkEnumerateInstanceLayerProperties(&instance_layer_count, NULL);
         assert(!err);
 
-        instance_validation_layers = instance_validation_layers_alt1;
+        instance_validation_layers = (const char**) instance_validation_layers_alt1;
         if (instance_layer_count > 0) {
             VkLayerProperties *instance_layers =
                     malloc(sizeof (VkLayerProperties) * instance_layer_count);
@@ -1740,7 +1740,8 @@ static void demo_init_vk(struct demo *demo) {
                 validation_layer_count = 1;
             } else {
                 // use alternative set of validation layers
-                instance_validation_layers = instance_validation_layers_alt2;
+                instance_validation_layers =
+                    (const char**) instance_validation_layers_alt2;
                 demo->enabled_layer_count = ARRAY_SIZE(instance_validation_layers_alt2);
                 validation_found = demo_check_layers(
                     ARRAY_SIZE(instance_validation_layers_alt2),

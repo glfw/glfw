@@ -43,6 +43,8 @@
 typedef struct _GLFWjoyelementNS
 {
     IOHIDElementRef native;
+    uint32_t        usage;
+    int             index;
     long            minimum;
     long            maximum;
 
@@ -69,6 +71,25 @@ static long getElementValue(_GLFWjoystick* js, _GLFWjoyelementNS* element)
     return value;
 }
 
+// Comparison function for matching the SDL element order
+//
+static CFComparisonResult compareElements(const void* fp,
+                                          const void* sp,
+                                          void* user)
+{
+    const _GLFWjoyelementNS* fe = fp;
+    const _GLFWjoyelementNS* se = sp;
+    if (fe->usage < se->usage)
+        return kCFCompareLessThan;
+    if (fe->usage > se->usage)
+        return kCFCompareGreaterThan;
+    if (fe->index < se->index)
+        return kCFCompareLessThan;
+    if (fe->index > se->index)
+        return kCFCompareGreaterThan;
+    return kCFCompareEqualTo;
+}
+
 // Removes the specified joystick
 //
 static void closeJoystick(_GLFWjoystick* js)
@@ -91,7 +112,7 @@ static void closeJoystick(_GLFWjoystick* js)
     CFRelease(js->ns.hats);
 
     _glfwFreeJoystick(js);
-    _glfwInputJoystick(_GLFW_JOYSTICK_ID(js), GLFW_DISCONNECTED);
+    _glfwInputJoystick(js, GLFW_DISCONNECTED);
 }
 
 // Callback for user-initiated joystick addition
@@ -103,8 +124,10 @@ static void matchCallback(void* context,
 {
     int jid;
     char name[256];
+    char guid[33];
     CFIndex i;
-    CFStringRef productKey;
+    CFTypeRef property;
+    uint32_t vendor = 0, product = 0, version = 0;
     _GLFWjoystick* js;
     CFMutableArrayRef axes, buttons, hats;
 
@@ -118,10 +141,10 @@ static void matchCallback(void* context,
     buttons = CFArrayCreateMutable(NULL, 0, NULL);
     hats    = CFArrayCreateMutable(NULL, 0, NULL);
 
-    productKey = IOHIDDeviceGetProperty(device, CFSTR(kIOHIDProductKey));
-    if (productKey)
+    property = IOHIDDeviceGetProperty(device, CFSTR(kIOHIDProductKey));
+    if (property)
     {
-        CFStringGetCString(productKey,
+        CFStringGetCString(property,
                            name,
                            sizeof(name),
                            kCFStringEncodingUTF8);
@@ -129,12 +152,41 @@ static void matchCallback(void* context,
     else
         strncpy(name, "Unknown", sizeof(name));
 
+    property = IOHIDDeviceGetProperty(device, CFSTR(kIOHIDVendorIDKey));
+    if (property)
+        CFNumberGetValue(property, kCFNumberSInt32Type, &vendor);
+
+    property = IOHIDDeviceGetProperty(device, CFSTR(kIOHIDProductIDKey));
+    if (property)
+        CFNumberGetValue(property, kCFNumberSInt32Type, &product);
+
+    property = IOHIDDeviceGetProperty(device, CFSTR(kIOHIDVersionNumberKey));
+    if (property)
+        CFNumberGetValue(property, kCFNumberSInt32Type, &version);
+
+    // Generate a joystick GUID that matches the SDL 2.0.5+ one
+    if (vendor && product)
+    {
+        sprintf(guid, "03000000%02x%02x0000%02x%02x0000%02x%02x0000",
+                (uint8_t) vendor, (uint8_t) (vendor >> 8),
+                (uint8_t) product, (uint8_t) (product >> 8),
+                (uint8_t) version, (uint8_t) (version >> 8));
+    }
+    else
+    {
+        sprintf(guid, "05000000%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x00",
+                name[0], name[1], name[2], name[3],
+                name[4], name[5], name[6], name[7],
+                name[8], name[9], name[10]);
+    }
+
     CFArrayRef elements =
         IOHIDDeviceCopyMatchingElements(device, NULL, kIOHIDOptionsTypeNone);
 
     for (i = 0;  i < CFArrayGetCount(elements);  i++)
     {
-        IOHIDElementRef native = (IOHIDElementRef) CFArrayGetValueAtIndex(elements, i);
+        IOHIDElementRef native = (IOHIDElementRef)
+            CFArrayGetValueAtIndex(elements, i);
         if (CFGetTypeID(native) != IOHIDElementGetTypeID())
             continue;
 
@@ -148,42 +200,37 @@ static void matchCallback(void* context,
 
         CFMutableArrayRef target = NULL;
 
-        switch (IOHIDElementGetUsagePage(native))
+        const uint32_t usage = IOHIDElementGetUsage(native);
+        const uint32_t page = IOHIDElementGetUsagePage(native);
+        if (page == kHIDPage_GenericDesktop)
         {
-            case kHIDPage_GenericDesktop:
+            switch (usage)
             {
-                switch (IOHIDElementGetUsage(native))
-                {
-                    case kHIDUsage_GD_X:
-                    case kHIDUsage_GD_Y:
-                    case kHIDUsage_GD_Z:
-                    case kHIDUsage_GD_Rx:
-                    case kHIDUsage_GD_Ry:
-                    case kHIDUsage_GD_Rz:
-                    case kHIDUsage_GD_Slider:
-                    case kHIDUsage_GD_Dial:
-                    case kHIDUsage_GD_Wheel:
-                        target = axes;
-                        break;
-                    case kHIDUsage_GD_Hatswitch:
-                        target = hats;
-                        break;
-                }
-
-                break;
+                case kHIDUsage_GD_X:
+                case kHIDUsage_GD_Y:
+                case kHIDUsage_GD_Z:
+                case kHIDUsage_GD_Rx:
+                case kHIDUsage_GD_Ry:
+                case kHIDUsage_GD_Rz:
+                case kHIDUsage_GD_Slider:
+                case kHIDUsage_GD_Dial:
+                case kHIDUsage_GD_Wheel:
+                    target = axes;
+                    break;
+                case kHIDUsage_GD_Hatswitch:
+                    target = hats;
+                    break;
             }
-
-            case kHIDPage_Button:
-                target = buttons;
-                break;
-            default:
-                break;
         }
+        else if (page == kHIDPage_Button)
+            target = buttons;
 
         if (target)
         {
             _GLFWjoyelementNS* element = calloc(1, sizeof(_GLFWjoyelementNS));
             element->native  = native;
+            element->usage   = usage;
+            element->index   = (int) CFArrayGetCount(target);
             element->minimum = IOHIDElementGetLogicalMin(native);
             element->maximum = IOHIDElementGetLogicalMax(native);
             CFArrayAppendValue(target, element);
@@ -192,17 +239,24 @@ static void matchCallback(void* context,
 
     CFRelease(elements);
 
-    js = _glfwAllocJoystick(name,
-                            CFArrayGetCount(axes),
-                            CFArrayGetCount(buttons),
-                            CFArrayGetCount(hats));
+    CFArraySortValues(axes, CFRangeMake(0, CFArrayGetCount(axes)),
+                      compareElements, NULL);
+    CFArraySortValues(buttons, CFRangeMake(0, CFArrayGetCount(buttons)),
+                      compareElements, NULL);
+    CFArraySortValues(hats, CFRangeMake(0, CFArrayGetCount(hats)),
+                      compareElements, NULL);
+
+    js = _glfwAllocJoystick(name, guid,
+                            (int) CFArrayGetCount(axes),
+                            (int) CFArrayGetCount(buttons),
+                            (int) CFArrayGetCount(hats));
 
     js->ns.device  = device;
     js->ns.axes    = axes;
     js->ns.buttons = buttons;
     js->ns.hats    = hats;
 
-    _glfwInputJoystick(_GLFW_JOYSTICK_ID(js), GLFW_CONNECTED);
+    _glfwInputJoystick(js, GLFW_CONNECTED);
 }
 
 // Callback for user-initiated joystick removal
@@ -325,11 +379,9 @@ void _glfwTerminateJoysticksNS(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwPlatformPollJoystick(int jid, int mode)
+int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
 {
-    _GLFWjoystick* js = _glfw.joysticks + jid;
-
-    if (mode == _GLFW_POLL_AXES)
+    if (mode & _GLFW_POLL_AXES)
     {
         CFIndex i;
 
@@ -347,15 +399,16 @@ int _glfwPlatformPollJoystick(int jid, int mode)
 
             const long delta = axis->maximum - axis->minimum;
             if (delta == 0)
-                _glfwInputJoystickAxis(jid, i, 0.f);
+                _glfwInputJoystickAxis(js, (int) i, 0.f);
             else
             {
                 const float value = (2.f * (raw - axis->minimum) / delta) - 1.f;
-                _glfwInputJoystickAxis(jid, i, value);
+                _glfwInputJoystickAxis(js, (int) i, value);
             }
         }
     }
-    else if (mode == _GLFW_POLL_BUTTONS)
+
+    if (mode & _GLFW_POLL_BUTTONS)
     {
         CFIndex i;
 
@@ -364,7 +417,7 @@ int _glfwPlatformPollJoystick(int jid, int mode)
             _GLFWjoyelementNS* button = (_GLFWjoyelementNS*)
                 CFArrayGetValueAtIndex(js->ns.buttons, i);
             const char value = getElementValue(js, button) - button->minimum;
-            _glfwInputJoystickButton(jid, i, value);
+            _glfwInputJoystickButton(js, (int) i, value);
         }
 
         for (i = 0;  i < CFArrayGetCount(js->ns.hats);  i++)
@@ -388,10 +441,22 @@ int _glfwPlatformPollJoystick(int jid, int mode)
             if (state < 0 || state > 8)
                 state = 8;
 
-            _glfwInputJoystickHat(jid, i, states[state]);
+            _glfwInputJoystickHat(js, (int) i, states[state]);
         }
     }
 
     return js->present;
+}
+
+void _glfwPlatformUpdateGamepadGUID(char* guid)
+{
+    if ((strncmp(guid + 4, "000000000000", 12) == 0) &&
+        (strncmp(guid + 20, "000000000000", 12) == 0))
+    {
+        char original[33];
+        strcpy(original, guid);
+        sprintf(guid, "03000000%.4s0000%.4s000000000000",
+                original, original + 16);
+    }
 }
 

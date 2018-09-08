@@ -67,7 +67,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             {
                 const char* string;
 
-                string = glfwGetClipboardString(window);
+                string = glfwGetClipboardString(NULL);
                 if (string)
                     printf("Clipboard contains \"%s\"\n", string);
                 else
@@ -79,16 +79,11 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             if (mods == MODIFIER)
             {
                 const char* string = "Hello GLFW World!";
-                glfwSetClipboardString(window, string);
+                glfwSetClipboardString(NULL, string);
                 printf("Setting clipboard to \"%s\"\n", string);
             }
             break;
     }
-}
-
-static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
 }
 
 int main(int argc, char** argv)
@@ -132,7 +127,6 @@ int main(int argc, char** argv)
     glfwSwapInterval(1);
 
     glfwSetKeyCallback(window, key_callback);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     glClearColor(0.5f, 0.5f, 0.5f, 0);
 

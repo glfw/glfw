@@ -93,11 +93,14 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 static void list_modes(GLFWmonitor* monitor)
 {
     int count, x, y, widthMM, heightMM, i;
+    int workarea_x, workarea_y, workarea_width, workarea_height;
+
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
     const GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
 
     glfwGetMonitorPos(monitor, &x, &y);
     glfwGetMonitorPhysicalSize(monitor, &widthMM, &heightMM);
+    glfwGetMonitorWorkarea(monitor, &workarea_x, &workarea_y, &workarea_width, &workarea_height);
 
     printf("Name: %s (%s)\n",
            glfwGetMonitorName(monitor),
@@ -107,6 +110,8 @@ static void list_modes(GLFWmonitor* monitor)
 
     printf("Physical size: %i x %i mm (%0.2f dpi)\n",
            widthMM, heightMM, mode->width * 25.4f / widthMM);
+    printf("Monitor work area: pos=(%d,%d)  size=(%dx%d)\n",
+            workarea_x, workarea_y, workarea_width, workarea_height);
 
     printf("Modes:\n");
 

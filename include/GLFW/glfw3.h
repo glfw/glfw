@@ -1934,7 +1934,10 @@ GLFWAPI void glfwGetMonitorPos(GLFWmonitor* monitor, int* xpos, int* ypos);
 /*! @brief Returns the work area of the monitor.
  *
  *  This function returns the position, in screen coordinates, of the upper-left
- *  corner of the specified monitor.
+ *  corner of the work area of the specified monitor along with the
+ *  work area size in screen coordinates. The work area is defined as the area of the
+ *  monitor not occluded by the operating system task bar where present. If no task
+ *  bar exists then the work area is the monitor resolution in screen coordinates.
  *
  *  Any or all of the position and size arguments may be `NULL`.  If an error occurs, all
  *  non-`NULL` position and size arguments will be set to zero.

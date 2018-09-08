@@ -691,6 +691,60 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
 }
 
 static void
+setCursorImage(_GLFWcursorWayland* cursorWayland)
+{
+    struct itimerspec timer = {};
+    struct wl_cursor_image* image;
+    struct wl_buffer* buffer;
+    struct wl_surface* surface = _glfw.wl.cursorSurface;
+
+    if (!cursorWayland->cursor)
+        buffer = cursorWayland->buffer;
+    else
+    {
+        image = cursorWayland->cursor->images[cursorWayland->currentImage];
+        buffer = wl_cursor_image_get_buffer(image);
+        if (!buffer)
+            return;
+
+        timer.it_value.tv_sec = image->delay / 1000;
+        timer.it_value.tv_nsec = (image->delay % 1000) * 1000000;
+        timerfd_settime(_glfw.wl.cursorTimerfd, 0, &timer, NULL);
+
+        cursorWayland->width = image->width;
+        cursorWayland->height = image->height;
+        cursorWayland->xhot = image->hotspot_x;
+        cursorWayland->yhot = image->hotspot_y;
+    }
+
+    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
+                          surface,
+                          cursorWayland->xhot,
+                          cursorWayland->yhot);
+    wl_surface_attach(surface, buffer, 0, 0);
+    wl_surface_damage(surface, 0, 0,
+                      cursorWayland->width, cursorWayland->height);
+    wl_surface_commit(surface);
+}
+
+static void
+incrementCursorImage(_GLFWwindow* window)
+{
+    _GLFWcursor* cursor;
+
+    if (!window || window->wl.decorations.focus != mainWindow)
+        return;
+
+    cursor = window->wl.currentCursor;
+    if (cursor && cursor->wl.cursor)
+    {
+        cursor->wl.currentImage += 1;
+        cursor->wl.currentImage %= cursor->wl.cursor->image_count;
+        setCursorImage(&cursor->wl);
+    }
+}
+
+static void
 handleEvents(int timeout)
 {
     struct wl_display* display = _glfw.wl.display;
@@ -750,7 +804,7 @@ handleEvents(int timeout)
             if (read_ret != 8)
                 return;
 
-            // TODO: implement!
+            incrementCursorImage(_glfw.wl.pointerFocus);
         }
     }
     else
@@ -1267,14 +1321,15 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
         return GLFW_FALSE;
     }
 
-    cursor->wl.image = standardCursor->images[0];
+    cursor->wl.cursor = standardCursor;
+    cursor->wl.currentImage = 0;
     return GLFW_TRUE;
 }
 
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 {
     // If it's a standard cursor we don't need to do anything here
-    if (cursor->wl.image)
+    if (cursor->wl.cursor)
         return;
 
     if (cursor->wl.buffer)
@@ -1380,10 +1435,7 @@ static GLFWbool isPointerLocked(_GLFWwindow* window)
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 {
-    struct wl_buffer* buffer;
     struct wl_cursor* defaultCursor;
-    struct wl_cursor_image* image;
-    struct wl_surface* surface = _glfw.wl.cursorSurface;
 
     if (!_glfw.wl.pointer)
         return;
@@ -1392,7 +1444,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 
     // If we're not in the correct window just save the cursor
     // the next time the pointer enters the window the cursor will change
-    if (window != _glfw.wl.pointerFocus)
+    if (window != _glfw.wl.pointerFocus || window->wl.decorations.focus != mainWindow)
         return;
 
     // Unlock possible pointer lock if no longer disabled.
@@ -1402,7 +1454,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
     if (window->cursorMode == GLFW_CURSOR_NORMAL)
     {
         if (cursor)
-            image = cursor->wl.image;
+            setCursorImage(&cursor->wl);
         else
         {
             defaultCursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme,
@@ -1413,33 +1465,14 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
                                 "Wayland: Standard cursor not found");
                 return;
             }
-            image = defaultCursor->images[0];
-        }
-
-        if (image)
-        {
-            buffer = wl_cursor_image_get_buffer(image);
-            if (!buffer)
-                return;
-            wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
-                                  surface,
-                                  image->hotspot_x,
-                                  image->hotspot_y);
-            wl_surface_attach(surface, buffer, 0, 0);
-            wl_surface_damage(surface, 0, 0,
-                              image->width, image->height);
-            wl_surface_commit(surface);
-        }
-        else
-        {
-            wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
-                                  surface,
-                                  cursor->wl.xhot,
-                                  cursor->wl.yhot);
-            wl_surface_attach(surface, cursor->wl.buffer, 0, 0);
-            wl_surface_damage(surface, 0, 0,
-                              cursor->wl.width, cursor->wl.height);
-            wl_surface_commit(surface);
+            _GLFWcursorWayland cursorWayland = {
+                defaultCursor,
+                NULL,
+                0, 0,
+                0, 0,
+                0
+            };
+            setCursorImage(&cursorWayland);
         }
     }
     else if (window->cursorMode == GLFW_CURSOR_DISABLED)

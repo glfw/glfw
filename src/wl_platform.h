@@ -333,10 +333,11 @@ typedef struct _GLFWmonitorWayland
 //
 typedef struct _GLFWcursorWayland
 {
-    struct wl_cursor_image*     image;
+    struct wl_cursor*           cursor;
     struct wl_buffer*           buffer;
     int                         width, height;
     int                         xhot, yhot;
+    int                         currentImage;
 } _GLFWcursorWayland;
 
 

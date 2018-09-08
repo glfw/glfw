@@ -420,10 +420,14 @@ void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor, int* xpos, int* ypos
 
     NSRect frameRect = [[NSScreen resultScreen] visibleFrame];
 
-    *xpos = NSMinX(frameRect);
-    *ypos = NSMinY(frameRect);
-    *width = NSMaxX(frameRect);
-    *height = NSMaxY(frameRect);
+    if (xpos)
+        *xpos = NSMinX(frameRect);
+    if (ypos)
+        *ypos = NSMinY(frameRect);
+    if (width)
+        *width = NSWidth(frameRect);
+    if (height)
+        *height = NSHeight(frameRect);
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)

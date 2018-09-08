@@ -1068,6 +1068,7 @@ int _glfwPlatformInit(void)
         }
         _glfw.wl.cursorSurface =
             wl_compositor_create_surface(_glfw.wl.compositor);
+        _glfw.wl.cursorTimerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
     }
 
     return GLFW_TRUE;
@@ -1145,6 +1146,8 @@ void _glfwPlatformTerminate(void)
 
     if (_glfw.wl.timerfd >= 0)
         close(_glfw.wl.timerfd);
+    if (_glfw.wl.cursorTimerfd >= 0)
+        close(_glfw.wl.cursorTimerfd);
 }
 
 const char* _glfwPlatformGetVersionString(void)

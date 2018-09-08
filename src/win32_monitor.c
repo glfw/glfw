@@ -361,35 +361,26 @@ void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
     _glfwGetMonitorContentScaleWin32(monitor->win32.handle, xscale, yscale);
 }
 
-static BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
-{
-    RECT *workarea = (RECT *)dwData;
-    MONITORINFO monitorInfo;
-    monitorInfo.cbSize = sizeof(MONITORINFO);
-    GetMonitorInfo(hMonitor, &monitorInfo);
-    workarea->left = monitorInfo.rcWork.left;
-    workarea->top = monitorInfo.rcWork.top;
-    workarea->right = monitorInfo.rcWork.right;
-    workarea->bottom = monitorInfo.rcWork.bottom;
-    return TRUE;
-}
-
 void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor, int* xpos, int* ypos, int *width, int *height)
 {
-    HDC dc;
-    RECT workarea;
+    MONITORINFO monitorInfo;
+    int x, y;
+    POINT pointInMonitor;
+    HMONITOR hMonitor;
 
-    dc = CreateDCW(L"DISPLAY", monitor->win32.adapterName, NULL, NULL);
+    _glfwPlatformGetMonitorPos( monitor, &x, &y );
 
-    if (!EnumDisplayMonitors(dc, NULL, MonitorEnumProc, (LPARAM)&workarea))
-        return;
+    monitorInfo.cbSize = sizeof(MONITORINFO);
+    pointInMonitor.x = x + 1;
+    pointInMonitor.y = y + 1;
 
-    DeleteDC(dc);
+    hMonitor = MonitorFromPoint( pointInMonitor, 0 );
+    GetMonitorInfo(hMonitor, &monitorInfo);
 
-    *xpos = workarea.left;
-    *ypos = workarea.top;
-    *width = workarea.right;
-    *height = workarea.bottom;
+    *xpos   = monitorInfo.rcWork.left;
+    *ypos   = monitorInfo.rcWork.top;
+    *width  = monitorInfo.rcWork.right - monitorInfo.rcWork.left;
+    *height = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)

@@ -1142,6 +1142,9 @@ void _glfwPlatformTerminate(void)
         wl_display_flush(_glfw.wl.display);
         wl_display_disconnect(_glfw.wl.display);
     }
+
+    if (_glfw.wl.timerfd >= 0)
+        close(_glfw.wl.timerfd);
 }
 
 const char* _glfwPlatformGetVersionString(void)

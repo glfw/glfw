@@ -1952,7 +1952,7 @@ GLFWAPI void glfwGetMonitorPos(GLFWmonitor* monitor, int* xpos, int* ypos);
  *
  *  @sa @ref monitor_properties
  *
- *  @since Added in version 3.0.
+ *  @since Added in version 3.3.
  *
  *  @ingroup monitor
  */

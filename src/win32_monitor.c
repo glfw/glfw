@@ -377,10 +377,14 @@ void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor, int* xpos, int* ypos
     hMonitor = MonitorFromPoint( pointInMonitor, 0 );
     GetMonitorInfo(hMonitor, &monitorInfo);
 
-    *xpos   = monitorInfo.rcWork.left;
-    *ypos   = monitorInfo.rcWork.top;
-    *width  = monitorInfo.rcWork.right - monitorInfo.rcWork.left;
-    *height = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
+    if (xpos)
+        *xpos   = monitorInfo.rcWork.left;
+    if (ypos)
+        *ypos   = monitorInfo.rcWork.top;
+    if (width)
+        *width  = monitorInfo.rcWork.right - monitorInfo.rcWork.left;
+    if (height)
+        *height = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)

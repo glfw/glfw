@@ -350,10 +350,15 @@ void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor, int* xpos, int* ypos
 
         _glfwGetWindowPropertyX11(_glfw.x11.root, _glfw.x11.NET_WORKAREA, XA_CARDINAL, (unsigned char**) &extents);
 
-        *xpos = extents[0];
-        *ypos = extents[1];
-        *width = extents[2];
-        *height = extents[3];
+        if (xpos)
+            *xpos = extents[0];
+        if (xpos)
+            *ypos = extents[1];
+        if (xpos)
+            *width = extents[2];
+        if (xpos)
+            *height = extents[3];
+
         XFree(extents);
     }
 }

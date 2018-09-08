@@ -79,7 +79,6 @@ int main(void)
     GLFWwindow* window;
     GLuint vertex_buffer, vertex_shader, fragment_shader, program;
     GLint mvp_location, vpos_location, vcol_location;
-    int workarea_x, workarea_y, workarea_width, workarea_height;
 
     glfwSetErrorCallback(error_callback);
 
@@ -132,8 +131,6 @@ int main(void)
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
                           sizeof(vertices[0]), (void*) (sizeof(float) * 2));
 
-    glfwGetMonitorWorkarea(glfwGetPrimaryMonitor(), &workarea_x, &workarea_y, &workarea_width, &workarea_height);
-    printf("Monitor work area: %d, %d, %d, %d\n", workarea_x, workarea_y, workarea_width, workarea_height);
     while (!glfwWindowShouldClose(window))
     {
         float ratio;

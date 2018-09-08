@@ -697,6 +697,7 @@ handleEvents(int timeout)
     struct pollfd fds[] = {
         { wl_display_get_fd(display), POLLIN },
         { _glfw.wl.timerfd, POLLIN },
+        { _glfw.wl.cursorTimerfd, POLLIN },
     };
     ssize_t read_ret;
     uint64_t repeats, i;
@@ -719,7 +720,7 @@ handleEvents(int timeout)
         return;
     }
 
-    if (poll(fds, 2, timeout) > 0)
+    if (poll(fds, 3, timeout) > 0)
     {
         if (fds[0].revents & POLLIN)
         {
@@ -741,6 +742,15 @@ handleEvents(int timeout)
                 _glfwInputKey(_glfw.wl.keyboardFocus, _glfw.wl.keyboardLastKey,
                               _glfw.wl.keyboardLastScancode, GLFW_REPEAT,
                               _glfw.wl.xkb.modifiers);
+        }
+
+        if (fds[2].revents & POLLIN)
+        {
+            read_ret = read(_glfw.wl.cursorTimerfd, &repeats, sizeof(repeats));
+            if (read_ret != 8)
+                return;
+
+            // TODO: implement!
         }
     }
     else

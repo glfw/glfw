@@ -240,6 +240,7 @@ typedef struct _GLFWlibraryWayland
     int                         seatVersion;
 
     struct wl_cursor_theme*     cursorTheme;
+    struct wl_cursor_theme*     cursorThemeHiDPI;
     struct wl_surface*          cursorSurface;
     int                         cursorTimerfd;
     uint32_t                    pointerSerial;

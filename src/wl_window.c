@@ -691,18 +691,26 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
 }
 
 static void
-setCursorImage(_GLFWcursorWayland* cursorWayland)
+setCursorImage(_GLFWwindow* window, _GLFWcursorWayland* cursorWayland)
 {
     struct itimerspec timer = {};
+    struct wl_cursor* wlCursor = cursorWayland->cursor;
     struct wl_cursor_image* image;
     struct wl_buffer* buffer;
     struct wl_surface* surface = _glfw.wl.cursorSurface;
+    int scale = 1;
 
-    if (!cursorWayland->cursor)
+    if (!wlCursor)
         buffer = cursorWayland->buffer;
     else
     {
-        image = cursorWayland->cursor->images[cursorWayland->currentImage];
+        if (window->wl.scale > 1 && cursorWayland->cursorHiDPI)
+        {
+            wlCursor = cursorWayland->cursorHiDPI;
+            scale = 2;
+        }
+
+        image = wlCursor->images[cursorWayland->currentImage];
         buffer = wl_cursor_image_get_buffer(image);
         if (!buffer)
             return;
@@ -719,9 +727,9 @@ setCursorImage(_GLFWcursorWayland* cursorWayland)
 
     wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
                           surface,
-                          cursorWayland->xhot,
-                          cursorWayland->yhot);
-    wl_surface_set_buffer_scale(surface, 1);
+                          cursorWayland->xhot / scale,
+                          cursorWayland->yhot / scale);
+    wl_surface_set_buffer_scale(surface, scale);
     wl_surface_attach(surface, buffer, 0, 0);
     wl_surface_damage(surface, 0, 0,
                       cursorWayland->width, cursorWayland->height);
@@ -741,7 +749,7 @@ incrementCursorImage(_GLFWwindow* window)
     {
         cursor->wl.currentImage += 1;
         cursor->wl.currentImage %= cursor->wl.cursor->image_count;
-        setCursorImage(&cursor->wl);
+        setCursorImage(window, &cursor->wl);
     }
 }
 
@@ -1324,6 +1332,14 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 
     cursor->wl.cursor = standardCursor;
     cursor->wl.currentImage = 0;
+
+    if (_glfw.wl.cursorThemeHiDPI)
+    {
+        standardCursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI,
+                                                    translateCursorShape(shape));
+        cursor->wl.cursorHiDPI = standardCursor;
+    }
+
     return GLFW_TRUE;
 }
 
@@ -1437,6 +1453,7 @@ static GLFWbool isPointerLocked(_GLFWwindow* window)
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 {
     struct wl_cursor* defaultCursor;
+    struct wl_cursor* defaultCursorHiDPI = NULL;
 
     if (!_glfw.wl.pointer)
         return;
@@ -1455,7 +1472,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
     if (window->cursorMode == GLFW_CURSOR_NORMAL)
     {
         if (cursor)
-            setCursorImage(&cursor->wl);
+            setCursorImage(window, &cursor->wl);
         else
         {
             defaultCursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme,
@@ -1466,14 +1483,19 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
                                 "Wayland: Standard cursor not found");
                 return;
             }
+            if (_glfw.wl.cursorThemeHiDPI)
+                defaultCursorHiDPI =
+                    wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI,
+                                               "left_ptr");
             _GLFWcursorWayland cursorWayland = {
                 defaultCursor,
+                defaultCursorHiDPI,
                 NULL,
                 0, 0,
                 0, 0,
                 0
             };
-            setCursorImage(&cursorWayland);
+            setCursorImage(window, &cursorWayland);
         }
     }
     else if (window->cursorMode == GLFW_CURSOR_DISABLED)

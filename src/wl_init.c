@@ -1067,6 +1067,8 @@ int _glfwPlatformInit(void)
                             "Wayland: Unable to load default cursor theme");
             return GLFW_FALSE;
         }
+        // If this happens to be NULL, we just fallback to the scale=1 version.
+        _glfw.wl.cursorThemeHiDPI = wl_cursor_theme_load(NULL, 64, _glfw.wl.shm);
         _glfw.wl.cursorSurface =
             wl_compositor_create_surface(_glfw.wl.compositor);
         _glfw.wl.cursorTimerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
@@ -1105,6 +1107,8 @@ void _glfwPlatformTerminate(void)
 
     if (_glfw.wl.cursorTheme)
         wl_cursor_theme_destroy(_glfw.wl.cursorTheme);
+    if (_glfw.wl.cursorThemeHiDPI)
+        wl_cursor_theme_destroy(_glfw.wl.cursorThemeHiDPI);
     if (_glfw.wl.cursor.handle)
     {
         _glfw_dlclose(_glfw.wl.cursor.handle);

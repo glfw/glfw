@@ -122,15 +122,24 @@ static void pointerHandleLeave(void* data,
     _glfwInputCursorEnter(window, GLFW_FALSE);
 }
 
-static void setCursor(const char* name)
+static void setCursor(_GLFWwindow* window, const char* name)
 {
     struct wl_buffer* buffer;
     struct wl_cursor* cursor;
     struct wl_cursor_image* image;
     struct wl_surface* surface = _glfw.wl.cursorSurface;
+    struct wl_cursor_theme* theme = _glfw.wl.cursorTheme;
+    int scale = 1;
 
-    cursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme,
-                                        name);
+    if (window->wl.scale > 1 && _glfw.wl.cursorThemeHiDPI)
+    {
+        // We only support up to scale=2 for now, since libwayland-cursor
+        // requires us to load a different theme for each size.
+        scale = 2;
+        theme = _glfw.wl.cursorThemeHiDPI;
+    }
+
+    cursor = wl_cursor_theme_get_cursor(theme, name);
     if (!cursor)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -148,8 +157,9 @@ static void setCursor(const char* name)
         return;
     wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerSerial,
                           surface,
-                          image->hotspot_x,
-                          image->hotspot_y);
+                          image->hotspot_x / scale,
+                          image->hotspot_y / scale);
+    wl_surface_set_buffer_scale(surface, scale);
     wl_surface_attach(surface, buffer, 0, 0);
     wl_surface_damage(surface, 0, 0,
                       image->width, image->height);
@@ -212,7 +222,7 @@ static void pointerHandleMotion(void* data,
         default:
             assert(0);
     }
-    setCursor(cursorName);
+    setCursor(window, cursorName);
 }
 
 static void pointerHandleButton(void* data,

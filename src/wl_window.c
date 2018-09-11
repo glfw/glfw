@@ -721,6 +721,7 @@ setCursorImage(_GLFWcursorWayland* cursorWayland)
                           surface,
                           cursorWayland->xhot,
                           cursorWayland->yhot);
+    wl_surface_set_buffer_scale(surface, 1);
     wl_surface_attach(surface, buffer, 0, 0);
     wl_surface_damage(surface, 0, 0,
                       cursorWayland->width, cursorWayland->height);

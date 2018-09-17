@@ -162,7 +162,7 @@ missed the key press.  The recommended solution for this is to use a
 key callback, but there is also the `GLFW_STICKY_KEYS` input mode.
 
 @code
-glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
+glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
 @endcode
 
 When sticky keys mode is enabled, the pollable state of a key will remain
@@ -175,7 +175,7 @@ If you wish to know what the state of the Caps Lock and Num Lock keys was when
 input events were generated, set the `GLFW_LOCK_KEY_MODS` input mode.
 
 @code
-glfwSetInputMode(window, GLFW_LOCK_KEY_MODS, 1);
+glfwSetInputMode(window, GLFW_LOCK_KEY_MODS, GLFW_TRUE);
 @endcode
 
 When this input mode is enabled, any callback that receives
@@ -475,7 +475,7 @@ mouse button callback, but there is also the `GLFW_STICKY_MOUSE_BUTTONS`
 input mode.
 
 @code
-glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, 1);
+glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
 @endcode
 
 When sticky mouse buttons mode is enabled, the pollable state of a mouse button

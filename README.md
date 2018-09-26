@@ -167,6 +167,8 @@ information on what to include when reporting a bug.
   (#749,#842)
 - Added `GLFW_FOCUS_ON_SHOW` window hint and attribute to control input focus
   on calling show window (#1189)
+- Added `GLFW_SCALE_TO_MONITOR` window hint for automatic window resizing
+  (#676,#1115)
 - Added `GLFW_JOYSTICK_HAT_BUTTONS` init hint (#889)
 - Added `GLFW_LOCK_KEY_MODS` input mode and `GLFW_MOD_*_LOCK` mod bits (#946)
 - Added macOS specific `GLFW_COCOA_RETINA_FRAMEBUFFER` window hint

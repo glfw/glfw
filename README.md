@@ -11,8 +11,8 @@ application development.  It provides a simple, platform-independent API for
 creating windows, contexts and surfaces, reading input, handling events, etc.
 
 GLFW natively supports Windows, macOS and Linux and other Unix-like systems.
-Experimental implementations for the Wayland protocol and the Mir display server
-are available but not yet officially supported.
+An experimental implementation for the Wayland protocol is available but not
+yet officially supported.
 
 GLFW is licensed under the [zlib/libpng
 license](http://www.glfw.org/license.html).

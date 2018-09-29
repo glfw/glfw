@@ -35,7 +35,6 @@ endif()
 
 if (UNIX AND NOT APPLE)
     option(GLFW_USE_WAYLAND "Use Wayland for window creation" OFF)
-    option(GLFW_USE_MIR     "Use Mir for window creation" OFF)
 endif()
 
 if (MSVC)
@@ -141,9 +140,6 @@ endif()
 if (GLFW_USE_WAYLAND)
     set(_GLFW_WAYLAND 1)
     message(STATUS "Using Wayland for window creation")
-elseif (GLFW_USE_MIR)
-    set(_GLFW_MIR 1)
-    message(STATUS "Using Mir for window creation")
 elseif (GLFW_USE_OSMESA)
     set(_GLFW_OSMESA 1)
     message(STATUS "Using OSMesa for headless context creation")
@@ -284,22 +280,6 @@ if (_GLFW_WAYLAND)
             list(APPEND glfw_LIBRARIES "${EPOLLSHIM_LIBRARIES}")
         endif()
     endif()
-endif()
-
-#--------------------------------------------------------------------
-# Use Mir for window creation
-#--------------------------------------------------------------------
-if (_GLFW_MIR)
-    find_package(Mir REQUIRED)
-    list(APPEND glfw_PKG_DEPS "mirclient")
-
-    list(APPEND glfw_INCLUDE_DIRS "${MIR_INCLUDE_DIRS}")
-    list(APPEND glfw_LIBRARIES "${MIR_LIBRARIES}" "${CMAKE_THREAD_LIBS_INIT}")
-
-    find_package(XKBCommon REQUIRED)
-    list(APPEND glfw_PKG_DEPS "xkbcommon")
-    list(APPEND glfw_INCLUDE_DIRS "${XKBCOMMON_INCLUDE_DIRS}")
-    list(APPEND glfw_LIBRARIES "${XKBCOMMON_LIBRARY}")
 endif()
 
 #--------------------------------------------------------------------

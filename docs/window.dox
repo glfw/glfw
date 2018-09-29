@@ -337,7 +337,7 @@ constraint.  If no client API is requested, this hint is ignored.
 will fail.
 
 @par
-__Wayland, Mir:__ The EGL API _is_ the native context creation API, so this hint
+__Wayland:__ The EGL API _is_ the native context creation API, so this hint
 will have no effect.
 
 @par

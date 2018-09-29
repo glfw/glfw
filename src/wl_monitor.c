@@ -187,7 +187,8 @@ void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
                     "Wayland: Gamma ramp getting not supported yet");
 }
 
-void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
+void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor,
+                               const GLFWgammaramp* ramp)
 {
     // TODO
     _glfwInputError(GLFW_PLATFORM_ERROR,

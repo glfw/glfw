@@ -105,8 +105,7 @@ static const struct wl_shell_surface_listener shellSurfaceListener = {
     handlePopupDone
 };
 
-static int
-createTmpfileCloexec(char* tmpname)
+static int createTmpfileCloexec(char* tmpname)
 {
     int fd;
 
@@ -137,8 +136,7 @@ createTmpfileCloexec(char* tmpname)
  * is set to ENOSPC. If posix_fallocate() is not supported, program may
  * receive SIGBUS on accessing mmap()'ed file contents instead.
  */
-static int
-createAnonymousFile(off_t size)
+static int createAnonymousFile(off_t size)
 {
     static const char template[] = "/glfw-shared-XXXXXX";
     const char* path;
@@ -485,7 +483,8 @@ static GLFWbool createSurface(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
-static void setFullscreen(_GLFWwindow* window, _GLFWmonitor* monitor, int refreshRate)
+static void setFullscreen(_GLFWwindow* window, _GLFWmonitor* monitor,
+                          int refreshRate)
 {
     if (window->wl.xdg.toplevel)
     {
@@ -690,8 +689,8 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
     return GLFW_TRUE;
 }
 
-static void
-setCursorImage(_GLFWwindow* window, _GLFWcursorWayland* cursorWayland)
+static void setCursorImage(_GLFWwindow* window,
+                           _GLFWcursorWayland* cursorWayland)
 {
     struct itimerspec timer = {};
     struct wl_cursor* wlCursor = cursorWayland->cursor;
@@ -736,8 +735,7 @@ setCursorImage(_GLFWwindow* window, _GLFWcursorWayland* cursorWayland)
     wl_surface_commit(surface);
 }
 
-static void
-incrementCursorImage(_GLFWwindow* window)
+static void incrementCursorImage(_GLFWwindow* window)
 {
     _GLFWcursor* cursor;
 
@@ -753,8 +751,7 @@ incrementCursorImage(_GLFWwindow* window)
     }
 }
 
-static void
-handleEvents(int timeout)
+static void handleEvents(int timeout)
 {
     struct wl_display* display = _glfw.wl.display;
     struct pollfd fds[] = {
@@ -1029,13 +1026,15 @@ void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
     }
 }
 
-void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom)
+void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window,
+                                       int numer, int denom)
 {
     // TODO: find out how to trigger a resize.
     // The actual limits are checked in the wl_shell_surface::configure handler.
 }
 
-void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
+void _glfwPlatformGetFramebufferSize(_GLFWwindow* window,
+                                     int* width, int* height)
 {
     _glfwPlatformGetWindowSize(window, width, height);
     *width *= window->wl.scale;

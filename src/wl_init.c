@@ -42,7 +42,8 @@ static inline int min(int n1, int n2)
     return n1 < n2 ? n1 : n2;
 }
 
-static _GLFWwindow* findWindowFromDecorationSurface(struct wl_surface* surface, int* which)
+static _GLFWwindow* findWindowFromDecorationSurface(struct wl_surface* surface,
+                                                    int* which)
 {
     int focus;
     _GLFWwindow* window = _glfw.windowListHead;

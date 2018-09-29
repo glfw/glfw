@@ -144,23 +144,37 @@ static int createAnonymousFile(off_t size)
     int fd;
     int ret;
 
-    path = getenv("XDG_RUNTIME_DIR");
-    if (!path)
+#ifdef HAVE_MEMFD_CREATE
+    fd = memfd_create("glfw-shared", MFD_CLOEXEC | MFD_ALLOW_SEALING);
+    if (fd >= 0)
     {
-        errno = ENOENT;
-        return -1;
+        // We can add this seal before calling posix_fallocate(), as the file
+        // is currently zero-sized anyway.
+        //
+        // There is also no need to check for the return value, we couldn’t do
+        // anything with it anyway.
+        fcntl(fd, F_ADD_SEALS, F_SEAL_SHRINK | F_SEAL_SEAL);
+    }
+    else
+#endif
+    {
+        path = getenv("XDG_RUNTIME_DIR");
+        if (!path)
+        {
+            errno = ENOENT;
+            return -1;
+        }
+
+        name = calloc(strlen(path) + sizeof(template), 1);
+        strcpy(name, path);
+        strcat(name, template);
+
+        fd = createTmpfileCloexec(name);
+        free(name);
+        if (fd < 0)
+            return -1;
     }
 
-    name = calloc(strlen(path) + sizeof(template), 1);
-    strcpy(name, path);
-    strcat(name, template);
-
-    fd = createTmpfileCloexec(name);
-
-    free(name);
-
-    if (fd < 0)
-        return -1;
     ret = posix_fallocate(fd, 0, size);
     if (ret != 0)
     {

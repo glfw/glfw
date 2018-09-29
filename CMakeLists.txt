@@ -273,7 +273,9 @@ if (_GLFW_WAYLAND)
     list(APPEND glfw_INCLUDE_DIRS "${XKBCOMMON_INCLUDE_DIRS}")
 
     include(CheckIncludeFiles)
+    include(CheckFunctionExists)
     check_include_files(xkbcommon/xkbcommon-compose.h HAVE_XKBCOMMON_COMPOSE_H)
+    check_function_exists(memfd_create HAVE_MEMFD_CREATE)
 
     if (NOT ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux"))
         find_package(EpollShim)

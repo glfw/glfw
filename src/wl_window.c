@@ -39,18 +39,18 @@
 #include <poll.h>
 
 
-static void handlePing(void* data,
-                       struct wl_shell_surface* shellSurface,
-                       uint32_t serial)
+static void shellSurfaceHandlePing(void* data,
+                                   struct wl_shell_surface* shellSurface,
+                                   uint32_t serial)
 {
     wl_shell_surface_pong(shellSurface, serial);
 }
 
-static void handleConfigure(void* data,
-                            struct wl_shell_surface* shellSurface,
-                            uint32_t edges,
-                            int32_t width,
-                            int32_t height)
+static void shellSurfaceHandleConfigure(void* data,
+                                        struct wl_shell_surface* shellSurface,
+                                        uint32_t edges,
+                                        int32_t width,
+                                        int32_t height)
 {
     _GLFWwindow* window = data;
     float aspectRatio;
@@ -94,15 +94,15 @@ static void handleConfigure(void* data,
     _glfwInputWindowDamage(window);
 }
 
-static void handlePopupDone(void* data,
-                            struct wl_shell_surface* shellSurface)
+static void shellSurfaceHandlePopupDone(void* data,
+                                        struct wl_shell_surface* shellSurface)
 {
 }
 
 static const struct wl_shell_surface_listener shellSurfaceListener = {
-    handlePing,
-    handleConfigure,
-    handlePopupDone
+    shellSurfaceHandlePing,
+    shellSurfaceHandleConfigure,
+    shellSurfaceHandlePopupDone
 };
 
 static int createTmpfileCloexec(char* tmpname)
@@ -387,9 +387,9 @@ static void checkScaleChange(_GLFWwindow* window)
     }
 }
 
-static void handleEnter(void *data,
-                        struct wl_surface *surface,
-                        struct wl_output *output)
+static void surfaceHandleEnter(void *data,
+                               struct wl_surface *surface,
+                               struct wl_output *output)
 {
     _GLFWwindow* window = data;
     _GLFWmonitor* monitor = wl_output_get_user_data(output);
@@ -407,9 +407,9 @@ static void handleEnter(void *data,
     checkScaleChange(window);
 }
 
-static void handleLeave(void *data,
-                        struct wl_surface *surface,
-                        struct wl_output *output)
+static void surfaceHandleLeave(void *data,
+                               struct wl_surface *surface,
+                               struct wl_output *output)
 {
     _GLFWwindow* window = data;
     _GLFWmonitor* monitor = wl_output_get_user_data(output);
@@ -429,8 +429,8 @@ static void handleLeave(void *data,
 }
 
 static const struct wl_surface_listener surfaceListener = {
-    handleEnter,
-    handleLeave
+    surfaceHandleEnter,
+    surfaceHandleLeave
 };
 
 static void setIdleInhibitor(_GLFWwindow* window, GLFWbool enable)
@@ -1352,14 +1352,14 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
         wl_buffer_destroy(cursor->wl.buffer);
 }
 
-static void handleRelativeMotion(void* data,
-                                 struct zwp_relative_pointer_v1* pointer,
-                                 uint32_t timeHi,
-                                 uint32_t timeLo,
-                                 wl_fixed_t dx,
-                                 wl_fixed_t dy,
-                                 wl_fixed_t dxUnaccel,
-                                 wl_fixed_t dyUnaccel)
+static void relativePointerHandleRelativeMotion(void* data,
+                                                struct zwp_relative_pointer_v1* pointer,
+                                                uint32_t timeHi,
+                                                uint32_t timeLo,
+                                                wl_fixed_t dx,
+                                                wl_fixed_t dy,
+                                                wl_fixed_t dxUnaccel,
+                                                wl_fixed_t dyUnaccel)
 {
     _GLFWwindow* window = data;
 
@@ -1372,11 +1372,11 @@ static void handleRelativeMotion(void* data,
 }
 
 static const struct zwp_relative_pointer_v1_listener relativePointerListener = {
-    handleRelativeMotion
+    relativePointerHandleRelativeMotion
 };
 
-static void handleLocked(void* data,
-                         struct zwp_locked_pointer_v1* lockedPointer)
+static void lockedPointerHandleLocked(void* data,
+                                      struct zwp_locked_pointer_v1* lockedPointer)
 {
 }
 
@@ -1396,14 +1396,14 @@ static void unlockPointer(_GLFWwindow* window)
 
 static void lockPointer(_GLFWwindow* window);
 
-static void handleUnlocked(void* data,
-                           struct zwp_locked_pointer_v1* lockedPointer)
+static void lockedPointerHandleUnlocked(void* data,
+                                        struct zwp_locked_pointer_v1* lockedPointer)
 {
 }
 
 static const struct zwp_locked_pointer_v1_listener lockedPointerListener = {
-    handleLocked,
-    handleUnlocked
+    lockedPointerHandleLocked,
+    lockedPointerHandleUnlocked
 };
 
 static void lockPointer(_GLFWwindow* window)

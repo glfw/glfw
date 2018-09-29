@@ -62,7 +62,6 @@ extern "C" {
  *  * `GLFW_EXPOSE_NATIVE_COCOA`
  *  * `GLFW_EXPOSE_NATIVE_X11`
  *  * `GLFW_EXPOSE_NATIVE_WAYLAND`
- *  * `GLFW_EXPOSE_NATIVE_MIR`
  *
  *  The available context API macros are:
  *  * `GLFW_EXPOSE_NATIVE_WGL`
@@ -103,8 +102,6 @@ extern "C" {
  #include <X11/extensions/Xrandr.h>
 #elif defined(GLFW_EXPOSE_NATIVE_WAYLAND)
  #include <wayland-client.h>
-#elif defined(GLFW_EXPOSE_NATIVE_MIR)
- #include <mir_toolkit/mir_client_library.h>
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_WGL)
@@ -416,50 +413,6 @@ GLFWAPI struct wl_output* glfwGetWaylandMonitor(GLFWmonitor* monitor);
  *  @ingroup native
  */
 GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* window);
-#endif
-
-#if defined(GLFW_EXPOSE_NATIVE_MIR)
-/*! @brief Returns the `MirConnection*` used by GLFW.
- *
- *  @return The `MirConnection*` used by GLFW, or `NULL` if an
- *  [error](@ref error_handling) occurred.
- *
- *  @thread_safety This function may be called from any thread.  Access is not
- *  synchronized.
- *
- *  @since Added in version 3.2.
- *
- *  @ingroup native
- */
-GLFWAPI MirConnection* glfwGetMirDisplay(void);
-
-/*! @brief Returns the Mir output ID of the specified monitor.
- *
- *  @return The Mir output ID of the specified monitor, or zero if an
- *  [error](@ref error_handling) occurred.
- *
- *  @thread_safety This function may be called from any thread.  Access is not
- *  synchronized.
- *
- *  @since Added in version 3.2.
- *
- *  @ingroup native
- */
-GLFWAPI int glfwGetMirMonitor(GLFWmonitor* monitor);
-
-/*! @brief Returns the `MirWindow*` of the specified window.
- *
- *  @return The `MirWindow*` of the specified window, or `NULL` if an
- *  [error](@ref error_handling) occurred.
- *
- *  @thread_safety This function may be called from any thread.  Access is not
- *  synchronized.
- *
- *  @since Added in version 3.2.
- *
- *  @ingroup native
- */
-GLFWAPI MirWindow* glfwGetMirWindow(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_EGL)

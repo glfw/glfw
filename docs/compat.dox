@@ -277,9 +277,4 @@ surfaces on Wayland.  If any of these extensions are not available, @ref
 glfwGetRequiredInstanceExtensions will return an empty list and window surface
 creation will fail.
 
-GLFW uses the `VK_KHR_surface` and `VK_KHR_mir_surface` extensions to create
-surfaces on Mir.  If any of these extensions are not available, @ref
-glfwGetRequiredInstanceExtensions will return an empty list and window surface
-creation will fail.
-
 */

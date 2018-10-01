@@ -37,6 +37,10 @@ elseif (_GLFW_WAYLAND)
         BASENAME xdg-shell)
     ecm_add_wayland_client_protocol(glfw_SOURCES
         PROTOCOL
+        "${WAYLAND_PROTOCOLS_PKGDATADIR}/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml"
+        BASENAME xdg-decoration)
+    ecm_add_wayland_client_protocol(glfw_SOURCES
+        PROTOCOL
         "${WAYLAND_PROTOCOLS_PKGDATADIR}/stable/viewporter/viewporter.xml"
         BASENAME viewporter)
     ecm_add_wayland_client_protocol(glfw_SOURCES

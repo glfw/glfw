@@ -343,6 +343,10 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
+    // Fix for macOS mojave not rendering the OpenGL view on window start
+    if (window->context.client != GLFW_NO_API)
+        [window->context.nsgl.object update];
+
     if (_glfw.ns.disabledCursorWindow == window)
         centerCursor(window);
 

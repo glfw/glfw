@@ -266,7 +266,16 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 {
     self = [super init];
     if (self != nil)
+    {
         window = initWindow;
+
+        // HACK: Force an update shortly after the window appears to avoid the
+        //       issue where macOS mojave does not start rendering to the OpenGL view
+        dispatch_async(dispatch_get_main_queue(), ^() {
+            if (window->context.client != GLFW_NO_API)
+                [window->context.nsgl.object update];
+        });
+    }
 
     return self;
 }
@@ -343,10 +352,6 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
-    // Fix for macOS mojave not rendering the OpenGL view on window start
-    if (window->context.client != GLFW_NO_API)
-        [window->context.nsgl.object update];
-
     if (_glfw.ns.disabledCursorWindow == window)
         centerCursor(window);
 

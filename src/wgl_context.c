@@ -300,29 +300,17 @@ static void swapIntervalWGL(int interval)
 
 static int extensionSupportedWGL(const char* extension)
 {
-    const char* extensions;
-
-    if (_glfw.wgl.GetExtensionsStringEXT)
-    {
-        extensions = _glfw.wgl.GetExtensionsStringEXT();
-        if (extensions)
-        {
-            if (_glfwStringInExtensionString(extension, extensions))
-                return GLFW_TRUE;
-        }
-    }
+    const char* extensions = NULL;
 
     if (_glfw.wgl.GetExtensionsStringARB)
-    {
         extensions = _glfw.wgl.GetExtensionsStringARB(wglGetCurrentDC());
-        if (extensions)
-        {
-            if (_glfwStringInExtensionString(extension, extensions))
-                return GLFW_TRUE;
-        }
-    }
+    else if (_glfw.wgl.GetExtensionsStringEXT)
+        extensions = _glfw.wgl.GetExtensionsStringEXT();
 
-    return GLFW_FALSE;
+    if (!extensions)
+        return GLFW_FALSE;
+
+    return _glfwStringInExtensionString(extension, extensions);
 }
 
 static GLFWglproc getProcAddressWGL(const char* procname)

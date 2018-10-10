@@ -1263,6 +1263,8 @@ void _glfwPlatformTerminate(void)
         zxdg_decoration_manager_v1_destroy(_glfw.wl.decorationManager);
     if (_glfw.wl.wmBase)
         xdg_wm_base_destroy(_glfw.wl.wmBase);
+    if (_glfw.wl.dataSource)
+        wl_data_source_destroy(_glfw.wl.dataSource);
     if (_glfw.wl.dataDevice)
         wl_data_device_destroy(_glfw.wl.dataDevice);
     if (_glfw.wl.dataOffer)
@@ -1296,6 +1298,8 @@ void _glfwPlatformTerminate(void)
 
     if (_glfw.wl.clipboardString)
         free(_glfw.wl.clipboardString);
+    if (_glfw.wl.clipboardSendString)
+        free(_glfw.wl.clipboardSendString);
 }
 
 const char* _glfwPlatformGetVersionString(void)

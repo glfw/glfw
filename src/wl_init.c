@@ -27,6 +27,8 @@
 #include "internal.h"
 
 #include <assert.h>
+#include <errno.h>
+#include <limits.h>
 #include <linux/input.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -958,6 +960,12 @@ static void createKeyTables(void)
 
 int _glfwPlatformInit(void)
 {
+    const char *cursorTheme;
+    const char *cursorSizeStr;
+    char *cursorSizeEnd;
+    long cursorSizeLong;
+    int cursorSize;
+
     _glfw.wl.cursor.handle = _glfw_dlopen("libwayland-cursor.so.0");
     if (!_glfw.wl.cursor.handle)
     {
@@ -1078,7 +1086,18 @@ int _glfwPlatformInit(void)
 
     if (_glfw.wl.pointer && _glfw.wl.shm)
     {
-        _glfw.wl.cursorTheme = wl_cursor_theme_load(NULL, 32, _glfw.wl.shm);
+        cursorTheme = getenv("XCURSOR_THEME");
+        cursorSizeStr = getenv("XCURSOR_SIZE");
+        cursorSize = 32;
+        if (cursorSizeStr)
+        {
+            errno = 0;
+            cursorSizeLong = strtol(cursorSizeStr, &cursorSizeEnd, 10);
+            if (!*cursorSizeEnd && !errno && cursorSizeLong > 0 && cursorSizeLong <= INT_MAX)
+                cursorSize = (int)cursorSizeLong;
+        }
+        _glfw.wl.cursorTheme =
+            wl_cursor_theme_load(cursorTheme, cursorSize, _glfw.wl.shm);
         if (!_glfw.wl.cursorTheme)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -1086,7 +1105,8 @@ int _glfwPlatformInit(void)
             return GLFW_FALSE;
         }
         // If this happens to be NULL, we just fallback to the scale=1 version.
-        _glfw.wl.cursorThemeHiDPI = wl_cursor_theme_load(NULL, 64, _glfw.wl.shm);
+        _glfw.wl.cursorThemeHiDPI =
+            wl_cursor_theme_load(cursorTheme, 2 * cursorSize, _glfw.wl.shm);
         _glfw.wl.cursorSurface =
             wl_compositor_create_surface(_glfw.wl.compositor);
         _glfw.wl.cursorTimerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
@@ -1189,4 +1209,3 @@ const char* _glfwPlatformGetVersionString(void)
 #endif
         ;
 }
-

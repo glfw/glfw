@@ -4928,8 +4928,6 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
- *  @remark @wayland Clipboard is currently unimplemented.
- *
  *  @pointer_lifetime The specified string is copied before this function
  *  returns.
  *
@@ -4957,8 +4955,6 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
- *
- *  @remark @wayland Clipboard is currently unimplemented.
  *
  *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
  *  should not free it yourself.  It is valid until the next call to @ref

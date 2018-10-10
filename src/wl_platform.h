@@ -236,6 +236,7 @@ typedef struct _GLFWlibraryWayland
     struct wl_data_device_manager*          dataDeviceManager;
     struct wl_data_device*      dataDevice;
     struct wl_data_offer*       dataOffer;
+    struct wl_data_source*      dataSource;
     struct xdg_wm_base*         wmBase;
     struct zxdg_decoration_manager_v1*      decorationManager;
     struct wp_viewporter*       viewporter;
@@ -258,6 +259,8 @@ typedef struct _GLFWlibraryWayland
     int                         keyboardLastScancode;
     char*                       clipboardString;
     size_t                      clipboardSize;
+    char*                       clipboardSendString;
+    size_t                      clipboardSendSize;
     int                         timerfd;
     short int                   keycodes[256];
     short int                   scancodes[GLFW_KEY_LAST + 1];

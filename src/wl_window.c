@@ -1576,12 +1576,87 @@ void _glfwPlatformSetClipboardString(const char* string)
                     "Wayland: Clipboard setting not implemented yet");
 }
 
+static GLFWbool growClipboardString(void)
+{
+    char* clipboard = _glfw.wl.clipboardString;
+
+    clipboard = realloc(clipboard, _glfw.wl.clipboardSize * 2);
+    if (!clipboard)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Impossible to grow clipboard string");
+        return GLFW_FALSE;
+    }
+    _glfw.wl.clipboardString = clipboard;
+    _glfw.wl.clipboardSize = _glfw.wl.clipboardSize * 2;
+    return GLFW_TRUE;
+}
+
 const char* _glfwPlatformGetClipboardString(void)
 {
-    // TODO
-    _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Wayland: Clipboard getting not implemented yet");
-    return NULL;
+    int fds[2];
+    int ret;
+    size_t len = 0;
+
+    if (!_glfw.wl.dataOffer)
+    {
+        _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
+                        "No clipboard data has been sent yet");
+        return NULL;
+    }
+
+    ret = pipe2(fds, O_CLOEXEC);
+    if (ret < 0)
+    {
+        // TODO: also report errno maybe?
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Impossible to create clipboard pipe fds");
+        return NULL;
+    }
+
+    wl_data_offer_receive(_glfw.wl.dataOffer, "text/plain;charset=utf-8", fds[1]);
+    close(fds[1]);
+
+    // XXX: this is a huge hack, this function shouldn’t be synchronous!
+    handleEvents(-1);
+
+    while (1)
+    {
+        // Grow the clipboard if we need to paste something bigger, there is no
+        // shrink operation yet.
+        if (len + 4096 > _glfw.wl.clipboardSize)
+        {
+            if (!growClipboardString())
+            {
+                close(fds[0]);
+                return NULL;
+            }
+        }
+
+        // Then read from the fd to the clipboard, handling all known errors.
+        ret = read(fds[0], _glfw.wl.clipboardString + len, 4096);
+        if (ret == 0)
+            break;
+        if (ret == -1 && errno == EINTR)
+            continue;
+        if (ret == -1)
+        {
+            // TODO: also report errno maybe.
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Wayland: Impossible to read from clipboard fd");
+            close(fds[0]);
+            return NULL;
+        }
+        len += ret;
+    }
+    close(fds[0]);
+    if (len + 1 > _glfw.wl.clipboardSize)
+    {
+        if (!growClipboardString())
+            return NULL;
+    }
+    _glfw.wl.clipboardString[len] = '\0';
+    return _glfw.wl.clipboardString;
 }
 
 void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)

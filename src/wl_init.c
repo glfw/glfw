@@ -705,6 +705,70 @@ static const struct wl_seat_listener seatListener = {
     seatHandleName,
 };
 
+static void dataOfferHandleOffer(void* data,
+                                 struct wl_data_offer* dataOffer,
+                                 const char* mimeType)
+{
+}
+
+static const struct wl_data_offer_listener dataOfferListener = {
+    dataOfferHandleOffer,
+};
+
+static void dataDeviceHandleDataOffer(void* data,
+                                      struct wl_data_device* dataDevice,
+                                      struct wl_data_offer* id)
+{
+    if (_glfw.wl.dataOffer)
+        wl_data_offer_destroy(_glfw.wl.dataOffer);
+
+    _glfw.wl.dataOffer = id;
+    wl_data_offer_add_listener(_glfw.wl.dataOffer, &dataOfferListener, NULL);
+}
+
+static void dataDeviceHandleEnter(void* data,
+                                  struct wl_data_device* dataDevice,
+                                  uint32_t serial,
+                                  struct wl_surface *surface,
+                                  wl_fixed_t x,
+                                  wl_fixed_t y,
+                                  struct wl_data_offer *id)
+{
+}
+
+static void dataDeviceHandleLeave(void* data,
+                                  struct wl_data_device* dataDevice)
+{
+}
+
+static void dataDeviceHandleMotion(void* data,
+                                   struct wl_data_device* dataDevice,
+                                   uint32_t time,
+                                   wl_fixed_t x,
+                                   wl_fixed_t y)
+{
+}
+
+static void dataDeviceHandleDrop(void* data,
+                                 struct wl_data_device* dataDevice)
+{
+}
+
+static void dataDeviceHandleSelection(void* data,
+                                      struct wl_data_device* dataDevice,
+                                      struct wl_data_offer* id)
+{
+}
+
+static const struct wl_data_device_listener dataDeviceListener = {
+    dataDeviceHandleDataOffer,
+    dataDeviceHandleEnter,
+    dataDeviceHandleLeave,
+    dataDeviceHandleMotion,
+    dataDeviceHandleDrop,
+    dataDeviceHandleSelection,
+};
+
 static void wmBaseHandlePing(void* data,
                              struct xdg_wm_base* wmBase,
                              uint32_t serial)
@@ -757,6 +821,15 @@ static void registryHandleGlobal(void* data,
                 wl_registry_bind(registry, name, &wl_seat_interface,
                                  _glfw.wl.seatVersion);
             wl_seat_add_listener(_glfw.wl.seat, &seatListener, NULL);
+        }
+    }
+    else if (strcmp(interface, "wl_data_device_manager") == 0)
+    {
+        if (!_glfw.wl.dataDeviceManager)
+        {
+            _glfw.wl.dataDeviceManager =
+                wl_registry_bind(registry, name,
+                                 &wl_data_device_manager_interface, 1);
         }
     }
     else if (strcmp(interface, "xdg_wm_base") == 0)
@@ -1117,6 +1190,14 @@ int _glfwPlatformInit(void)
         _glfw.wl.cursorTimerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
     }
 
+    if (_glfw.wl.seat && _glfw.wl.dataDeviceManager)
+    {
+        _glfw.wl.dataDevice =
+            wl_data_device_manager_get_data_device(_glfw.wl.dataDeviceManager,
+                                                   _glfw.wl.seat);
+        wl_data_device_add_listener(_glfw.wl.dataDevice, &dataDeviceListener, NULL);
+    }
+
     return GLFW_TRUE;
 }
 
@@ -1174,6 +1255,12 @@ void _glfwPlatformTerminate(void)
         zxdg_decoration_manager_v1_destroy(_glfw.wl.decorationManager);
     if (_glfw.wl.wmBase)
         xdg_wm_base_destroy(_glfw.wl.wmBase);
+    if (_glfw.wl.dataDevice)
+        wl_data_device_destroy(_glfw.wl.dataDevice);
+    if (_glfw.wl.dataOffer)
+        wl_data_offer_destroy(_glfw.wl.dataOffer);
+    if (_glfw.wl.dataDeviceManager)
+        wl_data_device_manager_destroy(_glfw.wl.dataDeviceManager);
     if (_glfw.wl.pointer)
         wl_pointer_destroy(_glfw.wl.pointer);
     if (_glfw.wl.keyboard)

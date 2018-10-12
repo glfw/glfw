@@ -143,6 +143,7 @@ static int choosePixelFormat(_GLFWwindow* window,
     _GLFWfbconfig* usableConfigs;
     const _GLFWfbconfig* closest;
     int i, pixelFormat, nativeCount, usableCount;
+    int pixelFormatAttribs[GLFW_PFA_COUNT];
 
     if (_glfw.wgl.ARB_pixel_format)
     {
@@ -169,7 +170,6 @@ static int choosePixelFormat(_GLFWwindow* window,
         if (_glfw.wgl.ARB_pixel_format)
         {
             // Get pixel format attributes through "modern" extension
-            int pixelFormatAttribs[GLFW_PFA_COUNT];
             getPixelFormatAttribs(window, n, pixelFormatAttribs );
 
             if (!pixelFormatAttribs[GLFW_PFA_WGL_SUPPORT_OPENGL_ARB] ||

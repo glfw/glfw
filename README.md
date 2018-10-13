@@ -239,6 +239,7 @@ information on what to include when reporting a bug.
 - [X11] Bugfix: Selection I/O reported but did not support `COMPOUND_TEXT`
 - [X11] Bugfix: Latin-1 text read from selections was not converted to UTF-8
 - [X11] Bugfix: NVidia EGL would segfault if unloaded before closing the display
+- [X11] Bugfix: Checking window maximized attrib could crash some WMs (#1356)
 - [Linux] Added workaround for missing `SYN_DROPPED` in pre-2.6.39 kernel
           headers (#1196)
 - [Linux] Moved to evdev for joystick input (#906,#1005)

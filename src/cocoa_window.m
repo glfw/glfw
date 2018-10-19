@@ -658,7 +658,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     {
         const NSUInteger modifierFlags = [nsevent modifierFlags];
         NSString *chs = [nsevent charactersIgnoringModifiers];
-        if (modifierFlags & NSControlKeyMask)
+        if (modifierFlags & NSEventModifierFlagControl)
         {
             if ([chs characterAtIndex:0] == NSTabCharacter)
             {

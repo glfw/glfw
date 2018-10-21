@@ -161,11 +161,12 @@ David Drysdale.
 The static version of the GLFW library is named `glfw3`.  When using this
 version, it is also necessary to link with some libraries that GLFW uses.
 
-When linking an application under Windows that uses the static version of GLFW,
-you must link with `opengl32`.  On some versions of MinGW, you must also
-explicitly link with `gdi32`, while other versions of MinGW include it in the
-set of default libraries along with other dependencies like `user32` and
-`kernel32`.  If you are using GLU, you must also link with `glu32`.
+When using MinGW to link an application with the static version of GLFW, you
+must also explicitly link with `gdi32`. Other toolchains including MinGW-w64
+include it in the set of default libraries along with other dependencies like
+`user32` and `kernel32`.
+
+If you are using GLU, you must also link with `glu32`.
 
 The link library for the GLFW DLL is named `glfw3dll`.  When compiling an
 application that uses the DLL version of GLFW, you need to define the @ref
@@ -173,8 +174,7 @@ GLFW_DLL macro _before_ any inclusion of the GLFW header.  This can be done
 either with a compiler switch or by defining it in your source code.
 
 An application using the GLFW DLL does not need to link against any of its
-dependencies, but you still have to link against `opengl32` if your application
-uses OpenGL and `glu32` if it uses GLU.
+dependencies, but you still have to link against `glu32` if it uses GLU.
 
 
 @subsection build_link_cmake_source With CMake and GLFW source

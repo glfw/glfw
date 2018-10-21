@@ -210,10 +210,12 @@ static void applyAspectRatio(_GLFWwindow* window, int edge, RECT* area)
 {
     int xoff, yoff;
     const float ratio = (float) window->numer / (float) window->denom;
+    UINT dpi = _glfwIsWindows10AnniversaryUpdateOrGreaterWin32()
+        ? GetDpiForWindow(window->win32.handle)
+        : USER_DEFAULT_SCREEN_DPI;
 
     getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
-                      0, 0, &xoff, &yoff,
-                      GetDpiForWindow(window->win32.handle));
+                      0, 0, &xoff, &yoff, dpi);
 
     if (edge == WMSZ_LEFT  || edge == WMSZ_BOTTOMLEFT ||
         edge == WMSZ_RIGHT || edge == WMSZ_BOTTOMRIGHT)
@@ -1002,13 +1004,15 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         {
             int xoff, yoff;
             MINMAXINFO* mmi = (MINMAXINFO*) lParam;
+            UINT dpi = _glfwIsWindows10AnniversaryUpdateOrGreaterWin32()
+              ? GetDpiForWindow(window->win32.handle)
+              : USER_DEFAULT_SCREEN_DPI;
 
             if (window->monitor)
                 break;
 
             getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
-                              0, 0, &xoff, &yoff,
-                              GetDpiForWindow(window->win32.handle));
+                              0, 0, &xoff, &yoff, dpi);
 
             if (window->minwidth != GLFW_DONT_CARE &&
                 window->minheight != GLFW_DONT_CARE)
@@ -2185,4 +2189,5 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     return window->win32.handle;
 }
+
 

@@ -209,11 +209,14 @@ static void getFullWindowSize(DWORD style, DWORD exStyle,
 static void applyAspectRatio(_GLFWwindow* window, int edge, RECT* area)
 {
     int xoff, yoff;
+    UINT dpi = USER_DEFAULT_SCREEN_DPI;
     const float ratio = (float) window->numer / (float) window->denom;
 
+    if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+        dpi = GetDpiForWindow(window->win32.handle);
+
     getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
-                      0, 0, &xoff, &yoff,
-                      GetDpiForWindow(window->win32.handle));
+                      0, 0, &xoff, &yoff, dpi);
 
     if (edge == WMSZ_LEFT  || edge == WMSZ_BOTTOMLEFT ||
         edge == WMSZ_RIGHT || edge == WMSZ_BOTTOMRIGHT)
@@ -1001,14 +1004,17 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_GETMINMAXINFO:
         {
             int xoff, yoff;
+            UINT dpi = USER_DEFAULT_SCREEN_DPI;
             MINMAXINFO* mmi = (MINMAXINFO*) lParam;
 
             if (window->monitor)
                 break;
 
+            if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+                dpi = GetDpiForWindow(window->win32.handle);
+
             getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
-                              0, 0, &xoff, &yoff,
-                              GetDpiForWindow(window->win32.handle));
+                              0, 0, &xoff, &yoff, dpi);
 
             if (window->minwidth != GLFW_DONT_CARE &&
                 window->minheight != GLFW_DONT_CARE)

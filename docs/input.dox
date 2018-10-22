@@ -245,7 +245,7 @@ If you wish to be notified when the cursor moves over the window, set a cursor
 position callback.
 
 @code
-glfwSetCursorPosCallback(window, cursor_pos_callback);
+glfwSetCursorPosCallback(window, cursor_position_callback);
 @endcode
 
 The callback functions receives the cursor position, measured in screen

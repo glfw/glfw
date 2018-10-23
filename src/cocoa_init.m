@@ -359,7 +359,7 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateNSGL();
     _glfwTerminateJoysticksNS();
 
-    _glfwDestroyAutorealeasePool();
+    _glfwDestroyAutoreleasePool();
 }
 
 const char* _glfwPlatformGetVersionString(void)
@@ -390,9 +390,8 @@ void _glfwCreateAutoreleasePool()
     }
 }
 
-// Clears and resets the autorealease pool if GLFW is managing its own even loop,
-// and not using the built-in NSApplication event loop. GLFW creates its own
-// autorelease pool only if it is running its own event loop
+// Clears and resets the autorelease pool only if if GLFW is managing its own
+// event loop, and not using the built-in NSApplication event loop.
 void _glfwResetAutoreleasePool()
 {
     if(!isNSApplicationRunning())
@@ -402,7 +401,7 @@ void _glfwResetAutoreleasePool()
     }
 }
 
-void _glfwDestroyAutorealeasePool()
+void _glfwDestroyAutoreleasePool()
 {
     if(!isNSApplicationRunning())
     {

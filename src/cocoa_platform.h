@@ -162,12 +162,11 @@ void _glfwPollMonitorsNS(void);
 GLFWbool _glfwSetVideoModeNS(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoModeNS(_GLFWmonitor* monitor);
 
-// If GLFW is running as a stand-alone application, we create a global autorealease
+// If GLFW is running as a stand-alone application, we create a global autorelease
 // pool. If GLFW is running in an existing native Cocoa app, the underlying
-// NSApplication creates its own autorelease pool. These functions check if GLFW
-// is running in a Cocoa app or not, and creates the autorealease pool accordingly.
+// NSApplication create its own autorelease pool. These functions check if GLFW
+// is running in a Cocoa app or not, and creates the autorelease pool accordingly.
 // If GLFW is in a Cocoa app, these functions don't do anything
 void _glfwCreateAutoreleasePool();
 void _glfwResetAutoreleasePool();
-void _glfwDestroyAutorealeasePool();
-
+void _glfwDestroyAutoreleasePool();

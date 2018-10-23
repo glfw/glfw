@@ -4,6 +4,12 @@
 
 @section news_33 Release notes for 3.3
 
+@subsection news_33_focusonshow GLFW_FOCUS_ON_SHOW window hint and attribute
+
+GLFW now supports the [GLFW_FOCUS_ON_SHOW](@ref GLFW_DECORATED_hint) window hint
+and attribute for controlling input focus when calling @ref glfwShowWindow
+
+@see @ref window_hide
 
 @subsection news_33_geterror Error query
 
@@ -64,14 +70,20 @@ GLFW now supports querying the window and monitor content scale, i.e. the ratio
 between the current DPI and the platform's default DPI, with @ref
 glfwGetWindowContentScale and @ref glfwGetMonitorContentScale.
 
+Changes of the content scale of a window can be received with the window content
+scale callback, set with @ref glfwSetWindowContentScaleCallback.
+
+The @ref GLFW_SCALE_TO_MONITOR window hint enables automatic resizing of a
+window by the content scale of the monitor it is placed, on platforms like
+Windows and X11 where this is necessary.
+
 @see @ref window_scale
 
 
 @subsection news_33_inithint Support for initialization hints
 
-GLFW now supports setting library initialization hints with @ref glfwInitHint
-or @ref glfwInitHintString.  These must be set before initialization to take
-effect.
+GLFW now supports setting library initialization hints with @ref glfwInitHint.
+These must be set before initialization to take effect.
 
 @see @ref init_hints
 
@@ -94,11 +106,17 @@ be disabled with the @ref GLFW_JOYSTICK_HAT_BUTTONS init hint.
 @see @ref joystick_hat
 
 
-@subsection news_33_transparent Support for transparent window framebuffer
+@subsection news_33_transparent Support for transparent windows and framebuffers
 
 GLFW now supports the creation of windows with transparent framebuffers on
-systems with desktop compositing enabled with the @ref GLFW_TRANSPARENT window
-hint and attribute.  Any window decorations will still be opaque.
+systems with desktop compositing enabled with the @ref
+GLFW_TRANSPARENT_FRAMEBUFFER window hint and attribute.  This hint must be set
+before window creation and leaves any window decorations opaque.
+
+GLFW now also supports whole window transparency with @ref glfwGetWindowOpacity
+and @ref glfwSetWindowOpacity.  This value controls the opacity of the whole
+window including decorations and unlike framebuffer transparency can be changed
+at any time after window creation.
 
 
 @subsection news_33_centercursor Cursor centering window hint
@@ -106,6 +124,13 @@ hint and attribute.  Any window decorations will still be opaque.
 GLFW now supports controlling whether the cursor is centered over newly created
 full screen windows with the [GLFW_CENTER_CURSOR](@ref GLFW_CENTER_CURSOR_hint)
 window hint.  It is enabled by default.
+
+
+@subsection news_33_hover Mouse cursor hover window attribute
+
+GLFW now supports polling whether the cursor is hovering over the window client
+area with the [GLFW_HOVERED](@ref GLFW_HOVERED_attrib) window attribute.  This
+attribute corresponds to the [cursor enter/leave](@ref cursor_enter) event.
 
 
 @subsection news_33_rawmotion Support for raw mouse motion
@@ -117,7 +142,7 @@ mode on platforms where this is available, specifically Windows and X11.
 @subsection news_33_moltenvk Support for Vulkan on macOS via MoltenVK
 
 GLFW now supports the `VK_MVK_macos_surface` window surface creation extension
-provided by [MoltenVK](https://moltengl.com/moltenvk/).
+provided by MoltenVK in the [LunarG Vulkan SDK](https://vulkan.lunarg.com/).
 
 @see @ref vulkan_guide
 
@@ -134,11 +159,26 @@ creation API, intended for automated testing.  This backend does not provide
 input.
 
 
+@subsection news_33_userptr Monitor and joystick user pointers
+
+GLFW now supports setting and querying user pointers for connected monitors and
+joysticks with @ref glfwSetMonitorUserPointer, @ref glfwGetMonitorUserPointer,
+@ref glfwSetJoystickUserPointer and @ref glfwGetJoystickUserPointer.
+
+
 @subsection news_33_primary X11 primary selection access
 
 GLFW now supports querying and setting the X11 primary selection via the native
 access functions @ref glfwGetX11SelectionString and @ref
 glfwSetX11SelectionString.
+
+
+@subsection news_33_mir_removal Experimental Mir support has been removed
+
+As per the release of Mir 1.0, the recommended API is now Wayland, the
+experimental Mir display server backend introduced in GLFW 3.1 has thus been
+removed.  To use the experimental Wayland backend, pass -DGLFW_USE_WAYLAND=ON
+to cmake where you previously passed the now-removed -DGLFW_USE_MIR=ON.
 
 
 @section news_32 Release notes for 3.2

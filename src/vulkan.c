@@ -54,7 +54,7 @@ GLFWbool _glfwInitVulkan(int mode)
 #elif defined(_GLFW_WIN32)
     _glfw.vk.handle = _glfw_dlopen("vulkan-1.dll");
 #elif defined(_GLFW_COCOA)
-    _glfw.vk.handle = _glfw_dlopen("libMoltenVK.dylib");
+    _glfw.vk.handle = _glfw_dlopen("libvulkan.1.dylib");
 #else
     _glfw.vk.handle = _glfw_dlopen("libvulkan.so.1");
 #endif
@@ -136,9 +136,6 @@ GLFWbool _glfwInitVulkan(int mode)
 #elif defined(_GLFW_WAYLAND)
         else if (strcmp(ep[i].extensionName, "VK_KHR_wayland_surface") == 0)
             _glfw.vk.KHR_wayland_surface = GLFW_TRUE;
-#elif defined(_GLFW_MIR)
-        else if (strcmp(ep[i].extensionName, "VK_KHR_mir_surface") == 0)
-            _glfw.vk.KHR_mir_surface = GLFW_TRUE;
 #endif
     }
 
@@ -315,6 +312,13 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance,
         _glfwInputError(GLFW_API_UNAVAILABLE,
                         "Vulkan: Window surface creation extensions not found");
         return VK_ERROR_EXTENSION_NOT_PRESENT;
+    }
+
+    if (window->context.client != GLFW_NO_API)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE,
+                        "Vulkan: Window surface creation requires the window to have the client API set to GLFW_NO_API");
+        return VK_ERROR_NATIVE_WINDOW_IN_USE_KHR;
     }
 
     return _glfwPlatformCreateWindowSurface(instance, window, allocator, surface);

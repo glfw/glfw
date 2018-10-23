@@ -24,7 +24,7 @@ endif()
 file(STRINGS "${source_path}" lines)
 foreach(line ${lines})
     if ("${line}" MATCHES "^[0-9a-fA-F].*$")
-        set(GLFW_GAMEPAD_MAPPINGS "${GLFW_GAMEPAD_MAPPINGS}\"${line}\\n\"\n")
+        set(GLFW_GAMEPAD_MAPPINGS "${GLFW_GAMEPAD_MAPPINGS}\"${line}\",\n")
     endif()
 endforeach()
 

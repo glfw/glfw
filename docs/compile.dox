@@ -52,9 +52,9 @@ example, Cygwin has the `mingw64-i686-gcc` and `mingw64-x86_64-gcc` packages
 for 32- and 64-bit version of MinGW-w64, while Debian GNU/Linux and derivatives
 like Ubuntu have the `mingw-w64` package for both.
 
-GLFW has CMake toolchain files in the `CMake/` directory that allow for easy
-cross-compilation of Windows binaries.  To use these files you need to add a
-special parameter when generating the project files or makefiles:
+GLFW has CMake toolchain files in the `CMake/` directory that set up
+cross-compilation of Windows binaries.  To use these files you add an option
+when running `cmake` to generate the project files or makefiles:
 
 @code{.sh}
 cmake -DCMAKE_TOOLCHAIN_FILE=<toolchain-file> .
@@ -92,6 +92,19 @@ To compile GLFW for X11, you need to have the X11 packages installed, as well as
 the basic development tools like GCC and make.  For example, on Ubuntu and other
 distributions based on Debian GNU/Linux, you need to install the `xorg-dev`
 package, which pulls in all X.org header packages.
+
+Once you have installed the necessary packages, move on to @ref
+compile_generate.
+
+
+@subsubsection compile_deps_wayland Dependencies for Linux and Wayland
+
+To compile GLFW for Wayland, you need to have the Wayland packages installed,
+as well as the basic development tools like GCC and make.  For example, on
+Ubuntu and other distributions based on Debian GNU/Linux, you need to install
+the `libwayland-dev` package, which contains all Wayland headers and pulls in
+wayland-scanner, as well as the `wayland-protocols` and `extra-cmake-modules`
+packages.
 
 Once you have installed the necessary packages, move on to @ref
 compile_generate.
@@ -255,7 +268,6 @@ ramps and clipboard.  The options are:
  - @b _GLFW_WIN32 to use the Win32 API
  - @b _GLFW_X11 to use the X Window System
  - @b _GLFW_WAYLAND to use the Wayland API (experimental and incomplete)
- - @b _GLFW_MIR to use the Mir API (experimental and incomplete)
  - @b _GLFW_OSMESA to use the OSMesa API (headless and non-interactive)
 
 If you are building GLFW as a shared library / dynamic library / DLL then you
@@ -273,8 +285,8 @@ _GLFW_GLESV2_LIBRARY.  Otherwise, GLFW will use the built-in default names.
 
 For the EGL context creation API, the following options are available:
 
- - @b _GLFW_USE_EGLPLATFORM_H to use `EGL/eglplatform.h` for native handle
-   definitions (fallback)
+ - @b _GLFW_USE_EGLPLATFORM_H to use an existing `EGL/eglplatform.h` header file
+   for native handle types (fallback)
 
 @note None of the @ref build_macros may be defined during the compilation of
 GLFW.  If you define any of these in your build files, make sure they are not

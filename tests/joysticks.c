@@ -85,6 +85,32 @@ static void joystick_callback(int jid, int event)
         glfwRequestWindowAttention(window);
 }
 
+static void drop_callback(GLFWwindow* window, int count, const char** paths)
+{
+    int i;
+
+    for (i = 0;  i < count;  i++)
+    {
+        long size;
+        char* text;
+        FILE* stream = fopen(paths[i], "rb");
+        if (!stream)
+            continue;
+
+        fseek(stream, 0, SEEK_END);
+        size = ftell(stream);
+        fseek(stream, 0, SEEK_SET);
+
+        text = malloc(size + 1);
+        text[size] = '\0';
+        if (fread(text, 1, size, stream) == size)
+            glfwUpdateGamepadMappings(text);
+
+        free(text);
+        fclose(stream);
+    }
+}
+
 static const char* joystick_label(int jid)
 {
     static char label[1024];
@@ -154,6 +180,8 @@ int main(void)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
+    glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
+
     window = glfwCreateWindow(800, 600, "Joystick Test", NULL, NULL);
     if (!window)
     {
@@ -176,6 +204,7 @@ int main(void)
     }
 
     glfwSetJoystickCallback(joystick_callback);
+    glfwSetDropCallback(window, drop_callback);
 
     while (!glfwWindowShouldClose(window))
     {

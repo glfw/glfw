@@ -1573,7 +1573,6 @@ PREDEFINED             = GLFWAPI=                   \
                          GLFW_EXPOSE_NATIVE_WGL     \
                          GLFW_EXPOSE_NATIVE_X11     \
                          GLFW_EXPOSE_NATIVE_WAYLAND \
-                         GLFW_EXPOSE_NATIVE_MIR     \
                          GLFW_EXPOSE_NATIVE_GLX     \
                          GLFW_EXPOSE_NATIVE_COCOA   \
                          GLFW_EXPOSE_NATIVE_NSGL    \

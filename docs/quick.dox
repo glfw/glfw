@@ -174,7 +174,7 @@ If you are using an [extension loader library](@ref context_glext_auto) to
 access modern OpenGL then this is when to initialize it, as the loader needs
 a current context to load from.  This example uses
 [glad](https://github.com/Dav1dde/glad), but the same rule applies to all such
-libraries. 
+libraries.
 
 @code
 gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
@@ -309,7 +309,7 @@ done each frame after buffer swapping.
 
 There are two methods for processing pending events; polling and waiting.  This
 example will use event polling, which processes only those events that have
-already been received and then returns immediately.  
+already been received and then returns immediately.
 
 @code
 glfwPollEvents();

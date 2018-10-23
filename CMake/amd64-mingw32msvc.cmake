@@ -6,7 +6,7 @@ SET(CMAKE_CXX_COMPILER   "amd64-mingw32msvc-g++")
 SET(CMAKE_RC_COMPILER    "amd64-mingw32msvc-windres")
 SET(CMAKE_RANLIB         "amd64-mingw32msvc-ranlib")
 
-# Configure the behaviour of the find commands 
+# Configure the behaviour of the find commands
 SET(CMAKE_FIND_ROOT_PATH "/usr/amd64-mingw32msvc")
 SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)

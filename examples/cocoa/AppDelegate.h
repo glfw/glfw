@@ -5,7 +5,7 @@
 
 @property (assign, nonatomic) IBOutlet NSWindow *window;
 
-@property (assign, atomic) NSTimer *stepTimer; 
+@property (assign, atomic) NSTimer *stepTimer;
 
 -(IBAction)createGlfwWindow:(id)sender;
 

@@ -476,6 +476,14 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     return YES;
 }
 
+- (void)updateLayer
+{
+    if (window->context.client != GLFW_NO_API)
+        [window->context.nsgl.object update];
+
+    _glfwInputWindowDamage(window);
+}
+
 - (id)makeBackingLayer
 {
     if (window->ns.layer)

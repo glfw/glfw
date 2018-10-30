@@ -100,7 +100,7 @@ set_target_properties(glfw PROPERTIES
 target_compile_definitions(glfw PRIVATE _GLFW_USE_CONFIG_H)
 target_include_directories(glfw PUBLIC
                            "$<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>"
-                           "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>")
+                           "$<INSTALL_INTERFACE:${CMAKE_INSTALL_FULL_INCLUDEDIR}>")
 target_include_directories(glfw PRIVATE
                            "${GLFW_SOURCE_DIR}/src"
                            "${GLFW_BINARY_DIR}/src"
@@ -121,7 +121,7 @@ target_compile_options(glfw PRIVATE
 if (BUILD_SHARED_LIBS)
     if (WIN32)
         if (MINGW)
-            # Remove the lib prefix on the DLL (but not the import library
+            # Remove the lib prefix on the DLL (but not the import library)
             set_target_properties(glfw PROPERTIES PREFIX "")
 
             # Add a suffix to the import library to avoid naming conflicts

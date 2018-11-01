@@ -76,6 +76,7 @@ tests/monitors
 tests/msaa
 tests/reopen
 tests/tearing
+tests/text
 tests/threads
 tests/timeout
 tests/title

@@ -26,6 +26,7 @@ add_executable(iconify iconify.c ${GETOPT} ${GLAD})
 add_executable(monitors monitors.c ${GETOPT} ${GLAD})
 add_executable(reopen reopen.c ${GLAD})
 add_executable(cursor cursor.c ${GLAD})
+add_executable(text text.c ${GLAD})
 
 add_executable(empty WIN32 MACOSX_BUNDLE empty.c ${TINYCTHREAD} ${GLAD})
 add_executable(gamma WIN32 MACOSX_BUNDLE gamma.c ${GLAD})

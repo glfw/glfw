@@ -523,7 +523,7 @@ int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
 Each joystick has zero or more axes, zero or more buttons, zero or more hats,
 a human-readable name, a user pointer and an SDL compatible GUID.
 
-When GLFW is initialized, detected joysticks are added to to the beginning of
+When GLFW is initialized, detected joysticks are added to the beginning of
 the array.  Once a joystick is detected, it keeps its assigned ID until it is
 disconnected or the library is terminated, so as joysticks are connected and
 disconnected, there may appear gaps in the IDs.

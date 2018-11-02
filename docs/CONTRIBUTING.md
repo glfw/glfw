@@ -299,7 +299,7 @@ the source to the output or vice versa.
 ### Reporting a website bug
 
 If the bug is in the documentation (anything under `/docs/`) then please see the
-section above.  Bugs in the rest of the site are reported to to the [website
+section above.  Bugs in the rest of the site are reported to the [website
 source repository](https://github.com/glfw/website/issues).
 
 

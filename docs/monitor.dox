@@ -101,7 +101,7 @@ size and a gamma ramp.
 @subsection monitor_modes Video modes
 
 GLFW generally does a good job selecting a suitable video mode when you create
-a full screen window, change its video mode or or make a windowed one full
+a full screen window, change its video mode or make a windowed one full
 screen, but it is sometimes useful to know exactly which video modes are
 supported.
 

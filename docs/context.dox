@@ -56,7 +56,7 @@ platforms where it is possible to choose which types of objects are shared, GLFW
 requests that all types are shared.
 
 See the relevant chapter of the [OpenGL](https://www.opengl.org/registry/) or
-[OpenGL ES](http://www.khronos.org/opengles/) reference documents for more
+[OpenGL ES](https://www.khronos.org/opengles/) reference documents for more
 information.  The name and number of this chapter unfortunately varies between
 versions and APIs, but has at times been named _Shared Objects and Multiple
 Contexts_.
@@ -151,7 +151,7 @@ for official extensions.  The extension above was created by the ARB, but there
 are many different affixes, like `NV` for Nvidia and `AMD` for, well, AMD.  Any
 group may also use the generic `EXT` affix.  Lists of extensions, together with
 their specifications, can be found at the
-[OpenGL Registry](http://www.opengl.org/registry/) and
+[OpenGL Registry](https://www.opengl.org/registry/) and
 [OpenGL ES Registry](https://www.khronos.org/registry/gles/).
 
 
@@ -255,7 +255,7 @@ of OpenGL ES extensions is identical except for the name of the extension header
 
 The `glext.h` extension header is a continually updated file that defines the
 interfaces for all OpenGL extensions.  The latest version of this can always be
-found at the [OpenGL Registry](http://www.opengl.org/registry/).  There are also
+found at the [OpenGL Registry](https://www.opengl.org/registry/).  There are also
 extension headers for the various versions of OpenGL ES at the
 [OpenGL ES Registry](https://www.khronos.org/registry/gles/).  It it strongly
 recommended that you use your own copy of the extension header, as the one

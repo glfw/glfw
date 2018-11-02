@@ -275,7 +275,7 @@ easy linking with the library and its dependencies.
 @section news_31 Release notes for 3.1
 
 These are the release highlights.  For a full list of changes see the
-[version history](http://www.glfw.org/changelog.html).
+[version history](https://www.glfw.org/changelog.html).
 
 
 @subsection news_31_cursor Custom mouse cursor images
@@ -386,7 +386,7 @@ on Linux with a CMake option.
 @section news_30 Release notes for 3.0
 
 These are the release highlights.  For a full list of changes see the
-[version history](http://www.glfw.org/changelog.html).
+[version history](https://www.glfw.org/changelog.html).
 
 
 @subsection news_30_cmake CMake build system
@@ -397,7 +397,7 @@ supported by GLFW, is present in most package systems and can generate
 makefiles and/or project files for most popular development environments.
 
 For more information on how to use CMake, see the
-[CMake manual](http://cmake.org/cmake/help/documentation.html).
+[CMake manual](https://cmake.org/cmake/help/documentation.html).
 
 
 @subsection news_30_multiwnd Multi-window support

@@ -152,7 +152,7 @@ environment below.  On Linux and other Unix-like operating systems, the list
 varies but can be retrieved in various ways as described below.
 
 A good general introduction to linking is
-[Beginner's Guide to Linkers](http://www.lurklurk.org/linkers/linkers.html) by
+[Beginner's Guide to Linkers](https://www.lurklurk.org/linkers/linkers.html) by
 David Drysdale.
 
 
@@ -298,7 +298,7 @@ transition guide for suggested replacements.
 
 @subsection build_link_pkgconfig With makefiles and pkg-config on Unix
 
-GLFW supports [pkg-config](http://www.freedesktop.org/wiki/Software/pkg-config/),
+GLFW supports [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/),
 and the `glfw3.pc` pkg-config file is generated when the GLFW library is built
 and is installed along with it.  A pkg-config file describes all necessary
 compile-time and link-time flags and dependencies needed to use a library.  When

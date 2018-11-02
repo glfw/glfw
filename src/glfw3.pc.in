@@ -6,7 +6,7 @@ libdir=${exec_prefix}/lib@LIB_SUFFIX@
 Name: GLFW
 Description: A multi-platform library for OpenGL, window and input
 Version: @GLFW_VERSION_FULL@
-URL: http://www.glfw.org/
+URL: https://www.glfw.org/
 Requires.private: @GLFW_PKG_DEPS@
 Libs: -L${libdir} -l@GLFW_LIB_NAME@
 Libs.private: @GLFW_PKG_LIBS@

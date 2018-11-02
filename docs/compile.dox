@@ -10,12 +10,12 @@ build applications that use GLFW, see @ref build_guide.
 
 @section compile_cmake Using CMake
 
-GLFW uses [CMake](http://www.cmake.org/) to generate project files or makefiles
+GLFW uses [CMake](https://www.cmake.org/) to generate project files or makefiles
 for a particular development environment.  If you are on a Unix-like system such
 as Linux or FreeBSD or have a package system like Fink, MacPorts, Cygwin or
 Homebrew, you can install its CMake package.  If not, you can download
 installers for Windows and macOS from the
-[CMake website](http://www.cmake.org/).
+[CMake website](https://www.cmake.org/).
 
 @note CMake only generates project files or makefiles.  It does not compile the
 actual GLFW library.  To compile GLFW, first generate these files for your
@@ -71,7 +71,7 @@ cmake -DCMAKE_TOOLCHAIN_FILE=CMake/x86_64-w64-mingw32.cmake .
 @endcode
 
 For more details see the article
-[CMake Cross Compiling](http://www.paraview.org/Wiki/CMake_Cross_Compiling) on
+[CMake Cross Compiling](https://www.paraview.org/Wiki/CMake_Cross_Compiling) on
 the CMake wiki.
 
 Once you have this set up, move on to @ref compile_generate.

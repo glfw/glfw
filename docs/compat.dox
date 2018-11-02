@@ -23,9 +23,9 @@ varied window managers in use on Unix-like systems.  In order for applications
 and window managers to work well together, a number of standards and
 conventions have been developed that regulate behavior outside the scope of the
 X11 API; most importantly the
-[Inter-Client Communication Conventions Manual](http://www.tronche.com/gui/x/icccm/)
+[Inter-Client Communication Conventions Manual](https://www.tronche.com/gui/x/icccm/)
 (ICCCM) and
-[Extended Window Manager Hints](http://standards.freedesktop.org/wm-spec/wm-spec-latest.html)
+[Extended Window Manager Hints](https://standards.freedesktop.org/wm-spec/wm-spec-latest.html)
 (EWMH) standards.
 
 GLFW uses the `_MOTIF_WM_HINTS` window property to support borderless windows.
@@ -53,13 +53,13 @@ running window manager uses compositing but does not support this property then
 additional copying may be performed for each buffer swap of full screen windows.
 
 GLFW uses the
-[clipboard manager protocol](http://www.freedesktop.org/wiki/ClipboardManager/)
+[clipboard manager protocol](https://www.freedesktop.org/wiki/ClipboardManager/)
 to push a clipboard string (i.e. selection) owned by a GLFW window about to be
 destroyed to the clipboard manager.  If there is no running clipboard manager,
 the clipboard string will be unavailable once the window has been destroyed.
 
 GLFW uses the
-[X drag-and-drop protocol](http://www.freedesktop.org/wiki/Specifications/XDND/)
+[X drag-and-drop protocol](https://www.freedesktop.org/wiki/Specifications/XDND/)
 to provide file drop events.  If the application originating the drag does not
 support this protocol, drag and drop will not work.
 

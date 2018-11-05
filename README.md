@@ -116,6 +116,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - Added `glfwInitVulkan` to init Vulkan with a custom loader (#1374)
  - Added `GLFW_PLATFORM` init hint for runtime platform selection (#1958)
  - Added `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`,
    `GLFW_PLATFORM_WAYLAND`, `GLFW_PLATFORM_X11` and `GLFW_PLATFORM_NULL` symbols to

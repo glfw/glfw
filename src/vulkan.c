@@ -35,6 +35,7 @@
 
 #define _GLFW_FIND_LOADER    1
 #define _GLFW_REQUIRE_LOADER 2
+#define _GLFW_SKIP_LOADER    3
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -51,27 +52,30 @@ GLFWbool _glfwInitVulkan(int mode)
         return GLFW_TRUE;
 
 #if !defined(_GLFW_VULKAN_STATIC)
+    if (mode != _GLFW_SKIP_LOADER) {
 #if defined(_GLFW_VULKAN_LIBRARY)
-    _glfw.vk.handle = _glfwPlatformLoadModule(_GLFW_VULKAN_LIBRARY);
+      _glfw.vk.handle = _glfwPlatformLoadModule(_GLFW_VULKAN_LIBRARY);
 #elif defined(_GLFW_WIN32)
-    _glfw.vk.handle = _glfwPlatformLoadModule("vulkan-1.dll");
+      _glfw.vk.handle = _glfwPlatformLoadModule("vulkan-1.dll");
 #elif defined(_GLFW_COCOA)
-    _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.1.dylib");
-    if (!_glfw.vk.handle)
-        _glfw.vk.handle = _glfwLoadLocalVulkanLoaderCocoa();
+      _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.1.dylib");
+      if (!_glfw.vk.handle)
+          _glfw.vk.handle = _glfwLoadLocalVulkanLoaderCocoa();
 #else
-    _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.so.1");
+      _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.so.1");
 #endif
-    if (!_glfw.vk.handle)
-    {
-        if (mode == _GLFW_REQUIRE_LOADER)
-            _glfwInputError(GLFW_API_UNAVAILABLE, "Vulkan: Loader not found");
+      if (!_glfw.vk.handle)
+      {
+          if (mode == _GLFW_REQUIRE_LOADER)
+              _glfwInputError(GLFW_API_UNAVAILABLE, "Vulkan: Loader not found");
 
-        return GLFW_FALSE;
-    }
+          return GLFW_FALSE;
+      }
 
-    _glfw.vk.GetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)
-        _glfwPlatformGetModuleSymbol(_glfw.vk.handle, "vkGetInstanceProcAddr");
+      _glfw.vk.GetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)
+          _glfwPlatformGetModuleSymbol(_glfw.vk.handle, "vkGetInstanceProcAddr");
+    } // mode != _GLFW_SKIP_LOADER
+
     if (!_glfw.vk.GetInstanceProcAddr)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
@@ -216,6 +220,16 @@ const char* _glfwGetVulkanResultString(VkResult result)
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
+
+GLFWAPI int glfwInitVulkan(void* getInstanceProcAddr) {
+    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
+#if !defined(_GLFW_VULKAN_STATIC)
+    _glfw.vk.GetInstanceProcAddr = getInstanceProcAddr;
+    return _glfwInitVulkan(_GLFW_SKIP_LOADER);
+#else
+    return GLFW_TRUE;
+#endif
+}
 
 GLFWAPI int glfwVulkanSupported(void)
 {

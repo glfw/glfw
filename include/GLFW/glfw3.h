@@ -6081,6 +6081,29 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
  */
 GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);
 
+/*! @brief Initializes the Vulkan support with the given Vulkan loader
+ *  function.
+ *
+ *  The passed pointer must be a valid vkGetInstanceProcAddr function
+ *  retrieved from the Vulkan loader. Calling this funciton is optional, and
+ *  GLFW attempts to locate the Vulkan loader automatically if this function is
+ *  not called explicitely.
+ *
+ *  @return `GLFW_TRUE` if initializing Vulkan was successful, or `GLFW_FALSE`
+ *  otherwise.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function may be called from any thread.
+ *
+ *  @sa @ref vulkan_support
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup vulkan
+ */
+GLFWAPI int glfwInitVulkan(void* getInstanceProcAddr);
+
 /*! @brief Returns whether the Vulkan loader and an ICD have been found.
  *
  *  This function returns whether the Vulkan loader and any minimally functional

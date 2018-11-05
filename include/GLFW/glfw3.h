@@ -269,23 +269,22 @@ extern "C" {
 #define GLFW_VERSION_REVISION       0
 /*! @} */
 
-/*! @name Boolean values
- *  @{ */
 /*! @brief One.
  *
- *  One.  Seriously.  You don't _need_ to use this symbol in your code.  It's
- *  semantic sugar for the number 1.  You can also use `1` or `true` or `_True`
- *  or `GL_TRUE` or whatever you want.
+ *  This is only semantic sugar for the number 1.  You can instead use `1` or
+ *  `true` or `_True` or `GL_TRUE` or anything else that is equal to one.
+ *
+ *  @ingroup init
  */
 #define GLFW_TRUE                   1
 /*! @brief Zero.
  *
- *  Zero.  Seriously.  You don't _need_ to use this symbol in your code.  It's
- *  semantic sugar for the number 0.  You can also use `0` or `false` or
- *  `_False` or `GL_FALSE` or whatever you want.
+ *  This is only semantic sugar for the number 0.  You can instead use `0` or
+ *  `false` or `_False` or `GL_FALSE` or anything else that is equal to zero.
+ *
+ *  @ingroup init
  */
 #define GLFW_FALSE                  0
-/*! @} */
 
 /*! @name Key and button actions
  *  @{ */
@@ -313,6 +312,7 @@ extern "C" {
 /*! @} */
 
 /*! @defgroup hat_state Joystick hat states
+ *  @brief Joystick hat states.
  *
  *  See [joystick hat input](@ref joystick_hat) for how these are used.
  *
@@ -1060,9 +1060,20 @@ extern "C" {
 
 /*! @addtogroup init
  *  @{ */
+/*! @brief Joystick hat buttons init hint.
+ *
+ *  Joystick hat buttons [init hint](@ref GLFW_JOYSTICK_HAT_BUTTONS)
+ */
 #define GLFW_JOYSTICK_HAT_BUTTONS   0x00050001
-
+/*! @brief macOS specific init hint.
+ *
+ *  macOS specific [init hint](@ref GLFW_COCOA_CHDIR_RESOURCES)
+ */
 #define GLFW_COCOA_CHDIR_RESOURCES  0x00051001
+/*! @brief macOS specific init hint.
+ *
+ *  macOS specific [init hint](@ref GLFW_COCOA_MENUBAR)
+ */
 #define GLFW_COCOA_MENUBAR          0x00051002
 /*! @} */
 
@@ -1133,7 +1144,7 @@ typedef struct GLFWwindow GLFWwindow;
  *
  *  @since Added in version 3.1.
  *
- *  @ingroup cursor
+ *  @ingroup input
  */
 typedef struct GLFWcursor GLFWcursor;
 
@@ -1571,6 +1582,8 @@ typedef struct GLFWgammaramp
  *
  *  @since Added in version 2.1.
  *  @glfw3 Removed format and bytes-per-pixel members.
+ *
+ *  @ingroup window
  */
 typedef struct GLFWimage
 {
@@ -1593,6 +1606,8 @@ typedef struct GLFWimage
  *  @sa @ref glfwGetGamepadState
  *
  *  @since Added in version 3.3.
+ *
+ *  @ingroup input
  */
 typedef struct GLFWgamepadstate
 {

@@ -13644,7 +13644,7 @@ nk_font_atlas_bake(struct nk_font_atlas *atlas, int *width, int *height,
 #ifdef NK_INCLUDE_DEFAULT_FONT
     /* no font added so just use default font */
     if (!atlas->font_num)
-        atlas->default_font = nk_font_atlas_add_default(atlas, 20.0f, 0);
+        atlas->default_font = nk_font_atlas_add_default(atlas, 13.0f, 0);
 #endif
     NK_ASSERT(atlas->font_num);
     if (!atlas->font_num) return 0;

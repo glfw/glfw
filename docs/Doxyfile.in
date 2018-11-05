@@ -195,12 +195,12 @@ TAB_SIZE               = 8
 # will result in a user-defined paragraph with heading "Side Effects:".
 # You can put \n's in the value part of an alias to insert newlines.
 
-ALIASES                = "thread_safety=@par Thread safety\n" \
-                         "pointer_lifetime=@par Pointer lifetime\n" \
-                         "analysis=@par Analysis\n" \
-                         "reentrancy=@par Reentrancy\n" \
-                         "errors=@par Errors\n" \
-                         "glfw3=@par\n__GLFW 3:__" \
+ALIASES                = "thread_safety=@par Thread safety^^" \
+                         "pointer_lifetime=@par Pointer lifetime^^" \
+                         "analysis=@par Analysis^^" \
+                         "reentrancy=@par Reentrancy^^" \
+                         "errors=@par Errors^^" \
+                         "glfw3=__GLFW 3:__" \
                          "x11=__X11:__" \
                          "wayland=__Wayland:__" \
                          "win32=__Windows:__" \

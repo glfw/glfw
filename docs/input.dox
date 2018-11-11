@@ -583,7 +583,7 @@ const unsigned char* hats = glfwGetJoystickHats(GLFW_JOYSTICK_7, &count);
 Each element in the returned array is one of the following:
 
 Name                  | Value
---------------------- | --------------------------------
+----                  | -----
 `GLFW_HAT_CENTERED`   | 0
 `GLFW_HAT_UP`         | 1
 `GLFW_HAT_RIGHT`      | 2

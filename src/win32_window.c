@@ -1161,6 +1161,19 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             DragFinish(drop);
             return 0;
         }
+
+        case WM_NCACTIVATE:
+        case WM_NCPAINT:
+        {
+            // HACK: Prevent title bar artifacts from appearing after restoring
+            //       a minimized borderless window
+            if (!window->decorated)
+            {
+                return TRUE;
+            }
+
+            break;
+        }
     }
 
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);

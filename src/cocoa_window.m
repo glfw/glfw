@@ -492,6 +492,11 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     updateCursorImage(window);
 }
 
+- (BOOL)acceptsFirstMouse:(NSEvent *)event
+{
+    return YES;
+}
+
 - (void)mouseDown:(NSEvent *)event
 {
     _glfwInputMouseClick(window,

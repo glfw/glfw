@@ -427,8 +427,8 @@ GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* handle)
 
 GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
 {
-    int i;
-    unsigned short values[256];
+    int i, size;
+    unsigned short *values;
     GLFWgammaramp ramp;
     assert(handle != NULL);
 
@@ -440,12 +440,19 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
         return;
     }
 
-    for (i = 0;  i < 256;  i++)
+    size = _glfwPlatformGetGammaRampSize((_GLFWmonitor*) handle);
+
+    if (size < 2)
+        return;
+
+    values = malloc(size * sizeof(unsigned short));
+
+    for (i = 0;  i < size;  i++)
     {
         float value;
 
         // Calculate intensity
-        value = i / 255.f;
+        value = 1.f / (size - 1) * i;
         // Apply gamma curve
         value = powf(value, 1.f / gamma) * 65535.f + 0.5f;
 
@@ -459,9 +466,10 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
     ramp.red = values;
     ramp.green = values;
     ramp.blue = values;
-    ramp.size = 256;
+    ramp.size = size;
 
     glfwSetGammaRamp(handle, &ramp);
+    free(values);
 }
 
 GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* handle)

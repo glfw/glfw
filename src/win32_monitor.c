@@ -455,6 +455,11 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
                   &mode->blueBits);
 }
 
+int _glfwPlatformGetGammaRampSize(_GLFWmonitor* monitor)
+{
+    return 256;
+}
+
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
     HDC dc;

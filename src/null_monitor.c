@@ -58,6 +58,11 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
 }
 
+int _glfwPlatformGetGammaRampSize(_GLFWmonitor* monitor)
+{
+    return 0;
+}
+
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
 }

@@ -422,17 +422,28 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
     }
 }
 
+int _glfwPlatformGetGammaRampSize(_GLFWmonitor* monitor)
+{
+    int size = 0;
+
+    if (_glfw.x11.randr.available && !_glfw.x11.randr.gammaBroken)
+        size = XRRGetCrtcGammaSize(_glfw.x11.display, monitor->x11.crtc);
+    else if (_glfw.x11.vidmode.available)
+        XF86VidModeGetGammaRampSize(_glfw.x11.display, _glfw.x11.screen, &size);
+
+    return size;
+}
+
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
+    int size = _glfwPlatformGetGammaRampSize(monitor);
+
+    _glfwAllocGammaArrays(ramp, size);
+
     if (_glfw.x11.randr.available && !_glfw.x11.randr.gammaBroken)
     {
-        const size_t size = XRRGetCrtcGammaSize(_glfw.x11.display,
-                                                monitor->x11.crtc);
         XRRCrtcGamma* gamma = XRRGetCrtcGamma(_glfw.x11.display,
                                               monitor->x11.crtc);
-
-        _glfwAllocGammaArrays(ramp, size);
-
         memcpy(ramp->red,   gamma->red,   size * sizeof(unsigned short));
         memcpy(ramp->green, gamma->green, size * sizeof(unsigned short));
         memcpy(ramp->blue,  gamma->blue,  size * sizeof(unsigned short));
@@ -441,11 +452,6 @@ void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
     }
     else if (_glfw.x11.vidmode.available)
     {
-        int size;
-        XF86VidModeGetGammaRampSize(_glfw.x11.display, _glfw.x11.screen, &size);
-
-        _glfwAllocGammaArrays(ramp, size);
-
         XF86VidModeGetGammaRamp(_glfw.x11.display,
                                 _glfw.x11.screen,
                                 ramp->size, ramp->red, ramp->green, ramp->blue);

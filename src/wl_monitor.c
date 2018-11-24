@@ -180,6 +180,11 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
     *mode = monitor->modes[monitor->wl.currentMode];
 }
 
+int _glfwPlatformGetGammaRampSize(_GLFWmonitor* monitor)
+{
+    return 0;
+}
+
 void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,

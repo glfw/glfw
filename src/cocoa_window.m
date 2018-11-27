@@ -50,10 +50,6 @@
  #define NSBitmapFormatAlphaNonpremultiplied NSAlphaNonpremultipliedBitmapFormat
 #endif
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED < 101300
- #define NSPasteboardTypeString NSStringPboardType
-#endif
-
 // Returns the style mask corresponding to the window settings
 //
 static NSUInteger getStyleMask(_GLFWwindow* window)

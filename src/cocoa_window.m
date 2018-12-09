@@ -1384,6 +1384,12 @@ void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
     [NSApp requestUserAttention:NSInformationalRequest];
 }
 
+int _glfwPlatformWindowBell(_GLFWwindow* window)
+{
+    NSBeep();
+    return GLFW_TRUE;
+}
+
 void _glfwPlatformFocusWindow(_GLFWwindow* window)
 {
     // Make us the active application
@@ -1905,4 +1911,3 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
     _GLFW_REQUIRE_INIT_OR_RETURN(nil);
     return window->ns.object;
 }
-

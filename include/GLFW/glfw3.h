@@ -3778,7 +3778,7 @@ GLFWAPI void glfwWaitEvents(void);
  *  @param[in] timeout The maximum amount of time, in seconds, to wait.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
- *  GLFW_PLATFORM_ERROR and @ref GLFW_INVALID_VALUE.
+ *  GLFW_INVALID_VALUE and @ref GLFW_PLATFORM_ERROR.
  *
  *  @reentrancy This function must not be called from a callback.
  *

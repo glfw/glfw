@@ -3415,6 +3415,21 @@ GLFWAPI void glfwSetWindowUserPointer(GLFWwindow* window, void* pointer);
  */
 GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
 
+/*!
+ * TODO
+ */
+GLFWAPI int glfwGetWindowUseRawInput(GLFWwindow* handle);
+
+/*!
+ * TODO
+ */
+GLFWAPI void glfwSetWindowUseRawInput(GLFWwindow* handle, int value);
+
+/*!
+ * TODO
+ */
+GLFWAPI int glfwRawInputSupported(void);
+
 /*! @brief Sets the position callback for the specified window.
  *
  *  This function sets the position callback of the specified window, which is

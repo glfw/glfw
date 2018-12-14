@@ -1305,3 +1305,8 @@ GLFWAPI uint64_t glfwGetTimerFrequency(void)
     return _glfwPlatformGetTimerFrequency();
 }
 
+GLFWAPI int glfwRawInputSupported(void)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(0);
+    return _glfwPlatformRawInputSupported();
+}

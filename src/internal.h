@@ -623,6 +623,7 @@ void _glfwPlatformUpdateGamepadGUID(char* guid);
 
 uint64_t _glfwPlatformGetTimerValue(void);
 uint64_t _glfwPlatformGetTimerFrequency(void);
+GLFWbool _glfwPlatformRawInputSupported(void);
 
 int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,

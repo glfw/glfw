@@ -1865,6 +1865,11 @@ void _glfwPlatformSetWindowUseRawInput(_GLFWwindow* window, GLFWbool enabled)
     }
 }
 
+GLFWbool _glfwPlatformRawInputSupported(void)
+{
+    return GLFW_TRUE;
+}
+
 void _glfwPlatformPollEvents(void)
 {
     MSG msg;

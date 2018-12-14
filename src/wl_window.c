@@ -1309,6 +1309,11 @@ void _glfwPlatformSetWindowUseRawInput(_GLFWwindow* window, GLFWbool enabled)
     window->useRawInput = enabled;
 }
 
+GLFWbool _glfwPlatformRawInputSupported(void)
+{
+    return GLFW_FALSE;
+}
+
 void _glfwPlatformPollEvents(void)
 {
     handleEvents(0);

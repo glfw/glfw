@@ -2667,6 +2667,11 @@ void _glfwPlatformSetWindowUseRawInput(_GLFWwindow* window, GLFWbool enabled)
     }
 }
 
+GLFWbool _glfwPlatformRawInputSupported(void)
+{
+    return _glfw.x11.xi.available;
+}
+
 void _glfwPlatformPollEvents(void)
 {
     _GLFWwindow* window;

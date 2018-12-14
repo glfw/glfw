@@ -302,7 +302,7 @@ void cursor_position_callback( GLFWwindow* window, double x, double y )
  * The Boing ball is sphere in which each facet is a rectangle.
  * Facet colors alternate between red and white.
  * The ball is built by stacking latitudinal circles.  Each circle is composed
- * of a widely-separated set of points, so that each facet is noticably large.
+ * of a widely-separated set of points, so that each facet is noticeably large.
  *****************************************************************************/
 void DrawBoingBall( void )
 {
@@ -446,7 +446,7 @@ void DrawBoingBallBand( GLfloat long_lo,
    static int colorToggle = 0;
 
   /*
-   * Iterate thru the points of a latitude circle.
+   * Iterate through the points of a latitude circle.
    * A latitude circle is a 2D set of X,Z points.
    */
    for ( lat_deg = 0;

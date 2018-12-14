@@ -202,6 +202,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->floating    = wndconfig.floating;
     window->focusOnShow = wndconfig.focusOnShow;
     window->cursorMode  = GLFW_CURSOR_NORMAL;
+    window->useRawInput = GLFW_TRUE;
 
     window->minwidth    = GLFW_DONT_CARE;
     window->minheight   = GLFW_DONT_CARE;
@@ -1097,4 +1098,3 @@ GLFWAPI void glfwPostEmptyEvent(void)
     _GLFW_REQUIRE_INIT();
     _glfwPlatformPostEmptyEvent();
 }
-

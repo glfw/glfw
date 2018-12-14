@@ -163,6 +163,19 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             printf("(( cursor is hidden ))\n");
             break;
 
+        case GLFW_KEY_R:
+            if (glfwGetInputMode(window, GLFW_RAW_INPUT))
+            {
+                glfwSetInputMode(window, GLFW_RAW_INPUT, GLFW_FALSE);
+                printf("(( raw input is disabled ))\n");
+            }
+            else
+            {
+                glfwSetInputMode(window, GLFW_RAW_INPUT, GLFW_TRUE);
+                printf("(( raw input is enabled ))\n");
+            }
+            break;
+
         case GLFW_KEY_SPACE:
             swap_interval = 1 - swap_interval;
             printf("(( swap interval: %i ))\n", swap_interval);

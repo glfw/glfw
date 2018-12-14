@@ -164,14 +164,14 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             break;
 
         case GLFW_KEY_R:
-            if (glfwGetWindowUseRawInput(window))
+            if (glfwGetInputMode(window, GLFW_RAW_INPUT))
             {
-                glfwSetWindowUseRawInput(window, GLFW_FALSE);
+                glfwSetInputMode(window, GLFW_RAW_INPUT, GLFW_FALSE);
                 printf("(( raw input is disabled ))\n");
             }
             else
             {
-                glfwSetWindowUseRawInput(window, GLFW_TRUE);
+                glfwSetInputMode(window, GLFW_RAW_INPUT, GLFW_TRUE);
                 printf("(( raw input is enabled ))\n");
             }
             break;

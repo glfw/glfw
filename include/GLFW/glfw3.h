@@ -1002,6 +1002,7 @@ extern "C" {
 #define GLFW_STICKY_KEYS            0x00033002
 #define GLFW_STICKY_MOUSE_BUTTONS   0x00033003
 #define GLFW_LOCK_KEY_MODS          0x00033004
+#define GLFW_RAW_INPUT              0x00033005
 
 #define GLFW_CURSOR_NORMAL          0x00034001
 #define GLFW_CURSOR_HIDDEN          0x00034002
@@ -3414,16 +3415,6 @@ GLFWAPI void glfwSetWindowUserPointer(GLFWwindow* window, void* pointer);
  *  @ingroup window
  */
 GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
-
-/*!
- * TODO
- */
-GLFWAPI int glfwGetWindowUseRawInput(GLFWwindow* handle);
-
-/*!
- * TODO
- */
-GLFWAPI void glfwSetWindowUseRawInput(GLFWwindow* handle, int value);
 
 /*!
  * TODO

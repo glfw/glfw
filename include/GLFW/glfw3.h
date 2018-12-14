@@ -3416,11 +3416,6 @@ GLFWAPI void glfwSetWindowUserPointer(GLFWwindow* window, void* pointer);
  */
 GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
 
-/*!
- * TODO
- */
-GLFWAPI int glfwRawInputSupported(void);
-
 /*! @brief Sets the position callback for the specified window.
  *
  *  This function sets the position callback of the specified window, which is
@@ -3897,6 +3892,11 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  @ingroup input
  */
 GLFWAPI void glfwSetInputMode(GLFWwindow* window, int mode, int value);
+
+/*!
+ * TODO
+ */
+GLFWAPI int glfwRawInputSupported(void);
 
 /*! @brief Returns the layout-specific name of the specified printable key.
  *

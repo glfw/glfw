@@ -2653,7 +2653,7 @@ void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
                     PropModeReplace, (unsigned char*) &value, 1);
 }
 
-void _glfwPlatformSetWindowUseRawInput(_GLFWwindow* window, GLFWbool enabled)
+void _glfwPlatformSetRawInput(_GLFWwindow *window, GLFWbool enabled)
 {
     if (window->useRawInput != enabled)
     {

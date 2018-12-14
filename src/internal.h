@@ -597,6 +597,8 @@ const char* _glfwPlatformGetVersionString(void);
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos);
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos);
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
+void _glfwPlatformSetRawInput(_GLFWwindow *window, GLFWbool enabled);
+GLFWbool _glfwPlatformRawInputSupported(void);
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                               const GLFWimage* image, int xhot, int yhot);
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape);
@@ -623,7 +625,6 @@ void _glfwPlatformUpdateGamepadGUID(char* guid);
 
 uint64_t _glfwPlatformGetTimerValue(void);
 uint64_t _glfwPlatformGetTimerFrequency(void);
-GLFWbool _glfwPlatformRawInputSupported(void);
 
 int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
@@ -668,7 +669,6 @@ void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled);
 void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled);
 void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled);
 void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity);
-void _glfwPlatformSetWindowUseRawInput(_GLFWwindow* window, GLFWbool enabled);
 
 void _glfwPlatformPollEvents(void);
 void _glfwPlatformWaitEvents(void);

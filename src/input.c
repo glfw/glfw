@@ -555,9 +555,15 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
     else if (mode == GLFW_LOCK_KEY_MODS)
         window->lockKeyMods = value ? GLFW_TRUE : GLFW_FALSE;
     else if (mode == GLFW_RAW_INPUT)
-        _glfwPlatformSetWindowUseRawInput(window, value ? GLFW_TRUE : GLFW_FALSE);
+        _glfwPlatformSetRawInput(window, value ? GLFW_TRUE : GLFW_FALSE);
     else
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode 0x%08X", mode);
+}
+
+GLFWAPI int glfwRawInputSupported(void)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(0);
+    return _glfwPlatformRawInputSupported();
 }
 
 GLFWAPI const char* glfwGetKeyName(int key, int scancode)
@@ -1307,10 +1313,4 @@ GLFWAPI uint64_t glfwGetTimerFrequency(void)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(0);
     return _glfwPlatformGetTimerFrequency();
-}
-
-GLFWAPI int glfwRawInputSupported(void)
-{
-    _GLFW_REQUIRE_INIT_OR_RETURN(0);
-    return _glfwPlatformRawInputSupported();
 }

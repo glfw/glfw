@@ -196,6 +196,10 @@ void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
 {
 }
 
+void _glfwPlatformSetWindowUseRawInput(_GLFWwindow* window, GLFWbool enabled)
+{
+}
+
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
 }

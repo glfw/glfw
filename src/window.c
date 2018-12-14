@@ -203,6 +203,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->floating    = wndconfig.floating;
     window->focusOnShow = wndconfig.focusOnShow;
     window->cursorMode  = GLFW_CURSOR_NORMAL;
+    window->useRawInput = GLFW_TRUE;
 
     window->minwidth    = GLFW_DONT_CARE;
     window->minheight   = GLFW_DONT_CARE;
@@ -970,6 +971,23 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* handle)
     return window->userPointer;
 }
 
+GLFWAPI int glfwGetWindowUseRawInput(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    return window->useRawInput;
+}
+
+GLFWAPI void glfwSetWindowUseRawInput(GLFWwindow* handle,
+                                      int value)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _glfwPlatformSetWindowUseRawInput(window, value ? GLFW_TRUE : GLFW_FALSE);
+}
+
 GLFWAPI GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow* handle,
                                                   GLFWwindowposfun cbfun)
 {
@@ -1110,4 +1128,3 @@ GLFWAPI void glfwPostEmptyEvent(void)
 
     _glfwPlatformPostEmptyEvent();
 }
-

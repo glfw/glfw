@@ -1552,6 +1552,10 @@ void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
     [window->ns.object setAlphaValue:opacity];
 }
 
+void _glfwPlatformSetWindowUseRawInput(_GLFWwindow* window, GLFWbool enabled)
+{
+}
+
 void _glfwPlatformPollEvents(void)
 {
     if (!initializeAppKit())

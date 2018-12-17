@@ -431,8 +431,7 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
     unsigned short values[256];
     GLFWgammaramp ramp;
     assert(handle != NULL);
-    assert(gamma == gamma);
-    assert(gamma >= 0.f);
+    assert(gamma > 0.f);
     assert(gamma <= FLT_MAX);
 
     _GLFW_REQUIRE_INIT();

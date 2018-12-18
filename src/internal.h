@@ -766,4 +766,6 @@ void _glfwTerminateVulkan(void);
 const char* _glfwGetVulkanResultString(VkResult result);
 
 char* _glfw_strdup(const char* source);
+float _glfw_fminf(float a, float b);
+float _glfw_fmaxf(float a, float b);
 

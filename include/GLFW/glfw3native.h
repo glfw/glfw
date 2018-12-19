@@ -413,6 +413,31 @@ GLFWAPI struct wl_output* glfwGetWaylandMonitor(GLFWmonitor* monitor);
  *  @ingroup native
  */
 GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* window);
+
+/*! @brief Check to see if the Wayland server supports the presentation-time
+ * protocol.
+ *
+ *  @return GLFW_TRUE iff presentation-time is supported.
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup native
+ */
+GLFWAPI int glfwWaylandPresSupported(void);
+
+/*! @brief Swap the buffers, then use the Wayland presentation-time protocol to
+ * wait for the new frame to be presented. GLFW window events are processed for
+ * the whole time this function waits for the frame to be presented.
+ *
+ *  @return The presentation time of the frame, with respect to the same time
+ *  measure glfwGetTime() uses, or 0.0 if the frame was not shown due to a
+ *  vblank miss.
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup native
+ */
+GLFWAPI double glfwWaylandSwapPres(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_EGL)

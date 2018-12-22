@@ -156,6 +156,9 @@ static int createAnonymousFile(off_t size)
         fcntl(fd, F_ADD_SEALS, F_SEAL_SHRINK | F_SEAL_SEAL);
     }
     else
+#elif defined(SHM_ANON)
+    fd = shm_open(SHM_ANON, O_RDWR | O_CLOEXEC, 0600);
+    if (fd < 0)
 #endif
     {
         path = getenv("XDG_RUNTIME_DIR");
@@ -175,7 +178,12 @@ static int createAnonymousFile(off_t size)
             return -1;
     }
 
+#if defined(SHM_ANON)
+    // posix_fallocate does not work on SHM descriptors
+    ret = ftruncate(fd, size);
+#else
     ret = posix_fallocate(fd, 0, size);
+#endif
     if (ret != 0)
     {
         close(fd);

@@ -71,15 +71,6 @@ static NSUInteger getStyleMask(_GLFWwindow* window)
     return styleMask;
 }
 
-// Center the cursor in the view of the window
-//
-static void centerCursor(_GLFWwindow *window)
-{
-    int width, height;
-    _glfwPlatformGetWindowSize(window, &width, &height);
-    _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
-}
-
 // Returns whether the cursor is in the client area of the specified window
 //
 static GLFWbool cursorInClientArea(_GLFWwindow* window)
@@ -137,7 +128,7 @@ static void updateCursorMode(_GLFWwindow* window)
         _glfwPlatformGetCursorPos(window,
                                   &_glfw.ns.restoreCursorPosX,
                                   &_glfw.ns.restoreCursorPosY);
-        centerCursor(window);
+        _glfwPlatformCenterCursor(window);
         CGAssociateMouseAndMouseCursorPosition(false);
     }
     else if (_glfw.ns.disabledCursorWindow == window)
@@ -282,7 +273,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         [window->context.nsgl.object update];
 
     if (_glfw.ns.disabledCursorWindow == window)
-        centerCursor(window);
+        _glfwPlatformCenterCursor(window);
 
     const int maximized = [window->ns.object isZoomed];
     if (window->ns.maximized != maximized)
@@ -317,7 +308,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         [window->context.nsgl.object update];
 
     if (_glfw.ns.disabledCursorWindow == window)
-        centerCursor(window);
+        _glfwPlatformCenterCursor(window);
 
     int x, y;
     _glfwPlatformGetWindowPos(window, &x, &y);
@@ -343,7 +334,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
     if (_glfw.ns.disabledCursorWindow == window)
-        centerCursor(window);
+        _glfwPlatformCenterCursor(window);
 
     _glfwInputWindowFocus(window, GLFW_TRUE);
     updateCursorMode(window);

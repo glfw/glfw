@@ -601,6 +601,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape);
 void _glfwPlatformDestroyCursor(_GLFWcursor* cursor);
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor);
+void _glfwPlatformCenterCursor(_GLFWwindow* window);
 
 const char* _glfwPlatformGetScancodeName(int scancode);
 int _glfwPlatformGetKeyScancode(int key);

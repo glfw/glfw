@@ -236,15 +236,6 @@ static void applyAspectRatio(_GLFWwindow* window, int edge, RECT* area)
     }
 }
 
-// Centers the cursor over the window client area
-//
-static void centerCursor(_GLFWwindow* window)
-{
-    int width, height;
-    _glfwPlatformGetWindowSize(window, &width, &height);
-    _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
-}
-
 // Updates the cursor image according to its cursor mode
 //
 static void updateCursorImage(_GLFWwindow* window)
@@ -287,7 +278,7 @@ static void disableCursor(_GLFWwindow* window)
                               &_glfw.win32.restoreCursorPosX,
                               &_glfw.win32.restoreCursorPosY);
     updateCursorImage(window);
-    centerCursor(window);
+    _glfwCenterCursor(window);
     updateClipRect(window);
 
     if (!RegisterRawInputDevices(&rid, 1, sizeof(rid)))

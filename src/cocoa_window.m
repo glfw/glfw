@@ -46,7 +46,6 @@
  #define NSEventModifierFlagDeviceIndependentFlagsMask NSDeviceIndependentModifierFlagsMask
  #define NSEventMaskAny NSAnyEventMask
  #define NSEventTypeApplicationDefined NSApplicationDefined
- #define NSEventTypeKeyUp NSKeyUp
  #define NSBitmapFormatAlphaNonpremultiplied NSAlphaNonpremultipliedBitmapFormat
 #endif
 
@@ -856,52 +855,6 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 @end
 
 
-//------------------------------------------------------------------------
-// GLFW application class
-//------------------------------------------------------------------------
-
-@interface GLFWApplication : NSApplication
-{
-    NSArray* nibObjects;
-}
-
-@end
-
-@implementation GLFWApplication
-
-// From http://cocoadev.com/index.pl?GameKeyboardHandlingAlmost
-// This works around an AppKit bug, where key up events while holding
-// down the command key don't get sent to the key window.
-- (void)sendEvent:(NSEvent *)event
-{
-    if ([event type] == NSEventTypeKeyUp &&
-        ([event modifierFlags] & NSEventModifierFlagCommand))
-    {
-        [[self keyWindow] sendEvent:event];
-    }
-    else
-        [super sendEvent:event];
-}
-
-
-// No-op thread entry point
-//
-- (void)doNothing:(id)object
-{
-}
-
-- (void)loadMainMenu
-{
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1080
-    [[NSBundle mainBundle] loadNibNamed:@"MainMenu"
-                                  owner:NSApp
-                        topLevelObjects:&nibObjects];
-#else
-    [[NSBundle mainBundle] loadNibNamed:@"MainMenu" owner:NSApp];
-#endif
-}
-@end
-
 // Set up the menu bar (manually)
 // This is nasty, nasty stuff -- calls to undocumented semi-private APIs that
 // could go away at any moment, lots of stuff that really should be
@@ -1011,31 +964,8 @@ static void createMenuBar(void)
 //
 static GLFWbool initializeAppKit(void)
 {
-    if (NSApp)
+    if (_glfw.ns.delegate)
         return GLFW_TRUE;
-
-    // Implicitly create shared NSApplication instance
-    [GLFWApplication sharedApplication];
-
-    // Make Cocoa enter multi-threaded mode
-    [NSThread detachNewThreadSelector:@selector(doNothing:)
-                             toTarget:NSApp
-                           withObject:nil];
-
-    if (_glfw.hints.init.ns.menubar)
-    {
-        // In case we are unbundled, make us a proper UI application
-        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
-
-        // Menu bar setup must go between sharedApplication above and
-        // finishLaunching below, in order to properly emulate the behavior
-        // of NSApplicationMain
-
-        if ([[NSBundle mainBundle] pathForResource:@"MainMenu" ofType:@"nib"])
-            [NSApp loadMainMenu];
-        else
-            createMenuBar();
-    }
 
     // There can only be one application delegate, but we allocate it the
     // first time a window is created to keep all window code in this file
@@ -1048,6 +978,30 @@ static GLFWbool initializeAppKit(void)
     }
 
     [NSApp setDelegate:_glfw.ns.delegate];
+
+    if (_glfw.hints.init.ns.menubar)
+    {
+        // In case we are unbundled, make us a proper UI application
+        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+
+        // Menu bar setup must go between sharedApplication above and
+        // finishLaunching below, in order to properly emulate the behavior
+        // of NSApplicationMain
+
+        if ([[NSBundle mainBundle] pathForResource:@"MainMenu" ofType:@"nib"])
+        {
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1080
+            [[NSBundle mainBundle] loadNibNamed:@"MainMenu"
+                                          owner:NSApp
+                                topLevelObjects:&_glfw.ns.nibObjects];
+#else
+            [[NSBundle mainBundle] loadNibNamed:@"MainMenu" owner:NSApp];
+#endif
+        }
+        else
+            createMenuBar();
+    }
+
     [NSApp run];
 
     // Press and Hold prevents some keys from emitting repeated characters
@@ -1554,9 +1508,6 @@ void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
 
 void _glfwPlatformPollEvents(void)
 {
-    if (!initializeAppKit())
-        return;
-
     for (;;)
     {
         NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
@@ -1707,9 +1658,6 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     NSImage* native;
     NSBitmapImageRep* rep;
 
-    if (!initializeAppKit())
-        return GLFW_FALSE;
-
     rep = [[NSBitmapImageRep alloc]
         initWithBitmapDataPlanes:NULL
                       pixelsWide:image->width
@@ -1745,9 +1693,6 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
-    if (!initializeAppKit())
-        return GLFW_FALSE;
-
     if (shape == GLFW_ARROW_CURSOR)
         cursor->ns.object = [NSCursor arrowCursor];
     else if (shape == GLFW_IBEAM_CURSOR)

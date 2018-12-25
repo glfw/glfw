@@ -4302,9 +4302,7 @@ GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
  *  The character callback behaves as system text input normally does and will
  *  not be called if modifier keys are held down that would prevent normal text
  *  input on that platform, for example a Super (Command) key on macOS or Alt key
- *  on Windows.  There is a
- *  [character with modifiers callback](@ref glfwSetCharModsCallback) that
- *  receives these events.
+ *  on Windows.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set

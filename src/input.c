@@ -453,6 +453,15 @@ void _glfwFreeJoystick(_GLFWjoystick* js)
     memset(js, 0, sizeof(_GLFWjoystick));
 }
 
+// Center the cursor in the middle of the window
+//
+void _glfwCenterCursor(_GLFWwindow* window)
+{
+    int width, height;
+
+    _glfwPlatformGetWindowSize(window, &width, &height);
+    _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////

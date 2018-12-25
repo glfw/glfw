@@ -544,7 +544,7 @@ static void disableCursor(_GLFWwindow* window)
                               &_glfw.x11.restoreCursorPosX,
                               &_glfw.x11.restoreCursorPosY);
     updateCursorImage(window);
-    _glfwPlatformCenterCursor(window);
+    _glfwCenterCursor(window);
     XGrabPointer(_glfw.x11.display, window->x11.handle, True,
                  ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
                  GrabModeAsync, GrabModeAsync,

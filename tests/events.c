@@ -429,15 +429,6 @@ static void char_callback(GLFWwindow* window, unsigned int codepoint)
            get_character_string(codepoint));
 }
 
-static void char_mods_callback(GLFWwindow* window, unsigned int codepoint, int mods)
-{
-    Slot* slot = glfwGetWindowUserPointer(window);
-    printf("%08x to %i at %0.3f: Character 0x%08x (%s) with modifiers (with%s) input\n",
-            counter++, slot->number, glfwGetTime(), codepoint,
-            get_character_string(codepoint),
-            get_mods_name(mods));
-}
-
 static void drop_callback(GLFWwindow* window, int count, const char** paths)
 {
     int i;
@@ -616,7 +607,6 @@ int main(int argc, char** argv)
         glfwSetScrollCallback(slots[i].window, scroll_callback);
         glfwSetKeyCallback(slots[i].window, key_callback);
         glfwSetCharCallback(slots[i].window, char_callback);
-        glfwSetCharModsCallback(slots[i].window, char_mods_callback);
         glfwSetDropCallback(slots[i].window, drop_callback);
 
         glfwMakeContextCurrent(slots[i].window);

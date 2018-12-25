@@ -278,7 +278,7 @@ static void disableCursor(_GLFWwindow* window)
                               &_glfw.win32.restoreCursorPosX,
                               &_glfw.win32.restoreCursorPosY);
     updateCursorImage(window);
-    _glfwPlatformCenterCursor(window);
+    _glfwCursor(window);
     updateClipRect(window);
 
     if (!RegisterRawInputDevices(&rid, 1, sizeof(rid)))

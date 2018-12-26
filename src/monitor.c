@@ -450,10 +450,8 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
         value = i / 255.f;
         // Apply gamma curve
         value = powf(value, 1.f / gamma) * 65535.f + 0.5f;
-
         // Clamp to value range
-        if (value > 65535.f)
-            value = 65535.f;
+        value = _glfw_fminf(value, 65535.f);
 
         values[i] = (unsigned short) value;
     }

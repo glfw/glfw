@@ -398,6 +398,7 @@ skills.
  - Bruce Mitchener
  - Jack Moffitt
  - Jeff Molofee
+ - Alexander Monakov
  - Pierre Morel
  - Jon Morton
  - Pierre Moulon

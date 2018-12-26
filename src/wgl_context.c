@@ -31,7 +31,7 @@
 #include <malloc.h>
 #include <assert.h>
 
-// array of pixel format attributes we need, order in terms of access via getPixelFormatAttribFromArray
+// array of pixel format attributes we need
 static const int glfwPixelFormatAttribs[] = {
     WGL_SUPPORT_OPENGL_ARB,
     WGL_DRAW_TO_WINDOW_ARB,
@@ -114,23 +114,13 @@ static int getPixelFormatAttribs(_GLFWwindow* window, int pixelFormat, int numAt
     return 1;
 }
 
-static int getPixelFormatAttribFromArray( int* attribs, int* values, int* hintPos, int attrib )
+static int getPixelFormatAttribFromArray( int* attribs, int* values, int attrib )
 {
-    int start = *hintPos;
-    while ( *hintPos < sizeof(glfwPixelFormatAttribs) / sizeof(glfwPixelFormatAttribs[0]) )
+    int i;
+    for (i = 0; i < sizeof(glfwPixelFormatAttribs) / sizeof(glfwPixelFormatAttribs[0]); ++i )
     {
-        if ( attribs[ *hintPos ] == attrib )
-            return values[ (*hintPos)++ ];
-        ++(*hintPos);
-    }
-
-    // hint did not work, restart search from beginning
-    *hintPos = 0;
-    while ( *hintPos < start )
-    {
-        if ( attribs[ *hintPos ] == attrib )
-            return values[ (*hintPos)++ ];
-        ++(*hintPos);
+        if ( attribs[i] == attrib )
+            return values[i];
     }
 
     // error
@@ -201,53 +191,53 @@ static int choosePixelFormat(_GLFWwindow* window,
             getPixelFormatAttribs(window, n, numAttribs, pfAttribs, pfValues );
             hintPos = 0;
 
-            if (!getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_SUPPORT_OPENGL_ARB) ||
-                !getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_DRAW_TO_WINDOW_ARB))
+            if (!getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_SUPPORT_OPENGL_ARB) ||
+                !getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_DRAW_TO_WINDOW_ARB))
             {
                 continue;
             }
 
-            if (getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_PIXEL_TYPE_ARB) !=
+            if (getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_PIXEL_TYPE_ARB) !=
                 WGL_TYPE_RGBA_ARB )
             {
                 continue;
             }
 
-            if (getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_ACCELERATION_ARB) ==
+            if (getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_ACCELERATION_ARB) ==
                  WGL_NO_ACCELERATION_ARB )
             {
                 continue;
             }
 
-            u->redBits = getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_RED_BITS_ARB);
-            u->greenBits = getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_GREEN_BITS_ARB);
-            u->blueBits = getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_BLUE_BITS_ARB);
-            u->alphaBits = getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_ALPHA_BITS_ARB);
+            u->redBits = getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_RED_BITS_ARB);
+            u->greenBits = getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_GREEN_BITS_ARB);
+            u->blueBits = getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_BLUE_BITS_ARB);
+            u->alphaBits = getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_ALPHA_BITS_ARB);
 
-            u->depthBits = getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_DEPTH_BITS_ARB);
-            u->stencilBits = getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_STENCIL_BITS_ARB);
+            u->depthBits = getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_DEPTH_BITS_ARB);
+            u->stencilBits = getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_STENCIL_BITS_ARB);
 
-            u->accumRedBits = getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_ACCUM_RED_BITS_ARB);
-            u->accumGreenBits = getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_ACCUM_GREEN_BITS_ARB);
-            u->accumBlueBits = getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_ACCUM_BLUE_BITS_ARB);
-            u->accumAlphaBits = getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_ACCUM_ALPHA_BITS_ARB);
+            u->accumRedBits = getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_ACCUM_RED_BITS_ARB);
+            u->accumGreenBits = getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_ACCUM_GREEN_BITS_ARB);
+            u->accumBlueBits = getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_ACCUM_BLUE_BITS_ARB);
+            u->accumAlphaBits = getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_ACCUM_ALPHA_BITS_ARB);
 
-            u->auxBuffers = getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_AUX_BUFFERS_ARB);
+            u->auxBuffers = getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_AUX_BUFFERS_ARB);
 
-            if (getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_STEREO_ARB))
+            if (getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_STEREO_ARB))
                 u->stereo = GLFW_TRUE;
-            if (getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_DOUBLE_BUFFER_ARB))
+            if (getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_DOUBLE_BUFFER_ARB))
                 u->doublebuffer = GLFW_TRUE;
 
             if (_glfw.wgl.ARB_multisample)
-                u->samples = getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_SAMPLES_ARB);
+                u->samples = getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_SAMPLES_ARB);
 
             if (ctxconfig->client == GLFW_OPENGL_API)
             {
                 if (_glfw.wgl.ARB_framebuffer_sRGB ||
                     _glfw.wgl.EXT_framebuffer_sRGB)
                 {
-                    if (getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB))
+                    if (getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB))
                         u->sRGB = GLFW_TRUE;
                 }
             }
@@ -255,7 +245,7 @@ static int choosePixelFormat(_GLFWwindow* window,
             {
                 if (_glfw.wgl.EXT_colorspace)
                 {
-                    if (getPixelFormatAttribFromArray(pfAttribs, pfValues, &hintPos, WGL_COLORSPACE_EXT) ==
+                    if (getPixelFormatAttribFromArray(pfAttribs, pfValues,  WGL_COLORSPACE_EXT) ==
                         WGL_COLORSPACE_SRGB_EXT)
                     {
                         u->sRGB = GLFW_TRUE;

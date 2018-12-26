@@ -1060,6 +1060,17 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             return TRUE;
         }
 
+        case WM_NCACTIVATE:
+        case WM_NCPAINT:
+        {
+            // Prevent title bar from being drawn after restoring a minimized
+            // undecorated window
+            if (!window->decorated)
+                return TRUE;
+
+            break;
+        }
+
         case WM_DWMCOMPOSITIONCHANGED:
         {
             if (window->win32.transparent)
@@ -1160,19 +1171,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             DragFinish(drop);
             return 0;
-        }
-
-        case WM_NCACTIVATE:
-        case WM_NCPAINT:
-        {
-            // HACK: Prevent title bar artifacts from appearing after restoring
-            //       a minimized borderless window
-            if (!window->decorated)
-            {
-                return TRUE;
-            }
-
-            break;
         }
     }
 

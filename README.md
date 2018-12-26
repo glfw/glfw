@@ -227,6 +227,8 @@ information on what to include when reporting a bug.
                   hint set to false (#1179,#1180)
 - [Win32] Bugfix: The keypad equals key was reported as `GLFW_KEY_UNKNOWN`
                   (#1315,#1316)
+- [Win32] Bugfix: A title bar would be drawn over undecorated windows in some
+                  circumstances (#1383)
 - [X11] Moved to XI2 `XI_RawMotion` for disable cursor mode motion input (#125)
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
 - [X11] Bugfix: `glfwGetVideoMode` would segfault on Cygwin/X

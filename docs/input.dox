@@ -162,7 +162,7 @@ missed the key press.  The recommended solution for this is to use a
 key callback, but there is also the `GLFW_STICKY_KEYS` input mode.
 
 @code
-glfwSetInputMode(window, GLFW_STICKY_KEYS, 1);
+glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
 @endcode
 
 When sticky keys mode is enabled, the pollable state of a key will remain
@@ -175,7 +175,7 @@ If you wish to know what the state of the Caps Lock and Num Lock keys was when
 input events were generated, set the `GLFW_LOCK_KEY_MODS` input mode.
 
 @code
-glfwSetInputMode(window, GLFW_LOCK_KEY_MODS, 1);
+glfwSetInputMode(window, GLFW_LOCK_KEY_MODS, GLFW_TRUE);
 @endcode
 
 When this input mode is enabled, any callback that receives
@@ -245,7 +245,7 @@ If you wish to be notified when the cursor moves over the window, set a cursor
 position callback.
 
 @code
-glfwSetCursorPosCallback(window, cursor_pos_callback);
+glfwSetCursorPosCallback(window, cursor_position_callback);
 @endcode
 
 The callback functions receives the cursor position, measured in screen
@@ -475,7 +475,7 @@ mouse button callback, but there is also the `GLFW_STICKY_MOUSE_BUTTONS`
 input mode.
 
 @code
-glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, 1);
+glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
 @endcode
 
 When sticky mouse buttons mode is enabled, the pollable state of a mouse button
@@ -523,7 +523,7 @@ int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
 Each joystick has zero or more axes, zero or more buttons, zero or more hats,
 a human-readable name, a user pointer and an SDL compatible GUID.
 
-When GLFW is initialized, detected joysticks are added to to the beginning of
+When GLFW is initialized, detected joysticks are added to the beginning of
 the array.  Once a joystick is detected, it keeps its assigned ID until it is
 disconnected or the library is terminated, so as joysticks are connected and
 disconnected, there may appear gaps in the IDs.
@@ -583,7 +583,7 @@ const unsigned char* hats = glfwGetJoystickHats(GLFW_JOYSTICK_7, &count);
 Each element in the returned array is one of the following:
 
 Name                  | Value
---------------------- | --------------------------------
+----                  | -----
 `GLFW_HAT_CENTERED`   | 0
 `GLFW_HAT_UP`         | 1
 `GLFW_HAT_RIGHT`      | 2

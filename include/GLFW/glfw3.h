@@ -269,23 +269,22 @@ extern "C" {
 #define GLFW_VERSION_REVISION       0
 /*! @} */
 
-/*! @name Boolean values
- *  @{ */
 /*! @brief One.
  *
- *  One.  Seriously.  You don't _need_ to use this symbol in your code.  It's
- *  semantic sugar for the number 1.  You can also use `1` or `true` or `_True`
- *  or `GL_TRUE` or whatever you want.
+ *  This is only semantic sugar for the number 1.  You can instead use `1` or
+ *  `true` or `_True` or `GL_TRUE` or anything else that is equal to one.
+ *
+ *  @ingroup init
  */
 #define GLFW_TRUE                   1
 /*! @brief Zero.
  *
- *  Zero.  Seriously.  You don't _need_ to use this symbol in your code.  It's
- *  semantic sugar for the number 0.  You can also use `0` or `false` or
- *  `_False` or `GL_FALSE` or whatever you want.
+ *  This is only semantic sugar for the number 0.  You can instead use `0` or
+ *  `false` or `_False` or `GL_FALSE` or anything else that is equal to zero.
+ *
+ *  @ingroup init
  */
 #define GLFW_FALSE                  0
-/*! @} */
 
 /*! @name Key and button actions
  *  @{ */
@@ -313,6 +312,7 @@ extern "C" {
 /*! @} */
 
 /*! @defgroup hat_state Joystick hat states
+ *  @brief Joystick hat states.
  *
  *  See [joystick hat input](@ref joystick_hat) for how these are used.
  *
@@ -1060,9 +1060,20 @@ extern "C" {
 
 /*! @addtogroup init
  *  @{ */
+/*! @brief Joystick hat buttons init hint.
+ *
+ *  Joystick hat buttons [init hint](@ref GLFW_JOYSTICK_HAT_BUTTONS)
+ */
 #define GLFW_JOYSTICK_HAT_BUTTONS   0x00050001
-
+/*! @brief macOS specific init hint.
+ *
+ *  macOS specific [init hint](@ref GLFW_COCOA_CHDIR_RESOURCES)
+ */
 #define GLFW_COCOA_CHDIR_RESOURCES  0x00051001
+/*! @brief macOS specific init hint.
+ *
+ *  macOS specific [init hint](@ref GLFW_COCOA_MENUBAR)
+ */
 #define GLFW_COCOA_MENUBAR          0x00051002
 /*! @} */
 
@@ -1133,7 +1144,7 @@ typedef struct GLFWwindow GLFWwindow;
  *
  *  @since Added in version 3.1.
  *
- *  @ingroup cursor
+ *  @ingroup input
  */
 typedef struct GLFWcursor GLFWcursor;
 
@@ -1571,6 +1582,8 @@ typedef struct GLFWgammaramp
  *
  *  @since Added in version 2.1.
  *  @glfw3 Removed format and bytes-per-pixel members.
+ *
+ *  @ingroup window
  */
 typedef struct GLFWimage
 {
@@ -1593,6 +1606,8 @@ typedef struct GLFWimage
  *  @sa @ref glfwGetGamepadState
  *
  *  @since Added in version 3.3.
+ *
+ *  @ingroup input
  */
 typedef struct GLFWgamepadstate
 {
@@ -2141,9 +2156,9 @@ GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor);
 
 /*! @brief Generates a gamma ramp and sets it for the specified monitor.
  *
- *  This function generates a 256-element gamma ramp from the specified exponent
- *  and then calls @ref glfwSetGammaRamp with it.  The value must be a finite
- *  number greater than zero.
+ *  This function generates an appropriately sized gamma ramp from the specified
+ *  exponent and then calls @ref glfwSetGammaRamp with it.  The value must be
+ *  a finite number greater than zero.
  *
  *  The software controlled gamma ramp is applied _in addition_ to the hardware
  *  gamma correction, which today is usually an approximation of sRGB gamma.
@@ -2222,8 +2237,8 @@ GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
- *  @remark Gamma ramp sizes other than 256 are not supported by all platforms
- *  or graphics hardware.
+ *  @remark The size of the specified gamma ramp should match the size of the
+ *  current ramp for that monitor.
  *
  *  @remark @win32 The gamma ramp size must be 256.
  *
@@ -3762,6 +3777,9 @@ GLFWAPI void glfwWaitEvents(void);
  *
  *  @param[in] timeout The maximum amount of time, in seconds, to wait.
  *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_INVALID_VALUE and @ref GLFW_PLATFORM_ERROR.
+ *
  *  @reentrancy This function must not be called from a callback.
  *
  *  @thread_safety This function must only be called from the main thread.
@@ -4287,9 +4305,7 @@ GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* window, GLFWkeyfun cbfun);
  *  The character callback behaves as system text input normally does and will
  *  not be called if modifier keys are held down that would prevent normal text
  *  input on that platform, for example a Super (Command) key on macOS or Alt key
- *  on Windows.  There is a
- *  [character with modifiers callback](@ref glfwSetCharModsCallback) that
- *  receives these events.
+ *  on Windows.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
@@ -4585,7 +4601,7 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int jid, int* count);
  *  Each element in the array is one of the following values:
  *
  *  Name                  | Value
- *  --------------------- | --------------------------------
+ *  ----                  | -----
  *  `GLFW_HAT_CENTERED`   | 0
  *  `GLFW_HAT_UP`         | 1
  *  `GLFW_HAT_RIGHT`      | 2
@@ -4928,8 +4944,6 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
- *  @remark @wayland Clipboard is currently unimplemented.
- *
  *  @pointer_lifetime The specified string is copied before this function
  *  returns.
  *
@@ -4957,8 +4971,6 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
- *
- *  @remark @wayland Clipboard is currently unimplemented.
  *
  *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
  *  should not free it yourself.  It is valid until the next call to @ref

@@ -38,8 +38,8 @@ The threading functions have been removed, including the per-thread sleep
 function.  They were fairly primitive, under-used, poorly integrated and took
 time away from the focus of GLFW (i.e.  context, input and window).  There are
 better threading libraries available and native threading support is available
-in both [C++11](http://en.cppreference.com/w/cpp/thread) and
-[C11](http://en.cppreference.com/w/c/thread), both of which are gaining
+in both [C++11](https://en.cppreference.com/w/cpp/thread) and
+[C11](https://en.cppreference.com/w/c/thread), both of which are gaining
 traction.
 
 If you wish to use the C++11 or C11 facilities but your compiler doesn't yet
@@ -87,7 +87,7 @@ platform-independent, as both OpenGL and stdio are available wherever GLFW is.
 @subsection moving_stdcall Removal of GLFWCALL macro
 
 The `GLFWCALL` macro, which made callback functions use
-[__stdcall](http://msdn.microsoft.com/en-us/library/zxk0tw93.aspx) on Windows,
+[__stdcall](https://msdn.microsoft.com/en-us/library/zxk0tw93.aspx) on Windows,
 has been removed.  GLFW is written in C, not Pascal.  Removing this macro means
 there's one less thing for application programmers to remember, i.e. the
 requirement to mark all callback functions with `GLFWCALL`.  It also simplifies
@@ -379,7 +379,7 @@ glfwGetJoystickAxes and @ref glfwGetJoystickButtons functions.
 @subsection moving_mbcs Win32 MBCS support
 
 The Win32 port of GLFW 3 will not compile in
-[MBCS mode](http://msdn.microsoft.com/en-us/library/5z097dxa.aspx).
+[MBCS mode](https://msdn.microsoft.com/en-us/library/5z097dxa.aspx).
 However, because the use of the Unicode version of the Win32 API doesn't affect
 the process as a whole, but only those windows created using it, it's perfectly
 possible to call MBCS functions from other parts of the same application.

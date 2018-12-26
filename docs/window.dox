@@ -68,7 +68,7 @@ set for the chosen monitor as long as the window has input focus.  For more
 information about retrieving video modes, see @ref monitor_modes.
 
 Video mode field        | Corresponds to
------------------------ | ------------------------
+----------------        | --------------
 GLFWvidmode.width       | `width` parameter
 GLFWvidmode.height      | `height` parameter
 GLFWvidmode.redBits     | @ref GLFW_RED_BITS hint

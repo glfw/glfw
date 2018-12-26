@@ -103,11 +103,11 @@
     text-shadow:none;
 }
 
-#main-nav,#main-menu,#main-menu a,#main-menu a:visited,#main-menu a:hover,#main-menu li,.memdoc,dl.reflist dd,div.toc li,.ah,span.lineno,span.lineno a,span.lineno a:hover,.note code,.pre code,.post code,.invariant code,.warning code,.attention code,.deprecated code,.bug code,.todo code,.test code,.doxtable code {
+#main-nav,#main-menu,#main-menu a,#main-menu a:visited,#main-menu a:hover,#main-menu li,.memdoc,dl.reflist dd,div.toc li,.ah,span.lineno,span.lineno a,span.lineno a:hover,.note code,.pre code,.post code,.invariant code,.warning code,.attention code,.deprecated code,.bug code,.todo code,.test code,.doxtable code,.markdownTable code {
 	background:none;
 }
 
-#titlearea,.footer,.contents,div.header,.memdoc,table.doxtable td,table.doxtable th,hr,.memSeparator {
+#titlearea,.footer,.contents,div.header,.memdoc,table.doxtable td,table.doxtable th,table.markdownTable td,table.markdownTable th,hr,.memSeparator {
 	border:none;
 }
 
@@ -119,7 +119,7 @@
 	box-shadow:none;
 }
 
-div.headertitle,.note code,.pre code,.post code,.invariant code,.warning code,.attention code,.deprecated code,.bug code,.todo code,.test code,table.doxtable code {
+div.headertitle,.note code,.pre code,.post code,.invariant code,.warning code,.attention code,.deprecated code,.bug code,.todo code,.test code,table.doxtable code,table.markdownTable code {
 	padding:0;
 }
 
@@ -127,7 +127,7 @@ div.headertitle,.note code,.pre code,.post code,.invariant code,.warning code,.a
 	display:none;
 }
 
-html,#titlearea,.footer,tr.even,.directory tr.even,.doxtable tr:nth-child(even),.mdescLeft,.mdescRight,.memItemLeft,.memItemRight,code {
+html,#titlearea,.footer,tr.even,.directory tr.even,.doxtable tr:nth-child(even),tr.markdownTableBody:nth-child(even),.mdescLeft,.mdescRight,.memItemLeft,.memItemRight,code {
 	background:@header-footer-background-color;
 }
 
@@ -171,7 +171,7 @@ h3 {
 	padding-right:48px;
 	color:@header-footer-link-color;
 	font-size:2.5em;
-	background:url("http://www.glfw.org/css/arrow.png") no-repeat right;
+	background:url("https://www.glfw.org/css/arrow.png") no-repeat right;
 }
 
 .glfwnavbar {
@@ -261,7 +261,7 @@ div.contents,div.header {
 	background:@content-background-color none;
 }
 
-table.doxtable th,dl.reflist dt {
+table.doxtable th,table.markdownTable th,dl.reflist dt {
 	background:linear-gradient(to bottom,@table-background-color2 0%,@table-background-color1 100%);
 	box-shadow:inset 0 0 32px @table-background-color1;
 	text-shadow:0 -1px 1px darken(@table-background-color1, 15%);
@@ -322,7 +322,7 @@ dl.reflist dd {
 	border-top:none;
 }
 
-table.doxtable {
+table.doxtable,table.markdownTable {
 	border-collapse:inherit;
 	border-spacing:0;
 	border:2px solid @default-border-color;

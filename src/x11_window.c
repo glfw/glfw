@@ -1455,12 +1455,20 @@ static void processEvent(XEvent *event)
 
         case EnterNotify:
         {
+            // XEnterWindowEvent is XCrossingEvent
+            const int x = event->xcrossing.x;
+            const int y = event->xcrossing.y;
+
             // HACK: This is a workaround for WMs (KWM, Fluxbox) that otherwise
             //       ignore the defined cursor for hidden cursor mode
             if (window->cursorMode == GLFW_CURSOR_HIDDEN)
                 updateCursorImage(window);
 
             _glfwInputCursorEnter(window, GLFW_TRUE);
+            _glfwInputCursorPos(window, x, y);
+
+            window->x11.lastCursorPosX = x;
+            window->x11.lastCursorPosY = y;
             return;
         }
 
@@ -2450,6 +2458,14 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
     Atom* states;
     unsigned long i;
     GLFWbool maximized = GLFW_FALSE;
+
+    if (!_glfw.x11.NET_WM_STATE ||
+        !_glfw.x11.NET_WM_STATE_MAXIMIZED_VERT ||
+        !_glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ)
+    {
+        return maximized;
+    }
+
     const unsigned long count =
         _glfwGetWindowPropertyX11(window->x11.handle,
                                   _glfw.x11.NET_WM_STATE,

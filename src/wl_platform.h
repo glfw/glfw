@@ -233,6 +233,10 @@ typedef struct _GLFWlibraryWayland
     struct wl_seat*             seat;
     struct wl_pointer*          pointer;
     struct wl_keyboard*         keyboard;
+    struct wl_data_device_manager*          dataDeviceManager;
+    struct wl_data_device*      dataDevice;
+    struct wl_data_offer*       dataOffer;
+    struct wl_data_source*      dataSource;
     struct xdg_wm_base*         wmBase;
     struct zxdg_decoration_manager_v1*      decorationManager;
     struct wp_viewporter*       viewporter;
@@ -247,12 +251,16 @@ typedef struct _GLFWlibraryWayland
     struct wl_cursor_theme*     cursorThemeHiDPI;
     struct wl_surface*          cursorSurface;
     int                         cursorTimerfd;
-    uint32_t                    pointerSerial;
+    uint32_t                    serial;
 
     int32_t                     keyboardRepeatRate;
     int32_t                     keyboardRepeatDelay;
     int                         keyboardLastKey;
     int                         keyboardLastScancode;
+    char*                       clipboardString;
+    size_t                      clipboardSize;
+    char*                       clipboardSendString;
+    size_t                      clipboardSendSize;
     int                         timerfd;
     short int                   keycodes[256];
     short int                   scancodes[GLFW_KEY_LAST + 1];

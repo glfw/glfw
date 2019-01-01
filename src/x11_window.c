@@ -2410,6 +2410,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
                               xpos, ypos, width, height);
         }
 
+        XFlush(_glfw.x11.display);
         return;
     }
 

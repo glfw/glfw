@@ -245,6 +245,8 @@ information on what to include when reporting a bug.
 - [X11] Bugfix: NVidia EGL would segfault if unloaded before closing the display
 - [X11] Bugfix: Checking window maximized attrib could crash some WMs (#1356)
 - [X11] Bugfix: Update cursor position on enter event (#1366)
+- [X11] Bugfix: `glfwSetWindowMonitor` did not update hints when resizing
+                non-user-resizable windows
 - [Linux] Added workaround for missing `SYN_DROPPED` in pre-2.6.39 kernel
           headers (#1196)
 - [Linux] Moved to evdev for joystick input (#906,#1005)

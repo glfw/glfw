@@ -737,7 +737,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         char** paths = calloc(count, sizeof(char*));
 
         for (NSUInteger i = 0;  i < count;  i++)
-            paths[i] = _glfw_strdup([[urls objectAtIndex:i] fileSystemRepresentation]);
+            paths[i] = _glfw_strdup([urls[i] fileSystemRepresentation]);
 
         _glfwInputDrop(window, (int) count, (const char**) paths);
 
@@ -883,7 +883,7 @@ static void createMenuBar(void)
 
     for (i = 0;  i < sizeof(nameKeys) / sizeof(nameKeys[0]);  i++)
     {
-        id name = [bundleInfo objectForKey:nameKeys[i]];
+        id name = bundleInfo[nameKeys[i]];
         if (name &&
             [name isKindOfClass:[NSString class]] &&
             ![name isEqualToString:@""])
@@ -897,7 +897,7 @@ static void createMenuBar(void)
     {
         char** progname = _NSGetProgname();
         if (progname && *progname)
-            appName = [NSString stringWithUTF8String:*progname];
+            appName = @(*progname);
         else
             appName = @"GLFW Application";
     }
@@ -1084,7 +1084,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     }
 
     if (strlen(wndconfig->ns.frameName))
-        [window->ns.object setFrameAutosaveName:[NSString stringWithUTF8String:wndconfig->ns.frameName]];
+        [window->ns.object setFrameAutosaveName:@(wndconfig->ns.frameName)];
 
     window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
 
@@ -1099,7 +1099,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 
     [window->ns.object setContentView:window->ns.view];
     [window->ns.object makeFirstResponder:window->ns.view];
-    [window->ns.object setTitle:[NSString stringWithUTF8String:wndconfig->title]];
+    [window->ns.object setTitle:@(wndconfig->title)];
     [window->ns.object setDelegate:window->ns.delegate];
     [window->ns.object setAcceptsMouseMovedEvents:YES];
     [window->ns.object setRestorable:NO];
@@ -1190,11 +1190,10 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)
 {
-    NSString* string = [NSString stringWithUTF8String:title];
-    [window->ns.object setTitle:string];
+    [window->ns.object setTitle:@(title)];
     // HACK: Set the miniwindow title explicitly as setTitle: doesn't update it
     //       if the window lacks NSWindowStyleMaskTitled
-    [window->ns.object setMiniwindowTitle:string];
+    [window->ns.object setMiniwindowTitle:@(title)];
 }
 
 void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
@@ -1737,8 +1736,7 @@ void _glfwPlatformSetClipboardString(const char* string)
 {
     NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
     [pasteboard declareTypes:@[NSPasteboardTypeString] owner:nil];
-    [pasteboard setString:[NSString stringWithUTF8String:string]
-                  forType:NSPasteboardTypeString];
+    [pasteboard setString:@(string) forType:NSPasteboardTypeString];
 }
 
 const char* _glfwPlatformGetClipboardString(void)

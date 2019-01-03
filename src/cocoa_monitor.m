@@ -374,14 +374,10 @@ void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
 {
     if (!monitor->ns.screen)
     {
-        NSUInteger i;
-        NSArray* screens = [NSScreen screens];
-
-        for (i = 0;  i < [screens count];  i++)
+        for (NSScreen* screen in [NSScreen screens])
         {
-            NSScreen* screen = [screens objectAtIndex:i];
             NSNumber* displayID =
-                [[screen deviceDescription] objectForKey:@"NSScreenNumber"];
+                [screen deviceDescription][@"NSScreenNumber"];
 
             // HACK: Compare unit numbers instead of display IDs to work around
             //       display replacement on machines with automatic graphics
@@ -394,7 +390,7 @@ void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
             }
         }
 
-        if (i == [screens count])
+        if (!monitor->ns.screen)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Cocoa: Failed to find a screen for monitor");

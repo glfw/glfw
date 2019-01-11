@@ -29,9 +29,6 @@
 #include <float.h>
 #include <string.h>
 
-// Needed for _NSGetProgname
-#include <crt_externs.h>
-
 #if MAC_OS_X_VERSION_MAX_ALLOWED < 101200
  #define NSWindowStyleMaskBorderless NSBorderlessWindowMask
  #define NSWindowStyleMaskClosable NSClosableWindowMask
@@ -356,56 +353,6 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         _glfwPlatformIconifyWindow(window);
 
     _glfwInputWindowFocus(window, GLFW_FALSE);
-}
-
-@end
-
-
-//------------------------------------------------------------------------
-// Delegate for application related notifications
-//------------------------------------------------------------------------
-
-@interface GLFWApplicationDelegate : NSObject <NSApplicationDelegate>
-@end
-
-@implementation GLFWApplicationDelegate
-
-- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
-{
-    _GLFWwindow* window;
-
-    for (window = _glfw.windowListHead;  window;  window = window->next)
-        _glfwInputWindowCloseRequest(window);
-
-    return NSTerminateCancel;
-}
-
-- (void)applicationDidChangeScreenParameters:(NSNotification *) notification
-{
-    _GLFWwindow* window;
-
-    for (window = _glfw.windowListHead;  window;  window = window->next)
-    {
-        if (window->context.client != GLFW_NO_API)
-            [window->context.nsgl.object update];
-    }
-
-    _glfwPollMonitorsNS();
-}
-
-- (void)applicationDidFinishLaunching:(NSNotification *)notification
-{
-    [NSApp stop:nil];
-
-    _glfwPlatformPostEmptyEvent();
-}
-
-- (void)applicationDidHide:(NSNotification *)notification
-{
-    int i;
-
-    for (i = 0;  i < _glfw.monitorCount;  i++)
-        _glfwRestoreVideoModeNS(_glfw.monitors[i]);
 }
 
 @end
@@ -862,162 +809,6 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 @end
 
 
-// Set up the menu bar (manually)
-// This is nasty, nasty stuff -- calls to undocumented semi-private APIs that
-// could go away at any moment, lots of stuff that really should be
-// localize(d|able), etc.  Add a nib to save us this horror.
-//
-static void createMenuBar(void)
-{
-    size_t i;
-    NSString* appName = nil;
-    NSDictionary* bundleInfo = [[NSBundle mainBundle] infoDictionary];
-    NSString* nameKeys[] =
-    {
-        @"CFBundleDisplayName",
-        @"CFBundleName",
-        @"CFBundleExecutable",
-    };
-
-    // Try to figure out what the calling application is called
-
-    for (i = 0;  i < sizeof(nameKeys) / sizeof(nameKeys[0]);  i++)
-    {
-        id name = bundleInfo[nameKeys[i]];
-        if (name &&
-            [name isKindOfClass:[NSString class]] &&
-            ![name isEqualToString:@""])
-        {
-            appName = name;
-            break;
-        }
-    }
-
-    if (!appName)
-    {
-        char** progname = _NSGetProgname();
-        if (progname && *progname)
-            appName = @(*progname);
-        else
-            appName = @"GLFW Application";
-    }
-
-    NSMenu* bar = [[NSMenu alloc] init];
-    [NSApp setMainMenu:bar];
-
-    NSMenuItem* appMenuItem =
-        [bar addItemWithTitle:@"" action:NULL keyEquivalent:@""];
-    NSMenu* appMenu = [[NSMenu alloc] init];
-    [appMenuItem setSubmenu:appMenu];
-
-    [appMenu addItemWithTitle:[NSString stringWithFormat:@"About %@", appName]
-                       action:@selector(orderFrontStandardAboutPanel:)
-                keyEquivalent:@""];
-    [appMenu addItem:[NSMenuItem separatorItem]];
-    NSMenu* servicesMenu = [[NSMenu alloc] init];
-    [NSApp setServicesMenu:servicesMenu];
-    [[appMenu addItemWithTitle:@"Services"
-                       action:NULL
-                keyEquivalent:@""] setSubmenu:servicesMenu];
-    [servicesMenu release];
-    [appMenu addItem:[NSMenuItem separatorItem]];
-    [appMenu addItemWithTitle:[NSString stringWithFormat:@"Hide %@", appName]
-                       action:@selector(hide:)
-                keyEquivalent:@"h"];
-    [[appMenu addItemWithTitle:@"Hide Others"
-                       action:@selector(hideOtherApplications:)
-                keyEquivalent:@"h"]
-        setKeyEquivalentModifierMask:NSEventModifierFlagOption | NSEventModifierFlagCommand];
-    [appMenu addItemWithTitle:@"Show All"
-                       action:@selector(unhideAllApplications:)
-                keyEquivalent:@""];
-    [appMenu addItem:[NSMenuItem separatorItem]];
-    [appMenu addItemWithTitle:[NSString stringWithFormat:@"Quit %@", appName]
-                       action:@selector(terminate:)
-                keyEquivalent:@"q"];
-
-    NSMenuItem* windowMenuItem =
-        [bar addItemWithTitle:@"" action:NULL keyEquivalent:@""];
-    [bar release];
-    NSMenu* windowMenu = [[NSMenu alloc] initWithTitle:@"Window"];
-    [NSApp setWindowsMenu:windowMenu];
-    [windowMenuItem setSubmenu:windowMenu];
-
-    [windowMenu addItemWithTitle:@"Minimize"
-                          action:@selector(performMiniaturize:)
-                   keyEquivalent:@"m"];
-    [windowMenu addItemWithTitle:@"Zoom"
-                          action:@selector(performZoom:)
-                   keyEquivalent:@""];
-    [windowMenu addItem:[NSMenuItem separatorItem]];
-    [windowMenu addItemWithTitle:@"Bring All to Front"
-                          action:@selector(arrangeInFront:)
-                   keyEquivalent:@""];
-
-    // TODO: Make this appear at the bottom of the menu (for consistency)
-    [windowMenu addItem:[NSMenuItem separatorItem]];
-    [[windowMenu addItemWithTitle:@"Enter Full Screen"
-                           action:@selector(toggleFullScreen:)
-                    keyEquivalent:@"f"]
-     setKeyEquivalentModifierMask:NSEventModifierFlagControl | NSEventModifierFlagCommand];
-
-    // Prior to Snow Leopard, we need to use this oddly-named semi-private API
-    // to get the application menu working properly.
-    SEL setAppleMenuSelector = NSSelectorFromString(@"setAppleMenu:");
-    [NSApp performSelector:setAppleMenuSelector withObject:appMenu];
-}
-
-// Initialize the Cocoa Application Kit
-//
-static GLFWbool initializeAppKit(void)
-{
-    if (_glfw.ns.delegate)
-        return GLFW_TRUE;
-
-    // There can only be one application delegate, but we allocate it the
-    // first time a window is created to keep all window code in this file
-    _glfw.ns.delegate = [[GLFWApplicationDelegate alloc] init];
-    if (_glfw.ns.delegate == nil)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Failed to create application delegate");
-        return GLFW_FALSE;
-    }
-
-    [NSApp setDelegate:_glfw.ns.delegate];
-
-    if (_glfw.hints.init.ns.menubar)
-    {
-        // In case we are unbundled, make us a proper UI application
-        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
-
-        // Menu bar setup must go between sharedApplication above and
-        // finishLaunching below, in order to properly emulate the behavior
-        // of NSApplicationMain
-
-        if ([[NSBundle mainBundle] pathForResource:@"MainMenu" ofType:@"nib"])
-        {
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1080
-            [[NSBundle mainBundle] loadNibNamed:@"MainMenu"
-                                          owner:NSApp
-                                topLevelObjects:&_glfw.ns.nibObjects];
-#else
-            [[NSBundle mainBundle] loadNibNamed:@"MainMenu" owner:NSApp];
-#endif
-        }
-        else
-            createMenuBar();
-    }
-
-    [NSApp run];
-
-    // Press and Hold prevents some keys from emitting repeated characters
-    NSDictionary* defaults = @{@"ApplePressAndHoldEnabled":@NO};
-    [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
-
-    return GLFW_TRUE;
-}
-
 // Create the Cocoa window
 //
 static GLFWbool createNativeWindow(_GLFWwindow* window,
@@ -1120,8 +911,11 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    if (!initializeAppKit())
-        return GLFW_FALSE;
+    if (!_glfw.ns.finishedLaunching)
+    {
+        [NSApp run];
+        _glfw.ns.finishedLaunching = GLFW_TRUE;
+    }
 
     if (!createNativeWindow(window, wndconfig, fbconfig))
         return GLFW_FALSE;
@@ -1344,9 +1138,9 @@ void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
 void _glfwPlatformFocusWindow(_GLFWwindow* window)
 {
     // Make us the active application
-    // HACK: This has been moved here from initializeAppKit to prevent
-    //       applications using only hidden windows from being activated, but
-    //       should probably not be done every time any window is shown
+    // HACK: This is here to prevent applications using only hidden windows from
+    //       being activated, but should probably not be done every time any
+    //       window is shown
     [NSApp activateIgnoringOtherApps:YES];
 
     [window->ns.object makeKeyAndOrderFront:nil];

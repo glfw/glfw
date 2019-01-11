@@ -105,6 +105,7 @@ typedef struct _GLFWlibraryNS
     CGEventSourceRef    eventSource;
     id                  delegate;
     id                  autoreleasePool;
+    GLFWbool            finishedLaunching;
     GLFWbool            cursorHidden;
     TISInputSourceRef   inputSource;
     IOHIDManagerRef     hidManager;

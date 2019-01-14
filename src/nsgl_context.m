@@ -355,8 +355,8 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                    &displayLinkCallback,
                                    window);
     CVDisplayLinkSetCurrentCGDisplayFromOpenGLContext(window->context.nsgl.displayLink,
-                                                      window->context.nsgl.object,
-                                                      window->context.nsgl.pixelFormat);
+                                                      (CGLContextObj) window->context.nsgl.object,
+                                                      (CGLPixelFormatObj) window->context.nsgl.pixelFormat);
     CVDisplayLinkStart(window->context.nsgl.displayLink);
 
     window->context.nsgl.swapIntervalCond = [NSCondition new];

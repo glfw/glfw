@@ -39,7 +39,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
                                     void* userInfo)
 {
   _GLFWwindow* window = (_GLFWwindow *) userInfo;
-  
+
   const int setting = atomic_load(&window->context.nsgl.swapInterval);
   if (setting > 0)
   {
@@ -48,7 +48,7 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
     [window->context.nsgl.swapIntervalCond signal];
     [window->context.nsgl.swapIntervalCond unlock];
   }
-  
+
   return kCVReturnSuccess;
 }
 
@@ -75,7 +75,7 @@ static void swapBuffersNSGL(_GLFWwindow* window)
         window->context.nsgl.swapIntervalsPassed = 0;
         [window->context.nsgl.swapIntervalCond unlock];
     }
-  
+
     // ARP appears to be unnecessary, but this is future-proof
     [window->context.nsgl.object flushBuffer];
 }
@@ -358,7 +358,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                                       window->context.nsgl.object,
                                                       window->context.nsgl.pixelFormat);
     CVDisplayLinkStart(window->context.nsgl.displayLink);
-  
+
     window->context.nsgl.swapIntervalCond = [NSCondition new];
 
     return GLFW_TRUE;

@@ -31,6 +31,27 @@
  #define NSOpenGLContextParameterSurfaceOpacity NSOpenGLCPSurfaceOpacity
 #endif
 
+static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
+                                    const CVTimeStamp* now,
+                                    const CVTimeStamp* outputTime,
+                                    CVOptionFlags flagsIn,
+                                    CVOptionFlags* flagsOut,
+                                    void* userInfo)
+{
+  _GLFWwindow* window = (_GLFWwindow *) userInfo;
+
+  const int setting = atomic_load(&window->context.nsgl.swapInterval);
+  if (setting > 0)
+  {
+    [window->context.nsgl.swapIntervalCond lock];
+    window->context.nsgl.swapIntervalsPassed++;
+    [window->context.nsgl.swapIntervalCond signal];
+    [window->context.nsgl.swapIntervalCond unlock];
+  }
+
+  return kCVReturnSuccess;
+}
+
 static void makeContextCurrentNSGL(_GLFWwindow* window)
 {
     @autoreleasepool {
@@ -48,21 +69,33 @@ static void makeContextCurrentNSGL(_GLFWwindow* window)
 static void swapBuffersNSGL(_GLFWwindow* window)
 {
     @autoreleasepool {
+
+    const int setting = atomic_load(&window->context.nsgl.swapInterval);
+    if (setting > 0)
+    {
+        [window->context.nsgl.swapIntervalCond lock];
+        do
+        {
+            [window->context.nsgl.swapIntervalCond wait];
+        } while (window->context.nsgl.swapIntervalsPassed % setting != 0);
+        window->context.nsgl.swapIntervalsPassed = 0;
+        [window->context.nsgl.swapIntervalCond unlock];
+    }
+
     // ARP appears to be unnecessary, but this is future-proof
     [window->context.nsgl.object flushBuffer];
+
     } // autoreleasepool
 }
 
 static void swapIntervalNSGL(int interval)
 {
     @autoreleasepool {
-
     _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
-
-    GLint sync = interval;
-    [window->context.nsgl.object setValues:&sync
-                              forParameter:NSOpenGLContextParameterSwapInterval];
-
+    atomic_store(&window->context.nsgl.swapInterval, interval);
+    [window->context.nsgl.swapIntervalCond lock];
+    window->context.nsgl.swapIntervalsPassed = 0;
+    [window->context.nsgl.swapIntervalCond unlock];
     } // autoreleasepool
 }
 
@@ -329,6 +362,17 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     window->context.extensionSupported = extensionSupportedNSGL;
     window->context.getProcAddress = getProcAddressNSGL;
     window->context.destroy = destroyContextNSGL;
+
+    CVDisplayLinkCreateWithActiveCGDisplays(&window->context.nsgl.displayLink);
+    CVDisplayLinkSetOutputCallback(window->context.nsgl.displayLink,
+                                   &displayLinkCallback,
+                                   window);
+    CVDisplayLinkSetCurrentCGDisplayFromOpenGLContext(window->context.nsgl.displayLink,
+                                                      (CGLContextObj) window->context.nsgl.object,
+                                                      (CGLPixelFormatObj) window->context.nsgl.pixelFormat);
+    CVDisplayLinkStart(window->context.nsgl.displayLink);
+
+    window->context.nsgl.swapIntervalCond = [NSCondition new];
 
     return GLFW_TRUE;
 }

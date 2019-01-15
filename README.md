@@ -189,6 +189,8 @@ information on what to include when reporting a bug.
 - Removed `GLFW_USE_RETINA` compile-time option
 - Removed `GLFW_USE_CHDIR` compile-time option
 - Removed `GLFW_USE_MENUBAR` compile-time option
+- Removed requirement of at least one window for `glfwWaitEvents` and
+  `glfwPostEmptyEvent` (#1317)
 - Bugfix: Calling `glfwMaximizeWindow` on a full screen window was not ignored
 - Bugfix: `GLFW_INCLUDE_VULKAN` could not be combined with the corresponding
           OpenGL and OpenGL ES header macros

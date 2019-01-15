@@ -57,8 +57,7 @@ glfwWaitEvents();
 
 It puts the thread to sleep until at least one event has been received and then
 processes all received events.  This saves a great deal of CPU cycles and is
-useful for, for example, editing tools.  There must be at least one GLFW window
-for this function to sleep.
+useful for, for example, editing tools.
 
 If you want to wait for events but have UI elements or other tasks that need
 periodic updates, @ref glfwWaitEventsTimeout lets you specify a timeout.

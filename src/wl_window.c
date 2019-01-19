@@ -37,6 +37,7 @@
 #include <sys/mman.h>
 #include <sys/timerfd.h>
 #include <poll.h>
+#include <assert.h>
 
 
 static void shellSurfaceHandlePing(void* data,
@@ -1217,7 +1218,7 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
 
 void _glfwPlatformDragWindow(_GLFWwindow* window)
 {
-    wl_shell_surface_move(window->wl.shellSurface, _glfw.wl.seat, _glfw.wl.pointerSerial);
+    wl_shell_surface_move(window->wl.shellSurface, _glfw.wl.seat, _glfw.wl.serial);
 }
 
 void _glfwPlatformResizeWindow(_GLFWwindow* window, int border)
@@ -1254,7 +1255,7 @@ void _glfwPlatformResizeWindow(_GLFWwindow* window, int border)
     }
     wl_shell_surface_resize(window->wl.shellSurface,
                             _glfw.wl.seat,
-                            _glfw.wl.pointerSerial,
+                            _glfw.wl.serial,
                             wlBorder);
 }
 

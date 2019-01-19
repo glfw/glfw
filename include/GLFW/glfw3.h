@@ -3220,7 +3220,7 @@ GLFWAPI void glfwDragWindow(GLFWwindow* handle);
  *
  *  This function starts a resize operation on one of the borders of the
  *  specified window.
- *  
+ *
  *  this function must be called from a pointer or touch event callback,
  *  otherwise it risks reacting to a different event.
  *

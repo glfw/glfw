@@ -1146,6 +1146,15 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
     [window->ns.object makeKeyAndOrderFront:nil];
 }
 
+void _glfwPlatformDragWindow(_GLFWwindow* window)
+{
+    [window->ns.object performWindowDragWithEvent:[NSApp currentEvent]];
+}
+
+void _glfwPlatformResizeWindow(_GLFWwindow* window, int border)
+{
+}
+
 void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
                                    _GLFWmonitor* monitor,
                                    int xpos, int ypos,

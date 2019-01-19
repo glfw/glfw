@@ -655,6 +655,8 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window);
 void _glfwPlatformSetWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor,
                                    int xpos, int ypos, int width, int height,
                                    int refreshRate);
+void _glfwPlatformDragWindow(_GLFWwindow* window);
+void _glfwPlatformResizeWindow(_GLFWwindow* window, int border);
 int _glfwPlatformWindowFocused(_GLFWwindow* window);
 int _glfwPlatformWindowIconified(_GLFWwindow* window);
 int _glfwPlatformWindowVisible(_GLFWwindow* window);

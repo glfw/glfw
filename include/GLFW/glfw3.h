@@ -1015,6 +1015,15 @@ extern "C" {
 #define GLFW_EGL_CONTEXT_API        0x00036002
 #define GLFW_OSMESA_CONTEXT_API     0x00036003
 
+#define GLFW_WINDOW_LEFT 0
+#define GLFW_WINDOW_TOP 1
+#define GLFW_WINDOW_RIGHT 2
+#define GLFW_WINDOW_BOTTOM 3
+#define GLFW_WINDOW_TOPLEFT 4
+#define GLFW_WINDOW_TOPRIGHT 5
+#define GLFW_WINDOW_BOTTOMLEFT 6
+#define GLFW_WINDOW_BOTTOMRIGHT 7
+
 /*! @defgroup shapes Standard cursor shapes
  *  @brief Standard system cursor shapes.
  *
@@ -3191,6 +3200,54 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
  *  @ingroup window
  */
 GLFWAPI void glfwFocusWindow(GLFWwindow* window);
+
+/*! @brief Starts drag operation to the specified window.
+ *
+ *  This function starts the drag operation of the specified window.
+ *
+ *  @param[in] window The window to start the dragging operation.
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_drag
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwDragWindow(GLFWwindow* handle);
+
+/*! @brief Starts a resize operation with the specified window.
+ *
+ *  This function starts a resize operation on one of the borders of the
+ *  specified window.
+ *  
+ *  this function must be called from a pointer or touch event callback,
+ *  otherwise it risks reacting to a different event.
+ *
+ *  The borders are [GLFW_WINDOW_LEFT](@ref GLFW_GLFW_WINDOW_LEFT),
+ *  [GLFW_WINDOW_TOP](@ref GLFW_WINDOW_TOP),
+ *  [GLFW_WINDOW_RIGHT](@ref GLFW_WINDOW_RIGHT),
+ *  [GLFW_WINDOW_BOTTOM](@ref GLFW_WINDOW_BOTTOM),
+ *  [GLFW_WINDOW_TOPLEFT](@ref GLFW_WINDOW_TOPLEFT),
+ *  [GLFW_WINDOW_TOPRIGHT](@ref GLFW_WINDOW_TOPRIGHT),
+ *  [GLFW_WINDOW_BOTTOMLEFT](@ref GLFW_WINDOW_BOTTOMLEFT) and
+ *  [GLFW_WINDOW_BOTTOMRIGHT](@ref GLFW_WINDOW_BOTTOMRIGHT).
+ *
+ *  @param[in] window The window to start the resize operation.
+ *  @param[in] border One of the window borders.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_resize
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwResizeWindow(GLFWwindow* window, int border);
 
 /*! @brief Requests user attention to the specified window.
  *

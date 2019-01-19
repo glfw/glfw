@@ -1215,6 +1215,49 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
                     "Wayland: Focusing a window requires user interaction");
 }
 
+void _glfwPlatformDragWindow(_GLFWwindow* window)
+{
+    wl_shell_surface_move(window->wl.shellSurface, _glfw.wl.seat, _glfw.wl.pointerSerial);
+}
+
+void _glfwPlatformResizeWindow(_GLFWwindow* window, int border)
+{
+    int wlBorder;
+    switch (border)
+    {
+        case GLFW_WINDOW_LEFT:
+            wlBorder = WL_SHELL_SURFACE_RESIZE_LEFT;
+            break;
+        case GLFW_WINDOW_TOP:
+            wlBorder = WL_SHELL_SURFACE_RESIZE_TOP;
+            break;
+        case GLFW_WINDOW_RIGHT:
+            wlBorder = WL_SHELL_SURFACE_RESIZE_RIGHT;
+            break;
+        case GLFW_WINDOW_BOTTOM:
+            wlBorder = WL_SHELL_SURFACE_RESIZE_BOTTOM;
+            break;
+        case GLFW_WINDOW_TOPLEFT:
+            wlBorder = WL_SHELL_SURFACE_RESIZE_TOP_LEFT;
+            break;
+        case GLFW_WINDOW_TOPRIGHT:
+            wlBorder = WL_SHELL_SURFACE_RESIZE_TOP_RIGHT;
+            break;
+        case GLFW_WINDOW_BOTTOMLEFT:
+            wlBorder = WL_SHELL_SURFACE_RESIZE_BOTTOM_LEFT;
+            break;
+        case GLFW_WINDOW_BOTTOMRIGHT:
+            wlBorder = WL_SHELL_SURFACE_RESIZE_BOTTOM_RIGHT;
+			break;
+		default:
+			assert(GLFW_FALSE);
+    }
+    wl_shell_surface_resize(window->wl.shellSurface,
+                            _glfw.wl.seat,
+                            _glfw.wl.pointerSerial,
+                            wlBorder);
+}
+
 void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
                                    _GLFWmonitor* monitor,
                                    int xpos, int ypos,

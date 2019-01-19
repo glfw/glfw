@@ -141,6 +141,10 @@ information on what to include when reporting a bug.
   (#235,#439,#677,#845,#898)
 - Added `glfwRequestWindowAttention` function for requesting attention from the
   user (#732,#988)
+- Added `glfwDragWindow` function for starting a drag operation on a window
+  (#987)
+- Added `glfwResizeWindow` function for starting a resize operation on a window
+  (#923)
 - Added `glfwGetKeyScancode` function that allows retrieving platform dependent
   scancodes for keys (#830)
 - Added `glfwSetWindowMaximizeCallback` and `GLFWwindowmaximizefun` for

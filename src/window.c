@@ -801,6 +801,29 @@ GLFWAPI void glfwFocusWindow(GLFWwindow* handle)
     _glfwPlatformFocusWindow(window);
 }
 
+GLFWAPI void glfwDragWindow(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT();
+
+    _glfwPlatformDragWindow(window);
+}
+
+GLFWAPI void glfwResizeWindow(GLFWwindow* handle, int border)
+{
+	_GLFWwindow* window = (_GLFWwindow*)handle;
+	assert(window != NULL);
+
+	_GLFW_REQUIRE_INIT();
+
+	if (border < GLFW_WINDOW_LEFT || border > GLFW_WINDOW_BOTTOMRIGHT)
+		return;
+
+	_glfwPlatformResizeWindow(window, border);
+}
+
 GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;

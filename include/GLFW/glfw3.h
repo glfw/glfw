@@ -1170,9 +1170,9 @@ typedef void (* GLFWerrorfun)(int,const char*);
  *
  *  @param[in] window The window that was moved.
  *  @param[in] xpos The new x-coordinate, in screen coordinates, of the
- *  upper-left corner of the client area of the window.
+ *  upper-left corner of the content area of the window.
  *  @param[in] ypos The new y-coordinate, in screen coordinates, of the
- *  upper-left corner of the client area of the window.
+ *  upper-left corner of the content area of the window.
  *
  *  @sa @ref window_pos
  *  @sa @ref glfwSetWindowPosCallback
@@ -1349,9 +1349,9 @@ typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int,int);
  *
  *  @param[in] window The window that received the event.
  *  @param[in] xpos The new cursor x-coordinate, relative to the left edge of
- *  the client area.
+ *  the content area.
  *  @param[in] ypos The new cursor y-coordinate, relative to the top edge of the
- *  client area.
+ *  content area.
  *
  *  @sa @ref cursor_pos
  *  @sa @ref glfwSetCursorPosCallback
@@ -1367,7 +1367,7 @@ typedef void (* GLFWcursorposfun)(GLFWwindow*,double,double);
  *  This is the function signature for cursor enter/leave callback functions.
  *
  *  @param[in] window The window that received the event.
- *  @param[in] entered `GLFW_TRUE` if the cursor entered the window's client
+ *  @param[in] entered `GLFW_TRUE` if the cursor entered the window's content
  *  area, or `GLFW_FALSE` if it left it.
  *
  *  @sa @ref cursor_enter
@@ -2644,19 +2644,19 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  */
 GLFWAPI void glfwSetWindowIcon(GLFWwindow* window, int count, const GLFWimage* images);
 
-/*! @brief Retrieves the position of the client area of the specified window.
+/*! @brief Retrieves the position of the content area of the specified window.
  *
  *  This function retrieves the position, in screen coordinates, of the
- *  upper-left corner of the client area of the specified window.
+ *  upper-left corner of the content area of the specified window.
  *
  *  Any or all of the position arguments may be `NULL`.  If an error occurs, all
  *  non-`NULL` position arguments will be set to zero.
  *
  *  @param[in] window The window to query.
  *  @param[out] xpos Where to store the x-coordinate of the upper-left corner of
- *  the client area, or `NULL`.
+ *  the content area, or `NULL`.
  *  @param[out] ypos Where to store the y-coordinate of the upper-left corner of
- *  the client area, or `NULL`.
+ *  the content area, or `NULL`.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
@@ -2676,10 +2676,10 @@ GLFWAPI void glfwSetWindowIcon(GLFWwindow* window, int count, const GLFWimage* i
  */
 GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
 
-/*! @brief Sets the position of the client area of the specified window.
+/*! @brief Sets the position of the content area of the specified window.
  *
  *  This function sets the position, in screen coordinates, of the upper-left
- *  corner of the client area of the specified windowed mode window.  If the
+ *  corner of the content area of the specified windowed mode window.  If the
  *  window is a full screen window, this function does nothing.
  *
  *  __Do not use this function__ to move an already visible window unless you
@@ -2689,8 +2689,8 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
  *  cannot and should not override these limits.
  *
  *  @param[in] window The window to query.
- *  @param[in] xpos The x-coordinate of the upper-left corner of the client area.
- *  @param[in] ypos The y-coordinate of the upper-left corner of the client area.
+ *  @param[in] xpos The x-coordinate of the upper-left corner of the content area.
+ *  @param[in] ypos The y-coordinate of the upper-left corner of the content area.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
@@ -2711,9 +2711,9 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
  */
 GLFWAPI void glfwSetWindowPos(GLFWwindow* window, int xpos, int ypos);
 
-/*! @brief Retrieves the size of the client area of the specified window.
+/*! @brief Retrieves the size of the content area of the specified window.
  *
- *  This function retrieves the size, in screen coordinates, of the client area
+ *  This function retrieves the size, in screen coordinates, of the content area
  *  of the specified window.  If you wish to retrieve the size of the
  *  framebuffer of the window in pixels, see @ref glfwGetFramebufferSize.
  *
@@ -2722,9 +2722,9 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow* window, int xpos, int ypos);
  *
  *  @param[in] window The window whose size to retrieve.
  *  @param[out] width Where to store the width, in screen coordinates, of the
- *  client area, or `NULL`.
+ *  content area, or `NULL`.
  *  @param[out] height Where to store the height, in screen coordinates, of the
- *  client area, or `NULL`.
+ *  content area, or `NULL`.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
@@ -2743,7 +2743,7 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
 
 /*! @brief Sets the size limits of the specified window.
  *
- *  This function sets the size limits of the client area of the specified
+ *  This function sets the size limits of the content area of the specified
  *  window.  If the window is full screen, the size limits only take effect
  *  once it is made windowed.  If the window is not resizable, this function
  *  does nothing.
@@ -2755,14 +2755,14 @@ GLFWAPI void glfwGetWindowSize(GLFWwindow* window, int* width, int* height);
  *  dimensions and all must be greater than or equal to zero.
  *
  *  @param[in] window The window to set limits for.
- *  @param[in] minwidth The minimum width, in screen coordinates, of the client
+ *  @param[in] minwidth The minimum width, in screen coordinates, of the content
  *  area, or `GLFW_DONT_CARE`.
  *  @param[in] minheight The minimum height, in screen coordinates, of the
- *  client area, or `GLFW_DONT_CARE`.
- *  @param[in] maxwidth The maximum width, in screen coordinates, of the client
+ *  content area, or `GLFW_DONT_CARE`.
+ *  @param[in] maxwidth The maximum width, in screen coordinates, of the content
  *  area, or `GLFW_DONT_CARE`.
  *  @param[in] maxheight The maximum height, in screen coordinates, of the
- *  client area, or `GLFW_DONT_CARE`.
+ *  content area, or `GLFW_DONT_CARE`.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_INVALID_VALUE and @ref GLFW_PLATFORM_ERROR.
@@ -2786,7 +2786,7 @@ GLFWAPI void glfwSetWindowSizeLimits(GLFWwindow* window, int minwidth, int minhe
 
 /*! @brief Sets the aspect ratio of the specified window.
  *
- *  This function sets the required aspect ratio of the client area of the
+ *  This function sets the required aspect ratio of the content area of the
  *  specified window.  If the window is full screen, the aspect ratio only takes
  *  effect once it is made windowed.  If the window is not resizable, this
  *  function does nothing.
@@ -2827,9 +2827,9 @@ GLFWAPI void glfwSetWindowSizeLimits(GLFWwindow* window, int minwidth, int minhe
  */
 GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* window, int numer, int denom);
 
-/*! @brief Sets the size of the client area of the specified window.
+/*! @brief Sets the size of the content area of the specified window.
  *
- *  This function sets the size, in screen coordinates, of the client area of
+ *  This function sets the size, in screen coordinates, of the content area of
  *  the specified window.
  *
  *  For full screen windows, this function updates the resolution of its desired
@@ -2845,9 +2845,9 @@ GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* window, int numer, int denom);
  *
  *  @param[in] window The window to resize.
  *  @param[in] width The desired width, in screen coordinates, of the window
- *  client area.
+ *  content area.
  *  @param[in] height The desired height, in screen coordinates, of the window
- *  client area.
+ *  content area.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
@@ -3251,7 +3251,7 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  The window position is ignored when setting a monitor.
  *
  *  When the monitor is `NULL`, the position, width and height are used to
- *  place the window client area.  The refresh rate is ignored when no monitor
+ *  place the window content area.  The refresh rate is ignored when no monitor
  *  is specified.
  *
  *  If you only wish to update the resolution of a full screen window or the
@@ -3264,12 +3264,12 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  @param[in] window The window whose monitor, size or video mode to set.
  *  @param[in] monitor The desired monitor, or `NULL` to set windowed mode.
  *  @param[in] xpos The desired x-coordinate of the upper-left corner of the
- *  client area.
+ *  content area.
  *  @param[in] ypos The desired y-coordinate of the upper-left corner of the
- *  client area.
- *  @param[in] width The desired with, in screen coordinates, of the client area
- *  or video mode.
- *  @param[in] height The desired height, in screen coordinates, of the client
+ *  content area.
+ *  @param[in] width The desired with, in screen coordinates, of the content
+ *  area or video mode.
+ *  @param[in] height The desired height, in screen coordinates, of the content
  *  area or video mode.
  *  @param[in] refreshRate The desired refresh rate, in Hz, of the video mode,
  *  or `GLFW_DONT_CARE`.
@@ -3419,8 +3419,8 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
  *
  *  This function sets the position callback of the specified window, which is
  *  called when the window is moved.  The callback is provided with the
- *  position, in screen coordinates, of the upper-left corner of the client area
- *  of the window.
+ *  position, in screen coordinates, of the upper-left corner of the content
+ *  area of the window.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
@@ -3447,7 +3447,7 @@ GLFWAPI GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow* window, GLFWwindow
  *
  *  This function sets the size callback of the specified window, which is
  *  called when the window is resized.  The callback is provided with the size,
- *  in screen coordinates, of the client area of the window.
+ *  in screen coordinates, of the content area of the window.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
@@ -3504,7 +3504,7 @@ GLFWAPI GLFWwindowclosefun glfwSetWindowCloseCallback(GLFWwindow* window, GLFWwi
 /*! @brief Sets the refresh callback for the specified window.
  *
  *  This function sets the refresh callback of the specified window, which is
- *  called when the client area of the window needs to be redrawn, for example
+ *  called when the content area of the window needs to be redrawn, for example
  *  if the window has been exposed after having been covered by another window.
  *
  *  On compositing window systems such as Aero, Compiz, Aqua or Wayland, where
@@ -3838,8 +3838,8 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  If the mode is `GLFW_CURSOR`, the value must be one of the following cursor
  *  modes:
  *  - `GLFW_CURSOR_NORMAL` makes the cursor visible and behaving normally.
- *  - `GLFW_CURSOR_HIDDEN` makes the cursor invisible when it is over the client
- *    area of the window but does not restrict the cursor from leaving.
+ *  - `GLFW_CURSOR_HIDDEN` makes the cursor invisible when it is over the
+ *    content area of the window but does not restrict the cursor from leaving.
  *  - `GLFW_CURSOR_DISABLED` hides and grabs the cursor, providing virtual
  *    and unlimited cursor movement.  This is useful for implementing for
  *    example 3D camera controls.
@@ -4042,11 +4042,11 @@ GLFWAPI int glfwGetKey(GLFWwindow* window, int key);
  */
 GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
 
-/*! @brief Retrieves the position of the cursor relative to the client area of
+/*! @brief Retrieves the position of the cursor relative to the content area of
  *  the window.
  *
  *  This function returns the position of the cursor, in screen coordinates,
- *  relative to the upper-left corner of the client area of the specified
+ *  relative to the upper-left corner of the content area of the specified
  *  window.
  *
  *  If the cursor is disabled (with `GLFW_CURSOR_DISABLED`) then the cursor
@@ -4062,9 +4062,9 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
  *
  *  @param[in] window The desired window.
  *  @param[out] xpos Where to store the cursor x-coordinate, relative to the
- *  left edge of the client area, or `NULL`.
+ *  left edge of the content area, or `NULL`.
  *  @param[out] ypos Where to store the cursor y-coordinate, relative to the to
- *  top edge of the client area, or `NULL`.
+ *  top edge of the content area, or `NULL`.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
@@ -4080,11 +4080,11 @@ GLFWAPI int glfwGetMouseButton(GLFWwindow* window, int button);
  */
 GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
 
-/*! @brief Sets the position of the cursor, relative to the client area of the
+/*! @brief Sets the position of the cursor, relative to the content area of the
  *  window.
  *
  *  This function sets the position, in screen coordinates, of the cursor
- *  relative to the upper-left corner of the client area of the specified
+ *  relative to the upper-left corner of the content area of the specified
  *  window.  The window must have input focus.  If the window does not have
  *  input focus when this function is called, it fails silently.
  *
@@ -4099,9 +4099,9 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *
  *  @param[in] window The desired window.
  *  @param[in] xpos The desired x-coordinate, relative to the left edge of the
- *  client area.
+ *  content area.
  *  @param[in] ypos The desired y-coordinate, relative to the top edge of the
- *  client area.
+ *  content area.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
@@ -4211,7 +4211,7 @@ GLFWAPI void glfwDestroyCursor(GLFWcursor* cursor);
 /*! @brief Sets the cursor for the window.
  *
  *  This function sets the cursor image to be used when the cursor is over the
- *  client area of the specified window.  The set cursor will only be visible
+ *  content area of the specified window.  The set cursor will only be visible
  *  when the [cursor mode](@ref cursor_mode) of the window is
  *  `GLFW_CURSOR_NORMAL`.
  *
@@ -4384,7 +4384,7 @@ GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmo
  *  This function sets the cursor position callback of the specified window,
  *  which is called when the cursor is moved.  The callback is provided with the
  *  position, in screen coordinates, relative to the upper-left corner of the
- *  client area of the window.
+ *  content area of the window.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
@@ -4407,7 +4407,7 @@ GLFWAPI GLFWcursorposfun glfwSetCursorPosCallback(GLFWwindow* window, GLFWcursor
 /*! @brief Sets the cursor enter/exit callback.
  *
  *  This function sets the cursor boundary crossing callback of the specified
- *  window, which is called when the cursor enters or leaves the client area of
+ *  window, which is called when the cursor enters or leaves the content area of
  *  the window.
  *
  *  @param[in] window The window whose callback to set.

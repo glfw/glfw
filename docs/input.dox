@@ -248,7 +248,7 @@ glfwSetCursorPosCallback(window, cursor_position_callback);
 @endcode
 
 The callback functions receives the cursor position, measured in screen
-coordinates but relative to the top-left corner of the window client area.  On
+coordinates but relative to the top-left corner of the window content area.  On
 platforms that provide it, the full sub-pixel cursor position is passed on.
 
 @code
@@ -377,7 +377,7 @@ glfwSetCursor(window, cursor);
 @endcode
 
 Once set, the cursor image will be used as long as the system cursor is over the
-client area of the window and the [cursor mode](@ref cursor_mode) is set
+content area of the window and the [cursor mode](@ref cursor_mode) is set
 to `GLFW_CURSOR_NORMAL`.
 
 A single cursor may be set for any number of windows.
@@ -394,7 +394,7 @@ default cursor.  This does not affect the cursor mode.
 
 @subsection cursor_enter Cursor enter/leave events
 
-If you wish to be notified when the cursor enters or leaves the client area of
+If you wish to be notified when the cursor enters or leaves the content area of
 a window, set a cursor enter/leave callback.
 
 @code
@@ -408,16 +408,16 @@ void cursor_enter_callback(GLFWwindow* window, int entered)
 {
     if (entered)
     {
-        // The cursor entered the client area of the window
+        // The cursor entered the content area of the window
     }
     else
     {
-        // The cursor left the client area of the window
+        // The cursor left the content area of the window
     }
 }
 @endcode
 
-You can query whether the cursor is currently inside the client area of the
+You can query whether the cursor is currently inside the content area of the
 window with the [GLFW_HOVERED](@ref GLFW_HOVERED_attrib) window attribute.
 
 @code

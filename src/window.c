@@ -67,7 +67,7 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused)
 }
 
 // Notifies shared code that a window has moved
-// The position is specified in client-area relative screen coordinates
+// The position is specified in content area relative screen coordinates
 //
 void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
 {
@@ -229,7 +229,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     if (window->monitor)
     {
         if (wndconfig.centerCursor)
-            _glfwCenterCursor(window);
+            _glfwCenterCursorInContentArea(window);
     }
     else
     {

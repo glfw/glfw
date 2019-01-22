@@ -760,7 +760,7 @@ _GLFWjoystick* _glfwAllocJoystick(const char* name,
                                   int buttonCount,
                                   int hatCount);
 void _glfwFreeJoystick(_GLFWjoystick* js);
-void _glfwCenterCursor(_GLFWwindow* window);
+void _glfwCenterCursorInContentArea(_GLFWwindow* window);
 
 GLFWbool _glfwInitVulkan(int mode);
 void _glfwTerminateVulkan(void);

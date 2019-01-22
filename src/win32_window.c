@@ -186,14 +186,14 @@ static HICON createIcon(const GLFWimage* image,
     return handle;
 }
 
-// Translate client window size to full window size according to styles and DPI
+// Translate content area size to full window size according to styles and DPI
 //
 static void getFullWindowSize(DWORD style, DWORD exStyle,
-                              int clientWidth, int clientHeight,
+                              int contentWidth, int contentHeight,
                               int* fullWidth, int* fullHeight,
                               UINT dpi)
 {
-    RECT rect = { 0, 0, clientWidth, clientHeight };
+    RECT rect = { 0, 0, contentWidth, contentHeight };
 
     if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
         AdjustWindowRectExForDpi(&rect, style, FALSE, exStyle, dpi);
@@ -204,7 +204,7 @@ static void getFullWindowSize(DWORD style, DWORD exStyle,
     *fullHeight = rect.bottom - rect.top;
 }
 
-// Enforce the client rect aspect ratio based on which edge is being dragged
+// Enforce the content area aspect ratio based on which edge is being dragged
 //
 static void applyAspectRatio(_GLFWwindow* window, int edge, RECT* area)
 {
@@ -278,7 +278,7 @@ static void disableCursor(_GLFWwindow* window)
                               &_glfw.win32.restoreCursorPosX,
                               &_glfw.win32.restoreCursorPosY);
     updateCursorImage(window);
-    _glfwCenterCursor(window);
+    _glfwCenterCursorInContentArea(window);
     updateClipRect(window);
 
     if (!RegisterRawInputDevices(&rid, 1, sizeof(rid)))
@@ -308,9 +308,9 @@ static void enableCursor(_GLFWwindow* window)
     }
 }
 
-// Returns whether the cursor is in the client area of the specified window
+// Returns whether the cursor is in the content area of the specified window
 //
-static GLFWbool cursorInClientArea(_GLFWwindow* window)
+static GLFWbool cursorInContentArea(_GLFWwindow* window)
 {
     RECT area;
     POINT pos;
@@ -1074,7 +1074,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (window->win32.scaleToMonitor)
                 break;
 
-            // Adjust the window size to keep the client area size constant
+            // Adjust the window size to keep the content area size constant
             if (_glfwIsWindows10CreatorsUpdateOrGreaterWin32())
             {
                 RECT source = {0}, target = {0};
@@ -1244,7 +1244,7 @@ static int createNativeWindow(_GLFWwindow* window,
     window->win32.scaleToMonitor = wndconfig->scaleToMonitor;
 
     // Adjust window size to account for DPI scaling of the window frame and
-    // optionally DPI scaling of the client area
+    // optionally DPI scaling of the content area
     // This cannot be done until we know what monitor it was placed on
     if (!window->monitor)
     {
@@ -1779,7 +1779,7 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 
 int _glfwPlatformWindowHovered(_GLFWwindow* window)
 {
-    return cursorInClientArea(window);
+    return cursorInContentArea(window);
 }
 
 int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
@@ -1972,7 +1972,7 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
     }
     else if (_glfw.win32.disabledCursorWindow == window)
         enableCursor(window);
-    else if (cursorInClientArea(window))
+    else if (cursorInContentArea(window))
         updateCursorImage(window);
 }
 
@@ -2035,7 +2035,7 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 {
-    if (cursorInClientArea(window))
+    if (cursorInContentArea(window))
         updateCursorImage(window);
 }
 

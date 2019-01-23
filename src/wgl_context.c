@@ -67,7 +67,7 @@ static int choosePixelFormat(_GLFWwindow* window,
 {
     _GLFWfbconfig* usableConfigs;
     const _GLFWfbconfig* closest;
-    int i, pixelFormat, nativeCount, usableCount, attribCount;
+    int i, pixelFormat, nativeCount, usableCount = 0, attribCount = 0;
     int attribs[40];
     int values[sizeof(attribs) / sizeof(attribs[0])];
 
@@ -82,8 +82,6 @@ static int choosePixelFormat(_GLFWwindow* window,
                                  "WGL: Failed to retrieve pixel format attribute");
             return 0;
         }
-
-        attribCount = 0;
 
         addAttrib(WGL_SUPPORT_OPENGL_ARB);
         addAttrib(WGL_DRAW_TO_WINDOW_ARB);
@@ -131,7 +129,6 @@ static int choosePixelFormat(_GLFWwindow* window,
     }
 
     usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
-    usableCount = 0;
 
     for (i = 0;  i < nativeCount;  i++)
     {

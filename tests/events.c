@@ -524,7 +524,7 @@ int main(int argc, char** argv)
                 break;
 
             case 'n':
-                count = (int) strtol(optarg, NULL, 10);
+                count = (int) strtoul(optarg, NULL, 10);
                 break;
 
             default:
@@ -549,12 +549,6 @@ int main(int argc, char** argv)
     {
         width  = 640;
         height = 480;
-    }
-
-    if (!count)
-    {
-        fprintf(stderr, "Invalid user\n");
-        exit(EXIT_FAILURE);
     }
 
     slots = calloc(count, sizeof(Slot));

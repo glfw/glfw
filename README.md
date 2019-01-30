@@ -288,6 +288,7 @@ information on what to include when reporting a bug.
 - [Cocoa] Bugfix: OpenGL rendering was not initially visible on 10.14
                   (#1334,#1346)
 - [Cocoa] Bugfix: Caps Lock did not generate any key events (#1368,#1373)
+- [Cocoa] Bugfix: Some buttons for some joysticks were ignored (#1385)
 - [WGL] Added support for `WGL_EXT_colorspace` for OpenGL ES contexts
 - [WGL] Added support for `WGL_ARB_create_context_no_error`
 - [GLX] Added support for `GLX_ARB_create_context_no_error`

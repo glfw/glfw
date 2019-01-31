@@ -1083,14 +1083,12 @@ GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun cbfun)
     return cbfun;
 }
 
-GLFWAPI int glfwUpdateGamepadMappings(const char* string)
+int _glfwInputUpdateGamepadMappings(const char* string)
 {
     int jid;
     const char* c = string;
 
     assert(string != NULL);
-
-    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
 
     while (*c)
     {
@@ -1141,6 +1139,13 @@ GLFWAPI int glfwUpdateGamepadMappings(const char* string)
     }
 
     return GLFW_TRUE;
+}
+
+GLFWAPI int glfwUpdateGamepadMappings(const char* string)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
+
+    return _glfwInputUpdateGamepadMappings(string);
 }
 
 GLFWAPI int glfwJoystickIsGamepad(int jid)

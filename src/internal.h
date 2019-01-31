@@ -722,6 +722,8 @@ void _glfwInputJoystickAxis(_GLFWjoystick* js, int axis, float value);
 void _glfwInputJoystickButton(_GLFWjoystick* js, int button, char value);
 void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value);
 
+int _glfwInputUpdateGamepadMappings(const char* string);
+
 void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement);
 void _glfwInputMonitorWindow(_GLFWmonitor* monitor, _GLFWwindow* window);
 

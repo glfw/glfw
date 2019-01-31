@@ -227,6 +227,19 @@ GLFWAPI int glfwInit(void)
     memset(&_glfw, 0, sizeof(_glfw));
     _glfw.hints.init = _glfwInitHints;
 
+    {
+        int i;
+
+        for (i = 0;  _glfwDefaultMappings[i];  i++)
+        {
+            if (!_glfwInputUpdateGamepadMappings(_glfwDefaultMappings[i]))
+            {
+                terminate();
+                return GLFW_FALSE;
+            }
+        }
+    }
+
     if (!_glfwPlatformInit())
     {
         terminate();
@@ -247,19 +260,6 @@ GLFWAPI int glfwInit(void)
     _glfw.timer.offset = _glfwPlatformGetTimerValue();
 
     glfwDefaultWindowHints();
-
-    {
-        int i;
-
-        for (i = 0;  _glfwDefaultMappings[i];  i++)
-        {
-            if (!glfwUpdateGamepadMappings(_glfwDefaultMappings[i]))
-            {
-                terminate();
-                return GLFW_FALSE;
-            }
-        }
-    }
 
     return GLFW_TRUE;
 }

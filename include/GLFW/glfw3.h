@@ -1328,6 +1328,11 @@ extern "C" {
  *  Wayland specific [init hint](@ref GLFW_WAYLAND_LIBDECOR_hint).
  */
 #define GLFW_WAYLAND_LIBDECOR       0x00053001
+/*! @brief Windows specific init hint.
+ *
+ *  Windows specific [init hint](@ref GLFW_WIN32_MESSAGES_IN_FIBER_hint).
+ */
+#define GLFW_WIN32_MESSAGES_IN_FIBER 0x00054001
 /*! @} */
 
 /*! @addtogroup init
@@ -1604,6 +1609,10 @@ typedef void (* GLFWerrorfun)(int error_code, const char* description);
  *  @param[in] ypos The new y-coordinate, in screen coordinates, of the
  *  upper-left corner of the content area of the window.
  *
+ *  @remark @win32 On Windows moving or resizing of window will block event
+ *  processing. Workaround for this is @ref GLFW_WIN32_MESSAGES_IN_FIBER init
+ *  hint.
+ *
  *  @sa @ref window_pos
  *  @sa @ref glfwSetWindowPosCallback
  *
@@ -1624,6 +1633,10 @@ typedef void (* GLFWwindowposfun)(GLFWwindow* window, int xpos, int ypos);
  *  @param[in] window The window that was resized.
  *  @param[in] width The new width, in screen coordinates, of the window.
  *  @param[in] height The new height, in screen coordinates, of the window.
+ *
+ *  @remark @win32 On Windows moving or resizing of window will block event
+ *  processing. Workaround for this is @ref GLFW_WIN32_MESSAGES_IN_FIBER init
+ *  hint.
  *
  *  @sa @ref window_size
  *  @sa @ref glfwSetWindowSizeCallback

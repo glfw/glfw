@@ -599,7 +599,7 @@ void window_close_callback(GLFWwindow* window)
 
 The size of a window can be changed with @ref glfwSetWindowSize.  For windowed
 mode windows, this sets the size, in
-[screen coordinates](@ref coordinate_systems) of the _client area_ or _content
+[screen coordinates](@ref coordinate_systems) of the _content area_ or _content
 area_ of the window.  The window system may impose limits on window size.
 
 @code
@@ -619,7 +619,7 @@ glfwSetWindowSizeCallback(window, window_size_callback);
 @endcode
 
 The callback function receives the new size, in screen coordinates, of the
-client area of the window when the window is resized.
+content area of the window when the window is resized.
 
 @code
 void window_size_callback(GLFWwindow* window, int width, int height)
@@ -640,9 +640,9 @@ calls.  The window size is in screen coordinates, not pixels.  Use the
 [framebuffer size](@ref window_fbsize), which is in pixels, for pixel-based
 calls.
 
-The above functions work with the size of the client area, but decorated windows
-typically have title bars and window frames around this rectangle.  You can
-retrieve the extents of these with @ref glfwGetWindowFrameSize.
+The above functions work with the size of the content area, but decorated
+windows typically have title bars and window frames around this rectangle.  You
+can retrieve the extents of these with @ref glfwGetWindowFrameSize.
 
 @code
 int left, top, right, bottom;
@@ -650,7 +650,7 @@ glfwGetWindowFrameSize(window, &left, &top, &right, &bottom);
 @endcode
 
 The returned values are the distances, in screen coordinates, from the edges of
-the client area to the corresponding edges of the full window.  As they are
+the content area to the corresponding edges of the full window.  As they are
 distances and not coordinates, they are always zero or positive.
 
 
@@ -737,10 +737,10 @@ GLFW_SCALE_TO_MONITOR window hint.
 
 @subsection window_sizelimits Window size limits
 
-The minimum and maximum size of the client area of a windowed mode window can be
-enforced with @ref glfwSetWindowSizeLimits.  The user may resize the window to
-any size and aspect ratio within the specified limits, unless the aspect ratio
-is also set.
+The minimum and maximum size of the content area of a windowed mode window can
+be enforced with @ref glfwSetWindowSizeLimits.  The user may resize the window
+to any size and aspect ratio within the specified limits, unless the aspect
+ratio is also set.
 
 @code
 glfwSetWindowSizeLimits(window, 200, 200, 400, 400);
@@ -755,7 +755,7 @@ glfwSetWindowSizeLimits(window, 640, 480, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 To disable size limits for a window, set them all to `GLFW_DONT_CARE`.
 
-The aspect ratio of the client area of a windowed mode window can be enforced
+The aspect ratio of the content area of a windowed mode window can be enforced
 with @ref glfwSetWindowAspectRatio.  The user may resize the window freely
 unless size limits are also set, but the size will be constrained to maintain
 the aspect ratio.
@@ -785,7 +785,7 @@ are undefined if they conflict.
 
 The position of a windowed-mode window can be changed with @ref
 glfwSetWindowPos.  This moves the window so that the upper-left corner of its
-client area has the specified [screen coordinates](@ref coordinate_systems).
+content area has the specified [screen coordinates](@ref coordinate_systems).
 The window system may put limitations on window placement.
 
 @code
@@ -800,7 +800,7 @@ glfwSetWindowPosCallback(window, window_pos_callback);
 @endcode
 
 The callback function receives the new position, in screen coordinates, of the
-upper-left corner of the client area when the window is moved.
+upper-left corner of the content area when the window is moved.
 
 @code
 void window_pos_callback(GLFWwindow* window, int xpos, int ypos)
@@ -809,7 +809,7 @@ void window_pos_callback(GLFWwindow* window, int xpos, int ypos)
 @endcode
 
 There is also @ref glfwGetWindowPos for directly retrieving the current position
-of the client area of the window.
+of the content area of the window.
 
 @code
 int xpos, ypos;
@@ -1249,8 +1249,8 @@ __GLFW_MAXIMIZED__ indicates whether the specified window is maximized.  See
 
 @anchor GLFW_HOVERED_attrib
 __GLFW_HOVERED__ indicates whether the cursor is currently directly over the
-client area of the window, with no other windows between.  See @ref cursor_enter
-for details.
+content area of the window, with no other windows between.  See @ref
+cursor_enter for details.
 
 @anchor GLFW_VISIBLE_attrib
 __GLFW_VISIBLE__ indicates whether the specified window is visible.  See @ref

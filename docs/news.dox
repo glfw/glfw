@@ -128,7 +128,7 @@ window hint.  It is enabled by default.
 
 @subsection news_33_hover Mouse cursor hover window attribute
 
-GLFW now supports polling whether the cursor is hovering over the window client
+GLFW now supports polling whether the cursor is hovering over the window content
 area with the [GLFW_HOVERED](@ref GLFW_HOVERED_attrib) window attribute.  This
 attribute corresponds to the [cursor enter/leave](@ref cursor_enter) event.
 
@@ -308,7 +308,7 @@ glfwWaitEvents to return.
 @subsection news_31_framesize Window frame size query
 
 GLFW now supports querying the size, on each side, of the frame around the
-client area of a window, with @ref glfwGetWindowFrameSize.
+content area of a window, with @ref glfwGetWindowFrameSize.
 
 @see [Window size](@ref window_size)
 
@@ -506,7 +506,7 @@ glfwSetWindowFocusCallback.
 @subsection news_30_enterleave Cursor enter/leave callback
 
 Each window now has a callback for when the mouse cursor enters or leaves its
-client area, which is set with @ref glfwSetCursorEnterCallback.
+content area, which is set with @ref glfwSetCursorEnterCallback.
 
 
 @subsection news_30_wndtitle Initial window title

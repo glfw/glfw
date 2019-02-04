@@ -614,7 +614,7 @@ void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
                                          float* xscale, float* yscale);
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count);
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode);
-void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
+GLFWbool _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
 void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
 void _glfwPlatformSetClipboardString(const char* string);
@@ -763,10 +763,13 @@ _GLFWjoystick* _glfwAllocJoystick(const char* name,
                                   int buttonCount,
                                   int hatCount);
 void _glfwFreeJoystick(_GLFWjoystick* js);
+void _glfwCenterCursorInContentArea(_GLFWwindow* window);
 
 GLFWbool _glfwInitVulkan(int mode);
 void _glfwTerminateVulkan(void);
 const char* _glfwGetVulkanResultString(VkResult result);
 
 char* _glfw_strdup(const char* source);
+float _glfw_fminf(float a, float b);
+float _glfw_fmaxf(float a, float b);
 

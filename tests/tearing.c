@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "getopt.h"
 #include "linmath.h"
 
 static const struct
@@ -67,6 +68,14 @@ static const char* fragment_shader_text =
 static int swap_tear;
 static int swap_interval;
 static double frame_rate;
+
+static void usage(void)
+{
+    printf("Usage: tearing [-f] [-h]\n");
+    printf("Options:\n");
+    printf("  -f use full screen\n");
+    printf("  -h show this help\n");
+}
 
 static void update_window_title(GLFWwindow* window)
 {
@@ -154,6 +163,8 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 int main(int argc, char** argv)
 {
     unsigned long frame_count = 0;
+    GLFWmonitor* monitor = NULL;
+    int ch, width, height;
     double last_time, current_time;
     GLFWwindow* window;
     GLuint vertex_buffer, vertex_shader, fragment_shader, program;
@@ -164,10 +175,46 @@ int main(int argc, char** argv)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
+    while ((ch = getopt(argc, argv, "hf")) != -1)
+    {
+        switch (ch)
+        {
+            case 'h':
+                usage();
+                exit(EXIT_SUCCESS);
+
+            case 'f':
+                monitor = glfwGetPrimaryMonitor();
+                break;
+
+            default:
+                usage();
+                exit(EXIT_FAILURE);
+        }
+    }
+
+    if (monitor)
+    {
+        const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+        glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+        glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+        glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+        glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+
+        width = mode->width;
+        height = mode->height;
+    }
+    else
+    {
+        width  = 640;
+        height = 480;
+    }
+
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    window = glfwCreateWindow(640, 480, "Tearing detector", NULL, NULL);
+    window = glfwCreateWindow(width, height, "Tearing detector", monitor, NULL);
     if (!window)
     {
         glfwTerminate();

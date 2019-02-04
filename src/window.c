@@ -67,7 +67,7 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused)
 }
 
 // Notifies shared code that a window has moved
-// The position is specified in client-area relative screen coordinates
+// The position is specified in content area relative screen coordinates
 //
 void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
 {
@@ -142,7 +142,6 @@ void _glfwInputWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor)
 {
     window->monitor = monitor;
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////
@@ -231,11 +230,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     if (window->monitor)
     {
         if (wndconfig.centerCursor)
-        {
-            int width, height;
-            _glfwPlatformGetWindowSize(window, &width, &height);
-            _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
-        }
+            _glfwCenterCursorInContentArea(window);
     }
     else
     {
@@ -1079,10 +1074,6 @@ GLFWAPI void glfwPollEvents(void)
 GLFWAPI void glfwWaitEvents(void)
 {
     _GLFW_REQUIRE_INIT();
-
-    if (!_glfw.windowListHead)
-        return;
-
     _glfwPlatformWaitEvents();
 }
 
@@ -1105,9 +1096,5 @@ GLFWAPI void glfwWaitEventsTimeout(double timeout)
 GLFWAPI void glfwPostEmptyEvent(void)
 {
     _GLFW_REQUIRE_INIT();
-
-    if (!_glfw.windowListHead)
-        return;
-
     _glfwPlatformPostEmptyEvent();
 }

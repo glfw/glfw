@@ -374,14 +374,10 @@ void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
 {
     if (!monitor->ns.screen)
     {
-        NSUInteger i;
-        NSArray* screens = [NSScreen screens];
-
-        for (i = 0;  i < [screens count];  i++)
+        for (NSScreen* screen in [NSScreen screens])
         {
-            NSScreen* screen = [screens objectAtIndex:i];
             NSNumber* displayID =
-                [[screen deviceDescription] objectForKey:@"NSScreenNumber"];
+                [screen deviceDescription][@"NSScreenNumber"];
 
             // HACK: Compare unit numbers instead of display IDs to work around
             //       display replacement on machines with automatic graphics
@@ -394,7 +390,7 @@ void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
             }
         }
 
-        if (i == [screens count])
+        if (!monitor->ns.screen)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Cocoa: Failed to find a screen for monitor");
@@ -467,7 +463,7 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode *mode)
     CVDisplayLinkRelease(link);
 }
 
-void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
+GLFWbool _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
     uint32_t i, size = CGDisplayGammaTableCapacity(monitor->ns.displayID);
     CGGammaValue* values = calloc(size * 3, sizeof(CGGammaValue));
@@ -489,6 +485,7 @@ void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
     }
 
     free(values);
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)

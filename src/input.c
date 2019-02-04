@@ -333,7 +333,7 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
 }
 
 // Notifies shared code of a cursor motion event
-// The position is specified in client-area relative screen coordinates
+// The position is specified in content area relative screen coordinates
 //
 void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos)
 {
@@ -453,6 +453,15 @@ void _glfwFreeJoystick(_GLFWjoystick* js)
     memset(js, 0, sizeof(_GLFWjoystick));
 }
 
+// Center the cursor in the content area of the specified window
+//
+void _glfwCenterCursorInContentArea(_GLFWwindow* window)
+{
+    int width, height;
+
+    _glfwPlatformGetWindowSize(window, &width, &height);
+    _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////
@@ -1252,7 +1261,7 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state)
         if (e->type == _GLFW_JOYSTICK_AXIS)
         {
             const float value = js->axes[e->index] * e->axisScale + e->axisOffset;
-            state->axes[i] = fminf(fmaxf(value, -1.f), 1.f);
+            state->axes[i] = _glfw_fminf(_glfw_fmaxf(value, -1.f), 1.f);
         }
         else if (e->type == _GLFW_JOYSTICK_HATBIT)
         {

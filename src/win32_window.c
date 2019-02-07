@@ -422,9 +422,9 @@ static int getKeyMods(void)
         mods |= GLFW_MOD_ALT;
     if ((GetKeyState(VK_LWIN) | GetKeyState(VK_RWIN)) & 0x8000)
         mods |= GLFW_MOD_SUPER;
-    if (GetKeyState(VK_CAPITAL) & 1)
+    if (GetKeyState(VK_CAPITAL) & 0x8000)
         mods |= GLFW_MOD_CAPS_LOCK;
-    if (GetKeyState(VK_NUMLOCK) & 1)
+    if (GetKeyState(VK_NUMLOCK) & 0x8000)
         mods |= GLFW_MOD_NUM_LOCK;
 
     return mods;
@@ -444,9 +444,9 @@ static int getAsyncKeyMods(void)
         mods |= GLFW_MOD_ALT;
     if ((GetAsyncKeyState(VK_LWIN) | GetAsyncKeyState(VK_RWIN)) & 0x8000)
         mods |= GLFW_MOD_SUPER;
-    if (GetAsyncKeyState(VK_CAPITAL) & 1)
+    if (GetAsyncKeyState(VK_CAPITAL) & 0x8000)
         mods |= GLFW_MOD_CAPS_LOCK;
-    if (GetAsyncKeyState(VK_NUMLOCK) & 1)
+    if (GetAsyncKeyState(VK_NUMLOCK) & 0x8000)
         mods |= GLFW_MOD_NUM_LOCK;
 
     return mods;

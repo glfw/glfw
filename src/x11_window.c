@@ -522,22 +522,41 @@ static void updateCursorImage(_GLFWwindow* window)
     }
 }
 
+// Enable XI2 raw mouse motion events
+//
+static void enableRawMouseMotion(_GLFWwindow* window)
+{
+    XIEventMask em;
+    unsigned char mask[XIMaskLen(XI_RawMotion)] = { 0 };
+
+    em.deviceid = XIAllMasterDevices;
+    em.mask_len = sizeof(mask);
+    em.mask = mask;
+    XISetMask(mask, XI_RawMotion);
+
+    XISelectEvents(_glfw.x11.display, _glfw.x11.root, &em, 1);
+}
+
+// Disable XI2 raw mouse motion events
+//
+static void disableRawMouseMotion(_GLFWwindow* window)
+{
+    XIEventMask em;
+    unsigned char mask[] = { 0 };
+
+    em.deviceid = XIAllMasterDevices;
+    em.mask_len = sizeof(mask);
+    em.mask = mask;
+
+    XISelectEvents(_glfw.x11.display, _glfw.x11.root, &em, 1);
+}
+
 // Apply disabled cursor mode to a focused window
 //
 static void disableCursor(_GLFWwindow* window)
 {
-    if (_glfw.x11.xi.available && window->useRawInput)
-    {
-        XIEventMask em;
-        unsigned char mask[XIMaskLen(XI_RawMotion)] = { 0 };
-
-        em.deviceid = XIAllMasterDevices;
-        em.mask_len = sizeof(mask);
-        em.mask = mask;
-        XISetMask(mask, XI_RawMotion);
-
-        XISelectEvents(_glfw.x11.display, _glfw.x11.root, &em, 1);
-    }
+    if (window->rawMouseMotion)
+        enableRawMouseMotion(window);
 
     _glfw.x11.disabledCursorWindow = window;
     _glfwPlatformGetCursorPos(window,
@@ -557,17 +576,8 @@ static void disableCursor(_GLFWwindow* window)
 //
 static void enableCursor(_GLFWwindow* window)
 {
-    if (_glfw.x11.xi.available && window->useRawInput)
-    {
-        XIEventMask em;
-        unsigned char mask[] = { 0 };
-
-        em.deviceid = XIAllMasterDevices;
-        em.mask_len = sizeof(mask);
-        em.mask = mask;
-
-        XISelectEvents(_glfw.x11.display, _glfw.x11.root, &em, 1);
-    }
+    if (window->rawMouseMotion)
+        disableRawMouseMotion(window);
 
     _glfw.x11.disabledCursorWindow = NULL;
     XUngrabPointer(_glfw.x11.display, CurrentTime);
@@ -1183,7 +1193,7 @@ static void processEvent(XEvent *event)
             _GLFWwindow* window = _glfw.x11.disabledCursorWindow;
 
             if (window &&
-                window->useRawInput &&
+                window->rawMouseMotion &&
                 event->xcookie.extension == _glfw.x11.xi.majorOpcode &&
                 XGetEventData(_glfw.x11.display, &event->xcookie) &&
                 event->xcookie.evtype == XI_RawMotion)
@@ -1484,7 +1494,7 @@ static void processEvent(XEvent *event)
                 {
                     if (_glfw.x11.disabledCursorWindow != window)
                         return;
-                    if (_glfw.x11.xi.available && window->useRawInput)
+                    if (window->rawMouseMotion)
                         return;
 
                     const int dx = x - window->x11.lastCursorPosX;
@@ -2653,20 +2663,21 @@ void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
                     PropModeReplace, (unsigned char*) &value, 1);
 }
 
-void _glfwPlatformSetRawInput(_GLFWwindow *window, GLFWbool enabled)
+void _glfwPlatformSetRawMouseMotion(_GLFWwindow *window, GLFWbool enabled)
 {
-    if (window->useRawInput != enabled)
-    {
-        int update = (_glfw.x11.disabledCursorWindow == window && _glfw.x11.xi.available);
-        if (update)
-            enableCursor(window);
-        window->useRawInput = enabled;
-        if (update)
-            disableCursor(window);
-    }
+    if (!_glfw.x11.xi.available)
+        return;
+
+    if (_glfw.x11.disabledCursorWindow != window)
+        return;
+
+    if (enabled)
+        enableRawMouseMotion(window);
+    else
+        disableRawMouseMotion(window);
 }
 
-GLFWbool _glfwPlatformRawInputSupported(void)
+GLFWbool _glfwPlatformRawMouseMotionSupported(void)
 {
     return _glfw.x11.xi.available;
 }

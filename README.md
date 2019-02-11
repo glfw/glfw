@@ -182,7 +182,8 @@ information on what to include when reporting a bug.
 - Added `GLFW_OSMESA_CONTEXT_API` for creating OpenGL contexts with
   [OSMesa](https://www.mesa3d.org/osmesa.html) (#281)
 - Added `GenerateMappings.cmake` script for updating gamepad mappings
-- Added `GLFW_RAW_INPUT` input mode and `glfwRawInputSupported` function (#1401)
+- Added `GLFW_RAW_MOUSE_MOTION` input mode and `glfwRawMouseMotionSupported`
+  function (#1401)
 - Made `glfwCreateWindowSurface` emit an error when the window has a context
   (#1194,#1205)
 - Deprecated window parameter of clipboard string functions
@@ -437,6 +438,7 @@ skills.
  - Cyril Pichard
  - Keith Pitt
  - Stanislav Podgorskiy
+ - Nathan Poirier
  - Alexandre Pretyman
  - przemekmirek
  - Philip Rideout
@@ -490,7 +492,6 @@ skills.
  - Santi Zupancic
  - Jonas Ådahl
  - Lasse Öörni
- - Nathan Poirier
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

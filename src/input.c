@@ -463,6 +463,7 @@ void _glfwCenterCursorInContentArea(_GLFWwindow* window)
     _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
 }
 
+
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
@@ -484,8 +485,8 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* handle, int mode)
             return window->stickyMouseButtons;
         case GLFW_LOCK_KEY_MODS:
             return window->lockKeyMods;
-        case GLFW_RAW_INPUT:
-            return window->useRawInput;
+        case GLFW_RAW_MOUSE_MOTION:
+            return window->rawMouseMotion;
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode 0x%08X", mode);
@@ -562,17 +563,33 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
         window->stickyMouseButtons = value;
     }
     else if (mode == GLFW_LOCK_KEY_MODS)
+    {
         window->lockKeyMods = value ? GLFW_TRUE : GLFW_FALSE;
-    else if (mode == GLFW_RAW_INPUT)
-        _glfwPlatformSetRawInput(window, value ? GLFW_TRUE : GLFW_FALSE);
+    }
+    else if (mode == GLFW_RAW_MOUSE_MOTION)
+    {
+        if (!_glfwPlatformRawMouseMotionSupported())
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Raw mouse motion is not supported on this system");
+            return;
+        }
+
+        value = value ? GLFW_TRUE : GLFW_FALSE;
+        if (window->rawMouseMotion == value)
+            return;
+
+        window->rawMouseMotion = value;
+        _glfwPlatformSetRawMouseMotion(window, value);
+    }
     else
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode 0x%08X", mode);
 }
 
-GLFWAPI int glfwRawInputSupported(void)
+GLFWAPI int glfwRawMouseMotionSupported(void)
 {
-    _GLFW_REQUIRE_INIT_OR_RETURN(0);
-    return _glfwPlatformRawInputSupported();
+    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
+    return _glfwPlatformRawMouseMotionSupported();
 }
 
 GLFWAPI const char* glfwGetKeyName(int key, int scancode)

@@ -1999,24 +1999,25 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
-    LPCWSTR name = NULL;
+    int id = 0;
 
     if (shape == GLFW_ARROW_CURSOR)
-        name = IDC_ARROW;
+        id = OCR_NORMAL;
     else if (shape == GLFW_IBEAM_CURSOR)
-        name = IDC_IBEAM;
+        id = OCR_IBEAM;
     else if (shape == GLFW_CROSSHAIR_CURSOR)
-        name = IDC_CROSS;
+        id = OCR_CROSS;
     else if (shape == GLFW_HAND_CURSOR)
-        name = IDC_HAND;
+        id = OCR_HAND;
     else if (shape == GLFW_HRESIZE_CURSOR)
-        name = IDC_SIZEWE;
+        id = OCR_SIZEWE;
     else if (shape == GLFW_VRESIZE_CURSOR)
-        name = IDC_SIZENS;
+        id = OCR_SIZENS;
     else
         return GLFW_FALSE;
 
-    cursor->win32.handle = CopyCursor(LoadCursorW(NULL, name));
+    cursor->win32.handle =
+            (HCURSOR)LoadImage(NULL, MAKEINTRESOURCE(id), IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_SHARED);
     if (!cursor->win32.handle)
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,

@@ -61,7 +61,7 @@
 // GLFW uses DirectInput8 interfaces
 #define DIRECTINPUT_VERSION 0x0800
 
-// Enable standard cursors images defines
+// GLFW uses OEM cursor resources
 #define OEMRESOURCE
 
 #include <wctype.h>

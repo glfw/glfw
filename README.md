@@ -231,6 +231,7 @@ information on what to include when reporting a bug.
                   (#1315,#1316)
 - [Win32] Bugfix: A title bar would be drawn over undecorated windows in some
                   circumstances (#1383)
+- [Win32] Bugfix: Standard cursors were not per-monitor DPI aware (#1431)
 - [X11] Moved to XI2 `XI_RawMotion` for disable cursor mode motion input (#125)
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
 - [X11] Bugfix: `glfwGetVideoMode` would segfault on Cygwin/X
@@ -439,6 +440,7 @@ skills.
  - przemekmirek
  - Philip Rideout
  - Eddie Ringle
+ - Max Risuhin
  - Jorge Rodriguez
  - Ed Ropple
  - Aleksey Rybalkin

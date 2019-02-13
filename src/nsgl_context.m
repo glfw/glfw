@@ -38,18 +38,18 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
                                     CVOptionFlags* flagsOut,
                                     void* userInfo)
 {
-  _GLFWwindow* window = (_GLFWwindow *) userInfo;
+    _GLFWwindow* window = (_GLFWwindow *) userInfo;
 
-  const int setting = atomic_load(&window->context.nsgl.swapInterval);
-  if (setting > 0)
-  {
-    [window->context.nsgl.swapIntervalCond lock];
-    window->context.nsgl.swapIntervalsPassed++;
-    [window->context.nsgl.swapIntervalCond signal];
-    [window->context.nsgl.swapIntervalCond unlock];
-  }
+    const int setting = atomic_load(&window->context.nsgl.swapInterval);
+    if (setting > 0)
+    {
+        [window->context.nsgl.swapIntervalCond lock];
+        window->context.nsgl.swapIntervalsPassed++;
+        [window->context.nsgl.swapIntervalCond signal];
+        [window->context.nsgl.swapIntervalCond unlock];
+    }
 
-  return kCVReturnSuccess;
+    return kCVReturnSuccess;
 }
 
 static void makeContextCurrentNSGL(_GLFWwindow* window)

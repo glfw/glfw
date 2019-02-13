@@ -37,7 +37,7 @@
 typedef struct _GLFWcontextNSGL
 {
     id                pixelFormat;
-    id	              object;
+    id                object;
     CVDisplayLinkRef  displayLink;
     atomic_int        swapInterval;
     int               swapIntervalsPassed;

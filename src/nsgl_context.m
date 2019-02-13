@@ -40,8 +40,8 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
 {
     _GLFWwindow* window = (_GLFWwindow *) userInfo;
 
-    const int setting = atomic_load(&window->context.nsgl.swapInterval);
-    if (setting > 0)
+    const int interval = atomic_load(&window->context.nsgl.swapInterval);
+    if (interval > 0)
     {
         [window->context.nsgl.swapIntervalCond lock];
         window->context.nsgl.swapIntervalsPassed++;
@@ -70,14 +70,14 @@ static void swapBuffersNSGL(_GLFWwindow* window)
 {
     @autoreleasepool {
 
-    const int setting = atomic_load(&window->context.nsgl.swapInterval);
-    if (setting > 0)
+    const int interval = atomic_load(&window->context.nsgl.swapInterval);
+    if (interval > 0)
     {
         [window->context.nsgl.swapIntervalCond lock];
         do
         {
             [window->context.nsgl.swapIntervalCond wait];
-        } while (window->context.nsgl.swapIntervalsPassed % setting != 0);
+        } while (window->context.nsgl.swapIntervalsPassed % interval != 0);
         window->context.nsgl.swapIntervalsPassed = 0;
         [window->context.nsgl.swapIntervalCond unlock];
     }

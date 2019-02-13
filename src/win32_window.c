@@ -761,14 +761,21 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_RBUTTONUP:
         case WM_MBUTTONUP:
         case WM_XBUTTONUP:
+        case WM_LBUTTONDBLCLK:
+        case WM_RBUTTONDBLCLK:
+        case WM_MBUTTONDBLCLK:
+        case WM_XBUTTONDBLCLK:
         {
             int i, button, action;
 
-            if (uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP)
+            if (uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP ||
+                uMsg == WM_LBUTTONDBLCLK)
                 button = GLFW_MOUSE_BUTTON_LEFT;
-            else if (uMsg == WM_RBUTTONDOWN || uMsg == WM_RBUTTONUP)
+            else if (uMsg == WM_RBUTTONDOWN || uMsg == WM_RBUTTONUP ||
+                     uMsg == WM_RBUTTONDBLCLK)
                 button = GLFW_MOUSE_BUTTON_RIGHT;
-            else if (uMsg == WM_MBUTTONDOWN || uMsg == WM_MBUTTONUP)
+            else if (uMsg == WM_MBUTTONDOWN || uMsg == WM_MBUTTONUP ||
+                     uMsg == WM_MBUTTONDBLCLK)
                 button = GLFW_MOUSE_BUTTON_MIDDLE;
             else if (GET_XBUTTON_WPARAM(wParam) == XBUTTON1)
                 button = GLFW_MOUSE_BUTTON_4;
@@ -780,12 +787,20 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             {
                 action = GLFW_PRESS;
             }
-            else
+            else if (uMsg == WM_LBUTTONUP || uMsg == WM_RBUTTONUP ||
+                     uMsg == WM_MBUTTONUP || uMsg == WM_XBUTTONUP)
+            {
                 action = GLFW_RELEASE;
+            }
+            else
+            {
+                action = GLFW_MULTI;
+            }
 
             for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
             {
-                if (window->mouseButtons[i] == GLFW_PRESS)
+                if (window->mouseButtons[i] == GLFW_PRESS ||
+                    window->mouseButtons[i] == GLFW_MULTI)
                     break;
             }
 
@@ -796,14 +811,17 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
             {
-                if (window->mouseButtons[i] == GLFW_PRESS)
+                if (window->mouseButtons[i] == GLFW_PRESS ||
+                    window->mouseButtons[i] == GLFW_MULTI)
                     break;
             }
 
             if (i > GLFW_MOUSE_BUTTON_LAST)
                 ReleaseCapture();
 
-            if (uMsg == WM_XBUTTONDOWN || uMsg == WM_XBUTTONUP)
+            if (uMsg == WM_XBUTTONDOWN ||
+                uMsg == WM_XBUTTONUP ||
+                uMsg == WM_XBUTTONDBLCLK)
                 return TRUE;
 
             return 0;
@@ -1299,7 +1317,7 @@ GLFWbool _glfwRegisterWindowClassWin32(void)
 
     ZeroMemory(&wc, sizeof(wc));
     wc.cbSize        = sizeof(wc);
-    wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+    wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
     wc.lpfnWndProc   = (WNDPROC) windowProc;
     wc.hInstance     = GetModuleHandleW(NULL);
     wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);

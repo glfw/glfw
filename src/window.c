@@ -60,7 +60,8 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused)
 
         for (button = 0;  button <= GLFW_MOUSE_BUTTON_LAST;  button++)
         {
-            if (window->mouseButtons[button] == GLFW_PRESS)
+            if (window->mouseButtons[button] == GLFW_PRESS ||
+                window->mouseButtons[button] == GLFW_MULTI)
                 _glfwInputMouseClick(window, button, GLFW_RELEASE, 0);
         }
     }

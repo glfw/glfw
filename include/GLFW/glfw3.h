@@ -309,6 +309,13 @@ extern "C" {
  *  @ingroup input
  */
 #define GLFW_REPEAT                 2
+/*! @brief The key or mouse button was pressed multiple times (e.g. double-click).
+ *
+ *  The key or mouse button was pressed multiple times (e.g. double-click).
+ *
+ *  @ingroup input
+ */
+#define GLFW_MULTI                  3
 /*! @} */
 
 /*! @defgroup hat_state Joystick hat states

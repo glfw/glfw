@@ -215,7 +215,11 @@ static int choosePixelFormat(_GLFWwindow* window,
                                      sizeof(PIXELFORMATDESCRIPTOR),
                                      &pfd))
             {
-                continue;
+                _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                    "WGL: Failed to describe pixel format");
+
+                free(usableConfigs);
+                return 0;
             }
 
             if (!(pfd.dwFlags & PFD_DRAW_TO_WINDOW) ||

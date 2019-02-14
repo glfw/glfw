@@ -146,6 +146,8 @@ static int choosePixelFormat(_GLFWwindow* window,
             {
                 _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
                                     "WGL: Failed to retrieve pixel format attributes");
+
+                free(usableConfigs);
                 return 0;
             }
 

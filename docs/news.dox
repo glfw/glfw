@@ -135,8 +135,10 @@ attribute corresponds to the [cursor enter/leave](@ref cursor_enter) event.
 
 @subsection news_33_rawmotion Support for raw mouse motion
 
-GLFW now uses raw (unscaled and unaccelerated) mouse motion in disabled cursor
-mode on platforms where this is available, specifically Windows and X11.
+GLFW now supports raw (unscaled and unaccelerated) mouse motion in disabled
+cursor mode with the [GLFW_RAW_MOUSE_MOTION](@ref GLFW_RAW_MOUSE_MOTION) input
+mode.  Call @ref glfwRawMouseMotionSupported to check if the current machine
+supports raw mouse motion.
 
 
 @subsection news_33_moltenvk Support for Vulkan on macOS via MoltenVK

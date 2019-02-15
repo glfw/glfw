@@ -233,7 +233,7 @@ arguments can always be passed unmodified to this function.
 
 @section input_mouse Mouse input
 
-Mouse input comes in many forms, including cursor motion, button presses and
+Mouse input comes in many forms, including mouse motion, button presses and
 scrolling offsets.  The cursor appearance can also be changed, either to
 a custom image or a standard cursor shape from the system theme.
 
@@ -306,6 +306,31 @@ cursor mode.
 @code
 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 @endcode
+
+
+@anchor GLFW_RAW_MOUSE_MOTION
+@subsection raw_mouse_motion Raw mouse motion
+
+When the cursor is disabled, raw (unscaled and unaccelerated) mouse motion can
+be enabled if available.
+
+Raw mouse motion is closer to the actual motion of the mouse across a surface.
+It is not affected by the scaling and acceleration applied to the motion of the
+desktop cursor.  That processing is suitable for a cursor while raw motion is
+better for controlling for example a 3D camera.  Because of this, raw mouse
+motion is only provided when the cursor is disabled.
+
+Call @ref glfwRawMouseMotionSupported to check if the current machine provides
+raw motion and set the `GLFW_RAW_MOUSE_MOTION` input mode to enable it.  It is
+disabled by default.
+
+@code
+if (glfwRawMouseMotionSupported())
+    glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+@endcode
+
+If supported, raw mouse motion can be enabled or disabled per-window and at any
+time but it will only be provided when the cursor is disabled.
 
 
 @subsection cursor_object Cursor objects

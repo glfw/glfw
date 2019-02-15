@@ -182,7 +182,8 @@ information on what to include when reporting a bug.
 - Added `GLFW_OSMESA_CONTEXT_API` for creating OpenGL contexts with
   [OSMesa](https://www.mesa3d.org/osmesa.html) (#281)
 - Added `GenerateMappings.cmake` script for updating gamepad mappings
-- Added `GLFW_RAW_INPUT` input mode and `glfwRawInputSupported` function (#1401)
+- Added `GLFW_RAW_MOUSE_MOTION` input mode and `glfwRawMouseMotionSupported`
+  function (#1401)
 - Made `glfwCreateWindowSurface` emit an error when the window has a context
   (#1194,#1205)
 - Deprecated window parameter of clipboard string functions
@@ -232,6 +233,7 @@ information on what to include when reporting a bug.
                   (#1315,#1316)
 - [Win32] Bugfix: A title bar would be drawn over undecorated windows in some
                   circumstances (#1383)
+- [Win32] Bugfix: Standard cursors were not per-monitor DPI aware (#1431)
 - [X11] Moved to XI2 `XI_RawMotion` for disable cursor mode motion input (#125)
 - [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
 - [X11] Bugfix: `glfwGetVideoMode` would segfault on Cygwin/X
@@ -436,10 +438,12 @@ skills.
  - Cyril Pichard
  - Keith Pitt
  - Stanislav Podgorskiy
+ - Nathan Poirier
  - Alexandre Pretyman
  - przemekmirek
  - Philip Rideout
  - Eddie Ringle
+ - Max Risuhin
  - Jorge Rodriguez
  - Ed Ropple
  - Aleksey Rybalkin
@@ -488,7 +492,6 @@ skills.
  - Santi Zupancic
  - Jonas Ådahl
  - Lasse Öörni
- - Nathan Poirier
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

@@ -125,6 +125,14 @@ static void destroyContextNSGL(_GLFWwindow* window)
 {
     @autoreleasepool {
 
+    if (window->context.nsgl.displayLink)
+    {
+        if (CVDisplayLinkIsRunning(window->context.nsgl.displayLink))
+            CVDisplayLinkStop(window->context.nsgl.displayLink);
+
+        CVDisplayLinkRelease(window->context.nsgl.displayLink);
+    }
+
     [window->context.nsgl.pixelFormat release];
     window->context.nsgl.pixelFormat = nil;
 

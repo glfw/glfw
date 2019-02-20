@@ -28,6 +28,9 @@
 #include <dlfcn.h>
 
 #include <Carbon/Carbon.h>
+#include <CoreVideo/CVBase.h>
+#include <CoreVideo/CVDisplayLink.h>
+
 #if defined(__OBJC__)
 #import <Cocoa/Cocoa.h>
 #else

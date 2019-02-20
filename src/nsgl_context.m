@@ -367,6 +367,8 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
 
     [window->context.nsgl.object setView:window->ns.view];
 
+    window->context.nsgl.swapIntervalCond = [NSCondition new];
+
     window->context.makeCurrent = makeContextCurrentNSGL;
     window->context.swapBuffers = swapBuffersNSGL;
     window->context.swapInterval = swapIntervalNSGL;
@@ -378,14 +380,20 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     CVDisplayLinkSetOutputCallback(window->context.nsgl.displayLink,
                                    &displayLinkCallback,
                                    window);
-    CVDisplayLinkSetCurrentCGDisplayFromOpenGLContext(window->context.nsgl.displayLink,
-                                                      (CGLContextObj) window->context.nsgl.object,
-                                                      (CGLPixelFormatObj) window->context.nsgl.pixelFormat);
     CVDisplayLinkStart(window->context.nsgl.displayLink);
 
-    window->context.nsgl.swapIntervalCond = [NSCondition new];
-
+    _glfwUpdateDisplayLinkDisplayNSGL(window);
     return GLFW_TRUE;
+}
+
+void _glfwUpdateDisplayLinkDisplayNSGL(_GLFWwindow* window)
+{
+    CGDirectDisplayID displayID =
+        [[[window->ns.object screen] deviceDescription][@"NSScreenNumber"] unsignedIntValue];
+    if (!displayID)
+        return;
+
+    CVDisplayLinkSetCurrentCGDisplay(window->context.nsgl.displayLink, displayID);
 }
 
 

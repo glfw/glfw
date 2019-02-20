@@ -338,6 +338,12 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     _glfwInputWindowFocus(window, GLFW_FALSE);
 }
 
+- (void)windowDidChangeScreen:(NSNotification *)notification
+{
+    if (window->context.source == GLFW_NATIVE_CONTEXT_API)
+        _glfwUpdateDisplayLinkDisplayNSGL(window);
+}
+
 @end
 
 

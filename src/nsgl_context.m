@@ -133,6 +133,9 @@ static void destroyContextNSGL(_GLFWwindow* window)
         CVDisplayLinkRelease(window->context.nsgl.displayLink);
     }
 
+    [window->context.nsgl.swapIntervalCond release];
+    window->context.nsgl.swapIntervalCond = nil;
+
     [window->context.nsgl.pixelFormat release];
     window->context.nsgl.pixelFormat = nil;
 

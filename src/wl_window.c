@@ -1320,11 +1320,12 @@ void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
 
 void _glfwPlatformSetRawMouseMotion(_GLFWwindow *window, GLFWbool enabled)
 {
+    // This is handled in relativePointerHandleRelativeMotion
 }
 
 GLFWbool _glfwPlatformRawMouseMotionSupported(void)
 {
-    return GLFW_FALSE;
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformPollEvents(void)
@@ -1446,13 +1447,24 @@ static void relativePointerHandleRelativeMotion(void* data,
                                                 wl_fixed_t dyUnaccel)
 {
     _GLFWwindow* window = data;
+    double xpos = window->virtualCursorPosX;
+    double ypos = window->virtualCursorPosY;
 
     if (window->cursorMode != GLFW_CURSOR_DISABLED)
         return;
 
-    _glfwInputCursorPos(window,
-                        window->virtualCursorPosX + wl_fixed_to_double(dxUnaccel),
-                        window->virtualCursorPosY + wl_fixed_to_double(dyUnaccel));
+    if (window->rawMouseMotion)
+    {
+        xpos += wl_fixed_to_double(dxUnaccel);
+        ypos += wl_fixed_to_double(dyUnaccel);
+    }
+    else
+    {
+        xpos += wl_fixed_to_double(dx);
+        ypos += wl_fixed_to_double(dy);
+    }
+
+    _glfwInputCursorPos(window, xpos, ypos);
 }
 
 static const struct zwp_relative_pointer_v1_listener relativePointerListener = {

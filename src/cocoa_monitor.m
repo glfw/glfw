@@ -213,6 +213,31 @@ static void endFadeReservation(CGDisplayFadeReservationToken token)
     }
 }
 
+// Finds and caches the NSScreen corresponding to the specified monitor
+//
+GLFWbool refreshMonitorScreen(_GLFWmonitor* monitor)
+{
+    if (monitor->ns.screen)
+        return GLFW_TRUE;
+
+    for (NSScreen* screen in [NSScreen screens])
+    {
+        NSNumber* displayID = [screen deviceDescription][@"NSScreenNumber"];
+
+        // HACK: Compare unit numbers instead of display IDs to work around
+        //       display replacement on machines with automatic graphics
+        //       switching
+        if (monitor->ns.unitNumber == CGDisplayUnitNumber([displayID unsignedIntValue]))
+        {
+            monitor->ns.screen = screen;
+            return GLFW_TRUE;
+        }
+    }
+
+    _glfwInputError(GLFW_PLATFORM_ERROR, "Cocoa: Failed to find a screen for monitor");
+    return GLFW_FALSE;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -373,31 +398,8 @@ void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
                                          float* xscale, float* yscale)
 {
-    if (!monitor->ns.screen)
-    {
-        for (NSScreen* screen in [NSScreen screens])
-        {
-            NSNumber* displayID =
-                [screen deviceDescription][@"NSScreenNumber"];
-
-            // HACK: Compare unit numbers instead of display IDs to work around
-            //       display replacement on machines with automatic graphics
-            //       switching
-            if (monitor->ns.unitNumber ==
-                CGDisplayUnitNumber([displayID unsignedIntValue]))
-            {
-                monitor->ns.screen = screen;
-                break;
-            }
-        }
-
-        if (!monitor->ns.screen)
-        {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Cocoa: Failed to find a screen for monitor");
-            return;
-        }
-    }
+    if (!refreshMonitorScreen(monitor))
+        return;
 
     const NSRect points = [monitor->ns.screen frame];
     const NSRect pixels = [monitor->ns.screen convertRectToBacking:points];
@@ -410,21 +412,19 @@ void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
 
 void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor, int* xpos, int* ypos, int *width, int *height)
 {
-    NSScreen *resultScreen;
-    for (NSScreen *screen in [NSScreen screens]) {
-        if ([[[screen deviceDescription] valueForKey:@"NSScreenNumber"] intValue] == monitor->ns.displayID) {
-            NSRect frameRect = [screen visibleFrame];
-            if (xpos)
-                *xpos = NSMinX(frameRect);
-            if (ypos)
-                *ypos = NSMinY(frameRect);
-            if (width)
-                *width = NSWidth(frameRect);
-            if (height)
-                *height = NSHeight(frameRect);
-            break;
-        }
-    }
+    if (!refreshMonitorScreen(monitor))
+        return;
+
+    const NSRect frameRect = [monitor->ns.screen visibleFrame];
+
+    if (xpos)
+        *xpos = frameRect.origin.x;
+    if (ypos)
+        *ypos = frameRect.origin.y;
+    if (width)
+        *width = frameRect.size.width;
+    if (height)
+        *height = frameRect.size.height;
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count)

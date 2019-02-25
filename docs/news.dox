@@ -80,6 +80,14 @@ Windows and X11 where this is necessary.
 @see @ref window_scale
 
 
+@subsection news_33_workarea Support for monitor work area
+
+GLFW now supports querying the work area of a monitor, i.e. the area not
+occupied by task bars or global menu bars, with @ref glfwGetMonitorWorkarea.
+
+@see @ref monitor_workarea
+
+
 @subsection news_33_inithint Support for initialization hints
 
 GLFW now supports setting library initialization hints with @ref glfwInitHint.

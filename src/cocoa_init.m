@@ -486,6 +486,9 @@ int _glfwPlatformInit(void)
                              toTarget:_glfw.ns.helper
                            withObject:nil];
 
+    if (NSApp)
+        _glfw.ns.finishedLaunching = GLFW_TRUE;
+
     [NSApplication sharedApplication];
 
     _glfw.ns.delegate = [[GLFWApplicationDelegate alloc] init];

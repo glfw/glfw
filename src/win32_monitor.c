@@ -361,28 +361,30 @@ void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
     _glfwGetMonitorContentScaleWin32(monitor->win32.handle, xscale, yscale);
 }
 
-void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor, int* xpos, int* ypos, int *width, int *height)
+void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor,
+                                     int* xpos, int* ypos,
+                                     int* width, int* height)
 {
     MONITORINFO monitorInfo;
     int x, y;
     POINT pointInMonitor;
     HMONITOR hMonitor;
 
-    _glfwPlatformGetMonitorPos( monitor, &x, &y );
+    _glfwPlatformGetMonitorPos(monitor, &x, &y);
 
     monitorInfo.cbSize = sizeof(MONITORINFO);
     pointInMonitor.x = x + 1;
     pointInMonitor.y = y + 1;
 
-    hMonitor = MonitorFromPoint( pointInMonitor, 0 );
+    hMonitor = MonitorFromPoint(pointInMonitor, 0);
     GetMonitorInfo(hMonitor, &monitorInfo);
 
     if (xpos)
-        *xpos   = monitorInfo.rcWork.left;
+        *xpos = monitorInfo.rcWork.left;
     if (ypos)
-        *ypos   = monitorInfo.rcWork.top;
+        *ypos = monitorInfo.rcWork.top;
     if (width)
-        *width  = monitorInfo.rcWork.right - monitorInfo.rcWork.left;
+        *width = monitorInfo.rcWork.right - monitorInfo.rcWork.left;
     if (height)
         *height = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
 }

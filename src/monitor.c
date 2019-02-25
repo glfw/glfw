@@ -330,7 +330,9 @@ GLFWAPI void glfwGetMonitorPos(GLFWmonitor* handle, int* xpos, int* ypos)
     _glfwPlatformGetMonitorPos(monitor, xpos, ypos);
 }
 
-GLFWAPI void glfwGetMonitorWorkarea(GLFWmonitor* handle, int* xpos, int* ypos, int* width, int* height)
+GLFWAPI void glfwGetMonitorWorkarea(GLFWmonitor* handle,
+                                    int* xpos, int* ypos,
+                                    int* width, int* height)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
     assert(monitor != NULL);

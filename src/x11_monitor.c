@@ -354,11 +354,11 @@ void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor, int* xpos, int* ypos
 
         if (xpos)
             *xpos = extents[0];
-        if (xpos)
+        if (ypos)
             *ypos = extents[1];
-        if (xpos)
+        if (width)
             *width = extents[2];
-        if (xpos)
+        if (height)
             *height = extents[3];
 
         XFree(extents);

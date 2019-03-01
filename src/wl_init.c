@@ -237,9 +237,7 @@ static void pointerHandleButton(void* data,
 {
     _GLFWwindow* window = _glfw.wl.pointerFocus;
     int glfwButton;
-
-    // Both xdg-shell and wl_shell use the same values.
-    uint32_t edges = WL_SHELL_SURFACE_RESIZE_NONE;
+    uint32_t edges = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
 
     if (!window)
         return;
@@ -251,46 +249,39 @@ static void pointerHandleButton(void* data,
                 break;
             case topDecoration:
                 if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
-                    edges = WL_SHELL_SURFACE_RESIZE_TOP;
+                    edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP;
                 else
                 {
-                    if (window->wl.xdg.toplevel)
-                        xdg_toplevel_move(window->wl.xdg.toplevel, _glfw.wl.seat, serial);
-                    else
-                        wl_shell_surface_move(window->wl.shellSurface, _glfw.wl.seat, serial);
+                    xdg_toplevel_move(window->wl.xdg.toplevel, _glfw.wl.seat, serial);
                 }
                 break;
             case leftDecoration:
                 if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
-                    edges = WL_SHELL_SURFACE_RESIZE_TOP_LEFT;
+                    edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT;
                 else
-                    edges = WL_SHELL_SURFACE_RESIZE_LEFT;
+                    edges = XDG_TOPLEVEL_RESIZE_EDGE_LEFT;
                 break;
             case rightDecoration:
                 if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
-                    edges = WL_SHELL_SURFACE_RESIZE_TOP_RIGHT;
+                    edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT;
                 else
-                    edges = WL_SHELL_SURFACE_RESIZE_RIGHT;
+                    edges = XDG_TOPLEVEL_RESIZE_EDGE_RIGHT;
                 break;
             case bottomDecoration:
                 if (window->wl.cursorPosX < _GLFW_DECORATION_WIDTH)
-                    edges = WL_SHELL_SURFACE_RESIZE_BOTTOM_LEFT;
+                    edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT;
                 else if (window->wl.cursorPosX > window->wl.width + _GLFW_DECORATION_WIDTH)
-                    edges = WL_SHELL_SURFACE_RESIZE_BOTTOM_RIGHT;
+                    edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT;
                 else
-                    edges = WL_SHELL_SURFACE_RESIZE_BOTTOM;
+                    edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM;
                 break;
             default:
                 assert(0);
         }
-        if (edges != WL_SHELL_SURFACE_RESIZE_NONE)
+        if (edges != XDG_TOPLEVEL_RESIZE_EDGE_NONE)
         {
-            if (window->wl.xdg.toplevel)
-                xdg_toplevel_resize(window->wl.xdg.toplevel, _glfw.wl.seat,
-                                    serial, edges);
-            else
-                wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
-                                        serial, edges);
+            xdg_toplevel_resize(window->wl.xdg.toplevel, _glfw.wl.seat,
+                                serial, edges);
         }
     }
     else if (button == BTN_RIGHT)
@@ -805,11 +796,6 @@ static void registryHandleGlobal(void* data,
         _glfw.wl.shm =
             wl_registry_bind(registry, name, &wl_shm_interface, 1);
     }
-    else if (strcmp(interface, "wl_shell") == 0)
-    {
-        _glfw.wl.shell =
-            wl_registry_bind(registry, name, &wl_shell_interface, 1);
-    }
     else if (strcmp(interface, "wl_output") == 0)
     {
         _glfwAddOutputWayland(name, version);
@@ -1164,6 +1150,13 @@ int _glfwPlatformInit(void)
     if (_glfw.wl.seatVersion >= 4)
         _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
 
+    if (!_glfw.wl.wmBase)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to find xdg-shell in your compositor");
+        return GLFW_FALSE;
+    }
+
     if (_glfw.wl.pointer && _glfw.wl.shm)
     {
         cursorTheme = getenv("XCURSOR_THEME");
@@ -1257,8 +1250,6 @@ void _glfwPlatformTerminate(void)
         wl_compositor_destroy(_glfw.wl.compositor);
     if (_glfw.wl.shm)
         wl_shm_destroy(_glfw.wl.shm);
-    if (_glfw.wl.shell)
-        wl_shell_destroy(_glfw.wl.shell);
     if (_glfw.wl.viewporter)
         wp_viewporter_destroy(_glfw.wl.viewporter);
     if (_glfw.wl.decorationManager)

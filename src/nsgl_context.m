@@ -33,27 +33,37 @@
 
 static void makeContextCurrentNSGL(_GLFWwindow* window)
 {
+    @autoreleasepool {
+
     if (window)
         [window->context.nsgl.object makeCurrentContext];
     else
         [NSOpenGLContext clearCurrentContext];
 
     _glfwPlatformSetTls(&_glfw.contextSlot, window);
+
+    } // autoreleasepool
 }
 
 static void swapBuffersNSGL(_GLFWwindow* window)
 {
+    @autoreleasepool {
     // ARP appears to be unnecessary, but this is future-proof
     [window->context.nsgl.object flushBuffer];
+    } // autoreleasepool
 }
 
 static void swapIntervalNSGL(int interval)
 {
+    @autoreleasepool {
+
     _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
 
     GLint sync = interval;
     [window->context.nsgl.object setValues:&sync
                               forParameter:NSOpenGLContextParameterSwapInterval];
+
+    } // autoreleasepool
 }
 
 static int extensionSupportedNSGL(const char* extension)
@@ -80,11 +90,15 @@ static GLFWglproc getProcAddressNSGL(const char* procname)
 //
 static void destroyContextNSGL(_GLFWwindow* window)
 {
+    @autoreleasepool {
+
     [window->context.nsgl.pixelFormat release];
     window->context.nsgl.pixelFormat = nil;
 
     [window->context.nsgl.object release];
     window->context.nsgl.object = nil;
+
+    } // autoreleasepool
 }
 
 

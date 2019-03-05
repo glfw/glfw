@@ -479,7 +479,8 @@ static GLFWbool initializeTIS(void)
 
 int _glfwPlatformInit(void)
 {
-    _glfw.ns.autoreleasePool = [[NSAutoreleasePool alloc] init];
+    @autoreleasepool {
+
     _glfw.ns.helper = [[GLFWHelper alloc] init];
 
     [NSThread detachNewThreadSelector:@selector(doNothing:)
@@ -542,10 +543,14 @@ int _glfwPlatformInit(void)
 
     _glfwPollMonitorsNS();
     return GLFW_TRUE;
+
+    } // autoreleasepool
 }
 
 void _glfwPlatformTerminate(void)
 {
+    @autoreleasepool {
+
     if (_glfw.ns.inputSource)
     {
         CFRelease(_glfw.ns.inputSource);
@@ -586,8 +591,7 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateNSGL();
     _glfwTerminateJoysticksNS();
 
-    [_glfw.ns.autoreleasePool release];
-    _glfw.ns.autoreleasePool = nil;
+    } // autoreleasepool
 }
 
 const char* _glfwPlatformGetVersionString(void)

@@ -168,3 +168,5 @@ void _glfwPollMonitorsNS(void);
 void _glfwSetVideoModeNS(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoModeNS(_GLFWmonitor* monitor);
 
+float _glfwTransformYNS(float y);
+

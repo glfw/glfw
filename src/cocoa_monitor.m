@@ -422,7 +422,7 @@ void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor,
     if (xpos)
         *xpos = frameRect.origin.x;
     if (ypos)
-        *ypos = frameRect.origin.y;
+        *ypos = _glfwTransformYNS(frameRect.origin.y + frameRect.size.height);
     if (width)
         *width = frameRect.size.width;
     if (height)

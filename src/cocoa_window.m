@@ -140,14 +140,6 @@ static void updateCursorMode(_GLFWwindow* window)
         updateCursorImage(window);
 }
 
-// Transforms the specified y-coordinate between the CG display and NS screen
-// coordinate systems
-//
-static float transformY(float y)
-{
-    return CGDisplayBounds(CGMainDisplayID()).size.height - y;
-}
-
 // Make the specified window and its video mode active on its monitor
 //
 static void acquireMonitor(_GLFWwindow* window)
@@ -155,7 +147,7 @@ static void acquireMonitor(_GLFWwindow* window)
     _glfwSetVideoModeNS(window->monitor, &window->videoMode);
     const CGRect bounds = CGDisplayBounds(window->monitor->ns.displayID);
     const NSRect frame = NSMakeRect(bounds.origin.x,
-                                    transformY(bounds.origin.y + bounds.size.height),
+                                    _glfwTransformYNS(bounds.origin.y + bounds.size.height),
                                     bounds.size.width,
                                     bounds.size.height);
 
@@ -743,7 +735,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     int xpos, ypos;
     _glfwPlatformGetWindowPos(window, &xpos, &ypos);
     const NSRect contentRect = [window->ns.view frame];
-    return NSMakeRect(xpos, transformY(ypos + contentRect.size.height), 0.0, 0.0);
+    return NSMakeRect(xpos, _glfwTransformYNS(ypos + contentRect.size.height), 0.0, 0.0);
 }
 
 - (void)insertText:(id)string replacementRange:(NSRange)replacementRange
@@ -897,6 +889,18 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 
 
 //////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+// Transforms a y-coordinate between the CG display and NS screen spaces
+//
+float _glfwTransformYNS(float y)
+{
+    return CGDisplayBounds(CGMainDisplayID()).size.height - y;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
@@ -998,13 +1002,13 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
     if (xpos)
         *xpos = contentRect.origin.x;
     if (ypos)
-        *ypos = transformY(contentRect.origin.y + contentRect.size.height);
+        *ypos = _glfwTransformYNS(contentRect.origin.y + contentRect.size.height);
 }
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
 {
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect dummyRect = NSMakeRect(x, transformY(y + contentRect.size.height), 0, 0);
+    const NSRect dummyRect = NSMakeRect(x, _glfwTransformYNS(y + contentRect.size.height), 0, 0);
     const NSRect frameRect = [window->ns.object frameRectForContentRect:dummyRect];
     [window->ns.object setFrameOrigin:frameRect.origin];
 }
@@ -1156,7 +1160,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
         else
         {
             const NSRect contentRect =
-                NSMakeRect(xpos, transformY(ypos + height), width, height);
+                NSMakeRect(xpos, _glfwTransformYNS(ypos + height), width, height);
             const NSRect frameRect =
                 [window->ns.object frameRectForContentRect:contentRect
                                                  styleMask:getStyleMask(window)];
@@ -1190,7 +1194,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
     }
     else
     {
-        NSRect contentRect = NSMakeRect(xpos, transformY(ypos + height),
+        NSRect contentRect = NSMakeRect(xpos, _glfwTransformYNS(ypos + height),
                                         width, height);
         NSRect frameRect = [window->ns.object frameRectForContentRect:contentRect
                                                             styleMask:styleMask];
@@ -1400,7 +1404,7 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
         const NSPoint globalPoint = globalRect.origin;
 
         CGWarpMouseCursorPosition(CGPointMake(globalPoint.x,
-                                              transformY(globalPoint.y)));
+                                              _glfwTransformYNS(globalPoint.y)));
     }
 }
 

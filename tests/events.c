@@ -42,6 +42,10 @@
 
 #include "getopt.h"
 
+#if defined(_MSC_VER) && _MSC_VER < 1900
+#define snprintf _snprintf
+#endif
+
 // Event index
 static unsigned int counter = 0;
 
@@ -493,6 +497,24 @@ static void joystick_callback(int jid, int event)
     }
 }
 
+void penTabletData_callback(double x, double y, double z, double pressure, double pitch, double yaw, double roll)
+{
+    printf("%08x at %0.3f: pen: %f %f %f %f %f %f %f\n",
+        counter++, glfwGetTime(), x, y, z, pressure, pitch, yaw, roll);
+}
+
+void penTabletCursor_callback(unsigned int cursor)
+{
+    printf("%08x at %0.3f: pen cursor: %d\n",
+        counter++, glfwGetTime(), cursor);
+}
+
+void penTabletProximity_callback(int proximity)
+{
+    printf("%08x at %0.3f: pen proximity: %d\n",
+        counter++, glfwGetTime(), proximity);
+}
+
 int main(int argc, char** argv)
 {
     Slot* slots;
@@ -510,6 +532,9 @@ int main(int argc, char** argv)
 
     glfwSetMonitorCallback(monitor_callback);
     glfwSetJoystickCallback(joystick_callback);
+    glfwSetPenTabletDataCallback(penTabletData_callback);
+    glfwSetPenTabletCursorCallback(penTabletCursor_callback);
+    glfwSetPenTabletProximityCallback(penTabletProximity_callback);
 
     while ((ch = getopt(argc, argv, "hfn:")) != -1)
     {

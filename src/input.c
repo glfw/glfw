@@ -401,6 +401,29 @@ void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value)
     js->hats[hat] = value;
 }
 
+// Notifies shared code of the new value of the pen tablet data
+//
+void _glfwInputPenTabletData(double x, double y, double z, double pressure, double pitch, double yaw, double roll)
+{
+    if (_glfw.callbacks.pentabletdata)
+        _glfw.callbacks.pentabletdata(x, y, z, pressure, pitch, yaw, roll);
+}
+
+// Notifies shared code of the new value of the pen tablet cursor
+//
+void _glfwInputPenTabletCursor(unsigned int cursor)
+{
+    if (_glfw.callbacks.pentabletcursor)
+        _glfw.callbacks.pentabletcursor(cursor);
+}
+
+// Notifies shared code of the new value of the pen tablet proximity
+//
+void _glfwInputPenTabletProximity(int proximity)
+{
+    if (_glfw.callbacks.pentabletproximity)
+        _glfw.callbacks.pentabletproximity(proximity);
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -1292,6 +1315,27 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state)
     }
 
     return GLFW_TRUE;
+}
+
+GLFWAPI GLFWpentabletdatafun  glfwSetPenTabletDataCallback(GLFWpentabletdatafun cbfun)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(_glfw.callbacks.pentabletdata, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWpentabletcursorfun  glfwSetPenTabletCursorCallback(GLFWpentabletcursorfun cbfun)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(_glfw.callbacks.pentabletcursor, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWpentabletproximityfun  glfwSetPenTabletProximityCallback(GLFWpentabletproximityfun cbfun)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(_glfw.callbacks.pentabletproximity, cbfun);
+    return cbfun;
 }
 
 GLFWAPI void glfwSetClipboardString(GLFWwindow* handle, const char* string)

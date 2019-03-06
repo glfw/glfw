@@ -103,7 +103,7 @@ set_target_properties(glfw PROPERTIES
 target_compile_definitions(glfw PRIVATE _GLFW_USE_CONFIG_H)
 target_include_directories(glfw PUBLIC
                            "$<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>"
-                           "$<INSTALL_INTERFACE:${CMAKE_INSTALL_FULL_INCLUDEDIR}>")
+                           "$<INSTALL_INTERFACE:${GLFW_INSTALL_INCLUDEDIR}>")
 target_include_directories(glfw PRIVATE
                            "${GLFW_SOURCE_DIR}/src"
                            "${GLFW_BINARY_DIR}/src"
@@ -139,7 +139,7 @@ if (BUILD_SHARED_LIBS)
         target_compile_options(glfw PRIVATE "-fno-common")
 
         set_target_properties(glfw PROPERTIES
-                              INSTALL_NAME_DIR "${CMAKE_INSTALL_LIBDIR}")
+                              INSTALL_NAME_DIR "${GLFW_INSTALL_LIBDIR}")
     elseif (UNIX)
         # Hide symbols not explicitly tagged for export from the shared library
         target_compile_options(glfw PRIVATE "-fvisibility=hidden")
@@ -159,7 +159,7 @@ if (GLFW_INSTALL)
     install(TARGETS glfw
             EXPORT glfwTargets
             RUNTIME DESTINATION "bin"
-            ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-            LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+            ARCHIVE DESTINATION "${GLFW_INSTALL_LIBDIR}"
+            LIBRARY DESTINATION "${GLFW_INSTALL_LIBDIR}")
 endif()
 

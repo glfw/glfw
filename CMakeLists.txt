@@ -8,6 +8,10 @@ if (POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
 
+if (POLICY CMP0077)
+    cmake_policy(SET CMP0077 NEW)
+endif()
+
 set(GLFW_VERSION_MAJOR "3")
 set(GLFW_VERSION_MINOR "3")
 set(GLFW_VERSION_PATCH "0")
@@ -17,15 +21,76 @@ set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+#--------------------------------------------------------------------
+# Main project options
+#--------------------------------------------------------------------
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" ON)
-option(GLFW_INSTALL "Generate installation target" ON)
 option(GLFW_VULKAN_STATIC "Use the Vulkan loader statically linked into application" OFF)
 
+#--------------------------------------------------------------------
+# Options for controlling installation behavior
+#--------------------------------------------------------------------
+option(GLFW_INSTALL "Generate installation target" ON)
+option(GLFW_UNINSTALL "Generate uninstall target if not already defined" ON)
 include(GNUInstallDirs)
 
+# pkg-config file needs absolute paths for install and include directories.
+# This macro helps reset variables populated by GNUInstallDirs when a user
+# specifies a custom include / lib install directory.
+#
+# destvar: variable to make replacement in / save value to
+# original: default value GNUInstallDirs set
+# custom: value of custom directory specified by user
+macro(glfw_replace_absolute destvar original custom)
+    if (IS_ABSOLUTE "${${custom}}")
+        set(${destvar} "${${custom}}")
+    else()
+        string(REGEX REPLACE
+               "${${original}}$" # Replace original path suffix
+               "${${custom}}"    # with custom suffix.
+               ${destvar}        # Save into destvar
+               "${${destvar}}")  # Input to replace is current value of destvar
+    endif()
+endmacro()
+
+# Allow parent projects to define where to install the headers
+if (NOT DEFINED GLFW_INSTALL_INCLUDEDIR)
+    set(GLFW_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}")
+else()
+    glfw_replace_absolute(CMAKE_INSTALL_FULL_INCLUDEDIR
+                          CMAKE_INSTALL_INCLUDEDIR
+                          GLFW_INSTALL_INCLUDEDIR)
+endif()
+
+# Allow parent projects to define where to install the library.  Value affects
+# where to install:
+# - GLFW_INSTALL_CONFIGDIR: defaults to GLFW_INSTALL_LIBDIR/cmake/glfw3
+# - GLFW_INSTALL_PKGCONFDIR: defaults to GLFW_INSTALL_LIBDIR/pkgconfig
+# Parent projects seeking different install locations must also override these.
+if (NOT DEFINED GLFW_INSTALL_LIBDIR)
+    set(GLFW_INSTALL_LIBDIR "${CMAKE_INSTALL_LIBDIR}")
+else()
+    glfw_replace_absolute(CMAKE_INSTALL_FULL_LIBDIR
+                          CMAKE_INSTALL_LIBDIR
+                          GLFW_INSTALL_LIBDIR)
+endif()
+
+# Allow parent projects to define where to install cmake config / targets.
+if (NOT DEFINED GLFW_INSTALL_CONFIGDIR)
+    set(GLFW_INSTALL_CONFIGDIR "${GLFW_INSTALL_LIBDIR}/cmake/glfw3")
+endif()
+
+# Allow parent projects to define where to install pkg-config files.
+if (NOT DEFINED GLFW_INSTALL_PKGCONFDIR)
+    set(GLFW_INSTALL_PKGCONFDIR "${GLFW_INSTALL_LIBDIR}/pkgconfig")
+endif()
+
+#--------------------------------------------------------------------
+# Platform specific project options
+#--------------------------------------------------------------------
 if (UNIX)
     option(GLFW_USE_OSMESA "Use OSMesa for offscreen context creation" OFF)
 endif()
@@ -42,6 +107,9 @@ if (MSVC)
     option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON)
 endif()
 
+#--------------------------------------------------------------------
+# Initial project setup
+#--------------------------------------------------------------------
 if (BUILD_SHARED_LIBS)
     set(_GLFW_BUILD_DLL 1)
 endif()
@@ -321,11 +389,9 @@ endforeach()
 #--------------------------------------------------------------------
 include(CMakePackageConfigHelpers)
 
-set(GLFW_CONFIG_PATH "${CMAKE_INSTALL_LIBDIR}/cmake/glfw3")
-
 configure_package_config_file(src/glfw3Config.cmake.in
                               src/glfw3Config.cmake
-                              INSTALL_DESTINATION "${GLFW_CONFIG_PATH}"
+                              INSTALL_DESTINATION "${GLFW_INSTALL_CONFIGDIR}"
                               NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
 write_basic_package_version_file(src/glfw3ConfigVersion.cmake
@@ -358,21 +424,21 @@ endif()
 # The library is installed by src/CMakeLists.txt
 #--------------------------------------------------------------------
 if (GLFW_INSTALL)
-    install(DIRECTORY include/GLFW DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    install(DIRECTORY include/GLFW DESTINATION "${GLFW_INSTALL_INCLUDEDIR}"
             FILES_MATCHING PATTERN glfw3.h PATTERN glfw3native.h)
 
     install(FILES "${GLFW_BINARY_DIR}/src/glfw3Config.cmake"
                   "${GLFW_BINARY_DIR}/src/glfw3ConfigVersion.cmake"
-            DESTINATION "${GLFW_CONFIG_PATH}")
+            DESTINATION "${GLFW_INSTALL_CONFIGDIR}")
 
     install(EXPORT glfwTargets FILE glfw3Targets.cmake
             EXPORT_LINK_INTERFACE_LIBRARIES
-            DESTINATION "${GLFW_CONFIG_PATH}")
+            DESTINATION "${GLFW_INSTALL_CONFIGDIR}")
     install(FILES "${GLFW_BINARY_DIR}/src/glfw3.pc"
-            DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+            DESTINATION "${GLFW_INSTALL_PKGCONFDIR}")
 
     # Only generate this target if no higher-level project already has
-    if (NOT TARGET uninstall)
+    if (GLFW_UNINSTALL AND NOT TARGET uninstall)
         configure_file(cmake_uninstall.cmake.in
                        cmake_uninstall.cmake IMMEDIATE @ONLY)
 

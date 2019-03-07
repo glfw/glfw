@@ -474,7 +474,6 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
             double tx = tilt.x * 1.5707963267949;
             double ty = tilt.y * 1.5707963267949;
-            
             double sinx = sin(tx);
             double siny = sin(ty);
             double cosx = cos(tx);
@@ -511,7 +510,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
                 s_cursor = cursor;
             }
         }
-    }    
+    }
 }
 
 - (void)mouseMoved:(NSEvent *)event

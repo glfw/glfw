@@ -45,6 +45,8 @@
  #define NSEventMaskAny NSAnyEventMask
  #define NSEventTypeApplicationDefined NSApplicationDefined
  #define NSBitmapFormatAlphaNonpremultiplied NSAlphaNonpremultipliedBitmapFormat
+ #define NSEventSubtypeTabletPoint NSTabletPointEventSubtype
+ #define NSEventSubtypeTabletProximity NSTabletProximityEventSubtype
 #endif
 
 // Returns the style mask corresponding to the window settings
@@ -465,7 +467,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 {
     if ([window->ns.object isKeyWindow])
     {
-        if ([event subtype] == NSTabletPointEventSubtype)
+        if ([event subtype] == NSEventSubtypeTabletPoint)
         {
             const double pressure = [event pressure];
             const NSPoint tilt = [event tilt];
@@ -490,7 +492,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
             _glfwInputPenTabletData(
                 pos.x,
-                transformY(pos.y),
+                (double)transformY((float)pos.y),
                 posz / 1024.0,
                 pressure,
                 pitch,
@@ -498,7 +500,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
                 0.0);
         }
 
-        if ([event subtype] == NSTabletProximityEventSubtype)
+        if ([event subtype] == NSEventSubtypeTabletProximity)
         {
             static unsigned int s_cursor = 0;
             unsigned int cursor = [event pointingDeviceType];

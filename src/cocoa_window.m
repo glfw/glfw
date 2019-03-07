@@ -492,7 +492,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
             _glfwInputPenTabletData(
                 pos.x,
-                (double)transformY((float)pos.y),
+                CGDisplayBounds(CGMainDisplayID()).size.height - pos.y,
                 posz / 1024.0,
                 pressure,
                 pitch,

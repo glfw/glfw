@@ -1518,9 +1518,9 @@ typedef void (* GLFWjoystickfun)(int,int);
  *  @param[in] y pen position relative to the screen.
  *  @param[in] z pen position relative to the tablet.
  *  @param[in] pen pressure from 0.0 to 1.0.
- *  @param[in] pen pitch in degree.
- *  @param[in] pen yaw in degree.
- *  @param[in] pen roll in degree.
+ *  @param[in] pen pitch in radian.
+ *  @param[in] pen yaw in radian.
+ *  @param[in] pen roll in radian.
  *
  *  @sa @ref pen_tablet_data
  *  @sa @ref glfwSetPenTabletDataCallback

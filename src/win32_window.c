@@ -639,13 +639,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
                     x = ((double)(packet.x - contextInfo.lcInOrgX) / contextInfo.lcInExtX) * contextInfo.lcSysExtX + contextInfo.lcSysOrgX;
                     y = ((double)(packet.y - contextInfo.lcInOrgY) / contextInfo.lcInExtY) * contextInfo.lcSysExtY + contextInfo.lcSysOrgY;
-                    z = ((double)(packet.z - contextInfo.lcOutOrgZ) / contextInfo.lcOutExtZ);
+                    z = packet.z / 1024.0;
                     pressure = (double)(packet.normalPressure - pressureInfo.min) / (pressureInfo.max - pressureInfo.min);
                     if (aziInfo.resolution && altInfo.resolution) {
                         double alt = (double)(packet.orientation.altitude - altInfo.min) / (altInfo.max - altInfo.min);
                         double azi = (double)(packet.orientation.azimuth  - aziInfo.min) / (aziInfo.max - aziInfo.min);
-                        pitch = (0.5 - alt) * 180.0;
-                        yaw = azi * 360.0;
+                        pitch = alt * 3.14159265359;
+                        yaw = azi * 6.28318530718;
                     }
                     if (rollInfo.resolution) { // roll seems to be mostly unsupported so this is untested
                         roll = (double)(packet.orientation.twist - rollInfo.min) / (rollInfo.max - rollInfo.min) * 360.0;

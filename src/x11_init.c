@@ -903,7 +903,7 @@ static void initPenTablet(Display *display)
                     int c;
 
                     _glfw.x11.xi.stylus_deviceid = dev->deviceid;
-      
+
                     for (c = 0; c < dev->num_classes; c++)
                     {
                         if (dev->classes[c]->type == XIValuatorClass)

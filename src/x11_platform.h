@@ -113,8 +113,12 @@ typedef Bool (* PFN_XF86VidModeGetGammaRampSize)(Display*,int,int*);
 
 typedef Status (* PFN_XIQueryVersion)(Display*,int*,int*);
 typedef int (* PFN_XISelectEvents)(Display*,Window,XIEventMask*,int);
+typedef XIDeviceInfo* (* PFN_XIQueryDevice)(Display*,int,int*);
+typedef Status (* PFN_XIGetProperty)(Display*,int,Atom,long,long,Bool,Atom,Atom*,int*,unsigned long*,unsigned long*,unsigned char**);
 #define XIQueryVersion _glfw.x11.xi.QueryVersion
 #define XISelectEvents _glfw.x11.xi.SelectEvents
+#define XIQueryDevice  _glfw.x11.xi.QueryDevice
+#define XIGetProperty  _glfw.x11.xi.GetProperty
 
 typedef Bool (* PFN_XRenderQueryExtension)(Display*,int*,int*);
 typedef Status (* PFN_XRenderQueryVersion)(Display*dpy,int*,int*);
@@ -385,6 +389,13 @@ typedef struct _GLFWlibraryX11
         int         minor;
         PFN_XIQueryVersion QueryVersion;
         PFN_XISelectEvents SelectEvents;
+        PFN_XIQueryDevice  QueryDevice;
+        PFN_XIGetProperty  GetProperty;
+        XIValuatorClassInfo stylus_ClassInfo[32];
+        float       *stylus_CTMatrix;
+        float       *eraser_CTMatrix;
+        int         stylus_deviceid;
+        int         eraser_deviceid;
     } xi;
 
     struct {
@@ -436,6 +447,7 @@ unsigned long _glfwGetWindowPropertyX11(Window window,
                                         unsigned char** value);
 GLFWbool _glfwIsVisualTransparentX11(Visual* visual);
 
+void _glfwApplyCoordTransformMatrix(float *matrix, float *px, float *py);
 void _glfwGrabErrorHandlerX11(void);
 void _glfwReleaseErrorHandlerX11(void);
 void _glfwInputErrorX11(int error, const char* message);

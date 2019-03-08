@@ -1534,8 +1534,9 @@ typedef void (* GLFWpentabletdatafun)(double,double,double,double,double,double,
 /*! @brief The function signature for pen tablet cursor callbacks.
  *
  *  This is the function signature for pen tablet cursor callback functions.
+ *  It is called when the tablet cursor is changed, from stylus to eraser for example.
  *
- *  @param[in] pen cursor identifier.
+ *  @param[in] pen cursor identifier. 1 is usually a stylus, 2 and 3 an eraser.
  *
  *  @sa @ref pen_tablet_cursor
  *  @sa @ref glfwSetPenTabletCursorCallback
@@ -1549,8 +1550,9 @@ typedef void (* GLFWpentabletcursorfun)(unsigned int);
 /*! @brief The function signature for pen tablet proximity callbacks.
  *
  *  This is the function signature for pen tablet proximity callback functions.
+ *  It is called when a tablet device (pen etc) entering or is exiting tablet proximity.
  *
- *  @param[in] pen proximity state.
+ *  @param[in] pen proximity state. 1 = entering, 0 = exiting.
  *
  *  @sa @ref pen_tablet_proximity
  *  @sa @ref glfwSetPenTabletProximityCallback

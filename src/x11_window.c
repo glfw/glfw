@@ -1218,13 +1218,10 @@ static void processEvent(XEvent *event)
                                 0, 5, False,
                                 XIAnyPropertyType,
                                 &type, &format, &num_items, &bytes_after,
-                                (unsigned char **)&data
-                                ) != Success)
-                                data = NULL;
-
-                            if (data && format == 32 && num_items > 4)
+                                (unsigned char **)&data) == Success)
                             {
-                                _glfwInputPenTabletProximity(((unsigned int *)data)[4] != 0);
+                                if (format == 32 && num_items > 4)
+                                    _glfwInputPenTabletProximity(((unsigned int *)data)[4] != 0);
                                 XFree(data);
                             }
                         }

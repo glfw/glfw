@@ -1238,7 +1238,6 @@ static void processEvent(XEvent *event)
                         if (re->deviceid == _glfw.x11.xi.stylus_deviceid ||
                             re->deviceid == _glfw.x11.xi.eraser_deviceid)
                         {
-                            static unsigned int s_cursor = 0;
                             unsigned int cursor = re->deviceid == _glfw.x11.xi.stylus_deviceid ? 1 : 2;
                             float x = 0.0f;
                             float y = 0.0f;
@@ -1246,10 +1245,10 @@ static void processEvent(XEvent *event)
                             double tiltx = 0.0;
                             double tilty = 0.0;
 
-                            if (cursor != s_cursor)
+                            if (cursor != _glfw.x11.xi.tablet_cursor)
                             {
                                 _glfwInputPenTabletCursor(cursor);
-                                s_cursor = cursor;
+                                _glfw.x11.xi.tablet_cursor = cursor;
                             }
 
                             if (XIMaskIsSet(re->valuators.mask, 0))

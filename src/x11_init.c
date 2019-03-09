@@ -875,8 +875,11 @@ static float * getDeviceCoordinateTransformationMatrix(Display *display, int dev
 //
 static void initPenTablet(Display *display)
 {
+    _glfw.x11.xi.tablet_cursor = 0;
     _glfw.x11.xi.stylus_deviceid = 0;
     _glfw.x11.xi.eraser_deviceid = 0;
+    _glfw.x11.xi.stylus_CTMatrix = NULL;
+    _glfw.x11.xi.eraser_CTMatrix = NULL;
 
     if (_glfw.x11.xi.available)
     {
@@ -924,6 +927,23 @@ static void initPenTablet(Display *display)
                 free(mask.mask);
             }
         }
+    }
+}
+
+// XInput2 terminate pen tablet
+//
+static void terminatePenTablet(void)
+{
+    if (_glfw.x11.xi.stylus_CTMatrix)
+    {
+        XFree(_glfw.x11.xi.stylus_CTMatrix);
+        _glfw.x11.xi.stylus_CTMatrix = NULL;
+    }
+
+    if (_glfw.x11.xi.eraser_CTMatrix)
+    {
+        XFree(_glfw.x11.xi.eraser_CTMatrix);
+        _glfw.x11.xi.eraser_CTMatrix = NULL;
     }
 }
 
@@ -1086,6 +1106,8 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
+    terminatePenTablet();
+
     if (_glfw.x11.helperWindowHandle)
     {
         if (XGetSelectionOwner(_glfw.x11.display, _glfw.x11.CLIPBOARD) ==

@@ -392,10 +392,11 @@ typedef struct _GLFWlibraryX11
         PFN_XIQueryDevice  QueryDevice;
         PFN_XIGetProperty  GetProperty;
         XIValuatorClassInfo stylus_ClassInfo[32];
-        float       *stylus_CTMatrix;
-        float       *eraser_CTMatrix;
-        int         stylus_deviceid;
-        int         eraser_deviceid;
+        float        *stylus_CTMatrix;
+        float        *eraser_CTMatrix;
+        unsigned int tablet_cursor;
+        int          stylus_deviceid;
+        int          eraser_deviceid;
     } xi;
 
     struct {

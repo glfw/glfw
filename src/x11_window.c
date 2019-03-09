@@ -1213,7 +1213,7 @@ static void processEvent(XEvent *event)
                             unsigned long num_items, bytes_after;
 
                             if (XIGetProperty(
-                                re->display, re->deviceid,
+                                _glfw.x11.display, re->deviceid,
                                 re->property,
                                 0, 5, False,
                                 XIAnyPropertyType,

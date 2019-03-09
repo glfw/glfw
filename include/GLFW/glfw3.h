@@ -1510,6 +1510,59 @@ typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
  */
 typedef void (* GLFWjoystickfun)(int,int);
 
+/*! @brief The function signature for pen tablet data callbacks.
+ *
+ *  This is the function signature for pen tablet data callback functions.
+ *
+ *  @param[in] x pen position relative to the screen.
+ *  @param[in] y pen position relative to the screen.
+ *  @param[in] z pen position relative to the tablet.
+ *  @param[in] pen pressure from 0.0 to 1.0.
+ *  @param[in] pen pitch in radian.
+ *  @param[in] pen yaw in radian.
+ *  @param[in] pen roll in radian.
+ *
+ *  @sa @ref pen_tablet_data
+ *  @sa @ref glfwSetPenTabletDataCallback
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWpentabletdatafun)(double,double,double,double,double,double,double);
+
+/*! @brief The function signature for pen tablet cursor callbacks.
+ *
+ *  This is the function signature for pen tablet cursor callback functions.
+ *  It is called when the tablet cursor is changed, from stylus to eraser for example.
+ *
+ *  @param[in] pen cursor identifier. 1 is usually a stylus, 2 and 3 an eraser.
+ *
+ *  @sa @ref pen_tablet_cursor
+ *  @sa @ref glfwSetPenTabletCursorCallback
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWpentabletcursorfun)(unsigned int);
+
+/*! @brief The function signature for pen tablet proximity callbacks.
+ *
+ *  This is the function signature for pen tablet proximity callback functions.
+ *  It is called when a tablet device (pen etc) entering or is exiting tablet proximity.
+ *
+ *  @param[in] pen proximity state. 1 = entering, 0 = exiting.
+ *
+ *  @sa @ref pen_tablet_proximity
+ *  @sa @ref glfwSetPenTabletProximityCallback
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWpentabletproximityfun)(int);
+
 /*! @brief Video mode type.
  *
  *  This describes a single video mode.
@@ -4993,6 +5046,72 @@ GLFWAPI const char* glfwGetGamepadName(int jid);
  *  @ingroup input
  */
 GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state);
+
+/*! @brief Sets the pen tablet data callback.
+ *
+ *  This function sets the pen tablet data callback, or removes the
+ *  currently set callback.  This is called when the pen tablet data is updated.
+ *
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref pen_tablet_event
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWpentabletdatafun glfwSetPenTabletDataCallback(GLFWpentabletdatafun cbfun);
+
+/*! @brief Sets the pen tablet cursor callback.
+ *
+ *  This function sets the pen tablet cursor callback, or removes the
+ *  currently set callback.  This is called when the pen tablet cursor has changed.
+ *
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref pen_tablet_event
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWpentabletcursorfun glfwSetPenTabletCursorCallback(GLFWpentabletcursorfun cbfun);
+
+/*! @brief Sets the pen tablet proximity callback.
+ *
+ *  This function sets the pen tablet proximity callback, or removes the
+ *  currently set callback.  This is called when the pen tablet proximity has changed.
+ *
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref pen_tablet_event
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWpentabletproximityfun glfwSetPenTabletProximityCallback(GLFWpentabletproximityfun cbfun);
 
 /*! @brief Sets the clipboard to the specified string.
  *

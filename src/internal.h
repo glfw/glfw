@@ -567,6 +567,9 @@ struct _GLFWlibrary
     struct {
         GLFWmonitorfun  monitor;
         GLFWjoystickfun joystick;
+        GLFWpentabletdatafun pentabletdata;
+        GLFWpentabletcursorfun pentabletcursor;
+        GLFWpentabletproximityfun pentabletproximity;
     } callbacks;
 
     // This is defined in the window API's platform.h
@@ -728,6 +731,10 @@ void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value);
 
 void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement);
 void _glfwInputMonitorWindow(_GLFWmonitor* monitor, _GLFWwindow* window);
+
+void _glfwInputPenTabletData(double x, double y, double z, double pressure, double pitch, double yaw, double roll);
+void _glfwInputPenTabletCursor(unsigned int cursor);
+void _glfwInputPenTabletProximity(int proximity);
 
 #if defined(__GNUC__)
 void _glfwInputError(int code, const char* format, ...)

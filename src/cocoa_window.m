@@ -26,6 +26,7 @@
 
 #include "internal.h"
 
+#include <math.h>
 #include <float.h>
 #include <string.h>
 
@@ -44,6 +45,8 @@
  #define NSEventMaskAny NSAnyEventMask
  #define NSEventTypeApplicationDefined NSApplicationDefined
  #define NSBitmapFormatAlphaNonpremultiplied NSAlphaNonpremultipliedBitmapFormat
+ #define NSEventSubtypeTabletPoint NSTabletPointEventSubtype
+ #define NSEventSubtypeTabletProximity NSTabletProximityEventSubtype
 #endif
 
 // Returns the style mask corresponding to the window settings
@@ -437,6 +440,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)mouseDown:(NSEvent *)event
 {
+    [self handlePenTablet:event];
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_LEFT,
                          GLFW_PRESS,
@@ -450,14 +454,69 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)mouseUp:(NSEvent *)event
 {
+    [self handlePenTablet:event];
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_LEFT,
                          GLFW_RELEASE,
                          translateFlags([event modifierFlags]));
 }
 
+- (void)handlePenTablet:(NSEvent *)event
+{
+    if ([window->ns.object isKeyWindow])
+    {
+        if ([event subtype] == NSEventSubtypeTabletPoint)
+        {
+            const double pressure = [event pressure];
+            const NSPoint tilt = [event tilt];
+            const NSPoint pos = [NSEvent mouseLocation];
+            const double posz = [event absoluteZ];
+
+            double tx = tilt.x * 1.5707963267949;
+            double ty = tilt.y * 1.5707963267949;
+            double sinx = sin(tx);
+            double siny = sin(ty);
+            double cosx = cos(tx);
+            double cosy = cos(ty);
+            /*double matrix[9] = { // full matrix for reference
+                0.0, -cosy, siny,
+                cosx, -sinx*siny, -sinx*cosy,
+                sinx,  cosx*siny,  cosx*cosy
+            };*/
+            double v[3] = {sinx, cosx*siny,  cosx*cosy};
+            double yaw = atan2(v[0], v[1]);
+            double pitch = 3.141592653589793 - acos(v[2]);
+            if (yaw < 0.0) yaw += 6.28318530717959;
+
+            _glfwInputPenTabletData(
+                pos.x,
+                CGDisplayBounds(CGMainDisplayID()).size.height - pos.y,
+                posz / 1024.0,
+                pressure,
+                pitch,
+                yaw,
+                0.0);
+        }
+
+        if ([event subtype] == NSEventSubtypeTabletProximity)
+        {
+            static unsigned int s_cursor = 0;
+            unsigned int cursor = [event pointingDeviceType];
+
+            _glfwInputPenTabletProximity([event isEnteringProximity]);
+            if (cursor != s_cursor)
+            {
+                _glfwInputPenTabletCursor(cursor);
+                s_cursor = cursor;
+            }
+        }
+    }
+}
+
 - (void)mouseMoved:(NSEvent *)event
 {
+    [self handlePenTablet:event];
+
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         const double dx = [event deltaX] - window->ns.cursorWarpDeltaX;
@@ -481,6 +540,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)rightMouseDown:(NSEvent *)event
 {
+    [self handlePenTablet:event];
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_RIGHT,
                          GLFW_PRESS,
@@ -494,6 +554,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)rightMouseUp:(NSEvent *)event
 {
+    [self handlePenTablet:event];
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_RIGHT,
                          GLFW_RELEASE,
@@ -502,6 +563,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)otherMouseDown:(NSEvent *)event
 {
+    [self handlePenTablet:event];
     _glfwInputMouseClick(window,
                          (int) [event buttonNumber],
                          GLFW_PRESS,
@@ -515,6 +577,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)otherMouseUp:(NSEvent *)event
 {
+    [self handlePenTablet:event];
     _glfwInputMouseClick(window,
                          (int) [event buttonNumber],
                          GLFW_RELEASE,

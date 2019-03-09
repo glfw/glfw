@@ -494,6 +494,10 @@ static GLFWbool initExtensions(void)
             _glfw_dlsym(_glfw.x11.xi.handle, "XIQueryVersion");
         _glfw.x11.xi.SelectEvents = (PFN_XISelectEvents)
             _glfw_dlsym(_glfw.x11.xi.handle, "XISelectEvents");
+        _glfw.x11.xi.QueryDevice = (PFN_XIQueryDevice)
+            _glfw_dlsym(_glfw.x11.xi.handle, "XIQueryDevice");
+        _glfw.x11.xi.GetProperty = (PFN_XIGetProperty)
+            _glfw_dlsym(_glfw.x11.xi.handle, "XIGetProperty");
 
         if (XQueryExtension(_glfw.x11.display,
                             "XInputExtension",
@@ -849,10 +853,118 @@ static int errorHandler(Display *display, XErrorEvent* event)
     return 0;
 }
 
+// Coordinate Transformation Matrix
+//
+static float * getDeviceCoordinateTransformationMatrix(Display *display, int deviceid)
+{
+    float *data = NULL;
+    Atom type;
+    int format;
+    unsigned long num_items, bytes_after;
+
+    if (XIGetProperty(
+        display, deviceid,
+        XInternAtom(display, "Coordinate Transformation Matrix", False),
+        0, 9, False,
+        XInternAtom(display, "FLOAT", False),
+        &type, &format, &num_items, &bytes_after,
+        (unsigned char **)&data
+        ) != Success)
+        return NULL;
+
+    return data;
+}
+
+// XInput2 init pen tablet
+//
+static void initPenTablet(Display *display)
+{
+    _glfw.x11.xi.tablet_cursor = 0;
+    _glfw.x11.xi.stylus_deviceid = 0;
+    _glfw.x11.xi.eraser_deviceid = 0;
+    _glfw.x11.xi.stylus_CTMatrix = NULL;
+    _glfw.x11.xi.eraser_CTMatrix = NULL;
+
+    if (_glfw.x11.xi.available)
+    {
+        int i, n;
+        XIDeviceInfo *dev_info = XIQueryDevice(display, XIAllDevices, &n);
+
+        for (i = 0; i < n; i++)
+        {
+            XIDeviceInfo *dev = &dev_info[i];
+
+            if (strstr(dev->name, "stylus") || strstr(dev->name, "eraser"))
+            {
+                XIEventMask mask;
+
+                mask.deviceid = dev->deviceid;
+                mask.mask_len = XIMaskLen(XI_RawMotion);
+                mask.mask = calloc(mask.mask_len, sizeof(char));
+                XISetMask(mask.mask, XI_PropertyEvent); // property event to catch proximity change
+                XISetMask(mask.mask, XI_RawMotion); // raw motion to catch x, y, pressure and tilt
+                XISelectEvents(display, DefaultRootWindow(display), &mask, 1);
+
+                if (strstr(dev->name, "stylus"))
+                {
+                    int c;
+
+                    _glfw.x11.xi.stylus_deviceid = dev->deviceid;
+
+                    for (c = 0; c < dev->num_classes; c++)
+                    {
+                        if (dev->classes[c]->type == XIValuatorClass)
+                        {
+                            XIValuatorClassInfo *v = (XIValuatorClassInfo*)dev->classes[c];
+                            if (v->number < 32) _glfw.x11.xi.stylus_ClassInfo[v->number] = *v;
+                        }
+                    }
+
+                    _glfw.x11.xi.stylus_CTMatrix = getDeviceCoordinateTransformationMatrix(display, dev->deviceid);
+                }
+                else
+                {
+                    _glfw.x11.xi.eraser_deviceid = dev->deviceid;
+                    _glfw.x11.xi.eraser_CTMatrix = getDeviceCoordinateTransformationMatrix(display, dev->deviceid);
+                }
+
+                free(mask.mask);
+            }
+        }
+    }
+}
+
+// XInput2 terminate pen tablet
+//
+static void terminatePenTablet(void)
+{
+    if (_glfw.x11.xi.stylus_CTMatrix)
+    {
+        XFree(_glfw.x11.xi.stylus_CTMatrix);
+        _glfw.x11.xi.stylus_CTMatrix = NULL;
+    }
+
+    if (_glfw.x11.xi.eraser_CTMatrix)
+    {
+        XFree(_glfw.x11.xi.eraser_CTMatrix);
+        _glfw.x11.xi.eraser_CTMatrix = NULL;
+    }
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
+
+// Apply Coordinate Transformation Matrix to a 2d vector
+//
+void _glfwApplyCoordTransformMatrix(float *matrix, float *px, float *py)
+{
+    float x = *px;
+    float y = *py;
+    *px = x * matrix[0] + y * matrix[1] + matrix[2];
+    *py = x * matrix[3] + y * matrix[4] + matrix[5];
+}
 
 // Sets the X error handler callback
 //
@@ -991,11 +1103,15 @@ int _glfwPlatformInit(void)
     _glfwInitTimerPOSIX();
 
     _glfwPollMonitorsX11();
+
+    initPenTablet(_glfw.x11.display);
     return GLFW_TRUE;
 }
 
 void _glfwPlatformTerminate(void)
 {
+    terminatePenTablet();
+
     if (_glfw.x11.helperWindowHandle)
     {
         if (XGetSelectionOwner(_glfw.x11.display, _glfw.x11.CLIPBOARD) ==

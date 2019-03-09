@@ -32,6 +32,7 @@
 
 #include <sys/select.h>
 
+#include <math.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -1192,33 +1193,161 @@ static void processEvent(XEvent *event)
         {
             _GLFWwindow* window = _glfw.x11.disabledCursorWindow;
 
-            if (window &&
-                window->rawMouseMotion &&
-                event->xcookie.extension == _glfw.x11.xi.majorOpcode &&
-                XGetEventData(_glfw.x11.display, &event->xcookie) &&
-                event->xcookie.evtype == XI_RawMotion)
+            if (event->xcookie.extension == _glfw.x11.xi.majorOpcode &&
+                XGetEventData(_glfw.x11.display, &event->xcookie))
             {
-                XIRawEvent* re = event->xcookie.data;
-                if (re->valuators.mask_len)
+                if (event->xcookie.evtype == XI_PropertyEvent)
                 {
-                    const double* values = re->raw_values;
-                    double xpos = window->virtualCursorPosX;
-                    double ypos = window->virtualCursorPosY;
+                    // the first proximity event seems to arrive one later AFTER XI_RawMotion...
+                    XIPropertyEvent* re = event->xcookie.data;
 
-                    if (XIMaskIsSet(re->valuators.mask, 0))
+                    // pen tablet property
+                    if (re->deviceid == _glfw.x11.xi.stylus_deviceid ||
+                        re->deviceid == _glfw.x11.xi.eraser_deviceid)
                     {
-                        xpos += *values;
-                        values++;
+                        if (re->what == XIPropertyModified)
+                        {
+                            float *data = NULL;
+                            Atom type;
+                            int format;
+                            unsigned long num_items, bytes_after;
+
+                            if (XIGetProperty(
+                                _glfw.x11.display, re->deviceid,
+                                re->property,
+                                0, 5, False,
+                                XIAnyPropertyType,
+                                &type, &format, &num_items, &bytes_after,
+                                (unsigned char **)&data) == Success)
+                            {
+                                if (format == 32 && num_items > 4)
+                                    _glfwInputPenTabletProximity(((unsigned int *)data)[4] != 0);
+                                XFree(data);
+                            }
+                        }
                     }
-
-                    if (XIMaskIsSet(re->valuators.mask, 1))
-                        ypos += *values;
-
-                    _glfwInputCursorPos(window, xpos, ypos);
                 }
-            }
+                else if (event->xcookie.evtype == XI_RawMotion)
+                {
+                    XIRawEvent* re = event->xcookie.data;
+                    if (re->valuators.mask_len)
+                    {
+                        const double* values = re->raw_values;
 
-            XFreeEventData(_glfw.x11.display, &event->xcookie);
+                        // pen tablet raw motion
+                        if (re->deviceid == _glfw.x11.xi.stylus_deviceid ||
+                            re->deviceid == _glfw.x11.xi.eraser_deviceid)
+                        {
+                            unsigned int cursor = re->deviceid == _glfw.x11.xi.stylus_deviceid ? 1 : 2;
+                            float x = 0.0f;
+                            float y = 0.0f;
+                            double pressure = 0.0;
+                            double tiltx = 0.0;
+                            double tilty = 0.0;
+
+                            if (cursor != _glfw.x11.xi.tablet_cursor)
+                            {
+                                _glfwInputPenTabletCursor(cursor);
+                                _glfw.x11.xi.tablet_cursor = cursor;
+                            }
+
+                            if (XIMaskIsSet(re->valuators.mask, 0))
+                            {
+                                XIValuatorClassInfo *v = &_glfw.x11.xi.stylus_ClassInfo[0];
+                                x = (*values - v->min) / (v->max - v->min);
+                                values++;
+                            }
+
+                            if (XIMaskIsSet(re->valuators.mask, 1))
+                            {
+                                XIValuatorClassInfo *v = &_glfw.x11.xi.stylus_ClassInfo[1];
+                                y = (*values - v->min) / (v->max - v->min);
+                                values++;
+                            }
+
+                            if (XIMaskIsSet(re->valuators.mask, 2))
+                            {
+                                XIValuatorClassInfo *v = &_glfw.x11.xi.stylus_ClassInfo[2];
+                                pressure = (*values - v->min) / (v->max - v->min);
+                                values++;
+                            }
+
+                            if (XIMaskIsSet(re->valuators.mask, 3))
+                            {
+                                XIValuatorClassInfo *v = &_glfw.x11.xi.stylus_ClassInfo[3];
+                                tiltx = (*values - v->min) / (v->max - v->min) * 2.0 - 1.0;
+                                values++;
+                            }
+
+                            if (XIMaskIsSet(re->valuators.mask, 4))
+                            {
+                                XIValuatorClassInfo *v = &_glfw.x11.xi.stylus_ClassInfo[4];
+                                tilty = (*values - v->min) / (v->max - v->min) * 2.0 - 1.0;
+                                values++;
+                            }
+
+                            // apply coordinate transform matrix depending on current cursor
+                            if (re->deviceid == _glfw.x11.xi.stylus_deviceid)
+                            {
+                                if (_glfw.x11.xi.stylus_CTMatrix)
+                                    _glfwApplyCoordTransformMatrix(_glfw.x11.xi.stylus_CTMatrix, &x, &y);
+                            }
+                            else
+                            {
+                                if (_glfw.x11.xi.eraser_CTMatrix)
+                                    _glfwApplyCoordTransformMatrix(_glfw.x11.xi.eraser_CTMatrix, &x, &y);
+                            }
+
+                            // send data
+                            {
+                                double tx =  tiltx * 1.5707963267949;
+                                double ty = -tilty * 1.5707963267949;
+                                double sinx = sin(tx);
+                                double siny = sin(ty);
+                                double cosx = cos(tx);
+                                double cosy = cos(ty);
+                                /*double matrix[9] = { // full matrix for reference
+                                    0.0, -cosy, siny,
+                                    cosx, -sinx*siny, -sinx*cosy,
+                                    sinx,  cosx*siny,  cosx*cosy
+                                };*/
+                                double v[3] = {sinx, cosx*siny,  cosx*cosy};
+                                double yaw = atan2(v[0], v[1]);
+                                double pitch = 3.141592653589793 - acos(v[2]);
+                                if (yaw < 0.0) yaw += 6.28318530717959;
+
+                                _glfwInputPenTabletData(
+                                    (double)x * DisplayWidth(_glfw.x11.display, _glfw.x11.screen),
+                                    (double)y * DisplayHeight(_glfw.x11.display, _glfw.x11.screen),
+                                    0.0, // can't find z coordinate
+                                    pressure,
+                                    pitch,
+                                    yaw,
+                                    0.0);
+                            }
+                        }
+                        // mouse raw motion
+                        else if (window && window->rawMouseMotion)
+                        {
+                            double xpos = window->virtualCursorPosX;
+                            double ypos = window->virtualCursorPosY;
+
+                            if (XIMaskIsSet(re->valuators.mask, 0))
+                            {
+                                xpos += *values;
+                                values++;
+                            }
+
+                            if (XIMaskIsSet(re->valuators.mask, 1))
+                                ypos += *values;
+
+                            _glfwInputCursorPos(window, xpos, ypos);
+                        }
+                    }
+                }
+
+                XFreeEventData(_glfw.x11.display, &event->xcookie);
+            }
         }
 
         return;

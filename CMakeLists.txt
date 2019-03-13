@@ -205,6 +205,7 @@ endif()
 if (_GLFW_WIN32)
 
     list(APPEND glfw_PKG_LIBS "-lgdi32")
+    list(APPEND glfw_LIBRARIES "imm32")
 
     if (GLFW_USE_HYBRID_HPG)
         set(_GLFW_USE_HYBRID_HPG 1)
@@ -298,12 +299,13 @@ if (_GLFW_COCOA)
 
     list(APPEND glfw_LIBRARIES
         "-framework Cocoa"
+        "-framework Carbon"
         "-framework IOKit"
         "-framework CoreFoundation"
         "-framework CoreVideo")
 
     set(glfw_PKG_DEPS "")
-    set(glfw_PKG_LIBS "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
+    set(glfw_PKG_LIBS "-framework Cocoa -framework Carbon -framework IOKit -framework CoreFoundation -framework CoreVideo")
 endif()
 
 #--------------------------------------------------------------------

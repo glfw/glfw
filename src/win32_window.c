@@ -33,6 +33,7 @@
 #include <string.h>
 #include <windowsx.h>
 #include <shellapi.h>
+#include <imm.h>
 
 #define _GLFW_KEY_INVALID -2
 
@@ -574,6 +575,15 @@ static void releaseMonitor(_GLFWwindow* window)
     _glfwRestoreVideoModeWin32(window->monitor);
 }
 
+// Set cursor position to decide candidate window
+static void _win32ChangeCursorPosition(HIMC hIMC, _GLFWwindow* window) {
+    int x = window->preeditCursorPosX;
+    int y = window->preeditCursorPosY;
+    int h = window->preeditCursorHeight;
+    CANDIDATEFORM excludeRect = {0, CFS_EXCLUDE, {x, y}, {x, y, x, y+h}};
+    ImmSetCandidateWindow(hIMC, &excludeRect);
+}
+
 // Window callback function (handles window messages)
 //
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
@@ -733,7 +743,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             }
 
             _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), plain);
-            return 0;
+            return TRUE;
         }
 
         case WM_KEYDOWN:
@@ -768,7 +778,93 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             break;
         }
-
+        case WM_IME_COMPOSITION:
+        {
+            if (lParam & GCS_RESULTSTR) {
+                window->nblocks = 0;
+                window->ntext = 0;
+                _glfwInputPreedit(window, 0);
+                return TRUE;
+            }
+            if (lParam & GCS_COMPSTR) {
+                HIMC hIMC = ImmGetContext(hWnd);
+                // get preedit data sizes
+                LONG preeditTextLength = ImmGetCompositionStringW(hIMC, GCS_COMPSTR, NULL, 0);
+                LONG attrLength = ImmGetCompositionString(hIMC, GCS_COMPATTR, NULL, 0);
+                LONG clauseLength = ImmGetCompositionString(hIMC, GCS_COMPCLAUSE, NULL, 0);
+                if (preeditTextLength > 0) {
+                    // get preedit data
+                    int length = preeditTextLength/sizeof(WCHAR);
+                    LPWSTR buffer = (LPWSTR)malloc(sizeof(WCHAR)+preeditTextLength);
+                    LPSTR attributes = (LPSTR)malloc(attrLength);
+                    DWORD *clauses = (DWORD*)malloc(clauseLength);
+                    ImmGetCompositionStringW(hIMC, GCS_COMPSTR, buffer, preeditTextLength);
+                    ImmGetCompositionString(hIMC, GCS_COMPATTR, attributes, attrLength);
+                    ImmGetCompositionString(hIMC, GCS_COMPCLAUSE, clauses, clauseLength);
+                    // store preedit text
+                    int ctext = window->ctext;
+                    while (ctext < length+1) {
+                        ctext = (ctext == 0) ? 1 : ctext*2;
+                    }
+                    if (ctext != window->ctext) {
+                        unsigned int* preeditText = realloc(window->preeditText, sizeof(unsigned int)*ctext);
+                        if (preeditText == NULL) {
+                            return 0;
+                            free(buffer);
+                            free(attributes);
+                            free(clauses);
+                        }
+                        window->preeditText = preeditText;
+                        window->ctext = ctext;
+                    }
+                    window->ntext = length;
+                    window->preeditText[length] = 0;
+                    int i;
+                    for (i=0; i < length; i++) {
+                        window->preeditText[i] = buffer[i];
+                    }
+                    // store blocks
+                    window->nblocks = clauseLength/sizeof(DWORD)-1;
+                    // last element of clauses is a block count, but
+                    // text length is convenient.
+                    clauses[window->nblocks] = length;
+                    int cblocks = window->cblocks;
+                    while (cblocks < window->nblocks) {
+                        cblocks = (cblocks == 0) ? 1 : cblocks*2;
+                    }
+                    if (cblocks != window->cblocks) {
+                        int* blocks = realloc(window->preeditAttributeBlocks, sizeof(int)*cblocks);
+                        if (blocks == NULL) {
+                            return 0;
+                            free(buffer);
+                            free(attributes);
+                            free(clauses);
+                        }
+                        window->preeditAttributeBlocks = blocks;
+                        window->cblocks = cblocks;
+                    }
+                    int focusedBlock = 0;
+                    for (i=0; i < window->nblocks; i++) {
+                        window->preeditAttributeBlocks[i] = clauses[i+1]-clauses[i];
+                        if (attributes[clauses[i]] != ATTR_CONVERTED) {
+                            focusedBlock = i;
+                        }
+                    }
+                    free(buffer);
+                    free(attributes);
+                    free(clauses);
+                    _glfwInputPreedit(window, focusedBlock);
+                    _win32ChangeCursorPosition(hIMC, window);
+                }
+                ImmReleaseContext(hWnd, hIMC);
+                return TRUE;
+            }
+            break;
+        }
+        case WM_IME_NOTIFY:
+            if (wParam == IMN_SETOPENSTATUS)
+                _glfwInputIMEStatus(window);
+            break;
         case WM_LBUTTONDOWN:
         case WM_RBUTTONDOWN:
         case WM_MBUTTONDOWN:
@@ -2229,6 +2325,30 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
     return err;
 }
 
+void _glfwPlatformResetPreeditText(_GLFWwindow* window)
+{
+    HWND hWnd = window->win32.handle;
+    HIMC hIMC = ImmGetContext(hWnd);
+    ImmNotifyIME(hIMC, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
+    ImmReleaseContext(hWnd, hIMC);
+}
+
+void _glfwPlatformSetIMEStatus(_GLFWwindow* window, int active)
+{
+    HWND hWnd = window->win32.handle;
+    HIMC hIMC = ImmGetContext(hWnd);
+    ImmSetOpenStatus(hIMC, active ? TRUE : FALSE);
+    ImmReleaseContext(hWnd, hIMC);
+}
+
+int _glfwPlatformGetIMEStatus(_GLFWwindow* window)
+{
+    HWND hWnd = window->win32.handle;
+    HIMC hIMC = ImmGetContext(hWnd);
+    BOOL result = ImmGetOpenStatus(hIMC);
+    ImmReleaseContext(hWnd, hIMC);
+    return result ? GLFW_TRUE : GLFW_FALSE;
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

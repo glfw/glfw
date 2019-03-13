@@ -214,6 +214,96 @@ void character_callback(GLFWwindow* window, unsigned int codepoint)
 }
 @endcode
 
+@subsection preedit IME Support
+
+All desktop operating systems support IME (Input Method Editor) to input characters
+that are not mapped with physical keys. IME have been popular among Eeastern Asian people.
+And some operating systems start supporting voice input via IME mechanism.
+
+GLFW provides IME support functions to help
+you implement better text input features. You should add suitable visualization code for
+preedit text.
+
+IME works in front of actual character input events (@ref input_char).
+If your application uses text input and you want to support IME,
+you should register preedit callback to receive preedit text before committed.
+
+@code
+glfwSetPreeditCallback(window, preedit_callback);
+@endcode
+
+The callback function receives chunk of text and focused block information.
+
+@code
+static void preedit_callback(GLFWwindow* window, int strLength, unsigned int* string, int blockLength, int* blocks, int focusedBlock) {
+}
+@endcode
+
+strLength and string parameter reprsent whole preedit text. Each character of the preedit string is a codepoint like @ref input_char.
+
+If you want to type the text "寿司(sushi)", Usually the callback is called several times like the following sequence:
+
+-# key event: s
+-# preedit: [string: "ｓ", block: [1], focusedBlock: 0]
+-# key event: u
+-# preedit: [string: "す", block: [1], focusedBlock: 0]
+-# key event: s
+-# preedit: [string: "すｓ", block: [2], focusedBlock: 0]
+-# key event: h
+-# preedit: [string: "すｓｈ", block: [2], focusedBlock: 0]
+-# key event: i
+-# preedit: [string: "すし", block: [2], focusedBlock: 0]
+-# key event: ' '
+-# preedit: [string: "寿司", block: [2], focusedBlock: 0]
+-# char: '寿'
+-# char: '司'
+-# preedit: [string: "", block: [], focusedBlock: 0]
+
+If preedit text includes several semantic blocks, preedit callbacks returns several blocks after a space key pressed:
+
+-# preedit: [string: "わたしはすしをたべます", block: [11], focusedBlock: 0]
+-# preedit: [string: "私は寿司を食べます", block: [2, 7], focusedBlock: 1]
+
+"blocks" is a list of block length. The above case, it contains the following blocks and second block is focused.
+
+- 私は
+- [寿司を食べます]
+
+commited text(passed via regular @ref input_char event), unfocused block, focused block should have different text style.
+
+
+GLFW provides helper function to teach suitable position of the candidate window to window system.
+Window system decides the best position from text cursor geometry (x, y coords and height). You should call this function
+in the above preedit text callback function.
+
+@code
+glfwSetPreeditCursorPos(window, x, y, h);
+glfwGetPreeditCursorPos(window, &x, &y, &h);
+@endcode
+
+Sometimes IME task is interrupted by user or application. There are several functions to support these situation.
+You can receive notification about IME status change(on/off) by using the following function:
+
+@code
+glfwSetIMEStatusCallback(window, imestatus_callback);
+@endcode
+
+imestatus_callback has simple sigunature like this:
+
+@code
+static void imestatus_callback(GLFWwindow* window) {
+}
+@endcode
+
+You can implement the code that resets or commits preedit text when IME status is changed and preedit text is not empty.
+
+When the focus is gone from text box, you can use the following functions to reset IME status:
+
+@code
+void glfwResetPreeditText(GLFWwindow* window);
+void glfwSetIMEStatus(GLFWwindow* window, int active)
+int glfwGetIMEStatus(GLFWwindow* window)
+@endcode
 
 @subsection input_key_name Key names
 

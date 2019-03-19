@@ -322,7 +322,7 @@ static void swapBuffersWGL(_GLFWwindow* window)
         if (IsWindowsVistaOrGreater())
         {
             BOOL enabled = FALSE;
-          
+
             // DWM Composition is always enabled on Win8+
             if (IsWindows8OrGreater())
               enabled = TRUE;
@@ -352,7 +352,7 @@ static void swapIntervalWGL(int interval)
         if (IsWindowsVistaOrGreater())
         {
             BOOL enabled = FALSE;
-          
+
             // DWM Composition is always enabled on Win8+
             if (IsWindows8OrGreater())
               enabled = TRUE;

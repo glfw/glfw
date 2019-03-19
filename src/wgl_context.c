@@ -321,10 +321,15 @@ static void swapBuffersWGL(_GLFWwindow* window)
     {
         if (IsWindowsVistaOrGreater())
         {
-            BOOL enabled;
+            BOOL enabled = FALSE;
+          
+            // DWM Composition is always enabled on Win8+
+            if (IsWindows8OrGreater())
+              enabled = TRUE;
 
             // HACK: Use DwmFlush when desktop composition is enabled
-            if (SUCCEEDED(DwmIsCompositionEnabled(&enabled)) && enabled)
+            if (enabled ||
+                (SUCCEEDED(DwmIsCompositionEnabled(&enabled)) && enabled))
             {
                 int count = abs(window->context.wgl.interval);
                 while (count--)
@@ -346,11 +351,16 @@ static void swapIntervalWGL(int interval)
     {
         if (IsWindowsVistaOrGreater())
         {
-            BOOL enabled;
+            BOOL enabled = FALSE;
+          
+            // DWM Composition is always enabled on Win8+
+            if (IsWindows8OrGreater())
+              enabled = TRUE;
 
             // HACK: Disable WGL swap interval when desktop composition is enabled to
             //       avoid interfering with DWM vsync
-            if (SUCCEEDED(DwmIsCompositionEnabled(&enabled)) && enabled)
+            if (enabled ||
+                (SUCCEEDED(DwmIsCompositionEnabled(&enabled)) && enabled))
                 interval = 0;
         }
     }

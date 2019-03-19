@@ -238,7 +238,14 @@ static void destroyContextGLX(_GLFWwindow* window)
 
     if (window->context.glx.handle)
     {
+#ifdef _GLFW_OPENGL_SINGLE_GLRC
+        if (window->context.customctx)
+        {
+            glXDestroyContext(_glfw.x11.display, window->context.glx.handle);
+        }
+#else
         glXDestroyContext(_glfw.x11.display, window->context.glx.handle);
+#endif
         window->context.glx.handle = NULL;
     }
 }
@@ -495,112 +502,132 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
 
     _glfwGrabErrorHandlerX11();
 
-    if (_glfw.glx.ARB_create_context)
+#ifdef _GLFW_OPENGL_SINGLE_GLRC
+    if(share)
     {
-        int index = 0, mask = 0, flags = 0;
-
-        if (ctxconfig->client == GLFW_OPENGL_API)
-        {
-            if (ctxconfig->forward)
-                flags |= GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
-
-            if (ctxconfig->profile == GLFW_OPENGL_CORE_PROFILE)
-                mask |= GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
-            else if (ctxconfig->profile == GLFW_OPENGL_COMPAT_PROFILE)
-                mask |= GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
-        }
-        else
-            mask |= GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
-
-        if (ctxconfig->debug)
-            flags |= GLX_CONTEXT_DEBUG_BIT_ARB;
-
-        if (ctxconfig->robustness)
-        {
-            if (_glfw.glx.ARB_create_context_robustness)
-            {
-                if (ctxconfig->robustness == GLFW_NO_RESET_NOTIFICATION)
-                {
-                    setAttrib(GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
-                              GLX_NO_RESET_NOTIFICATION_ARB);
-                }
-                else if (ctxconfig->robustness == GLFW_LOSE_CONTEXT_ON_RESET)
-                {
-                    setAttrib(GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
-                              GLX_LOSE_CONTEXT_ON_RESET_ARB);
-                }
-
-                flags |= GLX_CONTEXT_ROBUST_ACCESS_BIT_ARB;
-            }
-        }
-
-        if (ctxconfig->release)
-        {
-            if (_glfw.glx.ARB_context_flush_control)
-            {
-                if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_NONE)
-                {
-                    setAttrib(GLX_CONTEXT_RELEASE_BEHAVIOR_ARB,
-                              GLX_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB);
-                }
-                else if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_FLUSH)
-                {
-                    setAttrib(GLX_CONTEXT_RELEASE_BEHAVIOR_ARB,
-                              GLX_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB);
-                }
-            }
-        }
-
-        if (ctxconfig->noerror)
-        {
-            if (_glfw.glx.ARB_create_context_no_error)
-                setAttrib(GLX_CONTEXT_OPENGL_NO_ERROR_ARB, GLFW_TRUE);
-        }
-
-        // NOTE: Only request an explicitly versioned context when necessary, as
-        //       explicitly requesting version 1.0 does not always return the
-        //       highest version supported by the driver
-        if (ctxconfig->major != 1 || ctxconfig->minor != 0)
-        {
-            setAttrib(GLX_CONTEXT_MAJOR_VERSION_ARB, ctxconfig->major);
-            setAttrib(GLX_CONTEXT_MINOR_VERSION_ARB, ctxconfig->minor);
-        }
-
-        if (mask)
-            setAttrib(GLX_CONTEXT_PROFILE_MASK_ARB, mask);
-
-        if (flags)
-            setAttrib(GLX_CONTEXT_FLAGS_ARB, flags);
-
-        setAttrib(None, None);
-
-        window->context.glx.handle =
-            _glfw.glx.CreateContextAttribsARB(_glfw.x11.display,
-                                              native,
-                                              share,
-                                              True,
-                                              attribs);
-
-        // HACK: This is a fallback for broken versions of the Mesa
-        //       implementation of GLX_ARB_create_context_profile that fail
-        //       default 1.0 context creation with a GLXBadProfileARB error in
-        //       violation of the extension spec
-        if (!window->context.glx.handle)
-        {
-            if (_glfw.x11.errorCode == _glfw.glx.errorBase + GLXBadProfileARB &&
-                ctxconfig->client == GLFW_OPENGL_API &&
-                ctxconfig->profile == GLFW_OPENGL_ANY_PROFILE &&
-                ctxconfig->forward == GLFW_FALSE)
-            {
-                window->context.glx.handle =
-                    createLegacyContextGLX(window, native, share);
-            }
-        }
+        // Use shared context instead of creating a new one
+        window->context.glx.handle = share;
+        window->context.customctx = GLFW_FALSE;
     }
     else
     {
-        window->context.glx.handle =
-            createLegacyContextGLX(window, native, share);
+        // Create new GL render context
+        window->context.glx.handle = NULL;
+        window->context.customctx = GLFW_TRUE;
+    }
+#endif
+
+#ifdef _GLFW_OPENGL_SINGLE_GLRC
+    if (!window->context.glx.handle)
+#endif
+    {
+        if (_glfw.glx.ARB_create_context)
+        {
+            int index = 0, mask = 0, flags = 0;
+
+            if (ctxconfig->client == GLFW_OPENGL_API)
+            {
+                if (ctxconfig->forward)
+                    flags |= GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
+
+                if (ctxconfig->profile == GLFW_OPENGL_CORE_PROFILE)
+                    mask |= GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
+                else if (ctxconfig->profile == GLFW_OPENGL_COMPAT_PROFILE)
+                    mask |= GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
+            }
+            else
+                mask |= GLX_CONTEXT_ES2_PROFILE_BIT_EXT;
+
+            if (ctxconfig->debug)
+                flags |= GLX_CONTEXT_DEBUG_BIT_ARB;
+
+            if (ctxconfig->robustness)
+            {
+                if (_glfw.glx.ARB_create_context_robustness)
+                {
+                    if (ctxconfig->robustness == GLFW_NO_RESET_NOTIFICATION)
+                    {
+                        setAttrib(GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
+                                  GLX_NO_RESET_NOTIFICATION_ARB);
+                    }
+                    else if (ctxconfig->robustness == GLFW_LOSE_CONTEXT_ON_RESET)
+                    {
+                        setAttrib(GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
+                                  GLX_LOSE_CONTEXT_ON_RESET_ARB);
+                    }
+
+                    flags |= GLX_CONTEXT_ROBUST_ACCESS_BIT_ARB;
+                }
+            }
+
+            if (ctxconfig->release)
+            {
+                if (_glfw.glx.ARB_context_flush_control)
+                {
+                    if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_NONE)
+                    {
+                        setAttrib(GLX_CONTEXT_RELEASE_BEHAVIOR_ARB,
+                                  GLX_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB);
+                    }
+                    else if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_FLUSH)
+                    {
+                        setAttrib(GLX_CONTEXT_RELEASE_BEHAVIOR_ARB,
+                                  GLX_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB);
+                    }
+                }
+            }
+
+            if (ctxconfig->noerror)
+            {
+                if (_glfw.glx.ARB_create_context_no_error)
+                    setAttrib(GLX_CONTEXT_OPENGL_NO_ERROR_ARB, GLFW_TRUE);
+            }
+
+            // NOTE: Only request an explicitly versioned context when necessary, as
+            //       explicitly requesting version 1.0 does not always return the
+            //       highest version supported by the driver
+            if (ctxconfig->major != 1 || ctxconfig->minor != 0)
+            {
+                setAttrib(GLX_CONTEXT_MAJOR_VERSION_ARB, ctxconfig->major);
+                setAttrib(GLX_CONTEXT_MINOR_VERSION_ARB, ctxconfig->minor);
+            }
+
+            if (mask)
+                setAttrib(GLX_CONTEXT_PROFILE_MASK_ARB, mask);
+
+            if (flags)
+                setAttrib(GLX_CONTEXT_FLAGS_ARB, flags);
+
+            setAttrib(None, None);
+
+            window->context.glx.handle =
+                _glfw.glx.CreateContextAttribsARB(_glfw.x11.display,
+                                                    native,
+                                                    share,
+                                                    True,
+                                                    attribs);
+
+            // HACK: This is a fallback for broken versions of the Mesa
+            //       implementation of GLX_ARB_create_context_profile that fail
+            //       default 1.0 context creation with a GLXBadProfileARB error in
+            //       violation of the extension spec
+            if (!window->context.glx.handle)
+            {
+                if (_glfw.x11.errorCode == _glfw.glx.errorBase + GLXBadProfileARB &&
+                    ctxconfig->client == GLFW_OPENGL_API &&
+                    ctxconfig->profile == GLFW_OPENGL_ANY_PROFILE &&
+                    ctxconfig->forward == GLFW_FALSE)
+                {
+                    window->context.glx.handle =
+                        createLegacyContextGLX(window, native, share);
+                }
+            }
+        }
+        else
+        {
+            window->context.glx.handle =
+                createLegacyContextGLX(window, native, share);
+        }
     }
 
     _glfwReleaseErrorHandlerX11();

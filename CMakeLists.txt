@@ -23,6 +23,7 @@ option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" ON)
 option(GLFW_INSTALL "Generate installation target" ON)
 option(GLFW_VULKAN_STATIC "Use the Vulkan loader statically linked into application" OFF)
+option(GLFW_OPENGL_SINGLE_GLRC "Build the GLFW to use only a single OpenGL render context" OFF)
 
 include(GNUInstallDirs)
 
@@ -65,6 +66,10 @@ find_package(Vulkan)
 if (GLFW_BUILD_DOCS)
     set(DOXYGEN_SKIP_DOT TRUE)
     find_package(Doxygen)
+endif()
+
+if (GLFW_OPENGL_SINGLE_GLRC)
+    add_definitions(-D_GLFW_OPENGL_SINGLE_GLRC)
 endif()
 
 #--------------------------------------------------------------------

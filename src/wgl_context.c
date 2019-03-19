@@ -389,7 +389,14 @@ static void destroyContextWGL(_GLFWwindow* window)
 {
     if (window->context.wgl.handle)
     {
+#ifdef _GLFW_OPENGL_SINGLE_GLRC
+        if (window->context.customctx)
+        {
+            wglDeleteContext(window->context.wgl.handle);
+        }
+#else
         wglDeleteContext(window->context.wgl.handle);
+#endif
         window->context.wgl.handle = NULL;
     }
 }
@@ -688,9 +695,23 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
 
         setAttrib(0, 0);
 
-        window->context.wgl.handle =
-            _glfw.wgl.CreateContextAttribsARB(window->context.wgl.dc,
-                                              share, attribs);
+#ifdef _GLFW_OPENGL_SINGLE_GLRC
+        if (share)
+        {
+            // Use shared context instead of creating a new one
+            window->context.wgl.handle = share;
+            window->context.customctx = GLFW_FALSE;
+        }
+        else
+        {
+            // Create new GL render context
+            window->context.wgl.handle = _glfw.wgl.CreateContextAttribsARB(window->context.wgl.dc, NULL, attribs);
+            window->context.customctx = GLFW_TRUE;
+        }
+#else
+        window->context.wgl.handle = _glfw.wgl.CreateContextAttribsARB(window->context.wgl.dc, share, attribs);
+#endif
+
         if (!window->context.wgl.handle)
         {
             const DWORD error = GetLastError();
@@ -741,7 +762,23 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
     }
     else
     {
+#ifdef _GLFW_OPENGL_SINGLE_GLRC
+        if (share)
+        {
+            // Use shared context instead of creating a new one
+            window->context.wgl.handle = share;
+            window->context.customctx = GLFW_FALSE;
+        }
+        else
+        {
+            // Create new GL render context
+            window->context.wgl.handle = wglCreateContext(window->context.wgl.dc);
+            window->context.customctx = GLFW_TRUE;
+        }
+#else
         window->context.wgl.handle = wglCreateContext(window->context.wgl.dc);
+#endif
+
         if (!window->context.wgl.handle)
         {
             _glfwInputErrorWin32(GLFW_VERSION_UNAVAILABLE,
@@ -749,6 +786,7 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
             return GLFW_FALSE;
         }
 
+#ifndef _GLFW_OPENGL_SINGLE_GLRC
         if (share)
         {
             if (!wglShareLists(share, window->context.wgl.handle))
@@ -758,6 +796,7 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                 return GLFW_FALSE;
             }
         }
+#endif
     }
 
     window->context.makeCurrent = makeContextCurrentWGL;

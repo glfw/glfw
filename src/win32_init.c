@@ -329,27 +329,30 @@ static void createKeyTables(void)
 
 // Creates a dummy window for behind-the-scenes work
 //
-static HWND createHelperWindow(void)
+static GLFWbool createHelperWindow(void)
 {
     MSG msg;
-    HWND window = CreateWindowExW(WS_EX_OVERLAPPEDWINDOW,
-                                  _GLFW_WNDCLASSNAME,
-                                  L"GLFW message window",
-                                  WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
-                                  0, 0, 1, 1,
-                                  NULL, NULL,
-                                  GetModuleHandleW(NULL),
-                                  NULL);
-    if (!window)
+
+    _glfw.win32.helperWindowHandle =
+        CreateWindowExW(WS_EX_OVERLAPPEDWINDOW,
+                        _GLFW_WNDCLASSNAME,
+                        L"GLFW message window",
+                        WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
+                        0, 0, 1, 1,
+                        NULL, NULL,
+                        GetModuleHandleW(NULL),
+                        NULL);
+
+    if (!_glfw.win32.helperWindowHandle)
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
                              "Win32: Failed to create helper window");
-        return NULL;
+        return GLFW_FALSE;
     }
 
     // HACK: The command to the first ShowWindow call is ignored if the parent
     //       process passed along a STARTUPINFO, so clear that with a no-op call
-    ShowWindow(window, SW_HIDE);
+    ShowWindow(_glfw.win32.helperWindowHandle, SW_HIDE);
 
     // Register for HID device notifications
     {
@@ -360,7 +363,7 @@ static HWND createHelperWindow(void)
         dbi.dbcc_classguid = GUID_DEVINTERFACE_HID;
 
         _glfw.win32.deviceNotificationHandle =
-            RegisterDeviceNotificationW(window,
+            RegisterDeviceNotificationW(_glfw.win32.helperWindowHandle,
                                         (DEV_BROADCAST_HDR*) &dbi,
                                         DEVICE_NOTIFY_WINDOW_HANDLE);
     }
@@ -371,7 +374,7 @@ static HWND createHelperWindow(void)
         DispatchMessageW(&msg);
     }
 
-   return window;
+   return GLFW_TRUE;
 }
 
 
@@ -571,8 +574,7 @@ int _glfwPlatformInit(void)
     if (!_glfwRegisterWindowClassWin32())
         return GLFW_FALSE;
 
-    _glfw.win32.helperWindowHandle = createHelperWindow();
-    if (!_glfw.win32.helperWindowHandle)
+    if (!createHelperWindow())
         return GLFW_FALSE;
 
     _glfwInitTimerWin32();

@@ -2,12 +2,130 @@
 
 namespace glfw
 {
-    namespace
-    {
+    namespace{
         #include"glfw3.h"
     }
 
-    GLFWAPI int (&Init)(void) = glfwInit;
-    GLFWAPI void (&WindowHint)(int, int) = glfwWindowHint;
+    constexpr auto Init = glfwInit;
+    constexpr auto Terminate = glfwTerminate;
+    constexpr auto InitHint = glfwInitHint;
+    constexpr auto GetVersion = glfwGetVersion;
+    constexpr auto GetVersionString = glfwGetVersionString;
+    constexpr auto GetError = glfwGetError;
+    constexpr auto SetErrorCallback = glfwSetErrorCallback;
+    constexpr auto GetMonitors = glfwGetMonitors;
+    constexpr auto GetPrimaryMonitor = glfwGetPrimaryMonitor;
+    constexpr auto GetMonitorPos = glfwGetMonitorPos;
+    constexpr auto GetMonitorWorkarea = glfwGetMonitorWorkarea;
+    constexpr auto GetMonitorPhysicalSize = glfwGetMonitorPhysicalSize;
+    constexpr auto GetMonitorContentScale = glfwGetMonitorContentScale;
+    constexpr auto GetMonitorName = glfwGetMonitorName;
+    constexpr auto SetMonitorUserPointer = glfwSetMonitorUserPointer;
+    constexpr auto GetMonitorUserPointer = glfwGetMonitorUserPointer;
+    constexpr auto SetMonitorCallback = glfwSetMonitorCallback;
+    constexpr auto GetVideoModes = glfwGetVideoModes;
+    constexpr auto GetVideoMode = glfwGetVideoMode;
+    constexpr auto SetGamma = glfwSetGamma;
+    constexpr auto GetGammaRamp = glfwGetGammaRamp;
+    constexpr auto SetGammaRamp = glfwSetGammaRamp;
+    constexpr auto DefaultWindowHints = glfwDefaultWindowHints;
+    constexpr auto WindowHint = glfwWindowHint;
+    constexpr auto WindowHintString = glfwWindowHintString;
+    constexpr auto CreateWindow = glfwCreateWindow;
+    constexpr auto DestroyWindow = glfwDestroyWindow;
+    constexpr auto WindowShouldClose = glfwWindowShouldClose;
+    constexpr auto SetWindowShouldClose = glfwSetWindowShouldClose;
+    constexpr auto SetWindowTitle = glfwSetWindowTitle;
+    constexpr auto SetWindowIcon = glfwSetWindowIcon;
+    constexpr auto GetWindowPos = glfwGetWindowPos;
+    constexpr auto SetWindowPos = glfwSetWindowPos;
+    constexpr auto GetWindowSize = glfwGetWindowSize;
+    constexpr auto SetWindowSizeLimits = glfwSetWindowSizeLimits;
+    constexpr auto SetWindowAspectRatio = glfwSetWindowAspectRatio;
+    constexpr auto SetWindowSize = glfwSetWindowSize;
+    constexpr auto GetFramebufferSize = glfwGetFramebufferSize;
+    constexpr auto GetWindowFrameSize = glfwGetWindowFrameSize;
+    constexpr auto GetWindowContentScale = glfwGetWindowContentScale;
+    constexpr auto GetWindowOpacity = glfwGetWindowOpacity;
+    constexpr auto SetWindowOpacity = glfwSetWindowOpacity;
+    constexpr auto IconifyWindow = glfwIconifyWindow;
+    constexpr auto RestoreWindow = glfwRestoreWindow;
+    constexpr auto MaximizeWindow = glfwMaximizeWindow;
+    constexpr auto ShowWindow = glfwShowWindow;
+    constexpr auto HideWindow = glfwHideWindow;
+    constexpr auto FocusWindow = glfwFocusWindow;
+    constexpr auto RequestWindowAttention = glfwRequestWindowAttention;
+    constexpr auto GetWindowMonitor = glfwGetWindowMonitor;
+    constexpr auto SetWindowMonitor = glfwSetWindowMonitor;
+    constexpr auto GetWindowAttrib = glfwGetWindowAttrib;
+    constexpr auto SetWindowAttrib = glfwSetWindowAttrib;
+    constexpr auto SetWindowUserPointer = glfwSetWindowUserPointer;
+    constexpr auto GetWindowUserPointer = glfwGetWindowUserPointer;
+    constexpr auto SetWindowPosCallback = glfwSetWindowPosCallback;
+    constexpr auto SetWindowSizeCallback = glfwSetWindowSizeCallback;
+    constexpr auto SetWindowCloseCallback = glfwSetWindowCloseCallback;
+    constexpr auto SetWindowRefreshCallback = glfwSetWindowRefreshCallback;
+    constexpr auto SetWindowFocusCallback = glfwSetWindowFocusCallback;
+    constexpr auto SetWindowIconifyCallback = glfwSetWindowIconifyCallback;
+    constexpr auto SetWindowMaximizeCallback = glfwSetWindowMaximizeCallback;
+    constexpr auto SetFramebufferSizeCallback = glfwSetFramebufferSizeCallback;
+    constexpr auto SetWindowContentScaleCallback = glfwSetWindowContentScaleCallback;
+    constexpr auto PollEvents = glfwPollEvents;
+    constexpr auto WaitEvents = glfwWaitEvents;
+    constexpr auto WaitEventsTimeout = glfwWaitEventsTimeout;
+    constexpr auto PostEmptyEvent = glfwPostEmptyEvent;
+    constexpr auto GetInputMode = glfwGetInputMode;
+    constexpr auto SetInputMode = glfwSetInputMode;
+    constexpr auto RawMouseMotionSupported = glfwRawMouseMotionSupported;
+    constexpr auto GetKeyName = glfwGetKeyName;
+    constexpr auto GetKeyScancode = glfwGetKeyScancode;
+    constexpr auto GetKey = glfwGetKey;
+    constexpr auto GetMouseButton = glfwGetMouseButton;
+    constexpr auto GetCursorPos = glfwGetCursorPos;
+    constexpr auto SetCursorPos = glfwSetCursorPos;
+    constexpr auto CreateCursor = glfwCreateCursor;
+    constexpr auto CreateStandardCursor = glfwCreateStandardCursor;
+    constexpr auto DestroyCursor = glfwDestroyCursor;
+    constexpr auto SetCursor = glfwSetCursor;
+    constexpr auto SetKeyCallback = glfwSetKeyCallback;
+    constexpr auto SetCharCallback = glfwSetCharCallback;
+    constexpr auto SetCharModsCallback = glfwSetCharModsCallback;
+    constexpr auto SetMouseButtonCallback = glfwSetMouseButtonCallback;
+    constexpr auto SetCursorPosCallback = glfwSetCursorPosCallback;
+    constexpr auto SetCursorEnterCallback = glfwSetCursorEnterCallback;
+    constexpr auto SetScrollCallback = glfwSetScrollCallback;
+    constexpr auto SetDropCallback = glfwSetDropCallback;
+    constexpr auto JoystickPresent = glfwJoystickPresent;
+    constexpr auto GetJoystickAxes = glfwGetJoystickAxes;
+    constexpr auto GetJoystickButtons = glfwGetJoystickButtons;
+    constexpr auto GetJoystickHats = glfwGetJoystickHats;
+    constexpr auto GetJoystickName = glfwGetJoystickName;
+    constexpr auto GetJoystickGUID = glfwGetJoystickGUID;
+    constexpr auto SetJoystickUserPointer = glfwSetJoystickUserPointer;
+    constexpr auto GetJoystickUserPointer = glfwGetJoystickUserPointer;
+    constexpr auto JoystickIsGamepad = glfwJoystickIsGamepad;
+    constexpr auto SetJoystickCallback = glfwSetJoystickCallback;
+    constexpr auto UpdateGamepadMappings = glfwUpdateGamepadMappings;
+    constexpr auto GetGamepadName = glfwGetGamepadName;
+    constexpr auto GetGamepadState = glfwGetGamepadState;
+    constexpr auto SetClipboardString = glfwSetClipboardString;
+    constexpr auto GetClipboardString = glfwGetClipboardString;
+    constexpr auto GetTime = glfwGetTime;
+    constexpr auto SetTime = glfwSetTime;
+    constexpr auto GetTimerValue = glfwGetTimerValue;
+    constexpr auto GetTimerFrequency = glfwGetTimerFrequency;
+    constexpr auto MakeContextCurrent = glfwMakeContextCurrent;
+    constexpr auto GetCurrentContext = glfwGetCurrentContext;
+    constexpr auto SwapBuffers = glfwSwapBuffers;
+    constexpr auto SwapInterval = glfwSwapInterval;
+    constexpr auto ExtensionSupported = glfwExtensionSupported;
+    constexpr auto GetProcAddress = glfwGetProcAddress;
+    constexpr auto VulkanSupported = glfwVulkanSupported;
+    constexpr auto GetRequiredInstanceExtensions = glfwGetRequiredInstanceExtensions;
+    #if defined(VK_VERSION_1_0)
+        constexpr auto GetInstanceProcAddress = glfwGetInstanceProcAddress;
+        constexpr auto GetPhysicalDevicePresentationSupport = glfwGetPhysicalDevicePresentationSupport;
+        constexpr auto CreateWindowSurface = glfwCreateWindowSurface;
+    #endif
 
 }

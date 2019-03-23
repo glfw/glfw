@@ -124,6 +124,8 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+- Added c++ namespace syntax as alternative for accessing glfw functions,
+  `glfwInit()` becomes `glfw::Init()`.
 - Added `glfwGetError` function for querying the last error code and its
   description (#970)
 - Added `glfwUpdateGamepadMappings` function for importing gamepad mappings in
@@ -500,4 +502,3 @@ skills.
  - Lasse Öörni
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
-

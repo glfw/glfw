@@ -435,13 +435,9 @@ static GLFWbool initializeTIS(void)
 
         if ([[NSBundle mainBundle] pathForResource:@"MainMenu" ofType:@"nib"])
         {
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1080
             [[NSBundle mainBundle] loadNibNamed:@"MainMenu"
                                           owner:NSApp
                                 topLevelObjects:&_glfw.ns.nibObjects];
-#else
-            [[NSBundle mainBundle] loadNibNamed:@"MainMenu" owner:NSApp];
-#endif
         }
         else
             createMenuBar();

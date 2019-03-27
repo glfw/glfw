@@ -857,8 +857,10 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     [window->ns.object setDelegate:window->ns.delegate];
     [window->ns.object setAcceptsMouseMovedEvents:YES];
     [window->ns.object setRestorable:NO];
+
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 101200
-    [window->ns.object setTabbingMode:NSWindowTabbingModeDisallowed];
+    if ([window->ns.object respondsToSelector:@selector(setTabbingMode:)])
+        [window->ns.object setTabbingMode:NSWindowTabbingModeDisallowed];
 #endif
 
     _glfwPlatformGetWindowSize(window, &window->ns.width, &window->ns.height);

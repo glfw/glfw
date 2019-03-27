@@ -29,23 +29,6 @@
 #include <float.h>
 #include <string.h>
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED < 101200
- #define NSWindowStyleMaskBorderless NSBorderlessWindowMask
- #define NSWindowStyleMaskClosable NSClosableWindowMask
- #define NSWindowStyleMaskMiniaturizable NSMiniaturizableWindowMask
- #define NSWindowStyleMaskResizable NSResizableWindowMask
- #define NSWindowStyleMaskTitled NSTitledWindowMask
- #define NSEventModifierFlagCommand NSCommandKeyMask
- #define NSEventModifierFlagControl NSControlKeyMask
- #define NSEventModifierFlagOption NSAlternateKeyMask
- #define NSEventModifierFlagShift NSShiftKeyMask
- #define NSEventModifierFlagCapsLock NSAlphaShiftKeyMask
- #define NSEventModifierFlagDeviceIndependentFlagsMask NSDeviceIndependentModifierFlagsMask
- #define NSEventMaskAny NSAnyEventMask
- #define NSEventTypeApplicationDefined NSApplicationDefined
- #define NSBitmapFormatAlphaNonpremultiplied NSAlphaNonpremultipliedBitmapFormat
-#endif
-
 // Returns the style mask corresponding to the window settings
 //
 static NSUInteger getStyleMask(_GLFWwindow* window)

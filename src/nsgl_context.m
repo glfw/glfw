@@ -26,11 +26,6 @@
 
 #include "internal.h"
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED < 101400
- #define NSOpenGLContextParameterSwapInterval NSOpenGLCPSwapInterval
- #define NSOpenGLContextParameterSurfaceOpacity NSOpenGLCPSurfaceOpacity
-#endif
-
 static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
                                     const CVTimeStamp* now,
                                     const CVTimeStamp* outputTime,

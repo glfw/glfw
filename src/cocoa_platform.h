@@ -41,6 +41,24 @@
 typedef void* id;
 #endif
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 101200
+ #define NSBitmapFormatAlphaNonpremultiplied NSAlphaNonpremultipliedBitmapFormat
+ #define NSEventMaskAny NSAnyEventMask
+ #define NSEventMaskKeyUp NSKeyUpMask
+ #define NSEventModifierFlagCapsLock NSAlphaShiftKeyMask
+ #define NSEventModifierFlagCommand NSCommandKeyMask
+ #define NSEventModifierFlagControl NSControlKeyMask
+ #define NSEventModifierFlagDeviceIndependentFlagsMask NSDeviceIndependentModifierFlagsMask
+ #define NSEventModifierFlagOption NSAlternateKeyMask
+ #define NSEventModifierFlagShift NSShiftKeyMask
+ #define NSEventTypeApplicationDefined NSApplicationDefined
+ #define NSWindowStyleMaskBorderless NSBorderlessWindowMask
+ #define NSWindowStyleMaskClosable NSClosableWindowMask
+ #define NSWindowStyleMaskMiniaturizable NSMiniaturizableWindowMask
+ #define NSWindowStyleMaskResizable NSResizableWindowMask
+ #define NSWindowStyleMaskTitled NSTitledWindowMask
+#endif
+
 typedef VkFlags VkMacOSSurfaceCreateFlagsMVK;
 
 typedef struct VkMacOSSurfaceCreateInfoMVK

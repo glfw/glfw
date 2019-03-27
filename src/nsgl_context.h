@@ -24,6 +24,11 @@
 //
 //========================================================================
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 101400
+ #define NSOpenGLContextParameterSwapInterval NSOpenGLCPSwapInterval
+ #define NSOpenGLContextParameterSurfaceOpacity NSOpenGLCPSurfaceOpacity
+#endif
+
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextNSGL nsgl
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryNSGL nsgl
 

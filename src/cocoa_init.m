@@ -30,13 +30,6 @@
 // Needed for _NSGetProgname
 #include <crt_externs.h>
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED < 101200
- #define NSEventMaskKeyUp NSKeyUpMask
- #define NSEventModifierFlagCommand NSCommandKeyMask
- #define NSEventModifierFlagControl NSControlKeyMask
- #define NSEventModifierFlagOption NSAlternateKeyMask
-#endif
-
 // Change to our application bundle's resources directory, if present
 //
 static void changeToResourcesDirectory(void)

@@ -360,6 +360,9 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                   forParameter:NSOpenGLContextParameterSurfaceOpacity];
     }
 
+    if (window->ns.retina)
+        [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
+
     [window->context.nsgl.object setView:window->ns.view];
 
     window->context.nsgl.swapIntervalCond = [NSCondition new];

@@ -110,6 +110,7 @@ typedef struct _GLFWwindowNS
     id              layer;
 
     GLFWbool        maximized;
+    GLFWbool        retina;
 
     // Cached window properties to filter out duplicate events
     int             width, height;

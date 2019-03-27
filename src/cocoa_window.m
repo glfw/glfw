@@ -400,14 +400,6 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     _glfwInputWindowDamage(window);
 }
 
-- (id)makeBackingLayer
-{
-    if (window->ns.layer)
-        return window->ns.layer;
-
-    return [super makeBackingLayer];
-}
-
 - (void)cursorUpdate:(NSEvent *)event
 {
     updateCursorImage(window);
@@ -1737,6 +1729,7 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
     }
 
     [window->ns.layer setContentsScale:[window->ns.object backingScaleFactor]];
+    [window->ns.view setLayer:window->ns.layer];
     [window->ns.view setWantsLayer:YES];
 
     memset(&sci, 0, sizeof(sci));

@@ -100,6 +100,7 @@ static void usage(void)
     printf("      --srgb                request an sRGB capable framebuffer\n");
     printf("      --singlebuffer        request single-buffering\n");
     printf("      --no-error            request a context that does not emit errors\n");
+    printf("      --graphics-switching  request macOS graphics switching\n");
 }
 
 static void error_callback(int error, const char* description)
@@ -369,38 +370,40 @@ int main(int argc, char** argv)
            MAJOR, MINOR, PROFILE, ROBUSTNESS, VERSION,
            REDBITS, GREENBITS, BLUEBITS, ALPHABITS, DEPTHBITS, STENCILBITS,
            ACCUMREDBITS, ACCUMGREENBITS, ACCUMBLUEBITS, ACCUMALPHABITS,
-           AUXBUFFERS, SAMPLES, STEREO, SRGB, SINGLEBUFFER, NOERROR_SRSLY };
+           AUXBUFFERS, SAMPLES, STEREO, SRGB, SINGLEBUFFER, NOERROR_SRSLY,
+           GRAPHICS_SWITCHING };
     const struct option options[] =
     {
-        { "behavior",         1, NULL, BEHAVIOR },
-        { "client-api",       1, NULL, CLIENT },
-        { "context-api",      1, NULL, CONTEXT },
-        { "debug",            0, NULL, DEBUG },
-        { "forward",          0, NULL, FORWARD },
-        { "help",             0, NULL, HELP },
-        { "list-extensions",  0, NULL, EXTENSIONS },
-        { "list-layers",      0, NULL, LAYERS },
-        { "major",            1, NULL, MAJOR },
-        { "minor",            1, NULL, MINOR },
-        { "profile",          1, NULL, PROFILE },
-        { "robustness",       1, NULL, ROBUSTNESS },
-        { "version",          0, NULL, VERSION },
-        { "red-bits",         1, NULL, REDBITS },
-        { "green-bits",       1, NULL, GREENBITS },
-        { "blue-bits",        1, NULL, BLUEBITS },
-        { "alpha-bits",       1, NULL, ALPHABITS },
-        { "depth-bits",       1, NULL, DEPTHBITS },
-        { "stencil-bits",     1, NULL, STENCILBITS },
-        { "accum-red-bits",   1, NULL, ACCUMREDBITS },
-        { "accum-green-bits", 1, NULL, ACCUMGREENBITS },
-        { "accum-blue-bits",  1, NULL, ACCUMBLUEBITS },
-        { "accum-alpha-bits", 1, NULL, ACCUMALPHABITS },
-        { "aux-buffers",      1, NULL, AUXBUFFERS },
-        { "samples",          1, NULL, SAMPLES },
-        { "stereo",           0, NULL, STEREO },
-        { "srgb",             0, NULL, SRGB },
-        { "singlebuffer",     0, NULL, SINGLEBUFFER },
-        { "no-error",         0, NULL, NOERROR_SRSLY },
+        { "behavior",           1, NULL, BEHAVIOR },
+        { "client-api",         1, NULL, CLIENT },
+        { "context-api",        1, NULL, CONTEXT },
+        { "debug",              0, NULL, DEBUG },
+        { "forward",            0, NULL, FORWARD },
+        { "help",               0, NULL, HELP },
+        { "list-extensions",    0, NULL, EXTENSIONS },
+        { "list-layers",        0, NULL, LAYERS },
+        { "major",              1, NULL, MAJOR },
+        { "minor",              1, NULL, MINOR },
+        { "profile",            1, NULL, PROFILE },
+        { "robustness",         1, NULL, ROBUSTNESS },
+        { "version",            0, NULL, VERSION },
+        { "red-bits",           1, NULL, REDBITS },
+        { "green-bits",         1, NULL, GREENBITS },
+        { "blue-bits",          1, NULL, BLUEBITS },
+        { "alpha-bits",         1, NULL, ALPHABITS },
+        { "depth-bits",         1, NULL, DEPTHBITS },
+        { "stencil-bits",       1, NULL, STENCILBITS },
+        { "accum-red-bits",     1, NULL, ACCUMREDBITS },
+        { "accum-green-bits",   1, NULL, ACCUMGREENBITS },
+        { "accum-blue-bits",    1, NULL, ACCUMBLUEBITS },
+        { "accum-alpha-bits",   1, NULL, ACCUMALPHABITS },
+        { "aux-buffers",        1, NULL, AUXBUFFERS },
+        { "samples",            1, NULL, SAMPLES },
+        { "stereo",             0, NULL, STEREO },
+        { "srgb",               0, NULL, SRGB },
+        { "singlebuffer",       0, NULL, SINGLEBUFFER },
+        { "no-error",           0, NULL, NOERROR_SRSLY },
+        { "graphics-switching", 0, NULL, GRAPHICS_SWITCHING },
         { NULL, 0, NULL, 0 }
     };
 
@@ -614,6 +617,9 @@ int main(int argc, char** argv)
                 break;
             case NOERROR_SRSLY:
                 glfwWindowHint(GLFW_CONTEXT_NO_ERROR, GLFW_TRUE);
+                break;
+            case GRAPHICS_SWITCHING:
+                glfwWindowHint(GLFW_COCOA_GRAPHICS_SWITCHING, GLFW_TRUE);
                 break;
             default:
                 usage();

@@ -157,13 +157,13 @@ static void hat_widget(struct nk_context* nk, unsigned char state)
         const struct nk_vec2 p2 = nk_vec2(-radius / 2.f, -radius / 3.f);
 
         nk_fill_triangle(nk_window_get_canvas(nk),
-                            center.x + cosa * p0.x + sina * p0.y,
-                            center.y + cosa * p0.y - sina * p0.x,
-                            center.x + cosa * p1.x + sina * p1.y,
-                            center.y + cosa * p1.y - sina * p1.x,
-                            center.x + cosa * p2.x + sina * p2.y,
-                            center.y + cosa * p2.y - sina * p2.x,
-                            nk_rgb(175, 175, 175));
+                         center.x + cosa * p0.x + sina * p0.y,
+                         center.y + cosa * p0.y - sina * p0.x,
+                         center.x + cosa * p1.x + sina * p1.y,
+                         center.y + cosa * p1.y - sina * p1.x,
+                         center.x + cosa * p2.x + sina * p2.y,
+                         center.y + cosa * p2.y - sina * p2.x,
+                         nk_rgb(175, 175, 175));
     }
 }
 

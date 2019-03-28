@@ -4,21 +4,6 @@
 
 @section news_33 Release notes for 3.3
 
-@subsection news_33_focusonshow GLFW_FOCUS_ON_SHOW window hint and attribute
-
-GLFW now supports the [GLFW_FOCUS_ON_SHOW](@ref GLFW_DECORATED_hint) window hint
-and attribute for controlling input focus when calling @ref glfwShowWindow
-
-@see @ref window_hide
-
-@subsection news_33_geterror Error query
-
-GLFW now supports querying the last error code for the calling thread and its
-human-readable description with @ref glfwGetError.
-
-@see @ref error_handling
-
-
 @subsection news_33_gamepad SDL_GameControllerDB support and gamepad input
 
 GLFW now supports remapping of gamepads and controllers to a 360-like controller
@@ -29,39 +14,13 @@ and the input state struct @ref GLFWgamepadstate.
 @sa @ref gamepad
 
 
-@subsection news_33_attention User attention request
+@subsection news_33_joyhats Support for joystick hats
 
-GLFW now supports requesting user attention to a specific window (on macOS to
-the application as a whole) with @ref glfwRequestWindowAttention.
+GLFW now supports querying the hats (or POVs or D-pads) of a joystick with @ref
+glfwGetJoystickHats.  Hats are by default also exposed as buttons, but this can
+be disabled with the @ref GLFW_JOYSTICK_HAT_BUTTONS init hint.
 
-@see @ref window_attention
-
-
-@subsection news_33_maximize Window maximization callback
-
-GLFW now supports notifying the application that the window has been maximized
-@ref glfwSetWindowMaximizeCallback.
-
-@see @ref window_maximize
-
-
-@subsection news_33_keyscancode Platform-specific key scancode query
-
-GLFW now supports querying the platform dependent scancode of any physical key
-with @ref glfwGetKeyScancode.
-
-@see @ref input_key
-
-
-@subsection news_33_setwindowattrib Support for updating window attributes
-
-GLFW now supports changing the [GLFW_DECORATED](@ref GLFW_DECORATED_attrib),
-[GLFW_RESIZABLE](@ref GLFW_RESIZABLE_attrib),
-[GLFW_FLOATING](@ref GLFW_FLOATING_attrib) and
-[GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib) attributes for existing
-windows with @ref glfwSetWindowAttrib.
-
-@see @ref window_attribs
+@see @ref joystick_hat
 
 
 @subsection news_33_contentscale Content scale queries for DPI-aware rendering
@@ -80,12 +39,39 @@ Windows and X11 where this is necessary.
 @see @ref window_scale
 
 
-@subsection news_33_workarea Support for monitor work area
+@subsection news_33_moltenvk Support for Vulkan on macOS via MoltenVK
 
-GLFW now supports querying the work area of a monitor, i.e. the area not
-occupied by task bars or global menu bars, with @ref glfwGetMonitorWorkarea.
+GLFW now supports the `VK_MVK_macos_surface` window surface creation extension
+provided by MoltenVK in the [LunarG Vulkan SDK](https://vulkan.lunarg.com/).
 
-@see @ref monitor_workarea
+@see @ref vulkan_guide
+
+
+@subsection news_33_setwindowattrib Support for updating window attributes
+
+GLFW now supports changing the [GLFW_DECORATED](@ref GLFW_DECORATED_attrib),
+[GLFW_RESIZABLE](@ref GLFW_RESIZABLE_attrib),
+[GLFW_FLOATING](@ref GLFW_FLOATING_attrib) and
+[GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib) attributes for existing
+windows with @ref glfwSetWindowAttrib.
+
+@see @ref window_attribs
+
+
+@subsection news_33_rawmotion Support for raw mouse motion
+
+GLFW now supports raw (unscaled and unaccelerated) mouse motion in disabled
+cursor mode with the [GLFW_RAW_MOUSE_MOTION](@ref GLFW_RAW_MOUSE_MOTION) input
+mode.  Call @ref glfwRawMouseMotionSupported to check if the current machine
+supports raw mouse motion.
+
+
+@subsection news_33_geterror Error query
+
+GLFW now supports querying the last error code for the calling thread and its
+human-readable description with @ref glfwGetError.
+
+@see @ref error_handling
 
 
 @subsection news_33_inithint Support for initialization hints
@@ -105,13 +91,28 @@ features that are only available on a single platform.
 @see @ref window_hints_osx
 
 
-@subsection news_33_joyhats Support for joystick hats
+@subsection news_33_attention User attention request
 
-GLFW now supports querying the hats (or POVs or D-pads) of a joystick with @ref
-glfwGetJoystickHats.  Hats are by default also exposed as buttons, but this can
-be disabled with the @ref GLFW_JOYSTICK_HAT_BUTTONS init hint.
+GLFW now supports requesting user attention to a specific window (on macOS to
+the application as a whole) with @ref glfwRequestWindowAttention.
 
-@see @ref joystick_hat
+@see @ref window_attention
+
+
+@subsection news_33_maximize Window maximization callback
+
+GLFW now supports notifying the application that the window has been maximized
+@ref glfwSetWindowMaximizeCallback.
+
+@see @ref window_maximize
+
+
+@subsection news_33_workarea Support for monitor work area
+
+GLFW now supports querying the work area of a monitor, i.e. the area not
+occupied by task bars or global menu bars, with @ref glfwGetMonitorWorkarea.
+
+@see @ref monitor_workarea
 
 
 @subsection news_33_transparent Support for transparent windows and framebuffers
@@ -125,6 +126,14 @@ GLFW now also supports whole window transparency with @ref glfwGetWindowOpacity
 and @ref glfwSetWindowOpacity.  This value controls the opacity of the whole
 window including decorations and unlike framebuffer transparency can be changed
 at any time after window creation.
+
+
+@subsection news_33_keyscancode Platform-specific key scancode query
+
+GLFW now supports querying the platform dependent scancode of any physical key
+with @ref glfwGetKeyScancode.
+
+@see @ref input_key
 
 
 @subsection news_33_centercursor Cursor centering window hint
@@ -141,32 +150,12 @@ area with the [GLFW_HOVERED](@ref GLFW_HOVERED_attrib) window attribute.  This
 attribute corresponds to the [cursor enter/leave](@ref cursor_enter) event.
 
 
-@subsection news_33_rawmotion Support for raw mouse motion
+@subsection news_33_focusonshow GLFW_FOCUS_ON_SHOW window hint and attribute
 
-GLFW now supports raw (unscaled and unaccelerated) mouse motion in disabled
-cursor mode with the [GLFW_RAW_MOUSE_MOTION](@ref GLFW_RAW_MOUSE_MOTION) input
-mode.  Call @ref glfwRawMouseMotionSupported to check if the current machine
-supports raw mouse motion.
+GLFW now supports the [GLFW_FOCUS_ON_SHOW](@ref GLFW_DECORATED_hint) window hint
+and attribute for controlling input focus when calling @ref glfwShowWindow
 
-
-@subsection news_33_moltenvk Support for Vulkan on macOS via MoltenVK
-
-GLFW now supports the `VK_MVK_macos_surface` window surface creation extension
-provided by MoltenVK in the [LunarG Vulkan SDK](https://vulkan.lunarg.com/).
-
-@see @ref vulkan_guide
-
-
-@subsection news_33_osmesa OSMesa backend for headless software rendering
-
-GLFW now supports creating offscreen OpenGL contexts using
-[OSMesa](https://www.mesa3d.org/osmesa.html) by setting
-[GLFW_CONTEXT_CREATION_API](@ref GLFW_CONTEXT_CREATION_API_hint) to
-`GLFW_OSMESA_CONTEXT_API`.
-
-There is also a new null backend that uses OSMesa as its native context
-creation API, intended for automated testing.  This backend does not provide
-input.
+@see @ref window_hide
 
 
 @subsection news_33_userptr Monitor and joystick user pointers
@@ -181,6 +170,18 @@ joysticks with @ref glfwSetMonitorUserPointer, @ref glfwGetMonitorUserPointer,
 GLFW now supports querying and setting the X11 primary selection via the native
 access functions @ref glfwGetX11SelectionString and @ref
 glfwSetX11SelectionString.
+
+
+@subsection news_33_osmesa OSMesa backend for headless software rendering
+
+GLFW now supports creating offscreen OpenGL contexts using
+[OSMesa](https://www.mesa3d.org/osmesa.html) by setting
+[GLFW_CONTEXT_CREATION_API](@ref GLFW_CONTEXT_CREATION_API_hint) to
+`GLFW_OSMESA_CONTEXT_API`.
+
+There is also a new null backend that uses OSMesa as its native context
+creation API, intended for automated testing.  This backend does not provide
+input.
 
 
 @subsection news_33_mir_removal Experimental Mir support has been removed

@@ -153,9 +153,11 @@ glfwGetMonitorContentScale(monitor, &xscale, &yscale);
 @endcode
 
 The content scale is the ratio between the current DPI and the platform's
-default DPI.  If you scale all pixel dimensions by this scale then your content
-should appear at an appropriate size.  This is especially important for text and
-any UI elements.
+default DPI.  This is especially important for text and any UI elements.  If the
+pixel dimensions of your UI scaled by this look appropriate on your machine then
+it should appear at a reasonable size on other machines regardless of their DPI
+and scaling settings.  This relies on the system DPI and scaling settings being
+somewhat correct.
 
 The content scale may depend on both the monitor resolution and pixel density
 and on user settings.  It may be very different from the raw DPI calculated from

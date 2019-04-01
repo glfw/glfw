@@ -17,8 +17,6 @@ yet officially supported.
 GLFW is licensed under the [zlib/libpng
 license](http://www.glfw.org/license.html).
 
-The latest stable release is version 3.2.1.
-
 See the [downloads](http://www.glfw.org/download.html) page for details and
 files, or fetch the `latest` branch, which always points to the latest stable
 release.  Each release starting with 3.0 also has a corresponding [annotated
@@ -26,8 +24,9 @@ tag](https://github.com/glfw/glfw/releases) with source and binary archives.
 The [version history](http://www.glfw.org/changelog.html) lists all user-visible
 changes for every release.
 
-This is a development branch for version 3.3, which is _not yet described_.
-Pre-release documentation is available [here](http://www.glfw.org/docs/3.3/).
+Documentation is available [here](http://www.glfw.org/docs/latest/).  See the
+[release notes](https://www.glfw.org/docs/latest/news.html) for new features,
+caveats and deprecations in the latest release.
 
 The `master` branch is the stable integration branch and _should_ always compile
 and run on all supported platforms, although details of newly added features may
@@ -221,7 +220,7 @@ information on what to include when reporting a bug.
 - [Win32] Bugfix: Vulkan libraries have a new path as of SDK 1.0.42.0 (#956)
 - [Win32] Bugfix: Monitors with no display devices were not enumerated (#960)
 - [Win32] Bugfix: Monitor events were not emitted (#784)
-- [Win32] Bugfix: The Cygwin DLL was installed to the wrong directory (#1035)
+- [Win32] Bugfix: The DLL was installed to the wrong directory on Cygwin (#1035)
 - [Win32] Bugfix: Normalization of axis data via XInput was incorrect (#1045)
 - [Win32] Bugfix: `glfw3native.h` would undefine a foreign `APIENTRY` (#1062)
 - [Win32] Bugfix: Disabled cursor mode prevented use of caption buttons
@@ -290,13 +289,13 @@ information on what to include when reporting a bug.
 - [Cocoa] Bugfix: Window was resized twice when entering full screen (#1085)
 - [Cocoa] Bugfix: Duplicate size events were not filtered (#1085)
 - [Cocoa] Bugfix: Event polling did not initialize AppKit if necessary (#1218)
-- [Cocoa] Bugfix: OpenGL rendering was not initially visible on 10.14
-                  (#1334,#1346)
+- [Cocoa] Bugfix: OpenGL rendering was not visible before resize on early macOS
+                  10.14 (#1334,#1346)
 - [Cocoa] Bugfix: Caps Lock did not generate any key events (#1368,#1373)
 - [Cocoa] Bugfix: Some buttons for some joysticks were ignored (#1385)
 - [Cocoa] Bugfix: Analog joystick buttons were not translated correctly (#1385)
 - [Cocoa] Bugfix: OpenGL swap interval was ignored for occluded windows (#680)
-- [Cocoa] Bugfix: OpenGL swap interval was ignored on macOS 10.14
+- [Cocoa] Bugfix: OpenGL swap interval was ignored on early macOS 10.14
                   (#1337,#1417,#1435)
 - [WGL] Added support for `WGL_EXT_colorspace` for OpenGL ES contexts
 - [WGL] Added support for `WGL_ARB_create_context_no_error`

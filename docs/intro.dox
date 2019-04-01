@@ -91,12 +91,12 @@ glfwGetJoystickHats.  Set this with @ref glfwInitHint.
 
 @subsubsection init_hints_osx macOS specific init hints
 
-@anchor GLFW_COCOA_CHDIR_RESOURCES
+@anchor GLFW_COCOA_CHDIR_RESOURCES_hint
 __GLFW_COCOA_CHDIR_RESOURCES__ specifies whether to set the current directory to
 the application to the `Contents/Resources` subdirectory of the application's
 bundle, if present.  Set this with @ref glfwInitHint.
 
-@anchor GLFW_COCOA_MENUBAR
+@anchor GLFW_COCOA_MENUBAR_hint
 __GLFW_COCOA_MENUBAR__ specifies whether to create a basic menu bar, either from
 a nib or manually, when the first window is created, which is when AppKit is
 initialized.  Set this with @ref glfwInitHint.

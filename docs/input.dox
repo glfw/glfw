@@ -786,7 +786,7 @@ time of release.  Newer ones can be added at runtime with @ref
 glfwUpdateGamepadMappings.
 
 @code
-const char* mappings = load_file_contents("gamecontrollerdb.txt");
+const char* mappings = load_file_contents("game/data/gamecontrollerdb.txt");
 
 glfwUpdateGamepadMappings(mappings);
 @endcode

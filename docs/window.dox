@@ -483,8 +483,8 @@ should also declare this in its `Info.plist` by setting the
 
 @subsubsection window_hints_x11 X11 specific window hints
 
-@anchor GLFW_X11_CLASS_NAME
-@anchor GLFW_X11_INSTANCE_NAME
+@anchor GLFW_X11_CLASS_NAME_hint
+@anchor GLFW_X11_INSTANCE_NAME_hint
 __GLFW_X11_CLASS_NAME__ and __GLFW_X11_INSTANCE_NAME__ specifies the desired
 ASCII encoded class and instance parts of the ICCCM `WM_CLASS` window property.
 These are set with @ref glfwWindowHintString.
@@ -702,10 +702,12 @@ float xscale, yscale;
 glfwGetWindowContentScale(window, &xscale, &yscale);
 @endcode
 
-The content scale of a window is the ratio between the current DPI and the
-platform's default DPI.  If you scale all pixel dimensions by this scale then
-your content should appear at an appropriate size.  This is especially important
-for text and any UI elements.
+The content scale is the ratio between the current DPI and the platform's
+default DPI.  This is especially important for text and any UI elements.  If the
+pixel dimensions of your UI scaled by this look appropriate on your machine then
+it should appear at a reasonable size on other machines regardless of their DPI
+and scaling settings.  This relies on the system DPI and scaling settings being
+somewhat correct.
 
 On systems where each monitors can have its own content scale, the window
 content scale will depend on which monitor the system considers the window to be

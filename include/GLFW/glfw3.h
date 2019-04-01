@@ -272,7 +272,8 @@ extern "C" {
 /*! @brief One.
  *
  *  This is only semantic sugar for the number 1.  You can instead use `1` or
- *  `true` or `_True` or `GL_TRUE` or anything else that is equal to one.
+ *  `true` or `_True` or `GL_TRUE` or `VK_TRUE` or anything else that is equal
+ *  to one.
  *
  *  @ingroup init
  */
@@ -280,7 +281,8 @@ extern "C" {
 /*! @brief Zero.
  *
  *  This is only semantic sugar for the number 0.  You can instead use `0` or
- *  `false` or `_False` or `GL_FALSE` or anything else that is equal to zero.
+ *  `false` or `_False` or `GL_FALSE` or `VK_FALSE` or anything else that is
+ *  equal to zero.
  *
  *  @ingroup init
  */
@@ -977,12 +979,25 @@ extern "C" {
  *  [window hint](@ref GLFW_SCALE_TO_MONITOR).
  */
 #define GLFW_SCALE_TO_MONITOR       0x0002200C
-
+/*! @brief macOS specific
+ *  [window hint](@ref GLFW_COCOA_RETINA_FRAMEBUFFER_hint).
+ */
 #define GLFW_COCOA_RETINA_FRAMEBUFFER 0x00023001
+/*! @brief macOS specific
+ *  [window hint](@ref GLFW_COCOA_FRAME_NAME_hint).
+ */
 #define GLFW_COCOA_FRAME_NAME         0x00023002
+/*! @brief macOS specific
+ *  [window hint](@ref GLFW_COCOA_GRAPHICS_SWITCHING_hint).
+ */
 #define GLFW_COCOA_GRAPHICS_SWITCHING 0x00023003
-
+/*! @brief X11 specific
+ *  [window hint](@ref GLFW_X11_CLASS_NAME_hint).
+ */
 #define GLFW_X11_CLASS_NAME         0x00024001
+/*! @brief X11 specific
+ *  [window hint](@ref GLFW_X11_CLASS_NAME_hint).
+ */
 #define GLFW_X11_INSTANCE_NAME      0x00024002
 /*! @} */
 
@@ -1063,17 +1078,17 @@ extern "C" {
  *  @{ */
 /*! @brief Joystick hat buttons init hint.
  *
- *  Joystick hat buttons [init hint](@ref GLFW_JOYSTICK_HAT_BUTTONS)
+ *  Joystick hat buttons [init hint](@ref GLFW_JOYSTICK_HAT_BUTTONS).
  */
 #define GLFW_JOYSTICK_HAT_BUTTONS   0x00050001
 /*! @brief macOS specific init hint.
  *
- *  macOS specific [init hint](@ref GLFW_COCOA_CHDIR_RESOURCES)
+ *  macOS specific [init hint](@ref GLFW_COCOA_CHDIR_RESOURCES_hint).
  */
 #define GLFW_COCOA_CHDIR_RESOURCES  0x00051001
 /*! @brief macOS specific init hint.
  *
- *  macOS specific [init hint](@ref GLFW_COCOA_MENUBAR)
+ *  macOS specific [init hint](@ref GLFW_COCOA_MENUBAR_hint).
  */
 #define GLFW_COCOA_MENUBAR          0x00051002
 /*! @} */
@@ -2000,9 +2015,11 @@ GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* monitor, int* widthMM, int*
  *
  *  This function retrieves the content scale for the specified monitor.  The
  *  content scale is the ratio between the current DPI and the platform's
- *  default DPI.  If you scale all pixel dimensions by this scale then your
- *  content should appear at an appropriate size.  This is especially important
- *  for text and any UI elements.
+ *  default DPI.  This is especially important for text and any UI elements.  If
+ *  the pixel dimensions of your UI scaled by this look appropriate on your
+ *  machine then it should appear at a reasonable size on other machines
+ *  regardless of their DPI and scaling settings.  This relies on the system DPI
+ *  and scaling settings being somewhat correct.
  *
  *  The content scale may depend on both the monitor resolution and pixel
  *  density and on user settings.  It may be very different from the raw DPI
@@ -2506,9 +2523,10 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *  @remark @x11 The class part of the `WM_CLASS` window property will by
  *  default be set to the window title passed to this function.  The instance
  *  part will use the contents of the `RESOURCE_NAME` environment variable, if
- *  present and not empty, or fall back to the window title.  Set the @ref
- *  GLFW_X11_CLASS_NAME and @ref GLFW_X11_INSTANCE_NAME window hints to override
- *  this.
+ *  present and not empty, or fall back to the window title.  Set the
+ *  [GLFW_X11_CLASS_NAME](@ref GLFW_X11_CLASS_NAME_hint) and
+ *  [GLFW_X11_INSTANCE_NAME](@ref GLFW_X11_INSTANCE_NAME_hint) window hints to
+ *  override this.
  *
  *  @remark @wayland Compositors should implement the xdg-decoration protocol
  *  for GLFW to decorate the window properly.  If this protocol isn't
@@ -2972,9 +2990,11 @@ GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* window, int* left, int* top, int
  *
  *  This function retrieves the content scale for the specified window.  The
  *  content scale is the ratio between the current DPI and the platform's
- *  default DPI.  If you scale all pixel dimensions by this scale then your
- *  content should appear at an appropriate size.  This is especially important
- *  for text and any UI elements.
+ *  default DPI.  This is especially important for text and any UI elements.  If
+ *  the pixel dimensions of your UI scaled by this look appropriate on your
+ *  machine then it should appear at a reasonable size on other machines
+ *  regardless of their DPI and scaling settings.  This relies on the system DPI
+ *  and scaling settings being somewhat correct.
  *
  *  On systems where each monitors can have its own content scale, the window
  *  content scale will depend on which monitor the system considers the window

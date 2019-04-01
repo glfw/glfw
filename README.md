@@ -464,6 +464,7 @@ skills.
  - Dmitri Shuralyov
  - Daniel Skorupski
  - Bradley Smith
+ - Cliff Smolinsky
  - Patrick Snape
  - Erlend Sogge Heggen
  - Julian Squires

@@ -184,14 +184,6 @@ creation API, intended for automated testing.  This backend does not provide
 input.
 
 
-@subsection news_33_mir_removal Experimental Mir support has been removed
-
-As per the release of Mir 1.0, the recommended API is now Wayland, the
-experimental Mir display server backend introduced in GLFW 3.1 has thus been
-removed.  To use the experimental Wayland backend, pass -DGLFW_USE_WAYLAND=ON
-to cmake where you previously passed the now-removed -DGLFW_USE_MIR=ON.
-
-
 @section news_32 Release notes for 3.2
 
 

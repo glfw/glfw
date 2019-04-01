@@ -26,6 +26,9 @@
 
 #include "internal.h"
 
+// Display link callback for manual swap interval implementation
+// This is based on a similar workaround added to SDL2
+//
 static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
                                     const CVTimeStamp* now,
                                     const CVTimeStamp* outputTime,

@@ -930,7 +930,7 @@ When a full screen window is restored, the desired video mode is restored to its
 monitor as well.
 
 If you wish to be notified when a window is iconified or restored, whether by
-the user, system or your own code, set a iconify callback.
+the user, system or your own code, set an iconify callback.
 
 @code
 glfwSetWindowIconifyCallback(window, window_iconify_callback);

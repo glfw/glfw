@@ -69,8 +69,8 @@ information about retrieving video modes, see @ref monitor_modes.
 
 Video mode field        | Corresponds to
 ----------------        | --------------
-GLFWvidmode.width       | `width` parameter
-GLFWvidmode.height      | `height` parameter
+GLFWvidmode.width       | `width` parameter of @ref glfwCreateWindow
+GLFWvidmode.height      | `height` parameter of @ref glfwCreateWindow
 GLFWvidmode.redBits     | @ref GLFW_RED_BITS hint
 GLFWvidmode.greenBits   | @ref GLFW_GREEN_BITS hint
 GLFWvidmode.blueBits    | @ref GLFW_BLUE_BITS hint

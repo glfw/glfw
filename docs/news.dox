@@ -10,8 +10,8 @@
 These are the release notes for version 3.3.  For a more detailed view including
 all fixed bugs see the [version history](https://www.glfw.org/changelog.html).
 
-Please review the caveats and deprecations if your project was written against
-an earlier version of GLFW 3.
+Please review the caveats, deprecations and removals if your project was written
+against an earlier version of GLFW 3.
 
 
 @subsection features_33 New features in version 3.3
@@ -196,8 +196,8 @@ For more information see @ref monitor_userptr and @ref joystick_userptr.
 @subsubsection macos_nib_33 macOS menu bar from nib file
 
 GLFW will now load a `MainMenu.nib` file if found in the `Contents/Resources`
-directory of the application bundle as a way to replace the GLFW menu bar with
-a custom one.  This can be disabled with the
+directory of the application bundle, as a way to replace the GLFW menu bar
+without recompiling GLFW.  This behavior can be disabled with the
 [GLFW_COCOA_MENUBAR](@ref GLFW_COCOA_MENUBAR_hint) initialization hint.
 
 
@@ -225,7 +225,6 @@ input.
 
 
 @subsection caveats_33 Caveats for version 3.3
-
 
 @subsubsection joystick_layout_33 Layout of joysticks have changed
 
@@ -282,23 +281,6 @@ the read limit has changed.  Any string that could be written before still can
 be.
 
 
-@subsubsection macos_options_33 macOS specific compilation options removed
-
-The `GLFW_USE_RETINA`, `GLFW_USE_CHDIR` and `GLFW_USE_MENUBAR` CMake options and
-the `_GLFW_USE_RETINA`, `_GLFW_USE_CHDIR` and `_GLFW_USE_MENUBAR` compile-time
-macros have been removed.
-
-These options and macros are replaced by the window hint
-[GLFW_COCOA_RETINA_FRAMEBUFFER](@ref GLFW_COCOA_RETINA_FRAMEBUFFER_hint)
-and the init hints
-[GLFW_COCOA_CHDIR_RESOURCES](@ref GLFW_COCOA_CHDIR_RESOURCES_hint) and
-[GLFW_COCOA_MENUBAR](@ref GLFW_COCOA_MENUBAR_hint).
-
-Existing projects and makefiles that set these options or define these macros
-during compilation of GLFW will still build but it will have no effect and the
-default behaviors will be used.
-
-
 @subsubsection x11_linking_33 X11 extension libraries are loaded dynamically
 
 GLFW now loads all X11 extension libraries at initialization.  The only X11
@@ -315,16 +297,6 @@ dependencies.
 The minimum CMake version has been raised from 2.8.12 to 3.0.  This is only
 a requirement of the GLFW CMake files.  The GLFW source files do not depend on
 CMake.
-
-
-@subsubsection lib_suffix_33 CMake option LIB_SUFFIX replaced with GNUInstallDirs
-
-GLFW now uses the GNUInstallDirs CMake package to handle platform specific
-details like the library directory suffix and the `LIB_SUFFIX` CMake option has
-been removed.
-
-Existing projects and makefiles that set the `LIB_SUFFIX` option will use the
-suffix chosen by the GNUInstallDirs package and the option will be ignored.
 
 
 @subsection deprecations_33 Deprecations in version 3.3
@@ -352,10 +324,38 @@ will be removed in a future release.
 
 @subsection removals_33 Removals in 3.3
 
-@subsubsection mir_removed_33 Mir support has been removed
+@subsubsection macos_options_33 macOS specific CMake options and macros
 
-Mir support has been completely removed as the Mir project has implemented
-support for the Wayland protocol.
+The `GLFW_USE_RETINA`, `GLFW_USE_CHDIR` and `GLFW_USE_MENUBAR` CMake options and
+the `_GLFW_USE_RETINA`, `_GLFW_USE_CHDIR` and `_GLFW_USE_MENUBAR` compile-time
+macros have been removed.
+
+These options and macros are replaced by the window hint
+[GLFW_COCOA_RETINA_FRAMEBUFFER](@ref GLFW_COCOA_RETINA_FRAMEBUFFER_hint)
+and the init hints
+[GLFW_COCOA_CHDIR_RESOURCES](@ref GLFW_COCOA_CHDIR_RESOURCES_hint) and
+[GLFW_COCOA_MENUBAR](@ref GLFW_COCOA_MENUBAR_hint).
+
+Existing projects and makefiles that set these options or define these macros
+during compilation of GLFW will still build but it will have no effect and the
+default behaviors will be used.
+
+
+@subsubsection lib_suffix_33 CMake option LIB_SUFFIX
+
+The `LIB_SUFFIX` CMake option has been removed.  GLFW now uses the
+GNUInstallDirs CMake package to handle platform specific details like the
+library directory suffix and the `LIB_SUFFIX` CMake option has been removed.
+
+Existing projects and makefiles that set the `LIB_SUFFIX` option will use the
+suffix chosen by the GNUInstallDirs package and the option will be ignored.
+
+
+@subsubsection mir_removed_33 Mir support
+
+The experimental Mir support has been completely removed as the Mir project has
+implemented support for the Wayland protocol and is recommending that
+applications use that instead.
 
 Existing projects and makefiles that select Mir when compiling GLFW will fail.
 Use Wayland or X11 instead.

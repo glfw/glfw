@@ -1306,7 +1306,7 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    return _GLFW_VERSION_NUMBER " Wayland EGL"
+    return _GLFW_VERSION_NUMBER " Wayland EGL OSMesa"
 #if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
         " clock_gettime"
 #else

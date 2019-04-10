@@ -181,6 +181,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
         case GLFW_KEY_N:
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            glfwGetCursorPos(window, &cursor_x, &cursor_y);
             printf("(( cursor is normal ))\n");
             break;
 

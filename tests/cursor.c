@@ -370,14 +370,14 @@ int main(void)
             glViewport(0, 0, fb_width, fb_height);
 
             scale = (float) fb_width / (float) wnd_width;
-            vertices[0][0] = 0.f;
-            vertices[0][1] = (float) (fb_height - cursor_y * scale);
-            vertices[1][0] = (float) fb_width;
-            vertices[1][1] = (float) (fb_height - cursor_y * scale);
-            vertices[2][0] = (float) (cursor_x * scale);
-            vertices[2][1] = 0.f;
-            vertices[3][0] = (float) (cursor_x * scale);
-            vertices[3][1] = (float) fb_height;
+            vertices[0][0] = 0.5f;
+            vertices[0][1] = (float) (fb_height - floor(cursor_y * scale) - 1.f + 0.5f);
+            vertices[1][0] = (float) fb_width + 0.5f;
+            vertices[1][1] = (float) (fb_height - floor(cursor_y * scale) - 1.f + 0.5f);
+            vertices[2][0] = (float) floor(cursor_x * scale) + 0.5f;
+            vertices[2][1] = 0.5f;
+            vertices[3][0] = (float) floor(cursor_x * scale) + 0.5f;
+            vertices[3][1] = (float) fb_height + 0.5f;
 
             glBufferData(GL_ARRAY_BUFFER,
                          sizeof(vertices),

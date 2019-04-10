@@ -290,6 +290,8 @@ information on what to include when reporting a bug.
 - [Cocoa] Bugfix: OpenGL swap interval was ignored for occluded windows (#680)
 - [Cocoa] Bugfix: OpenGL swap interval was ignored on early macOS 10.14
                   (#1337,#1417,#1435)
+- [Cocoa] Bugfix: The y-coordinate was incorrect for `glfwGetCursorPos` and
+                  `glfwSetCursorPos` (#1461)
 - [WGL] Added support for `WGL_EXT_colorspace` for OpenGL ES contexts
 - [WGL] Added support for `WGL_ARB_create_context_no_error`
 - [GLX] Added support for `GLX_ARB_create_context_no_error`

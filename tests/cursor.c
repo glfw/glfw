@@ -292,6 +292,31 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         case GLFW_KEY_6:
             glfwSetCursor(window, standard_cursors[5]);
             break;
+
+        case GLFW_KEY_F11:
+        case GLFW_KEY_ENTER:
+        {
+            static int x, y, width, height;
+
+            if (mods != GLFW_MOD_ALT)
+                return;
+
+            if (glfwGetWindowMonitor(window))
+                glfwSetWindowMonitor(window, NULL, x, y, width, height, 0);
+            else
+            {
+                GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+                const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+                glfwGetWindowPos(window, &x, &y);
+                glfwGetWindowSize(window, &width, &height);
+                glfwSetWindowMonitor(window, monitor,
+                                     0, 0, mode->width, mode->height,
+                                     mode->refreshRate);
+            }
+
+            glfwGetCursorPos(window, &cursor_x, &cursor_y);
+            break;
+        }
     }
 }
 

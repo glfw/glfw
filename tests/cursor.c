@@ -231,6 +231,26 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
             break;
 
+        case GLFW_KEY_P:
+        {
+            double x, y;
+            glfwGetCursorPos(window, &x, &y);
+
+            printf("Query before set: %f %f (%+f %+f)\n",
+                   x, y, x - cursor_x, y - cursor_y);
+            cursor_x = x;
+            cursor_y = y;
+
+            glfwSetCursorPos(window, cursor_x, cursor_y);
+            glfwGetCursorPos(window, &x, &y);
+
+            printf("Query after set: %f %f (%+f %+f)\n",
+                   x, y, x - cursor_x, y - cursor_y);
+            cursor_x = x;
+            cursor_y = y;
+            break;
+        }
+
         case GLFW_KEY_0:
             glfwSetCursor(window, NULL);
             break;

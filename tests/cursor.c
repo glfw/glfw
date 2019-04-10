@@ -69,6 +69,7 @@ static int wait_events = GLFW_TRUE;
 static int animate_cursor = GLFW_FALSE;
 static int track_cursor = GLFW_FALSE;
 static GLFWcursor* standard_cursors[6];
+static GLFWcursor* tracking_cursor = NULL;
 
 static void error_callback(int error, const char* description)
 {
@@ -109,6 +110,36 @@ static GLFWcursor* create_cursor_frame(float t)
     }
 
     return glfwCreateCursor(&image, image.width / 2, image.height / 2);
+}
+
+static GLFWcursor* create_tracking_cursor(void)
+{
+    int i = 0, x, y;
+    unsigned char buffer[32 * 32 * 4];
+    const GLFWimage image = { 32, 32, buffer };
+
+    for (y = 0;  y < image.width;  y++)
+    {
+        for (x = 0;  x < image.height;  x++)
+        {
+            if (x == 7 || y == 7)
+            {
+                buffer[i++] = 255;
+                buffer[i++] = 0;
+                buffer[i++] = 0;
+                buffer[i++] = 255;
+            }
+            else
+            {
+                buffer[i++] = 0;
+                buffer[i++] = 0;
+                buffer[i++] = 0;
+                buffer[i++] = 0;
+            }
+        }
+    }
+
+    return glfwCreateCursor(&image, 7, 7);
 }
 
 static void cursor_position_callback(GLFWwindow* window, double x, double y)
@@ -192,6 +223,11 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
         case GLFW_KEY_T:
             track_cursor = !track_cursor;
+            if (track_cursor)
+                glfwSetCursor(window, tracking_cursor);
+            else
+                glfwSetCursor(window, NULL);
+
             break;
 
         case GLFW_KEY_0:
@@ -237,6 +273,13 @@ int main(void)
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
+
+    tracking_cursor = create_tracking_cursor();
+    if (!tracking_cursor)
+    {
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
 
     for (i = 0;  i < CURSOR_FRAME_COUNT;  i++)
     {

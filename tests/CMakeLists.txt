@@ -26,6 +26,7 @@ add_executable(iconify iconify.c ${GETOPT} ${GLAD})
 add_executable(monitors monitors.c ${GETOPT} ${GLAD})
 add_executable(reopen reopen.c ${GLAD})
 add_executable(cursor cursor.c ${GLAD})
+add_executable(ime ime.c ${GETOPT} ${GLAD})
 
 add_executable(empty WIN32 MACOSX_BUNDLE empty.c ${TINYCTHREAD} ${GLAD})
 add_executable(gamma WIN32 MACOSX_BUNDLE gamma.c ${GLAD})
@@ -49,7 +50,7 @@ endif()
 set(WINDOWS_BINARIES empty gamma icon inputlag joysticks opacity tearing
                      threads timeout title windows)
 set(CONSOLE_BINARIES clipboard events msaa glfwinfo iconify monitors reopen
-                     cursor)
+                     cursor ime)
 
 if (VULKAN_FOUND)
     add_executable(vulkan WIN32 vulkan.c ${ICON})

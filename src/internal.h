@@ -392,6 +392,15 @@ struct _GLFWwindow
     double              virtualCursorPosX, virtualCursorPosY;
     GLFWbool            rawMouseMotion;
 
+    // Preedit texts
+    unsigned int*       preeditText;
+    int                 ntext;
+    int                 ctext;
+    int*                preeditAttributeBlocks;
+    int                 nblocks;
+    int                 cblocks;
+    int                 preeditCursorPosX, preeditCursorPosY, preeditCursorHeight;
+
     _GLFWcontext        context;
 
     struct {
@@ -411,6 +420,8 @@ struct _GLFWwindow
         GLFWkeyfun              key;
         GLFWcharfun             character;
         GLFWcharmodsfun         charmods;
+        GLFWpreeditfun          preedit;
+        GLFWimestatusfun        imestatus;
         GLFWdropfun             drop;
     } callbacks;
 
@@ -716,6 +727,8 @@ void _glfwInputKey(_GLFWwindow* window,
                    int key, int scancode, int action, int mods);
 void _glfwInputChar(_GLFWwindow* window,
                     unsigned int codepoint, int mods, GLFWbool plain);
+void _glfwInputPreedit(_GLFWwindow* window, int focusedBlock);
+void _glfwInputIMEStatus(_GLFWwindow* window);
 void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset);
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods);
 void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos);
@@ -736,6 +749,9 @@ void _glfwInputError(int code, const char* format, ...)
 void _glfwInputError(int code, const char* format, ...);
 #endif
 
+void _glfwPlatformResetPreeditText(_GLFWwindow* window);
+void _glfwPlatformSetIMEStatus(_GLFWwindow* window, int active);
+int  _glfwPlatformGetIMEStatus(_GLFWwindow* window);
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////

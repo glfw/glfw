@@ -101,6 +101,9 @@
 #ifndef _WIN32_WINNT_WINBLUE
  #define _WIN32_WINNT_WINBLUE 0x0602
 #endif
+#ifndef _WIN32_WINNT_WIN8
+ #define _WIN32_WINNT_WIN8 0x0602
+#endif
 #ifndef WM_GETDPISCALEDSIZE
  #define WM_GETDPISCALEDSIZE 0x02e4
 #endif

@@ -301,7 +301,7 @@ CMake.
 
 @subsection deprecations_33 Deprecations in version 3.3
 
-@subsubsection charmods_callback_deprecated Character with modifiers callback
+@subsubsection charmods_callback_33 Character with modifiers callback
 
 The character with modifiers callback set with @ref glfwSetCharModsCallback has
 been deprecated and should if possible not be used.
@@ -310,7 +310,7 @@ Existing code should still work but further bug fixes will likely not be made.
 The callback will be removed in the next major version.
 
 
-@subsubsection clipboard_window_deprecated Window parameter to clipboard functions
+@subsubsection clipboard_window_33 Window parameter to clipboard functions
 
 The window parameter of the clipboard functions @ref glfwGetClipboardString and
 @ref glfwSetClipboardString has been deprecated and is no longer used on any

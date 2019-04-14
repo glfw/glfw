@@ -23,9 +23,8 @@
 //
 //========================================================================
 
-#define VK_NO_PROTOTYPES
-#include <vulkan/vulkan.h>
-#include <glad/glad.h>
+#include <glad/gl.h>
+#include <glad/vulkan.h>
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -214,9 +213,6 @@ static void list_vulkan_instance_extensions(void)
 {
     uint32_t i, ep_count = 0;
     VkExtensionProperties* ep;
-    PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties =
-        (PFN_vkEnumerateInstanceExtensionProperties)
-        glfwGetInstanceProcAddress(NULL, "vkEnumerateInstanceExtensionProperties");
 
     printf("Vulkan instance extensions:\n");
 
@@ -241,9 +237,6 @@ static void list_vulkan_instance_layers(void)
 {
     uint32_t i, lp_count = 0;
     VkLayerProperties* lp;
-    PFN_vkEnumerateInstanceLayerProperties vkEnumerateInstanceLayerProperties =
-        (PFN_vkEnumerateInstanceLayerProperties)
-        glfwGetInstanceProcAddress(NULL, "vkEnumerateInstanceLayerProperties");
 
     printf("Vulkan instance layers:\n");
 
@@ -273,9 +266,6 @@ static void list_vulkan_device_extensions(VkInstance instance, VkPhysicalDevice 
 {
     uint32_t i, ep_count;
     VkExtensionProperties* ep;
-    PFN_vkEnumerateDeviceExtensionProperties vkEnumerateDeviceExtensionProperties =
-        (PFN_vkEnumerateDeviceExtensionProperties)
-        glfwGetInstanceProcAddress(instance, "vkEnumerateDeviceExtensionProperties");
 
     printf("Vulkan device extensions:\n");
 
@@ -300,9 +290,6 @@ static void list_vulkan_device_layers(VkInstance instance, VkPhysicalDevice devi
 {
     uint32_t i, lp_count;
     VkLayerProperties* lp;
-    PFN_vkEnumerateDeviceLayerProperties vkEnumerateDeviceLayerProperties =
-        (PFN_vkEnumerateDeviceLayerProperties)
-        glfwGetInstanceProcAddress(instance, "vkEnumerateDeviceLayerProperties");
 
     printf("Vulkan device layers:\n");
 
@@ -356,6 +343,11 @@ static void print_version(void)
            GLFW_VERSION_REVISION);
     printf("GLFW library version: %u.%u.%u\n", major, minor, revision);
     printf("GLFW library version string: \"%s\"\n", glfwGetVersionString());
+}
+
+static GLADapiproc glad_vulkan_callback(const char* name, void* user)
+{
+    return glfwGetInstanceProcAddress((VkInstance) user, name);
 }
 
 int main(int argc, char** argv)
@@ -639,7 +631,7 @@ int main(int argc, char** argv)
     }
 
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    gladLoadGL(glfwGetProcAddress);
 
     error = glGetError();
     if (error != GL_NO_ERROR)
@@ -823,11 +815,8 @@ int main(int argc, char** argv)
         VkInstanceCreateInfo ici = {0};
         VkInstance instance;
         VkPhysicalDevice* pd;
-        PFN_vkCreateInstance vkCreateInstance = (PFN_vkCreateInstance)
-            glfwGetInstanceProcAddress(NULL, "vkCreateInstance");
-        PFN_vkDestroyInstance vkDestroyInstance;
-        PFN_vkEnumeratePhysicalDevices vkEnumeratePhysicalDevices;
-        PFN_vkGetPhysicalDeviceProperties vkGetPhysicalDeviceProperties;
+
+        gladLoadVulkanUserPtr(NULL, glad_vulkan_callback, NULL);
 
         re = glfwGetRequiredInstanceExtensions(&re_count);
 
@@ -865,12 +854,7 @@ int main(int argc, char** argv)
             exit(EXIT_FAILURE);
         }
 
-        vkDestroyInstance = (PFN_vkDestroyInstance)
-            glfwGetInstanceProcAddress(instance, "vkDestroyInstance");
-        vkEnumeratePhysicalDevices = (PFN_vkEnumeratePhysicalDevices)
-            glfwGetInstanceProcAddress(instance, "vkEnumeratePhysicalDevices");
-        vkGetPhysicalDeviceProperties = (PFN_vkGetPhysicalDeviceProperties)
-            glfwGetInstanceProcAddress(instance, "vkGetPhysicalDeviceProperties");
+        gladLoadVulkanUserPtr(NULL, glad_vulkan_callback, instance);
 
         if (vkEnumeratePhysicalDevices(instance, &pd_count, NULL) != VK_SUCCESS)
         {

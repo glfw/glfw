@@ -224,7 +224,7 @@ with the library.
 
 @anchor GLFW_VULKAN_STATIC
 __GLFW_VULKAN_STATIC__ determines whether to use the Vulkan loader linked
-statically into the application.
+directly with the application.
 
 
 @subsubsection compile_options_win32 Windows specific CMake options
@@ -268,7 +268,7 @@ ramps and clipboard.  The options are:
 If you are building GLFW as a shared library / dynamic library / DLL then you
 must also define @b _GLFW_BUILD_DLL.  Otherwise, you must not define it.
 
-If you are linking the Vulkan loader statically into your application then you
+If you are linking the Vulkan loader directly with your application then you
 must also define @b _GLFW_VULKAN_STATIC.  Otherwise, GLFW will attempt to use the
 external version.
 

@@ -33,7 +33,7 @@
 //
 //========================================================================
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
 #include <time.h>
@@ -164,7 +164,7 @@ int main(int argc, char** argv)
         glfwSetKeyCallback(window, key_callback);
 
         glfwMakeContextCurrent(window);
-        gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+        gladLoadGL(glfwGetProcAddress);
         glfwSwapInterval(1);
 
         vertex_shader = glCreateShader(GL_VERTEX_SHADER);

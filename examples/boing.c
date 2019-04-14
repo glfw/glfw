@@ -36,7 +36,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
 #include <linmath.h>
@@ -642,7 +642,7 @@ int main( void )
    glfwSetCursorPosCallback(window, cursor_position_callback);
 
    glfwMakeContextCurrent(window);
-   gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+   gladLoadGL(glfwGetProcAddress);
    glfwSwapInterval( 1 );
 
    glfwGetFramebufferSize(window, &width, &height);

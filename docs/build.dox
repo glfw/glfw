@@ -52,7 +52,7 @@ If you are using an OpenGL extension loading library such as
 be included _before_ the GLFW one.
 
 @code
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 @endcode
 
@@ -62,7 +62,7 @@ prevent the GLFW header from including the OpenGL header.
 @code
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
-#include <glad/glad.h>
+#include <glad/gl.h>
 @endcode
 
 

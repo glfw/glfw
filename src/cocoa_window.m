@@ -1312,8 +1312,8 @@ int _glfwPlatformWindowHovered(_GLFWwindow* window)
         return GLFW_FALSE;
     }
 
-    return NSPointInRect(point,
-        [window->ns.object convertRectToScreen:[window->ns.view bounds]]);
+    return NSMouseInRect(point,
+        [window->ns.object convertRectToScreen:[window->ns.view frame]], NO);
 
     } // autoreleasepool
 }

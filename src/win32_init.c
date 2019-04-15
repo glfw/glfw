@@ -452,7 +452,7 @@ void _glfwInputErrorWin32(int error, const char* description)
                    GetLastError() & 0xffff,
                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                    buffer,
-                   sizeof(buffer),
+                   sizeof(buffer) / sizeof(WCHAR),
                    NULL);
     WideCharToMultiByte(CP_UTF8, 0, buffer, -1, message, sizeof(message), NULL, NULL);
 

@@ -345,6 +345,7 @@ skills.
  - Ian Clarkson
  - Michał Cichoń
  - Lambert Clara
+ - Anna Clarke
  - Yaron Cohen-Tal
  - Omar Cornut
  - Andrew Corrigan

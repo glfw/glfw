@@ -10,23 +10,22 @@ GLFW is an Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan
 application development.  It provides a simple, platform-independent API for
 creating windows, contexts and surfaces, reading input, handling events, etc.
 
-GLFW natively supports Windows, macOS and Linux and other Unix-like systems.
-An experimental implementation for the Wayland protocol is available but not
-yet officially supported.
+GLFW natively supports Windows, macOS and Linux and other Unix-like systems.  On
+Linux both X11 and Wayland is supported.
 
 GLFW is licensed under the [zlib/libpng
 license](http://www.glfw.org/license.html).
 
-See the [downloads](http://www.glfw.org/download.html) page for details and
-files, or fetch the `latest` branch, which always points to the latest stable
-release.  Each release starting with 3.0 also has a corresponding [annotated
+You can [download](http://www.glfw.org/download.html) the latest stable release
+as source or Windows binaries, or fetch the `latest` branch from GitHub.  Each
+release starting with 3.0 also has a corresponding [annotated
 tag](https://github.com/glfw/glfw/releases) with source and binary archives.
-The [version history](http://www.glfw.org/changelog.html) lists all user-visible
-changes for every release.
 
-Documentation is available [here](http://www.glfw.org/docs/latest/).  See the
-[release notes](https://www.glfw.org/docs/latest/news.html) for new features,
-caveats and deprecations in the latest release.
+The [documentation](http://www.glfw.org/docs/latest/) is available online and is
+included in all source and binary archives.  See the [release
+notes](https://www.glfw.org/docs/latest/news.html) for new features, caveats and
+deprecations in the latest release.  For more details see the [version
+history](http://www.glfw.org/changelog.html).
 
 The `master` branch is the stable integration branch and _should_ always compile
 and run on all supported platforms, although details of newly added features may
@@ -43,9 +42,10 @@ guide](http://www.glfw.org/docs/latest/moving.html) for moving to the GLFW
 
 ## Compiling GLFW
 
-GLFW itself requires only the headers and libraries for your window system.  It
-does not need the headers for any context creation API (WGL, GLX, EGL, NSGL,
-OSMesa) or rendering API (OpenGL, OpenGL ES, Vulkan) to enable support for them.
+GLFW itself requires only the headers and libraries for your OS and window
+system.  It does not need the headers for any context creation API (WGL, GLX,
+EGL, NSGL, OSMesa) or rendering API (OpenGL, OpenGL ES, Vulkan) to enable
+support for them.
 
 GLFW supports compilation on Windows with Visual C++ 2010 and later, MinGW and
 MinGW-w64, on macOS with Clang and on Linux and other Unix-like systems with GCC

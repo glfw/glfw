@@ -100,7 +100,7 @@ void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement)
         {
             memmove(_glfw.monitors + 1,
                     _glfw.monitors,
-                    (_glfw.monitorCount - 1) * sizeof(_GLFWmonitor*));
+                    ((size_t) _glfw.monitorCount - 1) * sizeof(_GLFWmonitor*));
             _glfw.monitors[0] = monitor;
         }
         else
@@ -130,7 +130,7 @@ void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement)
                 _glfw.monitorCount--;
                 memmove(_glfw.monitors + i,
                         _glfw.monitors + i + 1,
-                        (_glfw.monitorCount - i) * sizeof(_GLFWmonitor*));
+                        ((size_t) _glfw.monitorCount - i) * sizeof(_GLFWmonitor*));
                 break;
             }
         }

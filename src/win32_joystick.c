@@ -414,7 +414,7 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
 
     memset(&data, 0, sizeof(data));
     data.device = device;
-    data.objects = calloc(dc.dwAxes + dc.dwButtons + dc.dwPOVs,
+    data.objects = calloc(dc.dwAxes + (size_t) dc.dwButtons + dc.dwPOVs,
                           sizeof(_GLFWjoyobjectWin32));
 
     if (FAILED(IDirectInputDevice8_EnumObjects(device,

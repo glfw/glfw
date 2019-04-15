@@ -293,6 +293,13 @@ if (_GLFW_COCOA)
 endif()
 
 #--------------------------------------------------------------------
+# Add the Vulkan loader as a dependency if necessary
+#--------------------------------------------------------------------
+if (GLFW_VULKAN_STATIC)
+    list(APPEND glfw_PKG_DEPS "vulkan")
+endif()
+
+#--------------------------------------------------------------------
 # Export GLFW library dependencies
 #--------------------------------------------------------------------
 foreach(arg ${glfw_PKG_DEPS})

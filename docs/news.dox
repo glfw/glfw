@@ -5,6 +5,23 @@
 @tableofcontents
 
 
+@section news_34 Release notes for version 3.4
+
+@subsection features_34 New features in version 3.4
+
+@subsection caveats_34 Caveats for version 3.4
+
+@subsection deprecations_34 Deprecations in version 3.4
+
+@subsection removals_34 Removals in 3.4
+
+@subsection symbols_34 New symbols in version 3.4
+
+@subsubsection functions_34 New functions in version 3.4
+@subsubsection types_34 New types in version 3.4
+@subsubsection constants_34 New constants in version 3.4
+
+
 @section news_33 Release notes for version 3.3
 
 These are the release notes for version 3.3.  For a more detailed view including

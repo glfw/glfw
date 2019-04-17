@@ -1918,7 +1918,7 @@ void _glfwPlatformPollEvents(void)
         }
     }
 
-    handle = GetForegroundWindow();
+    handle = GetActiveWindow();
     if (handle)
     {
         // NOTE: Shift keys on Windows tend to "stick" when both are pressed as

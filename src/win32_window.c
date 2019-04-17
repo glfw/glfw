@@ -1788,7 +1788,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
 
 int _glfwPlatformWindowFocused(_GLFWwindow* window)
 {
-    return window->win32.handle == GetActiveWindow();
+    return window->win32.handle == GetForegroundWindow();
 }
 
 int _glfwPlatformWindowIconified(_GLFWwindow* window)
@@ -1918,7 +1918,7 @@ void _glfwPlatformPollEvents(void)
         }
     }
 
-    handle = GetActiveWindow();
+    handle = GetForegroundWindow();
     if (handle)
     {
         // NOTE: Shift keys on Windows tend to "stick" when both are pressed as

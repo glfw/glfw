@@ -2536,8 +2536,8 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *  instance a keybind mechanism.  If neither of these protocols is supported,
  *  the window won't be decorated.
  *
- *  @remark @wayland A full screen window will not attempt to change the mode,
- *  no matter what the requested size or refresh rate.
+ *  @remark @wayland The wp_viewporter protocol is required for a full screen
+ *  window to set the video mode, otherwise the current mode will be used.
  *
  *  @remark @wayland Screensaver inhibition requires the idle-inhibit protocol
  *  to be implemented in the user's compositor.
@@ -2904,8 +2904,8 @@ GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* window, int numer, int denom);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
- *  @remark @wayland A full screen window will not attempt to change the mode,
- *  no matter what the requested size.
+ *  @remark @wayland The wp_viewporter protocol is required for a full screen
+ *  window to change the video mode, otherwise this function does nothing.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -3338,8 +3338,8 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  @remark @wayland The desired window position is ignored, as there is no way
  *  for an application to set this property.
  *
- *  @remark @wayland Setting the window to full screen will not attempt to
- *  change the mode, no matter what the requested size or refresh rate.
+ *  @remark @wayland The wp_viewporter protocol is required for a full screen
+ *  window to set its video mode, otherwise the current mode will be used.
  *
  *  @thread_safety This function must only be called from the main thread.
  *

@@ -188,8 +188,8 @@ int main(int argc, char** argv)
         monitor = glfwGetPrimaryMonitor();
         mode = glfwGetVideoMode(monitor);
 
-        width = mode->width;
-        height = mode->height;
+        width = 640;
+        height = 480;
     }
     else
     {
@@ -229,6 +229,9 @@ int main(int argc, char** argv)
 
         glfwPollEvents();
         sample_input(window);
+
+        if (frame_count == 30)
+            glfwSetWindowSize(window, 640, rand() % 1200);
 
         glfwGetWindowSize(window, &width, &height);
         area = nk_rect(0.f, 0.f, (float) width, (float) height);

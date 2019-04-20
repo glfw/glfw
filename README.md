@@ -118,7 +118,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
-User-visible changes since the last release.
+* [Win32] Bugfix: Worker threads are now able to correctly detect if the GLFW window has focus by getting the `GLFW_FOCUSED` attribute.
 
 
 ## Contact

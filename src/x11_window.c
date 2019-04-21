@@ -1258,7 +1258,8 @@ static void processEvent(XEvent *event)
                 //       These have the same timestamp as the original event
                 //       Corresponding release events are filtered out
                 //       implicitly by the GLFW key repeat logic
-                if (window->x11.lastKeyTime < event->xkey.time)
+                if (window->x11.lastKeyTime < event->xkey.time ||
+                    (key != GLFW_KEY_UNKNOWN && window->keys[key] != GLFW_PRESS))
                 {
                     if (keycode)
                         _glfwInputKey(window, key, keycode, GLFW_PRESS, mods);

@@ -118,7 +118,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
-User-visible changes since the last release.
+- [X11] Bugfix: Simultanous key presses were being ignored (#1112)
 
 
 ## Contact

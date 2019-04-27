@@ -94,8 +94,8 @@ for a disconnected monitor and only before the monitor callback returns.
 @section monitor_properties Monitor properties
 
 Each monitor has a current video mode, a list of supported video modes,
-a virtual position, a human-readable name, a user pointer, an estimated physical
-size and a gamma ramp.
+a virtual position, a content scale, a human-readable name, a user pointer, an
+estimated physical size and a gamma ramp.
 
 
 @subsection monitor_modes Video modes

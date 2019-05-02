@@ -118,7 +118,8 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
-User-visible changes since the last release.
+ - Bugfix: The CMake config-file package used an absolute path and was not
+   relocatable (#1470)
 
 
 ## Contact
@@ -258,6 +259,7 @@ skills.
  - Cyril Pichard
  - Keith Pitt
  - Stanislav Podgorskiy
+ - Konstantin Podsvirov
  - Nathan Poirier
  - Alexandre Pretyman
  - przemekmirek

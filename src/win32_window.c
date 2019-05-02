@@ -832,7 +832,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             const int x = GET_X_LPARAM(lParam);
             const int y = GET_Y_LPARAM(lParam);
 
-            // Disabled cursor motion input is provided by WM_INPUT
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
             {
                 const int dx = x - window->win32.lastCursorPosX;

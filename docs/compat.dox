@@ -85,6 +85,13 @@ transparent window framebuffers.  If the running X server does not support this
 extension or there is no running compositing manager, the
 `GLFW_TRANSPARENT_FRAMEBUFFER` framebuffer hint will have no effect.
 
+GLFW uses both the Xcursor extension and the freedesktop cursor conventions to
+provide an expanded set of standard cursor shapes.  If the running X server does
+not support this extension or the current cursor theme does not support the
+conventions, the `GLFW_RESIZE_NWSE_CURSOR`, `GLFW_RESIZE_NESW_CURSOR` and
+`GLFW_NOT_ALLOWED_CURSOR` shapes will not be available and other shapes may use
+legacy images.
+
 
 @section compat_wayland Wayland protocols and IPC standards
 

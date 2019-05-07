@@ -230,10 +230,16 @@ if (_GLFW_X11)
         message(FATAL_ERROR "The Xcursor headers were not found")
     endif()
 
+    # Check for XInput (modern HID input)
+    if (NOT X11_Xinput_INCLUDE_PATH)
+        message(FATAL_ERROR "The XInput headers were not found")
+    endif()
+
     list(APPEND glfw_INCLUDE_DIRS "${X11_Xrandr_INCLUDE_PATH}"
                                   "${X11_Xinerama_INCLUDE_PATH}"
                                   "${X11_Xkb_INCLUDE_PATH}"
-                                  "${X11_Xcursor_INCLUDE_PATH}")
+                                  "${X11_Xcursor_INCLUDE_PATH}"
+                                  "${X11_Xinput_INCLUDE_PATH}")
 endif()
 
 #--------------------------------------------------------------------

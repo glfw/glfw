@@ -85,9 +85,15 @@ typedef int (* PFN_XRRUpdateConfiguration)(XEvent*);
 typedef XcursorImage* (* PFN_XcursorImageCreate)(int,int);
 typedef void (* PFN_XcursorImageDestroy)(XcursorImage*);
 typedef Cursor (* PFN_XcursorImageLoadCursor)(Display*,const XcursorImage*);
+typedef char* (* PFN_XcursorGetTheme)(Display*);
+typedef int (* PFN_XcursorGetDefaultSize)(Display*);
+typedef XcursorImage* (* PFN_XcursorLibraryLoadImage)(const char*,const char*,int);
 #define XcursorImageCreate _glfw.x11.xcursor.ImageCreate
 #define XcursorImageDestroy _glfw.x11.xcursor.ImageDestroy
 #define XcursorImageLoadCursor _glfw.x11.xcursor.ImageLoadCursor
+#define XcursorGetTheme _glfw.x11.xcursor.GetTheme
+#define XcursorGetDefaultSize _glfw.x11.xcursor.GetDefaultSize
+#define XcursorLibraryLoadImage _glfw.x11.xcursor.LibraryLoadImage
 
 typedef Bool (* PFN_XineramaIsActive)(Display*);
 typedef Bool (* PFN_XineramaQueryExtension)(Display*,int*,int*);
@@ -352,6 +358,9 @@ typedef struct _GLFWlibraryX11
         PFN_XcursorImageCreate ImageCreate;
         PFN_XcursorImageDestroy ImageDestroy;
         PFN_XcursorImageLoadCursor ImageLoadCursor;
+        PFN_XcursorGetTheme GetTheme;
+        PFN_XcursorGetDefaultSize GetDefaultSize;
+        PFN_XcursorLibraryLoadImage LibraryLoadImage;
     } xcursor;
 
     struct {

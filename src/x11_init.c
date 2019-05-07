@@ -615,6 +615,12 @@ static GLFWbool initExtensions(void)
             _glfw_dlsym(_glfw.x11.xcursor.handle, "XcursorImageDestroy");
         _glfw.x11.xcursor.ImageLoadCursor = (PFN_XcursorImageLoadCursor)
             _glfw_dlsym(_glfw.x11.xcursor.handle, "XcursorImageLoadCursor");
+        _glfw.x11.xcursor.GetTheme = (PFN_XcursorGetTheme)
+            _glfw_dlsym(_glfw.x11.xcursor.handle, "XcursorGetTheme");
+        _glfw.x11.xcursor.GetDefaultSize = (PFN_XcursorGetDefaultSize)
+            _glfw_dlsym(_glfw.x11.xcursor.handle, "XcursorGetDefaultSize");
+        _glfw.x11.xcursor.LibraryLoadImage = (PFN_XcursorLibraryLoadImage)
+            _glfw_dlsym(_glfw.x11.xcursor.handle, "XcursorLibraryLoadImage");
     }
 
 #if defined(__CYGWIN__)

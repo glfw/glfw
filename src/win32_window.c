@@ -2068,14 +2068,25 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
         id = OCR_IBEAM;
     else if (shape == GLFW_CROSSHAIR_CURSOR)
         id = OCR_CROSS;
-    else if (shape == GLFW_HAND_CURSOR)
+    else if (shape == GLFW_POINTING_HAND_CURSOR)
         id = OCR_HAND;
-    else if (shape == GLFW_HRESIZE_CURSOR)
+    else if (shape == GLFW_RESIZE_EW_CURSOR)
         id = OCR_SIZEWE;
-    else if (shape == GLFW_VRESIZE_CURSOR)
+    else if (shape == GLFW_RESIZE_NS_CURSOR)
         id = OCR_SIZENS;
+    else if (shape == GLFW_RESIZE_NWSE_CURSOR)
+        id = OCR_SIZENWSE;
+    else if (shape == GLFW_RESIZE_NESW_CURSOR)
+        id = OCR_SIZENESW;
+    else if (shape == GLFW_RESIZE_ALL_CURSOR)
+        id = OCR_SIZEALL;
+    else if (shape == GLFW_NOT_ALLOWED_CURSOR)
+        id = OCR_NO;
     else
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Unknown standard cursor");
         return GLFW_FALSE;
+    }
 
     cursor->win32.handle = LoadImageW(NULL,
                                       MAKEINTRESOURCEW(id), IMAGE_CURSOR, 0, 0,

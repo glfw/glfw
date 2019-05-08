@@ -18,22 +18,16 @@ option(GLFW_INSTALL "Generate installation target" ON)
 option(GLFW_VULKAN_STATIC "Assume the Vulkan loader is linked with the application" OFF)
 
 include(GNUInstallDirs)
+include(CMakeDependentOption)
 
-if (UNIX)
-    option(GLFW_USE_OSMESA "Use OSMesa for offscreen context creation" OFF)
-endif()
-
-if (WIN32)
-    option(GLFW_USE_HYBRID_HPG "Force use of high-performance GPU on hybrid systems" OFF)
-endif()
-
-if (UNIX AND NOT APPLE)
-    option(GLFW_USE_WAYLAND "Use Wayland for window creation" OFF)
-endif()
-
-if (MSVC)
-    option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON)
-endif()
+cmake_dependent_option(GLFW_USE_OSMESA "Use OSMesa for offscreen context creation" OFF
+                       "UNIX" OFF)
+cmake_dependent_option(GLFW_USE_HYBRID_HPG "Force use of high-performance GPU on hybrid systems" OFF
+                       "WIN32" OFF)
+cmake_dependent_option(GLFW_USE_WAYLAND "Use Wayland for window creation" OFF
+                       "UNIX;NOT APPLE" OFF)
+cmake_dependent_option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON
+                       "MSVC" OFF)
 
 if (BUILD_SHARED_LIBS)
     set(_GLFW_BUILD_DLL 1)

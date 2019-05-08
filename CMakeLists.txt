@@ -1,19 +1,12 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(GLFW C)
+project(GLFW VERSION 3.4.0 LANGUAGES C)
 
 set(CMAKE_LEGACY_CYGWIN_WIN32 OFF)
 
 if (POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
-
-set(GLFW_VERSION_MAJOR "3")
-set(GLFW_VERSION_MINOR "4")
-set(GLFW_VERSION_PATCH "0")
-set(GLFW_VERSION_EXTRA "")
-set(GLFW_VERSION "${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}")
-set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA}")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -328,7 +321,7 @@ configure_package_config_file(src/glfw3Config.cmake.in
                               NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
 write_basic_package_version_file(src/glfw3ConfigVersion.cmake
-                                 VERSION ${GLFW_VERSION_FULL}
+                                 VERSION ${GLFW_VERSION}
                                  COMPATIBILITY SameMajorVersion)
 
 configure_file(src/glfw_config.h.in src/glfw_config.h @ONLY)

@@ -118,6 +118,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - Disabled tests and examples by default when built as a CMake subdirectory
  - Bugfix: The CMake config-file package used an absolute path and was not
    relocatable (#1470)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)

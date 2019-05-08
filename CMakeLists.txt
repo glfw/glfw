@@ -10,9 +10,13 @@ endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
+    set(GLFW_STANDALONE TRUE)
+endif()
+
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
-option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
-option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
+option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" GLFW_STANDALONE)
+option(GLFW_BUILD_TESTS "Build the GLFW test programs" GLFW_STANDALONE)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" ON)
 option(GLFW_INSTALL "Generate installation target" ON)
 option(GLFW_VULKAN_STATIC "Assume the Vulkan loader is linked with the application" OFF)

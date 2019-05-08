@@ -11,6 +11,20 @@
 
 @subsection caveats_34 Caveats for version 3.4
 
+@subsubsection standalone_34 Tests and examples are disabled when built as a sub-project
+
+GLFW now does not build the tests and examples when it is added as
+a subdirectory of another CMake project.  To enable these, set the @ref
+GLFW_BUILD_TESTS and @ref GLFW_BUILD_EXAMPLES cache variables before adding the
+GLFW subdirectory.
+
+@code{.cmake}
+set(GLFW_BUILD_EXAMPLES ON CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS ON CACHE BOOL "" FORCE)
+add_subdirectory(path/to/glfw)
+@endcode
+
+
 @subsection deprecations_34 Deprecations in version 3.4
 
 @subsection removals_34 Removals in 3.4

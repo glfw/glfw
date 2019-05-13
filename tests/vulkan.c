@@ -41,8 +41,8 @@
 #include <windows.h>
 #endif
 
+#include <glad/vulkan.h>
 #define GLFW_INCLUDE_NONE
-#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #define DEMO_TEXTURE_COUNT 1
@@ -65,25 +65,10 @@
         exit(1);                                                               \
     } while (0)
 
-#define GET_INSTANCE_PROC_ADDR(inst, entrypoint)                               \
-    {                                                                          \
-        demo->fp##entrypoint =                                                 \
-            (PFN_vk##entrypoint)vkGetInstanceProcAddr(inst, "vk" #entrypoint); \
-        if (demo->fp##entrypoint == NULL) {                                    \
-            ERR_EXIT("vkGetInstanceProcAddr failed to find vk" #entrypoint,    \
-                     "vkGetInstanceProcAddr Failure");                         \
-        }                                                                      \
-    }
-
-#define GET_DEVICE_PROC_ADDR(dev, entrypoint)                                  \
-    {                                                                          \
-        demo->fp##entrypoint =                                                 \
-            (PFN_vk##entrypoint)vkGetDeviceProcAddr(dev, "vk" #entrypoint);    \
-        if (demo->fp##entrypoint == NULL) {                                    \
-            ERR_EXIT("vkGetDeviceProcAddr failed to find vk" #entrypoint,      \
-                     "vkGetDeviceProcAddr Failure");                           \
-        }                                                                      \
-    }
+static GLADapiproc glad_vulkan_callback(const char* name, void* user)
+{
+    return glfwGetInstanceProcAddress((VkInstance) user, name);
+}
 
 static const char fragShaderCode[] = {
     0x03, 0x02, 0x23, 0x07, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x08, 0x00,
@@ -287,19 +272,6 @@ struct demo {
     VkFormat format;
     VkColorSpaceKHR color_space;
 
-    PFN_vkGetPhysicalDeviceSurfaceSupportKHR
-        fpGetPhysicalDeviceSurfaceSupportKHR;
-    PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR
-        fpGetPhysicalDeviceSurfaceCapabilitiesKHR;
-    PFN_vkGetPhysicalDeviceSurfaceFormatsKHR
-        fpGetPhysicalDeviceSurfaceFormatsKHR;
-    PFN_vkGetPhysicalDeviceSurfacePresentModesKHR
-        fpGetPhysicalDeviceSurfacePresentModesKHR;
-    PFN_vkCreateSwapchainKHR fpCreateSwapchainKHR;
-    PFN_vkDestroySwapchainKHR fpDestroySwapchainKHR;
-    PFN_vkGetSwapchainImagesKHR fpGetSwapchainImagesKHR;
-    PFN_vkAcquireNextImageKHR fpAcquireNextImageKHR;
-    PFN_vkQueuePresentKHR fpQueuePresentKHR;
     uint32_t swapchainImageCount;
     VkSwapchainKHR swapchain;
     SwapchainBuffers *buffers;
@@ -347,10 +319,7 @@ struct demo {
     int32_t frameCount;
     bool validate;
     bool use_break;
-    PFN_vkCreateDebugReportCallbackEXT CreateDebugReportCallback;
-    PFN_vkDestroyDebugReportCallbackEXT DestroyDebugReportCallback;
     VkDebugReportCallbackEXT msg_callback;
-    PFN_vkDebugReportMessageEXT DebugReportMessage;
 
     float depthStencil;
     float depthIncrement;
@@ -631,10 +600,10 @@ static void demo_draw(struct demo *demo) {
     assert(!err);
 
     // Get the index of the next available swapchain image:
-    err = demo->fpAcquireNextImageKHR(demo->device, demo->swapchain, UINT64_MAX,
-                                      imageAcquiredSemaphore,
-                                      (VkFence)0, // TODO: Show use of fence
-                                      &demo->current_buffer);
+    err = vkAcquireNextImageKHR(demo->device, demo->swapchain, UINT64_MAX,
+                                imageAcquiredSemaphore,
+                                (VkFence)0, // TODO: Show use of fence
+                                &demo->current_buffer);
     if (err == VK_ERROR_OUT_OF_DATE_KHR) {
         // demo->swapchain is out of date (e.g. the window was resized) and
         // must be recreated:
@@ -684,7 +653,7 @@ static void demo_draw(struct demo *demo) {
         .pImageIndices = &demo->current_buffer,
     };
 
-    err = demo->fpQueuePresentKHR(demo->queue, &present);
+    err = vkQueuePresentKHR(demo->queue, &present);
     if (err == VK_ERROR_OUT_OF_DATE_KHR) {
         // demo->swapchain is out of date (e.g. the window was resized) and
         // must be recreated:
@@ -709,18 +678,18 @@ static void demo_prepare_buffers(struct demo *demo) {
 
     // Check the surface capabilities and formats
     VkSurfaceCapabilitiesKHR surfCapabilities;
-    err = demo->fpGetPhysicalDeviceSurfaceCapabilitiesKHR(
+    err = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
         demo->gpu, demo->surface, &surfCapabilities);
     assert(!err);
 
     uint32_t presentModeCount;
-    err = demo->fpGetPhysicalDeviceSurfacePresentModesKHR(
+    err = vkGetPhysicalDeviceSurfacePresentModesKHR(
         demo->gpu, demo->surface, &presentModeCount, NULL);
     assert(!err);
     VkPresentModeKHR *presentModes =
         (VkPresentModeKHR *)malloc(presentModeCount * sizeof(VkPresentModeKHR));
     assert(presentModes);
-    err = demo->fpGetPhysicalDeviceSurfacePresentModesKHR(
+    err = vkGetPhysicalDeviceSurfacePresentModesKHR(
         demo->gpu, demo->surface, &presentModeCount, presentModes);
     assert(!err);
 
@@ -797,8 +766,7 @@ static void demo_prepare_buffers(struct demo *demo) {
     };
     uint32_t i;
 
-    err = demo->fpCreateSwapchainKHR(demo->device, &swapchain, NULL,
-                                     &demo->swapchain);
+    err = vkCreateSwapchainKHR(demo->device, &swapchain, NULL, &demo->swapchain);
     assert(!err);
 
     // If we just re-created an existing swapchain, we should destroy the old
@@ -806,19 +774,19 @@ static void demo_prepare_buffers(struct demo *demo) {
     // Note: destroying the swapchain also cleans up all its associated
     // presentable images once the platform is done with them.
     if (oldSwapchain != VK_NULL_HANDLE) {
-        demo->fpDestroySwapchainKHR(demo->device, oldSwapchain, NULL);
+        vkDestroySwapchainKHR(demo->device, oldSwapchain, NULL);
     }
 
-    err = demo->fpGetSwapchainImagesKHR(demo->device, demo->swapchain,
+    err = vkGetSwapchainImagesKHR(demo->device, demo->swapchain,
                                         &demo->swapchainImageCount, NULL);
     assert(!err);
 
     VkImage *swapchainImages =
         (VkImage *)malloc(demo->swapchainImageCount * sizeof(VkImage));
     assert(swapchainImages);
-    err = demo->fpGetSwapchainImagesKHR(demo->device, demo->swapchain,
-                                        &demo->swapchainImageCount,
-                                        swapchainImages);
+    err = vkGetSwapchainImagesKHR(demo->device, demo->swapchain,
+                                  &demo->swapchainImageCount,
+                                  swapchainImages);
     assert(!err);
 
     demo->buffers = (SwapchainBuffers *)malloc(sizeof(SwapchainBuffers) *
@@ -1843,6 +1811,8 @@ static void demo_init_vk(struct demo *demo) {
                  "vkCreateInstance Failure");
     }
 
+    gladLoadVulkanUserPtr(NULL, glad_vulkan_callback, demo->inst);
+
     /* Make initial call to query gpu_count, then second call for gpu info*/
     err = vkEnumeratePhysicalDevices(demo->inst, &gpu_count, NULL);
     assert(!err && gpu_count > 0);
@@ -1863,6 +1833,8 @@ static void demo_init_vk(struct demo *demo) {
                  " guide for additional information.\n",
                  "vkEnumeratePhysicalDevices Failure");
     }
+
+    gladLoadVulkanUserPtr(demo->gpu, glad_vulkan_callback, demo->inst);
 
     /* Look for device extensions */
     uint32_t device_extension_count = 0;
@@ -1904,30 +1876,6 @@ static void demo_init_vk(struct demo *demo) {
     }
 
     if (demo->validate) {
-        demo->CreateDebugReportCallback =
-            (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(
-                demo->inst, "vkCreateDebugReportCallbackEXT");
-        demo->DestroyDebugReportCallback =
-            (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(
-                demo->inst, "vkDestroyDebugReportCallbackEXT");
-        if (!demo->CreateDebugReportCallback) {
-            ERR_EXIT(
-                "GetProcAddr: Unable to find vkCreateDebugReportCallbackEXT\n",
-                "vkGetProcAddr Failure");
-        }
-        if (!demo->DestroyDebugReportCallback) {
-            ERR_EXIT(
-                "GetProcAddr: Unable to find vkDestroyDebugReportCallbackEXT\n",
-                "vkGetProcAddr Failure");
-        }
-        demo->DebugReportMessage =
-            (PFN_vkDebugReportMessageEXT)vkGetInstanceProcAddr(
-                demo->inst, "vkDebugReportMessageEXT");
-        if (!demo->DebugReportMessage) {
-            ERR_EXIT("GetProcAddr: Unable to find vkDebugReportMessageEXT\n",
-                     "vkGetProcAddr Failure");
-        }
-
         VkDebugReportCallbackCreateInfoEXT dbgCreateInfo;
         dbgCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT;
         dbgCreateInfo.flags =
@@ -1935,8 +1883,8 @@ static void demo_init_vk(struct demo *demo) {
         dbgCreateInfo.pfnCallback = demo->use_break ? BreakCallback : dbgFunc;
         dbgCreateInfo.pUserData = demo;
         dbgCreateInfo.pNext = NULL;
-        err = demo->CreateDebugReportCallback(demo->inst, &dbgCreateInfo, NULL,
-                                              &demo->msg_callback);
+        err = vkCreateDebugReportCallbackEXT(demo->inst, &dbgCreateInfo, NULL,
+                                             &demo->msg_callback);
         switch (err) {
         case VK_SUCCESS:
             break;
@@ -1950,13 +1898,6 @@ static void demo_init_vk(struct demo *demo) {
             break;
         }
     }
-
-    // Having these GIPA queries of device extension entry points both
-    // BEFORE and AFTER vkCreateDevice is a good test for the loader
-    GET_INSTANCE_PROC_ADDR(demo->inst, GetPhysicalDeviceSurfaceCapabilitiesKHR);
-    GET_INSTANCE_PROC_ADDR(demo->inst, GetPhysicalDeviceSurfaceFormatsKHR);
-    GET_INSTANCE_PROC_ADDR(demo->inst, GetPhysicalDeviceSurfacePresentModesKHR);
-    GET_INSTANCE_PROC_ADDR(demo->inst, GetPhysicalDeviceSurfaceSupportKHR);
 
     vkGetPhysicalDeviceProperties(demo->gpu, &demo->gpu_props);
 
@@ -2009,12 +1950,6 @@ static void demo_init_device(struct demo *demo) {
 
     err = vkCreateDevice(demo->gpu, &device, NULL, &demo->device);
     assert(!err);
-
-    GET_DEVICE_PROC_ADDR(demo->device, CreateSwapchainKHR);
-    GET_DEVICE_PROC_ADDR(demo->device, DestroySwapchainKHR);
-    GET_DEVICE_PROC_ADDR(demo->device, GetSwapchainImagesKHR);
-    GET_DEVICE_PROC_ADDR(demo->device, AcquireNextImageKHR);
-    GET_DEVICE_PROC_ADDR(demo->device, QueuePresentKHR);
 }
 
 static void demo_init_vk_swapchain(struct demo *demo) {
@@ -2028,8 +1963,8 @@ static void demo_init_vk_swapchain(struct demo *demo) {
     VkBool32 *supportsPresent =
         (VkBool32 *)malloc(demo->queue_count * sizeof(VkBool32));
     for (i = 0; i < demo->queue_count; i++) {
-        demo->fpGetPhysicalDeviceSurfaceSupportKHR(demo->gpu, i, demo->surface,
-                                                   &supportsPresent[i]);
+        vkGetPhysicalDeviceSurfaceSupportKHR(demo->gpu, i, demo->surface,
+                                             &supportsPresent[i]);
     }
 
     // Search for a graphics and a present queue in the array of queue
@@ -2087,13 +2022,13 @@ static void demo_init_vk_swapchain(struct demo *demo) {
 
     // Get the list of VkFormat's that are supported:
     uint32_t formatCount;
-    err = demo->fpGetPhysicalDeviceSurfaceFormatsKHR(demo->gpu, demo->surface,
-                                                     &formatCount, NULL);
+    err = vkGetPhysicalDeviceSurfaceFormatsKHR(demo->gpu, demo->surface,
+                                               &formatCount, NULL);
     assert(!err);
     VkSurfaceFormatKHR *surfFormats =
         (VkSurfaceFormatKHR *)malloc(formatCount * sizeof(VkSurfaceFormatKHR));
-    err = demo->fpGetPhysicalDeviceSurfaceFormatsKHR(demo->gpu, demo->surface,
-                                                     &formatCount, surfFormats);
+    err = vkGetPhysicalDeviceSurfaceFormatsKHR(demo->gpu, demo->surface,
+                                               &formatCount, surfFormats);
     assert(!err);
     // If the format list includes just one entry of VK_FORMAT_UNDEFINED,
     // the surface has no preferred format.  Otherwise, at least one
@@ -2126,6 +2061,8 @@ static void demo_init_connection(struct demo *demo) {
         fflush(stdout);
         exit(1);
     }
+
+    gladLoadVulkanUserPtr(NULL, glad_vulkan_callback, NULL);
 }
 
 static void demo_init(struct demo *demo, const int argc, const char *argv[])
@@ -2208,12 +2145,12 @@ static void demo_cleanup(struct demo *demo) {
     vkDestroyImage(demo->device, demo->depth.image, NULL);
     vkFreeMemory(demo->device, demo->depth.mem, NULL);
 
-    demo->fpDestroySwapchainKHR(demo->device, demo->swapchain, NULL);
+    vkDestroySwapchainKHR(demo->device, demo->swapchain, NULL);
     free(demo->buffers);
 
     vkDestroyDevice(demo->device, NULL);
     if (demo->validate) {
-        demo->DestroyDebugReportCallback(demo->inst, demo->msg_callback, NULL);
+        vkDestroyDebugReportCallbackEXT(demo->inst, demo->msg_callback, NULL);
     }
     vkDestroySurfaceKHR(demo->inst, demo->surface, NULL);
     vkDestroyInstance(demo->inst, NULL);

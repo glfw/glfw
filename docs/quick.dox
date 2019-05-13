@@ -47,11 +47,11 @@ exposes OpenGL 1.2.  The easiest way to work around this is to use an
 If you are using such a library then you should include its header _before_ the
 GLFW header.  This lets it replace the OpenGL header included by GLFW without
 conflicts.  This example uses
-[glad](https://github.com/Dav1dde/glad), but the same rule applies to all such
+[glad2](https://github.com/Dav1dde/glad), but the same rule applies to all such
 libraries.
 
 @code
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 @endcode
 
@@ -177,7 +177,7 @@ a current context to load from.  This example uses
 libraries.
 
 @code
-gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+gladLoadGL(glfwGetProcAddress);
 @endcode
 
 

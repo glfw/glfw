@@ -31,7 +31,7 @@
 //
 //========================================================================
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -524,7 +524,7 @@ int main(int argc, char** argv)
                 break;
 
             case 'n':
-                count = (int) strtol(optarg, NULL, 10);
+                count = (int) strtoul(optarg, NULL, 10);
                 break;
 
             default:
@@ -549,12 +549,6 @@ int main(int argc, char** argv)
     {
         width  = 640;
         height = 480;
-    }
-
-    if (!count)
-    {
-        fprintf(stderr, "Invalid user\n");
-        exit(EXIT_FAILURE);
     }
 
     slots = calloc(count, sizeof(Slot));
@@ -610,7 +604,7 @@ int main(int argc, char** argv)
         glfwSetDropCallback(slots[i].window, drop_callback);
 
         glfwMakeContextCurrent(slots[i].window);
-        gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+        gladLoadGL(glfwGetProcAddress);
         glfwSwapInterval(1);
     }
 

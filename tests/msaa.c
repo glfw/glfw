@@ -29,7 +29,7 @@
 //
 //========================================================================
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
 #if defined(_MSC_VER)
@@ -141,7 +141,7 @@ int main(int argc, char** argv)
     glfwSetKeyCallback(window, key_callback);
 
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    gladLoadGL(glfwGetProcAddress);
     glfwSwapInterval(1);
 
     glGetIntegerv(GL_SAMPLES, &samples);

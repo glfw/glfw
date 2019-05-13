@@ -233,7 +233,7 @@ arguments can always be passed unmodified to this function.
 
 @section input_mouse Mouse input
 
-Mouse input comes in many forms, including cursor motion, button presses and
+Mouse input comes in many forms, including mouse motion, button presses and
 scrolling offsets.  The cursor appearance can also be changed, either to
 a custom image or a standard cursor shape from the system theme.
 
@@ -248,7 +248,7 @@ glfwSetCursorPosCallback(window, cursor_position_callback);
 @endcode
 
 The callback functions receives the cursor position, measured in screen
-coordinates but relative to the top-left corner of the window client area.  On
+coordinates but relative to the top-left corner of the window content area.  On
 platforms that provide it, the full sub-pixel cursor position is passed on.
 
 @code
@@ -306,6 +306,31 @@ cursor mode.
 @code
 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 @endcode
+
+
+@anchor GLFW_RAW_MOUSE_MOTION
+@subsection raw_mouse_motion Raw mouse motion
+
+When the cursor is disabled, raw (unscaled and unaccelerated) mouse motion can
+be enabled if available.
+
+Raw mouse motion is closer to the actual motion of the mouse across a surface.
+It is not affected by the scaling and acceleration applied to the motion of the
+desktop cursor.  That processing is suitable for a cursor while raw motion is
+better for controlling for example a 3D camera.  Because of this, raw mouse
+motion is only provided when the cursor is disabled.
+
+Call @ref glfwRawMouseMotionSupported to check if the current machine provides
+raw motion and set the `GLFW_RAW_MOUSE_MOTION` input mode to enable it.  It is
+disabled by default.
+
+@code
+if (glfwRawMouseMotionSupported())
+    glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+@endcode
+
+If supported, raw mouse motion can be enabled or disabled per-window and at any
+time but it will only be provided when the cursor is disabled.
 
 
 @subsection cursor_object Cursor objects
@@ -377,7 +402,7 @@ glfwSetCursor(window, cursor);
 @endcode
 
 Once set, the cursor image will be used as long as the system cursor is over the
-client area of the window and the [cursor mode](@ref cursor_mode) is set
+content area of the window and the [cursor mode](@ref cursor_mode) is set
 to `GLFW_CURSOR_NORMAL`.
 
 A single cursor may be set for any number of windows.
@@ -394,7 +419,7 @@ default cursor.  This does not affect the cursor mode.
 
 @subsection cursor_enter Cursor enter/leave events
 
-If you wish to be notified when the cursor enters or leaves the client area of
+If you wish to be notified when the cursor enters or leaves the content area of
 a window, set a cursor enter/leave callback.
 
 @code
@@ -408,16 +433,16 @@ void cursor_enter_callback(GLFWwindow* window, int entered)
 {
     if (entered)
     {
-        // The cursor entered the client area of the window
+        // The cursor entered the content area of the window
     }
     else
     {
-        // The cursor left the client area of the window
+        // The cursor left the content area of the window
     }
 }
 @endcode
 
-You can query whether the cursor is currently inside the client area of the
+You can query whether the cursor is currently inside the content area of the
 window with the [GLFW_HOVERED](@ref GLFW_HOVERED_attrib) window attribute.
 
 @code
@@ -761,7 +786,7 @@ time of release.  Newer ones can be added at runtime with @ref
 glfwUpdateGamepadMappings.
 
 @code
-const char* mappings = load_file_contents("gamecontrollerdb.txt");
+const char* mappings = load_file_contents("game/data/gamecontrollerdb.txt");
 
 glfwUpdateGamepadMappings(mappings);
 @endcode

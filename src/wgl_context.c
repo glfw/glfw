@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.3 WGL - www.glfw.org
+// GLFW 3.4 WGL - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -67,7 +67,7 @@ static int choosePixelFormat(_GLFWwindow* window,
 {
     _GLFWfbconfig* usableConfigs;
     const _GLFWfbconfig* closest;
-    int i, pixelFormat, nativeCount, usableCount, attribCount;
+    int i, pixelFormat, nativeCount, usableCount = 0, attribCount = 0;
     int attribs[40];
     int values[sizeof(attribs) / sizeof(attribs[0])];
 
@@ -82,8 +82,6 @@ static int choosePixelFormat(_GLFWwindow* window,
                                  "WGL: Failed to retrieve pixel format attribute");
             return 0;
         }
-
-        attribCount = 0;
 
         addAttrib(WGL_SUPPORT_OPENGL_ARB);
         addAttrib(WGL_DRAW_TO_WINDOW_ARB);
@@ -131,7 +129,6 @@ static int choosePixelFormat(_GLFWwindow* window,
     }
 
     usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
-    usableCount = 0;
 
     for (i = 0;  i < nativeCount;  i++)
     {
@@ -149,6 +146,8 @@ static int choosePixelFormat(_GLFWwindow* window,
             {
                 _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
                                     "WGL: Failed to retrieve pixel format attributes");
+
+                free(usableConfigs);
                 return 0;
             }
 
@@ -216,7 +215,11 @@ static int choosePixelFormat(_GLFWwindow* window,
                                      sizeof(PIXELFORMATDESCRIPTOR),
                                      &pfd))
             {
-                continue;
+                _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                    "WGL: Failed to describe pixel format");
+
+                free(usableConfigs);
+                return 0;
             }
 
             if (!(pfd.dwFlags & PFD_DRAW_TO_WINDOW) ||
@@ -318,10 +321,12 @@ static void swapBuffersWGL(_GLFWwindow* window)
     {
         if (IsWindowsVistaOrGreater())
         {
-            BOOL enabled;
+            // DWM Composition is always enabled on Win8+
+            BOOL enabled = IsWindows8OrGreater();
 
             // HACK: Use DwmFlush when desktop composition is enabled
-            if (SUCCEEDED(DwmIsCompositionEnabled(&enabled)) && enabled)
+            if (enabled ||
+                (SUCCEEDED(DwmIsCompositionEnabled(&enabled)) && enabled))
             {
                 int count = abs(window->context.wgl.interval);
                 while (count--)
@@ -343,11 +348,13 @@ static void swapIntervalWGL(int interval)
     {
         if (IsWindowsVistaOrGreater())
         {
-            BOOL enabled;
+            // DWM Composition is always enabled on Win8+
+            BOOL enabled = IsWindows8OrGreater();
 
             // HACK: Disable WGL swap interval when desktop composition is enabled to
             //       avoid interfering with DWM vsync
-            if (SUCCEEDED(DwmIsCompositionEnabled(&enabled)) && enabled)
+            if (enabled ||
+                (SUCCEEDED(DwmIsCompositionEnabled(&enabled)) && enabled))
                 interval = 0;
         }
     }
@@ -526,7 +533,7 @@ void _glfwTerminateWGL(void)
 
 #define setAttrib(a, v) \
 { \
-    assert((size_t) (index + 1) < sizeof(attribs) / sizeof(attribs[0])); \
+    assert(((size_t) index + 1) < sizeof(attribs) / sizeof(attribs[0])); \
     attribs[index++] = a; \
     attribs[index++] = v; \
 }

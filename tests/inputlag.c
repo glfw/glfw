@@ -28,7 +28,7 @@
 //
 //========================================================================
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
 #define NK_IMPLEMENTATION
@@ -210,7 +210,7 @@ int main(int argc, char** argv)
     }
 
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    gladLoadGL(glfwGetProcAddress);
     update_vsync();
 
     last_time = glfwGetTime();

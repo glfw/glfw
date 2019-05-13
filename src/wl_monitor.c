@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 Wayland - www.glfw.org
+// GLFW 3.4 Wayland - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <math.h>
 
 
 static void outputHandleGeometry(void* data,
@@ -70,7 +71,7 @@ static void outputHandleMode(void* data,
     mode.redBits = 8;
     mode.greenBits = 8;
     mode.blueBits = 8;
-    mode.refreshRate = refresh / 1000;
+    mode.refreshRate = (int) round(refresh / 1000.0);
 
     monitor->modeCount++;
     monitor->modes =
@@ -167,6 +168,20 @@ void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
         *xscale = (float) monitor->wl.scale;
     if (yscale)
         *yscale = (float) monitor->wl.scale;
+}
+
+void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor,
+                                     int* xpos, int* ypos,
+                                     int* width, int* height)
+{
+    if (xpos)
+        *xpos = monitor->wl.x;
+    if (ypos)
+        *ypos = monitor->wl.y;
+    if (width)
+        *width = monitor->modes[monitor->wl.currentMode].width;
+    if (height)
+        *height = monitor->modes[monitor->wl.currentMode].height;
 }
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)

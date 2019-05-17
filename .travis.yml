@@ -4,6 +4,7 @@ branches:
     only:
         - ci
         - master
+        - 3.3-stable
 matrix:
     include:
         - os: linux

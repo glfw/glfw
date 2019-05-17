@@ -202,6 +202,7 @@ skills.
  - Lucas Hinderberger
  - Paul Holden
  - Warren Hu
+ - Charles Huber
  - IntellectualKitty
  - Aaron Jacobs
  - Erik S. V. Jansson

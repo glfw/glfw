@@ -83,7 +83,10 @@ matrix:
               - BUILD_SHARED_LIBS=OFF
               - CFLAGS=-Werror
 script:
-    - if grep -Inr '\s$' src include docs tests examples CMake *.md .gitattributes .gitignore; then echo Trailing whitespace found, aborting.; exit 1; fi
+    - if grep -Inr '\s$' src include docs tests examples CMake *.md .gitattributes .gitignore; then
+          echo Trailing whitespace found, aborting;
+          exit 1;
+      fi
     - mkdir build
     - cd build
     - if test -n "${USE_WAYLAND}"; then

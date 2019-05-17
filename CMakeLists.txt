@@ -211,22 +211,22 @@ if (_GLFW_X11)
     list(APPEND glfw_LIBRARIES "${X11_X11_LIB}" "${CMAKE_THREAD_LIBS_INIT}")
 
     # Check for XRandR (modern resolution switching and gamma control)
-    if (NOT X11_Xrandr_FOUND)
+    if (NOT X11_Xrandr_INCLUDE_PATH)
         message(FATAL_ERROR "The RandR headers were not found")
     endif()
 
     # Check for Xinerama (legacy multi-monitor support)
-    if (NOT X11_Xinerama_FOUND)
+    if (NOT X11_Xinerama_INCLUDE_PATH)
         message(FATAL_ERROR "The Xinerama headers were not found")
     endif()
 
     # Check for Xkb (X keyboard extension)
-    if (NOT X11_Xkb_FOUND)
+    if (NOT X11_Xkb_INCLUDE_PATH)
         message(FATAL_ERROR "The X keyboard extension headers were not found")
     endif()
 
     # Check for Xcursor (cursor creation from RGBA images)
-    if (NOT X11_Xcursor_FOUND)
+    if (NOT X11_Xcursor_INCLUDE_PATH)
         message(FATAL_ERROR "The Xcursor headers were not found")
     endif()
 

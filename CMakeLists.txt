@@ -222,7 +222,7 @@ if (_GLFW_X11)
     endif()
 
     # Check for XInput (modern HID input)
-    if (NOT X11_Xinput_INCLUDE_PATH)
+    if (NOT X11_Xi_INCLUDE_PATH)
         message(FATAL_ERROR "The XInput headers were not found")
     endif()
 
@@ -230,7 +230,7 @@ if (_GLFW_X11)
                                   "${X11_Xinerama_INCLUDE_PATH}"
                                   "${X11_Xkb_INCLUDE_PATH}"
                                   "${X11_Xcursor_INCLUDE_PATH}"
-                                  "${X11_Xinput_INCLUDE_PATH}")
+                                  "${X11_Xi_INCLUDE_PATH}")
 endif()
 
 #--------------------------------------------------------------------

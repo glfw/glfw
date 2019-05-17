@@ -4,31 +4,45 @@ branches:
     only:
         - ci
         - master
-sudo: false
-dist: trusty
-addons:
-    apt:
-        packages:
-            - cmake
-            - libxrandr-dev
-            - libxinerama-dev
-            - libxcursor-dev
-            - libxi-dev
 matrix:
     include:
         - os: linux
+          dist: xenial
+          sudo: false
+          addons:
+              apt:
+                  packages:
+                      - cmake
+                      - libxrandr-dev
+                      - libxinerama-dev
+                      - libxcursor-dev
+                      - libxi-dev
           env:
               - BUILD_SHARED_LIBS=ON
               - CFLAGS=-Werror
         - os: linux
+          dist: xenial
+          sudo: false
+          addons:
+              apt:
+                  packages:
+                      - cmake
+                      - libxrandr-dev
+                      - libxinerama-dev
+                      - libxcursor-dev
+                      - libxi-dev
           env:
               - BUILD_SHARED_LIBS=OFF
               - CFLAGS=-Werror
         - os: linux
+          dist: xenial
           sudo: required
           addons:
               apt:
+                  sources:
+                      - ppa:kubuntu-ppa/backports
                   packages:
+                      - extra-cmake-modules
                       - libwayland-dev
                       - libxkbcommon-dev
                       - libegl1-mesa-dev
@@ -37,10 +51,14 @@ matrix:
               - BUILD_SHARED_LIBS=ON
               - CFLAGS=-Werror
         - os: linux
+          dist: xenial
           sudo: required
           addons:
               apt:
+                  sources:
+                      - ppa:kubuntu-ppa/backports
                   packages:
+                      - extra-cmake-modules
                       - libwayland-dev
                       - libxkbcommon-dev
                       - libegl1-mesa-dev
@@ -49,10 +67,12 @@ matrix:
               - BUILD_SHARED_LIBS=OFF
               - CFLAGS=-Werror
         - os: osx
+          sudo: false
           env:
               - BUILD_SHARED_LIBS=ON
               - CFLAGS=-Werror
         - os: osx
+          sudo: false
           env:
               - BUILD_SHARED_LIBS=OFF
               - CFLAGS=-Werror
@@ -60,9 +80,7 @@ script:
     - if grep -Inr '\s$' src include docs tests examples CMake *.md .gitattributes .gitignore; then echo Trailing whitespace found, aborting.; exit 1; fi
     - mkdir build
     - cd build
-    - if test -n "${USE_WAYLAND}";
-          then wget https://mirrors.kernel.org/ubuntu/pool/universe/e/extra-cmake-modules/extra-cmake-modules_5.38.0a-0ubuntu1_amd64.deb;
-          sudo dpkg -i extra-cmake-modules_5.38.0a-0ubuntu1_amd64.deb;
+    - if test -n "${USE_WAYLAND}"; then
           git clone git://anongit.freedesktop.org/wayland/wayland-protocols;
           pushd wayland-protocols;
           git checkout 1.15 && ./autogen.sh --prefix=/usr && make && sudo make install;

@@ -13,7 +13,6 @@ matrix:
           addons:
               apt:
                   packages:
-                      - cmake
                       - libxrandr-dev
                       - libxinerama-dev
                       - libxcursor-dev
@@ -28,7 +27,6 @@ matrix:
           addons:
               apt:
                   packages:
-                      - cmake
                       - libxrandr-dev
                       - libxinerama-dev
                       - libxcursor-dev

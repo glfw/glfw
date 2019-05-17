@@ -9,6 +9,7 @@ matrix:
         - os: linux
           dist: xenial
           sudo: false
+          name: "X11 shared library"
           addons:
               apt:
                   packages:
@@ -23,6 +24,7 @@ matrix:
         - os: linux
           dist: xenial
           sudo: false
+          name: "X11 static library"
           addons:
               apt:
                   packages:
@@ -37,6 +39,7 @@ matrix:
         - os: linux
           dist: xenial
           sudo: required
+          name: "Wayland shared library"
           addons:
               apt:
                   sources:
@@ -53,6 +56,7 @@ matrix:
         - os: linux
           dist: xenial
           sudo: required
+          name: "Wayland static library"
           addons:
               apt:
                   sources:
@@ -68,11 +72,13 @@ matrix:
               - CFLAGS=-Werror
         - os: osx
           sudo: false
+          name: "Cocoa shared library"
           env:
               - BUILD_SHARED_LIBS=ON
               - CFLAGS=-Werror
         - os: osx
           sudo: false
+          name: "Cocoa static library"
           env:
               - BUILD_SHARED_LIBS=OFF
               - CFLAGS=-Werror

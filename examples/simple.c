@@ -30,17 +30,20 @@
 #include "linmath.h"
 
 #include <stdlib.h>
+#include <stddef.h>
 #include <stdio.h>
 
-static const struct
+typedef struct Vertex
 {
-    float x, y;
-    float r, g, b;
-} vertices[3] =
+    vec2 pos;
+    vec3 col;
+} Vertex;
+
+static const Vertex vertices[3] =
 {
-    { -0.6f, -0.4f, 1.f, 0.f, 0.f },
-    {  0.6f, -0.4f, 0.f, 1.f, 0.f },
-    {   0.f,  0.6f, 0.f, 0.f, 1.f }
+    { { -0.6f, -0.4f }, { 1.f, 0.f, 0.f } },
+    { {  0.6f, -0.4f }, { 0.f, 1.f, 0.f } },
+    { {   0.f,  0.6f }, { 0.f, 0.f, 1.f } }
 };
 
 static const char* vertex_shader_text =
@@ -123,10 +126,10 @@ int main(void)
 
     glEnableVertexAttribArray(vpos_location);
     glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(vertices[0]), (void*) 0);
+                          sizeof(Vertex), (void*) offsetof(Vertex, pos));
     glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
-                          sizeof(vertices[0]), (void*) (sizeof(float) * 2));
+                          sizeof(Vertex), (void*) offsetof(Vertex, col));
 
     while (!glfwWindowShouldClose(window))
     {

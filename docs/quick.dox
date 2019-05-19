@@ -342,7 +342,7 @@ presses _Escape_ or closes the window.
 The program above can be found in the
 [source package](https://www.glfw.org/download.html) as
 `examples/triangle-opengl.c` and is compiled along with all other examples when
-you build GLFW.  If you built GLFW from the source package then already have
+you build GLFW.  If you built GLFW from the source package then you already have
 this as `triangle-opengl.exe` on Windows, `triangle-opengl` on Linux or
 `triangle-opengl.app` on macOS.
 

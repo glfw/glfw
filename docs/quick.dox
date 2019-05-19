@@ -135,9 +135,14 @@ require a minimum OpenGL version by setting the `GLFW_CONTEXT_VERSION_MAJOR` and
 `GLFW_CONTEXT_VERSION_MINOR` hints _before_ creation.  If the required minimum
 version is not supported on the machine, context (and window) creation fails.
 
+You can select the OpenGL profile by setting the `GLFW_OPENGL_PROFILE` hint.
+This program uses the core profile as that is the only profile macOS supports
+for OpenGL 3.x and 4.x.
+
 @code
-glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
 if (!window)
 {

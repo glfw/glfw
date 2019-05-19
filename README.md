@@ -122,6 +122,7 @@ information on what to include when reporting a bug.
  - Bugfix: The CMake config-file package used an absolute path and was not
    relocatable (#1470)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
+ - [NSGL] Removed enforcement of forward-compatible flag for core contexts
 
 
 ## Contact

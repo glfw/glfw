@@ -152,7 +152,7 @@ int main(void)
         mat4x4_mul(mvp, p, m);
 
         glUseProgram(program);
-        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
+        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) &mvp);
         glBindVertexArray(vertex_array);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 

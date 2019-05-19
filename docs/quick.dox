@@ -337,7 +337,7 @@ presses _Escape_ or closes the window.
 The program above can be found in the
 [source package](https://www.glfw.org/download.html) as `examples/simple.c`
 and is compiled along with all other examples when you build GLFW.  If you
-built GLFW from the source package then already have this as `simple.exe` on
+built GLFW from the source package then you already have this as `simple.exe` on
 Windows, `simple` on Linux or `simple.app` on macOS.
 
 This tutorial used only a few of the many functions GLFW provides.  There are

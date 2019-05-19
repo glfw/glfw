@@ -212,16 +212,9 @@ static void list_vulkan_instance_extensions(void)
     printf("Vulkan instance extensions:\n");
 
     uint32_t ep_count;
-    if (vkEnumerateInstanceExtensionProperties(NULL, &ep_count, NULL) != VK_SUCCESS)
-        return;
-
+    vkEnumerateInstanceExtensionProperties(NULL, &ep_count, NULL);
     VkExtensionProperties* ep = calloc(ep_count, sizeof(VkExtensionProperties));
-
-    if (vkEnumerateInstanceExtensionProperties(NULL, &ep_count, ep) != VK_SUCCESS)
-    {
-        free(ep);
-        return;
-    }
+    vkEnumerateInstanceExtensionProperties(NULL, &ep_count, ep);
 
     for (uint32_t i = 0;  i < ep_count;  i++)
         printf(" %s (v%u)\n", ep[i].extensionName, ep[i].specVersion);
@@ -234,16 +227,9 @@ static void list_vulkan_instance_layers(void)
     printf("Vulkan instance layers:\n");
 
     uint32_t lp_count;
-    if (vkEnumerateInstanceLayerProperties(&lp_count, NULL) != VK_SUCCESS)
-        return;
-
+    vkEnumerateInstanceLayerProperties(&lp_count, NULL);
     VkLayerProperties* lp = calloc(lp_count, sizeof(VkLayerProperties));
-
-    if (vkEnumerateInstanceLayerProperties(&lp_count, lp) != VK_SUCCESS)
-    {
-        free(lp);
-        return;
-    }
+    vkEnumerateInstanceLayerProperties(&lp_count, lp);
 
     for (uint32_t i = 0;  i < lp_count;  i++)
     {
@@ -261,16 +247,9 @@ static void list_vulkan_device_extensions(VkInstance instance, VkPhysicalDevice 
     printf("Vulkan device extensions:\n");
 
     uint32_t ep_count;
-    if (vkEnumerateDeviceExtensionProperties(device, NULL, &ep_count, NULL) != VK_SUCCESS)
-        return;
-
+    vkEnumerateDeviceExtensionProperties(device, NULL, &ep_count, NULL);
     VkExtensionProperties* ep = calloc(ep_count, sizeof(VkExtensionProperties));
-
-    if (vkEnumerateDeviceExtensionProperties(device, NULL, &ep_count, ep) != VK_SUCCESS)
-    {
-        free(ep);
-        return;
-    }
+    vkEnumerateDeviceExtensionProperties(device, NULL, &ep_count, ep);
 
     for (uint32_t i = 0;  i < ep_count;  i++)
         printf(" %s (v%u)\n", ep[i].extensionName, ep[i].specVersion);
@@ -283,16 +262,9 @@ static void list_vulkan_device_layers(VkInstance instance, VkPhysicalDevice devi
     printf("Vulkan device layers:\n");
 
     uint32_t lp_count;
-    if (vkEnumerateDeviceLayerProperties(device, &lp_count, NULL) != VK_SUCCESS)
-        return;
-
+    vkEnumerateDeviceLayerProperties(device, &lp_count, NULL);
     VkLayerProperties* lp = calloc(lp_count, sizeof(VkLayerProperties));
-
-    if (vkEnumerateDeviceLayerProperties(device, &lp_count, lp) != VK_SUCCESS)
-    {
-        free(lp);
-        return;
-    }
+    vkEnumerateDeviceLayerProperties(device, &lp_count, lp);
 
     for (uint32_t i = 0;  i < lp_count;  i++)
     {
@@ -859,22 +831,9 @@ int main(int argc, char** argv)
         gladLoadVulkanUserPtr(NULL, glad_vulkan_callback, instance);
 
         uint32_t pd_count;
-        if (vkEnumeratePhysicalDevices(instance, &pd_count, NULL) != VK_SUCCESS)
-        {
-            vkDestroyInstance(instance, NULL);
-            glfwTerminate();
-            exit(EXIT_FAILURE);
-        }
-
+        vkEnumeratePhysicalDevices(instance, &pd_count, NULL);
         VkPhysicalDevice* pd = calloc(pd_count, sizeof(VkPhysicalDevice));
-
-        if (vkEnumeratePhysicalDevices(instance, &pd_count, pd) != VK_SUCCESS)
-        {
-            free(pd);
-            vkDestroyInstance(instance, NULL);
-            glfwTerminate();
-            exit(EXIT_FAILURE);
-        }
+        vkEnumeratePhysicalDevices(instance, &pd_count, pd);
 
         for (uint32_t i = 0;  i < pd_count;  i++)
         {

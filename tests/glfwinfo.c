@@ -809,6 +809,7 @@ int main(int argc, char** argv)
 
     if (glfwVulkanSupported())
     {
+        uint32_t loader_version = VK_API_VERSION_1_0;
         uint32_t i, re_count, pd_count;
         const char** re;
         VkApplicationInfo ai = {0};
@@ -817,6 +818,17 @@ int main(int argc, char** argv)
         VkPhysicalDevice* pd;
 
         gladLoadVulkanUserPtr(NULL, glad_vulkan_callback, NULL);
+
+        if (vkEnumerateInstanceVersion)
+        {
+            uint32_t version;
+            if (vkEnumerateInstanceVersion(&version) == VK_SUCCESS)
+                loader_version = version;
+        }
+
+        printf("Vulkan loader API version: %i.%i\n",
+               VK_VERSION_MAJOR(loader_version),
+               VK_VERSION_MINOR(loader_version));
 
         re = glfwGetRequiredInstanceExtensions(&re_count);
 
@@ -838,10 +850,14 @@ int main(int argc, char** argv)
 
         ai.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
         ai.pApplicationName = "glfwinfo";
-        ai.applicationVersion = GLFW_VERSION_MAJOR;
-        ai.pEngineName = "GLFW";
-        ai.engineVersion = GLFW_VERSION_MAJOR;
-        ai.apiVersion = VK_API_VERSION_1_0;
+        ai.applicationVersion = VK_MAKE_VERSION(GLFW_VERSION_MAJOR,
+                                                GLFW_VERSION_MINOR,
+                                                GLFW_VERSION_REVISION);
+
+        if (loader_version >= VK_API_VERSION_1_1)
+            ai.apiVersion = VK_API_VERSION_1_1;
+        else
+            ai.apiVersion = VK_API_VERSION_1_0;
 
         ici.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         ici.pApplicationInfo = &ai;
@@ -879,9 +895,11 @@ int main(int argc, char** argv)
 
             vkGetPhysicalDeviceProperties(pd[i], &pdp);
 
-            printf("Vulkan %s device: \"%s\"\n",
+            printf("Vulkan %s device: \"%s\" API version %i.%i\n",
                    get_device_type_name(pdp.deviceType),
-                   pdp.deviceName);
+                   pdp.deviceName,
+                   VK_VERSION_MAJOR(pdp.apiVersion),
+                   VK_VERSION_MINOR(pdp.apiVersion));
 
             if (list_extensions)
                 list_vulkan_device_extensions(instance, pd[i]);

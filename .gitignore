@@ -60,7 +60,7 @@ examples/offscreen
 examples/particles
 examples/splitview
 examples/sharing
-examples/simple
+examples/triangle-opengl
 examples/wave
 tests/*.app
 tests/*.exe

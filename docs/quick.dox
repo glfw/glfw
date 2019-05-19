@@ -4,7 +4,7 @@
 
 @tableofcontents
 
-This guide takes you through writing a simple application using GLFW 3.  The
+This guide takes you through writing a small application using GLFW 3.  The
 application will create a window and OpenGL context, render a rotating triangle
 and exit when the user closes the window or presses _Escape_.  This guide will
 introduce a few of the most commonly used functions, but there are many more.
@@ -326,19 +326,20 @@ for example, many kinds of editing tools.
 @section quick_example Putting it together
 
 Now that you know how to initialize GLFW, create a window and poll for
-keyboard input, it's possible to create a simple program.
+keyboard input, it's possible to create a small program.
 
 This program creates a 640 by 480 windowed mode window and starts a loop that
 clears the screen, renders a triangle and processes events until the user either
 presses _Escape_ or closes the window.
 
-@snippet simple.c code
+@snippet triangle-opengl.c code
 
 The program above can be found in the
-[source package](https://www.glfw.org/download.html) as `examples/simple.c`
-and is compiled along with all other examples when you build GLFW.  If you
-built GLFW from the source package then already have this as `simple.exe` on
-Windows, `simple` on Linux or `simple.app` on macOS.
+[source package](https://www.glfw.org/download.html) as
+`examples/triangle-opengl.c` and is compiled along with all other examples when
+you build GLFW.  If you built GLFW from the source package then already have
+this as `triangle-opengl.exe` on Windows, `triangle-opengl` on Linux or
+`triangle-opengl.app` on macOS.
 
 This tutorial used only a few of the many functions GLFW provides.  There are
 guides for each of the areas covered by GLFW.  Each guide will introduce all the

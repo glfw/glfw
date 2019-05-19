@@ -217,7 +217,7 @@ static void list_vulkan_instance_extensions(void)
     vkEnumerateInstanceExtensionProperties(NULL, &ep_count, ep);
 
     for (uint32_t i = 0;  i < ep_count;  i++)
-        printf(" %s (v%u)\n", ep[i].extensionName, ep[i].specVersion);
+        printf(" %s (spec version %u)\n", ep[i].extensionName, ep[i].specVersion);
 
     free(ep);
 }
@@ -233,7 +233,7 @@ static void list_vulkan_instance_layers(void)
 
     for (uint32_t i = 0;  i < lp_count;  i++)
     {
-        printf(" %s (v%u) \"%s\"\n",
+        printf(" %s (spec version %u) \"%s\"\n",
                lp[i].layerName,
                lp[i].specVersion >> 22,
                lp[i].description);
@@ -252,7 +252,7 @@ static void list_vulkan_device_extensions(VkInstance instance, VkPhysicalDevice 
     vkEnumerateDeviceExtensionProperties(device, NULL, &ep_count, ep);
 
     for (uint32_t i = 0;  i < ep_count;  i++)
-        printf(" %s (v%u)\n", ep[i].extensionName, ep[i].specVersion);
+        printf(" %s (spec version %u)\n", ep[i].extensionName, ep[i].specVersion);
 
     free(ep);
 }
@@ -268,7 +268,7 @@ static void list_vulkan_device_layers(VkInstance instance, VkPhysicalDevice devi
 
     for (uint32_t i = 0;  i < lp_count;  i++)
     {
-        printf(" %s (v%u) \"%s\"\n",
+        printf(" %s (spec version %u) \"%s\"\n",
                lp[i].layerName,
                lp[i].specVersion >> 22,
                lp[i].description);
@@ -841,7 +841,7 @@ int main(int argc, char** argv)
 
             vkGetPhysicalDeviceProperties(pd[i], &pdp);
 
-            printf("Vulkan %s device: \"%s\" API version %i.%i\n",
+            printf("Vulkan %s device: \"%s\" (API version %i.%i)\n",
                    get_device_type_name(pdp.deviceType),
                    pdp.deviceName,
                    VK_VERSION_MAJOR(pdp.apiVersion),

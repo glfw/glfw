@@ -5066,23 +5066,26 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  */
 GLFWAPI const char* glfwGetClipboardString(GLFWwindow* window);
 
-/*! @brief Returns the value of the GLFW timer.
+/*! @brief Returns the GLFW time.
  *
- *  This function returns the value of the GLFW timer.  Unless the timer has
- *  been set using @ref glfwSetTime, the timer measures time elapsed since GLFW
- *  was initialized.
+ *  This function returns the current GLFW time, in seconds.  Unless the time
+ *  has been set using @ref glfwSetTime it measures time elapsed since GLFW was
+ *  initialized.
+ *
+ *  This function and @ref glfwSetTime are helper functions on top of @ref
+ *  glfwGetTimerFrequency and @ref glfwGetTimerValue.
  *
  *  The resolution of the timer is system dependent, but is usually on the order
  *  of a few micro- or nanoseconds.  It uses the highest-resolution monotonic
  *  time source on each supported platform.
  *
- *  @return The current value, in seconds, or zero if an
+ *  @return The current time, in seconds, or zero if an
  *  [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
  *  @thread_safety This function may be called from any thread.  Reading and
- *  writing of the internal timer offset is not atomic, so it needs to be
+ *  writing of the internal base time is not atomic, so it needs to be
  *  externally synchronized with calls to @ref glfwSetTime.
  *
  *  @sa @ref time
@@ -5093,23 +5096,26 @@ GLFWAPI const char* glfwGetClipboardString(GLFWwindow* window);
  */
 GLFWAPI double glfwGetTime(void);
 
-/*! @brief Sets the GLFW timer.
+/*! @brief Sets the GLFW time.
  *
- *  This function sets the value of the GLFW timer.  It then continues to count
- *  up from that value.  The value must be a positive finite number less than
- *  or equal to 18446744073.0, which is approximately 584.5 years.
+ *  This function sets the current GLFW time, in seconds.  The value must be
+ *  a positive finite number less than or equal to 18446744073.0, which is
+ *  approximately 584.5 years.
+ *
+ *  This function and @ref glfwGetTime are helper functions on top of @ref
+ *  glfwGetTimerFrequency and @ref glfwGetTimerValue.
  *
  *  @param[in] time The new value, in seconds.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_INVALID_VALUE.
  *
- *  @remark The upper limit of the timer is calculated as
+ *  @remark The upper limit of GLFW time is calculated as
  *  floor((2<sup>64</sup> - 1) / 10<sup>9</sup>) and is due to implementations
  *  storing nanoseconds in 64 bits.  The limit may be increased in the future.
  *
  *  @thread_safety This function may be called from any thread.  Reading and
- *  writing of the internal timer offset is not atomic, so it needs to be
+ *  writing of the internal base time is not atomic, so it needs to be
  *  externally synchronized with calls to @ref glfwGetTime.
  *
  *  @sa @ref time

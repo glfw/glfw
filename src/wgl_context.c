@@ -77,8 +77,8 @@ static int choosePixelFormat(_GLFWwindow* window,
     {
         const int attrib = WGL_NUMBER_PIXEL_FORMATS_ARB;
 
-        if (!_glfw.wgl.GetPixelFormatAttribivARB(window->context.wgl.dc,
-                                                 1, 0, 1, &attrib, &nativeCount))
+        if (!wglGetPixelFormatAttribivARB(window->context.wgl.dc,
+                                          1, 0, 1, &attrib, &nativeCount))
         {
             _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
                                  "WGL: Failed to retrieve pixel format attribute");
@@ -141,10 +141,10 @@ static int choosePixelFormat(_GLFWwindow* window,
         {
             // Get pixel format attributes through "modern" extension
 
-            if (!_glfw.wgl.GetPixelFormatAttribivARB(window->context.wgl.dc,
-                                                     pixelFormat, 0,
-                                                     attribCount,
-                                                     attribs, values))
+            if (!wglGetPixelFormatAttribivARB(window->context.wgl.dc,
+                                              pixelFormat, 0,
+                                              attribCount,
+                                              attribs, values))
             {
                 _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
                                     "WGL: Failed to retrieve pixel format attributes");
@@ -362,7 +362,7 @@ static void swapIntervalWGL(int interval)
     }
 
     if (_glfw.wgl.EXT_swap_control)
-        _glfw.wgl.SwapIntervalEXT(interval);
+        wglSwapIntervalEXT(interval);
 }
 
 static int extensionSupportedWGL(const char* extension)
@@ -370,9 +370,9 @@ static int extensionSupportedWGL(const char* extension)
     const char* extensions = NULL;
 
     if (_glfw.wgl.GetExtensionsStringARB)
-        extensions = _glfw.wgl.GetExtensionsStringARB(wglGetCurrentDC());
+        extensions = wglGetExtensionsStringARB(wglGetCurrentDC());
     else if (_glfw.wgl.GetExtensionsStringEXT)
-        extensions = _glfw.wgl.GetExtensionsStringEXT();
+        extensions = wglGetExtensionsStringEXT();
 
     if (!extensions)
         return GLFW_FALSE;
@@ -695,8 +695,7 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         setAttrib(0, 0);
 
         window->context.wgl.handle =
-            _glfw.wgl.CreateContextAttribsARB(window->context.wgl.dc,
-                                              share, attribs);
+            wglCreateContextAttribsARB(window->context.wgl.dc, share, attribs);
         if (!window->context.wgl.handle)
         {
             const DWORD error = GetLastError();

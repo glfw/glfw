@@ -1,24 +1,27 @@
 
-set(glfw_DOCS_SOURCES
-    "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"
-    "${GLFW_SOURCE_DIR}/include/GLFW/glfw3native.h"
-    "${GLFW_SOURCE_DIR}/docs/main.dox"
-    "${GLFW_SOURCE_DIR}/docs/news.dox"
-    "${GLFW_SOURCE_DIR}/docs/quick.dox"
-    "${GLFW_SOURCE_DIR}/docs/moving.dox"
-    "${GLFW_SOURCE_DIR}/docs/compile.dox"
-    "${GLFW_SOURCE_DIR}/docs/build.dox"
-    "${GLFW_SOURCE_DIR}/docs/intro.dox"
-    "${GLFW_SOURCE_DIR}/docs/context.dox"
-    "${GLFW_SOURCE_DIR}/docs/monitor.dox"
-    "${GLFW_SOURCE_DIR}/docs/window.dox"
-    "${GLFW_SOURCE_DIR}/docs/input.dox"
-    "${GLFW_SOURCE_DIR}/docs/vulkan.dox"
-    "${GLFW_SOURCE_DIR}/docs/compat.dox"
-    "${GLFW_SOURCE_DIR}/docs/internal.dox")
+# NOTE: The order of this list determines the order of items in the Guides
+#       (i.e. Pages) list in the generated documentation
+set(GLFW_DOXYGEN_SOURCES
+    "include/GLFW/glfw3.h"
+    "include/GLFW/glfw3native.h"
+    "docs/main.dox"
+    "docs/news.dox"
+    "docs/quick.dox"
+    "docs/moving.dox"
+    "docs/compile.dox"
+    "docs/build.dox"
+    "docs/intro.dox"
+    "docs/context.dox"
+    "docs/monitor.dox"
+    "docs/window.dox"
+    "docs/input.dox"
+    "docs/vulkan.dox"
+    "docs/compat.dox"
+    "docs/internal.dox")
 
-foreach(arg ${glfw_DOCS_SOURCES})
-    set(GLFW_DOCS_SOURCES "${GLFW_DOCS_SOURCES} \\\n\"${arg}\"")
+# Format the source list into a Doxyfile INPUT value that Doxygen can parse
+foreach(path IN LISTS GLFW_DOXYGEN_SOURCES)
+    set(GLFW_DOXYGEN_INPUT "${GLFW_DOXYGEN_INPUT} \\\n\"${GLFW_SOURCE_DIR}/${path}\"")
 endforeach()
 
 configure_file(Doxyfile.in Doxyfile @ONLY)

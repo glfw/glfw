@@ -662,7 +662,7 @@ WARN_LOGFILE           = "@GLFW_BINARY_DIR@/docs/warnings.txt"
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = @GLFW_DOCS_SOURCES@
+INPUT                  = @GLFW_DOXYGEN_INPUT@
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is

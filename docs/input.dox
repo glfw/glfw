@@ -864,28 +864,29 @@ GLFW provides high-resolution time input, in seconds, with @ref glfwGetTime.
 double seconds = glfwGetTime();
 @endcode
 
-It returns the number of seconds since the timer was started when the library
-was initialized with @ref glfwInit.  The platform-specific time sources used
-usually have micro- or nanosecond resolution.
+It returns the number of seconds since the library was initialized with @ref
+glfwInit.  The platform-specific time sources used typically have micro- or
+nanosecond resolution.
 
-You can modify the reference time with @ref glfwSetTime.
+You can modify the base time with @ref glfwSetTime.
 
 @code
 glfwSetTime(4.0);
 @endcode
 
-This sets the timer to the specified time, in seconds.
+This sets the time to the specified time, in seconds, and it continues to count
+from there.
 
-You can also access the raw timer value, measured in 1&nbsp;/&nbsp;frequency
-seconds, with @ref glfwGetTimerValue.
+You can also access the raw timer used to implement the functions above,
+with @ref glfwGetTimerValue.
 
 @code
 uint64_t value = glfwGetTimerValue();
 @endcode
 
-The frequency of the raw timer varies depending on what time sources are
-available on the machine.  You can query its frequency, in Hz, with @ref
-glfwGetTimerFrequency.
+This value is in 1&nbsp;/&nbsp;frequency seconds.  The frequency of the raw
+timer varies depending on the operating system and hardware.  You can query the
+frequency, in Hz, with @ref glfwGetTimerFrequency.
 
 @code
 uint64_t freqency = glfwGetTimerFrequency();

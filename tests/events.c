@@ -429,7 +429,7 @@ static void char_callback(GLFWwindow* window, unsigned int codepoint)
            get_character_string(codepoint));
 }
 
-static void drop_callback(GLFWwindow* window, int count, const char** paths)
+static void drop_callback(GLFWwindow* window, int count, const char* paths[])
 {
     int i;
     Slot* slot = glfwGetWindowUserPointer(window);

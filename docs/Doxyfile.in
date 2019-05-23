@@ -200,6 +200,7 @@ ALIASES                = "thread_safety=@par Thread safety^^" \
                          "analysis=@par Analysis^^" \
                          "reentrancy=@par Reentrancy^^" \
                          "errors=@par Errors^^" \
+                         "callback_signature=@par Callback signature^^" \
                          "glfw3=__GLFW 3:__" \
                          "x11=__X11:__" \
                          "wayland=__Wayland:__" \

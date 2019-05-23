@@ -85,7 +85,7 @@ static void joystick_callback(int jid, int event)
         glfwRequestWindowAttention(window);
 }
 
-static void drop_callback(GLFWwindow* window, int count, const char** paths)
+static void drop_callback(GLFWwindow* window, int count, const char* paths[])
 {
     int i;
 

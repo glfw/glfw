@@ -222,6 +222,7 @@ skills.
  - Robin Leffmann
  - Glenn Lewis
  - Shane Liesegang
+ - Anders Lindqvist
  - Eyal Lotem
  - Aaron Loucks
  - Tristam MacDonald

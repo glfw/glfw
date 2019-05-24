@@ -40,6 +40,7 @@
 #include <linmath.h>
 
 #include <glad/gl.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 // Define tokens for GL_EXT_separate_specular_color if not already defined

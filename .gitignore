@@ -80,6 +80,6 @@ tests/tearing
 tests/threads
 tests/timeout
 tests/title
-tests/vulkan
+tests/triangle-vulkan
 tests/windows
 

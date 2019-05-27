@@ -121,6 +121,7 @@ information on what to include when reporting a bug.
  - Disabled tests and examples by default when built as a CMake subdirectory
  - Bugfix: The CMake config-file package used an absolute path and was not
    relocatable (#1470)
+ - [Win32] Bugfix: Invoke cursor enter callback before cursor position callback
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
 
@@ -223,6 +224,7 @@ skills.
  - Glenn Lewis
  - Shane Liesegang
  - Anders Lindqvist
+ - Leon Linhart
  - Eyal Lotem
  - Aaron Loucks
  - Tristam MacDonald

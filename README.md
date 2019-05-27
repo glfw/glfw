@@ -123,6 +123,7 @@ information on what to include when reporting a bug.
    relocatable (#1470)
  - [Win32] Bugfix: `GLFW_INCLUDE_VULKAN` plus `VK_USE_PLATFORM_WIN32_KHR` caused
    symbol redefinition (#1524)
+ - [Win32] Bugfix: Invoke cursor enter callback before cursor position callback
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -227,6 +228,7 @@ skills.
  - Glenn Lewis
  - Shane Liesegang
  - Anders Lindqvist
+ - Leon Linhart
  - Eyal Lotem
  - Aaron Loucks
  - Luflosi

@@ -138,13 +138,6 @@ void _glfwInputWindowCloseRequest(_GLFWwindow* window)
         window->callbacks.close((GLFWwindow*) window);
 }
 
-// Notifies shared code that a window has changed its desired monitor
-//
-void _glfwInputWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor)
-{
-    window->monitor = monitor;
-}
-
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////

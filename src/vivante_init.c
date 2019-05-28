@@ -34,6 +34,54 @@
 
 int _glfwPlatformInit(void)
 {
+    _glfw.vivante.handle = _glfw_dlopen("libEGL.so.1");
+    if (!_glfw.vivante.handle) {
+        _glfw.vivante.handle = _glfw_dlopen("libEGL.so");
+        if (!_glfw.vivante.handle) {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Vivante: EGL Library not found");
+
+            return GLFW_FALSE;
+        }
+    }
+    
+    _glfw.vivante.GetDisplay = (PFN_fbGetDisplay)
+        _glfw_dlsym(_glfw.vivante.handle, "fbGetDisplay");
+    _glfw.vivante.GetDisplayByIndex = (PFN_fbGetDisplayByIndex)
+        _glfw_dlsym(_glfw.vivante.handle, "fbGetDisplayByIndex");
+    _glfw.vivante.GetDisplayGeometry = (PFN_fbGetDisplayGeometry)
+        _glfw_dlsym(_glfw.vivante.handle, "fbGetDisplayGeometry");
+    _glfw.vivante.GetDisplayInfo = (PFN_fbGetDisplayInfo)
+        _glfw_dlsym(_glfw.vivante.handle, "fbGetDisplayInfo");
+    _glfw.vivante.DestroyDisplay = (PFN_fbDestroyDisplay)
+        _glfw_dlsym(_glfw.vivante.handle, "fbDestroyDisplay");
+    _glfw.vivante.CreateWindow = (PFN_fbCreateWindow)
+        _glfw_dlsym(_glfw.vivante.handle, "fbCreateWindow");
+    _glfw.vivante.GetWindowGeometry = (PFN_fbGetWindowGeometry)
+        _glfw_dlsym(_glfw.vivante.handle, "fbGetWindowGeometry");
+    _glfw.vivante.GetWindowInfo = (PFN_fbGetWindowInfo)
+        _glfw_dlsym(_glfw.vivante.handle, "fbGetWindowInfo");
+    _glfw.vivante.DestroyWindow = (PFN_fbDestroyWindow)
+        _glfw_dlsym(_glfw.vivante.handle, "fbDestroyWindow");
+    
+    if (!_glfw.vivante.GetDisplay ||
+        !_glfw.vivante.GetDisplayByIndex ||
+        !_glfw.vivante.GetDisplayGeometry ||
+        !_glfw.vivante.GetDisplayInfo ||
+        !_glfw.vivante.DestroyDisplay ||
+        !_glfw.vivante.CreateWindow ||
+        !_glfw.vivante.GetWindowGeometry ||
+        !_glfw.vivante.GetWindowInfo ||
+        !_glfw.vivante.DestroyWindow)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Vivante: Failed to load required entry points");
+
+        _glfwTerminateEGL();
+        return GLFW_FALSE;
+    }
+    
+    
     _glfw.vivante.display = fbGetDisplay(NULL);
     if (!_glfw.vivante.display)
     {
@@ -42,10 +90,6 @@ int _glfwPlatformInit(void)
 
         return GLFW_FALSE;
     }
-    
-    
-    
-    
     
     _glfwInitTimerPOSIX();
     
@@ -63,6 +107,12 @@ void _glfwPlatformTerminate(void)
     {
         fbDestroyDisplay(_glfw.vivante.display);
         _glfw.vivante.display = NULL;
+    }
+    
+    if (_glfw.vivante.handle)
+    {
+        _glfw_dlclose(_glfw.vivante.handle);
+        _glfw.vivante.handle = NULL;
     }
 }
 

@@ -78,6 +78,11 @@ if (_GLFW_X11 OR _GLFW_WAYLAND)
     endif()
 endif()
 
+if (_GLFW_VIVANTE)
+    set_source_files_properties(${glfw_SOURCES} PROPERTIES
+        COMPILE_DEFINITIONS EGL_API_FB=1)
+endif()
+
 if (APPLE)
     # For some reason, CMake doesn't know about .m
     set_source_files_properties(${glfw_SOURCES} PROPERTIES LANGUAGE C)

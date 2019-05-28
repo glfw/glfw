@@ -280,9 +280,6 @@ endif()
 # Use Vivante for window creation
 #--------------------------------------------------------------------
 if (_GLFW_VIVANTE)
-    list(APPEND glfw_LIBRARIES "-lEGL")
-    list(APPEND glfw_PKG_LIBS "-lEGL")
-
     list(APPEND glfw_LIBRARIES "${CMAKE_THREAD_LIBS_INIT}")
 endif()
 

@@ -1015,7 +1015,7 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
         // There is no way to unset minimized, or even to know if we are
         // minimized, so there is nothing to do in this case.
     }
-    _glfwInputWindowMonitor(window, NULL);
+    window->monitor = NULL;
     window->wl.maximized = GLFW_FALSE;
 }
 
@@ -1080,7 +1080,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
         if (!_glfw.wl.decorationManager)
             createDecorations(window);
     }
-    _glfwInputWindowMonitor(window, monitor);
+    window->monitor = monitor;
 }
 
 int _glfwPlatformWindowFocused(_GLFWwindow* window)

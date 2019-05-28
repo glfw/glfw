@@ -8,6 +8,8 @@ _ReSharper*
 *.vcxproj*
 *.sln
 .vs/
+/.idea/
+/cmake-build-*/
 Win32
 x64
 Debug

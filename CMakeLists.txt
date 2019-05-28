@@ -30,6 +30,10 @@ if (UNIX)
     option(GLFW_USE_OSMESA "Use OSMesa for offscreen context creation" OFF)
 endif()
 
+if (UNIX)
+    option(GLFW_USE_VIVANTE "Use Vivante EGL for window creation" OFF)
+endif()
+
 if (WIN32)
     option(GLFW_USE_HYBRID_HPG "Force use of high-performance GPU on hybrid systems" OFF)
 endif()
@@ -145,6 +149,9 @@ endif()
 if (GLFW_USE_WAYLAND)
     set(_GLFW_WAYLAND 1)
     message(STATUS "Using Wayland for window creation")
+elseif (GLFW_USE_VIVANTE)
+    set(_GLFW_VIVANTE 1)
+    message(STATUS "Using Vivante for window creation")
 elseif (GLFW_USE_OSMESA)
     set(_GLFW_OSMESA 1)
     message(STATUS "Using OSMesa for headless context creation")
@@ -267,6 +274,16 @@ if (_GLFW_WAYLAND)
             list(APPEND glfw_LIBRARIES "${EPOLLSHIM_LIBRARIES}")
         endif()
     endif()
+endif()
+
+#--------------------------------------------------------------------
+# Use Vivante for window creation
+#--------------------------------------------------------------------
+if (_GLFW_VIVANTE)
+    list(APPEND glfw_LIBRARIES "-lEGL")
+    list(APPEND glfw_PKG_LIBS "-lEGL")
+
+    list(APPEND glfw_LIBRARIES "${CMAKE_THREAD_LIBS_INIT}")
 endif()
 
 #--------------------------------------------------------------------

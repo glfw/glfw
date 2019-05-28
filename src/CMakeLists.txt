@@ -60,6 +60,12 @@ elseif (_GLFW_OSMESA)
                      posix_time.h posix_thread.h osmesa_context.h)
     set(glfw_SOURCES ${common_SOURCES} null_init.c null_monitor.c null_window.c
                      null_joystick.c posix_time.c posix_thread.c osmesa_context.c)
+elseif (_GLFW_VIVANTE)
+    set(glfw_HEADERS ${common_HEADERS} vivante_platform.h xkb_unicode.h linux_joystick.h
+                     posix_time.h posix_thread.h egl_context.h)
+    set(glfw_SOURCES ${common_SOURCES} vivante_init.c vivante_monitor.c vivante_window.c
+                     xkb_unicode.c linux_joystick.c posix_time.c posix_thread.c
+                     egl_context.c)
 endif()
 
 if (_GLFW_X11 OR _GLFW_WAYLAND)

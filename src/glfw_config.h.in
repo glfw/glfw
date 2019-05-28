@@ -44,6 +44,8 @@
 #cmakedefine _GLFW_WAYLAND
 // Define this to 1 if building GLFW for OSMesa
 #cmakedefine _GLFW_OSMESA
+// Define this to 1 if building GLFW for Vivante
+#cmakedefine _GLFW_VIVANTE
 
 // Define this to 1 if building as a shared library / dynamic library / DLL
 #cmakedefine _GLFW_BUILD_DLL

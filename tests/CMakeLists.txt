@@ -11,6 +11,12 @@ if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
+if (GLFW_USE_VIVANTE)
+    add_definitions(-DGLFW_INCLUDE_ES2)
+    add_definitions(-DGL_GLES_PROTOTYPES=0)
+    link_libraries(-pthread)
+endif()
+
 set(GLAD_GL "${GLFW_SOURCE_DIR}/deps/glad/gl.h"
             "${GLFW_SOURCE_DIR}/deps/glad_gl.c")
 set(GLAD_VULKAN "${GLFW_SOURCE_DIR}/deps/glad/vulkan.h"

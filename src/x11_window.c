@@ -2421,7 +2421,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
     if (window->monitor)
         releaseMonitor(window);
 
-    _glfwInputWindowMonitor(window, monitor);
+    window->monitor = monitor;
     updateNormalHints(window, width, height);
 
     if (window->monitor)

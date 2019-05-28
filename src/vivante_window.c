@@ -27,16 +27,28 @@
 
 #include "internal.h"
 
+static int queryWindowGeometry(_GLFWwindow* window )
+{
+    if (!window->vivante.native_window)
+        return GLFW_FALSE;
+    
+    fbGetWindowGeometry(window->vivante.native_window
+                      , &window->vivante.xpos, &window->vivante.ypos
+                      , &window->vivante.width, &window->vivante.height);
+    
+    return GLFW_TRUE;
+}
+
 static int createNativeWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig)
 {
-    window->vivante.native_window = fbCreateWindow( _GLFW_EGL_NATIVE_DISPLAY, 0, 0, wndconfig->width, wndconfig->height );
+    window->vivante.native_window = fbCreateWindow(_GLFW_EGL_NATIVE_DISPLAY, 0, 0, 0, 0);//, wndconfig->width, wndconfig->height);
     if (!window->vivante.native_window)
         return GLFW_FALSE;
 
-    window->vivante.width = wndconfig->width;
-    window->vivante.height = wndconfig->height;
-
+    if (!queryWindowGeometry(window))
+        return GLFW_FALSE;
+    
     return GLFW_TRUE;
 }
 
@@ -119,8 +131,6 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
-    window->vivante.width = width;
-    window->vivante.height = height;
 }
 
 void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,

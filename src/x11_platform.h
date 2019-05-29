@@ -323,13 +323,14 @@ typedef struct _GLFWlibraryX11
     } randr;
 
     struct {
-        GLFWbool    available;
-        GLFWbool    detectable;
-        int         majorOpcode;
-        int         eventBase;
-        int         errorBase;
-        int         major;
-        int         minor;
+        GLFWbool     available;
+        GLFWbool     detectable;
+        int          majorOpcode;
+        int          eventBase;
+        int          errorBase;
+        int          major;
+        int          minor;
+        unsigned int group;
     } xkb;
 
     struct {

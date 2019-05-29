@@ -54,7 +54,7 @@ static int translateKeyCode(int scancode)
         // Note: This way we always force "NumLock = ON", which is intentional
         // since the returned key code should correspond to a physical
         // location.
-        keySym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, 0, 1);
+        keySym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, _glfw.x11.xkb.group, 1);
         switch (keySym)
         {
             case XK_KP_0:           return GLFW_KEY_KP_0;
@@ -76,7 +76,7 @@ static int translateKeyCode(int scancode)
 
         // Now try primary keysym for function keys (non-printable keys)
         // These should not depend on the current keyboard layout
-        keySym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, 0, 0);
+        keySym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, _glfw.x11.xkb.group, 0);
     }
     else
     {
@@ -658,6 +658,14 @@ static GLFWbool initExtensions(void)
         {
             if (supported)
                 _glfw.x11.xkb.detectable = GLFW_TRUE;
+        }
+
+        _glfw.x11.xkb.group = 0;
+        XkbStateRec state;
+        if (XkbGetState(_glfw.x11.display, XkbUseCoreKbd, &state) == Success)
+        {
+            XkbSelectEventDetails(_glfw.x11.display, XkbUseCoreKbd, XkbStateNotify, XkbAllStateComponentsMask, XkbGroupStateMask);
+            _glfw.x11.xkb.group = (unsigned int)state.group;
         }
     }
 

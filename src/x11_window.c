@@ -595,6 +595,8 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 {
     int width = wndconfig->width;
     int height = wndconfig->height;
+    int xpos = wndconfig->xpos;
+    int ypos = wndconfig->ypos;
 
     if (wndconfig->scaleToMonitor)
     {
@@ -787,6 +789,17 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     _glfwPlatformGetWindowPos(window, &window->x11.xpos, &window->x11.ypos);
     _glfwPlatformGetWindowSize(window, &window->x11.width, &window->x11.height);
 
+    // It's useless to set position in XCreateWindow because it is overwrote
+    // anyway. So just call glfwSetWindowPos
+    if (xpos != GLFW_DONT_CARE || ypos != GLFW_DONT_CARE)
+    {
+        if (xpos == GLFW_DONT_CARE)
+            xpos = 0;
+        if (ypos == GLFW_DONT_CARE)
+            ypos = 0;
+        glfwSetWindowPos(window, xpos, ypos);
+    }
+    
     return GLFW_TRUE;
 }
 

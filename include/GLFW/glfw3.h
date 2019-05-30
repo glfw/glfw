@@ -2399,6 +2399,162 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  */
 GLFWAPI void glfwWindowHintString(int hint, const char* value);
 
+/*! @brief Creates a window and its associated context in given position.
+ *
+ *  This function creates a window and its associated OpenGL or OpenGL ES
+ *  context.  Most of the options controlling how the window and its context
+ *  should be created are specified with [window hints](@ref window_hints).
+ *
+ *  Successful creation does not change which context is current.  Before you
+ *  can use the newly created context, you need to
+ *  [make it current](@ref context_current).  For information about the `share`
+ *  parameter, see @ref context_sharing.
+ *
+ *  The created window, framebuffer and context may differ from what you
+ *  requested, as not all parameters and hints are
+ *  [hard constraints](@ref window_hints_hard).  This includes the size of the
+ *  window, especially for full screen windows.  To query the actual attributes
+ *  of the created window, framebuffer and context, see @ref
+ *  glfwGetWindowAttrib, @ref glfwGetWindowSize and @ref glfwGetFramebufferSize.
+ *
+ *  To create a full screen window, you need to specify the monitor the window
+ *  will cover.  If no monitor is specified, the window will be windowed mode.
+ *  Unless you have a way for the user to choose a specific monitor, it is
+ *  recommended that you pick the primary monitor.  For more information on how
+ *  to query connected monitors, see @ref monitor_monitors.
+ *
+ *  For full screen windows, the specified size becomes the resolution of the
+ *  window's _desired video mode_.  As long as a full screen window is not
+ *  iconified, the supported video mode most closely matching the desired video
+ *  mode is set for the specified monitor.  For more information about full
+ *  screen windows, including the creation of so called _windowed full screen_
+ *  or _borderless full screen_ windows, see @ref window_windowed_full_screen.
+ *
+ *  Once you have created the window, you can switch it between windowed and
+ *  full screen mode with @ref glfwSetWindowMonitor.  This will not affect its
+ *  OpenGL or OpenGL ES context.
+ *
+ *  By default, newly created windows use the placement recommended by the
+ *  window system.  To create the window at a specific position, make it
+ *  initially invisible using the [GLFW_VISIBLE](@ref GLFW_VISIBLE_hint) window
+ *  hint, set its [position](@ref window_pos) and then [show](@ref window_hide)
+ *  it.
+ *
+ *  As long as at least one full screen window is not iconified, the screensaver
+ *  is prohibited from starting.
+ *
+ *  Window systems put limits on window sizes.  Very large or very small window
+ *  dimensions may be overridden by the window system on creation.  Check the
+ *  actual [size](@ref window_size) after creation.
+ *
+ *  The [swap interval](@ref buffer_swap) is not set during window creation and
+ *  the initial value may vary depending on driver settings and defaults.
+ *
+ *  @param[in] xpos The x-coordinate of the upper-left corner of the content area.
+ *  @param[in] ypos The y-coordinate of the upper-left corner of the content area.
+ *  @param[in] width The desired width, in screen coordinates, of the window.
+ *  This must be greater than zero.
+ *  @param[in] height The desired height, in screen coordinates, of the window.
+ *  This must be greater than zero.
+ *  @param[in] title The initial, UTF-8 encoded window title.
+ *  @param[in] monitor The monitor to use for full screen mode, or `NULL` for
+ *  windowed mode.
+ *  @param[in] share The window whose context to share resources with, or `NULL`
+ *  to not share resources.
+ *  @return The handle of the created window, or `NULL` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_INVALID_ENUM, @ref GLFW_INVALID_VALUE, @ref GLFW_API_UNAVAILABLE, @ref
+ *  GLFW_VERSION_UNAVAILABLE, @ref GLFW_FORMAT_UNAVAILABLE and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @remark @win32 Window creation will fail if the Microsoft GDI software
+ *  OpenGL implementation is the only one available.
+ *
+ *  @remark @win32 If the executable has an icon resource named `GLFW_ICON,` it
+ *  will be set as the initial icon for the window.  If no such icon is present,
+ *  the `IDI_APPLICATION` icon will be used instead.  To set a different icon,
+ *  see @ref glfwSetWindowIcon.
+ *
+ *  @remark @win32 The context to share resources with must not be current on
+ *  any other thread.
+ *
+ *  @remark @macos The OS only supports forward-compatible core profile contexts
+ *  for OpenGL versions 3.2 and later.  Before creating an OpenGL context of
+ *  version 3.2 or later you must set the
+ *  [GLFW_OPENGL_FORWARD_COMPAT](@ref GLFW_OPENGL_FORWARD_COMPAT_hint) and
+ *  [GLFW_OPENGL_PROFILE](@ref GLFW_OPENGL_PROFILE_hint) hints accordingly.
+ *  OpenGL 3.0 and 3.1 contexts are not supported at all on macOS.
+ *
+ *  @remark @macos The GLFW window has no icon, as it is not a document
+ *  window, but the dock icon will be the same as the application bundle's icon.
+ *  For more information on bundles, see the
+ *  [Bundle Programming Guide](https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/)
+ *  in the Mac Developer Library.
+ *
+ *  @remark @macos The first time a window is created the menu bar is created.
+ *  If GLFW finds a `MainMenu.nib` it is loaded and assumed to contain a menu
+ *  bar.  Otherwise a minimal menu bar is created manually with common commands
+ *  like Hide, Quit and About.  The About entry opens a minimal about dialog
+ *  with information from the application's bundle.  Menu bar creation can be
+ *  disabled entirely with the @ref GLFW_COCOA_MENUBAR init hint.
+ *
+ *  @remark @macos On OS X 10.10 and later the window frame will not be rendered
+ *  at full resolution on Retina displays unless the
+ *  [GLFW_COCOA_RETINA_FRAMEBUFFER](@ref GLFW_COCOA_RETINA_FRAMEBUFFER_hint)
+ *  hint is `GLFW_TRUE` and the `NSHighResolutionCapable` key is enabled in the
+ *  application bundle's `Info.plist`.  For more information, see
+ *  [High Resolution Guidelines for OS X](https://developer.apple.com/library/mac/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Explained/Explained.html)
+ *  in the Mac Developer Library.  The GLFW test and example programs use
+ *  a custom `Info.plist` template for this, which can be found as
+ *  `CMake/MacOSXBundleInfo.plist.in` in the source tree.
+ *
+ *  @remark @macos When activating frame autosaving with
+ *  [GLFW_COCOA_FRAME_NAME](@ref GLFW_COCOA_FRAME_NAME_hint), the specified
+ *  window size and position may be overriden by previously saved values.
+ *
+ *  @remark @x11 Some window managers will not respect the placement of
+ *  initially hidden windows.
+ *
+ *  @remark @x11 Due to the asynchronous nature of X11, it may take a moment for
+ *  a window to reach its requested state.  This means you may not be able to
+ *  query the final size, position or other attributes directly after window
+ *  creation.
+ *
+ *  @remark @x11 The class part of the `WM_CLASS` window property will by
+ *  default be set to the window title passed to this function.  The instance
+ *  part will use the contents of the `RESOURCE_NAME` environment variable, if
+ *  present and not empty, or fall back to the window title.  Set the
+ *  [GLFW_X11_CLASS_NAME](@ref GLFW_X11_CLASS_NAME_hint) and
+ *  [GLFW_X11_INSTANCE_NAME](@ref GLFW_X11_INSTANCE_NAME_hint) window hints to
+ *  override this.
+ *
+ *  @remark @wayland Compositors should implement the xdg-decoration protocol
+ *  for GLFW to decorate the window properly.  If this protocol isn't
+ *  supported, or if the compositor prefers client-side decorations, a very
+ *  simple fallback frame will be drawn using the wp_viewporter protocol.  A
+ *  compositor can still emit close, maximize or fullscreen events, using for
+ *  instance a keybind mechanism.  If neither of these protocols is supported,
+ *  the window won't be decorated.
+ *
+ *  @remark @wayland A full screen window will not attempt to change the mode,
+ *  no matter what the requested size or refresh rate.
+ *
+ *  @remark @wayland Screensaver inhibition requires the idle-inhibit protocol
+ *  to be implemented in the user's compositor.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_creation
+ *  @sa @ref glfwDestroyWindow
+ *
+ *  @since Added in version 3.3_viv.
+ *
+ *  @ingroup window
+ */
+GLFWAPI GLFWwindow* glfwCreatePositionedWindow(int xpos, int ypos, int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share);
+
 /*! @brief Creates a window and its associated context.
  *
  *  This function creates a window and its associated OpenGL or OpenGL ES

@@ -44,12 +44,25 @@ static int createNativeWindow(_GLFWwindow* window,
 {
     int width = wndconfig->width;
     int height = wndconfig->height;
+    int xpos = wndconfig->xpos;
+    int ypos = wndconfig->ypos;
+
     if (window->monitor)
     {
+        xpos = 0;
+        ypos = 0;
         width = window->monitor->widthMM;
         height = window->monitor->heightMM;
     }
-    window->vivante.native_window = fbCreateWindow(_GLFW_EGL_NATIVE_DISPLAY, 0, 0, width, height);
+    else
+    {
+        if (xpos == GLFW_DONT_CARE)
+            xpos = 0;
+        if (ypos == GLFW_DONT_CARE)
+            ypos = 0;
+    }
+
+    window->vivante.native_window = fbCreateWindow(_GLFW_EGL_NATIVE_DISPLAY, xpos, ypos, width, height);
     if (!window->vivante.native_window)
         return GLFW_FALSE;
 
@@ -84,7 +97,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         }
         else
         {
-            _glfwInputError(GLFW_API_UNAVAILABLE, "Null: EGL not available");
+            _glfwInputError(GLFW_API_UNAVAILABLE, "Vivante: EGL not available");
             return GLFW_FALSE;
         }
     }
@@ -130,6 +143,8 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
 {
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Vivante: Window position setting not supported");
 }
 
 void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
@@ -142,6 +157,8 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
 
 void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
 {
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Vivante: Window resizing not supported");
 }
 
 void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,

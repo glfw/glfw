@@ -257,6 +257,8 @@ struct _GLFWwndconfig
 {
     int           width;
     int           height;
+    int           xpos;
+    int           ypos;
     const char*   title;
     GLFWbool      resizable;
     GLFWbool      visible;

@@ -147,10 +147,11 @@ void _glfwInputWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor)
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
-                                     const char* title,
-                                     GLFWmonitor* monitor,
-                                     GLFWwindow* share)
+GLFWAPI GLFWwindow* glfwCreatePositionedWindow(int xpos, int ypos,
+                                               int width, int height,
+                                               const char* title,
+                                               GLFWmonitor* monitor,
+                                               GLFWwindow* share)
 {
     _GLFWfbconfig fbconfig;
     _GLFWctxconfig ctxconfig;
@@ -176,6 +177,8 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     ctxconfig = _glfw.hints.context;
     wndconfig = _glfw.hints.window;
 
+    wndconfig.xpos    = xpos;
+    wndconfig.ypos    = ypos;
     wndconfig.width   = width;
     wndconfig.height  = height;
     wndconfig.title   = title;
@@ -242,6 +245,18 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     }
 
     return (GLFWwindow*) window;
+}
+
+GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
+                                     const char* title,
+                                     GLFWmonitor* monitor,
+                                     GLFWwindow* share)
+{
+    return glfwCreatePositionedWindow(GLFW_DONT_CARE, GLFW_DONT_CARE,
+                                      width, height,
+                                      title,
+                                      monitor,
+                                      share);
 }
 
 void glfwDefaultWindowHints(void)

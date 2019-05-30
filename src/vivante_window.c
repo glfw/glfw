@@ -42,7 +42,14 @@ static int queryWindowGeometry(_GLFWwindow* window )
 static int createNativeWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig)
 {
-    window->vivante.native_window = fbCreateWindow(_GLFW_EGL_NATIVE_DISPLAY, 0, 0, 0, 0);//, wndconfig->width, wndconfig->height);
+    int width = wndconfig->width;
+    int height = wndconfig->height;
+    if (window->monitor)
+    {
+        width = window->monitor->widthMM;
+        height = window->monitor->heightMM;
+    }
+    window->vivante.native_window = fbCreateWindow(_GLFW_EGL_NATIVE_DISPLAY, 0, 0, width, height);
     if (!window->vivante.native_window)
         return GLFW_FALSE;
 
@@ -115,6 +122,10 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
 
 void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
 {
+    if (xpos)
+        *xpos = window->vivante.xpos;
+    if (ypos)
+        *ypos = window->vivante.ypos;
 }
 
 void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos)
@@ -155,6 +166,14 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
                                      int* left, int* top,
                                      int* right, int* bottom)
 {
+    if (left)
+        *left = 0;
+    if (top)
+        *top = 0;
+    if (right)
+        *right = 0;
+    if (bottom)
+        *bottom = 0;
 }
 
 void _glfwPlatformGetWindowContentScale(_GLFWwindow* window,

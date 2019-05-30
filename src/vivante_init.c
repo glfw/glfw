@@ -27,6 +27,15 @@
 
 #include "internal.h"
 
+void _glfwInitFbMonitor(void)
+{
+    int width, height;
+    fbGetDisplayGeometry(_glfw.vivante.display, &width, &height);
+    
+    _glfwInputMonitor(_glfwAllocMonitor("Display", width, height),
+                      GLFW_CONNECTED,
+                      _GLFW_INSERT_FIRST);
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -91,10 +100,12 @@ int _glfwPlatformInit(void)
         return GLFW_FALSE;
     }
     
-    _glfwInitTimerPOSIX();
-    
     if (!_glfwInitJoysticksLinux())
         return GLFW_FALSE;
+    
+    _glfwInitTimerPOSIX();
+    
+    _glfwInitFbMonitor();
     
     return GLFW_TRUE;
 }

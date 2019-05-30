@@ -1125,11 +1125,18 @@ static void count_fps()
     }
 }
 
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s\n", description);
+}
+
 /* program entry */
 int main(int argc, char *argv[])
 {
     GLFWwindow* window;
     int width, height;
+    
+    glfwSetErrorCallback(error_callback);
     
     if( !glfwInit() )
     {
@@ -1142,14 +1149,13 @@ int main(int argc, char *argv[])
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
 
-    window = glfwCreateWindow( 300, 300, "Gears GLES2", glfwGetPrimaryMonitor(), NULL );
+    window = glfwCreatePositionedWindow( 100, 100, 500, 500, "Gears GLES2", NULL /*glfwGetPrimaryMonitor()*/, NULL );
     if (!window)
     {
         fprintf( stderr, "Failed to open GLFW window\n" );
         glfwTerminate();
         exit( EXIT_FAILURE );
     }
-    glfwSetWindowPos( window, 100, 100 );
 
     // Set callback functions
     glfwSetFramebufferSizeCallback(window, reshape);

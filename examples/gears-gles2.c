@@ -9,16 +9,9 @@
  * Brian Paul
  *
  *
- * Marcus Geelnard:
- *   - Conversion to GLFW
- *   - Time based rendering (frame rate independent)
- *   - Slightly modified camera that should work better for stereo viewing
- *
- *
- * Camilla Löwy:
- *   - Removed FPS counter (this is not a benchmark)
- *   - Added a few comments
- *   - Enabled vsync
+ * Krylov Yaroslav:
+ *   - Based on gles2-egl-gears http://en.pudn.com/Download/item/id/1806093.html
+ *   - Conversion to GLFW, using code from GLFW gears.c example
  */
 
 #include <math.h>

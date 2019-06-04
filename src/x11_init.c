@@ -331,14 +331,13 @@ static void createKeyTables(void)
 //
 static GLFWbool hasUsableInputMethodStyle(void)
 {
-    unsigned int i;
     GLFWbool found = GLFW_FALSE;
     XIMStyles* styles = NULL;
 
     if (XGetIMValues(_glfw.x11.im, XNQueryInputStyle, &styles, NULL) != NULL)
         return GLFW_FALSE;
 
-    for (i = 0;  i < styles->count_styles;  i++)
+    for (unsigned int i = 0;  i < styles->count_styles;  i++)
     {
         if (styles->supported_styles[i] == (XIMPreeditNothing | XIMStatusNothing))
         {
@@ -357,10 +356,9 @@ static Atom getSupportedAtom(Atom* supportedAtoms,
                              unsigned long atomCount,
                              const char* atomName)
 {
-    unsigned long i;
     const Atom atom = XInternAtom(_glfw.x11.display, atomName, False);
 
-    for (i = 0;  i < atomCount;  i++)
+    for (unsigned int i = 0;  i < atomCount;  i++)
     {
         if (supportedAtoms[i] == atom)
             return atom;

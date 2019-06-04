@@ -962,7 +962,6 @@ static void handleSelectionRequest(XEvent* event)
 
 static const char* getSelectionString(Atom selection)
 {
-    size_t i;
     char** selectionString = NULL;
     const Atom targets[] = { _glfw.x11.UTF8_STRING, XA_STRING };
     const size_t targetCount = sizeof(targets) / sizeof(targets[0]);
@@ -983,7 +982,7 @@ static const char* getSelectionString(Atom selection)
     free(*selectionString);
     *selectionString = NULL;
 
-    for (i = 0;  i < targetCount;  i++)
+    for (size_t i = 0;  i < targetCount;  i++)
     {
         char* data;
         Atom actualType;
@@ -1167,7 +1166,6 @@ static void releaseMonitor(_GLFWwindow* window)
 //
 static void processEvent(XEvent *event)
 {
-    _GLFWwindow* window = NULL;
     int keycode = 0;
     Bool filtered = False;
 
@@ -1237,6 +1235,7 @@ static void processEvent(XEvent *event)
         return;
     }
 
+    _GLFWwindow* window = NULL;
     if (XFindContext(_glfw.x11.display,
                      event->xany.window,
                      _glfw.x11.context,

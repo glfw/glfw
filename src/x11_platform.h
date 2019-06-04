@@ -239,6 +239,8 @@ typedef struct _GLFWlibraryX11
     _GLFWwindow*    disabledCursorWindow;
 
     // Window manager atoms
+    Atom            NET_SUPPORTED;
+    Atom            NET_SUPPORTING_WM_CHECK;
     Atom            WM_PROTOCOLS;
     Atom            WM_STATE;
     Atom            WM_DELETE_WINDOW;

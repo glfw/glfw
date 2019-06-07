@@ -200,7 +200,7 @@ void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode)
 GLFWbool _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
-                    "Wayland: Gamma ramp access it not available");
+                    "Wayland: Gamma ramp access is not available");
     return GLFW_FALSE;
 }
 

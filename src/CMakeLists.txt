@@ -92,19 +92,34 @@ if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
         COMPILE_FLAGS -Wdeclaration-after-statement)
 endif()
 
-add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
+# wenzel: changes begin
+add_library(glfw_objects OBJECT ${glfw_SOURCES} ${glfw_HEADERS})
+add_library(glfw $<TARGET_OBJECTS:glfw_objects>)
+if (BUILD_SHARED_LIBS)
+  set_target_properties(glfw_objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
 set_target_properties(glfw PROPERTIES
                       OUTPUT_NAME ${GLFW_LIB_NAME}
-                      VERSION ${GLFW_VERSION}
-                      SOVERSION ${GLFW_VERSION_MAJOR}
-                      POSITION_INDEPENDENT_CODE ON
-                      FOLDER "GLFW3")
+                      # VERSION ${GLFW_VERSION}
+                      # SOVERSION ${GLFW_VERSION_MAJOR}
+)
+# wenzel : changes end
 
-target_compile_definitions(glfw PRIVATE _GLFW_USE_CONFIG_H)
+if (BUILD_SHARED_LIBS)
+   set_target_properties(glfw PROPERTIES POSITION_INDEPENDENT_CODE ON
+                         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+endif()
+
+# wenzel: changes begin
 target_include_directories(glfw PUBLIC
                            "$<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>"
                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_FULL_INCLUDEDIR}>")
-target_include_directories(glfw PRIVATE
+target_include_directories(glfw_objects PUBLIC
+                           "$<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>"
+                           "$<INSTALL_INTERFACE:${CMAKE_INSTALL_FULL_INCLUDEDIR}>")
+target_compile_definitions(glfw_objects PRIVATE _GLFW_USE_CONFIG_H)
+target_include_directories(glfw_objects PRIVATE
                            "${GLFW_SOURCE_DIR}/src"
                            "${GLFW_BINARY_DIR}/src"
                            ${glfw_INCLUDE_DIRS})
@@ -113,14 +128,15 @@ target_include_directories(glfw PRIVATE
 # the inclusion of stddef.h (by glfw3.h), which is itself included before
 # win32_platform.h.  We define them here until a saner solution can be found
 # NOTE: MinGW-w64 and Visual C++ do /not/ need this hack.
-target_compile_definitions(glfw PRIVATE
+target_compile_definitions(glfw_objects PRIVATE
                            "$<$<BOOL:${MINGW}>:UNICODE;WINVER=0x0501>")
 
 # Enable a reasonable set of warnings (no, -Wextra is not reasonable)
-target_compile_options(glfw PRIVATE
-                       "$<$<C_COMPILER_ID:AppleClang>:-Wall>"
+target_compile_options(glfw_objects PRIVATE
                        "$<$<C_COMPILER_ID:Clang>:-Wall>"
+                       "$<$<C_COMPILER_ID:Clang>:-Wno-deprecated-declarations>"
                        "$<$<C_COMPILER_ID:GNU>:-Wall>")
+# wenzel: changes end
 
 if (BUILD_SHARED_LIBS)
     if (WIN32)
@@ -136,13 +152,16 @@ if (BUILD_SHARED_LIBS)
         endif()
     elseif (APPLE)
         # Add -fno-common to work around a bug in Apple's GCC
-        target_compile_options(glfw PRIVATE "-fno-common")
-
+        # wenzel : changes begin
+        target_compile_options(glfw_objects PRIVATE "-fno-common")
         set_target_properties(glfw PROPERTIES
                               INSTALL_NAME_DIR "${CMAKE_INSTALL_LIBDIR}")
+        # wenzel : changes end
     elseif (UNIX)
         # Hide symbols not explicitly tagged for export from the shared library
-        target_compile_options(glfw PRIVATE "-fvisibility=hidden")
+        # wenzel : changes begin
+        target_compile_options(glfw_objects PRIVATE "-fvisibility=hidden")
+        # wenzel: changes end
     endif()
 
     target_compile_definitions(glfw INTERFACE GLFW_DLL)
@@ -152,7 +171,9 @@ else()
 endif()
 
 if (MSVC)
-    target_compile_definitions(glfw PRIVATE _CRT_SECURE_NO_WARNINGS)
+    # wenzel: changes begin
+    target_compile_definitions(glfw_objects PRIVATE _CRT_SECURE_NO_WARNINGS)
+    # wenzel: changes end
 endif()
 
 if (GLFW_INSTALL)
@@ -162,4 +183,3 @@ if (GLFW_INSTALL)
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 endif()
-

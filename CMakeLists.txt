@@ -8,6 +8,10 @@ if (POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
 
+if(POLICY CMP0022)
+  cmake_policy(SET CMP0022 NEW)
+endif()
+
 set(GLFW_VERSION_MAJOR "3")
 set(GLFW_VERSION_MINOR "3")
 set(GLFW_VERSION_PATCH "0")

@@ -203,9 +203,6 @@ if (BUILD_SHARED_LIBS)
         endif()
 
         target_compile_definitions(glfw INTERFACE GLFW_DLL)
-    elseif (APPLE)
-        set_target_properties(glfw PROPERTIES
-                              INSTALL_NAME_DIR "${CMAKE_INSTALL_LIBDIR}")
     endif()
 
     if (MINGW)

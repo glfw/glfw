@@ -1619,7 +1619,10 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
-    ShowWindow(window->win32.handle, SW_SHOWNA);
+	if (window->win32.maximized)
+		ShowWindow(window->win32.handle, SW_MAXIMIZE);
+	else
+		ShowWindow(window->win32.handle, SW_SHOWNA);
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)

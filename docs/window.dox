@@ -68,9 +68,9 @@ set for the chosen monitor as long as the window has input focus.  For more
 information about retrieving video modes, see @ref monitor_modes.
 
 Video mode field        | Corresponds to
------------------------ | ------------------------
-GLFWvidmode.width       | `width` parameter
-GLFWvidmode.height      | `height` parameter
+----------------        | --------------
+GLFWvidmode.width       | `width` parameter of @ref glfwCreateWindow
+GLFWvidmode.height      | `height` parameter of @ref glfwCreateWindow
 GLFWvidmode.redBits     | @ref GLFW_RED_BITS hint
 GLFWvidmode.greenBits   | @ref GLFW_GREEN_BITS hint
 GLFWvidmode.blueBits    | @ref GLFW_BLUE_BITS hint
@@ -483,8 +483,8 @@ should also declare this in its `Info.plist` by setting the
 
 @subsubsection window_hints_x11 X11 specific window hints
 
-@anchor GLFW_X11_CLASS_NAME
-@anchor GLFW_X11_INSTANCE_NAME
+@anchor GLFW_X11_CLASS_NAME_hint
+@anchor GLFW_X11_INSTANCE_NAME_hint
 __GLFW_X11_CLASS_NAME__ and __GLFW_X11_INSTANCE_NAME__ specifies the desired
 ASCII encoded class and instance parts of the ICCCM `WM_CLASS` window property.
 These are set with @ref glfwWindowHintString.
@@ -599,7 +599,7 @@ void window_close_callback(GLFWwindow* window)
 
 The size of a window can be changed with @ref glfwSetWindowSize.  For windowed
 mode windows, this sets the size, in
-[screen coordinates](@ref coordinate_systems) of the _client area_ or _content
+[screen coordinates](@ref coordinate_systems) of the _content area_ or _content
 area_ of the window.  The window system may impose limits on window size.
 
 @code
@@ -619,7 +619,7 @@ glfwSetWindowSizeCallback(window, window_size_callback);
 @endcode
 
 The callback function receives the new size, in screen coordinates, of the
-client area of the window when the window is resized.
+content area of the window when the window is resized.
 
 @code
 void window_size_callback(GLFWwindow* window, int width, int height)
@@ -640,9 +640,9 @@ calls.  The window size is in screen coordinates, not pixels.  Use the
 [framebuffer size](@ref window_fbsize), which is in pixels, for pixel-based
 calls.
 
-The above functions work with the size of the client area, but decorated windows
-typically have title bars and window frames around this rectangle.  You can
-retrieve the extents of these with @ref glfwGetWindowFrameSize.
+The above functions work with the size of the content area, but decorated
+windows typically have title bars and window frames around this rectangle.  You
+can retrieve the extents of these with @ref glfwGetWindowFrameSize.
 
 @code
 int left, top, right, bottom;
@@ -650,7 +650,7 @@ glfwGetWindowFrameSize(window, &left, &top, &right, &bottom);
 @endcode
 
 The returned values are the distances, in screen coordinates, from the edges of
-the client area to the corresponding edges of the full window.  As they are
+the content area to the corresponding edges of the full window.  As they are
 distances and not coordinates, they are always zero or positive.
 
 
@@ -702,10 +702,12 @@ float xscale, yscale;
 glfwGetWindowContentScale(window, &xscale, &yscale);
 @endcode
 
-The content scale of a window is the ratio between the current DPI and the
-platform's default DPI.  If you scale all pixel dimensions by this scale then
-your content should appear at an appropriate size.  This is especially important
-for text and any UI elements.
+The content scale is the ratio between the current DPI and the platform's
+default DPI.  This is especially important for text and any UI elements.  If the
+pixel dimensions of your UI scaled by this look appropriate on your machine then
+it should appear at a reasonable size on other machines regardless of their DPI
+and scaling settings.  This relies on the system DPI and scaling settings being
+somewhat correct.
 
 On systems where each monitors can have its own content scale, the window
 content scale will depend on which monitor the system considers the window to be
@@ -737,10 +739,10 @@ GLFW_SCALE_TO_MONITOR window hint.
 
 @subsection window_sizelimits Window size limits
 
-The minimum and maximum size of the client area of a windowed mode window can be
-enforced with @ref glfwSetWindowSizeLimits.  The user may resize the window to
-any size and aspect ratio within the specified limits, unless the aspect ratio
-is also set.
+The minimum and maximum size of the content area of a windowed mode window can
+be enforced with @ref glfwSetWindowSizeLimits.  The user may resize the window
+to any size and aspect ratio within the specified limits, unless the aspect
+ratio is also set.
 
 @code
 glfwSetWindowSizeLimits(window, 200, 200, 400, 400);
@@ -755,7 +757,7 @@ glfwSetWindowSizeLimits(window, 640, 480, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 To disable size limits for a window, set them all to `GLFW_DONT_CARE`.
 
-The aspect ratio of the client area of a windowed mode window can be enforced
+The aspect ratio of the content area of a windowed mode window can be enforced
 with @ref glfwSetWindowAspectRatio.  The user may resize the window freely
 unless size limits are also set, but the size will be constrained to maintain
 the aspect ratio.
@@ -785,7 +787,7 @@ are undefined if they conflict.
 
 The position of a windowed-mode window can be changed with @ref
 glfwSetWindowPos.  This moves the window so that the upper-left corner of its
-client area has the specified [screen coordinates](@ref coordinate_systems).
+content area has the specified [screen coordinates](@ref coordinate_systems).
 The window system may put limitations on window placement.
 
 @code
@@ -800,7 +802,7 @@ glfwSetWindowPosCallback(window, window_pos_callback);
 @endcode
 
 The callback function receives the new position, in screen coordinates, of the
-upper-left corner of the client area when the window is moved.
+upper-left corner of the content area when the window is moved.
 
 @code
 void window_pos_callback(GLFWwindow* window, int xpos, int ypos)
@@ -809,7 +811,7 @@ void window_pos_callback(GLFWwindow* window, int xpos, int ypos)
 @endcode
 
 There is also @ref glfwGetWindowPos for directly retrieving the current position
-of the client area of the window.
+of the content area of the window.
 
 @code
 int xpos, ypos;
@@ -928,7 +930,7 @@ When a full screen window is restored, the desired video mode is restored to its
 monitor as well.
 
 If you wish to be notified when a window is iconified or restored, whether by
-the user, system or your own code, set a iconify callback.
+the user, system or your own code, set an iconify callback.
 
 @code
 glfwSetWindowIconifyCallback(window, window_iconify_callback);
@@ -1249,8 +1251,8 @@ __GLFW_MAXIMIZED__ indicates whether the specified window is maximized.  See
 
 @anchor GLFW_HOVERED_attrib
 __GLFW_HOVERED__ indicates whether the cursor is currently directly over the
-client area of the window, with no other windows between.  See @ref cursor_enter
-for details.
+content area of the window, with no other windows between.  See @ref
+cursor_enter for details.
 
 @anchor GLFW_VISIBLE_attrib
 __GLFW_VISIBLE__ indicates whether the specified window is visible.  See @ref
@@ -1329,6 +1331,21 @@ uses a known profile, or `GLFW_OPENGL_ANY_PROFILE` if the OpenGL profile is
 unknown or the context is an OpenGL ES context.  Note that the returned profile
 may not match the profile bits of the context flags, as GLFW will try other
 means of detecting the profile when no bits are set.
+
+@anchor GLFW_CONTEXT_RELEASE_BEHAVIOR_attrib
+__GLFW_CONTEXT_RELEASE_BEHAVIOR__ indicates the release used by the context.
+Possible values are one of `GLFW_ANY_RELEASE_BEHAVIOR`,
+`GLFW_RELEASE_BEHAVIOR_FLUSH` or `GLFW_RELEASE_BEHAVIOR_NONE`.  If the
+behavior is `GLFW_ANY_RELEASE_BEHAVIOR`, the default behavior of the context
+creation API will be used.  If the behavior is `GLFW_RELEASE_BEHAVIOR_FLUSH`,
+the pipeline will be flushed whenever the context is released from being the
+current one.  If the behavior is `GLFW_RELEASE_BEHAVIOR_NONE`, the pipeline will
+not be flushed on release.
+
+@anchor GLFW_CONTEXT_NO_ERROR_attrib
+__GLFW_CONTEXT_NO_ERROR__ indicates whether errors are generated by the context.
+Possible values are `GLFW_TRUE` and `GLFW_FALSE`.  If enabled, situations that
+would have generated errors instead cause undefined behavior.
 
 @anchor GLFW_CONTEXT_ROBUSTNESS_attrib
 __GLFW_CONTEXT_ROBUSTNESS__ indicates the robustness strategy used by the

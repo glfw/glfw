@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 Wayland - www.glfw.org
+// GLFW 3.4 Wayland - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -180,7 +180,6 @@ typedef struct _GLFWwindowWayland
     GLFWbool                    transparent;
     struct wl_surface*          surface;
     struct wl_egl_window*       native;
-    struct wl_shell_surface*    shellSurface;
     struct wl_callback*         callback;
 
     struct {
@@ -208,8 +207,7 @@ typedef struct _GLFWwindowWayland
 
     struct zwp_idle_inhibitor_v1*          idleInhibitor;
 
-    // This is a hack to prevent auto-iconification on creation.
-    GLFWbool                    justCreated;
+    GLFWbool                    wasFullscreen;
 
     struct {
         GLFWbool                           serverSide;
@@ -228,11 +226,14 @@ typedef struct _GLFWlibraryWayland
     struct wl_registry*         registry;
     struct wl_compositor*       compositor;
     struct wl_subcompositor*    subcompositor;
-    struct wl_shell*            shell;
     struct wl_shm*              shm;
     struct wl_seat*             seat;
     struct wl_pointer*          pointer;
     struct wl_keyboard*         keyboard;
+    struct wl_data_device_manager*          dataDeviceManager;
+    struct wl_data_device*      dataDevice;
+    struct wl_data_offer*       dataOffer;
+    struct wl_data_source*      dataSource;
     struct xdg_wm_base*         wmBase;
     struct zxdg_decoration_manager_v1*      decorationManager;
     struct wp_viewporter*       viewporter;
@@ -247,12 +248,16 @@ typedef struct _GLFWlibraryWayland
     struct wl_cursor_theme*     cursorThemeHiDPI;
     struct wl_surface*          cursorSurface;
     int                         cursorTimerfd;
-    uint32_t                    pointerSerial;
+    uint32_t                    serial;
 
     int32_t                     keyboardRepeatRate;
     int32_t                     keyboardRepeatDelay;
     int                         keyboardLastKey;
     int                         keyboardLastScancode;
+    char*                       clipboardString;
+    size_t                      clipboardSize;
+    char*                       clipboardSendString;
+    size_t                      clipboardSendSize;
     int                         timerfd;
     short int                   keycodes[256];
     short int                   scancodes[GLFW_KEY_LAST + 1];

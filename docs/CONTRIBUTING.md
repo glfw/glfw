@@ -35,7 +35,7 @@ questions without first checking with a maintainer.
 ## Reporting a bug
 
 If GLFW is behaving unexpectedly at run-time, start by setting an [error
-callback](http://www.glfw.org/docs/latest/intro_guide.html#error_handling).
+callback](https://www.glfw.org/docs/latest/intro_guide.html#error_handling).
 GLFW will often tell you the cause of an error via this callback.  If it
 doesn't, that might be a separate bug.
 
@@ -87,8 +87,8 @@ means linking to many system libraries.  If you are using GLFW as a static
 library, that means your application needs to link to these in addition to GLFW.
 
 __Note:__ Check the [Compiling
-GLFW](http://www.glfw.org/docs/latest/compile.html) guide and or [Building
-applications](http://www.glfw.org/docs/latest/build.html) guide for before
+GLFW](https://www.glfw.org/docs/latest/compile.html) guide and or [Building
+applications](https://www.glfw.org/docs/latest/build.html) guide for before
 opening an issue of this kind.  Most issues are caused by a missing package or
 linker flag.
 
@@ -121,7 +121,7 @@ __GLFW commit ID__ (e.g.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
 
 Please also include any __error messages__ provided to your application via the
 [error
-callback](http://www.glfw.org/docs/latest/intro_guide.html#error_handling) and
+callback](https://www.glfw.org/docs/latest/intro_guide.html#error_handling) and
 the __full call stack__ of the crash, or if the crash does not occur in debug
 mode, mention that instead.
 
@@ -141,13 +141,13 @@ Call stack:
 __Note:__ Windows ships with graphics drivers that do not support OpenGL.  If
 GLFW says that your machine lacks support for OpenGL, it very likely does.
 Install drivers from the computer manufacturer or graphics card manufacturer
-([Nvidia](http://www.geforce.com/drivers),
-[AMD](http://support.amd.com/en-us/download),
+([Nvidia](https://www.geforce.com/drivers),
+[AMD](https://www.amd.com/en/support),
 [Intel](https://www-ssl.intel.com/content/www/us/en/support/detect.html)) to
 fix this.
 
 __Note:__ AMD only supports OpenGL ES on Windows via EGL.  See the
-[GLFW\_CONTEXT\_CREATION\_API](http://www.glfw.org/docs/latest/window_guide.html#window_hints_ctx)
+[GLFW\_CONTEXT\_CREATION\_API](https://www.glfw.org/docs/latest/window_guide.html#window_hints_ctx)
 hint for how to select EGL.
 
 Please verify that context creation also fails with the `glfwinfo` tool before
@@ -165,7 +165,7 @@ include the __VM name and version__ (e.g. `VirtualBox 5.1`).
 
 Please also include the __GLFW version string__ (`3.2.0 X11 EGL clock_gettime
 /dev/js`), as described
-[here](http://www.glfw.org/docs/latest/intro.html#intro_version_string), the
+[here](https://www.glfw.org/docs/latest/intro.html#intro_version_string), the
 __GPU model and driver version__ (e.g. `GeForce GTX660 with 352.79`), and the
 __output of `glfwinfo`__ (with switches matching any hints you set in your
 code) when reporting this kind of bug.  If this tool doesn't run on the machine,
@@ -207,7 +207,7 @@ include the __VM name and version__ (e.g. `VirtualBox 5.1`).
 
 Please also include any __error messages__ provided to your application via the
 [error
-callback](http://www.glfw.org/docs/latest/intro_guide.html#error_handling) and
+callback](https://www.glfw.org/docs/latest/intro_guide.html#error_handling) and
 the __output of `monitors`__ when reporting this kind of bug.  If this tool
 doesn't run on the machine, mention this instead.
 
@@ -228,7 +228,7 @@ __Note:__ The exact ordering of related window events will sometimes differ.
 
 __Note:__ Window moving and resizing (by the user) will block the main thread on
 some platforms.  This is not a bug.  Set a [refresh
-callback](http://www.glfw.org/docs/latest/window.html#window_refresh) if you
+callback](https://www.glfw.org/docs/latest/window.html#window_refresh) if you
 want to keep the window contents updated during a move or size operation.
 
 The `events` tool is included in the GLFW source tree as `tests/events.c` and is
@@ -247,7 +247,7 @@ include the __VM name and version__ (e.g. `VirtualBox 5.1`).
 
 Please also include any __error messages__ provided to your application via the
 [error
-callback](http://www.glfw.org/docs/latest/intro_guide.html#error_handling) and
+callback](https://www.glfw.org/docs/latest/intro_guide.html#error_handling) and
 if relevant, the __output of `events`__ when reporting this kind of bug.  If
 this tool doesn't run on the machine, mention this instead.
 
@@ -276,7 +276,7 @@ __GLFW commit ID__ (e.g.  `3795d78b14ef06008889cc422a1fb8d642597751`) from Git.
 
 Please also include any __error messages__ provided to your application via the
 [error
-callback](http://www.glfw.org/docs/latest/intro_guide.html#error_handling), if
+callback](https://www.glfw.org/docs/latest/intro_guide.html#error_handling), if
 relevant.
 
 
@@ -299,7 +299,7 @@ the source to the output or vice versa.
 ### Reporting a website bug
 
 If the bug is in the documentation (anything under `/docs/`) then please see the
-section above.  Bugs in the rest of the site are reported to to the [website
+section above.  Bugs in the rest of the site are reported to the [website
 source repository](https://github.com/glfw/website/issues).
 
 

@@ -1,9 +1,9 @@
 /*************************************************************************
- * GLFW 3.3 - www.glfw.org
+ * GLFW 3.4 - www.glfw.org
  * A library for OpenGL, window and input
  *------------------------------------------------------------------------
  * Copyright (c) 2002-2006 Marcus Geelnard
- * Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+ * Copyright (c) 2006-2018 Camilla Löwy <elmindreda@glfw.org>
  *
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -81,7 +81,7 @@ extern "C" {
  * System headers and types
  *************************************************************************/
 
-#if defined(GLFW_EXPOSE_NATIVE_WIN32)
+#if defined(GLFW_EXPOSE_NATIVE_WIN32) || defined(GLFW_EXPOSE_NATIVE_WGL)
  // This is a workaround for the fact that glfw3.h needs to export APIENTRY (for
  // example to allow applications to correctly declare a GL_ARB_debug_output
  // callback) but windows.h assumes no one will define APIENTRY before it does
@@ -90,14 +90,14 @@ extern "C" {
   #undef GLFW_APIENTRY_DEFINED
  #endif
  #include <windows.h>
-#elif defined(GLFW_EXPOSE_NATIVE_COCOA)
- #include <ApplicationServices/ApplicationServices.h>
+#elif defined(GLFW_EXPOSE_NATIVE_COCOA) || defined(GLFW_EXPOSE_NATIVE_NSGL)
  #if defined(__OBJC__)
   #import <Cocoa/Cocoa.h>
  #else
+  #include <ApplicationServices/ApplicationServices.h>
   typedef void* id;
  #endif
-#elif defined(GLFW_EXPOSE_NATIVE_X11)
+#elif defined(GLFW_EXPOSE_NATIVE_X11) || defined(GLFW_EXPOSE_NATIVE_GLX)
  #include <X11/Xlib.h>
  #include <X11/extensions/Xrandr.h>
 #elif defined(GLFW_EXPOSE_NATIVE_WAYLAND)

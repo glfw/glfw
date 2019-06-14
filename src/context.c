@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 - www.glfw.org
+// GLFW 3.4 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
@@ -23,6 +23,8 @@
 // 3. This notice may not be removed or altered from any source
 //    distribution.
 //
+//========================================================================
+// Please use C89 style variable declarations in this file because VS 2010
 //========================================================================
 
 #include "internal.h"
@@ -358,7 +360,7 @@ GLFWbool _glfwRefreshContextAttribs(_GLFWwindow* window,
     window->context.source = ctxconfig->source;
     window->context.client = GLFW_OPENGL_API;
 
-    previous = _glfwPlatformGetTls(&_glfw.contextSlot);;
+    previous = _glfwPlatformGetTls(&_glfw.contextSlot);
     glfwMakeContextCurrent((GLFWwindow*) window);
 
     window->context.GetIntegerv = (PFNGLGETINTEGERVPROC)

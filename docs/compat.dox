@@ -23,9 +23,9 @@ varied window managers in use on Unix-like systems.  In order for applications
 and window managers to work well together, a number of standards and
 conventions have been developed that regulate behavior outside the scope of the
 X11 API; most importantly the
-[Inter-Client Communication Conventions Manual](http://www.tronche.com/gui/x/icccm/)
+[Inter-Client Communication Conventions Manual](https://www.tronche.com/gui/x/icccm/)
 (ICCCM) and
-[Extended Window Manager Hints](http://standards.freedesktop.org/wm-spec/wm-spec-latest.html)
+[Extended Window Manager Hints](https://standards.freedesktop.org/wm-spec/wm-spec-latest.html)
 (EWMH) standards.
 
 GLFW uses the `_MOTIF_WM_HINTS` window property to support borderless windows.
@@ -53,13 +53,13 @@ running window manager uses compositing but does not support this property then
 additional copying may be performed for each buffer swap of full screen windows.
 
 GLFW uses the
-[clipboard manager protocol](http://www.freedesktop.org/wiki/ClipboardManager/)
+[clipboard manager protocol](https://www.freedesktop.org/wiki/ClipboardManager/)
 to push a clipboard string (i.e. selection) owned by a GLFW window about to be
 destroyed to the clipboard manager.  If there is no running clipboard manager,
 the clipboard string will be unavailable once the window has been destroyed.
 
 GLFW uses the
-[X drag-and-drop protocol](http://www.freedesktop.org/wiki/Specifications/XDND/)
+[X drag-and-drop protocol](https://www.freedesktop.org/wiki/Specifications/XDND/)
 to provide file drop events.  If the application originating the drag does not
 support this protocol, drag and drop will not work.
 
@@ -104,11 +104,7 @@ has been configured in the compositor.
 GLFW uses the [xdg-shell
 protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/stable/xdg-shell/xdg-shell.xml)
 to provide better window management.  This protocol is part of
-wayland-protocols 1.12, and mandatory at build time.  If the running compositor
-does not support this protocol, the older [wl_shell
-interface](https://cgit.freedesktop.org/wayland/wayland/tree/protocol/wayland.xml#n972)
-will be used instead.  This will result in a worse integration with the
-desktop, especially on tiling compositors.
+wayland-protocols 1.12, and mandatory at build time.
 
 GLFW uses the [relative pointer
 protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/unstable/relative-pointer/relative-pointer-unstable-v1.xml)
@@ -126,13 +122,18 @@ wayland-protocols 1.6, and mandatory at build time.  If the running compositor
 does not support this protocol, the screensaver may start even for full screen
 windows.
 
-GLFW uses the [viewporter
+GLFW uses the [xdg-decoration
+protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml)
+to request decorations to be drawn around its windows.  This protocol is part
+of wayland-protocols 1.15, and mandatory at build time.  If the running
+compositor does not support this protocol, a very simple frame will be drawn by
+GLFW itself, using the [viewporter
 protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/stable/viewporter/viewporter.xml)
 alongside
-[subsurfaces](https://cgit.freedesktop.org/wayland/wayland/tree/protocol/wayland.xml#n2598)
-to draw decorations around windows.  This protocol is part of wayland-protocols
-1.4, and mandatory at build time.  If the running compositor does not support
-this protocol, no decorations will be drawn around windows.
+[subsurfaces](https://cgit.freedesktop.org/wayland/wayland/tree/protocol/wayland.xml#n2598).
+This protocol is part of wayland-protocols 1.4, and mandatory at build time.
+If the running compositor does not support this protocol either, no decorations
+will be drawn around windows.
 
 
 @section compat_glx GLX extensions

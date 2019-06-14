@@ -29,7 +29,8 @@
 #include <assert.h>
 #include <stddef.h>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 /* Map height updates */
@@ -432,7 +433,7 @@ int main(int argc, char** argv)
     glfwSetKeyCallback(window, key_callback);
 
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    gladLoadGL(glfwGetProcAddress);
 
     /* Prepare opengl resources for rendering */
     shader_program = make_shader_program(vertex_shader_text, fragment_shader_text);

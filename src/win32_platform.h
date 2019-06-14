@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.3 Win32 - www.glfw.org
+// GLFW 3.4 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -61,6 +61,9 @@
 // GLFW uses DirectInput8 interfaces
 #define DIRECTINPUT_VERSION 0x0800
 
+// GLFW uses OEM cursor resources
+#define OEMRESOURCE
+
 #include <wctype.h>
 #include <windows.h>
 #include <dinput.h>
@@ -98,11 +101,17 @@
 #ifndef _WIN32_WINNT_WINBLUE
  #define _WIN32_WINNT_WINBLUE 0x0602
 #endif
+#ifndef _WIN32_WINNT_WIN8
+ #define _WIN32_WINNT_WIN8 0x0602
+#endif
 #ifndef WM_GETDPISCALEDSIZE
  #define WM_GETDPISCALEDSIZE 0x02e4
 #endif
 #ifndef USER_DEFAULT_SCREEN_DPI
  #define USER_DEFAULT_SCREEN_DPI 96
+#endif
+#ifndef OCR_HAND
+ #define OCR_HAND 32649
 #endif
 
 #if WINVER < 0x0601
@@ -147,8 +156,7 @@ typedef enum
 #endif /*DPI_ENUMS_DECLARED*/
 
 #ifndef DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
-DECLARE_HANDLE(DPI_AWARENESS_CONTEXT);
-#define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 ((DPI_AWARENESS_CONTEXT) -4)
+#define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 ((HANDLE) -4)
 #endif /*DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2*/
 
 // HACK: Define versionhelpers.h functions manually as MinGW lacks the header
@@ -225,7 +233,7 @@ typedef HRESULT (WINAPI * PFN_DirectInput8Create)(HINSTANCE,DWORD,REFIID,LPVOID*
 typedef BOOL (WINAPI * PFN_SetProcessDPIAware)(void);
 typedef BOOL (WINAPI * PFN_ChangeWindowMessageFilterEx)(HWND,UINT,DWORD,CHANGEFILTERSTRUCT*);
 typedef BOOL (WINAPI * PFN_EnableNonClientDpiScaling)(HWND);
-typedef BOOL (WINAPI * PFN_SetProcessDpiAwarenessContext)(DPI_AWARENESS_CONTEXT);
+typedef BOOL (WINAPI * PFN_SetProcessDpiAwarenessContext)(HANDLE);
 typedef UINT (WINAPI * PFN_GetDpiForWindow)(HWND);
 typedef BOOL (WINAPI * PFN_AdjustWindowRectExForDpi)(LPRECT,DWORD,BOOL,DWORD,UINT);
 #define SetProcessDPIAware _glfw.win32.user32.SetProcessDPIAware_

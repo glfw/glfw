@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.3 Win32 - www.glfw.org
+// GLFW 3.4 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -23,6 +23,8 @@
 // 3. This notice may not be removed or altered from any source
 //    distribution.
 //
+//========================================================================
+// Please use C89 style variable declarations in this file because VS 2010
 //========================================================================
 
 #include "internal.h"
@@ -186,14 +188,14 @@ static HICON createIcon(const GLFWimage* image,
     return handle;
 }
 
-// Translate client window size to full window size according to styles and DPI
+// Translate content area size to full window size according to styles and DPI
 //
 static void getFullWindowSize(DWORD style, DWORD exStyle,
-                              int clientWidth, int clientHeight,
+                              int contentWidth, int contentHeight,
                               int* fullWidth, int* fullHeight,
                               UINT dpi)
 {
-    RECT rect = { 0, 0, clientWidth, clientHeight };
+    RECT rect = { 0, 0, contentWidth, contentHeight };
 
     if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
         AdjustWindowRectExForDpi(&rect, style, FALSE, exStyle, dpi);
@@ -204,16 +206,19 @@ static void getFullWindowSize(DWORD style, DWORD exStyle,
     *fullHeight = rect.bottom - rect.top;
 }
 
-// Enforce the client rect aspect ratio based on which edge is being dragged
+// Enforce the content area aspect ratio based on which edge is being dragged
 //
 static void applyAspectRatio(_GLFWwindow* window, int edge, RECT* area)
 {
     int xoff, yoff;
+    UINT dpi = USER_DEFAULT_SCREEN_DPI;
     const float ratio = (float) window->numer / (float) window->denom;
 
+    if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+        dpi = GetDpiForWindow(window->win32.handle);
+
     getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
-                      0, 0, &xoff, &yoff,
-                      GetDpiForWindow(window->win32.handle));
+                      0, 0, &xoff, &yoff, dpi);
 
     if (edge == WMSZ_LEFT  || edge == WMSZ_BOTTOMLEFT ||
         edge == WMSZ_RIGHT || edge == WMSZ_BOTTOMRIGHT)
@@ -231,15 +236,6 @@ static void applyAspectRatio(_GLFWwindow* window, int edge, RECT* area)
         area->right = area->left + xoff +
             (int) ((area->bottom - area->top - yoff) * ratio);
     }
-}
-
-// Centers the cursor over the window client area
-//
-static void centerCursor(_GLFWwindow* window)
-{
-    int width, height;
-    _glfwPlatformGetWindowSize(window, &width, &height);
-    _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
 }
 
 // Updates the cursor image according to its cursor mode
@@ -273,19 +269,11 @@ static void updateClipRect(_GLFWwindow* window)
         ClipCursor(NULL);
 }
 
-// Apply disabled cursor mode to a focused window
+// Enables WM_INPUT messages for the mouse for the specified window
 //
-static void disableCursor(_GLFWwindow* window)
+static void enableRawMouseMotion(_GLFWwindow* window)
 {
     const RAWINPUTDEVICE rid = { 0x01, 0x02, 0, window->win32.handle };
-
-    _glfw.win32.disabledCursorWindow = window;
-    _glfwPlatformGetCursorPos(window,
-                              &_glfw.win32.restoreCursorPosX,
-                              &_glfw.win32.restoreCursorPosY);
-    updateCursorImage(window);
-    centerCursor(window);
-    updateClipRect(window);
 
     if (!RegisterRawInputDevices(&rid, 1, sizeof(rid)))
     {
@@ -294,18 +282,11 @@ static void disableCursor(_GLFWwindow* window)
     }
 }
 
-// Exit disabled cursor mode for the specified window
+// Disables WM_INPUT messages for the mouse
 //
-static void enableCursor(_GLFWwindow* window)
+static void disableRawMouseMotion(_GLFWwindow* window)
 {
     const RAWINPUTDEVICE rid = { 0x01, 0x02, RIDEV_REMOVE, NULL };
-
-    _glfw.win32.disabledCursorWindow = NULL;
-    updateClipRect(NULL);
-    _glfwPlatformSetCursorPos(window,
-                              _glfw.win32.restoreCursorPosX,
-                              _glfw.win32.restoreCursorPosY);
-    updateCursorImage(window);
 
     if (!RegisterRawInputDevices(&rid, 1, sizeof(rid)))
     {
@@ -314,9 +295,40 @@ static void enableCursor(_GLFWwindow* window)
     }
 }
 
-// Returns whether the cursor is in the client area of the specified window
+// Apply disabled cursor mode to a focused window
 //
-static GLFWbool cursorInClientArea(_GLFWwindow* window)
+static void disableCursor(_GLFWwindow* window)
+{
+    _glfw.win32.disabledCursorWindow = window;
+    _glfwPlatformGetCursorPos(window,
+                              &_glfw.win32.restoreCursorPosX,
+                              &_glfw.win32.restoreCursorPosY);
+    updateCursorImage(window);
+    _glfwCenterCursorInContentArea(window);
+    updateClipRect(window);
+
+    if (window->rawMouseMotion)
+        enableRawMouseMotion(window);
+}
+
+// Exit disabled cursor mode for the specified window
+//
+static void enableCursor(_GLFWwindow* window)
+{
+    if (window->rawMouseMotion)
+        disableRawMouseMotion(window);
+
+    _glfw.win32.disabledCursorWindow = NULL;
+    updateClipRect(NULL);
+    _glfwPlatformSetCursorPos(window,
+                              _glfw.win32.restoreCursorPosX,
+                              _glfw.win32.restoreCursorPosY);
+    updateCursorImage(window);
+}
+
+// Returns whether the cursor is in the content area of the specified window
+//
+static GLFWbool cursorInContentArea(_GLFWwindow* window)
 {
     RECT area;
     POINT pos;
@@ -619,12 +631,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             //       clicking a caption button
             if (HIWORD(lParam) == WM_LBUTTONDOWN)
             {
-                if (LOWORD(lParam) == HTCLOSE ||
-                    LOWORD(lParam) == HTMINBUTTON ||
-                    LOWORD(lParam) == HTMAXBUTTON)
-                {
+                if (LOWORD(lParam) != HTCLIENT)
                     window->win32.frameAction = GLFW_TRUE;
-                }
             }
 
             break;
@@ -820,11 +828,22 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             const int x = GET_X_LPARAM(lParam);
             const int y = GET_Y_LPARAM(lParam);
 
-            // Disabled cursor motion input is provided by WM_INPUT
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                break;
+            {
+                const int dx = x - window->win32.lastCursorPosX;
+                const int dy = y - window->win32.lastCursorPosY;
 
-            _glfwInputCursorPos(window, x, y);
+                if (_glfw.win32.disabledCursorWindow != window)
+                    break;
+                if (window->rawMouseMotion)
+                    break;
+
+                _glfwInputCursorPos(window,
+                                    window->virtualCursorPosX + dx,
+                                    window->virtualCursorPosY + dy);
+            }
+            else
+                _glfwInputCursorPos(window, x, y);
 
             window->win32.lastCursorPosX = x;
             window->win32.lastCursorPosY = y;
@@ -847,13 +866,14 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_INPUT:
         {
-            UINT size;
+            UINT size = 0;
             HRAWINPUT ri = (HRAWINPUT) lParam;
-            RAWINPUT* data;
+            RAWINPUT* data = NULL;
             int dx, dy;
 
-            // Only process input when disabled cursor mode is applied
             if (_glfw.win32.disabledCursorWindow != window)
+                break;
+            if (!window->rawMouseMotion)
                 break;
 
             GetRawInputData(ri, RID_INPUT, NULL, &size, sizeof(RAWINPUTHEADER));
@@ -919,6 +939,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_ENTERSIZEMOVE:
         case WM_ENTERMENULOOP:
         {
+            if (window->win32.frameAction)
+                break;
+
             // HACK: Enable the cursor while the user is moving or
             //       resizing the window or using the window menu
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
@@ -930,6 +953,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_EXITSIZEMOVE:
         case WM_EXITMENULOOP:
         {
+            if (window->win32.frameAction)
+                break;
+
             // HACK: Disable the cursor once the user is done moving or
             //       resizing the window or using the menu
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
@@ -1001,14 +1027,17 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_GETMINMAXINFO:
         {
             int xoff, yoff;
+            UINT dpi = USER_DEFAULT_SCREEN_DPI;
             MINMAXINFO* mmi = (MINMAXINFO*) lParam;
 
             if (window->monitor)
                 break;
 
+            if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+                dpi = GetDpiForWindow(window->win32.handle);
+
             getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
-                              0, 0, &xoff, &yoff,
-                              GetDpiForWindow(window->win32.handle));
+                              0, 0, &xoff, &yoff, dpi);
 
             if (window->minwidth != GLFW_DONT_CARE &&
                 window->minheight != GLFW_DONT_CARE)
@@ -1054,6 +1083,17 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             return TRUE;
         }
 
+        case WM_NCACTIVATE:
+        case WM_NCPAINT:
+        {
+            // Prevent title bar from being drawn after restoring a minimized
+            // undecorated window
+            if (!window->decorated)
+                return TRUE;
+
+            break;
+        }
+
         case WM_DWMCOMPOSITIONCHANGED:
         {
             if (window->win32.transparent)
@@ -1066,7 +1106,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (window->win32.scaleToMonitor)
                 break;
 
-            // Adjust the window size to keep the client area size constant
+            // Adjust the window size to keep the content area size constant
             if (_glfwIsWindows10CreatorsUpdateOrGreaterWin32())
             {
                 RECT source = {0}, target = {0};
@@ -1138,7 +1178,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             for (i = 0;  i < count;  i++)
             {
                 const UINT length = DragQueryFileW(drop, i, NULL, 0);
-                WCHAR* buffer = calloc(length + 1, sizeof(WCHAR));
+                WCHAR* buffer = calloc((size_t) length + 1, sizeof(WCHAR));
 
                 DragQueryFileW(drop, i, buffer, length + 1);
                 paths[i] = _glfwCreateUTF8FromWideStringWin32(buffer);
@@ -1236,7 +1276,7 @@ static int createNativeWindow(_GLFWwindow* window,
     window->win32.scaleToMonitor = wndconfig->scaleToMonitor;
 
     // Adjust window size to account for DPI scaling of the window frame and
-    // optionally DPI scaling of the client area
+    // optionally DPI scaling of the content area
     // This cannot be done until we know what monitor it was placed on
     if (!window->monitor)
     {
@@ -1774,7 +1814,7 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 
 int _glfwPlatformWindowHovered(_GLFWwindow* window)
 {
-    return cursorInClientArea(window);
+    return cursorInContentArea(window);
 }
 
 int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
@@ -1838,6 +1878,22 @@ void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
         style &= ~WS_EX_LAYERED;
         SetWindowLongW(window->win32.handle, GWL_EXSTYLE, style);
     }
+}
+
+void _glfwPlatformSetRawMouseMotion(_GLFWwindow *window, GLFWbool enabled)
+{
+    if (_glfw.win32.disabledCursorWindow != window)
+        return;
+
+    if (enabled)
+        enableRawMouseMotion(window);
+    else
+        disableRawMouseMotion(window);
+}
+
+GLFWbool _glfwPlatformRawMouseMotionSupported(void)
+{
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformPollEvents(void)
@@ -1967,7 +2023,7 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
     }
     else if (_glfw.win32.disabledCursorWindow == window)
         enableCursor(window);
-    else if (cursorInClientArea(window))
+    else if (cursorInContentArea(window))
         updateCursorImage(window);
 }
 
@@ -1994,24 +2050,26 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
-    LPCWSTR name = NULL;
+    int id = 0;
 
     if (shape == GLFW_ARROW_CURSOR)
-        name = IDC_ARROW;
+        id = OCR_NORMAL;
     else if (shape == GLFW_IBEAM_CURSOR)
-        name = IDC_IBEAM;
+        id = OCR_IBEAM;
     else if (shape == GLFW_CROSSHAIR_CURSOR)
-        name = IDC_CROSS;
+        id = OCR_CROSS;
     else if (shape == GLFW_HAND_CURSOR)
-        name = IDC_HAND;
+        id = OCR_HAND;
     else if (shape == GLFW_HRESIZE_CURSOR)
-        name = IDC_SIZEWE;
+        id = OCR_SIZEWE;
     else if (shape == GLFW_VRESIZE_CURSOR)
-        name = IDC_SIZENS;
+        id = OCR_SIZENS;
     else
         return GLFW_FALSE;
 
-    cursor->win32.handle = CopyCursor(LoadCursorW(NULL, name));
+    cursor->win32.handle = LoadImageW(NULL,
+                                      MAKEINTRESOURCEW(id), IMAGE_CURSOR, 0, 0,
+                                      LR_DEFAULTSIZE | LR_SHARED);
     if (!cursor->win32.handle)
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
@@ -2030,7 +2088,7 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 {
-    if (cursorInClientArea(window))
+    if (cursorInContentArea(window))
         updateCursorImage(window);
 }
 

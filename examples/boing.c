@@ -54,6 +54,7 @@ void reshape( GLFWwindow* window, int w, int h );
 void key_callback( GLFWwindow* window, int key, int scancode, int action, int mods );
 void mouse_button_callback( GLFWwindow* window, int button, int action, int mods );
 void cursor_position_callback( GLFWwindow* window, double x, double y );
+void window_maximize_callback( GLFWwindow* window, int maximized );
 void DrawBoingBall( void );
 void BounceBall( double dt );
 void DrawBoingBallBand( GLfloat long_lo, GLfloat long_hi );
@@ -295,6 +296,25 @@ void cursor_position_callback( GLFWwindow* window, double x, double y )
 
    if ( override_pos )
       set_ball_pos(cursor_x, cursor_y);
+}
+
+void window_maximize_callback( GLFWwindow* window, int maximize )
+{
+	if (maximize) {
+		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+		if (monitor == NULL)
+			return;
+
+		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+		if (mode == NULL)
+			return;
+
+		glfwSetWindowMonitor(window, monitor, 0, 0, mode->width,
+			mode->height, mode->refreshRate);
+	} else {
+		glfwSetWindowMonitor(window, NULL, windowed_xpos,
+			windowed_ypos, windowed_width, windowed_height, 0);
+	}
 }
 
 /*****************************************************************************
@@ -628,6 +648,8 @@ int main( void )
    if( !glfwInit() )
       exit( EXIT_FAILURE );
 
+   glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_FALSE);
+
    window = glfwCreateWindow( 400, 400, "Boing (classic Amiga demo)", NULL, NULL );
    if (!window)
    {
@@ -641,6 +663,7 @@ int main( void )
    glfwSetKeyCallback(window, key_callback);
    glfwSetMouseButtonCallback(window, mouse_button_callback);
    glfwSetCursorPosCallback(window, cursor_position_callback);
+   glfwSetWindowMaximizeCallback(window, window_maximize_callback);
 
    glfwMakeContextCurrent(window);
    gladLoadGL(glfwGetProcAddress);

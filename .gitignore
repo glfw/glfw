@@ -83,3 +83,4 @@ tests/title
 tests/triangle-vulkan
 tests/windows
 
+/[Bb]uild*/

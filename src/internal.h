@@ -583,6 +583,8 @@ struct _GLFWlibrary
     _GLFW_EGL_LIBRARY_CONTEXT_STATE;
     // This is defined in osmesa_context.h
     _GLFW_OSMESA_LIBRARY_CONTEXT_STATE;
+    // This is defined in evdev.h
+    _GLFW_PLATFORM_LIBRARY_EVDEV_STATE;
 };
 
 // Global state shared between compilation units of GLFW

@@ -297,6 +297,8 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
 
 void _glfwPlatformPollEvents(void)
 {
+    _glfwDetectEvdevConnection();
+    _glfwPollEvdevDevices();
 }
 
 void _glfwPlatformWaitEvents(void)

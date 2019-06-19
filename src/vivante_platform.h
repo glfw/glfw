@@ -26,6 +26,7 @@
 //========================================================================
 
 #include <dlfcn.h>
+#include <stdio.h>
 
 #define _GLFW_PLATFORM_CONTEXT_STATE
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
@@ -37,6 +38,7 @@
 #include "xkb_unicode.h"
 #include "egl_context.h"
 #include "linux_joystick.h"
+#include "evdev.h"
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)

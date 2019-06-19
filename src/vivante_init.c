@@ -100,6 +100,9 @@ int _glfwPlatformInit(void)
         return GLFW_FALSE;
     }
     
+    if (!_glfwInitEvdev())
+        return GLFW_FALSE;
+    
     if (!_glfwInitJoysticksLinux())
         return GLFW_FALSE;
     
@@ -113,6 +116,8 @@ int _glfwPlatformInit(void)
 void _glfwPlatformTerminate(void)
 {
     _glfwTerminateJoysticksLinux();
+    
+    _glfwTerminateEvdev();
     
     if (_glfw.vivante.display)
     {
@@ -144,3 +149,27 @@ const char* _glfwPlatformGetVersionString(void)
         ;
 }
 
+void _glfwEvdevInputKey(int key, int scancode, int action, int mods)
+{
+    printf("_glfwEvdevInputKey key = %i, scancode = %i, action = %i, mods = %i\n", key, scancode, action, mods);
+}
+
+void _glfwEvdevInputChar(unsigned int codepoint, int mods, GLFWbool plain)
+{
+    printf("_glfwEvdevInputChar codepoint = %i, mods = %i, plain = %i\n", codepoint, mods, plain);
+}
+
+void _glfwEvdevInputScroll(double xoffset, double yoffset)
+{
+    printf("_glfwEvdevInputScroll xoffset = %f, yoffset = %f\n", xoffset, yoffset);
+}
+
+void _glfwEvdevInputMouseClick(int button, int action, int mods)
+{
+    printf("_glfwEvdevInputMouseClick button = %i, action = %i, mods = %i\n", button, action, mods);
+}
+
+void _glfwEvdevInputCursorPos(double xoffset, double yoffset)
+{
+    printf("_glfwEvdevInputCursorPos xoffset = %f, yoffset = %f\n", xoffset, yoffset);
+}

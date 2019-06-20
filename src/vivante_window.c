@@ -26,6 +26,61 @@
 //========================================================================
 
 #include "internal.h"
+#include <errno.h>
+
+// Wait for data to arrive using select
+// TODO: because we get keyboard and mouse events via polling,
+// we have to rewrite it using active waiting.
+// Else we will wait only for device connected/disconnected events
+//
+static GLFWbool waitForEvent(double* timeout)
+{
+    fd_set fds;
+    int maxFd = -1;
+    int count = 0;
+    
+    if (_glfw.evdev.inotify > maxFd){
+        count = _glfw.evdev.inotify + 1;
+        maxFd = _glfw.evdev.inotify;
+    }
+    
+    if (_glfw.linjs.inotify > maxFd){
+        count = _glfw.linjs.inotify + 1;
+        maxFd = _glfw.linjs.inotify;
+    }
+    // TODO: code above is based on x11_window.c:waitForEvent
+    // I don't fully understand how it works so it can be done wrong way
+
+    for (;;)
+    {
+        FD_ZERO(&fds);
+        if (_glfw.evdev.inotify > 0)
+            FD_SET(_glfw.evdev.inotify, &fds);
+        if (_glfw.linjs.inotify > 0)
+            FD_SET(_glfw.linjs.inotify, &fds);
+
+        if (timeout)
+        {
+            const long seconds = (long) *timeout;
+            const long microseconds = (long) ((*timeout - seconds) * 1e6);
+            struct timeval tv = { seconds, microseconds };
+            const uint64_t base = _glfwPlatformGetTimerValue();
+
+            const int result = select(count, &fds, NULL, NULL, &tv);
+            const int error = errno;
+
+            *timeout -= (_glfwPlatformGetTimerValue() - base) /
+                (double) _glfwPlatformGetTimerFrequency();
+
+            if (result > 0)
+                return GLFW_TRUE;
+            if ((result == -1 && error == EINTR) || *timeout <= 0.0)
+                return GLFW_FALSE;
+        }
+        else if (select(count, &fds, NULL, NULL, NULL) != -1 || errno != EINTR)
+            return GLFW_TRUE;
+    }
+}
 
 static int queryWindowGeometry(_GLFWwindow* window )
 {
@@ -303,10 +358,14 @@ void _glfwPlatformPollEvents(void)
 
 void _glfwPlatformWaitEvents(void)
 {
+    waitForEvent(NULL);
+    _glfwPlatformPollEvents();
 }
 
 void _glfwPlatformWaitEventsTimeout(double timeout)
 {
+    waitForEvent(&timeout);
+    _glfwPlatformPollEvents();
 }
 
 void _glfwPlatformPostEmptyEvent(void)

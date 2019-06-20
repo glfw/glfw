@@ -367,13 +367,23 @@ static void handleKeyEvent(_GLFWeventDevice* ed, int code, int value)
 static void handleRelEvent(_GLFWeventDevice* ed, int code, int value)
 {
     if (code == REL_X){
-        _glfwEvdevInputCursorPos(value, .0);
+        _glfwEvdevInputCursorMove(value, .0);
     }else if (code == REL_Y)
-        _glfwEvdevInputCursorPos(.0, value);
+        _glfwEvdevInputCursorMove(.0, value);
     else if (code == REL_HWHEEL)
         _glfwEvdevInputScroll(value, .0);
     else if (code == REL_WHEEL)
         _glfwEvdevInputScroll(.0, value);
+}
+
+// Apply an EV_ABS event to the specified event device
+//
+static void handleAbsEvent(_GLFWeventDevice* ed, int code, int value)
+{
+    if (code == ABS_X){
+        _glfwEvdevInputCursorPos(value, .0);
+    }else if (code == ABS_Y)
+        _glfwEvdevInputCursorPos(.0, value);
 }
 
 // Apply an EV_LED event to the specified event device
@@ -627,6 +637,8 @@ int _glfwPollEvdevDevice( _GLFWeventDevice* ed)
             handleKeyEvent(ed, e.code, e.value);
         else if (e.type == EV_REL)
             handleRelEvent(ed, e.code, e.value);
+        else if (e.type == EV_ABS)
+            handleAbsEvent(ed, e.code, e.value);
         else if (e.type == EV_LED)
             handleLedEvent(ed, e.code, e.value);
     }

@@ -76,4 +76,5 @@ void _glfwEvdevInputKey(int key, int scancode, int action, int mods);
 void _glfwEvdevInputChar(unsigned int codepoint, int mods, GLFWbool plain);
 void _glfwEvdevInputScroll(double xoffset, double yoffset);
 void _glfwEvdevInputMouseClick(int button, int action, int mods);
-void _glfwEvdevInputCursorPos(double xoffset, double yoffset);
+void _glfwEvdevInputCursorMove(double xoffset, double yoffset);
+void _glfwEvdevInputCursorPos(double xpos, double ypos);

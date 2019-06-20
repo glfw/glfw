@@ -169,7 +169,12 @@ void _glfwEvdevInputMouseClick(int button, int action, int mods)
     printf("_glfwEvdevInputMouseClick button = %i, action = %i, mods = %i\n", button, action, mods);
 }
 
-void _glfwEvdevInputCursorPos(double xoffset, double yoffset)
+void _glfwEvdevInputCursorPos(double xpos, double ypos)
 {
-    printf("_glfwEvdevInputCursorPos xoffset = %f, yoffset = %f\n", xoffset, yoffset);
+    printf("_glfwEvdevInputCursorPos xpos = %f, ypos = %f\n", xpos, ypos);
+}
+
+void _glfwEvdevInputCursorMove(double xoffset, double yoffset)
+{
+    printf("_glfwEvdevInputCursorMove xoffset = %f, yoffset = %f\n", xoffset, yoffset);
 }

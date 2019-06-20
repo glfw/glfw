@@ -96,7 +96,12 @@ typedef struct _GLFWlibraryVivante
     EGLNativeDisplayType display;
 
     void*                handle;
-
+    
+    int                  displayWidth, displayHeight;
+    double               cursorXpos, cursorYpos;
+    _GLFWwindow*         focusedWindow;
+    char*                clipboardString;
+    
     PFN_fbGetDisplay            GetDisplay;
     PFN_fbGetDisplayByIndex     GetDisplayByIndex;
     PFN_fbGetDisplayGeometry    GetDisplayGeometry;
@@ -108,3 +113,5 @@ typedef struct _GLFWlibraryVivante
     PFN_fbDestroyWindow         DestroyWindow;
     
 } _GLFWlibraryVivante;
+
+void _glfwVivanteSetCursorPos(double xpos, double ypos);

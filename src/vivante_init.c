@@ -27,14 +27,30 @@
 
 #include "internal.h"
 
-void _glfwInitFbMonitor(void)
+static void _glfwInitFbMonitor(void)
 {
     int width, height;
     fbGetDisplayGeometry(_glfw.vivante.display, &width, &height);
     
+    _glfw.vivante.displayWidth = width;
+    _glfw.vivante.displayHeight = height;
+    _glfw.vivante.cursorXpos = width / 2;
+    _glfw.vivante.cursorYpos = height / 2;
+    
     _glfwInputMonitor(_glfwAllocMonitor("Display", width, height),
                       GLFW_CONNECTED,
                       _GLFW_INSERT_FIRST);
+}
+
+static void _glfwNotifyCursorPositionChanged(void)
+{
+    if (_glfw.vivante.focusedWindow){
+        if (_glfwPlatformWindowHovered(_glfw.vivante.focusedWindow)){
+            double xpos, ypos;
+            _glfwPlatformGetCursorPos(_glfw.vivante.focusedWindow, &xpos, &ypos);
+            _glfwInputCursorPos(_glfw.vivante.focusedWindow, xpos, ypos);
+        }
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -151,30 +167,52 @@ const char* _glfwPlatformGetVersionString(void)
 
 void _glfwEvdevInputKey(int key, int scancode, int action, int mods)
 {
-    printf("_glfwEvdevInputKey key = %i, scancode = %i, action = %i, mods = %i\n", key, scancode, action, mods);
+    
+    if (_glfw.vivante.focusedWindow)
+        _glfwInputKey(_glfw.vivante.focusedWindow, key, scancode, action, mods);
 }
 
 void _glfwEvdevInputChar(unsigned int codepoint, int mods, GLFWbool plain)
 {
-    printf("_glfwEvdevInputChar codepoint = %i, mods = %i, plain = %i\n", codepoint, mods, plain);
+    if (_glfw.vivante.focusedWindow)
+        _glfwInputChar(_glfw.vivante.focusedWindow, codepoint, mods, plain);
 }
 
 void _glfwEvdevInputScroll(double xoffset, double yoffset)
 {
-    printf("_glfwEvdevInputScroll xoffset = %f, yoffset = %f\n", xoffset, yoffset);
+    if (_glfw.vivante.focusedWindow)
+        _glfwInputScroll(_glfw.vivante.focusedWindow, xoffset, yoffset);
 }
 
 void _glfwEvdevInputMouseClick(int button, int action, int mods)
 {
-    printf("_glfwEvdevInputMouseClick button = %i, action = %i, mods = %i\n", button, action, mods);
+    if (_glfw.vivante.focusedWindow)
+        _glfwInputMouseClick(_glfw.vivante.focusedWindow, button, action, mods);
+}
+
+void _glfwVivanteSetCursorPos(double xpos, double ypos)
+{
+    _glfw.vivante.cursorXpos = xpos;
+    _glfw.vivante.cursorYpos = ypos;
+    
+    if( _glfw.vivante.cursorXpos < 0.0 )
+        _glfw.vivante.cursorXpos = 0.0;
+    if( _glfw.vivante.cursorXpos > _glfw.vivante.displayWidth )
+        _glfw.vivante.cursorXpos = _glfw.vivante.displayWidth;
+    if( _glfw.vivante.cursorYpos < 0.0 )
+        _glfw.vivante.cursorYpos = 0.0;
+    if( _glfw.vivante.cursorYpos > _glfw.vivante.displayHeight )
+        _glfw.vivante.cursorYpos = _glfw.vivante.displayHeight;
 }
 
 void _glfwEvdevInputCursorPos(double xpos, double ypos)
 {
-    printf("_glfwEvdevInputCursorPos xpos = %f, ypos = %f\n", xpos, ypos);
+    _glfwVivanteSetCursorPos(xpos, ypos);
+    _glfwNotifyCursorPositionChanged();
 }
 
 void _glfwEvdevInputCursorMove(double xoffset, double yoffset)
 {
-    printf("_glfwEvdevInputCursorMove xoffset = %f, yoffset = %f\n", xoffset, yoffset);
+    _glfwVivanteSetCursorPos(_glfw.vivante.cursorXpos + xoffset, _glfw.vivante.cursorYpos + yoffset);
+    _glfwNotifyCursorPositionChanged();
 }

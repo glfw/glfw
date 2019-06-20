@@ -27,6 +27,7 @@
 
 #include "internal.h"
 #include <errno.h>
+#include <stdlib.h>
 
 // Wait for data to arrive using select
 // TODO: because we get keyboard and mouse events via polling,
@@ -162,6 +163,9 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
 void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 {
+    if (_glfwPlatformWindowFocused(window))
+        _glfw.vivante.focusedWindow = GLFW_FALSE;
+    
     if (window->context.destroy)
         window->context.destroy(window);
     
@@ -276,7 +280,21 @@ int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 
 int _glfwPlatformWindowHovered(_GLFWwindow* window)
 {
-    return GLFW_FALSE;
+    double xpos = _glfw.vivante.cursorXpos;
+    double ypos = _glfw.vivante.cursorYpos;
+    xpos -= window->vivante.xpos;
+    ypos -= window->vivante.ypos;
+    
+    if( xpos < 0.0 )
+        return GLFW_FALSE;
+    if( xpos > window->vivante.width )
+        return GLFW_FALSE;
+    if( ypos < 0.0 )
+        return GLFW_FALSE;
+    if( ypos > window->vivante.height )
+        return GLFW_FALSE;
+    
+    return GLFW_TRUE;
 }
 
 int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
@@ -333,11 +351,12 @@ void _glfwPlatformHideWindow(_GLFWwindow* window)
 
 void _glfwPlatformFocusWindow(_GLFWwindow* window)
 {
+    _glfw.vivante.focusedWindow = window;
 }
 
 int _glfwPlatformWindowFocused(_GLFWwindow* window)
 {
-    return GLFW_FALSE;
+    return _glfw.vivante.focusedWindow == window;
 }
 
 int _glfwPlatformWindowIconified(_GLFWwindow* window)
@@ -347,7 +366,7 @@ int _glfwPlatformWindowIconified(_GLFWwindow* window)
 
 int _glfwPlatformWindowVisible(_GLFWwindow* window)
 {
-    return GLFW_FALSE;
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformPollEvents(void)
@@ -374,10 +393,29 @@ void _glfwPlatformPostEmptyEvent(void)
 
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
 {
+    double cursorXpos = _glfw.vivante.cursorXpos;
+    double cursorYpos = _glfw.vivante.cursorYpos;
+    cursorXpos -= window->vivante.xpos;
+    cursorYpos -= window->vivante.ypos;
+    
+    if (xpos)
+        *xpos = cursorXpos;
+    if (ypos)
+        *ypos = cursorYpos;
 }
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
+    if( x < 0.0 )
+        return;
+    if( x > window->vivante.width )
+        return;
+    if( y < 0.0 )
+        return;
+    if( y > window->vivante.height )
+        return;
+    
+    _glfwVivanteSetCursorPos(x + window->vivante.xpos, y + window->vivante.ypos);
 }
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
@@ -406,11 +444,14 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 
 void _glfwPlatformSetClipboardString(const char* string)
 {
+    if (_glfw.vivante.clipboardString)
+        free(_glfw.vivante.clipboardString);
+    _glfw.vivante.clipboardString = _glfw_strdup(string);
 }
 
 const char* _glfwPlatformGetClipboardString(void)
 {
-    return NULL;
+    return _glfw.vivante.clipboardString;
 }
 
 const char* _glfwPlatformGetScancodeName(int scancode)

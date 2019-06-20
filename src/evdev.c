@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
 
 #ifndef SYN_DROPPED // < v2.6.39 kernel headers
 // Workaround for CentOS-6, which is supported till 2020-11-30, but still on v2.6.32
@@ -350,9 +351,13 @@ static void handleKeyEvent(_GLFWeventDevice* ed, int code, int value)
         _glfwEvdevInputKey(key, ed->scancode, action, mods);
         
         if (action != GLFW_RELEASE){
-            upper = ((mods & GLFW_MOD_SHIFT) != 0) != ((mods & GLFW_MOD_CAPS_LOCK) != 0); // shift xor capsl
-            if ((codepoint = translateGlfwKeyCodeToChar(key, upper)))
+            upper = mods & GLFW_MOD_SHIFT;
+            if ((codepoint = translateGlfwKeyCodeToChar(key, upper))){
+                if( (mods & GLFW_MOD_CAPS_LOCK) && isalpha(codepoint) ){
+                    codepoint = isupper(codepoint) ? tolower(codepoint) : toupper(codepoint);
+                }
                 _glfwEvdevInputChar(codepoint, mods, GLFW_TRUE);
+            }
         }
     }
 }

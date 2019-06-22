@@ -259,6 +259,7 @@ typedef struct _GLFWlibraryWayland
     char*                       clipboardSendString;
     size_t                      clipboardSendSize;
     int                         timerfd;
+    int                         eventfd;
     short int                   keycodes[256];
     short int                   scancodes[GLFW_KEY_LAST + 1];
 

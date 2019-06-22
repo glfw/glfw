@@ -38,6 +38,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/timerfd.h>
+#include <sys/eventfd.h>
 #include <poll.h>
 
 
@@ -709,6 +710,7 @@ static void handleEvents(int timeout)
         { wl_display_get_fd(display), POLLIN },
         { _glfw.wl.timerfd, POLLIN },
         { _glfw.wl.cursorTimerfd, POLLIN },
+        { _glfw.wl.eventfd, POLLIN },
     };
     ssize_t read_ret;
     uint64_t repeats, i;
@@ -731,7 +733,7 @@ static void handleEvents(int timeout)
         return;
     }
 
-    if (poll(fds, 3, timeout) > 0)
+    if (poll(fds, 4, timeout) > 0)
     {
         if (fds[0].revents & POLLIN)
         {
@@ -762,6 +764,11 @@ static void handleEvents(int timeout)
                 return;
 
             incrementCursorImage(_glfw.wl.pointerFocus);
+        }
+
+        if (fds[3].revents & POLLIN)
+        {
+            read_ret = read(_glfw.wl.eventfd, &repeats, sizeof(repeats));
         }
     }
     else
@@ -1176,7 +1183,8 @@ void _glfwPlatformWaitEventsTimeout(double timeout)
 
 void _glfwPlatformPostEmptyEvent(void)
 {
-    wl_display_sync(_glfw.wl.display);
+    uint64_t value = 1;
+    write(_glfw.wl.eventfd, &value, sizeof value);
 }
 
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)

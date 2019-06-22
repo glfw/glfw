@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/eventfd.h>
 #include <sys/mman.h>
 #include <sys/timerfd.h>
 #include <unistd.h>
@@ -1152,6 +1153,8 @@ int _glfwPlatformInit(void)
     if (_glfw.wl.seatVersion >= 4)
         _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
 
+    _glfw.wl.eventfd = eventfd(0, 0);
+
     if (!_glfw.wl.wmBase)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -1288,6 +1291,8 @@ void _glfwPlatformTerminate(void)
 
     if (_glfw.wl.timerfd >= 0)
         close(_glfw.wl.timerfd);
+    if (_glfw.wl.eventfd >= 0)
+        close(_glfw.wl.eventfd);
     if (_glfw.wl.cursorTimerfd >= 0)
         close(_glfw.wl.cursorTimerfd);
 

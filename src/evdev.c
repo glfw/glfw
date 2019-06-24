@@ -283,7 +283,7 @@ static void updateMods()
     
     _GLFWeventDevice* ed = NULL;
     
-    for (edid = 0;  edid <= GLFW_EVENT_DEVICES_MAX;  edid++)
+    for (edid = 0;  edid < GLFW_EVENT_DEVICES_MAX;  edid++)
     {
         ed = _glfw.evdev.devices + edid;
         if (ed->present){
@@ -428,7 +428,7 @@ static GLFWbool openEventDevice(const char* path)
     char name[256] = "";
     _GLFWeventDevice* ed = NULL;
     
-    for (edid = 0;  edid <= GLFW_EVENT_DEVICES_MAX;  edid++)
+    for (edid = 0;  edid < GLFW_EVENT_DEVICES_MAX;  edid++)
     {
         if (!_glfw.evdev.devices[edid].present)
             continue;
@@ -436,7 +436,7 @@ static GLFWbool openEventDevice(const char* path)
             return GLFW_FALSE;
     }
 
-    for (edid = 0;  edid <= GLFW_EVENT_DEVICES_MAX;  edid++)
+    for (edid = 0;  edid < GLFW_EVENT_DEVICES_MAX;  edid++)
     {
         if (!_glfw.evdev.devices[edid].present)
             break;
@@ -536,7 +536,7 @@ void _glfwTerminateEvdev()
 {
     int edid;
 
-    for (edid = 0;  edid <= GLFW_EVENT_DEVICES_MAX;  edid++)
+    for (edid = 0;  edid < GLFW_EVENT_DEVICES_MAX;  edid++)
     {
         _GLFWeventDevice* ed = _glfw.evdev.devices + edid;
         if (ed->present)
@@ -584,7 +584,7 @@ void _glfwDetectEvdevConnection()
         else if (e->mask & IN_DELETE)
         {
             int edid;
-            for (edid = 0;  edid <= GLFW_EVENT_DEVICES_MAX;  edid++)
+            for (edid = 0;  edid < GLFW_EVENT_DEVICES_MAX;  edid++)
             {
                 if (strcmp(_glfw.evdev.devices[edid].path, path) == 0)
                 {
@@ -651,7 +651,7 @@ void _glfwPollEvdevDevices()
     int edid;
     _GLFWeventDevice* ed = NULL;
     
-    for (edid = 0;  edid <= GLFW_EVENT_DEVICES_MAX;  edid++)
+    for (edid = 0;  edid < GLFW_EVENT_DEVICES_MAX;  edid++)
     {
         ed = _glfw.evdev.devices + edid;
         if (ed->present)

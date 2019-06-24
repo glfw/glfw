@@ -45,6 +45,7 @@ typedef struct wl_display* EGLNativeDisplayType;
 typedef struct wl_egl_window* EGLNativeWindowType;
 #elif defined(_GLFW_VIVANTE)
  #define EGLAPIENTRY
+ #define LINUX
  #include <EGL/eglplatform.h>
 #else
  #error "No supported EGL platform selected"

@@ -52,10 +52,6 @@
 #define _GLFW_PLATFORM_MONITOR_STATE        //_GLFWmonitorVivante vivante
 #define _GLFW_PLATFORM_CURSOR_STATE         //_GLFWcursorVivante  vivante
 
-// EGL function pointer typedefs
-typedef void * EGLNativeDisplayType;
-typedef void * EGLNativeWindowType;
-
 typedef EGLNativeDisplayType (EGLAPIENTRY * PFN_fbGetDisplay)(void *context);
 typedef EGLNativeDisplayType (EGLAPIENTRY * PFN_fbGetDisplayByIndex)(int DisplayIndex);
 typedef void (EGLAPIENTRY * PFN_fbGetDisplayGeometry)(EGLNativeDisplayType Display, int *Width, int *Height);

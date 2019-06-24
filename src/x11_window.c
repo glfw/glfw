@@ -797,7 +797,9 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
             xpos = 0;
         if (ypos == GLFW_DONT_CARE)
             ypos = 0;
-        glfwSetWindowPos(window, xpos, ypos);
+        
+        if (!window->monitor)
+            _glfwPlatformSetWindowPos(window, xpos, ypos);
     }
     
     return GLFW_TRUE;

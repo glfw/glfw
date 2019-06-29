@@ -1,0 +1,35 @@
+option('glfw_build_examples',
+    type: 'boolean',
+    description: 'Build the GLFW example programs',
+    value: false)
+
+option('glfw_build_tests',
+    type: 'boolean',
+    description: 'Build the GLFW test programs',
+    value: false)
+
+option('glfw_build_docs',
+    type: 'boolean',
+    description: 'Build the GLFW documentation',
+    value: false)
+
+option('glfw_vulkan_static',
+    type: 'boolean',
+    description: 'Use the Vulkan loader statically linked into application',
+    value: false)
+
+option('glfw_use_hybrid_hpg',
+    type: 'boolean',
+    description: 'Force use of high-performance GPU on hybrid systems',
+    value: false)
+
+option('glfw_use_msvc_runtime_library_dll',
+    type: 'boolean',
+    description: 'Use MSVC runtime library DLL',
+    value: true)
+
+option('glfw_backend',
+    type: 'combo',
+    description: 'Backend used for window creation',
+    value: 'auto',
+    choices: ['auto', 'wayland', 'mir', 'osmesa', 'win32', 'cocoa', 'x11'])

@@ -1741,8 +1741,13 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
 
         acquireMonitor(window);
 
+        HWND z_mode = HWND_TOP;
+        if (window->floating) {
+                z_mode = HWND_TOPMOST;
+        }
+
         GetMonitorInfo(window->monitor->win32.handle, &mi);
-        SetWindowPos(window->win32.handle, HWND_TOPMOST,
+        SetWindowPos(window->win32.handle, z_mode,
                      mi.rcMonitor.left,
                      mi.rcMonitor.top,
                      mi.rcMonitor.right - mi.rcMonitor.left,

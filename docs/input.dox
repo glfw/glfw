@@ -851,9 +851,7 @@ rightstick:b9,leftx:a0,lefty:a1,rightx:a2,righty:a3,lefttrigger:a4,
 righttrigger:a5,dpup:h0.1,dpright:h0.2,dpdown:h0.4,dpleft:h0.8,
 @endcode
 
-@note GLFW does not yet support the output range and modifiers `+` and `-` that
-were recently added to SDL.  The input modifiers `+`, `-` and `~` are supported
-and described above.
+@note The input modifiers `+`, `-` and `~` are supported and described above.
 
 
 @section time Time input

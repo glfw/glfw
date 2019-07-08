@@ -2556,7 +2556,8 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
         if (!window->wl.lockedPointer)
             lockPointer(window);
     }
-    else
+    else if (window->cursorMode == GLFW_CURSOR_NORMAL ||
+             window->cursorMode == GLFW_CURSOR_HIDDEN)
     {
         if (window->wl.lockedPointer)
             unlockPointer(window);
@@ -2597,8 +2598,11 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
             setCursorImage(window, &cursorWayland);
         }
     }
-    else
+    else if (window->cursorMode == GLFW_CURSOR_HIDDEN ||
+             window->cursorMode == GLFW_CURSOR_DISABLED)
+    {
         wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial, NULL, 0, 0);
+    }
 }
 
 static void dataSourceHandleTarget(void* userData,

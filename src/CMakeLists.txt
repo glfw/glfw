@@ -134,6 +134,8 @@ if (BUILD_SHARED_LIBS)
             # Add a suffix to the import library to avoid naming conflicts
             set_target_properties(glfw PROPERTIES IMPORT_SUFFIX "dll.lib")
         endif()
+
+	target_compile_definitions(glfw INTERFACE GLFW_DLL)
     elseif (APPLE)
         # Add -fno-common to work around a bug in Apple's GCC
         target_compile_options(glfw PRIVATE "-fno-common")
@@ -147,7 +149,6 @@ if (BUILD_SHARED_LIBS)
         target_compile_options(glfw PRIVATE "-fvisibility=hidden")
     endif()
 
-    target_compile_definitions(glfw INTERFACE GLFW_DLL)
     target_link_libraries(glfw PRIVATE ${glfw_LIBRARIES})
 else()
     target_link_libraries(glfw INTERFACE ${glfw_LIBRARIES})

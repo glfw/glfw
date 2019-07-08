@@ -251,20 +251,24 @@ static void updateCursorImage(_GLFWwindow* window)
         SetCursor(NULL);
 }
 
-// Updates the cursor clip rect
+// Sets the cursor clip rect to the window content area
 //
-static void updateClipRect(_GLFWwindow* window)
+static void captureCursor(_GLFWwindow* window)
 {
-    if (window)
-    {
-        RECT clipRect;
-        GetClientRect(window->win32.handle, &clipRect);
-        ClientToScreen(window->win32.handle, (POINT*) &clipRect.left);
-        ClientToScreen(window->win32.handle, (POINT*) &clipRect.right);
-        ClipCursor(&clipRect);
-    }
-    else
-        ClipCursor(NULL);
+    RECT clipRect;
+    GetClientRect(window->win32.handle, &clipRect);
+    ClientToScreen(window->win32.handle, (POINT*) &clipRect.left);
+    ClientToScreen(window->win32.handle, (POINT*) &clipRect.right);
+    ClipCursor(&clipRect);
+    _glfw.win32.capturedCursorWindow = window;
+}
+
+// Disabled clip cursor
+//
+static void releaseCursor(void)
+{
+    ClipCursor(NULL);
+    _glfw.win32.capturedCursorWindow = NULL;
 }
 
 // Enables WM_INPUT messages for the mouse for the specified window
@@ -303,7 +307,7 @@ static void disableCursor(_GLFWwindow* window)
                               &_glfw.win32.restoreCursorPosY);
     updateCursorImage(window);
     _glfwCenterCursorInContentArea(window);
-    updateClipRect(window);
+    captureCursor(window);
 
     if (window->rawMouseMotion)
         enableRawMouseMotion(window);
@@ -317,7 +321,7 @@ static void enableCursor(_GLFWwindow* window)
         disableRawMouseMotion(window);
 
     _glfw.win32.disabledCursorWindow = NULL;
-    updateClipRect(NULL);
+    releaseCursor();
     _glfwPlatformSetCursorPos(window,
                               _glfw.win32.restoreCursorPosX,
                               _glfw.win32.restoreCursorPosY);
@@ -1033,8 +1037,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                                        (window->win32.maximized &&
                                         wParam != SIZE_RESTORED);
 
-            if (_glfw.win32.disabledCursorWindow == window)
-                updateClipRect(window);
+            if (_glfw.win32.capturedCursorWindow == window)
+                captureCursor(window);
 
             if (window->win32.iconified != iconified)
                 _glfwInputWindowIconify(window, iconified);
@@ -1069,8 +1073,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_MOVE:
         {
-            if (_glfw.win32.disabledCursorWindow == window)
-                updateClipRect(window);
+            if (_glfw.win32.capturedCursorWindow == window)
+                captureCursor(window);
 
             // NOTE: This cannot use LOWORD/HIWORD recommended by MSDN, as
             // those macros do not handle negative window positions correctly
@@ -1540,7 +1544,10 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         window->context.destroy(window);
 
     if (_glfw.win32.disabledCursorWindow == window)
-        _glfw.win32.disabledCursorWindow = NULL;
+        enableCursor(window);
+
+    if (_glfw.win32.capturedCursorWindow == window)
+        releaseCursor();
 
     if (window->win32.handle)
     {
@@ -2156,14 +2163,40 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos)
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 {
-    if (mode == GLFW_CURSOR_DISABLED)
+    if (_glfwPlatformWindowFocused(window))
     {
-        if (_glfwPlatformWindowFocused(window))
-            disableCursor(window);
+        if (mode == GLFW_CURSOR_DISABLED)
+        {
+            _glfwPlatformGetCursorPos(window,
+                                      &_glfw.win32.restoreCursorPosX,
+                                      &_glfw.win32.restoreCursorPosY);
+            _glfwCenterCursorInContentArea(window);
+            if (window->rawMouseMotion)
+                enableRawMouseMotion(window);
+        }
+        else if (_glfw.win32.disabledCursorWindow == window)
+        {
+            if (window->rawMouseMotion)
+                disableRawMouseMotion(window);
+        }
+
+        if (mode == GLFW_CURSOR_DISABLED)
+            captureCursor(window);
+        else
+            releaseCursor();
+
+        if (mode == GLFW_CURSOR_DISABLED)
+            _glfw.win32.disabledCursorWindow = window;
+        else if (_glfw.win32.disabledCursorWindow == window)
+        {
+            _glfw.win32.disabledCursorWindow = NULL;
+            _glfwPlatformSetCursorPos(window,
+                                      _glfw.win32.restoreCursorPosX,
+                                      _glfw.win32.restoreCursorPosY);
+        }
     }
-    else if (_glfw.win32.disabledCursorWindow == window)
-        enableCursor(window);
-    else if (cursorInContentArea(window))
+
+    if (cursorInContentArea(window))
         updateCursorImage(window);
 }
 

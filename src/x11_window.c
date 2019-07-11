@@ -1180,12 +1180,15 @@ static void processEvent(XEvent *event)
         }
     }
 
-    if (_glfw.x11.xkb.available && event->type == _glfw.x11.xkb.eventBase)
+    if (_glfw.x11.xkb.available)
     {
-        if (((XkbEvent *)event)->any.xkb_type == XkbStateNotify &&
-            ((XkbEvent *)event)->state.changed & XkbGroupStateMask)
+        if (event->type == _glfw.x11.xkb.eventBase + XkbEventCode)
         {
-            _glfw.x11.xkb.group = ((XkbEvent *)event)->state.group;
+            if (((XkbEvent*) event)->any.xkb_type == XkbStateNotify &&
+                (((XkbEvent*) event)->state.changed & XkbGroupStateMask))
+            {
+                _glfw.x11.xkb.group = ((XkbEvent*) event)->state.group;
+            }
         }
     }
 
@@ -2789,7 +2792,8 @@ const char* _glfwPlatformGetScancodeName(int scancode)
     if (!_glfw.x11.xkb.available)
         return NULL;
 
-    const KeySym keysym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, _glfw.x11.xkb.group, 0);
+    const KeySym keysym = XkbKeycodeToKeysym(_glfw.x11.display,
+                                             scancode, _glfw.x11.xkb.group, 0);
     if (keysym == NoSymbol)
         return NULL;
 

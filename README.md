@@ -122,6 +122,8 @@ information on what to include when reporting a bug.
  - Bugfix: The CMake config-file package used an absolute path and was not
    relocatable (#1470)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
+ - [X11] Bugfix: Key names were not updated when the keyboard layout changed
+   (#1462,#1528)
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
 
 

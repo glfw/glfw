@@ -227,6 +227,7 @@ skills.
  - Anders Lindqvist
  - Eyal Lotem
  - Aaron Loucks
+ - Luflosi
  - Tristam MacDonald
  - Hans Mackowiak
  - Дмитри Малышев
@@ -318,6 +319,7 @@ skills.
  - Jay Weisskopf
  - Frank Wille
  - Ryogo Yoshimura
+ - Lukas Zanner
  - Andrey Zholos
  - Santi Zupancic
  - Jonas Ådahl

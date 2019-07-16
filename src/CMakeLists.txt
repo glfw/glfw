@@ -140,7 +140,9 @@ if (BUILD_SHARED_LIBS)
 
         set_target_properties(glfw PROPERTIES
                               INSTALL_NAME_DIR "${CMAKE_INSTALL_LIBDIR}")
-    elseif (UNIX)
+    endif()
+
+    if (UNIX)
         # Hide symbols not explicitly tagged for export from the shared library
         target_compile_options(glfw PRIVATE "-fvisibility=hidden")
     endif()

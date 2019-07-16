@@ -215,7 +215,7 @@ static void endFadeReservation(CGDisplayFadeReservationToken token)
 
 // Finds and caches the NSScreen corresponding to the specified monitor
 //
-GLFWbool refreshMonitorScreen(_GLFWmonitor* monitor)
+static GLFWbool refreshMonitorScreen(_GLFWmonitor* monitor)
 {
     if (monitor->ns.screen)
         return GLFW_TRUE;

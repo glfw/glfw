@@ -318,7 +318,8 @@ int main(int argc, char** argv)
     int ch;
     bool list_extensions = false, list_layers = false;
 
-    enum { CLIENT, CONTEXT, BEHAVIOR, DEBUG, FORWARD, HELP, EXTENSIONS, LAYERS,
+    enum { CLIENT, CONTEXT, BEHAVIOR, DEBUG_CONTEXT, FORWARD, HELP,
+           EXTENSIONS, LAYERS,
            MAJOR, MINOR, PROFILE, ROBUSTNESS, VERSION,
            REDBITS, GREENBITS, BLUEBITS, ALPHABITS, DEPTHBITS, STENCILBITS,
            ACCUMREDBITS, ACCUMGREENBITS, ACCUMBLUEBITS, ACCUMALPHABITS,
@@ -329,7 +330,7 @@ int main(int argc, char** argv)
         { "behavior",           1, NULL, BEHAVIOR },
         { "client-api",         1, NULL, CLIENT },
         { "context-api",        1, NULL, CONTEXT },
-        { "debug",              0, NULL, DEBUG },
+        { "debug",              0, NULL, DEBUG_CONTEXT },
         { "forward",            0, NULL, FORWARD },
         { "help",               0, NULL, HELP },
         { "list-extensions",    0, NULL, EXTENSIONS },
@@ -420,7 +421,7 @@ int main(int argc, char** argv)
                 }
                 break;
             case 'd':
-            case DEBUG:
+            case DEBUG_CONTEXT:
                 glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
                 break;
             case 'f':

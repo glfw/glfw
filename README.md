@@ -199,6 +199,7 @@ skills.
  - Mário Freitas
  - GeO4d
  - Marcus Geelnard
+ - Charles Giessen
  - Stephen Gowen
  - Kovid Goyal
  - Eloi Marín Gratacós

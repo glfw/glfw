@@ -528,7 +528,7 @@ void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 
     CGGammaValue* values = calloc(ramp->size * 3, sizeof(CGGammaValue));
 
-    for (int i = 0;  i < ramp->size;  i++)
+    for (unsigned int i = 0;  i < ramp->size;  i++)
     {
         values[i]                  = ramp->red[i] / 65535.f;
         values[i + ramp->size]     = ramp->green[i] / 65535.f;

@@ -889,7 +889,7 @@ timer varies depending on the operating system and hardware.  You can query the
 frequency, in Hz, with @ref glfwGetTimerFrequency.
 
 @code
-uint64_t freqency = glfwGetTimerFrequency();
+uint64_t frequency = glfwGetTimerFrequency();
 @endcode
 
 

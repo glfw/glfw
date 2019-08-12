@@ -444,7 +444,7 @@ static void draw_particles(GLFWwindow* window, double t, float dt)
     }
 
     // Set up vertex arrays. We use interleaved arrays, which is easier to
-    // handle (in most situations) and it gives a linear memeory access
+    // handle (in most situations) and it gives a linear memory access
     // access pattern (which may give better performance in some
     // situations). GL_T2F_C4UB_V3F means: 2 floats for texture coords,
     // 4 ubytes for color and 3 floats for vertex coord (in that order).
@@ -654,7 +654,7 @@ static void draw_fountain(void)
 
 
 //========================================================================
-// Recursive function for building variable tesselated floor
+// Recursive function for building variable tessellated floor
 //========================================================================
 
 static void tessellate_floor(float x1, float y1, float x2, float y2, int depth)
@@ -721,7 +721,7 @@ static void draw_floor(void)
         glMaterialfv(GL_FRONT, GL_SPECULAR, floor_specular);
         glMaterialf(GL_FRONT, GL_SHININESS, floor_shininess);
 
-        // Draw floor as a bunch of triangle strips (high tesselation
+        // Draw floor as a bunch of triangle strips (high tessellation
         // improves lighting)
         glNormal3f(0.f, 0.f, 1.f);
         glBegin(GL_QUADS);

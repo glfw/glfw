@@ -1281,6 +1281,7 @@ static int createNativeWindow(_GLFWwindow* window,
     if (!window->monitor)
     {
         RECT rect = { 0, 0, wndconfig->width, wndconfig->height };
+        WINDOWPLACEMENT wp = { sizeof(wp) };
 
         if (wndconfig->scaleToMonitor)
         {
@@ -1301,10 +1302,11 @@ static int createNativeWindow(_GLFWwindow* window,
         else
             AdjustWindowRectEx(&rect, style, FALSE, exStyle);
 
-        SetWindowPos(window->win32.handle, NULL,
-                     rect.left, rect.top,
-                     rect.right - rect.left, rect.bottom - rect.top,
-                     SWP_NOACTIVATE | SWP_NOZORDER);
+        // Only update the restored window rect as the window may be maximized
+        GetWindowPlacement(window->win32.handle, &wp);
+        wp.rcNormalPosition = rect;
+        wp.showCmd = SW_HIDE;
+        SetWindowPlacement(window->win32.handle, &wp);
     }
 
     DragAcceptFiles(window->win32.handle, TRUE);

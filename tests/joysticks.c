@@ -182,6 +182,7 @@ int main(void)
         exit(EXIT_FAILURE);
 
     glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
+    glfwWindowHint(GLFW_WIN32_KEYBOARD_MENU, GLFW_TRUE);
 
     window = glfwCreateWindow(800, 600, "Joystick Test", NULL, NULL);
     if (!window)

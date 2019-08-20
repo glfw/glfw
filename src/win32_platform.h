@@ -315,6 +315,7 @@ typedef struct _GLFWwindowWin32
     // Whether to enable framebuffer transparency on DWM
     GLFWbool            transparent;
     GLFWbool            scaleToMonitor;
+    GLFWbool            keymenu;
 
     // The last received cursor position, regardless of source
     int                 lastCursorPosX, lastCursorPosY;

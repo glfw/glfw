@@ -9,6 +9,15 @@
 
 @subsection features_34 New features in version 3.4
 
+@subsubsection features_34_win32_keymenu Support for keyboard access to Windows window menu
+
+GLFW now provides the
+[GLFW_WIN32_KEYBOARD_MENU](@ref GLFW_WIN32_KEYBOARD_MENU_hint) window hint for
+enabling keyboard access to the window menu via the Alt+Space and
+Alt-and-then-Space shortcuts.  This may be useful for more GUI-oriented
+applications.
+
+
 @subsection caveats_34 Caveats for version 3.4
 
 @subsubsection standalone_34 Tests and examples are disabled when built as a sub-project
@@ -34,6 +43,8 @@ add_subdirectory(path/to/glfw)
 @subsubsection functions_34 New functions in version 3.4
 @subsubsection types_34 New types in version 3.4
 @subsubsection constants_34 New constants in version 3.4
+
+ - @ref GLFW_WIN32_KEYBOARD_MENU
 
 
 @section news_archive Release notes for earlier versions

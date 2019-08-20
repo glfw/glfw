@@ -455,6 +455,14 @@ The no error mode for OpenGL and OpenGL ES is described in detail by the
 extension.
 
 
+@subsubsection window_hints_win32 Windows specific window hints
+
+@anchor GLFW_WIN32_KEYBOARD_MENU_hint
+__GLFW_WIN32_KEYBOARD_MENU__ specifies whether to allow access to the window
+menu via the Alt+Space and Alt-and-then-Space keyboard shortcuts.  This is
+ignored on other platforms.
+
+
 @subsubsection window_hints_osx macOS specific window hints
 
 @anchor GLFW_COCOA_RETINA_FRAMEBUFFER_hint
@@ -535,6 +543,7 @@ GLFW_CONTEXT_RELEASE_BEHAVIOR | `GLFW_ANY_RELEASE_BEHAVIOR` | `GLFW_ANY_RELEASE_
 GLFW_OPENGL_FORWARD_COMPAT    | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_OPENGL_DEBUG_CONTEXT     | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_OPENGL_PROFILE           | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE`
+GLFW_WIN32_KEYBOARD_MENU      | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_COCOA_RETINA_FRAMEBUFFER | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_COCOA_FRAME_NAME         | `""`                        | A UTF-8 encoded frame autosave name
 GLFW_COCOA_GRAPHICS_SWITCHING | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`

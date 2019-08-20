@@ -363,6 +363,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_COCOA_RETINA_FRAMEBUFFER:
             _glfw.hints.window.ns.retina = value ? GLFW_TRUE : GLFW_FALSE;
             return;
+        case GLFW_WIN32_KEYBOARD_MENU:
+            _glfw.hints.window.win32.keymenu = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
         case GLFW_COCOA_GRAPHICS_SWITCHING:
             _glfw.hints.context.nsgl.offline = value ? GLFW_TRUE : GLFW_FALSE;
             return;

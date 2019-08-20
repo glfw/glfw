@@ -274,6 +274,9 @@ struct _GLFWwndconfig
         char      className[256];
         char      instanceName[256];
     } x11;
+    struct {
+        GLFWbool  keymenu;
+    } win32;
 };
 
 // Context configuration

@@ -139,7 +139,7 @@ typedef struct _GLFWlibraryNS
     id                  keyUpMonitor;
     id                  nibObjects;
 
-    char                keyName[64];
+    char                keynames[GLFW_KEY_LAST + 1][17];
     short int           keycodes[256];
     short int           scancodes[GLFW_KEY_LAST + 1];
     char*               clipboardString;

@@ -228,7 +228,7 @@ typedef struct _GLFWlibraryX11
     // Clipboard string (while the selection is owned)
     char*           clipboardString;
     // Key name string
-    char            keyName[5];
+    char            keynames[GLFW_KEY_LAST + 1][5];
     // X11 keycode to GLFW key LUT
     short int       keycodes[256];
     // GLFW key to X11 keycode LUT

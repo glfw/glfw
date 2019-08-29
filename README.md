@@ -128,6 +128,7 @@ information on what to include when reporting a bug.
    event (#1490)
  - [Win32] Bugfix: The window hint `GLFW_MAXIMIZED` did not move or resize the
    window (#1499)
+ - [Cocoa] Bugfix: `glfwSetWindowSize` used a bottom-left anchor point (#1553)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -228,6 +229,7 @@ skills.
  - Peter Knut
  - Christoph Kubisch
  - Yuri Kunde Schlesner
+ - Rokas Kupstys
  - Konstantin Käfer
  - Eric Larson
  - Robin Leffmann

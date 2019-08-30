@@ -52,7 +52,7 @@ If you are using an OpenGL extension loading library such as
 be included _before_ the GLFW one.
 
 @code
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 @endcode
 
@@ -62,7 +62,7 @@ prevent the GLFW header from including the OpenGL header.
 @code
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
-#include <glad/glad.h>
+#include <glad/gl.h>
 @endcode
 
 
@@ -186,18 +186,8 @@ build_link_cmake_package.
 With a few changes to your `CMakeLists.txt` you can have the GLFW source tree
 built along with your application.
 
-When including GLFW as part of your build, you probably don't want to build the
-GLFW tests, examples and documentation.  To disable these, set the corresponding
-cache variables before adding the GLFW source tree.
-
-@code
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-@endcode
-
-Then add the root directory of the GLFW source tree to your project.  This
-will add the `glfw` target and the necessary cache variables to your project.
+Add the root directory of the GLFW source tree to your project.  This will add
+the `glfw` target and the necessary cache variables to your project.
 
 @code{.cmake}
 add_subdirectory(path/to/glfw)
@@ -253,7 +243,7 @@ With a few changes to your `CMakeLists.txt` you can locate the package and
 target files generated when GLFW is installed.
 
 @code{.cmake}
-find_package(glfw3 3.3 REQUIRED)
+find_package(glfw3 3.4 REQUIRED)
 @endcode
 
 Once GLFW has been added to the project, link against it with the `glfw` target.

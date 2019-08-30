@@ -32,7 +32,7 @@ PROJECT_NAME           = "GLFW"
 # This could be handy for archiving the generated documentation or
 # if some version control system is used.
 
-PROJECT_NUMBER         = @GLFW_VERSION_FULL@
+PROJECT_NUMBER         = @GLFW_VERSION@
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer
@@ -195,12 +195,13 @@ TAB_SIZE               = 8
 # will result in a user-defined paragraph with heading "Side Effects:".
 # You can put \n's in the value part of an alias to insert newlines.
 
-ALIASES                = "thread_safety=@par Thread safety\n" \
-                         "pointer_lifetime=@par Pointer lifetime\n" \
-                         "analysis=@par Analysis\n" \
-                         "reentrancy=@par Reentrancy\n" \
-                         "errors=@par Errors\n" \
-                         "glfw3=@par\n__GLFW 3:__" \
+ALIASES                = "thread_safety=@par Thread safety^^" \
+                         "pointer_lifetime=@par Pointer lifetime^^" \
+                         "analysis=@par Analysis^^" \
+                         "reentrancy=@par Reentrancy^^" \
+                         "errors=@par Errors^^" \
+                         "callback_signature=@par Callback signature^^" \
+                         "glfw3=__GLFW 3:__" \
                          "x11=__X11:__" \
                          "wayland=__Wayland:__" \
                          "win32=__Windows:__" \
@@ -589,7 +590,7 @@ FILE_VERSION_FILTER    =
 # You can optionally specify a file name after the option, if omitted
 # DoxygenLayout.xml will be used as the name of the layout file.
 
-LAYOUT_FILE            =
+LAYOUT_FILE            = "@GLFW_SOURCE_DIR@/docs/DoxygenLayout.xml"
 
 # The CITE_BIB_FILES tag can be used to specify one or more bib files
 # containing the references data. This must be a list of .bib files. The
@@ -662,7 +663,7 @@ WARN_LOGFILE           = "@GLFW_BINARY_DIR@/docs/warnings.txt"
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = @GLFW_DOCS_SOURCES@
+INPUT                  = @GLFW_DOXYGEN_INPUT@
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is

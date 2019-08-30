@@ -57,8 +57,7 @@ glfwWaitEvents();
 
 It puts the thread to sleep until at least one event has been received and then
 processes all received events.  This saves a great deal of CPU cycles and is
-useful for, for example, editing tools.  There must be at least one GLFW window
-for this function to sleep.
+useful for, for example, editing tools.
 
 If you want to wait for events but have UI elements or other tasks that need
 periodic updates, @ref glfwWaitEventsTimeout lets you specify a timeout.
@@ -234,7 +233,7 @@ arguments can always be passed unmodified to this function.
 
 @section input_mouse Mouse input
 
-Mouse input comes in many forms, including cursor motion, button presses and
+Mouse input comes in many forms, including mouse motion, button presses and
 scrolling offsets.  The cursor appearance can also be changed, either to
 a custom image or a standard cursor shape from the system theme.
 
@@ -249,7 +248,7 @@ glfwSetCursorPosCallback(window, cursor_position_callback);
 @endcode
 
 The callback functions receives the cursor position, measured in screen
-coordinates but relative to the top-left corner of the window client area.  On
+coordinates but relative to the top-left corner of the window content area.  On
 platforms that provide it, the full sub-pixel cursor position is passed on.
 
 @code
@@ -307,6 +306,31 @@ cursor mode.
 @code
 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 @endcode
+
+
+@anchor GLFW_RAW_MOUSE_MOTION
+@subsection raw_mouse_motion Raw mouse motion
+
+When the cursor is disabled, raw (unscaled and unaccelerated) mouse motion can
+be enabled if available.
+
+Raw mouse motion is closer to the actual motion of the mouse across a surface.
+It is not affected by the scaling and acceleration applied to the motion of the
+desktop cursor.  That processing is suitable for a cursor while raw motion is
+better for controlling for example a 3D camera.  Because of this, raw mouse
+motion is only provided when the cursor is disabled.
+
+Call @ref glfwRawMouseMotionSupported to check if the current machine provides
+raw motion and set the `GLFW_RAW_MOUSE_MOTION` input mode to enable it.  It is
+disabled by default.
+
+@code
+if (glfwRawMouseMotionSupported())
+    glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+@endcode
+
+If supported, raw mouse motion can be enabled or disabled per-window and at any
+time but it will only be provided when the cursor is disabled.
 
 
 @subsection cursor_object Cursor objects
@@ -378,7 +402,7 @@ glfwSetCursor(window, cursor);
 @endcode
 
 Once set, the cursor image will be used as long as the system cursor is over the
-client area of the window and the [cursor mode](@ref cursor_mode) is set
+content area of the window and the [cursor mode](@ref cursor_mode) is set
 to `GLFW_CURSOR_NORMAL`.
 
 A single cursor may be set for any number of windows.
@@ -395,7 +419,7 @@ default cursor.  This does not affect the cursor mode.
 
 @subsection cursor_enter Cursor enter/leave events
 
-If you wish to be notified when the cursor enters or leaves the client area of
+If you wish to be notified when the cursor enters or leaves the content area of
 a window, set a cursor enter/leave callback.
 
 @code
@@ -409,16 +433,16 @@ void cursor_enter_callback(GLFWwindow* window, int entered)
 {
     if (entered)
     {
-        // The cursor entered the client area of the window
+        // The cursor entered the content area of the window
     }
     else
     {
-        // The cursor left the client area of the window
+        // The cursor left the content area of the window
     }
 }
 @endcode
 
-You can query whether the cursor is currently inside the client area of the
+You can query whether the cursor is currently inside the content area of the
 window with the [GLFW_HOVERED](@ref GLFW_HOVERED_attrib) window attribute.
 
 @code
@@ -583,7 +607,7 @@ const unsigned char* hats = glfwGetJoystickHats(GLFW_JOYSTICK_7, &count);
 Each element in the returned array is one of the following:
 
 Name                  | Value
---------------------- | --------------------------------
+----                  | -----
 `GLFW_HAT_CENTERED`   | 0
 `GLFW_HAT_UP`         | 1
 `GLFW_HAT_RIGHT`      | 2
@@ -762,7 +786,7 @@ time of release.  Newer ones can be added at runtime with @ref
 glfwUpdateGamepadMappings.
 
 @code
-const char* mappings = load_file_contents("gamecontrollerdb.txt");
+const char* mappings = load_file_contents("game/data/gamecontrollerdb.txt");
 
 glfwUpdateGamepadMappings(mappings);
 @endcode
@@ -840,28 +864,29 @@ GLFW provides high-resolution time input, in seconds, with @ref glfwGetTime.
 double seconds = glfwGetTime();
 @endcode
 
-It returns the number of seconds since the timer was started when the library
-was initialized with @ref glfwInit.  The platform-specific time sources used
-usually have micro- or nanosecond resolution.
+It returns the number of seconds since the library was initialized with @ref
+glfwInit.  The platform-specific time sources used typically have micro- or
+nanosecond resolution.
 
-You can modify the reference time with @ref glfwSetTime.
+You can modify the base time with @ref glfwSetTime.
 
 @code
 glfwSetTime(4.0);
 @endcode
 
-This sets the timer to the specified time, in seconds.
+This sets the time to the specified time, in seconds, and it continues to count
+from there.
 
-You can also access the raw timer value, measured in 1&nbsp;/&nbsp;frequency
-seconds, with @ref glfwGetTimerValue.
+You can also access the raw timer used to implement the functions above,
+with @ref glfwGetTimerValue.
 
 @code
 uint64_t value = glfwGetTimerValue();
 @endcode
 
-The frequency of the raw timer varies depending on what time sources are
-available on the machine.  You can query its frequency, in Hz, with @ref
-glfwGetTimerFrequency.
+This value is in 1&nbsp;/&nbsp;frequency seconds.  The frequency of the raw
+timer varies depending on the operating system and hardware.  You can query the
+frequency, in Hz, with @ref glfwGetTimerFrequency.
 
 @code
 uint64_t freqency = glfwGetTimerFrequency();

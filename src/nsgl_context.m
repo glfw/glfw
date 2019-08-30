@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.3 macOS - www.glfw.org
+// GLFW 3.4 macOS - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2009-2019 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -23,37 +23,80 @@
 //    distribution.
 //
 //========================================================================
+// It is fine to use C99 in this file because it will not be built with VS
+//========================================================================
 
 #include "internal.h"
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED < 101400
- #define NSOpenGLContextParameterSwapInterval NSOpenGLCPSwapInterval
- #define NSOpenGLContextParameterSurfaceOpacity NSOpenGLCPSurfaceOpacity
-#endif
+// Display link callback for manual swap interval implementation
+// This is based on a similar workaround added to SDL2
+//
+static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
+                                    const CVTimeStamp* now,
+                                    const CVTimeStamp* outputTime,
+                                    CVOptionFlags flagsIn,
+                                    CVOptionFlags* flagsOut,
+                                    void* userInfo)
+{
+    _GLFWwindow* window = (_GLFWwindow *) userInfo;
+
+    const int interval = atomic_load(&window->context.nsgl.swapInterval);
+    if (interval > 0)
+    {
+        [window->context.nsgl.swapIntervalCond lock];
+        window->context.nsgl.swapIntervalsPassed++;
+        [window->context.nsgl.swapIntervalCond signal];
+        [window->context.nsgl.swapIntervalCond unlock];
+    }
+
+    return kCVReturnSuccess;
+}
 
 static void makeContextCurrentNSGL(_GLFWwindow* window)
 {
+    @autoreleasepool {
+
     if (window)
         [window->context.nsgl.object makeCurrentContext];
     else
         [NSOpenGLContext clearCurrentContext];
 
     _glfwPlatformSetTls(&_glfw.contextSlot, window);
+
+    } // autoreleasepool
 }
 
 static void swapBuffersNSGL(_GLFWwindow* window)
 {
+    @autoreleasepool {
+
+    const int interval = atomic_load(&window->context.nsgl.swapInterval);
+    if (interval > 0)
+    {
+        [window->context.nsgl.swapIntervalCond lock];
+        do
+        {
+            [window->context.nsgl.swapIntervalCond wait];
+        } while (window->context.nsgl.swapIntervalsPassed % interval != 0);
+        window->context.nsgl.swapIntervalsPassed = 0;
+        [window->context.nsgl.swapIntervalCond unlock];
+    }
+
     // ARP appears to be unnecessary, but this is future-proof
     [window->context.nsgl.object flushBuffer];
+
+    } // autoreleasepool
 }
 
 static void swapIntervalNSGL(int interval)
 {
+    @autoreleasepool {
     _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
-
-    GLint sync = interval;
-    [window->context.nsgl.object setValues:&sync
-                              forParameter:NSOpenGLContextParameterSwapInterval];
+    atomic_store(&window->context.nsgl.swapInterval, interval);
+    [window->context.nsgl.swapIntervalCond lock];
+    window->context.nsgl.swapIntervalsPassed = 0;
+    [window->context.nsgl.swapIntervalCond unlock];
+    } // autoreleasepool
 }
 
 static int extensionSupportedNSGL(const char* extension)
@@ -76,15 +119,28 @@ static GLFWglproc getProcAddressNSGL(const char* procname)
     return symbol;
 }
 
-// Destroy the OpenGL context
-//
 static void destroyContextNSGL(_GLFWwindow* window)
 {
+    @autoreleasepool {
+
+    if (window->context.nsgl.displayLink)
+    {
+        if (CVDisplayLinkIsRunning(window->context.nsgl.displayLink))
+            CVDisplayLinkStop(window->context.nsgl.displayLink);
+
+        CVDisplayLinkRelease(window->context.nsgl.displayLink);
+    }
+
+    [window->context.nsgl.swapIntervalCond release];
+    window->context.nsgl.swapIntervalCond = nil;
+
     [window->context.nsgl.pixelFormat release];
     window->context.nsgl.pixelFormat = nil;
 
     [window->context.nsgl.object release];
     window->context.nsgl.object = nil;
+
+    } // autoreleasepool
 }
 
 
@@ -138,13 +194,6 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                             "NSGL: The targeted version of macOS does not support OpenGL 3.0 or 3.1 but may support 3.2 and above");
             return GLFW_FALSE;
         }
-
-        if (!ctxconfig->forward || ctxconfig->profile != GLFW_OPENGL_CORE_PROFILE)
-        {
-            _glfwInputError(GLFW_VERSION_UNAVAILABLE,
-                            "NSGL: The targeted version of macOS only supports forward-compatible core profile contexts for OpenGL 3.2 and above");
-            return GLFW_FALSE;
-        }
     }
 
     // Context robustness modes (GL_KHR_robustness) are not yet supported by
@@ -179,9 +228,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         //       Info.plist for unbundled applications
         // HACK: This assumes that NSOpenGLPixelFormat will remain
         //       a straightforward wrapper of its CGL counterpart
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1080
         addAttrib(kCGLPFASupportsAutomaticGraphicsSwitching);
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
     }
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
@@ -307,7 +354,16 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                   forParameter:NSOpenGLContextParameterSurfaceOpacity];
     }
 
+    if (window->ns.retina)
+        [window->ns.view setWantsBestResolutionOpenGLSurface:YES];
+
+    GLint interval = 0;
+    [window->context.nsgl.object setValues:&interval
+                              forParameter:NSOpenGLContextParameterSwapInterval];
+
     [window->context.nsgl.object setView:window->ns.view];
+
+    window->context.nsgl.swapIntervalCond = [NSCondition new];
 
     window->context.makeCurrent = makeContextCurrentNSGL;
     window->context.swapBuffers = swapBuffersNSGL;
@@ -316,7 +372,24 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     window->context.getProcAddress = getProcAddressNSGL;
     window->context.destroy = destroyContextNSGL;
 
+    CVDisplayLinkCreateWithActiveCGDisplays(&window->context.nsgl.displayLink);
+    CVDisplayLinkSetOutputCallback(window->context.nsgl.displayLink,
+                                   &displayLinkCallback,
+                                   window);
+    CVDisplayLinkStart(window->context.nsgl.displayLink);
+
+    _glfwUpdateDisplayLinkDisplayNSGL(window);
     return GLFW_TRUE;
+}
+
+void _glfwUpdateDisplayLinkDisplayNSGL(_GLFWwindow* window)
+{
+    CGDirectDisplayID displayID =
+        [[[window->ns.object screen] deviceDescription][@"NSScreenNumber"] unsignedIntValue];
+    if (!displayID)
+        return;
+
+    CVDisplayLinkSetCurrentCGDisplay(window->context.nsgl.displayLink, displayID);
 }
 
 

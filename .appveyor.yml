@@ -2,6 +2,7 @@ branches:
     only:
         - ci
         - master
+        - 3.3-stable
 skip_tags: true
 environment:
     CFLAGS: /WX

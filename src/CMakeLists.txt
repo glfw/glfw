@@ -79,7 +79,10 @@ endif()
 
 # Make GCC and Clang warn about declarations that VS 2010 and 2012 won't accept
 # for all source files that VS will build
-if (${CMAKE_C_COMPILER_ID} STREQUAL GNU OR ${CMAKE_C_COMPILER_ID} STREQUAL Clang)
+if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
+    "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR
+    "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
+
     if (WIN32)
         set(windows_SOURCES ${glfw_SOURCES})
     else()
@@ -92,7 +95,7 @@ endif()
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
 set_target_properties(glfw PROPERTIES
                       OUTPUT_NAME ${GLFW_LIB_NAME}
-                      VERSION ${GLFW_VERSION}
+                      VERSION ${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}
                       SOVERSION ${GLFW_VERSION_MAJOR}
                       POSITION_INDEPENDENT_CODE ON
                       FOLDER "GLFW3")
@@ -100,7 +103,7 @@ set_target_properties(glfw PROPERTIES
 target_compile_definitions(glfw PRIVATE _GLFW_USE_CONFIG_H)
 target_include_directories(glfw PUBLIC
                            "$<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>"
-                           "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>")
+                           "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 target_include_directories(glfw PRIVATE
                            "${GLFW_SOURCE_DIR}/src"
                            "${GLFW_BINARY_DIR}/src"
@@ -115,13 +118,14 @@ target_compile_definitions(glfw PRIVATE
 
 # Enable a reasonable set of warnings (no, -Wextra is not reasonable)
 target_compile_options(glfw PRIVATE
+                       "$<$<C_COMPILER_ID:AppleClang>:-Wall>"
                        "$<$<C_COMPILER_ID:Clang>:-Wall>"
                        "$<$<C_COMPILER_ID:GNU>:-Wall>")
 
 if (BUILD_SHARED_LIBS)
     if (WIN32)
         if (MINGW)
-            # Remove the lib prefix on the DLL (but not the import library
+            # Remove the lib prefix on the DLL (but not the import library)
             set_target_properties(glfw PROPERTIES PREFIX "")
 
             # Add a suffix to the import library to avoid naming conflicts
@@ -130,18 +134,21 @@ if (BUILD_SHARED_LIBS)
             # Add a suffix to the import library to avoid naming conflicts
             set_target_properties(glfw PROPERTIES IMPORT_SUFFIX "dll.lib")
         endif()
+
+	target_compile_definitions(glfw INTERFACE GLFW_DLL)
     elseif (APPLE)
         # Add -fno-common to work around a bug in Apple's GCC
         target_compile_options(glfw PRIVATE "-fno-common")
 
         set_target_properties(glfw PROPERTIES
-                              INSTALL_NAME_DIR "lib${LIB_SUFFIX}")
-    elseif (UNIX)
+                              INSTALL_NAME_DIR "${CMAKE_INSTALL_LIBDIR}")
+    endif()
+
+    if (UNIX)
         # Hide symbols not explicitly tagged for export from the shared library
         target_compile_options(glfw PRIVATE "-fvisibility=hidden")
     endif()
 
-    target_compile_definitions(glfw INTERFACE GLFW_DLL)
     target_link_libraries(glfw PRIVATE ${glfw_LIBRARIES})
 else()
     target_link_libraries(glfw INTERFACE ${glfw_LIBRARIES})
@@ -155,7 +162,7 @@ if (GLFW_INSTALL)
     install(TARGETS glfw
             EXPORT glfwTargets
             RUNTIME DESTINATION "bin"
-            ARCHIVE DESTINATION "lib${LIB_SUFFIX}"
-            LIBRARY DESTINATION "lib${LIB_SUFFIX}")
+            ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+            LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 endif()
 

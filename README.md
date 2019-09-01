@@ -120,6 +120,7 @@ information on what to include when reporting a bug.
 
  - Bugfix: The CMake config-file package used an absolute path and was not
    relocatable (#1470)
+ - Bugfix: Video modes with a duplicate screen area were discarded (#1555,#1556)
  - [Win32] Bugfix: `GLFW_INCLUDE_VULKAN` plus `VK_USE_PLATFORM_WIN32_KHR` caused
    symbol redefinition (#1524)
  - [Win32] Bugfix: The cursor position event was emitted before its cursor enter
@@ -167,6 +168,7 @@ skills.
  - blanco
  - Kyle Brenneman
  - Rok Breulj
+ - Kai Burjack
  - Martin Capitanio
  - David Carlier
  - Arturo Castro

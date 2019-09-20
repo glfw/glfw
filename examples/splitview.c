@@ -10,7 +10,8 @@
 //  because I am not a friend of orthogonal projections)
 //========================================================================
 
-#include <glad/glad.h>
+#include <glad/gl.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #if defined(_MSC_VER)
@@ -513,7 +514,7 @@ int main(void)
 
     // Enable vsync
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    gladLoadGL(glfwGetProcAddress);
     glfwSwapInterval(1);
 
     if (GLAD_GL_ARB_multisample || GLAD_GL_VERSION_1_3)

@@ -91,12 +91,12 @@ glfwGetJoystickHats.  Set this with @ref glfwInitHint.
 
 @subsubsection init_hints_osx macOS specific init hints
 
-@anchor GLFW_COCOA_CHDIR_RESOURCES
+@anchor GLFW_COCOA_CHDIR_RESOURCES_hint
 __GLFW_COCOA_CHDIR_RESOURCES__ specifies whether to set the current directory to
 the application to the `Contents/Resources` subdirectory of the application's
 bundle, if present.  Set this with @ref glfwInitHint.
 
-@anchor GLFW_COCOA_MENUBAR
+@anchor GLFW_COCOA_MENUBAR_hint
 __GLFW_COCOA_MENUBAR__ specifies whether to create a basic menu bar, either from
 a nib or manually, when the first window is created, which is when AppKit is
 initialized.  Set this with @ref glfwInitHint.
@@ -208,24 +208,24 @@ future that same call may generate a different error or become valid.
 @section coordinate_systems Coordinate systems
 
 GLFW has two primary coordinate systems: the _virtual screen_ and the window
-_client area_ or _content area_.  Both use the same unit: _virtual screen
+_content area_ or _content area_.  Both use the same unit: _virtual screen
 coordinates_, or just _screen coordinates_, which don't necessarily correspond
 to pixels.
 
 <img src="spaces.svg" width="90%" />
 
-Both the virtual screen and the client area coordinate systems have the X-axis
+Both the virtual screen and the content area coordinate systems have the X-axis
 pointing to the right and the Y-axis pointing down.
 
 Window and monitor positions are specified as the position of the upper-left
 corners of their content areas relative to the virtual screen, while cursor
-positions are specified relative to a window's client area.
+positions are specified relative to a window's content area.
 
-Because the origin of the window's client area coordinate system is also the
-point from which the window position is specified, you can translate client area
-coordinates to the virtual screen by adding the window position.  The window
-frame, when present, extends out from the client area but does not affect the
-window position.
+Because the origin of the window's content area coordinate system is also the
+point from which the window position is specified, you can translate content
+area coordinates to the virtual screen by adding the window position.  The
+window frame, when present, extends out from the content area but does not
+affect the window position.
 
 Almost all positions and sizes in GLFW are measured in screen coordinates
 relative to one of the two origins above.  This includes cursor positions,

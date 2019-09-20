@@ -210,18 +210,15 @@ cmake -DBUILD_SHARED_LIBS=ON .
 __BUILD_SHARED_LIBS__ determines whether GLFW is built as a static
 library or as a DLL / shared library / dynamic library.
 
-@anchor LIB_SUFFIX
-__LIB_SUFFIX__ affects where the GLFW shared /dynamic library is installed.  If
-it is empty, it is installed to `${CMAKE_INSTALL_PREFIX}/lib`.  If it is set to
-`64`, it is installed to `${CMAKE_INSTALL_PREFIX}/lib64`.
-
 @anchor GLFW_BUILD_EXAMPLES
 __GLFW_BUILD_EXAMPLES__ determines whether the GLFW examples are built
-along with the library.
+along with the library.  This is enabled by default unless GLFW is being built
+as a sub-project.
 
 @anchor GLFW_BUILD_TESTS
 __GLFW_BUILD_TESTS__ determines whether the GLFW test programs are
-built along with the library.
+built along with the library.  This is enabled by default unless GLFW is being
+built as a sub-project.
 
 @anchor GLFW_BUILD_DOCS
 __GLFW_BUILD_DOCS__ determines whether the GLFW documentation is built along
@@ -229,7 +226,7 @@ with the library.
 
 @anchor GLFW_VULKAN_STATIC
 __GLFW_VULKAN_STATIC__ determines whether to use the Vulkan loader linked
-statically into the application.
+directly with the application.
 
 
 @subsubsection compile_options_win32 Windows specific CMake options
@@ -273,7 +270,7 @@ ramps and clipboard.  The options are:
 If you are building GLFW as a shared library / dynamic library / DLL then you
 must also define @b _GLFW_BUILD_DLL.  Otherwise, you must not define it.
 
-If you are linking the Vulkan loader statically into your application then you
+If you are linking the Vulkan loader directly with your application then you
 must also define @b _GLFW_VULKAN_STATIC.  Otherwise, GLFW will attempt to use the
 external version.
 

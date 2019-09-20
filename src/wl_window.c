@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 Wayland - www.glfw.org
+// GLFW 3.4 Wayland - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -23,6 +23,8 @@
 //    distribution.
 //
 //========================================================================
+// It is fine to use C99 in this file because it will not be built with VS
+//========================================================================
 
 #define _GNU_SOURCE
 
@@ -38,72 +40,6 @@
 #include <sys/timerfd.h>
 #include <poll.h>
 
-
-static void shellSurfaceHandlePing(void* data,
-                                   struct wl_shell_surface* shellSurface,
-                                   uint32_t serial)
-{
-    wl_shell_surface_pong(shellSurface, serial);
-}
-
-static void shellSurfaceHandleConfigure(void* data,
-                                        struct wl_shell_surface* shellSurface,
-                                        uint32_t edges,
-                                        int32_t width,
-                                        int32_t height)
-{
-    _GLFWwindow* window = data;
-    float aspectRatio;
-    float targetRatio;
-
-    if (!window->monitor)
-    {
-        if (_glfw.wl.viewporter && window->decorated)
-        {
-            width -= _GLFW_DECORATION_HORIZONTAL;
-            height -= _GLFW_DECORATION_VERTICAL;
-        }
-        if (width < 1)
-            width = 1;
-        if (height < 1)
-            height = 1;
-
-        if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
-        {
-            aspectRatio = (float)width / (float)height;
-            targetRatio = (float)window->numer / (float)window->denom;
-            if (aspectRatio < targetRatio)
-                height = width / targetRatio;
-            else if (aspectRatio > targetRatio)
-                width = height * targetRatio;
-        }
-
-        if (window->minwidth != GLFW_DONT_CARE && width < window->minwidth)
-            width = window->minwidth;
-        else if (window->maxwidth != GLFW_DONT_CARE && width > window->maxwidth)
-            width = window->maxwidth;
-
-        if (window->minheight != GLFW_DONT_CARE && height < window->minheight)
-            height = window->minheight;
-        else if (window->maxheight != GLFW_DONT_CARE && height > window->maxheight)
-            height = window->maxheight;
-    }
-
-    _glfwInputWindowSize(window, width, height);
-    _glfwPlatformSetWindowSize(window, width, height);
-    _glfwInputWindowDamage(window);
-}
-
-static void shellSurfaceHandlePopupDone(void* data,
-                                        struct wl_shell_surface* shellSurface)
-{
-}
-
-static const struct wl_shell_surface_listener shellSurfaceListener = {
-    shellSurfaceHandlePing,
-    shellSurfaceHandleConfigure,
-    shellSurfaceHandlePopupDone
-};
 
 static int createTmpfileCloexec(char* tmpname)
 {
@@ -156,6 +92,9 @@ static int createAnonymousFile(off_t size)
         fcntl(fd, F_ADD_SEALS, F_SEAL_SHRINK | F_SEAL_SEAL);
     }
     else
+#elif defined(SHM_ANON)
+    fd = shm_open(SHM_ANON, O_RDWR | O_CLOEXEC, 0600);
+    if (fd < 0)
 #endif
     {
         path = getenv("XDG_RUNTIME_DIR");
@@ -175,7 +114,12 @@ static int createAnonymousFile(off_t size)
             return -1;
     }
 
+#if defined(SHM_ANON)
+    // posix_fallocate does not work on SHM descriptors
+    ret = ftruncate(fd, size);
+#else
     ret = posix_fallocate(fd, 0, size);
+#endif
     if (ret != 0)
     {
         close(fd);
@@ -521,64 +465,9 @@ static void setFullscreen(_GLFWwindow* window, _GLFWmonitor* monitor,
             window->wl.xdg.toplevel,
             monitor->wl.output);
     }
-    else if (window->wl.shellSurface)
-    {
-        wl_shell_surface_set_fullscreen(
-            window->wl.shellSurface,
-            WL_SHELL_SURFACE_FULLSCREEN_METHOD_DEFAULT,
-            refreshRate * 1000, // Convert Hz to mHz.
-            monitor->wl.output);
-    }
     setIdleInhibitor(window, GLFW_TRUE);
     if (!window->wl.decorations.serverSide)
         destroyDecorations(window);
-}
-
-static GLFWbool createShellSurface(_GLFWwindow* window)
-{
-    if (!_glfw.wl.shell)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: wl_shell protocol not available");
-        return GLFW_FALSE;
-    }
-
-    window->wl.shellSurface = wl_shell_get_shell_surface(_glfw.wl.shell,
-                                                         window->wl.surface);
-    if (!window->wl.shellSurface)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Shell surface creation failed");
-        return GLFW_FALSE;
-    }
-
-    wl_shell_surface_add_listener(window->wl.shellSurface,
-                                  &shellSurfaceListener,
-                                  window);
-
-    if (window->wl.title)
-        wl_shell_surface_set_title(window->wl.shellSurface, window->wl.title);
-
-    if (window->monitor)
-    {
-        setFullscreen(window, window->monitor, 0);
-    }
-    else if (window->wl.maximized)
-    {
-        wl_shell_surface_set_maximized(window->wl.shellSurface, NULL);
-        setIdleInhibitor(window, GLFW_FALSE);
-        createDecorations(window);
-    }
-    else
-    {
-        wl_shell_surface_set_toplevel(window->wl.shellSurface);
-        setIdleInhibitor(window, GLFW_FALSE);
-        createDecorations(window);
-    }
-
-    wl_surface_commit(window->wl.surface);
-
-    return GLFW_TRUE;
 }
 
 static void xdgToplevelHandleConfigure(void* data,
@@ -633,10 +522,17 @@ static void xdgToplevelHandleConfigure(void* data,
         _glfwInputWindowDamage(window);
     }
 
-    if (!window->wl.justCreated && !activated && window->autoIconify)
-        _glfwPlatformIconifyWindow(window);
+    if (window->wl.wasFullscreen && window->autoIconify)
+    {
+        if (!activated || !fullscreen)
+        {
+            _glfwPlatformIconifyWindow(window);
+            window->wl.wasFullscreen = GLFW_FALSE;
+        }
+    }
+    if (fullscreen && activated)
+        window->wl.wasFullscreen = GLFW_TRUE;
     _glfwInputWindowFocus(window, activated);
-    window->wl.justCreated = GLFW_FALSE;
 }
 
 static void xdgToplevelHandleClose(void* data,
@@ -905,7 +801,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    window->wl.justCreated = GLFW_TRUE;
     window->wl.transparent = fbconfig->transparent;
 
     if (!createSurface(window, wndconfig))
@@ -935,16 +830,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (wndconfig->visible)
     {
-        if (_glfw.wl.wmBase)
-        {
-            if (!createXdgSurface(window))
-                return GLFW_FALSE;
-        }
-        else
-        {
-            if (!createShellSurface(window))
-                return GLFW_FALSE;
-        }
+        if (!createXdgSurface(window))
+            return GLFW_FALSE;
 
         window->wl.visible = GLFW_TRUE;
     }
@@ -952,7 +839,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     {
         window->wl.xdg.surface = NULL;
         window->wl.xdg.toplevel = NULL;
-        window->wl.shellSurface = NULL;
         window->wl.visible = GLFW_FALSE;
     }
 
@@ -994,9 +880,6 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     if (window->wl.native)
         wl_egl_window_destroy(window->wl.native);
 
-    if (window->wl.shellSurface)
-        wl_shell_surface_destroy(window->wl.shellSurface);
-
     if (window->wl.xdg.toplevel)
         xdg_toplevel_destroy(window->wl.xdg.toplevel);
 
@@ -1017,8 +900,6 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     window->wl.title = _glfw_strdup(title);
     if (window->wl.xdg.toplevel)
         xdg_toplevel_set_title(window->wl.xdg.toplevel, title);
-    else if (window->wl.shellSurface)
-        wl_shell_surface_set_title(window->wl.shellSurface, title);
 }
 
 void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
@@ -1064,23 +945,15 @@ void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
                                       int minwidth, int minheight,
                                       int maxwidth, int maxheight)
 {
-    if (_glfw.wl.wmBase)
+    if (window->wl.xdg.toplevel)
     {
-        if (window->wl.xdg.toplevel)
-        {
-            if (minwidth == GLFW_DONT_CARE || minheight == GLFW_DONT_CARE)
-                minwidth = minheight = 0;
-            if (maxwidth == GLFW_DONT_CARE || maxheight == GLFW_DONT_CARE)
-                maxwidth = maxheight = 0;
-            xdg_toplevel_set_min_size(window->wl.xdg.toplevel, minwidth, minheight);
-            xdg_toplevel_set_max_size(window->wl.xdg.toplevel, maxwidth, maxheight);
-            wl_surface_commit(window->wl.surface);
-        }
-    }
-    else
-    {
-        // TODO: find out how to trigger a resize.
-        // The actual limits are checked in the wl_shell_surface::configure handler.
+        if (minwidth == GLFW_DONT_CARE || minheight == GLFW_DONT_CARE)
+            minwidth = minheight = 0;
+        if (maxwidth == GLFW_DONT_CARE || maxheight == GLFW_DONT_CARE)
+            maxwidth = maxheight = 0;
+        xdg_toplevel_set_min_size(window->wl.xdg.toplevel, minwidth, minheight);
+        xdg_toplevel_set_max_size(window->wl.xdg.toplevel, maxwidth, maxheight);
+        wl_surface_commit(window->wl.surface);
     }
 }
 
@@ -1088,7 +961,7 @@ void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window,
                                        int numer, int denom)
 {
     // TODO: find out how to trigger a resize.
-    // The actual limits are checked in the wl_shell_surface::configure handler.
+    // The actual limits are checked in the xdg_toplevel::configure handler.
 }
 
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window,
@@ -1127,16 +1000,8 @@ void _glfwPlatformGetWindowContentScale(_GLFWwindow* window,
 
 void _glfwPlatformIconifyWindow(_GLFWwindow* window)
 {
-    if (_glfw.wl.wmBase)
-    {
-        if (window->wl.xdg.toplevel)
-            xdg_toplevel_set_minimized(window->wl.xdg.toplevel);
-    }
-    else
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Iconify window not supported on wl_shell");
-    }
+    if (window->wl.xdg.toplevel)
+        xdg_toplevel_set_minimized(window->wl.xdg.toplevel);
 }
 
 void _glfwPlatformRestoreWindow(_GLFWwindow* window)
@@ -1148,12 +1013,7 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
         if (window->wl.maximized)
             xdg_toplevel_unset_maximized(window->wl.xdg.toplevel);
         // There is no way to unset minimized, or even to know if we are
-        // minimized, so there is nothing to do here.
-    }
-    else if (window->wl.shellSurface)
-    {
-        if (window->monitor || window->wl.maximized)
-            wl_shell_surface_set_toplevel(window->wl.shellSurface);
+        // minimized, so there is nothing to do in this case.
     }
     _glfwInputWindowMonitor(window, NULL);
     window->wl.maximized = GLFW_FALSE;
@@ -1165,11 +1025,6 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
     {
         xdg_toplevel_set_maximized(window->wl.xdg.toplevel);
     }
-    else if (window->wl.shellSurface)
-    {
-        // Let the compositor select the best output.
-        wl_shell_surface_set_maximized(window->wl.shellSurface, NULL);
-    }
     window->wl.maximized = GLFW_TRUE;
 }
 
@@ -1177,10 +1032,7 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
     if (!window->wl.visible)
     {
-        if (_glfw.wl.wmBase)
-            createXdgSurface(window);
-        else if (!window->wl.shellSurface)
-            createShellSurface(window);
+        createXdgSurface(window);
         window->wl.visible = GLFW_TRUE;
     }
 }
@@ -1193,11 +1045,6 @@ void _glfwPlatformHideWindow(_GLFWwindow* window)
         xdg_surface_destroy(window->wl.xdg.surface);
         window->wl.xdg.toplevel = NULL;
         window->wl.xdg.surface = NULL;
-    }
-    else if (window->wl.shellSurface)
-    {
-        wl_shell_surface_destroy(window->wl.shellSurface);
-        window->wl.shellSurface = NULL;
     }
     window->wl.visible = GLFW_FALSE;
 }
@@ -1229,8 +1076,6 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
     {
         if (window->wl.xdg.toplevel)
             xdg_toplevel_unset_fullscreen(window->wl.xdg.toplevel);
-        else if (window->wl.shellSurface)
-            wl_shell_surface_set_toplevel(window->wl.shellSurface);
         setIdleInhibitor(window, GLFW_FALSE);
         if (!_glfw.wl.decorationManager)
             createDecorations(window);
@@ -1245,8 +1090,8 @@ int _glfwPlatformWindowFocused(_GLFWwindow* window)
 
 int _glfwPlatformWindowIconified(_GLFWwindow* window)
 {
-    // wl_shell doesn't have any iconified concept, and xdg-shell doesn’t give
-    // any way to request whether a surface is iconified.
+    // xdg-shell doesn’t give any way to request whether a surface is
+    // iconified.
     return GLFW_FALSE;
 }
 
@@ -1302,6 +1147,16 @@ float _glfwPlatformGetWindowOpacity(_GLFWwindow* window)
 
 void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
 {
+}
+
+void _glfwPlatformSetRawMouseMotion(_GLFWwindow *window, GLFWbool enabled)
+{
+    // This is handled in relativePointerHandleRelativeMotion
+}
+
+GLFWbool _glfwPlatformRawMouseMotionSupported(void)
+{
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformPollEvents(void)
@@ -1423,13 +1278,24 @@ static void relativePointerHandleRelativeMotion(void* data,
                                                 wl_fixed_t dyUnaccel)
 {
     _GLFWwindow* window = data;
+    double xpos = window->virtualCursorPosX;
+    double ypos = window->virtualCursorPosY;
 
     if (window->cursorMode != GLFW_CURSOR_DISABLED)
         return;
 
-    _glfwInputCursorPos(window,
-                        window->virtualCursorPosX + wl_fixed_to_double(dxUnaccel),
-                        window->virtualCursorPosY + wl_fixed_to_double(dyUnaccel));
+    if (window->rawMouseMotion)
+    {
+        xpos += wl_fixed_to_double(dxUnaccel);
+        ypos += wl_fixed_to_double(dyUnaccel);
+    }
+    else
+    {
+        xpos += wl_fixed_to_double(dx);
+        ypos += wl_fixed_to_double(dy);
+    }
+
+    _glfwInputCursorPos(window, xpos, ypos);
 }
 
 static const struct zwp_relative_pointer_v1_listener relativePointerListener = {

@@ -94,8 +94,8 @@ for a disconnected monitor and only before the monitor callback returns.
 @section monitor_properties Monitor properties
 
 Each monitor has a current video mode, a list of supported video modes,
-a virtual position, a human-readable name, a user pointer, an estimated physical
-size and a gamma ramp.
+a virtual position, a content scale, a human-readable name, a user pointer, an
+estimated physical size and a gamma ramp.
 
 
 @subsection monitor_modes Video modes
@@ -153,9 +153,11 @@ glfwGetMonitorContentScale(monitor, &xscale, &yscale);
 @endcode
 
 The content scale is the ratio between the current DPI and the platform's
-default DPI.  If you scale all pixel dimensions by this scale then your content
-should appear at an appropriate size.  This is especially important for text and
-any UI elements.
+default DPI.  This is especially important for text and any UI elements.  If the
+pixel dimensions of your UI scaled by this look appropriate on your machine then
+it should appear at a reasonable size on other machines regardless of their DPI
+and scaling settings.  This relies on the system DPI and scaling settings being
+somewhat correct.
 
 The content scale may depend on both the monitor resolution and pixel density
 and on user settings.  It may be very different from the raw DPI calculated from
@@ -171,6 +173,18 @@ glfwGetMonitorPos.
 @code
 int xpos, ypos;
 glfwGetMonitorPos(monitor, &xpos, &ypos);
+@endcode
+
+
+@subsection monitor_workarea Work area
+
+The area of a monitor not occupied by global task bars or menu bars is the work
+area.  This is specified in [screen coordinates](@ref coordinate_systems) and
+can be retrieved with @ref glfwGetMonitorWorkarea.
+
+@code
+int xpos, ypos, width, height;
+glfwGetMonitorWorkarea(monitor, &xpos, &ypos, &width, &height);
 @endcode
 
 

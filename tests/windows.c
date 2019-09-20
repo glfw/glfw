@@ -27,7 +27,8 @@
 //
 //========================================================================
 
-#include <glad/glad.h>
+#include <glad/gl.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -140,7 +141,7 @@ int main(int argc, char** argv)
         glfwSetKeyCallback(windows[i], key_callback);
 
         glfwMakeContextCurrent(windows[i]);
-        gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+        gladLoadGL(glfwGetProcAddress);
         glClearColor(colors[i].r, colors[i].g, colors[i].b, 1.f);
 
         glfwGetWindowFrameSize(windows[i], &left, &top, &right, &bottom);

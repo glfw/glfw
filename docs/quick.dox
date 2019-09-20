@@ -4,7 +4,7 @@
 
 @tableofcontents
 
-This guide takes you through writing a simple application using GLFW 3.  The
+This guide takes you through writing a small application using GLFW 3.  The
 application will create a window and OpenGL context, render a rotating triangle
 and exit when the user closes the window or presses _Escape_.  This guide will
 introduce a few of the most commonly used functions, but there are many more.
@@ -47,11 +47,11 @@ exposes OpenGL 1.2.  The easiest way to work around this is to use an
 If you are using such a library then you should include its header _before_ the
 GLFW header.  This lets it replace the OpenGL header included by GLFW without
 conflicts.  This example uses
-[glad](https://github.com/Dav1dde/glad), but the same rule applies to all such
+[glad2](https://github.com/Dav1dde/glad), but the same rule applies to all such
 libraries.
 
 @code
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 @endcode
 
@@ -135,9 +135,14 @@ require a minimum OpenGL version by setting the `GLFW_CONTEXT_VERSION_MAJOR` and
 `GLFW_CONTEXT_VERSION_MINOR` hints _before_ creation.  If the required minimum
 version is not supported on the machine, context (and window) creation fails.
 
+You can select the OpenGL profile by setting the `GLFW_OPENGL_PROFILE` hint.
+This program uses the core profile as that is the only profile macOS supports
+for OpenGL 3.x and 4.x.
+
 @code
-glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
 if (!window)
 {
@@ -177,7 +182,7 @@ a current context to load from.  This example uses
 libraries.
 
 @code
-gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+gladLoadGL(glfwGetProcAddress);
 @endcode
 
 
@@ -326,19 +331,20 @@ for example, many kinds of editing tools.
 @section quick_example Putting it together
 
 Now that you know how to initialize GLFW, create a window and poll for
-keyboard input, it's possible to create a simple program.
+keyboard input, it's possible to create a small program.
 
 This program creates a 640 by 480 windowed mode window and starts a loop that
 clears the screen, renders a triangle and processes events until the user either
 presses _Escape_ or closes the window.
 
-@snippet simple.c code
+@snippet triangle-opengl.c code
 
 The program above can be found in the
-[source package](https://www.glfw.org/download.html) as `examples/simple.c`
-and is compiled along with all other examples when you build GLFW.  If you
-built GLFW from the source package then already have this as `simple.exe` on
-Windows, `simple` on Linux or `simple.app` on macOS.
+[source package](https://www.glfw.org/download.html) as
+`examples/triangle-opengl.c` and is compiled along with all other examples when
+you build GLFW.  If you built GLFW from the source package then you already have
+this as `triangle-opengl.exe` on Windows, `triangle-opengl` on Linux or
+`triangle-opengl.app` on macOS.
 
 This tutorial used only a few of the many functions GLFW provides.  There are
 guides for each of the areas covered by GLFW.  Each guide will introduce all the

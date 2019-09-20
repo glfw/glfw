@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.3 X11 - www.glfw.org
+// GLFW 3.4 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -23,6 +23,8 @@
 // 3. This notice may not be removed or altered from any source
 //    distribution.
 //
+//========================================================================
+// It is fine to use C99 in this file because it will not be built with VS
 //========================================================================
 
 #include "internal.h"
@@ -52,7 +54,7 @@ static int translateKeyCode(int scancode)
         // Note: This way we always force "NumLock = ON", which is intentional
         // since the returned key code should correspond to a physical
         // location.
-        keySym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, 0, 1);
+        keySym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, _glfw.x11.xkb.group, 1);
         switch (keySym)
         {
             case XK_KP_0:           return GLFW_KEY_KP_0;
@@ -74,7 +76,7 @@ static int translateKeyCode(int scancode)
 
         // Now try primary keysym for function keys (non-printable keys)
         // These should not depend on the current keyboard layout
-        keySym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, 0, 0);
+        keySym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, _glfw.x11.xkb.group, 0);
     }
     else
     {
@@ -329,14 +331,13 @@ static void createKeyTables(void)
 //
 static GLFWbool hasUsableInputMethodStyle(void)
 {
-    unsigned int i;
     GLFWbool found = GLFW_FALSE;
     XIMStyles* styles = NULL;
 
     if (XGetIMValues(_glfw.x11.im, XNQueryInputStyle, &styles, NULL) != NULL)
         return GLFW_FALSE;
 
-    for (i = 0;  i < styles->count_styles;  i++)
+    for (unsigned int i = 0;  i < styles->count_styles;  i++)
     {
         if (styles->supported_styles[i] == (XIMPreeditNothing | XIMStatusNothing))
         {
@@ -355,10 +356,9 @@ static Atom getSupportedAtom(Atom* supportedAtoms,
                              unsigned long atomCount,
                              const char* atomName)
 {
-    unsigned long i;
     const Atom atom = XInternAtom(_glfw.x11.display, atomName, False);
 
-    for (i = 0;  i < atomCount;  i++)
+    for (unsigned int i = 0;  i < atomCount;  i++)
     {
         if (supportedAtoms[i] == atom)
             return atom;
@@ -371,18 +371,11 @@ static Atom getSupportedAtom(Atom* supportedAtoms,
 //
 static void detectEWMH(void)
 {
+    // First we read the _NET_SUPPORTING_WM_CHECK property on the root window
+
     Window* windowFromRoot = NULL;
-    Window* windowFromChild = NULL;
-
-    // First we need a couple of atoms
-    const Atom supportingWmCheck =
-        XInternAtom(_glfw.x11.display, "_NET_SUPPORTING_WM_CHECK", False);
-    const Atom wmSupported =
-        XInternAtom(_glfw.x11.display, "_NET_SUPPORTED", False);
-
-    // Then we look for the _NET_SUPPORTING_WM_CHECK property of the root window
     if (!_glfwGetWindowPropertyX11(_glfw.x11.root,
-                                   supportingWmCheck,
+                                   _glfw.x11.NET_SUPPORTING_WM_CHECK,
                                    XA_WINDOW,
                                    (unsigned char**) &windowFromRoot))
     {
@@ -391,10 +384,12 @@ static void detectEWMH(void)
 
     _glfwGrabErrorHandlerX11();
 
-    // It should be the ID of a child window (of the root)
-    // Then we look for the same property on the child window
+    // If it exists, it should be the XID of a top-level window
+    // Then we look for the same property on that window
+
+    Window* windowFromChild = NULL;
     if (!_glfwGetWindowPropertyX11(*windowFromRoot,
-                                   supportingWmCheck,
+                                   _glfw.x11.NET_SUPPORTING_WM_CHECK,
                                    XA_WINDOW,
                                    (unsigned char**) &windowFromChild))
     {
@@ -404,7 +399,8 @@ static void detectEWMH(void)
 
     _glfwReleaseErrorHandlerX11();
 
-    // It should be the ID of that same child window
+    // If the property exists, it should contain the XID of the window
+
     if (*windowFromRoot != *windowFromChild)
     {
         XFree(windowFromRoot);
@@ -415,19 +411,20 @@ static void detectEWMH(void)
     XFree(windowFromRoot);
     XFree(windowFromChild);
 
-    // We are now fairly sure that an EWMH-compliant window manager is running
+    // We are now fairly sure that an EWMH-compliant WM is currently running
+    // We can now start querying the WM about what features it supports by
+    // looking in the _NET_SUPPORTED property on the root window
+    // It should contain a list of supported EWMH protocol and state atoms
 
-    Atom* supportedAtoms;
-    unsigned long atomCount;
-
-    // Now we need to check the _NET_SUPPORTED property of the root window
-    // It should be a list of supported WM protocol and state atoms
-    atomCount = _glfwGetWindowPropertyX11(_glfw.x11.root,
-                                          wmSupported,
-                                          XA_ATOM,
-                                          (unsigned char**) &supportedAtoms);
+    Atom* supportedAtoms = NULL;
+    const unsigned long atomCount =
+        _glfwGetWindowPropertyX11(_glfw.x11.root,
+                                  _glfw.x11.NET_SUPPORTED,
+                                  XA_ATOM,
+                                  (unsigned char**) &supportedAtoms);
 
     // See which of the atoms we support that are supported by the WM
+
     _glfw.x11.NET_WM_STATE =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE");
     _glfw.x11.NET_WM_STATE_ABOVE =
@@ -446,6 +443,10 @@ static void detectEWMH(void)
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_WINDOW_TYPE");
     _glfw.x11.NET_WM_WINDOW_TYPE_NORMAL =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_WINDOW_TYPE_NORMAL");
+    _glfw.x11.NET_WORKAREA =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_WORKAREA");
+    _glfw.x11.NET_CURRENT_DESKTOP =
+        getSupportedAtom(supportedAtoms, atomCount, "_NET_CURRENT_DESKTOP");
     _glfw.x11.NET_ACTIVE_WINDOW =
         getSupportedAtom(supportedAtoms, atomCount, "_NET_ACTIVE_WINDOW");
     _glfw.x11.NET_FRAME_EXTENTS =
@@ -658,6 +659,14 @@ static GLFWbool initExtensions(void)
             if (supported)
                 _glfw.x11.xkb.detectable = GLFW_TRUE;
         }
+
+        _glfw.x11.xkb.group = 0;
+        XkbStateRec state;
+        if (XkbGetState(_glfw.x11.display, XkbUseCoreKbd, &state) == Success)
+        {
+            XkbSelectEventDetails(_glfw.x11.display, XkbUseCoreKbd, XkbStateNotify, XkbAllStateComponentsMask, XkbGroupStateMask);
+            _glfw.x11.xkb.group = (unsigned int)state.group;
+        }
     }
 
 #if defined(__CYGWIN__)
@@ -703,9 +712,6 @@ static GLFWbool initExtensions(void)
     // the keyboard mapping.
     createKeyTables();
 
-    // Detect whether an EWMH-conformant window manager is running
-    detectEWMH();
-
     // String format atoms
     _glfw.x11.NULL_ = XInternAtom(_glfw.x11.display, "NULL", False);
     _glfw.x11.UTF8_STRING = XInternAtom(_glfw.x11.display, "UTF8_STRING", False);
@@ -749,6 +755,10 @@ static GLFWbool initExtensions(void)
         XInternAtom(_glfw.x11.display, "WM_STATE", False);
     _glfw.x11.WM_DELETE_WINDOW =
         XInternAtom(_glfw.x11.display, "WM_DELETE_WINDOW", False);
+    _glfw.x11.NET_SUPPORTED =
+        XInternAtom(_glfw.x11.display, "_NET_SUPPORTED", False);
+    _glfw.x11.NET_SUPPORTING_WM_CHECK =
+        XInternAtom(_glfw.x11.display, "_NET_SUPPORTING_WM_CHECK", False);
     _glfw.x11.NET_WM_ICON =
         XInternAtom(_glfw.x11.display, "_NET_WM_ICON", False);
     _glfw.x11.NET_WM_PING =
@@ -772,6 +782,9 @@ static GLFWbool initExtensions(void)
         snprintf(name, sizeof(name), "_NET_WM_CM_S%u", _glfw.x11.screen);
         _glfw.x11.NET_WM_CM_Sx = XInternAtom(_glfw.x11.display, name, False);
     }
+
+    // Detect whether an EWMH-conformant window manager is running
+    detectEWMH();
 
     return GLFW_TRUE;
 }
@@ -1079,7 +1092,7 @@ void _glfwPlatformTerminate(void)
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    return _GLFW_VERSION_NUMBER " X11 GLX EGL"
+    return _GLFW_VERSION_NUMBER " X11 GLX EGL OSMesa"
 #if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
         " clock_gettime"
 #else

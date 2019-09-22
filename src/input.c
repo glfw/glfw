@@ -1124,7 +1124,7 @@ GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun cbfun)
     return cbfun;
 }
 
-GLFWAPI GLFWjoystickwindowfun glfwSetJoystickCallback(GLFWwindow* handle, GLFWjoystickwindowfun cbfun)
+GLFWAPI GLFWjoystickwindowfun glfwSetWindowJoystickCallback(GLFWwindow* handle, GLFWjoystickwindowfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
     assert(window != NULL);

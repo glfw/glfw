@@ -5201,7 +5201,7 @@ GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun callback);
  *
  *  @ingroup input
  */
-GLFWAPI GLFWjoystickwindowfun glfwSetJoystickCallback(GLFWwindow* window, GLFWjoystickwindowfun callback);
+GLFWAPI GLFWjoystickwindowfun glfwSetWindowJoystickCallback(GLFWwindow* window, GLFWjoystickwindowfun callback);
 
 /*! @brief Adds the specified SDL_GameControllerDB gamepad mappings.
  *

@@ -45,6 +45,7 @@
 #define NK_GLFW_GL2_IMPLEMENTATION
 #include <nuklear_glfw_gl2.h>
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -53,9 +54,27 @@
 #define strdup(x) _strdup(x)
 #endif
 
+#ifdef NDEBUG
+#define TEST_ASSERT(expr) if(!(expr)) { \
+    fprintf(stderr, "TEST FAILURE : " #expr "\n    %s : line %d\n", __FILE__, __LINE__); \
+    glfwTerminate(); \
+    exit(EXIT_FAILURE); \
+}
+#else
+#define TEST_ASSERT(expr) assert(expr)
+#endif // !NDEBUG
+
+
 static GLFWwindow* window;
 static int joysticks[GLFW_JOYSTICK_LAST + 1];
 static int joystick_count = 0;
+static int window_joysticks[GLFW_JOYSTICK_LAST + 1];
+static int window_joystick_count = 0;
+
+#define OTHER_WINDOWS_COUNT 4
+static GLFWwindow* other_windows[OTHER_WINDOWS_COUNT];
+static int num_window_callbacks = 0;
+static int num_other_window_callbacks = 0;
 
 static void error_callback(int error, const char* description)
 {
@@ -64,6 +83,9 @@ static void error_callback(int error, const char* description)
 
 static void joystick_callback(int jid, int event)
 {
+    // Check the window callbacks are working ok.
+    TEST_ASSERT(num_window_callbacks * OTHER_WINDOWS_COUNT == num_other_window_callbacks);
+
     if (event == GLFW_CONNECTED)
         joysticks[joystick_count++] = jid;
     else if (event == GLFW_DISCONNECTED)
@@ -84,6 +106,41 @@ static void joystick_callback(int jid, int event)
 
     if (!glfwGetWindowAttrib(window, GLFW_FOCUSED))
         glfwRequestWindowAttention(window);
+}
+
+// We are guaranteed the window callback executes after the global one.
+static void joystick_window_callback(GLFWwindow* w, int jid, int event)
+{
+    TEST_ASSERT(w != NULL && w == window);
+
+    if (event == GLFW_CONNECTED)
+        window_joysticks[window_joystick_count++] = jid;
+    else if (event == GLFW_DISCONNECTED)
+    {
+        int i;
+
+        for (i = 0;  i < window_joystick_count;  i++)
+        {
+            if (window_joysticks[i] == jid)
+                break;
+        }
+
+        for (i = i + 1;  i < window_joystick_count;  i++)
+            window_joysticks[i - 1] = window_joysticks[i];
+
+        window_joystick_count--;
+    }
+
+    if (!glfwGetWindowAttrib(w, GLFW_FOCUSED))
+        glfwRequestWindowAttention(w);
+
+    TEST_ASSERT(joystick_count == window_joystick_count);
+
+    for (int i = 0; i < window_joystick_count; ++i) {
+        TEST_ASSERT(window_joysticks[i] == joysticks[i]);
+    }
+
+    ++num_window_callbacks;
 }
 
 static void drop_callback(GLFWwindow* window, int count, const char* paths[])
@@ -168,6 +225,35 @@ static void hat_widget(struct nk_context* nk, unsigned char state)
     }
 }
 
+static void other_joystick_window_callback(GLFWwindow* w, int jid, int event) {
+    TEST_ASSERT(w != NULL && w != window);
+
+    int window_ptr_found = GLFW_FALSE;
+    for (int i = 0; i < OTHER_WINDOWS_COUNT; ++i) {
+        if (other_windows[i] == w) {
+            window_ptr_found = GLFW_TRUE;
+            break;
+        }
+    }
+    TEST_ASSERT(window_ptr_found == GLFW_TRUE);
+
+    int jid_found = GLFW_FALSE;
+    for (int i = 0; i < joystick_count; ++i) {
+        if (joysticks[i] == jid) {
+            jid_found = GLFW_TRUE;
+            break;
+        }
+    }
+    if (event == GLFW_CONNECTED) {
+        TEST_ASSERT(jid_found == GLFW_TRUE);
+    }
+    else {
+        TEST_ASSERT(jid_found == GLFW_FALSE);
+    }
+
+    ++num_other_window_callbacks;
+}
+
 int main(void)
 {
     int jid, hat_buttons = GLFW_FALSE;
@@ -175,11 +261,23 @@ int main(void)
     struct nk_font_atlas* atlas;
 
     memset(joysticks, 0, sizeof(joysticks));
+    memset(window_joysticks, 0, sizeof(window_joysticks));
+    memset(other_windows, 0, sizeof(other_windows));
 
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
+
+    for (int i = 0; i < OTHER_WINDOWS_COUNT; ++i) {
+        other_windows[i] = glfwCreateWindow(800, 600, "other window", NULL, NULL);
+        if (other_windows[i] == NULL) {
+            glfwTerminate();
+            exit(EXIT_FAILURE);
+        }
+
+        glfwSetWindowJoystickCallback(other_windows[i], other_joystick_window_callback);
+    }
 
     glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
 
@@ -194,17 +292,24 @@ int main(void)
     gladLoadGL(glfwGetProcAddress);
     glfwSwapInterval(1);
 
+    // Make Nuklear window the main focus
+    if (!glfwGetWindowAttrib(window, GLFW_FOCUSED))
+        glfwRequestWindowAttention(window);
+
     nk = nk_glfw3_init(window, NK_GLFW3_INSTALL_CALLBACKS);
     nk_glfw3_font_stash_begin(&atlas);
     nk_glfw3_font_stash_end();
 
     for (jid = GLFW_JOYSTICK_1;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
-        if (glfwJoystickPresent(jid))
+        if (glfwJoystickPresent(jid)) {
             joysticks[joystick_count++] = jid;
+            window_joysticks[window_joystick_count++] = jid;
+        }
     }
 
     glfwSetJoystickCallback(joystick_callback);
+    glfwSetWindowJoystickCallback(window, joystick_window_callback);
     glfwSetDropCallback(window, drop_callback);
 
     while (!glfwWindowShouldClose(window))

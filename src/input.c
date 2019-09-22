@@ -373,6 +373,18 @@ void _glfwInputJoystick(_GLFWjoystick* js, int event)
 
     if (_glfw.callbacks.joystick)
         _glfw.callbacks.joystick(jid, event);
+
+    // Send event to windows that want the notification.
+    {
+        _GLFWwindow* window;
+
+        for (window = _glfw.windowListHead;  window;  window = window->next) {
+            GLFWjoystickwindowfun fun = window->callbacks.joystickConnect;
+            if (fun) {
+                fun((GLFWwindow*) window, jid, event);
+            }
+        }
+    }
 }
 
 // Notifies shared code of the new value of a joystick axis
@@ -1109,6 +1121,16 @@ GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun cbfun)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     _GLFW_SWAP_POINTERS(_glfw.callbacks.joystick, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWjoystickwindowfun glfwSetJoystickCallback(GLFWwindow* handle, GLFWjoystickwindowfun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(window->callbacks.joystickConnect, cbfun);
     return cbfun;
 }
 

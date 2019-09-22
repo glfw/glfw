@@ -1613,6 +1613,32 @@ typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
  */
 typedef void (* GLFWjoystickfun)(int,int);
 
+/*! @brief The function pointer type for window joystick configuration callbacks.
+ *
+ *  This is the function pointer type for window joystick configuration callbacks.
+ *  Even though joystick configuration callbacks are global events, you may
+ *  use this version of the callback to recieve valid window pointers in
+ *  your callback. Must be used with appropriate glfwSetJoystickCallback overload.
+ *
+ *  A joystick configuration callback function has the following signature:
+ *  @code
+ *  void function_name(GLFWwindow* window, int jid, int event)
+ *  @endcode
+ *
+ *  @param[in] window A valid window associated to the event.
+ *  @param[in] jid The joystick that was connected or disconnected.
+ *  @param[in] event One of `GLFW_CONNECTED` or `GLFW_DISCONNECTED`.  Future
+ *  releases may add more events.
+ *
+ *  @sa @ref joystick_event
+ *  @sa @ref glfwSetJoystickCallback
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWjoystickwindowfun)(GLFWwindow*,int,int);
+
 /*! @brief Video mode type.
  *
  *  This describes a single video mode.
@@ -5138,6 +5164,44 @@ GLFWAPI int glfwJoystickIsGamepad(int jid);
  *  @ingroup input
  */
 GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun callback);
+
+/*! @brief Sets the window joystick configuration callback.
+ *
+ *  This function sets the window joystick configuration callback, or removes the
+ *  currently set callback.  This is called when a joystick is connected to or
+ *  disconnected from the system. Windows which have registered to recieve
+ *  this callback will be notified, and provided with their window pointer.
+ *
+ *  For joystick connection and disconnection events to be delivered on all
+ *  platforms, you need to call one of the [event processing](@ref events)
+ *  functions.  Joystick disconnection may also be detected and the callback
+ *  called by joystick functions.  The function will then return whatever it
+ *  returns if the joystick is not present.
+ *
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] callback The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  @callback_signature
+ *  @code
+ *  void function_name(GLFWwindow* window, int jid, int event)
+ *  @endcode
+ *  For more information about the callback parameters, see the
+ *  [function pointer type](@ref GLFWjoystickwindowfun).
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref joystick_event
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWjoystickwindowfun glfwSetJoystickCallback(GLFWwindow* window, GLFWjoystickwindowfun callback);
 
 /*! @brief Adds the specified SDL_GameControllerDB gamepad mappings.
  *

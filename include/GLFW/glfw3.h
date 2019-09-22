@@ -1618,7 +1618,7 @@ typedef void (* GLFWjoystickfun)(int,int);
  *  This is the function pointer type for window joystick configuration callbacks.
  *  Even though joystick configuration callbacks are global events, you may
  *  use this version of the callback to recieve valid window pointers in
- *  your callback. Must be used with appropriate glfwSetJoystickCallback overload.
+ *  your callback. Must be used with appropriate glfwSetWindowJoystickCallback overload.
  *
  *  A joystick configuration callback function has the following signature:
  *  @code
@@ -1631,7 +1631,7 @@ typedef void (* GLFWjoystickfun)(int,int);
  *  releases may add more events.
  *
  *  @sa @ref joystick_event
- *  @sa @ref glfwSetJoystickCallback
+ *  @sa @ref glfwSetWindowJoystickCallback
  *
  *  @since Added in version 3.4.
  *

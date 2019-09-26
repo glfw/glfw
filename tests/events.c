@@ -503,6 +503,20 @@ static void joystick_callback(int jid, int event)
                axisCount,
                buttonCount,
                hatCount);
+
+        if (glfwJoystickIsGamepad(jid))
+        {
+            printf("  Joystick %i (%s) has a gamepad mapping (%s)\n",
+                   jid,
+                   glfwGetJoystickGUID(jid),
+                   glfwGetGamepadName(jid));
+        }
+        else
+        {
+            printf("  Joystick %i (%s) has no gamepad mapping\n",
+                   jid,
+                   glfwGetJoystickGUID(jid));
+        }
     }
     else
     {

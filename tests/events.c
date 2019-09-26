@@ -253,17 +253,32 @@ static const char* get_mods_name(int mods)
     return name;
 }
 
-static const char* get_character_string(int codepoint)
+static size_t encode_utf8(char* s, unsigned int ch)
 {
-    // This assumes UTF-8, which is stupid
-    static char result[6 + 1];
+    size_t count = 0;
 
-    int length = wctomb(result, codepoint);
-    if (length == -1)
-        length = 0;
+    if (ch < 0x80)
+        s[count++] = (char) ch;
+    else if (ch < 0x800)
+    {
+        s[count++] = (ch >> 6) | 0xc0;
+        s[count++] = (ch & 0x3f) | 0x80;
+    }
+    else if (ch < 0x10000)
+    {
+        s[count++] = (ch >> 12) | 0xe0;
+        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
+        s[count++] = (ch & 0x3f) | 0x80;
+    }
+    else if (ch < 0x110000)
+    {
+        s[count++] = (ch >> 18) | 0xf0;
+        s[count++] = ((ch >> 12) & 0x3f) | 0x80;
+        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
+        s[count++] = (ch & 0x3f) | 0x80;
+    }
 
-    result[length] = '\0';
-    return result;
+    return count;
 }
 
 static void error_callback(int error, const char* description)
@@ -425,9 +440,11 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 static void char_callback(GLFWwindow* window, unsigned int codepoint)
 {
     Slot* slot = glfwGetWindowUserPointer(window);
+    char string[5] = "";
+
+    encode_utf8(string, codepoint);
     printf("%08x to %i at %0.3f: Character 0x%08x (%s) input\n",
-           counter++, slot->number, glfwGetTime(), codepoint,
-           get_character_string(codepoint));
+           counter++, slot->number, glfwGetTime(), codepoint, string);
 }
 
 static void drop_callback(GLFWwindow* window, int count, const char* paths[])
@@ -499,8 +516,6 @@ int main(int argc, char** argv)
     Slot* slots;
     GLFWmonitor* monitor = NULL;
     int ch, i, width, height, count = 1;
-
-    setlocale(LC_ALL, "");
 
     glfwSetErrorCallback(error_callback);
 

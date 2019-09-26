@@ -133,6 +133,7 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
+ - [X11] Bugfix: Decorations could not be enabled after window creation (#1566)
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
 
 

@@ -320,6 +320,12 @@ static void window_close_callback(GLFWwindow* window)
     printf("%08x to %i at %0.3f: Window close\n",
            counter++, slot->number, glfwGetTime());
 
+    if (!slot->closeable)
+    {
+        printf("(( closing is disabled, press %s to re-enable )\n",
+               glfwGetKeyName(GLFW_KEY_C, 0));
+    }
+
     glfwSetWindowShouldClose(window, slot->closeable);
 }
 

@@ -61,11 +61,13 @@ typedef int (* PFN_XConvertSelection)(Display*,Atom,Atom,Atom,Window,Time);
 typedef Colormap (* PFN_XCreateColormap)(Display*,Window,Visual*,int);
 typedef Cursor (* PFN_XCreateFontCursor)(Display*,unsigned int);
 typedef XIC (* PFN_XCreateIC)(XIM,...);
+typedef Region (* PFN_XCreateRegion)(void);
 typedef Window (* PFN_XCreateWindow)(Display*,Window,int,int,unsigned int,unsigned int,unsigned int,int,unsigned int,Visual*,unsigned long,XSetWindowAttributes*);
 typedef int (* PFN_XDefineCursor)(Display*,Window,Cursor);
 typedef int (* PFN_XDeleteContext)(Display*,XID,XContext);
 typedef int (* PFN_XDeleteProperty)(Display*,Window,Atom);
 typedef void (* PFN_XDestroyIC)(XIC);
+typedef int (* PFN_XDestroyRegion)(Region);
 typedef int (* PFN_XDestroyWindow)(Display*,Window);
 typedef int (* PFN_XDisplayKeycodes)(Display*,int*,int*);
 typedef int (* PFN_XEventsQueued)(Display*,int);
@@ -127,6 +129,7 @@ typedef int (* PFN_XSync)(Display*,Bool);
 typedef Bool (* PFN_XTranslateCoordinates)(Display*,Window,Window,int,int,int*,int*,Window*);
 typedef int (* PFN_XUndefineCursor)(Display*,Window);
 typedef int (* PFN_XUngrabPointer)(Display*,Time);
+typedef int (* PFN_XUnionRectWithRegion)(XRectangle*,Region,Region);
 typedef int (* PFN_XUnmapWindow)(Display*,Window);
 typedef void (* PFN_XUnsetICFocus)(XIC);
 typedef VisualID (* PFN_XVisualIDFromVisual)(Visual*);
@@ -161,11 +164,13 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XCreateColormap _glfw.x11.xlib.CreateColormap
 #define XCreateFontCursor _glfw.x11.xlib.CreateFontCursor
 #define XCreateIC _glfw.x11.xlib.CreateIC
+#define XCreateRegion _glfw.x11.xlib.CreateRegion
 #define XCreateWindow _glfw.x11.xlib.CreateWindow
 #define XDefineCursor _glfw.x11.xlib.DefineCursor
 #define XDeleteContext _glfw.x11.xlib.DeleteContext
 #define XDeleteProperty _glfw.x11.xlib.DeleteProperty
 #define XDestroyIC _glfw.x11.xlib.DestroyIC
+#define XDestroyRegion _glfw.x11.xlib.DestroyRegion
 #define XDestroyWindow _glfw.x11.xlib.DestroyWindow
 #define XDisplayKeycodes _glfw.x11.xlib.DisplayKeycodes
 #define XEventsQueued _glfw.x11.xlib.EventsQueued
@@ -227,6 +232,7 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XTranslateCoordinates _glfw.x11.xlib.TranslateCoordinates
 #define XUndefineCursor _glfw.x11.xlib.UndefineCursor
 #define XUngrabPointer _glfw.x11.xlib.UngrabPointer
+#define XUnionRectWithRegion _glfw.x11.xlib.UnionRectWithRegion
 #define XUnmapWindow _glfw.x11.xlib.UnmapWindow
 #define XUnsetICFocus _glfw.x11.xlib.UnsetICFocus
 #define XVisualIDFromVisual _glfw.x11.xlib.VisualIDFromVisual
@@ -330,6 +336,13 @@ typedef XRenderPictFormat* (* PFN_XRenderFindVisualFormat)(Display*,Visual const
 #define XRenderQueryExtension _glfw.x11.xrender.QueryExtension
 #define XRenderQueryVersion _glfw.x11.xrender.QueryVersion
 #define XRenderFindVisualFormat _glfw.x11.xrender.FindVisualFormat
+
+typedef Bool (* PFN_XShapeQueryExtension)(Display*,int*,int*);
+typedef Status (* PFN_XShapeQueryVersion)(Display*dpy,int*,int*);
+typedef void (* PFN_XShapeCombineRegion)(Display*,Window,int,int,int,Region,int);
+#define XShapeQueryExtension _glfw.x11.xshape.QueryExtension
+#define XShapeQueryVersion _glfw.x11.xshape.QueryVersion
+#define XShapeCombineRegion _glfw.x11.xshape.ShapeCombineRegion
 
 typedef VkFlags VkXlibSurfaceCreateFlagsKHR;
 typedef VkFlags VkXcbSurfaceCreateFlagsKHR;
@@ -515,11 +528,13 @@ typedef struct _GLFWlibraryX11
         PFN_XCreateColormap CreateColormap;
         PFN_XCreateFontCursor CreateFontCursor;
         PFN_XCreateIC CreateIC;
+        PFN_XCreateRegion CreateRegion;
         PFN_XCreateWindow CreateWindow;
         PFN_XDefineCursor DefineCursor;
         PFN_XDeleteContext DeleteContext;
         PFN_XDeleteProperty DeleteProperty;
         PFN_XDestroyIC DestroyIC;
+        PFN_XDestroyRegion DestroyRegion;
         PFN_XDestroyWindow DestroyWindow;
         PFN_XDisplayKeycodes DisplayKeycodes;
         PFN_XEventsQueued EventsQueued;
@@ -581,6 +596,7 @@ typedef struct _GLFWlibraryX11
         PFN_XTranslateCoordinates TranslateCoordinates;
         PFN_XUndefineCursor UndefineCursor;
         PFN_XUngrabPointer UngrabPointer;
+        PFN_XUnionRectWithRegion UnionRectWithRegion;
         PFN_XUnmapWindow UnmapWindow;
         PFN_XUnsetICFocus UnsetICFocus;
         PFN_XVisualIDFromVisual VisualIDFromVisual;
@@ -719,6 +735,18 @@ typedef struct _GLFWlibraryX11
         PFN_XRenderQueryVersion QueryVersion;
         PFN_XRenderFindVisualFormat FindVisualFormat;
     } xrender;
+
+    struct {
+        GLFWbool    available;
+        void*       handle;
+        int         major;
+        int         minor;
+        int         eventBase;
+        int         errorBase;
+        PFN_XShapeQueryExtension QueryExtension;
+        PFN_XShapeCombineRegion ShapeCombineRegion;
+        PFN_XShapeQueryVersion QueryVersion;
+    } xshape;
 
 } _GLFWlibraryX11;
 

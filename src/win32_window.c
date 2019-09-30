@@ -1201,6 +1201,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             DragFinish(drop);
             return 0;
         }
+
+        case WM_NCHITTEST:
+        {
+            if (window->mousePassthrough)
+                return HTTRANSPARENT;
+            break;
+        }
     }
 
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
@@ -1852,6 +1859,11 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
     const HWND after = enabled ? HWND_TOPMOST : HWND_NOTOPMOST;
     SetWindowPos(window->win32.handle, after, 0, 0, 0, 0,
                  SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
+}
+
+void _glfwPlatformSetWindowMousePassthrough(_GLFWwindow* window, GLFWbool enabled)
+{
+    window->mousePassthrough = enabled;
 }
 
 float _glfwPlatformGetWindowOpacity(_GLFWwindow* window)

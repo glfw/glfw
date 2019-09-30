@@ -895,6 +895,13 @@ extern "C" {
  */
 #define GLFW_FOCUS_ON_SHOW          0x0002000C
 
+/*! @brief Forward mouse input to window behind.
+ *
+ *  Mouse input forwarding[window hint](@ref GLFW_MOUSE_PASSTHROUGH_hint) or
+ *  [window attribute](@ref GLFW_MOUSE_PASSTHROUGH_attrib).
+ */
+#define GLFW_MOUSE_PASSTHROUGH      0x0002000D
+
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_RED_BITS).
@@ -3656,6 +3663,7 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* window, int attrib);
  *  [GLFW_FLOATING](@ref GLFW_FLOATING_attrib),
  *  [GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib) and
  *  [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_attrib).
+ *  [GLFW_MOUSE_PASSTHROUGH](@ref GLFW_MOUSE_PASSTHROUGH_attrib)
  *
  *  Some of these attributes are ignored for full screen windows.  The new
  *  value will take effect if the window is later made windowed.

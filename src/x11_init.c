@@ -707,6 +707,33 @@ static GLFWbool initExtensions(void)
         }
     }
 
+#if defined(__CYGWIN__)
+    _glfw.x11.xshape.handle = _glfw_dlopen("libXext-6.so");
+#else
+    _glfw.x11.xshape.handle = _glfw_dlopen("libXext.so.6");
+#endif
+    if (_glfw.x11.xshape.handle)
+    {
+        _glfw.x11.xshape.QueryExtension = (PFN_XShapeQueryExtension)
+            _glfw_dlsym(_glfw.x11.xshape.handle, "XShapeQueryExtension");
+        _glfw.x11.xshape.ShapeCombineRegion = (PFN_XShapeCombineRegion)
+            _glfw_dlsym(_glfw.x11.xshape.handle, "XShapeCombineRegion");
+        _glfw.x11.xshape.QueryVersion = (PFN_XShapeQueryVersion)
+            _glfw_dlsym(_glfw.x11.xshape.handle, "XShapeQueryVersion");
+
+        if (XShapeQueryExtension(_glfw.x11.display,
+            &_glfw.x11.xshape.errorBase,
+            &_glfw.x11.xshape.eventBase))
+        {
+            if (XShapeQueryVersion(_glfw.x11.display,
+                &_glfw.x11.xshape.major,
+                &_glfw.x11.xshape.minor))
+            {
+                _glfw.x11.xshape.available = GLFW_TRUE;
+            }
+        }
+    }
+
     // Update the key code LUT
     // FIXME: We should listen to XkbMapNotify events to track changes to
     // the keyboard mapping.

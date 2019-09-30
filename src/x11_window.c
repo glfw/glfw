@@ -2630,6 +2630,32 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
     XFlush(_glfw.x11.display);
 }
 
+void _glfwPlatformSetWindowMousePassthru(_GLFWwindow* window, GLFWbool enabled)
+{
+    if (!_glfw.x11.xshape.available)
+        return;
+
+    if (enabled == window->mousePassthru)
+        return;
+
+    int width = 0;
+    int height = 0;
+    if (!enabled)
+        _glfwPlatformGetWindowSize(window, &width, &height);
+
+    XRectangle rect;
+    rect.x = 0;
+    rect.y = 0;
+    rect.width = (unsigned short)width;
+    rect.height = (unsigned short)height;
+
+    Region region = XCreateRegion();
+    XUnionRectWithRegion(&rect, region, region);
+    XShapeCombineRegion(_glfw.x11.display, window->x11.handle, 2/*ShapeInput*/, 0, 0, region, 0/*ShapeSet*/);
+    XDestroyRegion(region);
+    window->mousePassthru = enabled;
+}
+
 float _glfwPlatformGetWindowOpacity(_GLFWwindow* window)
 {
     float opacity = 1.f;

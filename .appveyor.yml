@@ -1,3 +1,6 @@
+image:
+    - Visual Studio 2015
+    - Visual Studio 2019
 branches:
     only:
         - ci
@@ -5,17 +8,50 @@ branches:
         - 3.3-stable
 skip_tags: true
 environment:
-    CFLAGS: /WX
     matrix:
-        - BUILD_SHARED_LIBS: ON
-        - BUILD_SHARED_LIBS: OFF
+        - GENERATOR: MinGW Makefiles
+          BUILD_SHARED_LIBS: ON
+          CFLAGS: -Werror
+        - GENERATOR: MinGW Makefiles
+          BUILD_SHARED_LIBS: OFF
+          CFLAGS: -Werror
+        - GENERATOR: Visual Studio 10 2010
+          BUILD_SHARED_LIBS: ON
+          CFLAGS: /WX
+        - GENERATOR: Visual Studio 10 2010
+          BUILD_SHARED_LIBS: OFF
+          CFLAGS: /WX
+        - GENERATOR: Visual Studio 16 2019
+          BUILD_SHARED_LIBS: ON
+          CFLAGS: /WX
+        - GENERATOR: Visual Studio 16 2019
+          BUILD_SHARED_LIBS: OFF
+          CFLAGS: /WX
 matrix:
     fast_finish: true
-build_script:
-    - mkdir build
-    - cd build
-    - cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% ..
-    - cmake --build .
+    exclude:
+        - image: Visual Studio 2015
+          GENERATOR: Visual Studio 16 2019
+        - image: Visual Studio 2019
+          GENERATOR: Visual Studio 10 2010
+        - image: Visual Studio 2019
+          GENERATOR: MinGW Makefiles
+for:
+-
+    matrix:
+        except:
+            - GENERATOR: Visual Studio 10 2010
+    build_script:
+        - set PATH=%PATH:C:\Program Files\Git\usr\bin=C:\MinGW\bin%
+        - cmake -S . -B build -G "%GENERATOR%" -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS%
+        - cmake --build build
+-
+    matrix:
+        only:
+            - GENERATOR: Visual Studio 10 2010
+    build_script:
+        - cmake -S . -B build -G "%GENERATOR%" -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS%
+        - cmake --build build --target glfw
 notifications:
     - provider: Email
       to:

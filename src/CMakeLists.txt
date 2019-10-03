@@ -125,6 +125,10 @@ target_compile_options(glfw PRIVATE
 if (BUILD_SHARED_LIBS)
     if (WIN32)
         if (MINGW)
+            # Remove the dependency on the shared version of libgcc
+            # NOTE: MinGW-w64 has the correct default but MinGW needs this
+            target_link_options(glfw PRIVATE "-static-libgcc")
+
             # Remove the lib prefix on the DLL (but not the import library)
             set_target_properties(glfw PROPERTIES PREFIX "")
 

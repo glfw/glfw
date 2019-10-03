@@ -849,6 +849,8 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         [window->ns.object setBackgroundColor:[NSColor clearColor]];
     }
 
+    [window->ns.view setWantsLayer:YES];
+    window->ns.layer = [window->ns.view layer];
     [window->ns.object setContentView:window->ns.view];
     [window->ns.object makeFirstResponder:window->ns.view];
     [window->ns.object setTitle:@(wndconfig->title)];

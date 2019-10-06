@@ -83,3 +83,17 @@ tests/title
 tests/triangle-vulkan
 tests/windows
 
+# ------
+# custom
+# ------
+
+# directories
+.vs/
+bin/
+bin-int/
+
+# file
+*.user
+
+# temporary excludes (clang-tidy and clang-format, used by the clang power tools)
+.clang-*

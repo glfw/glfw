@@ -81,6 +81,16 @@ matrix:
           env:
               - BUILD_SHARED_LIBS=OFF
               - CFLAGS=-Werror
+
+install:
+    # Travis CI macOS image ships with CMake 3.11.3, need 3.12 or later.
+    # Avoid `brew`, takes too long.
+    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+          virtualenv venv
+          source venv/bin/activate
+          pip install cmake
+      fi
+
 script:
     - if grep -Inr '\s$' src include docs tests examples CMake *.md .gitattributes .gitignore; then
           echo Trailing whitespace found, aborting;

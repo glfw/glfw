@@ -1,12 +1,8 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.12)
 
 project(GLFW VERSION 3.4.0 LANGUAGES C)
 
 set(CMAKE_LEGACY_CYGWIN_WIN32 OFF)
-
-if (POLICY CMP0054)
-    cmake_policy(SET CMP0054 NEW)
-endif()
 
 if (POLICY CMP0077)
     cmake_policy(SET CMP0077 NEW)

@@ -92,7 +92,19 @@ if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
         COMPILE_FLAGS -Wdeclaration-after-statement)
 endif()
 
-add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
+add_library(glfw-objects OBJECT ${glfw_SOURCES} ${glfw_HEADERS})
+add_library(glfw "")
+target_link_libraries(glfw PUBLIC glfw-objects)
+
+# XCode bug: need at least one "real" source file.  See:
+# https://cmake.org/Bug/view.php?id=14044
+# https://cmake.org/cmake/help/latest/command/add_library.html#object-libraries
+if (XCODE)
+    set(glfw_xcode_dummy "${CMAKE_CURRENT_BINARY_DIR}/xcode_dummy.c")
+    file(WRITE ${glfw_xcode_dummy} "")
+    target_sources(glfw PRIVATE ${glfw_xcode_dummy})
+endif()
+
 set_target_properties(glfw PROPERTIES
                       OUTPUT_NAME ${GLFW_LIB_NAME}
                       VERSION ${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}
@@ -100,11 +112,11 @@ set_target_properties(glfw PROPERTIES
                       POSITION_INDEPENDENT_CODE ON
                       FOLDER "GLFW3")
 
-target_compile_definitions(glfw PRIVATE _GLFW_USE_CONFIG_H)
-target_include_directories(glfw PUBLIC
+target_compile_definitions(glfw-objects PRIVATE _GLFW_USE_CONFIG_H)
+target_include_directories(glfw-objects PUBLIC
                            "$<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>"
                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
-target_include_directories(glfw PRIVATE
+target_include_directories(glfw-objects PRIVATE
                            "${GLFW_SOURCE_DIR}/src"
                            "${GLFW_BINARY_DIR}/src"
                            ${glfw_INCLUDE_DIRS})
@@ -113,11 +125,11 @@ target_include_directories(glfw PRIVATE
 # the inclusion of stddef.h (by glfw3.h), which is itself included before
 # win32_platform.h.  We define them here until a saner solution can be found
 # NOTE: MinGW-w64 and Visual C++ do /not/ need this hack.
-target_compile_definitions(glfw PRIVATE
+target_compile_definitions(glfw-objects PRIVATE
                            "$<$<BOOL:${MINGW}>:UNICODE;WINVER=0x0501>")
 
 # Enable a reasonable set of warnings (no, -Wextra is not reasonable)
-target_compile_options(glfw PRIVATE
+target_compile_options(glfw-objects PRIVATE
                        "$<$<C_COMPILER_ID:AppleClang>:-Wall>"
                        "$<$<C_COMPILER_ID:Clang>:-Wall>"
                        "$<$<C_COMPILER_ID:GNU>:-Wall>")
@@ -139,19 +151,23 @@ if (BUILD_SHARED_LIBS)
             set_target_properties(glfw PROPERTIES IMPORT_SUFFIX "dll.lib")
         endif()
 
-	target_compile_definitions(glfw INTERFACE GLFW_DLL)
+        target_compile_definitions(glfw-objects INTERFACE GLFW_DLL)
     elseif (APPLE)
         # Add -fno-common to work around a bug in Apple's GCC
-        target_compile_options(glfw PRIVATE "-fno-common")
+        target_compile_options(glfw-objects PRIVATE "-fno-common")
 
         set_target_properties(glfw PROPERTIES
                               INSTALL_NAME_DIR "${CMAKE_INSTALL_LIBDIR}")
     endif()
 
-    if (UNIX)
-        # Hide symbols not explicitly tagged for export from the shared library
-        target_compile_options(glfw PRIVATE "-fvisibility=hidden")
-    endif()
+    # Hide symbols not explicitly tagged for export from the shared library.
+    # Results in e.g., -fvisibility=hidden for gcc/clang.  Requires PIC code.
+    set_target_properties(glfw-objects glfw
+        PROPERTIES
+            C_VISIBILITY_PRESET "hidden"
+            VISIBILITY_INLINES_HIDDEN ON
+            POSITION_INDEPENDENT_CODE ON
+    )
 
     target_link_libraries(glfw PRIVATE ${glfw_LIBRARIES})
 else()
@@ -159,11 +175,11 @@ else()
 endif()
 
 if (MSVC)
-    target_compile_definitions(glfw PRIVATE _CRT_SECURE_NO_WARNINGS)
+    target_compile_definitions(glfw-objects PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
 
 if (GLFW_INSTALL)
-    install(TARGETS glfw
+    install(TARGETS glfw glfw-objects
             EXPORT glfwTargets
             RUNTIME DESTINATION "bin"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"

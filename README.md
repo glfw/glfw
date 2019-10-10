@@ -284,6 +284,7 @@ skills.
  - Nathan Poirier
  - Alexandre Pretyman
  - przemekmirek
+ - Guillaume Racicot
  - Philip Rideout
  - Eddie Ringle
  - Max Risuhin

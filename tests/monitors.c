@@ -109,13 +109,13 @@ static void list_modes(GLFWmonitor* monitor)
            glfwGetMonitorName(monitor),
            glfwGetPrimaryMonitor() == monitor ? "primary" : "secondary");
     printf("Current mode: %s\n", format_mode(mode));
-    printf("Virtual position: %i %i\n", x, y);
-    printf("Content scale: %f %f\n", xscale, yscale);
+    printf("Virtual position: %i, %i\n", x, y);
+    printf("Content scale: %f x %f\n", xscale, yscale);
 
-    printf("Physical size: %i x %i mm (%0.2f dpi)\n",
-           width_mm, height_mm, mode->width * 25.4f / width_mm);
-    printf("Monitor work area: pos=(%d,%d)  size=(%dx%d)\n",
-            workarea_x, workarea_y, workarea_width, workarea_height);
+    printf("Physical size: %i x %i mm (%0.2f dpi at %i x %i)\n",
+           width_mm, height_mm, mode->width * 25.4f / width_mm, mode->width, mode->height);
+    printf("Monitor work area: %i x %i starting at %i, %i\n",
+            workarea_width, workarea_height, workarea_x, workarea_y);
 
     printf("Modes:\n");
 

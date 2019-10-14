@@ -625,5 +625,5 @@ const char* _glfwPlatformGetVersionString(void)
 
 const char* const* glfwGetCocoaOpenedFilenames(void)
 {
-    return _glfw.ns.openedFilenames;
+    return (const char* const*) _glfw.ns.openedFilenames;
 }

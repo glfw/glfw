@@ -623,7 +623,7 @@ const char* _glfwPlatformGetVersionString(void)
 //////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-const char* const* glfwGetCocoaOpenedFilenames(void)
+const char* const* glfwGetOpenedFilenames(void)
 {
     return (const char* const*) _glfw.ns.openedFilenames;
 }

@@ -228,7 +228,7 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow* window);
  *
  *  @ingroup native
  */
-const char* const* glfwGetCocoaOpenedFilenames(void);
+const char* const* glfwGetOpenedFilenames(void);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_NSGL)

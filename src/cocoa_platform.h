@@ -148,6 +148,7 @@ typedef struct _GLFWlibraryNS
     double              restoreCursorPosX, restoreCursorPosY;
     // The window whose disabled cursor mode is active
     _GLFWwindow*        disabledCursorWindow;
+    char**              openedFilenames;
 
     struct {
         CFBundleRef     bundle;

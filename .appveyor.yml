@@ -7,6 +7,11 @@ branches:
         - master
         - 3.3-stable
 skip_tags: true
+skip_commits:
+    files:
+        - README.md
+        - LICENSE.md
+        - docs/*
 environment:
     matrix:
         - GENERATOR: MinGW Makefiles

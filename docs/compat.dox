@@ -230,8 +230,7 @@ at most OpenGL version 2.1.
 
 Because of this, on OS X 10.7 and later, the `GLFW_CONTEXT_VERSION_MAJOR` and
 `GLFW_CONTEXT_VERSION_MINOR` hints will cause @ref glfwCreateWindow to fail if
-given version 3.0 or 3.1.  The `GLFW_OPENGL_FORWARD_COMPAT` hint must be set to
-`GLFW_TRUE` and the `GLFW_OPENGL_PROFILE` hint must be set to
+given version 3.0 or 3.1.  The `GLFW_OPENGL_PROFILE` hint must be set to
 `GLFW_OPENGL_CORE_PROFILE` when creating OpenGL 3.2 and later contexts.  The
 `GLFW_OPENGL_DEBUG_CONTEXT` and `GLFW_CONTEXT_NO_ERROR` hints are ignored.
 

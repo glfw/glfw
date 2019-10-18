@@ -383,12 +383,10 @@ Additionally, OpenGL ES 1.x cannot be returned if 2.0 or later was requested,
 and vice versa.  This is because OpenGL ES 3.x is backward compatible with 2.0,
 but OpenGL ES 2.0 is not backward compatible with 1.x.
 
-@note @macos The OS only supports forward-compatible core profile contexts for
-OpenGL versions 3.2 and later.  Before creating an OpenGL context of version
-3.2 or later you must set the
-[GLFW_OPENGL_FORWARD_COMPAT](@ref GLFW_OPENGL_FORWARD_COMPAT_hint) and
-[GLFW_OPENGL_PROFILE](@ref GLFW_OPENGL_PROFILE_hint) hints accordingly.  OpenGL
-3.0 and 3.1 contexts are not supported at all on macOS.
+@note @macos The OS only supports core profile contexts for OpenGL versions 3.2
+and later.  Before creating an OpenGL context of version 3.2 or later you must
+set the [GLFW_OPENGL_PROFILE](@ref GLFW_OPENGL_PROFILE_hint) hint accordingly.
+OpenGL 3.0 and 3.1 contexts are not supported at all on macOS.
 
 @anchor GLFW_OPENGL_FORWARD_COMPAT_hint
 __GLFW_OPENGL_FORWARD_COMPAT__ specifies whether the OpenGL context should be

@@ -133,7 +133,7 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
-
+ - Bugfix: Add CMake < v3.7 compatibility (#1584)
 
 ## Contact
 
@@ -338,6 +338,7 @@ skills.
  - Santi Zupancic
  - Jonas Ådahl
  - Lasse Öörni
+ - Pablo Prietz
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

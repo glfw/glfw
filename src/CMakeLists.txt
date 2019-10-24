@@ -100,10 +100,9 @@ set_target_properties(glfw PROPERTIES
                       POSITION_INDEPENDENT_CODE ON
                       FOLDER "GLFW3")
 
-if (
-    ${CMAKE_VERSION} VERSION_EQUAL "3.1.0" OR
-    ${CMAKE_VERSION} VERSION_GREATER "3.1.0"
-)
+if (${CMAKE_VERSION} VERSION_EQUAL "3.1.0" OR
+    ${CMAKE_VERSION} VERSION_GREATER "3.1.0")
+
     set_target_properties(glfw PROPERTIES C_STANDARD 99)
 else()
     # Remove this fallback when removing support for CMake version less than 3.1

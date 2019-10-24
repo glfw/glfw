@@ -284,6 +284,7 @@ skills.
  - Konstantin Podsvirov
  - Nathan Poirier
  - Alexandre Pretyman
+ - Pablo Prietz
  - przemekmirek
  - Guillaume Racicot
  - Philip Rideout
@@ -339,7 +340,6 @@ skills.
  - Santi Zupancic
  - Jonas Ådahl
  - Lasse Öörni
- - Pablo Prietz
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

@@ -108,8 +108,8 @@ else()
     # Remove this fallback when removing support for CMake version less than 3.1
     target_compile_options(glfw PRIVATE
                            "$<$<C_COMPILER_ID:AppleClang>:-std=c99>"
-                           "$<$<C_COMPILER_ID:Clang>:-std=c99>>"
-                           "$<$<C_COMPILER_ID:GNU>:-std=c99>>")
+                           "$<$<C_COMPILER_ID:Clang>:-std=c99>"
+                           "$<$<C_COMPILER_ID:GNU>:-std=c99>")
 endif()
 
 target_compile_definitions(glfw PRIVATE _GLFW_USE_CONFIG_H)

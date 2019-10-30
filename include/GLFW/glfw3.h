@@ -1613,6 +1613,105 @@ typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
  */
 typedef void (* GLFWjoystickfun)(int,int);
 
+/*! @brief The function pointer type for joystick button callbacks.
+ *
+ *  This is the function pointer type for joystick button callbacks.  A joystick
+ *  button callback function has the following signature:
+ *  @code
+ *  void function_name(int jid, int button, int action)
+ *  @endcode
+ *
+ *  @param[in] jid The joystick that had a button pressed or released.
+ *  @param[in] button The [joystick button](@ref buttons) that was pressed or released.
+ *  @param[in] action `GLFW_PRESS` or `GLFW_RELEASE`.  Future
+ *  releases may add more actions.
+ *
+ *  @sa @ref input_joystick_button
+ *  @sa @ref glfwSetJoystickButonCallback
+ *
+ *  @since Added in version 3.4.
+ *  @ingroup input
+ */
+typedef void (* GLFWjoystickbuttonfun)(int,int,int);
+
+/*! @brief The function pointer type for joystick axis movement callbacks.
+ *
+ *  This is the function pointer type for joystick axis movement callbacks.  A joystick
+ *  axis movement callback function has the following signature:
+ *  @code
+ *  void function_name(int jid, int axis, float position)
+ *  @endcode
+ *
+ *  @param[in] jid The joystick that had an axis moved.
+ *  @param[in] axis The [joystick axis](@ref gamepad axes) that was moved.
+ *  @param[in] position A value between -1.0 and 1.0 that indicates the position of the axis.
+ *
+ *  @sa @ref input_gamepad_axis
+ *  @sa @ref glfwSetJoystickAxisCallback
+ *
+ *  @since Added in version 3.4.
+ *  @ingroup input
+ */
+typedef void (* GLFWjoystickaxisfun)(int,int,float);
+
+/*! @brief The function pointer type for joystick hat movement callbacks.
+ *
+ *  This is the function pointer type for joystick hat movement callbacks.  A joystick
+ *  hat movement callback function has the following signature:
+ *  @code
+ *  void function_name(int jid, int hat, int position)
+ *  @endcode
+ *
+ *  @param[in] jid The joystick that had an axis moved.
+ *  @param[in] hat The [joystick hat](@ref joystick hats) that was moved.
+ *  @param[in] position A value that indicates the position of the hat.
+ *  The position parameter is one of the following values:
+ *
+ *  Name                  | Value
+ *  ----                  | -----
+ *  `GLFW_HAT_CENTERED`   | 0
+ *  `GLFW_HAT_UP`         | 1
+ *  `GLFW_HAT_RIGHT`      | 2
+ *  `GLFW_HAT_DOWN`       | 4
+ *  `GLFW_HAT_LEFT`       | 8
+ *  `GLFW_HAT_RIGHT_UP`   | `GLFW_HAT_RIGHT` \| `GLFW_HAT_UP`
+ *  `GLFW_HAT_RIGHT_DOWN` | `GLFW_HAT_RIGHT` \| `GLFW_HAT_DOWN`
+ *  `GLFW_HAT_LEFT_UP`    | `GLFW_HAT_LEFT` \| `GLFW_HAT_UP`
+ *  `GLFW_HAT_LEFT_DOWN`  | `GLFW_HAT_LEFT` \| `GLFW_HAT_DOWN`
+ *
+ *  The diagonal directions are bitwise combinations of the primary (up, right,
+ *  down and left) directions and you can test for these individually by ANDing
+ *  it with the corresponding direction.
+ *
+ *  @sa @ref input_joystick_hat
+ *  @sa @ref glfwSetJoystickHatCallback
+ *
+ *  @since Added in version 3.4.
+ *  @ingroup input
+ */
+typedef void (* GLFWjoystickhatfun)(int,int,int);
+
+/*! @brief The function pointer type for Unicode character callbacks.
+ *
+ *  This is the function pointer type for Unicode character callbacks.
+ *  A Unicode character callback function has the following signature:
+ *  @code
+ *  void function_name(GLFWwindow* window, unsigned int codepoint)
+ *  @endcode
+ *
+ *  @param[in] window The window that received the event.
+ *  @param[in] codepoint The Unicode code point of the character.
+ *
+ *  @sa @ref input_char
+ *  @sa @ref glfwSetCharCallback
+ *
+ *  @since Added in version 2.4.
+ *  @glfw3 Added window handle parameter.
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
+
 /*! @brief Video mode type.
  *
  *  This describes a single video mode.

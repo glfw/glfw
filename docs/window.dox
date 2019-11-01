@@ -1398,7 +1398,7 @@ glfwSwapBuffers(window);
 
 Sometimes it can be useful to select when the buffer swap will occur.  With the
 function @ref glfwSwapInterval it is possible to select the minimum number of
-monitor refreshes the driver wait should from the time @ref glfwSwapBuffers was
+monitor refreshes the driver should wait from the time @ref glfwSwapBuffers was
 called before swapping the buffers:
 
 @code

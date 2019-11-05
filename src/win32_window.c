@@ -411,7 +411,7 @@ static void updateFramebufferTransparency(const _GLFWwindow* window)
             // issue.  When set to black, something is making the hit test
             // not resize with the window frame.
             SetLayeredWindowAttributes(window->win32.handle,
-                                       RGB(0, 193, 48), 255, LWA_COLORKEY);
+                                       RGB(255, 0, 255), 255, LWA_COLORKEY);
         }
 
         DeleteObject(region);

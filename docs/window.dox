@@ -234,6 +234,13 @@ alpha channel will be used to combine the framebuffer with the background.  This
 does not affect window decorations.  Possible values are `GLFW_TRUE` and
 `GLFW_FALSE`.
 
+@par
+@win32 GLFW sets a color key for the window to work around repainting issues
+with a transparent framebuffer.  The chosen color value is RGB 255,0,255
+(magenta).  This will make pixels with that exact color fully transparent
+regardless of their alpha values.  If this is a problem, make these pixels any
+other color before buffer swap.
+
 @anchor GLFW_FOCUS_ON_SHOW_hint
 __GLFW_FOCUS_ON_SHOW__ specifies whether the window will be given input
 focus when @ref glfwShowWindow is called. Possible values are `GLFW_TRUE` and `GLFW_FALSE`.

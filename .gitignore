@@ -15,6 +15,7 @@ Release
 MinSizeRel
 RelWithDebInfo
 *.xcodeproj
+build
 
 # CMake files
 Makefile

@@ -816,7 +816,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         [window->ns.object setLevel:NSMainMenuWindowLevel + 1];
     else
     {
-        [window->ns.object center];
+        [(NSWindow*) window->ns.object center];
         _glfw.ns.cascadePoint =
             NSPointToCGPoint([window->ns.object cascadeTopLeftFromPoint:
                               NSPointFromCGPoint(_glfw.ns.cascadePoint)]);

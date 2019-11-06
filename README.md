@@ -132,6 +132,8 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: The window hint `GLFW_MAXIMIZED` did not move or resize the
    window (#1499)
  - [Cocoa] Bugfix: `glfwSetWindowSize` used a bottom-left anchor point (#1553)
+ - [Cocoa] Bugfix: Window remained on screen after destruction until event poll
+   (#1412)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)

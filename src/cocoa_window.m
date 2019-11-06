@@ -962,6 +962,9 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     [window->ns.object close];
     window->ns.object = nil;
 
+    // HACK: Allow Cocoa to catch up before returning
+    _glfwPlatformPollEvents();
+
     } // autoreleasepool
 }
 

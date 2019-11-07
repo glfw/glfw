@@ -332,7 +332,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    NSOpenGLContext* share = NULL;
+    NSOpenGLContext* share = nil;
 
     if (ctxconfig->share)
         share = ctxconfig->share->context.nsgl.object;
@@ -405,7 +405,7 @@ GLFWAPI id glfwGetNSGLContext(GLFWwindow* handle)
     if (window->context.client == GLFW_NO_API)
     {
         _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
-        return NULL;
+        return nil;
     }
 
     return window->context.nsgl.object;

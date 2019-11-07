@@ -370,10 +370,15 @@ void _glfwInputDrop(_GLFWwindow* window, int count, const char** paths)
 void _glfwInputGamepad(_GLFWjoystick* js)
 {
     const int jid = (int) (js - _glfw.joysticks);
-    if (glfwJoystickIsGamepad(jid)  && (_glfw.callbacks.gamepad_state)) {
+
+    if (!_glfw.initialized) {
+        return;
+    }
+
+    if ((js->mapping != NULL)  && (_glfw.callbacks.gamepad_state)) {
         GLFWgamepadstate state;
-        if (0 == glfwGetGamepadState(jid, &state)) {
-          _glfw.callbacks.gamepad_state(jid, &state);
+        if (glfwGetGamepadState(jid, &state)) {
+          _glfw.callbacks.gamepad_state(jid, state.buttons, state.axes);
         }
     }
 }
@@ -394,10 +399,11 @@ void _glfwInputJoystickAxis(_GLFWjoystick* js, int axis, float value)
 {
     const int jid = (int) (js - _glfw.joysticks);
 
+    if ((_glfw.callbacks.joystick_axis) && (js->axes[axis] != value))
+        _glfw.callbacks.joystick_axis(jid, axis, value);
+
     js->axes[axis] = value;
 
-    if (_glfw.callbacks.joystick_axis)
-        _glfw.callbacks.joystick_axis(jid, axis, value);
     _glfwInputGamepad(js);
 }
 
@@ -493,6 +499,17 @@ void _glfwCenterCursorInContentArea(_GLFWwindow* window)
 
     _glfwPlatformGetWindowSize(window, &width, &height);
     _glfwPlatformSetCursorPos(window, width / 2.0, height / 2.0);
+}
+
+void _glfwPollAllJoysticks() {
+    int jid;
+
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    {
+        if (_glfw.joysticks[jid].present == GLFW_TRUE) {
+          _glfwPlatformPollJoystick(_glfw.joysticks + jid, _GLFW_POLL_ALL);
+        }
+    }
 }
 
 

@@ -494,6 +494,52 @@ static void joystick_callback(int jid, int event)
     }
 }
 
+static void joystick_button_callback(int jid, int button, int state) {
+    printf("%08x at %0.3f: Joystick %i (%s) button %d state %d\n",
+               counter++, glfwGetTime(),
+               jid,
+               glfwGetJoystickName(jid),
+               button,
+               state);
+}
+
+static void joystick_axis_callback(int jid, int axis, float value) {
+    printf("%08x at %0.3f: Joystick %i (%s) axis %d value %0.4f\n",
+               counter++, glfwGetTime(), jid,
+               glfwGetJoystickName(jid),
+               axis,
+               value);
+}
+
+static void joystick_hat_callback(int jid, int hat, int value) {
+    printf("%08x at %0.3f: Joystick %i (%s) hat %d value %d\n",
+               counter++, glfwGetTime(),
+               jid,
+               glfwGetJoystickName(jid),
+               hat,
+               value);
+}
+
+static void gamepad_state_callback(int jid, unsigned char buttons[15], float axes[6]) {
+    int i = 0;
+    printf("%08x at %0.3f: Gamepad %i (%s) state:",
+               counter++, glfwGetTime(),
+               jid,
+               glfwGetJoystickName(jid));
+
+    printf("Buttons: ");
+    for (i= 0 ; i < 15; i++) {
+      printf(" %d:%d", i, buttons[i]);
+    }
+    printf("Axes: ");
+    for (i= 0 ; i < 6; i++) {
+      printf(" %d:%0.4f", i, axes[i]);
+    }
+    printf("\n");
+
+}
+
+
 int main(int argc, char** argv)
 {
     Slot* slots;
@@ -511,6 +557,10 @@ int main(int argc, char** argv)
 
     glfwSetMonitorCallback(monitor_callback);
     glfwSetJoystickCallback(joystick_callback);
+    glfwSetJoystickAxisCallback(joystick_axis_callback);
+    glfwSetJoystickButtonCallback(joystick_button_callback);
+    glfwSetJoystickHatCallback(joystick_hat_callback);
+    glfwSetGamepadStateCallback(gamepad_state_callback);
 
     while ((ch = getopt(argc, argv, "hfn:")) != -1)
     {

@@ -1168,17 +1168,6 @@ typedef struct GLFWwindow GLFWwindow;
  */
 typedef struct GLFWcursor GLFWcursor;
 
-/*! @brief Gamepad state object.
- *
- *  Gamepad state object, predeclared here.
- *
- *  @since Added in version 3.4.
- *
- *  @ingroup input
- */
-typedef struct GLFWgamepadstate GLFWgamepadstate;
-
-
 /*! @brief The function pointer type for error callbacks.
  *
  *  This is the function pointer type for error callbacks.  An error callback
@@ -1711,7 +1700,11 @@ typedef void (* GLFWjoystickhatfun)(int,int,int);
  *  @endcode
  *
  *  @param[in] jid The ID of the game pad that changed state.
- *  @param[in] state The updated state of the game pad.
+ *  @param[in] buttons The states of each
+ *             [gamepad button](@ref gamepad_buttons),
+ *             `GLFW_PRESS` or `GLFW_RELEASE`.
+ *  @param[in] axes The states of each [gamepad axis](@ref gamepad_axes),
+ *                  in the range -1.0 to 1.0 inclusive.
  *
  *  @sa @ref input_gamepad
  *  @sa @ref glfwSetGamepadStateCallback
@@ -1719,7 +1712,8 @@ typedef void (* GLFWjoystickhatfun)(int,int,int);
  *  @since Added in version 3.4.
  *  @ingroup input
  */
-typedef void (* GLFWgamepadstatefun)(int,GLFWgamepadstate*);
+typedef void (* GLFWgamepadstatefun)(int, unsigned char buttons[15],
+                                          float axes[6]);
 
 
 /*! @brief The function pointer type for Unicode character callbacks.
@@ -5385,7 +5379,7 @@ GLFWAPI GLFWjoystickhatfun glfwSetJoystickHatCallback(GLFWjoystickhatfun callbac
  *
  *  @callback_signature
  *  @code
- *  void function_name(int jid, GLFWgamepadstate* state)
+ *  void function_name(int jid, unsigned char buttons[15], float axes[6])
  *  @endcode
  *  For more information about the callback parameters, see the
  *  [function pointer type](@ref GLFWgamepadstatefun).

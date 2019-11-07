@@ -1714,29 +1714,6 @@ typedef void (* GLFWjoystickhatfun)(int,int,int);
  */
 typedef void (* GLFWgamepadstatefun)(int, unsigned char buttons[15],
                                           float axes[6]);
-
-
-/*! @brief The function pointer type for Unicode character callbacks.
- *
- *  This is the function pointer type for Unicode character callbacks.
- *  A Unicode character callback function has the following signature:
- *  @code
- *  void function_name(GLFWwindow* window, unsigned int codepoint)
- *  @endcode
- *
- *  @param[in] window The window that received the event.
- *  @param[in] codepoint The Unicode code point of the character.
- *
- *  @sa @ref input_char
- *  @sa @ref glfwSetCharCallback
- *
- *  @since Added in version 2.4.
- *  @glfw3 Added window handle parameter.
- *
- *  @ingroup input
- */
-typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
-
 /*! @brief Video mode type.
  *
  *  This describes a single video mode.

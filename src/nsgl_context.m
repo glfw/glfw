@@ -28,30 +28,6 @@
 
 #include "internal.h"
 
-// Display link callback for manual swap interval implementation
-// This is based on a similar workaround added to SDL2
-//
-static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
-                                    const CVTimeStamp* now,
-                                    const CVTimeStamp* outputTime,
-                                    CVOptionFlags flagsIn,
-                                    CVOptionFlags* flagsOut,
-                                    void* userInfo)
-{
-    _GLFWwindow* window = (_GLFWwindow *) userInfo;
-
-    const int interval = atomic_load(&window->context.nsgl.swapInterval);
-    if (interval > 0)
-    {
-        [window->context.nsgl.swapIntervalCond lock];
-        window->context.nsgl.swapIntervalsPassed++;
-        [window->context.nsgl.swapIntervalCond signal];
-        [window->context.nsgl.swapIntervalCond unlock];
-    }
-
-    return kCVReturnSuccess;
-}
-
 static void makeContextCurrentNSGL(_GLFWwindow* window)
 {
     @autoreleasepool {
@@ -69,33 +45,21 @@ static void makeContextCurrentNSGL(_GLFWwindow* window)
 static void swapBuffersNSGL(_GLFWwindow* window)
 {
     @autoreleasepool {
-
-    const int interval = atomic_load(&window->context.nsgl.swapInterval);
-    if (interval > 0)
-    {
-        [window->context.nsgl.swapIntervalCond lock];
-        do
-        {
-            [window->context.nsgl.swapIntervalCond wait];
-        } while (window->context.nsgl.swapIntervalsPassed % interval != 0);
-        window->context.nsgl.swapIntervalsPassed = 0;
-        [window->context.nsgl.swapIntervalCond unlock];
-    }
-
-    // ARP appears to be unnecessary, but this is future-proof
     [window->context.nsgl.object flushBuffer];
-
     } // autoreleasepool
 }
 
 static void swapIntervalNSGL(int interval)
 {
     @autoreleasepool {
-    _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
-    atomic_store(&window->context.nsgl.swapInterval, interval);
-    [window->context.nsgl.swapIntervalCond lock];
-    window->context.nsgl.swapIntervalsPassed = 0;
-    [window->context.nsgl.swapIntervalCond unlock];
+
+    NSOpenGLContext* context = [NSOpenGLContext currentContext];
+    if (context)
+    {
+        [context setValues:&interval
+              forParameter:NSOpenGLContextParameterSwapInterval];
+    }
+
     } // autoreleasepool
 }
 
@@ -122,17 +86,6 @@ static GLFWglproc getProcAddressNSGL(const char* procname)
 static void destroyContextNSGL(_GLFWwindow* window)
 {
     @autoreleasepool {
-
-    if (window->context.nsgl.displayLink)
-    {
-        if (CVDisplayLinkIsRunning(window->context.nsgl.displayLink))
-            CVDisplayLinkStop(window->context.nsgl.displayLink);
-
-        CVDisplayLinkRelease(window->context.nsgl.displayLink);
-    }
-
-    [window->context.nsgl.swapIntervalCond release];
-    window->context.nsgl.swapIntervalCond = nil;
 
     [window->context.nsgl.pixelFormat release];
     window->context.nsgl.pixelFormat = nil;
@@ -356,13 +309,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
 
     [window->ns.view setWantsBestResolutionOpenGLSurface:window->ns.retina];
 
-    GLint interval = 0;
-    [window->context.nsgl.object setValues:&interval
-                              forParameter:NSOpenGLContextParameterSwapInterval];
-
     [window->context.nsgl.object setView:window->ns.view];
-
-    window->context.nsgl.swapIntervalCond = [NSCondition new];
 
     window->context.makeCurrent = makeContextCurrentNSGL;
     window->context.swapBuffers = swapBuffersNSGL;
@@ -371,24 +318,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     window->context.getProcAddress = getProcAddressNSGL;
     window->context.destroy = destroyContextNSGL;
 
-    CVDisplayLinkCreateWithActiveCGDisplays(&window->context.nsgl.displayLink);
-    CVDisplayLinkSetOutputCallback(window->context.nsgl.displayLink,
-                                   &displayLinkCallback,
-                                   window);
-    CVDisplayLinkStart(window->context.nsgl.displayLink);
-
-    _glfwUpdateDisplayLinkDisplayNSGL(window);
     return GLFW_TRUE;
-}
-
-void _glfwUpdateDisplayLinkDisplayNSGL(_GLFWwindow* window)
-{
-    CGDirectDisplayID displayID =
-        [[[window->ns.object screen] deviceDescription][@"NSScreenNumber"] unsignedIntValue];
-    if (!displayID)
-        return;
-
-    CVDisplayLinkSetCurrentCGDisplay(window->context.nsgl.displayLink, displayID);
 }
 
 

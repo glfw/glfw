@@ -28,6 +28,9 @@
 
 #include "internal.h"
 
+#include <unistd.h>
+#include <math.h>
+
 static void makeContextCurrentNSGL(_GLFWwindow* window)
 {
     @autoreleasepool {
@@ -45,7 +48,31 @@ static void makeContextCurrentNSGL(_GLFWwindow* window)
 static void swapBuffersNSGL(_GLFWwindow* window)
 {
     @autoreleasepool {
+
+    // HACK: Simulate vsync with usleep as NSGL swap interval does not apply to
+    //       windows with a non-visible occlusion state
+    if (!([window->ns.object occlusionState] & NSWindowOcclusionStateVisible))
+    {
+        int interval = 0;
+        [window->context.nsgl.object getValues:&interval
+                                  forParameter:NSOpenGLContextParameterSwapInterval];
+
+        if (interval > 0)
+        {
+            const double framerate = 60.0;
+            const uint64_t frequency = _glfwPlatformGetTimerFrequency();
+            const uint64_t value = _glfwPlatformGetTimerValue();
+
+            const double elapsed = value / (double) frequency;
+            const double period = 1.0 / framerate;
+            const double delay = period - fmod(elapsed, period);
+
+            usleep(floorl(delay * 1e6));
+        }
+    }
+
     [window->context.nsgl.object flushBuffer];
+
     } // autoreleasepool
 }
 
@@ -53,11 +80,11 @@ static void swapIntervalNSGL(int interval)
 {
     @autoreleasepool {
 
-    NSOpenGLContext* context = [NSOpenGLContext currentContext];
-    if (context)
+    _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
+    if (window)
     {
-        [context setValues:&interval
-              forParameter:NSOpenGLContextParameterSwapInterval];
+        [window->context.nsgl.object setValues:&interval
+                                  forParameter:NSOpenGLContextParameterSwapInterval];
     }
 
     } // autoreleasepool

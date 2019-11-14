@@ -1,7 +1,8 @@
-# External junk
-.DS_Store
+# The canonical out-of-tree build subdirectory
+build
+
+# Visual Studio clutter
 _ReSharper*
-*.opensdf
 *.sdf
 *.suo
 *.dir
@@ -15,10 +16,15 @@ Release
 MinSizeRel
 RelWithDebInfo
 *.xcodeproj
-build
+*.opensdf
 
-# CMake files
+# macOS clutter
+.DS_Store
+
+# Makefile generator clutter
 Makefile
+
+# CMake clutter
 CMakeCache.txt
 CMakeFiles
 CMakeScripts

@@ -24,10 +24,18 @@ RelWithDebInfo
 # Makefile generator clutter
 Makefile
 
+# Ninja generator clutter
+build.ninja
+rules.ninja
+.ninja_deps
+.ninja_log
+
 # CMake clutter
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
+CMakeDoxyfile.in
+CMakeDoxygenDefaults.cmake
 cmake_install.cmake
 cmake_uninstall.cmake
 

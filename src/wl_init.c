@@ -169,6 +169,7 @@ static void setCursor(_GLFWwindow* window, const char* name)
     wl_surface_damage(surface, 0, 0,
                       image->width, image->height);
     wl_surface_commit(surface);
+    _glfw.wl.cursorPreviousName = name;
 }
 
 static void pointerHandleMotion(void* data,
@@ -178,7 +179,7 @@ static void pointerHandleMotion(void* data,
                                 wl_fixed_t sy)
 {
     _GLFWwindow* window = _glfw.wl.pointerFocus;
-    const char* cursorName;
+    const char* cursorName = NULL;
 
     if (!window)
         return;
@@ -227,7 +228,8 @@ static void pointerHandleMotion(void* data,
         default:
             assert(0);
     }
-    setCursor(window, cursorName);
+    if (_glfw.wl.cursorPreviousName != cursorName)
+        setCursor(window, cursorName);
 }
 
 static void pointerHandleButton(void* data,

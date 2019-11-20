@@ -80,7 +80,6 @@ if (APPLE)
     set_target_properties(wave PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Wave")
 
     set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES
-                          RESOURCE glfw.icns
                           MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}
                           MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION}
                           MACOSX_BUNDLE_ICON_FILE glfw.icns

@@ -47,37 +47,6 @@ static int translateKeyCode(int scancode)
     if (scancode < 8 || scancode > 255)
         return GLFW_KEY_UNKNOWN;
 
-    if (_glfw.x11.xkb.available)
-    {
-        // Try secondary keysym, for numeric keypad keys
-        // Note: This way we always force "NumLock = ON", which is intentional
-        // since the returned key code should correspond to a physical
-        // location.
-        keySym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, _glfw.x11.xkb.group, 1);
-        switch (keySym)
-        {
-            case XK_KP_0:           return GLFW_KEY_KP_0;
-            case XK_KP_1:           return GLFW_KEY_KP_1;
-            case XK_KP_2:           return GLFW_KEY_KP_2;
-            case XK_KP_3:           return GLFW_KEY_KP_3;
-            case XK_KP_4:           return GLFW_KEY_KP_4;
-            case XK_KP_5:           return GLFW_KEY_KP_5;
-            case XK_KP_6:           return GLFW_KEY_KP_6;
-            case XK_KP_7:           return GLFW_KEY_KP_7;
-            case XK_KP_8:           return GLFW_KEY_KP_8;
-            case XK_KP_9:           return GLFW_KEY_KP_9;
-            case XK_KP_Separator:
-            case XK_KP_Decimal:     return GLFW_KEY_KP_DECIMAL;
-            case XK_KP_Equal:       return GLFW_KEY_KP_EQUAL;
-            case XK_KP_Enter:       return GLFW_KEY_KP_ENTER;
-            default:                break;
-        }
-
-        // Now try primary keysym for function keys (non-printable keys)
-        // These should not depend on the current keyboard layout
-        keySym = XkbKeycodeToKeysym(_glfw.x11.display, scancode, _glfw.x11.xkb.group, 0);
-    }
-    else
     {
         int dummy;
         KeySym* keySyms;
@@ -251,10 +220,10 @@ static void createKeyTables(void)
             memcpy(name, desc->names->keys[scancode].name, XkbKeyNameLength);
             name[XkbKeyNameLength] = '\0';
 
-            // Map the key name to a GLFW key code. Note: We only map printable
-            // keys here, and we use the US keyboard layout. The rest of the
-            // keys (function keys) are mapped using traditional KeySym
-            // translations.
+            // Map the key name to a GLFW key code. Note: We use the US
+            // keyboard layout. Because function keys aren't mapped correctly
+            // when using traditional KeySym translations, they are mapped
+            // here instead.
             if (strcmp(name, "TLDE") == 0) key = GLFW_KEY_GRAVE_ACCENT;
             else if (strcmp(name, "AE01") == 0) key = GLFW_KEY_1;
             else if (strcmp(name, "AE02") == 0) key = GLFW_KEY_2;
@@ -303,6 +272,77 @@ static void createKeyTables(void)
             else if (strcmp(name, "AB10") == 0) key = GLFW_KEY_SLASH;
             else if (strcmp(name, "BKSL") == 0) key = GLFW_KEY_BACKSLASH;
             else if (strcmp(name, "LSGT") == 0) key = GLFW_KEY_WORLD_1;
+            else if (strcmp(name, "SPCE") == 0) key = GLFW_KEY_SPACE;
+            else if (strcmp(name, "ESC") == 0) key = GLFW_KEY_ESCAPE;
+            else if (strcmp(name, "RTRN") == 0) key = GLFW_KEY_ENTER;
+            else if (strcmp(name, "TAB") == 0) key = GLFW_KEY_TAB;
+            else if (strcmp(name, "BKSP") == 0) key = GLFW_KEY_BACKSPACE;
+            else if (strcmp(name, "INS") == 0) key = GLFW_KEY_INSERT;
+            else if (strcmp(name, "DELE") == 0) key = GLFW_KEY_DELETE;
+            else if (strcmp(name, "RGHT") == 0) key = GLFW_KEY_RIGHT;
+            else if (strcmp(name, "LEFT") == 0) key = GLFW_KEY_LEFT;
+            else if (strcmp(name, "DOWN") == 0) key = GLFW_KEY_DOWN;
+            else if (strcmp(name, "UP") == 0) key = GLFW_KEY_UP;
+            else if (strcmp(name, "PGUP") == 0) key = GLFW_KEY_PAGE_UP;
+            else if (strcmp(name, "PGDN") == 0) key = GLFW_KEY_PAGE_DOWN;
+            else if (strcmp(name, "HOME") == 0) key = GLFW_KEY_HOME;
+            else if (strcmp(name, "END") == 0) key = GLFW_KEY_END;
+            else if (strcmp(name, "CAPS") == 0) key = GLFW_KEY_CAPS_LOCK;
+            else if (strcmp(name, "SCLK") == 0) key = GLFW_KEY_SCROLL_LOCK;
+            else if (strcmp(name, "NMLK") == 0) key = GLFW_KEY_NUM_LOCK;
+            else if (strcmp(name, "PRSC") == 0) key = GLFW_KEY_PRINT_SCREEN;
+            else if (strcmp(name, "PAUS") == 0) key = GLFW_KEY_PAUSE;
+            else if (strcmp(name, "FK01") == 0) key = GLFW_KEY_F1;
+            else if (strcmp(name, "FK02") == 0) key = GLFW_KEY_F2;
+            else if (strcmp(name, "FK03") == 0) key = GLFW_KEY_F3;
+            else if (strcmp(name, "FK04") == 0) key = GLFW_KEY_F4;
+            else if (strcmp(name, "FK05") == 0) key = GLFW_KEY_F5;
+            else if (strcmp(name, "FK06") == 0) key = GLFW_KEY_F6;
+            else if (strcmp(name, "FK07") == 0) key = GLFW_KEY_F7;
+            else if (strcmp(name, "FK08") == 0) key = GLFW_KEY_F8;
+            else if (strcmp(name, "FK09") == 0) key = GLFW_KEY_F9;
+            else if (strcmp(name, "FK10") == 0) key = GLFW_KEY_F10;
+            else if (strcmp(name, "FK11") == 0) key = GLFW_KEY_F11;
+            else if (strcmp(name, "FK12") == 0) key = GLFW_KEY_F12;
+            else if (strcmp(name, "FK13") == 0) key = GLFW_KEY_F13;
+            else if (strcmp(name, "FK14") == 0) key = GLFW_KEY_F14;
+            else if (strcmp(name, "FK15") == 0) key = GLFW_KEY_F15;
+            else if (strcmp(name, "FK16") == 0) key = GLFW_KEY_F16;
+            else if (strcmp(name, "FK17") == 0) key = GLFW_KEY_F17;
+            else if (strcmp(name, "FK18") == 0) key = GLFW_KEY_F18;
+            else if (strcmp(name, "FK19") == 0) key = GLFW_KEY_F19;
+            else if (strcmp(name, "FK20") == 0) key = GLFW_KEY_F20;
+            else if (strcmp(name, "FK21") == 0) key = GLFW_KEY_F21;
+            else if (strcmp(name, "FK22") == 0) key = GLFW_KEY_F22;
+            else if (strcmp(name, "FK23") == 0) key = GLFW_KEY_F23;
+            else if (strcmp(name, "FK24") == 0) key = GLFW_KEY_F24;
+            else if (strcmp(name, "FK25") == 0) key = GLFW_KEY_F25;
+            else if (strcmp(name, "KP0") == 0) key = GLFW_KEY_KP_0;
+            else if (strcmp(name, "KP1") == 0) key = GLFW_KEY_KP_1;
+            else if (strcmp(name, "KP2") == 0) key = GLFW_KEY_KP_2;
+            else if (strcmp(name, "KP3") == 0) key = GLFW_KEY_KP_3;
+            else if (strcmp(name, "KP4") == 0) key = GLFW_KEY_KP_4;
+            else if (strcmp(name, "KP5") == 0) key = GLFW_KEY_KP_5;
+            else if (strcmp(name, "KP6") == 0) key = GLFW_KEY_KP_6;
+            else if (strcmp(name, "KP7") == 0) key = GLFW_KEY_KP_7;
+            else if (strcmp(name, "KP8") == 0) key = GLFW_KEY_KP_8;
+            else if (strcmp(name, "KP9") == 0) key = GLFW_KEY_KP_9;
+            else if (strcmp(name, "KPDL") == 0) key = GLFW_KEY_KP_DECIMAL;
+            else if (strcmp(name, "KPDV") == 0) key = GLFW_KEY_KP_DIVIDE;
+            else if (strcmp(name, "KPMU") == 0) key = GLFW_KEY_KP_MULTIPLY;
+            else if (strcmp(name, "KPSU") == 0) key = GLFW_KEY_KP_SUBTRACT;
+            else if (strcmp(name, "KPAD") == 0) key = GLFW_KEY_KP_ADD;
+            else if (strcmp(name, "KPEN") == 0) key = GLFW_KEY_KP_ENTER;
+            else if (strcmp(name, "KPEQ") == 0) key = GLFW_KEY_KP_EQUAL;
+            else if (strcmp(name, "LFSH") == 0) key = GLFW_KEY_LEFT_SHIFT;
+            else if (strcmp(name, "LCTL") == 0) key = GLFW_KEY_LEFT_CONTROL;
+            else if (strcmp(name, "LALT") == 0) key = GLFW_KEY_LEFT_ALT;
+            else if (strcmp(name, "LWIN") == 0) key = GLFW_KEY_LEFT_SUPER;
+            else if (strcmp(name, "RTSH") == 0) key = GLFW_KEY_RIGHT_SHIFT;
+            else if (strcmp(name, "RCTL") == 0) key = GLFW_KEY_RIGHT_CONTROL;
+            else if (strcmp(name, "RALT") == 0) key = GLFW_KEY_RIGHT_ALT;
+            else if (strcmp(name, "RWIN") == 0) key = GLFW_KEY_RIGHT_SUPER;
+            else if (strcmp(name, "COMP") == 0) key = GLFW_KEY_MENU;
             else key = GLFW_KEY_UNKNOWN;
 
             if ((scancode >= 0) && (scancode < 256))

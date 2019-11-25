@@ -56,15 +56,16 @@ if (RT_LIBRARY)
     target_link_libraries(particles "${RT_LIBRARY}")
 endif()
 
-set(WINDOWS_BINARIES boing gears heightmap particles sharing splitview triangle-opengl wave)
+set(GUI_ONLY_BINARIES boing gears heightmap particles sharing splitview
+    triangle-opengl wave)
 set(CONSOLE_BINARIES offscreen)
 
-set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
+set_target_properties(${GUI_ONLY_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
                       FOLDER "GLFW3/Examples")
 
 if (MSVC)
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables
-    set_target_properties(${WINDOWS_BINARIES} PROPERTIES
+    set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES
                           LINK_FLAGS "/ENTRY:mainCRTStartup")
 endif()
 
@@ -78,7 +79,7 @@ if (APPLE)
     set_target_properties(splitview PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "SplitView")
     set_target_properties(wave PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Wave")
 
-    set_target_properties(${WINDOWS_BINARIES} PROPERTIES
+    set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES
                           RESOURCE glfw.icns
                           MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}
                           MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION}

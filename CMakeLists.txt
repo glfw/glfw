@@ -365,6 +365,11 @@ if (GLFW_INSTALL)
     install(FILES "${GLFW_BINARY_DIR}/src/glfw3.pc"
             DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
+    if (GLFW_BUILD_DOCS)
+        install(DIRECTORY "${GLFW_BINARY_DIR}/docs/html"
+                DESTINATION "${CMAKE_INSTALL_DOCDIR}")
+    endif()
+
     # Only generate this target if no higher-level project already has
     if (NOT TARGET uninstall)
         configure_file(CMake/cmake_uninstall.cmake.in

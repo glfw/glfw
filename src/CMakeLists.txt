@@ -120,6 +120,7 @@ target_include_directories(glfw PRIVATE
                            "${GLFW_SOURCE_DIR}/src"
                            "${GLFW_BINARY_DIR}/src"
                            ${glfw_INCLUDE_DIRS})
+target_link_libraries(glfw PRIVATE ${glfw_LIBRARIES})
 
 # HACK: When building on MinGW, WINVER and UNICODE need to be defined before
 # the inclusion of stddef.h (by glfw3.h), which is itself included before
@@ -164,10 +165,6 @@ if (BUILD_SHARED_LIBS)
         # Hide symbols not explicitly tagged for export from the shared library
         target_compile_options(glfw PRIVATE "-fvisibility=hidden")
     endif()
-
-    target_link_libraries(glfw PRIVATE ${glfw_LIBRARIES})
-else()
-    target_link_libraries(glfw INTERFACE ${glfw_LIBRARIES})
 endif()
 
 if (MSVC)

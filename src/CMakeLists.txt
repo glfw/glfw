@@ -85,19 +85,8 @@ set_target_properties(glfw PROPERTIES
                       VERSION ${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}
                       SOVERSION ${GLFW_VERSION_MAJOR}
                       POSITION_INDEPENDENT_CODE ON
+                      C_STANDARD 99
                       FOLDER "GLFW3")
-
-if (${CMAKE_VERSION} VERSION_EQUAL "3.1.0" OR
-    ${CMAKE_VERSION} VERSION_GREATER "3.1.0")
-
-    set_target_properties(glfw PROPERTIES C_STANDARD 99)
-else()
-    # Remove this fallback when removing support for CMake version less than 3.1
-    target_compile_options(glfw PRIVATE
-                           "$<$<C_COMPILER_ID:AppleClang>:-std=c99>"
-                           "$<$<C_COMPILER_ID:Clang>:-std=c99>"
-                           "$<$<C_COMPILER_ID:GNU>:-std=c99>")
-endif()
 
 target_compile_definitions(glfw PRIVATE _GLFW_USE_CONFIG_H)
 target_include_directories(glfw PUBLIC

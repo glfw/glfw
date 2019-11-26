@@ -20,17 +20,6 @@ set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"
 set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
                 "${GLFW_SOURCE_DIR}/deps/tinycthread.c")
 
-if (${CMAKE_VERSION} VERSION_EQUAL "3.1.0" OR
-    ${CMAKE_VERSION} VERSION_GREATER "3.1.0")
-    set(CMAKE_C_STANDARD 99)
-else()
-    # Remove this fallback when removing support for CMake version less than 3.1
-    add_compile_options("$<$<C_COMPILER_ID:AppleClang>:-std=c99>"
-                        "$<$<C_COMPILER_ID:Clang>:-std=c99>"
-                        "$<$<C_COMPILER_ID:GNU>:-std=c99>")
-
-endif()
-
 add_executable(clipboard clipboard.c ${GETOPT} ${GLAD_GL})
 add_executable(events events.c ${GETOPT} ${GLAD_GL})
 add_executable(msaa msaa.c ${GETOPT} ${GLAD_GL})
@@ -66,6 +55,7 @@ set(CONSOLE_BINARIES clipboard events msaa glfwinfo iconify monitors reopen
                      cursor)
 
 set_target_properties(${GUI_ONLY_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
+                      C_STANDARD 99
                       FOLDER "GLFW3/Tests")
 
 if (MSVC)

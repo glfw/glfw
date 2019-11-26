@@ -85,7 +85,8 @@ in the documentation for more information.
 
 ## Dependencies
 
-GLFW itself depends only on the headers and libraries for your window system.
+GLFW itself needs only CMake 3.1 or later and the headers and libraries for your
+OS and window system.
 
 The (experimental) Wayland backend also depends on the `extra-cmake-modules`
 package, which is used to generated Wayland protocol headers.
@@ -123,6 +124,7 @@ information on what to include when reporting a bug.
  - Added `GLFW_RESIZE_EW_CURSOR` alias for `GLFW_HRESIZE_CURSOR` (#427)
  - Added `GLFW_RESIZE_NS_CURSOR` alias for `GLFW_VRESIZE_CURSOR` (#427)
  - Added `GLFW_POINTING_HAND_CURSOR` alias for `GLFW_HAND_CURSOR` (#427)
+ - Updated the minimum required CMake version to 3.1
  - Disabled tests and examples by default when built as a CMake subdirectory
  - Bugfix: The CMake config-file package used an absolute path and was not
    relocatable (#1470)

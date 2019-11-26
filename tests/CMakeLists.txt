@@ -51,7 +51,7 @@ add_executable(threads WIN32 MACOSX_BUNDLE threads.c ${TINYCTHREAD} ${GLAD_GL})
 add_executable(timeout WIN32 MACOSX_BUNDLE timeout.c ${GLAD_GL})
 add_executable(title WIN32 MACOSX_BUNDLE title.c ${GLAD_GL})
 add_executable(triangle-vulkan WIN32 triangle-vulkan.c ${ICON} ${GLAD_VULKAN})
-add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GETOPT} ${GLAD_GL})
+add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GLAD_GL})
 
 target_link_libraries(empty "${CMAKE_THREAD_LIBS_INIT}")
 target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}")

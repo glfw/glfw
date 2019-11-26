@@ -152,7 +152,7 @@ if (BUILD_SHARED_LIBS)
             set_target_properties(glfw PROPERTIES IMPORT_SUFFIX "dll.lib")
         endif()
 
-	target_compile_definitions(glfw INTERFACE GLFW_DLL)
+        target_compile_definitions(glfw INTERFACE GLFW_DLL)
     elseif (APPLE)
         # Add -fno-common to work around a bug in Apple's GCC
         target_compile_options(glfw PRIVATE "-fno-common")

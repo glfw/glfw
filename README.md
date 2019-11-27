@@ -139,6 +139,7 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: `glfwSetWindowSize` used a bottom-left anchor point (#1553)
  - [Cocoa] Bugfix: Window remained on screen after destruction until event poll
    (#1412)
+ - [Cocoa] Bugfix: Event processing before window creation would assert (#1543)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)

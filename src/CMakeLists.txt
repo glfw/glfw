@@ -83,13 +83,12 @@ if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
     "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR
     "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
 
-    if (WIN32)
-        set(windows_SOURCES ${glfw_SOURCES})
-    else()
-        set(windows_SOURCES ${common_SOURCES})
-    endif()
-    set_source_files_properties(${windows_SOURCES} PROPERTIES
-        COMPILE_FLAGS -Wdeclaration-after-statement)
+    set_source_files_properties(context.c init.c input.c monitor.c vulkan.c
+                                window.c win32_init.c win32_joystick.c
+                                win32_monitor.c win32_time.c win32_thread.c
+                                win32_window.c wgl_context.c egl_context.c
+                                osmesa_context.c PROPERTIES
+                                COMPILE_FLAGS -Wdeclaration-after-statement)
 endif()
 
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})

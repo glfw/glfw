@@ -447,9 +447,9 @@ static GLFWbool initializeTIS(void)
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
-    [NSApp stop:nil];
-
+    _glfw.ns.finishedLaunching = GLFW_TRUE;
     _glfwPlatformPostEmptyEvent();
+    [NSApp stop:nil];
 }
 
 - (void)applicationDidHide:(NSNotification *)notification

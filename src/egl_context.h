@@ -132,6 +132,7 @@ typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapBuffers)(EGLDisplay,EGLSurface);
 typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapInterval)(EGLDisplay,EGLint);
 typedef const char* (EGLAPIENTRY * PFN_eglQueryString)(EGLDisplay,EGLint);
 typedef GLFWglproc (EGLAPIENTRY * PFN_eglGetProcAddress)(const char*);
+typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapBuffersWithDamageKHR)(EGLDisplay,EGLSurface,EGLint*,EGLint);
 #define eglGetConfigAttrib _glfw.egl.GetConfigAttrib
 #define eglGetConfigs _glfw.egl.GetConfigs
 #define eglGetDisplay _glfw.egl.GetDisplay
@@ -148,6 +149,7 @@ typedef GLFWglproc (EGLAPIENTRY * PFN_eglGetProcAddress)(const char*);
 #define eglSwapInterval _glfw.egl.SwapInterval
 #define eglQueryString _glfw.egl.QueryString
 #define eglGetProcAddress _glfw.egl.GetProcAddress
+#define eglSwapBuffersWithDamageKHR _glfw.egl.SwapBuffersWithDamageKHR
 
 #define _GLFW_EGL_CONTEXT_STATE            _GLFWcontextEGL egl
 #define _GLFW_EGL_LIBRARY_CONTEXT_STATE    _GLFWlibraryEGL egl
@@ -178,6 +180,7 @@ typedef struct _GLFWlibraryEGL
     GLFWbool        KHR_gl_colorspace;
     GLFWbool        KHR_get_all_proc_addresses;
     GLFWbool        KHR_context_flush_control;
+    GLFWbool        KHR_swap_buffers_with_damage;
 
     void*           handle;
 
@@ -197,6 +200,7 @@ typedef struct _GLFWlibraryEGL
     PFN_eglSwapInterval         SwapInterval;
     PFN_eglQueryString          QueryString;
     PFN_eglGetProcAddress       GetProcAddress;
+    PFN_eglSwapBuffersWithDamageKHR SwapBuffersWithDamageKHR;
 
 } _GLFWlibraryEGL;
 

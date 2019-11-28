@@ -232,6 +232,23 @@ static void swapBuffersEGL(_GLFWwindow* window)
     eglSwapBuffers(_glfw.egl.display, window->context.egl.surface);
 }
 
+static void swapBuffersWithDamageEGL(_GLFWwindow* window, GLFWrect* rects, int n_rects)
+{
+    if (window != _glfwPlatformGetTls(&_glfw.contextSlot))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "EGL: The context must be current on the calling thread when swapping buffers");
+        return;
+    }
+
+    if (eglSwapBuffersWithDamageKHR)
+        eglSwapBuffersWithDamageKHR(_glfw.egl.display,
+                                    window->context.egl.surface,
+                                    (EGLint*)rects, (EGLint)n_rects);
+    else
+        eglSwapBuffers(_glfw.egl.display, window->context.egl.surface);
+}
+
 static void swapIntervalEGL(int interval)
 {
     eglSwapInterval(_glfw.egl.display, interval);
@@ -425,6 +442,12 @@ GLFWbool _glfwInitEGL(void)
         extensionSupportedEGL("EGL_KHR_get_all_proc_addresses");
     _glfw.egl.KHR_context_flush_control =
         extensionSupportedEGL("EGL_KHR_context_flush_control");
+    _glfw.egl.KHR_swap_buffers_with_damage =
+        extensionSupportedEGL("EGL_KHR_swap_buffers_with_damage");
+
+    if (_glfw.egl.KHR_swap_buffers_with_damage)
+        _glfw.egl.SwapBuffersWithDamageKHR = (PFN_eglSwapBuffersWithDamageKHR)
+            _glfw.egl.GetProcAddress("eglSwapBuffersWithDamageKHR");
 
     return GLFW_TRUE;
 }
@@ -694,6 +717,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 
     window->context.makeCurrent = makeContextCurrentEGL;
     window->context.swapBuffers = swapBuffersEGL;
+    window->context.swapBuffersWithDamage = swapBuffersWithDamageEGL;
     window->context.swapInterval = swapIntervalEGL;
     window->context.extensionSupported = extensionSupportedEGL;
     window->context.getProcAddress = getProcAddressEGL;

@@ -657,6 +657,26 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow* handle)
     window->context.swapBuffers(window);
 }
 
+GLFWAPI void glfwSwapBuffersWithDamage(GLFWwindow* handle, GLFWrect* rects, int n_rects)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT();
+
+    if (window->context.client == GLFW_NO_API)
+    {
+        _glfwInputError(GLFW_NO_WINDOW_CONTEXT,
+                        "Cannot swap buffers of a window that has no OpenGL or OpenGL ES context");
+        return;
+    }
+
+    if (window->context.swapBuffersWithDamage)
+        window->context.swapBuffersWithDamage(window, rects, n_rects);
+    else
+        window->context.swapBuffers(window);
+}
+
 GLFWAPI void glfwSwapInterval(int interval)
 {
     _GLFWwindow* window;

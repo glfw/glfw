@@ -78,6 +78,7 @@ typedef struct _GLFWmutex       _GLFWmutex;
 
 typedef void (* _GLFWmakecontextcurrentfun)(_GLFWwindow*);
 typedef void (* _GLFWswapbuffersfun)(_GLFWwindow*);
+typedef void (* _GLFWswapbufferswithdamagefun)(_GLFWwindow*,GLFWrect*,int);
 typedef void (* _GLFWswapintervalfun)(int);
 typedef int (* _GLFWextensionsupportedfun)(const char*);
 typedef GLFWglproc (* _GLFWgetprocaddressfun)(const char*);
@@ -350,6 +351,7 @@ struct _GLFWcontext
 
     _GLFWmakecontextcurrentfun  makeCurrent;
     _GLFWswapbuffersfun         swapBuffers;
+    _GLFWswapbufferswithdamagefun swapBuffersWithDamage;
     _GLFWswapintervalfun        swapInterval;
     _GLFWextensionsupportedfun  extensionSupported;
     _GLFWgetprocaddressfun      getProcAddress;

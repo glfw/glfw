@@ -35,15 +35,14 @@
 //
 static NSUInteger getStyleMask(_GLFWwindow* window)
 {
-    NSUInteger styleMask = 0;
+    NSUInteger styleMask = NSWindowStyleMaskMiniaturizable;
 
     if (window->monitor || !window->decorated)
         styleMask |= NSWindowStyleMaskBorderless;
     else
     {
         styleMask |= NSWindowStyleMaskTitled |
-                     NSWindowStyleMaskClosable |
-                     NSWindowStyleMaskMiniaturizable;
+                     NSWindowStyleMaskClosable;
 
         if (window->resizable)
             styleMask |= NSWindowStyleMaskResizable;
@@ -816,7 +815,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         [window->ns.object setLevel:NSMainMenuWindowLevel + 1];
     else
     {
-        [window->ns.object center];
+        [(NSWindow*) window->ns.object center];
         _glfw.ns.cascadePoint =
             NSPointToCGPoint([window->ns.object cascadeTopLeftFromPoint:
                               NSPointFromCGPoint(_glfw.ns.cascadePoint)]);
@@ -962,6 +961,9 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     [window->ns.object close];
     window->ns.object = nil;
 
+    // HACK: Allow Cocoa to catch up before returning
+    _glfwPlatformPollEvents();
+
     } // autoreleasepool
 }
 
@@ -1032,7 +1034,14 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
             acquireMonitor(window);
     }
     else
-        [window->ns.object setContentSize:NSMakeSize(width, height)];
+    {
+        NSRect contentRect =
+            [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
+        contentRect.origin.y += contentRect.size.height - height;
+        contentRect.size = NSMakeSize(width, height);
+        [window->ns.object setFrame:[window->ns.object frameRectForContentRect:contentRect]
+                            display:YES];
+    }
 
     } // autoreleasepool
 }
@@ -1503,8 +1512,10 @@ const char* _glfwPlatformGetScancodeName(int scancode)
 {
     @autoreleasepool {
 
+    const int key = _glfw.ns.keycodes[scancode];
+
     UInt32 deadKeyState = 0;
-    UniChar characters[8];
+    UniChar characters[4];
     UniCharCount characterCount = 0;
 
     if (UCKeyTranslate([(NSData*) _glfw.ns.unicodeData bytes],
@@ -1529,12 +1540,12 @@ const char* _glfwPlatformGetScancodeName(int scancode)
                                                             characterCount,
                                                             kCFAllocatorNull);
     CFStringGetCString(string,
-                       _glfw.ns.keyName,
-                       sizeof(_glfw.ns.keyName),
+                       _glfw.ns.keynames[key],
+                       sizeof(_glfw.ns.keynames[key]),
                        kCFStringEncodingUTF8);
     CFRelease(string);
 
-    return _glfw.ns.keyName;
+    return _glfw.ns.keynames[key];
 
     } // autoreleasepool
 }
@@ -1592,23 +1603,49 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
     @autoreleasepool {
 
-    if (shape == GLFW_ARROW_CURSOR)
-        cursor->ns.object = [NSCursor arrowCursor];
-    else if (shape == GLFW_IBEAM_CURSOR)
-        cursor->ns.object = [NSCursor IBeamCursor];
-    else if (shape == GLFW_CROSSHAIR_CURSOR)
-        cursor->ns.object = [NSCursor crosshairCursor];
-    else if (shape == GLFW_HAND_CURSOR)
-        cursor->ns.object = [NSCursor pointingHandCursor];
-    else if (shape == GLFW_HRESIZE_CURSOR)
-        cursor->ns.object = [NSCursor resizeLeftRightCursor];
-    else if (shape == GLFW_VRESIZE_CURSOR)
-        cursor->ns.object = [NSCursor resizeUpDownCursor];
+    SEL cursorSelector = NULL;
+
+    // HACK: Try to use a private message
+    if (shape == GLFW_RESIZE_EW_CURSOR)
+        cursorSelector = @selector(_windowResizeEastWestCursor);
+    else if (shape == GLFW_RESIZE_NS_CURSOR)
+        cursorSelector = @selector(_windowResizeNorthSouthCursor);
+    else if (shape == GLFW_RESIZE_NWSE_CURSOR)
+        cursorSelector = @selector(_windowResizeNorthWestSouthEastCursor);
+    else if (shape == GLFW_RESIZE_NESW_CURSOR)
+        cursorSelector = @selector(_windowResizeNorthEastSouthWestCursor);
+
+    if (cursorSelector && [NSCursor respondsToSelector:cursorSelector])
+    {
+        id object = [NSCursor performSelector:cursorSelector];
+        if ([object isKindOfClass:[NSCursor class]])
+            cursor->ns.object = object;
+    }
 
     if (!cursor->ns.object)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Failed to retrieve standard cursor");
+        if (shape == GLFW_ARROW_CURSOR)
+            cursor->ns.object = [NSCursor arrowCursor];
+        else if (shape == GLFW_IBEAM_CURSOR)
+            cursor->ns.object = [NSCursor IBeamCursor];
+        else if (shape == GLFW_CROSSHAIR_CURSOR)
+            cursor->ns.object = [NSCursor crosshairCursor];
+        else if (shape == GLFW_POINTING_HAND_CURSOR)
+            cursor->ns.object = [NSCursor pointingHandCursor];
+        else if (shape == GLFW_RESIZE_EW_CURSOR)
+            cursor->ns.object = [NSCursor resizeLeftRightCursor];
+        else if (shape == GLFW_RESIZE_NS_CURSOR)
+            cursor->ns.object = [NSCursor resizeUpDownCursor];
+        else if (shape == GLFW_RESIZE_ALL_CURSOR)
+            cursor->ns.object = [NSCursor closedHandCursor];
+        else if (shape == GLFW_NOT_ALLOWED_CURSOR)
+            cursor->ns.object = [NSCursor operationNotAllowedCursor];
+    }
+
+    if (!cursor->ns.object)
+    {
+        _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
+                        "Cocoa: Standard cursor shape unavailable");
         return GLFW_FALSE;
     }
 

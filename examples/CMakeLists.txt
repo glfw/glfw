@@ -23,6 +23,17 @@ elseif (APPLE)
         MACOSX_PACKAGE_LOCATION "Resources")
 endif()
 
+if (${CMAKE_VERSION} VERSION_EQUAL "3.1.0" OR
+    ${CMAKE_VERSION} VERSION_GREATER "3.1.0")
+    set(CMAKE_C_STANDARD 99)
+else()
+    # Remove this fallback when removing support for CMake version less than 3.1
+    add_compile_options("$<$<C_COMPILER_ID:AppleClang>:-std=c99>"
+                        "$<$<C_COMPILER_ID:Clang>:-std=c99>"
+                        "$<$<C_COMPILER_ID:GNU>:-std=c99>")
+
+endif()
+
 set(GLAD_GL "${GLFW_SOURCE_DIR}/deps/glad/gl.h"
             "${GLFW_SOURCE_DIR}/deps/glad_gl.c")
 set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"

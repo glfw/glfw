@@ -68,7 +68,7 @@ static int createTmpfileCloexec(char* tmpname)
  * SCM_RIGHTS methods.
  *
  * posix_fallocate() is used to guarantee that disk space is available
- * for the file at the given size. If disk space is insufficent, errno
+ * for the file at the given size. If disk space is insufficient, errno
  * is set to ENOSPC. If posix_fallocate() is not supported, program may
  * receive SIGBUS on accessing mmap()'ed file contents instead.
  */
@@ -770,28 +770,6 @@ static void handleEvents(int timeout)
     }
 }
 
-// Translates a GLFW standard cursor to a theme cursor name
-//
-static char *translateCursorShape(int shape)
-{
-    switch (shape)
-    {
-        case GLFW_ARROW_CURSOR:
-            return "left_ptr";
-        case GLFW_IBEAM_CURSOR:
-            return "xterm";
-        case GLFW_CROSSHAIR_CURSOR:
-            return "crosshair";
-        case GLFW_HAND_CURSOR:
-            return "grabbing";
-        case GLFW_HRESIZE_CURSOR:
-            return "sb_h_double_arrow";
-        case GLFW_VRESIZE_CURSOR:
-            return "sb_v_double_arrow";
-    }
-    return NULL;
-}
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -1233,26 +1211,79 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
-    struct wl_cursor* standardCursor;
+    const char* name = NULL;
 
-    standardCursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme,
-                                                translateCursorShape(shape));
-    if (!standardCursor)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Standard cursor \"%s\" not found",
-                        translateCursorShape(shape));
-        return GLFW_FALSE;
-    }
+    // Try the XDG names first
+    if (shape == GLFW_ARROW_CURSOR)
+        name = "default";
+    else if (shape == GLFW_IBEAM_CURSOR)
+        name = "text";
+    else if (shape == GLFW_CROSSHAIR_CURSOR)
+        name = "crosshair";
+    else if (shape == GLFW_POINTING_HAND_CURSOR)
+        name = "pointer";
+    else if (shape == GLFW_RESIZE_EW_CURSOR)
+        name = "ew-resize";
+    else if (shape == GLFW_RESIZE_NS_CURSOR)
+        name = "ns-resize";
+    else if (shape == GLFW_RESIZE_NWSE_CURSOR)
+        name = "nwse-resize";
+    else if (shape == GLFW_RESIZE_NESW_CURSOR)
+        name = "nesw-resize";
+    else if (shape == GLFW_RESIZE_ALL_CURSOR)
+        name = "all-scroll";
+    else if (shape == GLFW_NOT_ALLOWED_CURSOR)
+        name = "not-allowed";
 
-    cursor->wl.cursor = standardCursor;
-    cursor->wl.currentImage = 0;
+    cursor->wl.cursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, name);
 
     if (_glfw.wl.cursorThemeHiDPI)
     {
-        standardCursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI,
-                                                    translateCursorShape(shape));
-        cursor->wl.cursorHiDPI = standardCursor;
+        cursor->wl.cursorHiDPI =
+            wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI, name);
+    }
+
+    if (!cursor->wl.cursor)
+    {
+        // Fall back to the core X11 names
+        if (shape == GLFW_ARROW_CURSOR)
+            name = "left_ptr";
+        else if (shape == GLFW_IBEAM_CURSOR)
+            name = "xterm";
+        else if (shape == GLFW_CROSSHAIR_CURSOR)
+            name = "crosshair";
+        else if (shape == GLFW_POINTING_HAND_CURSOR)
+            name = "hand2";
+        else if (shape == GLFW_RESIZE_EW_CURSOR)
+            name = "sb_h_double_arrow";
+        else if (shape == GLFW_RESIZE_NS_CURSOR)
+            name = "sb_v_double_arrow";
+        else if (shape == GLFW_RESIZE_ALL_CURSOR)
+            name = "fleur";
+        else
+        {
+            _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
+                            "Wayland: Standard cursor shape unavailable");
+            return GLFW_FALSE;
+        }
+
+        cursor->wl.cursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, name);
+        if (!cursor->wl.cursor)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Wayland: Failed to create standard cursor \"%s\"",
+                            name);
+            return GLFW_FALSE;
+        }
+
+        if (_glfw.wl.cursorThemeHiDPI)
+        {
+            if (!cursor->wl.cursorHiDPI)
+            {
+                cursor->wl.cursorHiDPI =
+                    wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI, name);
+            }
+        }
     }
 
     return GLFW_TRUE;

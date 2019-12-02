@@ -373,11 +373,14 @@ A cursor with a [standard shape](@ref shapes) from the current system cursor
 theme can be can be created with @ref glfwCreateStandardCursor.
 
 @code
-GLFWcursor* cursor = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
+GLFWcursor* url_cursor = glfwCreateStandardCursor(GLFW_POINTING_HAND_CURSOR);
 @endcode
 
 These cursor objects behave in the exact same way as those created with @ref
 glfwCreateCursor except that the system cursor theme provides the actual image.
+
+A few of these shapes are not available everywhere.  If a shape is unavailable,
+`NULL` is returned.  See @ref glfwCreateStandardCursor for details.
 
 
 @subsubsection cursor_destruction Cursor destruction
@@ -889,7 +892,7 @@ timer varies depending on the operating system and hardware.  You can query the
 frequency, in Hz, with @ref glfwGetTimerFrequency.
 
 @code
-uint64_t freqency = glfwGetTimerFrequency();
+uint64_t frequency = glfwGetTimerFrequency();
 @endcode
 
 

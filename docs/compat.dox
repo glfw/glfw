@@ -85,6 +85,13 @@ transparent window framebuffers.  If the running X server does not support this
 extension or there is no running compositing manager, the
 `GLFW_TRANSPARENT_FRAMEBUFFER` framebuffer hint will have no effect.
 
+GLFW uses both the Xcursor extension and the freedesktop cursor conventions to
+provide an expanded set of standard cursor shapes.  If the running X server does
+not support this extension or the current cursor theme does not support the
+conventions, the `GLFW_RESIZE_NWSE_CURSOR`, `GLFW_RESIZE_NESW_CURSOR` and
+`GLFW_NOT_ALLOWED_CURSOR` shapes will not be available and other shapes may use
+legacy images.
+
 
 @section compat_wayland Wayland protocols and IPC standards
 
@@ -230,8 +237,7 @@ at most OpenGL version 2.1.
 
 Because of this, on OS X 10.7 and later, the `GLFW_CONTEXT_VERSION_MAJOR` and
 `GLFW_CONTEXT_VERSION_MINOR` hints will cause @ref glfwCreateWindow to fail if
-given version 3.0 or 3.1.  The `GLFW_OPENGL_FORWARD_COMPAT` hint must be set to
-`GLFW_TRUE` and the `GLFW_OPENGL_PROFILE` hint must be set to
+given version 3.0 or 3.1.  The `GLFW_OPENGL_PROFILE` hint must be set to
 `GLFW_OPENGL_CORE_PROFILE` when creating OpenGL 3.2 and later contexts.  The
 `GLFW_OPENGL_DEBUG_CONTEXT` and `GLFW_CONTEXT_NO_ERROR` hints are ignored.
 

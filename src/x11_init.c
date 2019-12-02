@@ -615,6 +615,12 @@ static GLFWbool initExtensions(void)
             _glfw_dlsym(_glfw.x11.xcursor.handle, "XcursorImageDestroy");
         _glfw.x11.xcursor.ImageLoadCursor = (PFN_XcursorImageLoadCursor)
             _glfw_dlsym(_glfw.x11.xcursor.handle, "XcursorImageLoadCursor");
+        _glfw.x11.xcursor.GetTheme = (PFN_XcursorGetTheme)
+            _glfw_dlsym(_glfw.x11.xcursor.handle, "XcursorGetTheme");
+        _glfw.x11.xcursor.GetDefaultSize = (PFN_XcursorGetDefaultSize)
+            _glfw_dlsym(_glfw.x11.xcursor.handle, "XcursorGetDefaultSize");
+        _glfw.x11.xcursor.LibraryLoadImage = (PFN_XcursorLibraryLoadImage)
+            _glfw_dlsym(_glfw.x11.xcursor.handle, "XcursorLibraryLoadImage");
     }
 
 #if defined(__CYGWIN__)
@@ -793,13 +799,10 @@ static GLFWbool initExtensions(void)
 //
 static void getSystemContentScale(float* xscale, float* yscale)
 {
-    // NOTE: Fall back to the display-wide DPI instead of RandR monitor DPI if
-    //       Xft.dpi retrieval below fails as we don't currently have an exact
-    //       policy for which monitor a window is considered to "be on"
-    float xdpi = DisplayWidth(_glfw.x11.display, _glfw.x11.screen) *
-        25.4f / DisplayWidthMM(_glfw.x11.display, _glfw.x11.screen);
-    float ydpi = DisplayHeight(_glfw.x11.display, _glfw.x11.screen) *
-        25.4f / DisplayHeightMM(_glfw.x11.display, _glfw.x11.screen);
+    // Start by assuming the default X11 DPI
+    // NOTE: Some desktop environments (KDE) may remove the Xft.dpi field when it
+    //       would be set to 96, so assume that is the case if we cannot find it
+    float xdpi = 96.f, ydpi = 96.f;
 
     // NOTE: Basing the scale on Xft.dpi where available should provide the most
     //       consistent user experience (matches Qt, Gtk, etc), although not

@@ -41,6 +41,9 @@
 typedef void* id;
 #endif
 
+// NOTE: Many Cocoa enum values have been renamed and we need to build across
+//       SDK versions where one is unavailable or the other deprecated
+//       We use the newer names in code and these macros to handle compatibility
 #if MAC_OS_X_VERSION_MAX_ALLOWED < 101200
  #define NSBitmapFormatAlphaNonpremultiplied NSAlphaNonpremultipliedBitmapFormat
  #define NSEventMaskAny NSAnyEventMask
@@ -139,7 +142,7 @@ typedef struct _GLFWlibraryNS
     id                  keyUpMonitor;
     id                  nibObjects;
 
-    char                keyName[64];
+    char                keynames[GLFW_KEY_LAST + 1][17];
     short int           keycodes[256];
     short int           scancodes[GLFW_KEY_LAST + 1];
     char*               clipboardString;

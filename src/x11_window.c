@@ -50,6 +50,10 @@
 #define Button6            6
 #define Button7            7
 
+// Motif WM hints flags
+#define MWM_HINTS_DECORATIONS   2
+#define MWM_DECOR_ALL           1
+
 #define _GLFW_XDND_VERSION 5
 
 
@@ -2536,33 +2540,24 @@ void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
 
 void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
 {
-    if (enabled)
+    struct
     {
-        XDeleteProperty(_glfw.x11.display,
-                        window->x11.handle,
-                        _glfw.x11.MOTIF_WM_HINTS);
-    }
-    else
-    {
-        struct
-        {
-            unsigned long flags;
-            unsigned long functions;
-            unsigned long decorations;
-            long input_mode;
-            unsigned long status;
-        } hints;
+        unsigned long flags;
+        unsigned long functions;
+        unsigned long decorations;
+        long input_mode;
+        unsigned long status;
+    } hints = {0};
 
-        hints.flags = 2;       // Set decorations
-        hints.decorations = 0; // No decorations
+    hints.flags = MWM_HINTS_DECORATIONS;
+    hints.decorations = enabled ? MWM_DECOR_ALL : 0;
 
-        XChangeProperty(_glfw.x11.display, window->x11.handle,
-                        _glfw.x11.MOTIF_WM_HINTS,
-                        _glfw.x11.MOTIF_WM_HINTS, 32,
-                        PropModeReplace,
-                        (unsigned char*) &hints,
-                        sizeof(hints) / sizeof(long));
-    }
+    XChangeProperty(_glfw.x11.display, window->x11.handle,
+                    _glfw.x11.MOTIF_WM_HINTS,
+                    _glfw.x11.MOTIF_WM_HINTS, 32,
+                    PropModeReplace,
+                    (unsigned char*) &hints,
+                    sizeof(hints) / sizeof(long));
 }
 
 void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
@@ -2792,6 +2787,7 @@ const char* _glfwPlatformGetScancodeName(int scancode)
     if (!_glfw.x11.xkb.available)
         return NULL;
 
+    const int key = _glfw.x11.keycodes[scancode];
     const KeySym keysym = XkbKeycodeToKeysym(_glfw.x11.display,
                                              scancode, _glfw.x11.xkb.group, 0);
     if (keysym == NoSymbol)
@@ -2801,12 +2797,12 @@ const char* _glfwPlatformGetScancodeName(int scancode)
     if (ch == -1)
         return NULL;
 
-    const size_t count = encodeUTF8(_glfw.x11.keyName, (unsigned int) ch);
+    const size_t count = encodeUTF8(_glfw.x11.keynames[key], (unsigned int) ch);
     if (count == 0)
         return NULL;
 
-    _glfw.x11.keyName[count] = '\0';
-    return _glfw.x11.keyName;
+    _glfw.x11.keynames[key][count] = '\0';
+    return _glfw.x11.keynames[key];
 }
 
 int _glfwPlatformGetKeyScancode(int key)
@@ -2827,29 +2823,76 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
 
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
-    int native = 0;
+    if (_glfw.x11.xcursor.handle)
+    {
+        char* theme = XcursorGetTheme(_glfw.x11.display);
+        if (theme)
+        {
+            const int size = XcursorGetDefaultSize(_glfw.x11.display);
+            const char* name = NULL;
 
-    if (shape == GLFW_ARROW_CURSOR)
-        native = XC_left_ptr;
-    else if (shape == GLFW_IBEAM_CURSOR)
-        native = XC_xterm;
-    else if (shape == GLFW_CROSSHAIR_CURSOR)
-        native = XC_crosshair;
-    else if (shape == GLFW_HAND_CURSOR)
-        native = XC_hand2;
-    else if (shape == GLFW_HRESIZE_CURSOR)
-        native = XC_sb_h_double_arrow;
-    else if (shape == GLFW_VRESIZE_CURSOR)
-        native = XC_sb_v_double_arrow;
-    else
-        return GLFW_FALSE;
+            if (shape == GLFW_ARROW_CURSOR)
+                name = "default";
+            else if (shape == GLFW_IBEAM_CURSOR)
+                name = "text";
+            else if (shape == GLFW_CROSSHAIR_CURSOR)
+                name = "crosshair";
+            else if (shape == GLFW_POINTING_HAND_CURSOR)
+                name = "pointer";
+            else if (shape == GLFW_RESIZE_EW_CURSOR)
+                name = "ew-resize";
+            else if (shape == GLFW_RESIZE_NS_CURSOR)
+                name = "ns-resize";
+            else if (shape == GLFW_RESIZE_NWSE_CURSOR)
+                name = "nwse-resize";
+            else if (shape == GLFW_RESIZE_NESW_CURSOR)
+                name = "nesw-resize";
+            else if (shape == GLFW_RESIZE_ALL_CURSOR)
+                name = "all-scroll";
+            else if (shape == GLFW_NOT_ALLOWED_CURSOR)
+                name = "not-allowed";
 
-    cursor->x11.handle = XCreateFontCursor(_glfw.x11.display, native);
+            XcursorImage* image = XcursorLibraryLoadImage(name, theme, size);
+            if (image)
+            {
+                cursor->x11.handle = XcursorImageLoadCursor(_glfw.x11.display, image);
+                XcursorImageDestroy(image);
+            }
+        }
+    }
+
     if (!cursor->x11.handle)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "X11: Failed to create standard cursor");
-        return GLFW_FALSE;
+        unsigned int native = 0;
+
+        if (shape == GLFW_ARROW_CURSOR)
+            native = XC_left_ptr;
+        else if (shape == GLFW_IBEAM_CURSOR)
+            native = XC_xterm;
+        else if (shape == GLFW_CROSSHAIR_CURSOR)
+            native = XC_crosshair;
+        else if (shape == GLFW_POINTING_HAND_CURSOR)
+            native = XC_hand2;
+        else if (shape == GLFW_RESIZE_EW_CURSOR)
+            native = XC_sb_h_double_arrow;
+        else if (shape == GLFW_RESIZE_NS_CURSOR)
+            native = XC_sb_v_double_arrow;
+        else if (shape == GLFW_RESIZE_ALL_CURSOR)
+            native = XC_fleur;
+        else
+        {
+            _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
+                            "X11: Standard cursor shape unavailable");
+            return GLFW_FALSE;
+        }
+
+        cursor->x11.handle = XCreateFontCursor(_glfw.x11.display, native);
+        if (!cursor->x11.handle)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Failed to create standard cursor");
+            return GLFW_FALSE;
+        }
     }
 
     return GLFW_TRUE;

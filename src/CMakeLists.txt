@@ -100,6 +100,18 @@ set_target_properties(glfw PROPERTIES
                       POSITION_INDEPENDENT_CODE ON
                       FOLDER "GLFW3")
 
+if (${CMAKE_VERSION} VERSION_EQUAL "3.1.0" OR
+    ${CMAKE_VERSION} VERSION_GREATER "3.1.0")
+
+    set_target_properties(glfw PROPERTIES C_STANDARD 99)
+else()
+    # Remove this fallback when removing support for CMake version less than 3.1
+    target_compile_options(glfw PRIVATE
+                           "$<$<C_COMPILER_ID:AppleClang>:-std=c99>"
+                           "$<$<C_COMPILER_ID:Clang>:-std=c99>"
+                           "$<$<C_COMPILER_ID:GNU>:-std=c99>")
+endif()
+
 target_compile_definitions(glfw PRIVATE _GLFW_USE_CONFIG_H)
 target_include_directories(glfw PUBLIC
                            "$<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>"
@@ -125,6 +137,10 @@ target_compile_options(glfw PRIVATE
 if (BUILD_SHARED_LIBS)
     if (WIN32)
         if (MINGW)
+            # Remove the dependency on the shared version of libgcc
+            # NOTE: MinGW-w64 has the correct default but MinGW needs this
+            target_link_options(glfw PRIVATE "-static-libgcc")
+
             # Remove the lib prefix on the DLL (but not the import library)
             set_target_properties(glfw PROPERTIES PREFIX "")
 

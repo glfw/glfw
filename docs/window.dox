@@ -234,6 +234,13 @@ alpha channel will be used to combine the framebuffer with the background.  This
 does not affect window decorations.  Possible values are `GLFW_TRUE` and
 `GLFW_FALSE`.
 
+@par
+@win32 GLFW sets a color key for the window to work around repainting issues
+with a transparent framebuffer.  The chosen color value is RGB 255,0,255
+(magenta).  This will make pixels with that exact color fully transparent
+regardless of their alpha values.  If this is a problem, make these pixels any
+other color before buffer swap.
+
 @anchor GLFW_FOCUS_ON_SHOW_hint
 __GLFW_FOCUS_ON_SHOW__ specifies whether the window will be given input
 focus when @ref glfwShowWindow is called. Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
@@ -383,12 +390,10 @@ Additionally, OpenGL ES 1.x cannot be returned if 2.0 or later was requested,
 and vice versa.  This is because OpenGL ES 3.x is backward compatible with 2.0,
 but OpenGL ES 2.0 is not backward compatible with 1.x.
 
-@note @macos The OS only supports forward-compatible core profile contexts for
-OpenGL versions 3.2 and later.  Before creating an OpenGL context of version
-3.2 or later you must set the
-[GLFW_OPENGL_FORWARD_COMPAT](@ref GLFW_OPENGL_FORWARD_COMPAT_hint) and
-[GLFW_OPENGL_PROFILE](@ref GLFW_OPENGL_PROFILE_hint) hints accordingly.  OpenGL
-3.0 and 3.1 contexts are not supported at all on macOS.
+@note @macos The OS only supports core profile contexts for OpenGL versions 3.2
+and later.  Before creating an OpenGL context of version 3.2 or later you must
+set the [GLFW_OPENGL_PROFILE](@ref GLFW_OPENGL_PROFILE_hint) hint accordingly.
+OpenGL 3.0 and 3.1 contexts are not supported at all on macOS.
 
 @anchor GLFW_OPENGL_FORWARD_COMPAT_hint
 __GLFW_OPENGL_FORWARD_COMPAT__ specifies whether the OpenGL context should be
@@ -448,6 +453,14 @@ situations that would have generated errors instead cause undefined behavior.
 The no error mode for OpenGL and OpenGL ES is described in detail by the
 [GL_KHR_no_error](https://www.opengl.org/registry/specs/KHR/no_error.txt)
 extension.
+
+
+@subsubsection window_hints_win32 Windows specific window hints
+
+@anchor GLFW_WIN32_KEYBOARD_MENU_hint
+__GLFW_WIN32_KEYBOARD_MENU__ specifies whether to allow access to the window
+menu via the Alt+Space and Alt-and-then-Space keyboard shortcuts.  This is
+ignored on other platforms.
 
 
 @subsubsection window_hints_osx macOS specific window hints
@@ -530,6 +543,7 @@ GLFW_CONTEXT_RELEASE_BEHAVIOR | `GLFW_ANY_RELEASE_BEHAVIOR` | `GLFW_ANY_RELEASE_
 GLFW_OPENGL_FORWARD_COMPAT    | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_OPENGL_DEBUG_CONTEXT     | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_OPENGL_PROFILE           | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE`
+GLFW_WIN32_KEYBOARD_MENU      | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_COCOA_RETINA_FRAMEBUFFER | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_COCOA_FRAME_NAME         | `""`                        | A UTF-8 encoded frame autosave name
 GLFW_COCOA_GRAPHICS_SWITCHING | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
@@ -1400,7 +1414,7 @@ glfwSwapBuffers(window);
 
 Sometimes it can be useful to select when the buffer swap will occur.  With the
 function @ref glfwSwapInterval it is possible to select the minimum number of
-monitor refreshes the driver wait should from the time @ref glfwSwapBuffers was
+monitor refreshes the driver should wait from the time @ref glfwSwapBuffers was
 called before swapping the buffers:
 
 @code

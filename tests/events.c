@@ -175,7 +175,7 @@ static const char* get_key_name(int key)
         case GLFW_KEY_KP_8:         return "KEYPAD 8";
         case GLFW_KEY_KP_9:         return "KEYPAD 9";
         case GLFW_KEY_KP_DIVIDE:    return "KEYPAD DIVIDE";
-        case GLFW_KEY_KP_MULTIPLY:  return "KEYPAD MULTPLY";
+        case GLFW_KEY_KP_MULTIPLY:  return "KEYPAD MULTIPLY";
         case GLFW_KEY_KP_SUBTRACT:  return "KEYPAD SUBTRACT";
         case GLFW_KEY_KP_ADD:       return "KEYPAD ADD";
         case GLFW_KEY_KP_DECIMAL:   return "KEYPAD DECIMAL";
@@ -253,17 +253,32 @@ static const char* get_mods_name(int mods)
     return name;
 }
 
-static const char* get_character_string(int codepoint)
+static size_t encode_utf8(char* s, unsigned int ch)
 {
-    // This assumes UTF-8, which is stupid
-    static char result[6 + 1];
+    size_t count = 0;
 
-    int length = wctomb(result, codepoint);
-    if (length == -1)
-        length = 0;
+    if (ch < 0x80)
+        s[count++] = (char) ch;
+    else if (ch < 0x800)
+    {
+        s[count++] = (ch >> 6) | 0xc0;
+        s[count++] = (ch & 0x3f) | 0x80;
+    }
+    else if (ch < 0x10000)
+    {
+        s[count++] = (ch >> 12) | 0xe0;
+        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
+        s[count++] = (ch & 0x3f) | 0x80;
+    }
+    else if (ch < 0x110000)
+    {
+        s[count++] = (ch >> 18) | 0xf0;
+        s[count++] = ((ch >> 12) & 0x3f) | 0x80;
+        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
+        s[count++] = (ch & 0x3f) | 0x80;
+    }
 
-    result[length] = '\0';
-    return result;
+    return count;
 }
 
 static void error_callback(int error, const char* description)
@@ -304,6 +319,12 @@ static void window_close_callback(GLFWwindow* window)
     Slot* slot = glfwGetWindowUserPointer(window);
     printf("%08x to %i at %0.3f: Window close\n",
            counter++, slot->number, glfwGetTime());
+
+    if (!slot->closeable)
+    {
+        printf("(( closing is disabled, press %s to re-enable )\n",
+               glfwGetKeyName(GLFW_KEY_C, 0));
+    }
 
     glfwSetWindowShouldClose(window, slot->closeable);
 }
@@ -425,9 +446,11 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 static void char_callback(GLFWwindow* window, unsigned int codepoint)
 {
     Slot* slot = glfwGetWindowUserPointer(window);
+    char string[5] = "";
+
+    encode_utf8(string, codepoint);
     printf("%08x to %i at %0.3f: Character 0x%08x (%s) input\n",
-           counter++, slot->number, glfwGetTime(), codepoint,
-           get_character_string(codepoint));
+           counter++, slot->number, glfwGetTime(), codepoint, string);
 }
 
 static void drop_callback(GLFWwindow* window, int count, const char* paths[])
@@ -486,6 +509,20 @@ static void joystick_callback(int jid, int event)
                axisCount,
                buttonCount,
                hatCount);
+
+        if (glfwJoystickIsGamepad(jid))
+        {
+            printf("  Joystick %i (%s) has a gamepad mapping (%s)\n",
+                   jid,
+                   glfwGetJoystickGUID(jid),
+                   glfwGetGamepadName(jid));
+        }
+        else
+        {
+            printf("  Joystick %i (%s) has no gamepad mapping\n",
+                   jid,
+                   glfwGetJoystickGUID(jid));
+        }
     }
     else
     {
@@ -499,8 +536,6 @@ int main(int argc, char** argv)
     Slot* slots;
     GLFWmonitor* monitor = NULL;
     int ch, i, width, height, count = 1;
-
-    setlocale(LC_ALL, "");
 
     glfwSetErrorCallback(error_callback);
 

@@ -58,6 +58,14 @@ requesting a specific rendering backend when using
 contexts.
 
 
+@subsubsection captured_cursor_34 Captured cursor mode
+
+GLFW now supports confining the cursor to the window content area with the @ref
+GLFW_CURSOR_CAPTURED cursor mode.
+
+For more information see @ref cursor_mode.
+
+
 @subsubsection features_34_init_allocator Support for custom memory allocator
 
 GLFW now supports plugging a custom memory allocator at initialization with @ref
@@ -234,6 +242,7 @@ then GLFW will fail to initialize.
  - @ref GLFW_ANGLE_PLATFORM_TYPE_VULKAN
  - @ref GLFW_ANGLE_PLATFORM_TYPE_METAL
  - @ref GLFW_X11_XCB_VULKAN_SURFACE
+ - @ref GLFW_CURSOR_CAPTURED
 
 
 @section news_archive Release notes for earlier versions

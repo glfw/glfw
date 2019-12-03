@@ -453,7 +453,8 @@ static char* convertLatin1toUTF8(const char* source)
 //
 static void updateCursorImage(_GLFWwindow* window)
 {
-    if (window->cursorMode == GLFW_CURSOR_NORMAL)
+    if (window->cursorMode == GLFW_CURSOR_NORMAL ||
+        window->cursorMode == GLFW_CURSOR_CAPTURED)
     {
         if (window->cursor)
         {
@@ -1705,6 +1706,8 @@ static void processEvent(XEvent *event)
 
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 disableCursor(window);
+            else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+                captureCursor(window);
 
             if (window->x11.ic)
                 XSetICFocus(window->x11.ic);
@@ -1725,6 +1728,8 @@ static void processEvent(XEvent *event)
 
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 enableCursor(window);
+            else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+                releaseCursor();
 
             if (window->x11.ic)
                 XUnsetICFocus(window->x11.ic);
@@ -2831,7 +2836,7 @@ void _glfwSetCursorModeX11(_GLFWwindow* window, int mode)
                 disableRawMouseMotion(window);
         }
 
-        if (mode == GLFW_CURSOR_DISABLED)
+        if (mode == GLFW_CURSOR_DISABLED || mode == GLFW_CURSOR_CAPTURED)
             captureCursor(window);
         else
             releaseCursor();
@@ -3003,7 +3008,8 @@ void _glfwDestroyCursorX11(_GLFWcursor* cursor)
 
 void _glfwSetCursorX11(_GLFWwindow* window, _GLFWcursor* cursor)
 {
-    if (window->cursorMode == GLFW_CURSOR_NORMAL)
+    if (window->cursorMode == GLFW_CURSOR_NORMAL ||
+        window->cursorMode == GLFW_CURSOR_CAPTURED)
     {
         updateCursorImage(window);
         XFlush(_glfw.x11.display);

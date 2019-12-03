@@ -1860,6 +1860,9 @@ void _glfwDestroyWindowWayland(_GLFWwindow* window)
     if (window->wl.lockedPointer)
         zwp_locked_pointer_v1_destroy(window->wl.lockedPointer);
 
+    if (window->wl.confinedPointer)
+        zwp_confined_pointer_v1_destroy(window->wl.confinedPointer);
+
     if (window->context.destroy)
         window->context.destroy(window);
 
@@ -2538,6 +2541,43 @@ static void lockPointer(_GLFWwindow* window)
                                        window);
 }
 
+static void confinedPointerHandleConfined(void* userData,
+                                          struct zwp_confined_pointer_v1* confinedPointer)
+{
+}
+
+static void confinedPointerHandleUnconfined(void* userData,
+                                            struct zwp_confined_pointer_v1* confinedPointer)
+{
+}
+
+static const struct zwp_confined_pointer_v1_listener confinedPointerListener =
+{
+    confinedPointerHandleConfined,
+    confinedPointerHandleUnconfined
+};
+
+static void confinePointer(_GLFWwindow* window)
+{
+    window->wl.confinedPointer =
+        zwp_pointer_constraints_v1_confine_pointer(
+            _glfw.wl.pointerConstraints,
+            window->wl.surface,
+            _glfw.wl.pointer,
+            NULL,
+            ZWP_POINTER_CONSTRAINTS_V1_LIFETIME_PERSISTENT);
+
+    zwp_confined_pointer_v1_add_listener(window->wl.confinedPointer,
+                                         &confinedPointerListener,
+                                         window);
+}
+
+static void unconfinePointer(_GLFWwindow* window)
+{
+    zwp_confined_pointer_v1_destroy(window->wl.confinedPointer);
+    window->wl.confinedPointer = NULL;
+}
+
 void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
 {
     if (!_glfw.wl.pointer)
@@ -2553,17 +2593,29 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
     // Update pointer lock to match cursor mode
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
+        if (window->wl.confinedPointer)
+            unconfinePointer(window);
         if (!window->wl.lockedPointer)
             lockPointer(window);
+    }
+    else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+    {
+        if (window->wl.lockedPointer)
+            unlockPointer(window);
+        if (!window->wl.confinedPointer)
+            confinePointer(window);
     }
     else if (window->cursorMode == GLFW_CURSOR_NORMAL ||
              window->cursorMode == GLFW_CURSOR_HIDDEN)
     {
         if (window->wl.lockedPointer)
             unlockPointer(window);
+        else if (window->wl.confinedPointer)
+            unconfinePointer(window);
     }
 
-    if (window->cursorMode == GLFW_CURSOR_NORMAL)
+    if (window->cursorMode == GLFW_CURSOR_NORMAL ||
+        window->cursorMode == GLFW_CURSOR_CAPTURED)
     {
         if (cursor)
             setCursorImage(window, &cursor->wl);

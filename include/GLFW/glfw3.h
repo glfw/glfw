@@ -1134,6 +1134,7 @@ extern "C" {
 #define GLFW_CURSOR_NORMAL          0x00034001
 #define GLFW_CURSOR_HIDDEN          0x00034002
 #define GLFW_CURSOR_DISABLED        0x00034003
+#define GLFW_CURSOR_CAPTURED        0x00034004
 
 #define GLFW_ANY_RELEASE_BEHAVIOR            0
 #define GLFW_RELEASE_BEHAVIOR_FLUSH 0x00035001
@@ -4566,6 +4567,8 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  - `GLFW_CURSOR_DISABLED` hides and grabs the cursor, providing virtual
  *    and unlimited cursor movement.  This is useful for implementing for
  *    example 3D camera controls.
+ *  - `GLFW_CURSOR_CAPTURED` makes the cursor visible and confines it to the
+ *    content area of the window.
  *
  *  If the mode is `GLFW_STICKY_KEYS`, the value must be either `GLFW_TRUE` to
  *  enable sticky keys, or `GLFW_FALSE` to disable it.  If sticky keys are

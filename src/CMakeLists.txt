@@ -73,8 +73,10 @@ if (_GLFW_X11 OR _GLFW_WAYLAND)
 endif()
 
 if (APPLE)
-    # For some reason, CMake doesn't know about .m
-    set_source_files_properties(${glfw_SOURCES} PROPERTIES LANGUAGE C)
+    # For some reason CMake didn't know about .m until version 3.16
+    set_source_files_properties(cocoa_init.m cocoa_joystick.m cocoa_monitor.m
+                                cocoa_window.m nsgl_context.m PROPERTIES
+                                LANGUAGE C)
 endif()
 
 # Make GCC and Clang warn about declarations that VS 2010 and 2012 won't accept

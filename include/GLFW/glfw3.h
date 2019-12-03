@@ -2685,7 +2685,7 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *  [High Resolution Guidelines for OS X](https://developer.apple.com/library/mac/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Explained/Explained.html)
  *  in the Mac Developer Library.  The GLFW test and example programs use
  *  a custom `Info.plist` template for this, which can be found as
- *  `CMake/MacOSXBundleInfo.plist.in` in the source tree.
+ *  `CMake/Info.plist.in` in the source tree.
  *
  *  @remark @macos When activating frame autosaving with
  *  [GLFW_COCOA_FRAME_NAME](@ref GLFW_COCOA_FRAME_NAME_hint), the specified

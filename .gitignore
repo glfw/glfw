@@ -8,7 +8,8 @@ _ReSharper*
 *.dir
 *.vcxproj*
 *.sln
-.vs/
+.vs
+CMakeSettings.json
 Win32
 x64
 Debug

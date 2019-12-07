@@ -79,20 +79,6 @@ if (APPLE)
                                 LANGUAGE C)
 endif()
 
-# Make GCC and Clang warn about declarations that VS 2010 and 2012 won't accept
-# for all source files that VS will build
-if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
-    "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR
-    "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
-
-    set_source_files_properties(context.c init.c input.c monitor.c vulkan.c
-                                window.c win32_init.c win32_joystick.c
-                                win32_monitor.c win32_time.c win32_thread.c
-                                win32_window.c wgl_context.c egl_context.c
-                                osmesa_context.c PROPERTIES
-                                COMPILE_FLAGS -Wdeclaration-after-statement)
-endif()
-
 add_library(glfw ${glfw_SOURCES} ${glfw_HEADERS})
 set_target_properties(glfw PROPERTIES
                       OUTPUT_NAME ${GLFW_LIB_NAME}
@@ -123,18 +109,29 @@ target_include_directories(glfw PRIVATE
                            ${glfw_INCLUDE_DIRS})
 target_link_libraries(glfw PRIVATE ${glfw_LIBRARIES})
 
+if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
+    "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR
+    "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
+
+    # Make GCC and Clang warn about declarations that VS 2010 and 2012 won't
+    # accept for all source files that VS will build
+    set_source_files_properties(context.c init.c input.c monitor.c vulkan.c
+                                window.c win32_init.c win32_joystick.c
+                                win32_monitor.c win32_time.c win32_thread.c
+                                win32_window.c wgl_context.c egl_context.c
+                                osmesa_context.c PROPERTIES
+                                COMPILE_FLAGS -Wdeclaration-after-statement)
+
+    # Enable a reasonable set of warnings (no, -Wextra is not reasonable)
+    target_compile_options(glfw PRIVATE "-Wall")
+endif()
+
 # HACK: When building on MinGW, WINVER and UNICODE need to be defined before
 # the inclusion of stddef.h (by glfw3.h), which is itself included before
 # win32_platform.h.  We define them here until a saner solution can be found
 # NOTE: MinGW-w64 and Visual C++ do /not/ need this hack.
 target_compile_definitions(glfw PRIVATE
                            "$<$<BOOL:${MINGW}>:UNICODE;WINVER=0x0501>")
-
-# Enable a reasonable set of warnings (no, -Wextra is not reasonable)
-target_compile_options(glfw PRIVATE
-                       "$<$<C_COMPILER_ID:AppleClang>:-Wall>"
-                       "$<$<C_COMPILER_ID:Clang>:-Wall>"
-                       "$<$<C_COMPILER_ID:GNU>:-Wall>")
 
 if (BUILD_SHARED_LIBS)
     if (WIN32)

@@ -130,8 +130,9 @@ endif()
 # the inclusion of stddef.h (by glfw3.h), which is itself included before
 # win32_platform.h.  We define them here until a saner solution can be found
 # NOTE: MinGW-w64 and Visual C++ do /not/ need this hack.
-target_compile_definitions(glfw PRIVATE
-                           "$<$<BOOL:${MINGW}>:UNICODE;WINVER=0x0501>")
+if (MINGW)
+    target_compile_definitions(glfw PRIVATE UNICODE WINVER=0x0501)
+endif()
 
 if (BUILD_SHARED_LIBS)
     if (WIN32)

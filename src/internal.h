@@ -80,6 +80,7 @@ typedef void (* _GLFWmakecontextcurrentfun)(_GLFWwindow*);
 typedef void (* _GLFWswapbuffersfun)(_GLFWwindow*);
 typedef void (* _GLFWswapbufferswithdamagefun)(_GLFWwindow*,GLFWrect*,int);
 typedef void (* _GLFWswapintervalfun)(int);
+typedef int (* _GLFWgetbufferagefun)(_GLFWwindow*);
 typedef int (* _GLFWextensionsupportedfun)(const char*);
 typedef GLFWglproc (* _GLFWgetprocaddressfun)(const char*);
 typedef void (* _GLFWdestroycontextfun)(_GLFWwindow*);
@@ -353,6 +354,7 @@ struct _GLFWcontext
     _GLFWswapbuffersfun         swapBuffers;
     _GLFWswapbufferswithdamagefun swapBuffersWithDamage;
     _GLFWswapintervalfun        swapInterval;
+    _GLFWgetbufferagefun        getBufferAge;
     _GLFWextensionsupportedfun  extensionSupported;
     _GLFWgetprocaddressfun      getProcAddress;
     _GLFWdestroycontextfun      destroy;

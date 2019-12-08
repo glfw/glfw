@@ -5656,6 +5656,7 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
  *  @sa @ref buffer_swap
  *  @sa @ref glfwSwapBuffers
  *  @sa @ref glfwSwapInterval
+ *  @sa @ref glfwGetBufferAge
  *
  *  @since Added in version 3.4.
  *
@@ -5708,6 +5709,36 @@ GLFWAPI void glfwSwapBuffersWithDamage(GLFWwindow* window, GLFWrect* rects, int 
  *  @ingroup context
  */
 GLFWAPI void glfwSwapInterval(int interval);
+
+/*! @brief Returns the buffer age of the window’s current buffer.
+ *
+ *  This function returns the age of the current buffer, in frames.  It may be
+ *  used to redraw only the parts of the buffer that have changed since this
+ *  buffer was last used, thus avoiding a clear and draw of the entire buffer.
+ *
+ *  A context must be current on the calling thread.  Calling this function
+ *  without a current context will cause a @ref GLFW_NO_CURRENT_CONTEXT error.
+ *
+ *  This function does not apply to Vulkan.  If you are rendering with Vulkan,
+ *  see the present mode of your swapchain instead.
+ *
+ *  @param[in] window The window whose buffers to swap.
+ *  @return The age of the back buffer if the extension is available, or 0
+ *  otherwise.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_NO_CURRENT_CONTEXT and @ref GLFW_PLATFORM_ERROR.
+ *
+ *  @thread_safety This function may be called from any thread.
+ *
+ *  @sa @ref buffer_swap
+ *  @sa @ref glfwSwapBuffersWithDamage
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup context
+ */
+GLFWAPI int glfwGetBufferAge(GLFWwindow* window);
 
 /*! @brief Returns whether the specified extension is available.
  *

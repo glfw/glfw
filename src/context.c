@@ -694,6 +694,26 @@ GLFWAPI void glfwSwapInterval(int interval)
     window->context.swapInterval(interval);
 }
 
+GLFWAPI int glfwGetBufferAge(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(0);
+
+    if (window->context.client == GLFW_NO_API)
+    {
+        _glfwInputError(GLFW_NO_WINDOW_CONTEXT,
+                        "Cannot get buffer age of a window that has no OpenGL or OpenGL ES context");
+        return 0;
+    }
+
+    if (window->context.getBufferAge)
+        return window->context.getBufferAge(window);
+
+    return 0;
+}
+
 GLFWAPI int glfwExtensionSupported(const char* extension)
 {
     _GLFWwindow* window;

@@ -107,6 +107,8 @@ typedef struct wl_egl_window* EGLNativeWindowType;
 #define EGL_CONTEXT_RELEASE_BEHAVIOR_NONE_KHR 0
 #define EGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR 0x2098
 
+#define EGL_BUFFER_AGE_EXT 0x313D
+
 typedef int EGLint;
 typedef unsigned int EGLBoolean;
 typedef unsigned int EGLenum;
@@ -131,6 +133,7 @@ typedef EGLBoolean (EGLAPIENTRY * PFN_eglMakeCurrent)(EGLDisplay,EGLSurface,EGLS
 typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapBuffers)(EGLDisplay,EGLSurface);
 typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapInterval)(EGLDisplay,EGLint);
 typedef const char* (EGLAPIENTRY * PFN_eglQueryString)(EGLDisplay,EGLint);
+typedef EGLBoolean (EGLAPIENTRY * PFN_eglQuerySurface)(EGLDisplay,EGLSurface,EGLint,EGLint*);
 typedef GLFWglproc (EGLAPIENTRY * PFN_eglGetProcAddress)(const char*);
 typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapBuffersWithDamageKHR)(EGLDisplay,EGLSurface,EGLint*,EGLint);
 #define eglGetConfigAttrib _glfw.egl.GetConfigAttrib
@@ -148,6 +151,7 @@ typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapBuffersWithDamageKHR)(EGLDisplay,EG
 #define eglSwapBuffers _glfw.egl.SwapBuffers
 #define eglSwapInterval _glfw.egl.SwapInterval
 #define eglQueryString _glfw.egl.QueryString
+#define eglQuerySurface _glfw.egl.QuerySurface
 #define eglGetProcAddress _glfw.egl.GetProcAddress
 #define eglSwapBuffersWithDamageKHR _glfw.egl.SwapBuffersWithDamageKHR
 
@@ -199,6 +203,7 @@ typedef struct _GLFWlibraryEGL
     PFN_eglSwapBuffers          SwapBuffers;
     PFN_eglSwapInterval         SwapInterval;
     PFN_eglQueryString          QueryString;
+    PFN_eglQuerySurface         QuerySurface;
     PFN_eglGetProcAddress       GetProcAddress;
     PFN_eglSwapBuffersWithDamageKHR SwapBuffersWithDamageKHR;
 

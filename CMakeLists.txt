@@ -227,7 +227,7 @@ if (_GLFW_X11)
 
     # Check for XInput (modern HID input)
     if (NOT X11_Xi_INCLUDE_PATH)
-        message(FATAL_ERROR "The XInput headers were not found (hint: install libxi-dev)")
+        message(FATAL_ERROR "The XInput headers were not found (hint: install libxi devel package)")
     endif()
 
     list(APPEND glfw_INCLUDE_DIRS "${X11_Xrandr_INCLUDE_PATH}"

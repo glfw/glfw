@@ -70,7 +70,7 @@ set_target_properties(${GUI_ONLY_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
 
 if (MSVC)
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables
-    set_target_properties(${GUI_ONLY_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
+    set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES
                           LINK_FLAGS "/ENTRY:mainCRTStartup")
 endif()
 
@@ -84,10 +84,9 @@ if (APPLE)
     set_target_properties(threads PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Threads")
     set_target_properties(timeout PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Timeout")
     set_target_properties(title PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Title")
-    set_target_properties(triangle-vulkan PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Vulkan Triangle")
     set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 
-    set_target_properties(${GUI_ONLY_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
+    set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES
                           MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}
                           MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION}
                           MACOSX_BUNDLE_INFO_PLIST "${GLFW_SOURCE_DIR}/CMake/Info.plist.in")

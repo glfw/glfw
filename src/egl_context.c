@@ -419,7 +419,7 @@ GLFWbool _glfwInitEGL(void)
         eglGetProcAddress("eglQueryDevicesEXT");
     _glfw.egl.GetPlatformDisplayEXT = (PFN_eglGetPlatformDisplayEXT)
         eglGetProcAddress("eglGetPlatformDisplayEXT");
-    
+
     if (!_glfw.egl.QueryDevicesEXT ||
         !_glfw.egl.GetPlatformDisplayEXT)
     {

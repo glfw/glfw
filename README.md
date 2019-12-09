@@ -147,6 +147,8 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: Content scale fallback value could be inconsistent (#1578)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
+ - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
+   macOS versions (#1442)
 
 
 ## Contact

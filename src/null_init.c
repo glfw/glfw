@@ -42,11 +42,23 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
+    #if defined(_GLFW_OSMESA)
     _glfwTerminateOSMesa();
+    #elif defined(_GLFW_EGLHEADLESS)
+    _glfwTerminateEGL();
+    #else
+    #error "No supported context selected"
+    #endif
 }
 
 const char* _glfwPlatformGetVersionString(void)
 {
+    #if defined(_GLFW_OSMESA)
     return _GLFW_VERSION_NUMBER " null OSMesa";
+    #elif defined(_GLFW_EGLHEADLESS)
+    return _GLFW_VERSION_NUMBER " null EGL Headless";
+    #else
+    #error "No supported context selected"
+    #endif
 }
 

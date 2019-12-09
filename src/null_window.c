@@ -54,6 +54,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (ctxconfig->client != GLFW_NO_API)
     {
+    #if defined(_GLFW_OSMESA)
         if (ctxconfig->source == GLFW_NATIVE_CONTEXT_API ||
             ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
         {
@@ -64,9 +65,25 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         }
         else
         {
-            _glfwInputError(GLFW_API_UNAVAILABLE, "Null: EGL not available");
+            _glfwInputError(GLFW_API_UNAVAILABLE, "Null: context not available");
             return GLFW_FALSE;
         }
+    #elif defined(_GLFW_EGLHEADLESS)
+        if (ctxconfig->source == GLFW_NATIVE_CONTEXT_API)
+        {
+            if (!_glfwInitEGL())
+                return GLFW_FALSE;
+            if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
+                return GLFW_FALSE;
+        }
+        else
+        {
+            _glfwInputError(GLFW_API_UNAVAILABLE, "Null: context not available");
+            return GLFW_FALSE;
+        }
+    #else
+    #error "No supported context selected"
+    #endif
     }
 
     return GLFW_TRUE;

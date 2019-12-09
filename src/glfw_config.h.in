@@ -44,6 +44,8 @@
 #cmakedefine _GLFW_WAYLAND
 // Define this to 1 if building GLFW for OSMesa
 #cmakedefine _GLFW_OSMESA
+// Define this to 1 if building GLFW for EGLHeadless
+#cmakedefine _GLFW_EGLHEADLESS
 
 // Define this to 1 if building as a shared library / dynamic library / DLL
 #cmakedefine _GLFW_BUILD_DLL

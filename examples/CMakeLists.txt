@@ -15,8 +15,6 @@ if (WIN32)
     set(ICON glfw.rc)
 elseif (APPLE)
     set(ICON glfw.icns)
-    set_source_files_properties(glfw.icns PROPERTIES
-        MACOSX_PACKAGE_LOCATION "Resources")
 endif()
 
 if (${CMAKE_VERSION} VERSION_EQUAL "3.1.0" OR
@@ -79,6 +77,8 @@ if (APPLE)
     set_target_properties(splitview PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "SplitView")
     set_target_properties(wave PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Wave")
 
+    set_source_files_properties(glfw.icns PROPERTIES
+                                MACOSX_PACKAGE_LOCATION "Resources")
     set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES
                           MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}
                           MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION}

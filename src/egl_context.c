@@ -375,8 +375,6 @@ GLFWbool _glfwInitEGL(void)
     #if defined(_GLFW_EGLHEADLESS)
     _glfw.egl.CreatePbufferSurface = (PFN_eglCreatePbufferSurface)
         _glfw_dlsym(_glfw.egl.handle, "eglCreatePbufferSurface");
-    _glfw.egl.ChooseConfig = (PFN_eglChooseConfig)
-        _glfw_dlsym(_glfw.egl.handle, "eglChooseConfig");
     #endif
     _glfw.egl.MakeCurrent = (PFN_eglMakeCurrent)
         _glfw_dlsym(_glfw.egl.handle, "eglMakeCurrent");
@@ -402,7 +400,6 @@ GLFWbool _glfwInitEGL(void)
         !_glfw.egl.CreateWindowSurface ||
     #if defined(_GLFW_EGLHEADLESS)
         !_glfw.egl.CreatePbufferSurface ||
-        !_glfw.egl.ChooseConfig ||
     #endif
         !_glfw.egl.MakeCurrent ||
         !_glfw.egl.SwapBuffers ||
@@ -418,7 +415,43 @@ GLFWbool _glfwInitEGL(void)
     }
 
     #if defined(_GLFW_EGLHEADLESS)
-    _glfw.egl.display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    _glfw.egl.QueryDevicesEXT = (PFN_eglQueryDevicesEXT)
+        eglGetProcAddress("eglQueryDevicesEXT");
+    _glfw.egl.GetPlatformDisplayEXT = (PFN_eglGetPlatformDisplayEXT)
+        eglGetProcAddress("eglGetPlatformDisplayEXT");
+    
+    if (!_glfw.egl.QueryDevicesEXT ||
+        !_glfw.egl.GetPlatformDisplayEXT)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "EGL: Failed to load required extension entry points");
+
+        _glfwTerminateEGL();
+        return GLFW_FALSE;
+    }
+
+    EGLDeviceEXT devices[16];
+    EGLint num_devices;
+    if (!eglQueryDevicesEXT(sizeof(devices) / sizeof(devices[0]), devices, &num_devices)) {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "EGL: Failed to get EGL devices: %s",
+                        getEGLErrorString(eglGetError()));
+
+        _glfwTerminateEGL();
+        return GLFW_FALSE;
+    }
+
+    if (_glfw.hints.deviceIndex >= num_devices)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "EGL: Invalid device index: %d",
+                        _glfw.hints.deviceIndex);
+
+        _glfwTerminateEGL();
+        return GLFW_FALSE;
+    }
+
+    _glfw.egl.display = eglGetPlatformDisplayEXT(EGL_PLATFORM_DEVICE_EXT, devices[_glfw.hints.deviceIndex], NULL);
     #else
     _glfw.egl.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
     #endif

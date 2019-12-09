@@ -47,6 +47,7 @@ typedef struct wl_egl_window* EGLNativeWindowType;
  #define EGLAPIENTRY
 typedef void* EGLNativeDisplayType;
 typedef void* EGLNativeWindowType;
+typedef void *EGLDeviceEXT;
 #else
  #error "No supported EGL platform selected"
 #endif
@@ -94,6 +95,7 @@ typedef void* EGLNativeWindowType;
 #define EGL_DEFAULT_DISPLAY ((EGLNativeDisplayType) 0)
 #define EGL_HEIGHT 0x3056
 #define EGL_WIDTH 0x3057
+#define EGL_PLATFORM_DEVICE_EXT 0x313F
 
 #define EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR 0x00000002
 #define EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR 0x00000001
@@ -140,7 +142,8 @@ typedef EGLBoolean (EGLAPIENTRY * PFN_eglDestroyContext)(EGLDisplay,EGLContext);
 typedef EGLSurface (EGLAPIENTRY * PFN_eglCreateWindowSurface)(EGLDisplay,EGLConfig,EGLNativeWindowType,const EGLint*);
 #if defined(_GLFW_EGLHEADLESS)
 typedef EGLSurface (EGLAPIENTRY * PFN_eglCreatePbufferSurface)(EGLDisplay,EGLConfig,const EGLint*);
-typedef EGLBoolean (EGLAPIENTRY * PFN_eglChooseConfig)(EGLDisplay,const EGLint*,EGLConfig,EGLint,EGLint*);
+typedef EGLSurface (EGLAPIENTRY * PFN_eglQueryDevicesEXT)(EGLint,EGLDeviceEXT*,EGLint*);
+typedef EGLSurface (EGLAPIENTRY * PFN_eglGetPlatformDisplayEXT)(EGLenum,EGLNativeDisplayType,const EGLint*);
 #endif
 typedef EGLBoolean (EGLAPIENTRY * PFN_eglMakeCurrent)(EGLDisplay,EGLSurface,EGLSurface,EGLContext);
 typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapBuffers)(EGLDisplay,EGLSurface);
@@ -160,7 +163,8 @@ typedef GLFWglproc (EGLAPIENTRY * PFN_eglGetProcAddress)(const char*);
 #define eglCreateWindowSurface _glfw.egl.CreateWindowSurface
 #if defined(_GLFW_EGLHEADLESS)
 #define eglCreatePbufferSurface _glfw.egl.CreatePbufferSurface
-#define eglChooseConfig _glfw.egl.ChooseConfig
+#define eglQueryDevicesEXT _glfw.egl.QueryDevicesEXT
+#define eglGetPlatformDisplayEXT _glfw.egl.GetPlatformDisplayEXT
 #endif
 #define eglMakeCurrent _glfw.egl.MakeCurrent
 #define eglSwapBuffers _glfw.egl.SwapBuffers
@@ -213,7 +217,8 @@ typedef struct _GLFWlibraryEGL
     PFN_eglCreateWindowSurface  CreateWindowSurface;
 #if defined(_GLFW_EGLHEADLESS)
     PFN_eglCreatePbufferSurface CreatePbufferSurface;
-    PFN_eglChooseConfig         ChooseConfig;
+    PFN_eglQueryDevicesEXT QueryDevicesEXT;
+    PFN_eglGetPlatformDisplayEXT GetPlatformDisplayEXT;
 #endif
     PFN_eglMakeCurrent          MakeCurrent;
     PFN_eglSwapBuffers          SwapBuffers;

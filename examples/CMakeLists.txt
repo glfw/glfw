@@ -11,10 +11,6 @@ if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-if (GLFW_USE_OSMESA)
-    add_definitions(-DUSE_NATIVE_OSMESA)
-endif()
-
 if (WIN32)
     set(ICON glfw.rc)
 elseif (APPLE)
@@ -62,6 +58,10 @@ set(CONSOLE_BINARIES offscreen)
 
 set_target_properties(${GUI_ONLY_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
                       FOLDER "GLFW3/Examples")
+
+if (GLFW_USE_OSMESA)
+    target_compile_definitions(offscreen PRIVATE USE_NATIVE_OSMESA)
+endif()
 
 if (MSVC)
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables

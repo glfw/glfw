@@ -98,33 +98,6 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
                                 const _GLFWfbconfig* desired,
                                 EGLConfig* result)
 {
-
-#if defined(_GLFW_EGLHEADLESS)
-{
-    EGLint attribs[40];
-    int index = 0;
-        setAttrib(EGL_SURFACE_TYPE, EGL_PBUFFER_BIT);
-        setAttrib(EGL_BLUE_SIZE, 8);
-        setAttrib(EGL_GREEN_SIZE, 8);
-        setAttrib(EGL_RED_SIZE, 8);
-        setAttrib(EGL_DEPTH_SIZE, 8);
-        if (ctxconfig->client == GLFW_OPENGL_ES_API)
-        {
-            setAttrib(EGL_RENDERABLE_TYPE, EGL_OPENGL_ES_BIT);
-        }
-        else
-        {
-            setAttrib(EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT);
-        }
-        setAttrib(EGL_NONE, EGL_NONE);
-        
-        int num_configs;
-    if (!eglChooseConfig(_glfw.egl.display, attribs, result, 1, &num_configs) || num_configs == 0) {
-        return GLFW_FALSE;
-    }
-    return GLFW_TRUE;
-}
-#else
     EGLConfig* nativeConfigs;
     _GLFWfbconfig* usableConfigs;
     const _GLFWfbconfig* closest;
@@ -152,9 +125,14 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
         if (getEGLConfigAttrib(n, EGL_COLOR_BUFFER_TYPE) != EGL_RGB_BUFFER)
             continue;
 
+#if defined(_GLFW_EGLHEADLESS)
+        if (!(getEGLConfigAttrib(n, EGL_SURFACE_TYPE) & EGL_PBUFFER_BIT))
+            continue;
+#else
         // Only consider window EGLConfigs
         if (!(getEGLConfigAttrib(n, EGL_SURFACE_TYPE) & EGL_WINDOW_BIT))
             continue;
+#endif
 
 #if defined(_GLFW_X11)
         XVisualInfo vi = {0};
@@ -220,7 +198,6 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
     free(usableConfigs);
 
     return closest != NULL;
-#endif
 }
 
 static void makeContextCurrentEGL(_GLFWwindow* window)

@@ -515,6 +515,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
     EGLint attribs[40];
     EGLConfig config;
     EGLContext share = NULL;
+    int index = 0;
 
     if (!_glfw.egl.display)
     {
@@ -553,7 +554,6 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         }
     }
 
-    int index = 0;
     if (_glfw.egl.KHR_create_context)
     {
         int mask = 0, flags = 0;

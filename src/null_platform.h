@@ -34,10 +34,22 @@
 #define _GLFW_PLATFORM_CURSOR_STATE          struct { int dummyCursor; }
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE  struct { int dummyLibraryWindow; }
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE struct { int dummyLibraryContext; }
-#define _GLFW_EGL_CONTEXT_STATE              struct { int dummyEGLContext; }
-#define _GLFW_EGL_LIBRARY_CONTEXT_STATE      struct { int dummyEGLLibraryContext; }
+#if !defined(_GLFW_EGLHEADLESS)
+    #define _GLFW_EGL_CONTEXT_STATE              struct { int dummyEGLContext; }
+    #define _GLFW_EGL_LIBRARY_CONTEXT_STATE      struct { int dummyEGLLibraryContext; }
+#endif
+#if !defined(_GLFW_OSMESA)
+    #define _GLFW_OSMESA_CONTEXT_STATE              struct { int dummyOSMesaContext; }
+    #define _GLFW_OSMESA_LIBRARY_CONTEXT_STATE      struct { int dummyOSMesaLibraryContext; }
+#endif
 
-#include "osmesa_context.h"
+#if defined(_GLFW_OSMESA)
+ #include "osmesa_context.h"
+#elif defined(_GLFW_EGLHEADLESS)
+ #include "egl_context.h"
+#else
+ #error "No supported context selected"
+#endif
 #include "posix_time.h"
 #include "posix_thread.h"
 #include "null_joystick.h"

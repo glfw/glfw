@@ -189,6 +189,8 @@ typedef void (APIENTRY * PFN_vkVoidFunction)(void);
  #include "wl_platform.h"
 #elif defined(_GLFW_OSMESA)
  #include "null_platform.h"
+#elif defined(_GLFW_EGLHEADLESS)
+ #include "null_platform.h"
 #else
  #error "No supported window creation API selected"
 #endif
@@ -523,6 +525,7 @@ struct _GLFWlibrary
         _GLFWwndconfig  window;
         _GLFWctxconfig  context;
         int             refreshRate;
+        int             deviceIndex;
     } hints;
 
     _GLFWerror*         errorListHead;

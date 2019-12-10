@@ -1011,9 +1011,13 @@ extern "C" {
  */
 #define GLFW_X11_CLASS_NAME         0x00024001
 /*! @brief X11 specific
- *  [window hint](@ref GLFW_X11_CLASS_NAME_hint).
+ *  [window hint](@ref GLFW_X11_INSTANCE_NAME_hint).
  */
 #define GLFW_X11_INSTANCE_NAME      0x00024002
+/*! @brief EGL Headless specific
+ *  [window hint](@ref GLFW_EGL_HEADLESS_DEVICE_INDEX_hint).
+ */
+#define GLFW_EGL_HEADLESS_DEVICE_INDEX 0x00024003
 #define GLFW_WIN32_KEYBOARD_MENU    0x00025001
 /*! @} */
 

@@ -281,6 +281,8 @@ void glfwDefaultWindowHints(void)
     // The default is to select the highest available refresh rate
     _glfw.hints.refreshRate = GLFW_DONT_CARE;
 
+    _glfw.hints.deviceIndex = 0;
+
     // The default is to use full Retina resolution framebuffers
     _glfw.hints.window.ns.retina = GLFW_TRUE;
 }
@@ -410,6 +412,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             return;
         case GLFW_REFRESH_RATE:
             _glfw.hints.refreshRate = value;
+            return;
+        case GLFW_EGL_HEADLESS_DEVICE_INDEX:
+            _glfw.hints.deviceIndex = value;
             return;
     }
 

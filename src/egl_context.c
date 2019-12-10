@@ -34,6 +34,13 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#define setAttrib(a, v) \
+{ \
+    assert(((size_t) index + 1) < sizeof(attribs) / sizeof(attribs[0])); \
+    attribs[index++] = a; \
+    attribs[index++] = v; \
+}
+
 
 // Return a description of the specified EGL error
 //
@@ -118,9 +125,14 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
         if (getEGLConfigAttrib(n, EGL_COLOR_BUFFER_TYPE) != EGL_RGB_BUFFER)
             continue;
 
+#if defined(_GLFW_EGLHEADLESS)
+        if (!(getEGLConfigAttrib(n, EGL_SURFACE_TYPE) & EGL_PBUFFER_BIT))
+            continue;
+#else
         // Only consider window EGLConfigs
         if (!(getEGLConfigAttrib(n, EGL_SURFACE_TYPE) & EGL_WINDOW_BIT))
             continue;
+#endif
 
 #if defined(_GLFW_X11)
         XVisualInfo vi = {0};
@@ -239,13 +251,14 @@ static void swapIntervalEGL(int interval)
 
 static int extensionSupportedEGL(const char* extension)
 {
+#if !defined(_GLFW_EGLHEADLESS)
     const char* extensions = eglQueryString(_glfw.egl.display, EGL_EXTENSIONS);
     if (extensions)
     {
         if (_glfwStringInExtensionString(extension, extensions))
             return GLFW_TRUE;
     }
-
+#endif
     return GLFW_FALSE;
 }
 
@@ -359,6 +372,10 @@ GLFWbool _glfwInitEGL(void)
         _glfw_dlsym(_glfw.egl.handle, "eglDestroyContext");
     _glfw.egl.CreateWindowSurface = (PFN_eglCreateWindowSurface)
         _glfw_dlsym(_glfw.egl.handle, "eglCreateWindowSurface");
+    #if defined(_GLFW_EGLHEADLESS)
+    _glfw.egl.CreatePbufferSurface = (PFN_eglCreatePbufferSurface)
+        _glfw_dlsym(_glfw.egl.handle, "eglCreatePbufferSurface");
+    #endif
     _glfw.egl.MakeCurrent = (PFN_eglMakeCurrent)
         _glfw_dlsym(_glfw.egl.handle, "eglMakeCurrent");
     _glfw.egl.SwapBuffers = (PFN_eglSwapBuffers)
@@ -381,6 +398,9 @@ GLFWbool _glfwInitEGL(void)
         !_glfw.egl.DestroySurface ||
         !_glfw.egl.DestroyContext ||
         !_glfw.egl.CreateWindowSurface ||
+    #if defined(_GLFW_EGLHEADLESS)
+        !_glfw.egl.CreatePbufferSurface ||
+    #endif
         !_glfw.egl.MakeCurrent ||
         !_glfw.egl.SwapBuffers ||
         !_glfw.egl.SwapInterval ||
@@ -394,7 +414,47 @@ GLFWbool _glfwInitEGL(void)
         return GLFW_FALSE;
     }
 
+    #if defined(_GLFW_EGLHEADLESS)
+    _glfw.egl.QueryDevicesEXT = (PFN_eglQueryDevicesEXT)
+        eglGetProcAddress("eglQueryDevicesEXT");
+    _glfw.egl.GetPlatformDisplayEXT = (PFN_eglGetPlatformDisplayEXT)
+        eglGetProcAddress("eglGetPlatformDisplayEXT");
+
+    if (!_glfw.egl.QueryDevicesEXT ||
+        !_glfw.egl.GetPlatformDisplayEXT)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "EGL: Failed to load required extension entry points");
+
+        _glfwTerminateEGL();
+        return GLFW_FALSE;
+    }
+
+    EGLDeviceEXT devices[16];
+    EGLint num_devices;
+    if (!eglQueryDevicesEXT(sizeof(devices) / sizeof(devices[0]), devices, &num_devices)) {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "EGL: Failed to get EGL devices: %s",
+                        getEGLErrorString(eglGetError()));
+
+        _glfwTerminateEGL();
+        return GLFW_FALSE;
+    }
+
+    if (_glfw.hints.deviceIndex >= num_devices)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "EGL: Invalid device index: %d",
+                        _glfw.hints.deviceIndex);
+
+        _glfwTerminateEGL();
+        return GLFW_FALSE;
+    }
+
+    _glfw.egl.display = eglGetPlatformDisplayEXT(EGL_PLATFORM_DEVICE_EXT, devices[_glfw.hints.deviceIndex], NULL);
+    #else
     _glfw.egl.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
+    #endif
     if (_glfw.egl.display == EGL_NO_DISPLAY)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
@@ -444,13 +504,6 @@ void _glfwTerminateEGL(void)
         _glfw_dlclose(_glfw.egl.handle);
         _glfw.egl.handle = NULL;
     }
-}
-
-#define setAttrib(a, v) \
-{ \
-    assert(((size_t) index + 1) < sizeof(attribs) / sizeof(attribs[0])); \
-    attribs[index++] = a; \
-    attribs[index++] = v; \
 }
 
 // Create the OpenGL or OpenGL ES context
@@ -573,10 +626,21 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         }
     }
 
+    #if defined(_GLFW_EGLHEADLESS)
+        setAttrib(EGL_CONTEXT_MAJOR_VERSION, ctxconfig->major);
+        setAttrib(EGL_CONTEXT_MINOR_VERSION, ctxconfig->minor);
+        setAttrib(EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT);
+    #endif
+
     setAttrib(EGL_NONE, EGL_NONE);
 
+    #if defined(_GLFW_EGLHEADLESS)
+    window->context.egl.handle = eglCreateContext(_glfw.egl.display,
+                                                  config, share, NULL);
+    #else
     window->context.egl.handle = eglCreateContext(_glfw.egl.display,
                                                   config, share, attribs);
+    #endif
 
     if (window->context.egl.handle == EGL_NO_CONTEXT)
     {
@@ -586,6 +650,18 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
+    #if defined(_GLFW_EGLHEADLESS)
+    // Set up attributes for surface creation
+    {
+        int width, height;
+        _glfwPlatformGetFramebufferSize(window, &width, &height);
+        int index = 0;
+        setAttrib(EGL_WIDTH, width);
+        setAttrib(EGL_HEIGHT, height);
+        setAttrib(EGL_NONE, EGL_NONE);
+    }
+    window->context.egl.surface = eglCreatePbufferSurface(_glfw.egl.display, config, attribs);
+    #else
     // Set up attributes for surface creation
     {
         int index = 0;
@@ -598,12 +674,12 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 
         setAttrib(EGL_NONE, EGL_NONE);
     }
-
     window->context.egl.surface =
         eglCreateWindowSurface(_glfw.egl.display,
                                config,
                                _GLFW_EGL_NATIVE_WINDOW,
                                attribs);
+    #endif
     if (window->context.egl.surface == EGL_NO_SURFACE)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -657,7 +733,11 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 #elif defined(_GLFW_WIN32)
 #elif defined(_GLFW_COCOA)
 #else
+#if defined(_GLFW_EGLHEADLESS)
+            "libOpenGL.so.0",
+#else
             "libGL.so.1",
+#endif
 #endif
             NULL
         };

@@ -503,6 +503,12 @@ ASCII encoded class and instance parts of the ICCCM `WM_CLASS` window property.
 These are set with @ref glfwWindowHintString.
 
 
+@subsubsection window_hints_egl_headless EGL headless specific window hints
+
+@anchor GLFW_EGL_HEADLESS_DEVICE_INDEX_hint
+__GLFW_EGL_HEADLESS_DEVICE_INDEX__ specifies the device index to choose when using the EGL headless backend.
+
+
 @subsubsection window_hints_values Supported and default values
 
 Window hint                   | Default value               | Supported values

@@ -43,6 +43,11 @@ typedef Window EGLNativeWindowType;
  #define EGLAPIENTRY
 typedef struct wl_display* EGLNativeDisplayType;
 typedef struct wl_egl_window* EGLNativeWindowType;
+#elif defined(_GLFW_EGLHEADLESS)
+ #define EGLAPIENTRY
+typedef void* EGLNativeDisplayType;
+typedef void* EGLNativeWindowType;
+typedef void *EGLDeviceEXT;
 #else
  #error "No supported EGL platform selected"
 #endif
@@ -67,6 +72,7 @@ typedef struct wl_egl_window* EGLNativeWindowType;
 #define EGL_SURFACE_TYPE 0x3033
 #define EGL_WINDOW_BIT 0x0004
 #define EGL_RENDERABLE_TYPE 0x3040
+#define EGL_PBUFFER_BIT 0x0001
 #define EGL_OPENGL_ES_BIT 0x0001
 #define EGL_OPENGL_ES2_BIT 0x0004
 #define EGL_OPENGL_BIT 0x0008
@@ -87,9 +93,13 @@ typedef struct wl_egl_window* EGLNativeWindowType;
 #define EGL_NO_DISPLAY ((EGLDisplay) 0)
 #define EGL_NO_CONTEXT ((EGLContext) 0)
 #define EGL_DEFAULT_DISPLAY ((EGLNativeDisplayType) 0)
+#define EGL_HEIGHT 0x3056
+#define EGL_WIDTH 0x3057
+#define EGL_PLATFORM_DEVICE_EXT 0x313F
 
 #define EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR 0x00000002
 #define EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR 0x00000001
+#define EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT 0x00000001
 #define EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR 0x00000002
 #define EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR 0x00000001
 #define EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY_KHR 0x31bd
@@ -97,8 +107,11 @@ typedef struct wl_egl_window* EGLNativeWindowType;
 #define EGL_LOSE_CONTEXT_ON_RESET_KHR 0x31bf
 #define EGL_CONTEXT_OPENGL_ROBUST_ACCESS_BIT_KHR 0x00000004
 #define EGL_CONTEXT_MAJOR_VERSION_KHR 0x3098
+#define EGL_CONTEXT_MAJOR_VERSION 0x3098
 #define EGL_CONTEXT_MINOR_VERSION_KHR 0x30fb
+#define EGL_CONTEXT_MINOR_VERSION 0x30FB
 #define EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR 0x30fd
+#define EGL_CONTEXT_OPENGL_PROFILE_MASK 0x30FD
 #define EGL_CONTEXT_FLAGS_KHR 0x30fc
 #define EGL_CONTEXT_OPENGL_NO_ERROR_KHR 0x31b3
 #define EGL_GL_COLORSPACE_KHR 0x309d
@@ -127,6 +140,11 @@ typedef EGLContext (EGLAPIENTRY * PFN_eglCreateContext)(EGLDisplay,EGLConfig,EGL
 typedef EGLBoolean (EGLAPIENTRY * PFN_eglDestroySurface)(EGLDisplay,EGLSurface);
 typedef EGLBoolean (EGLAPIENTRY * PFN_eglDestroyContext)(EGLDisplay,EGLContext);
 typedef EGLSurface (EGLAPIENTRY * PFN_eglCreateWindowSurface)(EGLDisplay,EGLConfig,EGLNativeWindowType,const EGLint*);
+#if defined(_GLFW_EGLHEADLESS)
+typedef EGLSurface (EGLAPIENTRY * PFN_eglCreatePbufferSurface)(EGLDisplay,EGLConfig,const EGLint*);
+typedef EGLSurface (EGLAPIENTRY * PFN_eglQueryDevicesEXT)(EGLint,EGLDeviceEXT*,EGLint*);
+typedef EGLSurface (EGLAPIENTRY * PFN_eglGetPlatformDisplayEXT)(EGLenum,EGLNativeDisplayType,const EGLint*);
+#endif
 typedef EGLBoolean (EGLAPIENTRY * PFN_eglMakeCurrent)(EGLDisplay,EGLSurface,EGLSurface,EGLContext);
 typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapBuffers)(EGLDisplay,EGLSurface);
 typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapInterval)(EGLDisplay,EGLint);
@@ -143,6 +161,11 @@ typedef GLFWglproc (EGLAPIENTRY * PFN_eglGetProcAddress)(const char*);
 #define eglDestroySurface _glfw.egl.DestroySurface
 #define eglDestroyContext _glfw.egl.DestroyContext
 #define eglCreateWindowSurface _glfw.egl.CreateWindowSurface
+#if defined(_GLFW_EGLHEADLESS)
+#define eglCreatePbufferSurface _glfw.egl.CreatePbufferSurface
+#define eglQueryDevicesEXT _glfw.egl.QueryDevicesEXT
+#define eglGetPlatformDisplayEXT _glfw.egl.GetPlatformDisplayEXT
+#endif
 #define eglMakeCurrent _glfw.egl.MakeCurrent
 #define eglSwapBuffers _glfw.egl.SwapBuffers
 #define eglSwapInterval _glfw.egl.SwapInterval
@@ -192,6 +215,11 @@ typedef struct _GLFWlibraryEGL
     PFN_eglDestroySurface       DestroySurface;
     PFN_eglDestroyContext       DestroyContext;
     PFN_eglCreateWindowSurface  CreateWindowSurface;
+#if defined(_GLFW_EGLHEADLESS)
+    PFN_eglCreatePbufferSurface CreatePbufferSurface;
+    PFN_eglQueryDevicesEXT QueryDevicesEXT;
+    PFN_eglGetPlatformDisplayEXT GetPlatformDisplayEXT;
+#endif
     PFN_eglMakeCurrent          MakeCurrent;
     PFN_eglSwapBuffers          SwapBuffers;
     PFN_eglSwapInterval         SwapInterval;

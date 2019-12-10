@@ -55,6 +55,10 @@ elseif (_GLFW_WAYLAND)
         PROTOCOL
         "${WAYLAND_PROTOCOLS_PKGDATADIR}/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml"
         BASENAME idle-inhibit-unstable-v1)
+    ecm_add_wayland_client_protocol(glfw_SOURCES
+        PROTOCOL
+        "${WAYLAND_PROTOCOLS_PKGDATADIR}/stable/presentation-time/presentation-time.xml"
+        BASENAME presentation-time)
 elseif (_GLFW_OSMESA)
     set(glfw_HEADERS ${common_HEADERS} null_platform.h null_joystick.h
                      posix_time.h posix_thread.h osmesa_context.h)

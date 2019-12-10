@@ -777,12 +777,28 @@ static const struct xdg_wm_base_listener wmBaseListener = {
     wmBaseHandlePing
 };
 
+static void
+presSetClockId(void *data, struct wp_presentation *pres, uint32_t clockId)
+{
+    if (clockId == CLOCK_MONOTONIC)
+    {
+        // TODO: support for clocks other than CLOCK_MONOTONIC.
+        _glfw.wl.pres = pres;
+    }
+}
+
+static const struct wp_presentation_listener presListener = {
+    presSetClockId
+};
+
 static void registryHandleGlobal(void* data,
                                  struct wl_registry* registry,
                                  uint32_t name,
                                  const char* interface,
                                  uint32_t version)
 {
+    struct wp_presentation* pres;
+
     if (strcmp(interface, "wl_compositor") == 0)
     {
         _glfw.wl.compositorVersion = min(3, version);
@@ -862,6 +878,13 @@ static void registryHandleGlobal(void* data,
             wl_registry_bind(registry, name,
                              &zwp_idle_inhibit_manager_v1_interface,
                              1);
+    }
+    else if (strcmp(interface, wp_presentation_interface.name) == 0)
+    {
+        pres = wl_registry_bind(registry, name,
+                             &wp_presentation_interface,
+                             1);
+        wp_presentation_add_listener(pres, &presListener, NULL);
     }
 }
 

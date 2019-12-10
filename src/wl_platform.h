@@ -62,6 +62,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #include "wayland-relative-pointer-unstable-v1-client-protocol.h"
 #include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
 #include "wayland-idle-inhibit-unstable-v1-client-protocol.h"
+#include "wayland-presentation-time-client-protocol.h"
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)
@@ -216,6 +217,9 @@ typedef struct _GLFWwindowWayland
         int                                focus;
     } decorations;
 
+    GLFWbool presWaiting;
+    double   presTime;
+
 } _GLFWwindowWayland;
 
 // Wayland-specific global data
@@ -323,6 +327,8 @@ typedef struct _GLFWlibraryWayland
         PFN_wl_egl_window_destroy window_destroy;
         PFN_wl_egl_window_resize window_resize;
     } egl;
+
+    struct wp_presentation* pres;
 
 } _GLFWlibraryWayland;
 

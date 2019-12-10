@@ -39,6 +39,7 @@
 #include <sys/mman.h>
 #include <sys/timerfd.h>
 #include <poll.h>
+#include <assert.h>
 
 
 static int createTmpfileCloexec(char* tmpname)
@@ -825,6 +826,13 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     window->wl.monitors = calloc(1, sizeof(_GLFWmonitor*));
     window->wl.monitorsCount = 0;
     window->wl.monitorsSize = 1;
+
+    if (_glfw.wl.pres)
+    {
+        window->wl.presWaiting = GLFW_FALSE;
+        // Tell the user we missed the first vblank.
+        window->wl.presTime = 0.;
+    }
 
     return GLFW_TRUE;
 }
@@ -1752,3 +1760,81 @@ GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* handle)
     return window->wl.surface;
 }
 
+
+static void feedbackSyncOutput(void* data,
+                               struct wp_presentation_feedback* fback,
+                               struct wl_output* output)
+{
+}
+
+static void feedbackPresented(void* data,
+                              struct wp_presentation_feedback* fback,
+                              uint32_t tvSecHi,
+                              uint32_t tvSecLo,
+                              uint32_t tvNsec,
+                              uint32_t refreshNsec,
+                              uint32_t seqHi,
+                              uint32_t seqLo,
+                              uint32_t flags)
+{
+    _GLFWwindow* window;
+    uint64_t sec;
+    uint64_t nsec;
+
+    window = (_GLFWwindow*) data;
+
+    window->wl.presWaiting = GLFW_FALSE;
+
+    sec = (uint64_t) tvSecLo + ((uint64_t) tvSecHi << 32);
+    nsec = sec * 1000000000 + (uint64_t) tvNsec;
+    window->wl.presTime = (double) (nsec - _glfw.timer.offset) * 1e-9;
+
+    wp_presentation_feedback_destroy(fback);
+}
+
+static void feedbackDiscarded(void* data,
+                              struct wp_presentation_feedback* fback)
+{
+    _GLFWwindow* window = (_GLFWwindow*) data;
+    window->wl.presWaiting = GLFW_FALSE;
+    window->wl.presTime = 0.;
+
+    wp_presentation_feedback_destroy(fback);
+}
+
+static const struct wp_presentation_feedback_listener feedbackListener = {
+    feedbackSyncOutput,
+    feedbackPresented,
+    feedbackDiscarded
+};
+
+GLFWAPI int glfwWaylandPresSupported(void)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
+    return _glfw.wl.pres != NULL;
+}
+
+GLFWAPI double glfwWaylandSwapPres(GLFWwindow* handle)
+{
+    _GLFWwindow* window;
+    struct wp_presentation_feedback* fback;
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(0.);
+    assert(handle);
+    assert(_glfw.wl.pres);
+
+    window = (_GLFWwindow*) handle;
+
+    glfwSwapBuffers(handle);
+
+    while (window->wl.presWaiting)
+    {
+        handleEvents(-1);
+    }
+
+    window->wl.presWaiting = GLFW_TRUE;
+    fback = wp_presentation_feedback(_glfw.wl.pres, window->wl.surface);
+    wp_presentation_feedback_add_listener(fback, &feedbackListener, window);
+
+    return window->wl.presTime;
+}

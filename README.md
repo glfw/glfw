@@ -89,7 +89,7 @@ GLFW itself needs only CMake 3.1 or later and the headers and libraries for your
 OS and window system.
 
 The (experimental) Wayland backend also depends on the `extra-cmake-modules`
-package, which is used to generated Wayland protocol headers.
+package, which is used to generate Wayland protocol headers.
 
 The examples and test programs depend on a number of tiny libraries.  These are
 located in the `deps/` directory.

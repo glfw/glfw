@@ -967,10 +967,11 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)
 {
     @autoreleasepool {
-    [window->ns.object setTitle:@(title)];
+    NSString* string = @(title);
+    [window->ns.object setTitle:string];
     // HACK: Set the miniwindow title explicitly as setTitle: doesn't update it
     //       if the window lacks NSWindowStyleMaskTitled
-    [window->ns.object setMiniwindowTitle:@(title)];
+    [window->ns.object setMiniwindowTitle:string];
     } // autoreleasepool
 }
 

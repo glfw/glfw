@@ -303,6 +303,7 @@ skills.
  - Alexandre Pretyman
  - Pablo Prietz
  - przemekmirek
+ - pthom
  - Guillaume Racicot
  - Philip Rideout
  - Eddie Ringle

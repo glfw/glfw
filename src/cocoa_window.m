@@ -964,7 +964,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     } // autoreleasepool
 }
 
-void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char *title)
+void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
     @autoreleasepool {
     NSString* string = @(title);

@@ -132,6 +132,7 @@ information on what to include when reporting a bug.
  - Bugfix: Compiling with -Wextra-semi caused warnings (#1440)
  - [Win32] Added the `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access
            to the window menu
+ - [Win32] Added a version info resource to the GLFW DLL
  - [Win32] Bugfix: `GLFW_INCLUDE_VULKAN` plus `VK_USE_PLATFORM_WIN32_KHR` caused
    symbol redefinition (#1524)
  - [Win32] Bugfix: The cursor position event was emitted before its cursor enter

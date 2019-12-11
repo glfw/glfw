@@ -72,6 +72,11 @@ if (_GLFW_X11 OR _GLFW_WAYLAND)
     endif()
 endif()
 
+if (WIN32 AND BUILD_SHARED_LIBS)
+    configure_file(glfw.rc.in glfw.rc @ONLY)
+    set(glfw_SOURCES ${glfw_SOURCES} "${CMAKE_CURRENT_BINARY_DIR}/glfw.rc")
+endif()
+
 if (APPLE)
     # For some reason CMake didn't know about .m until version 3.16
     set_source_files_properties(cocoa_init.m cocoa_joystick.m cocoa_monitor.m

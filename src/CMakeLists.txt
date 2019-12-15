@@ -1,6 +1,5 @@
 
-add_library(glfw "${GLFW_BINARY_DIR}/src/glfw_config.h"
-                 "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"
+add_library(glfw "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"
                  "${GLFW_SOURCE_DIR}/include/GLFW/glfw3native.h"
                  internal.h mappings.h context.c init.c input.c monitor.c
                  vulkan.c window.c)
@@ -78,6 +77,10 @@ if (WIN32 AND BUILD_SHARED_LIBS)
     target_sources(glfw PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/glfw.rc")
 endif()
 
+configure_file(glfw_config.h.in glfw_config.h @ONLY)
+target_compile_definitions(glfw PRIVATE _GLFW_USE_CONFIG_H)
+target_sources(glfw PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/glfw_config.h")
+
 set_target_properties(glfw PROPERTIES
                       OUTPUT_NAME ${GLFW_LIB_NAME}
                       VERSION ${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}
@@ -87,7 +90,6 @@ set_target_properties(glfw PROPERTIES
                       DEFINE_SYMBOL _GLFW_BUILD_DLL
                       FOLDER "GLFW3")
 
-target_compile_definitions(glfw PRIVATE _GLFW_USE_CONFIG_H)
 target_include_directories(glfw PUBLIC
                            "$<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>"
                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")

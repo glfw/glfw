@@ -315,8 +315,6 @@ write_basic_package_version_file(src/glfw3ConfigVersion.cmake
                                  VERSION ${GLFW_VERSION}
                                  COMPATIBILITY SameMajorVersion)
 
-configure_file(src/glfw_config.h.in src/glfw_config.h @ONLY)
-
 configure_file(src/glfw3.pc.in src/glfw3.pc @ONLY)
 
 #--------------------------------------------------------------------

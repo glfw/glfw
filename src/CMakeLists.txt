@@ -123,6 +123,10 @@ if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
     target_compile_options(glfw PRIVATE "-Wall")
 endif()
 
+if (WIN32)
+    target_compile_definitions(glfw PRIVATE _UNICODE)
+endif()
+
 # HACK: When building on MinGW, WINVER and UNICODE need to be defined before
 # the inclusion of stddef.h (by glfw3.h), which is itself included before
 # win32_platform.h.  We define them here until a saner solution can be found

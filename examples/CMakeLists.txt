@@ -34,7 +34,7 @@ add_executable(splitview WIN32 MACOSX_BUNDLE splitview.c ${ICON} ${GLAD_GL})
 add_executable(triangle-opengl WIN32 MACOSX_BUNDLE triangle-opengl.c ${ICON} ${GLAD_GL})
 add_executable(wave WIN32 MACOSX_BUNDLE wave.c ${ICON} ${GLAD_GL})
 
-target_link_libraries(particles "${CMAKE_THREAD_LIBS_INIT}")
+target_link_libraries(particles Threads::Threads)
 if (RT_LIBRARY)
     target_link_libraries(particles "${RT_LIBRARY}")
 endif()

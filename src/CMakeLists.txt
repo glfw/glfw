@@ -95,7 +95,7 @@ target_include_directories(glfw PRIVATE
                            "${GLFW_SOURCE_DIR}/src"
                            "${GLFW_BINARY_DIR}/src"
                            ${glfw_INCLUDE_DIRS})
-target_link_libraries(glfw PRIVATE ${glfw_LIBRARIES})
+target_link_libraries(glfw PRIVATE Threads::Threads ${glfw_LIBRARIES})
 
 if (APPLE)
     # For some reason CMake didn't know about .m until version 3.16

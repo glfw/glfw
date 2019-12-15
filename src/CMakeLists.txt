@@ -84,6 +84,7 @@ set_target_properties(glfw PROPERTIES
                       SOVERSION ${GLFW_VERSION_MAJOR}
                       POSITION_INDEPENDENT_CODE ON
                       C_STANDARD 99
+                      DEFINE_SYMBOL _GLFW_BUILD_DLL
                       FOLDER "GLFW3")
 
 target_compile_definitions(glfw PRIVATE _GLFW_USE_CONFIG_H)

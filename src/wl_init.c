@@ -26,6 +26,8 @@
 // It is fine to use C99 in this file because it will not be built with VS
 //========================================================================
 
+#define _POSIX_C_SOURCE 199309L
+
 #include "internal.h"
 
 #include <assert.h>
@@ -38,6 +40,7 @@
 #include <sys/mman.h>
 #include <sys/timerfd.h>
 #include <unistd.h>
+#include <time.h>
 #include <wayland-client.h>
 
 

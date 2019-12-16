@@ -2619,7 +2619,7 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
 
     if (_glfwPlatformWindowVisible(window))
     {
-        const Atom action = enabled ? _NET_WM_STATE_ADD : _NET_WM_STATE_REMOVE;
+        const long action = enabled ? _NET_WM_STATE_ADD : _NET_WM_STATE_REMOVE;
         sendEventToWM(window,
                       _glfw.x11.NET_WM_STATE,
                       action,

@@ -195,11 +195,8 @@ if (_GLFW_X11)
 
     find_package(X11 REQUIRED)
 
-    list(APPEND glfw_PKG_DEPS "x11")
-
     # Set up library and include paths
     list(APPEND glfw_INCLUDE_DIRS "${X11_X11_INCLUDE_PATH}")
-    list(APPEND glfw_LIBRARIES "${X11_X11_LIB}")
 
     # Check for XRandR (modern resolution switching and gamma control)
     if (NOT X11_Xrandr_INCLUDE_PATH)

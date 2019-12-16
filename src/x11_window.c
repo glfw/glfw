@@ -2759,7 +2759,7 @@ void _glfwPlatformPollEvents(void)
 #endif
     XPending(_glfw.x11.display);
 
-    while (XQLength(_glfw.x11.display))
+    while (QLength(_glfw.x11.display))
     {
         XEvent event;
         XNextEvent(_glfw.x11.display, &event);

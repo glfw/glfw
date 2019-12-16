@@ -137,6 +137,7 @@ information on what to include when reporting a bug.
    (#1462,#1528)
  - [X11] Bugfix: Decorations could not be enabled after window creation (#1566)
  - [X11] Bugfix: Content scale fallback value could be inconsistent (#1578)
+ - [X11] Bugfix: `glfwMaximizeWindow` had no effect on hidden windows
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
    macOS versions (#1442)

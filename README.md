@@ -149,6 +149,7 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: Decorations could not be enabled after window creation (#1566)
  - [X11] Bugfix: Content scale fallback value could be inconsistent (#1578)
  - [X11] Bugfix: `glfwMaximizeWindow` had no effect on hidden windows
+ - [X11] Bugfix: Clearing `GLFW_FLOATING` on a hidden window caused invalid read
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled

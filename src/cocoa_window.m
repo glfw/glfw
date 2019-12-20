@@ -1617,13 +1617,13 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 
     // HACK: Try to use a private message
     if (shape == GLFW_RESIZE_EW_CURSOR)
-        cursorSelector = @selector(_windowResizeEastWestCursor);
+        cursorSelector = NSSelectorFromString(@"_windowResizeEastWestCursor");
     else if (shape == GLFW_RESIZE_NS_CURSOR)
-        cursorSelector = @selector(_windowResizeNorthSouthCursor);
+        cursorSelector = NSSelectorFromString(@"_windowResizeNorthSouthCursor");
     else if (shape == GLFW_RESIZE_NWSE_CURSOR)
-        cursorSelector = @selector(_windowResizeNorthWestSouthEastCursor);
+        cursorSelector = NSSelectorFromString(@"_windowResizeNorthWestSouthEastCursor");
     else if (shape == GLFW_RESIZE_NESW_CURSOR)
-        cursorSelector = @selector(_windowResizeNorthEastSouthWestCursor);
+        cursorSelector = NSSelectorFromString(@"_windowResizeNorthEastSouthWestCursor");
 
     if (cursorSelector && [NSCursor respondsToSelector:cursorSelector])
     {

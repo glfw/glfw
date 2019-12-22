@@ -781,6 +781,13 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                                    NULL);
     }
 
+    if (window->x11.ic)
+    {
+        unsigned long filter = 0;
+        if (XGetICValues(window->x11.ic, XNFilterEvents, &filter, NULL) == NULL)
+            XSelectInput(_glfw.x11.display, window->x11.handle, wa.event_mask | filter);
+    }
+
     _glfwPlatformGetWindowPos(window, &window->x11.xpos, &window->x11.ypos);
     _glfwPlatformGetWindowSize(window, &window->x11.width, &window->x11.height);
 

@@ -75,12 +75,14 @@ matrix:
           env:
               - BUILD_SHARED_LIBS=ON
               - CFLAGS=-Werror
+              - MACOSX_DEPLOYMENT_TARGET=10.8
         - os: osx
           sudo: false
           name: "Cocoa static library"
           env:
               - BUILD_SHARED_LIBS=OFF
               - CFLAGS=-Werror
+              - MACOSX_DEPLOYMENT_TARGET=10.8
 script:
     - if grep -Inr '\s$' src include docs tests examples CMake *.md .gitattributes .gitignore; then
           echo Trailing whitespace found, aborting;

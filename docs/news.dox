@@ -52,6 +52,12 @@ add_subdirectory(path/to/glfw)
 @endcode
 
 
+@subsubsection corevideo_34 CoreVideo dependency has been removed
+
+GLFW no longer depends on the CoreVideo framework on macOS and it no longer
+needs to be specified during compilation or linking.
+
+
 @subsection deprecations_34 Deprecations in version 3.4
 
 @subsection removals_34 Removals in 3.4

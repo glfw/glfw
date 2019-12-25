@@ -275,11 +275,10 @@ if (_GLFW_COCOA)
     list(APPEND glfw_LIBRARIES
         "-framework Cocoa"
         "-framework IOKit"
-        "-framework CoreFoundation"
-        "-framework CoreVideo")
+        "-framework CoreFoundation")
 
     set(glfw_PKG_DEPS "")
-    set(glfw_PKG_LIBS "-framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo")
+    set(glfw_PKG_LIBS "-framework Cocoa -framework IOKit -framework CoreFoundation")
 endif()
 
 #--------------------------------------------------------------------

@@ -395,7 +395,58 @@ GLFWbool _glfwInitEGL(void)
         return GLFW_FALSE;
     }
 
-    _glfw.egl.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
+    // Test for the presence of EGL_EXT_platform_base and related extensions on
+    // EGL_NO_DISPLAY.
+    _glfw.egl.display = EGL_NO_DISPLAY;
+
+    // If the KHR version of the extension for the relevant platform is
+    // exposed, we can assume we are on EGL 1.5 and eglGetPlatformDisplay() and
+    // eglCreatePlatformWindowSurface() will be available.
+    //
+    // If they aren’t, we check for the EXT version, which requires both
+    // EXT_platform_base and the platform extension to exist, and uses
+    // EXT-suffixed symbols.
+    //
+    // If none of these extensions are exposed, we use the error-prone
+    // eglGetDisplay() and eglCreateWindowSurface() symbols instead.
+#if defined(_GLFW_X11) || defined(_GLFW_WAYLAND)
+    _glfw.egl.platform_supported =
+        extensionSupportedEGL(_GLFW_EGL_KHR_PLATFORM);
+    if (_glfw.egl.platform_supported)
+    {
+        _glfw.egl.GetPlatformDisplay = (PFN_eglGetPlatformDisplay)
+            _glfw_dlsym(_glfw.egl.handle, "eglGetPlatformDisplay");
+        _glfw.egl.CreatePlatformWindowSurface = (PFN_eglCreatePlatformWindowSurface)
+            _glfw_dlsym(_glfw.egl.handle, "eglCreatePlatformWindowSurface");
+    }
+    else
+    {
+        _glfw.egl.platform_supported =
+            extensionSupportedEGL("EGL_EXT_platform_base") &&
+            extensionSupportedEGL(_GLFW_EGL_EXT_PLATFORM);
+        if (_glfw.egl.platform_supported)
+        {
+            _glfw.egl.GetPlatformDisplay = (PFN_eglGetPlatformDisplay)
+                eglGetProcAddress("eglGetPlatformDisplayEXT");
+            _glfw.egl.CreatePlatformWindowSurface = (PFN_eglCreatePlatformWindowSurface)
+                eglGetProcAddress("eglCreatePlatformWindowSurfaceEXT");
+        }
+    }
+#else
+    _glfw.egl.platform_supported = GLFW_FALSE;
+#endif
+
+    if (_glfw.egl.platform_supported)
+    {
+        _glfw.egl.display = eglGetPlatformDisplay(_GLFW_EGL_NATIVE_PLATFORM, _GLFW_EGL_NATIVE_DISPLAY, NULL);
+    }
+    else
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "EGL: Falling back to the unsafe eglGetDisplay() API");
+        _glfw.egl.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
+    }
+
     if (_glfw.egl.display == EGL_NO_DISPLAY)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
@@ -600,11 +651,29 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         setAttrib(EGL_NONE, EGL_NONE);
     }
 
-    window->context.egl.surface =
-        eglCreateWindowSurface(_glfw.egl.display,
-                               config,
-                               _GLFW_EGL_NATIVE_WINDOW,
-                               attribs);
+    if (_glfw.egl.platform_supported)
+    {
+        window->context.egl.surface =
+            eglCreatePlatformWindowSurface(_glfw.egl.display,
+                                           config,
+#if defined(_GLFW_X11)
+                                           // An X11 Window isn’t a pointer, so
+                                           // we have to take its address here.
+                                           &_GLFW_EGL_NATIVE_WINDOW,
+#else
+                                           _GLFW_EGL_NATIVE_WINDOW,
+#endif
+                                           attribs);
+    }
+    else
+    {
+        window->context.egl.surface =
+            eglCreateWindowSurface(_glfw.egl.display,
+                                   config,
+                                   _GLFW_EGL_NATIVE_WINDOW,
+                                   attribs);
+    }
+
     if (window->context.egl.surface == EGL_NO_SURFACE)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,

@@ -107,6 +107,11 @@ typedef struct wl_egl_window* EGLNativeWindowType;
 #define EGL_CONTEXT_RELEASE_BEHAVIOR_NONE_KHR 0
 #define EGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR 0x2098
 
+#define EGL_PLATFORM_WAYLAND_EXT 0x31d8
+#define EGL_PLATFORM_X11_EXT 0x31d5
+
+#define EGL_PLATFORM_GBM_MESA 0x31d7
+
 typedef int EGLint;
 typedef unsigned int EGLBoolean;
 typedef unsigned int EGLenum;
@@ -132,6 +137,8 @@ typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapBuffers)(EGLDisplay,EGLSurface);
 typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapInterval)(EGLDisplay,EGLint);
 typedef const char* (EGLAPIENTRY * PFN_eglQueryString)(EGLDisplay,EGLint);
 typedef GLFWglproc (EGLAPIENTRY * PFN_eglGetProcAddress)(const char*);
+typedef EGLDisplay (EGLAPIENTRY * PFN_eglGetPlatformDisplay)(EGLenum,void*,const EGLint*);
+typedef EGLSurface (EGLAPIENTRY * PFN_eglCreatePlatformWindowSurface)(EGLDisplay,EGLConfig,void*,const EGLint*);
 #define eglGetConfigAttrib _glfw.egl.GetConfigAttrib
 #define eglGetConfigs _glfw.egl.GetConfigs
 #define eglGetDisplay _glfw.egl.GetDisplay
@@ -148,6 +155,8 @@ typedef GLFWglproc (EGLAPIENTRY * PFN_eglGetProcAddress)(const char*);
 #define eglSwapInterval _glfw.egl.SwapInterval
 #define eglQueryString _glfw.egl.QueryString
 #define eglGetProcAddress _glfw.egl.GetProcAddress
+#define eglGetPlatformDisplay _glfw.egl.GetPlatformDisplay
+#define eglCreatePlatformWindowSurface _glfw.egl.CreatePlatformWindowSurface
 
 #define _GLFW_EGL_CONTEXT_STATE            _GLFWcontextEGL egl
 #define _GLFW_EGL_LIBRARY_CONTEXT_STATE    _GLFWlibraryEGL egl
@@ -178,6 +187,7 @@ typedef struct _GLFWlibraryEGL
     GLFWbool        KHR_gl_colorspace;
     GLFWbool        KHR_get_all_proc_addresses;
     GLFWbool        KHR_context_flush_control;
+    GLFWbool        platform_supported;
 
     void*           handle;
 
@@ -197,6 +207,8 @@ typedef struct _GLFWlibraryEGL
     PFN_eglSwapInterval         SwapInterval;
     PFN_eglQueryString          QueryString;
     PFN_eglGetProcAddress       GetProcAddress;
+    PFN_eglGetPlatformDisplay   GetPlatformDisplay;
+    PFN_eglCreatePlatformWindowSurface CreatePlatformWindowSurface;
 
 } _GLFWlibraryEGL;
 

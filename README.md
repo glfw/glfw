@@ -146,6 +146,7 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: Changing `GLFW_FLOATING` on a hidden window could silently fail
  - [X11] Bugfix: Disabled cursor mode was interrupted by indicator windows
  - [X11] Bugfix: Monitor physical dimensions could be reported as zero mm
+ - [X11] Bugfix: Window position events were not emitted during resizing (#1613)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
    macOS versions (#1442)

@@ -130,6 +130,7 @@ information on what to include when reporting a bug.
    relocatable (#1470)
  - Bugfix: Video modes with a duplicate screen area were discarded (#1555,#1556)
  - Bugfix: Compiling with -Wextra-semi caused warnings (#1440)
+ - Bugfix: Built-in mappings failed because some OEMs re-used VID/PID (#1583)
  - [Win32] Added the `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access
            to the window menu
  - [Win32] Added a version info resource to the GLFW DLL
@@ -139,11 +140,13 @@ information on what to include when reporting a bug.
    event (#1490)
  - [Win32] Bugfix: The window hint `GLFW_MAXIMIZED` did not move or resize the
    window (#1499)
+ - [Win32] Bugfix: Disabled cursor mode interfered with some non-client actions
  - [Cocoa] Removed dependency on the CoreVideo framework
  - [Cocoa] Bugfix: `glfwSetWindowSize` used a bottom-left anchor point (#1553)
  - [Cocoa] Bugfix: Window remained on screen after destruction until event poll
    (#1412)
  - [Cocoa] Bugfix: Event processing before window creation would assert (#1543)
+ - [Cocoa] Bugfix: Undecorated windows could not be iconified on recent macOS
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -152,6 +155,8 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: `glfwMaximizeWindow` had no effect on hidden windows
  - [X11] Bugfix: Clearing `GLFW_FLOATING` on a hidden window caused invalid read
  - [X11] Bugfix: Changing `GLFW_FLOATING` on a hidden window could silently fail
+ - [X11] Bugfix: Disabled cursor mode was interrupted by indicator windows
+ - [X11] Bugfix: Monitor physical dimensions could be reported as zero mm
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
@@ -231,6 +236,7 @@ skills.
  - GeO4d
  - Marcus Geelnard
  - Charles Giessen
+ - Ryan C. Gordon
  - Stephen Gowen
  - Kovid Goyal
  - Eloi Marín Gratacós

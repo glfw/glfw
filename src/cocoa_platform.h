@@ -28,8 +28,6 @@
 #include <dlfcn.h>
 
 #include <Carbon/Carbon.h>
-#include <CoreVideo/CVBase.h>
-#include <CoreVideo/CVDisplayLink.h>
 
 // NOTE: All of NSGL was deprecated in the 10.14 SDK
 //       This disables the pointless warnings for every symbol we use
@@ -170,6 +168,7 @@ typedef struct _GLFWmonitorNS
     CGDisplayModeRef    previousMode;
     uint32_t            unitNumber;
     id                  screen;
+    double              fallbackRefreshRate;
 
 } _GLFWmonitorNS;
 

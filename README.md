@@ -118,7 +118,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
-There is nothing here yet.
+ - [X11] Bugfix: `glfwFocusWindow` could terminate on older WMs or without a WM
 
 
 ## Contact

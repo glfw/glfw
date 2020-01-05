@@ -268,10 +268,10 @@ surfaces on Microsoft Windows.  If any of these extensions are not available,
 @ref glfwGetRequiredInstanceExtensions will return an empty list and window
 surface creation will fail.
 
-GLFW uses the `VK_KHR_surface` and `VK_MVK_macos_surface` extensions to create
-surfaces on macOS.  If any of these extensions are not available, @ref
-glfwGetRequiredInstanceExtensions will return an empty list and window surface
-creation will fail.
+GLFW uses the `VK_KHR_surface` and either the `VK_MVK_macos_surface` or
+`VK_EXT_metal_surface` extensions to create surfaces on macOS.  If any of these
+extensions are not available, @ref glfwGetRequiredInstanceExtensions will
+return an empty list and window surface creation will fail.
 
 GLFW uses the `VK_KHR_surface` and either the `VK_KHR_xlib_surface` or
 `VK_KHR_xcb_surface` extensions to create surfaces on X11.  If `VK_KHR_surface`

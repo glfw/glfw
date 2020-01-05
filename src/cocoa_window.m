@@ -1751,7 +1751,6 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
     VkMacOSSurfaceCreateInfoMVK sci;
 
     PFN_vkCreateMacOSSurfaceMVK vkCreateMacOSSurfaceMVK;
-
     vkCreateMacOSSurfaceMVK = (PFN_vkCreateMacOSSurfaceMVK)
         vkGetInstanceProcAddr(instance, "vkCreateMacOSSurfaceMVK");
     if (!vkCreateMacOSSurfaceMVK)
@@ -1765,7 +1764,6 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
     VkMetalSurfaceCreateInfoEXT sci;
 
     PFN_vkCreateMetalSurfaceEXT vkCreateMetalSurfaceEXT;
-
     vkCreateMetalSurfaceEXT = (PFN_vkCreateMetalSurfaceEXT)
         vkGetInstanceProcAddr(instance, "vkCreateMetalSurfaceEXT");
     if (!vkCreateMetalSurfaceEXT)
@@ -1801,6 +1799,7 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
     [window->ns.view setLayer:window->ns.layer];
     [window->ns.view setWantsLayer:YES];
 
+    memset(&sci, 0, sizeof(sci));
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
     sci.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
     sci.pView = window->ns.view;
@@ -1808,7 +1807,6 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
     err = vkCreateMacOSSurfaceMVK(instance, &sci, allocator, surface);
 
 #elif defined(VK_USE_PLATFORM_METAL_EXT)
-    memset(&sci, 0, sizeof(sci));
     sci.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
     sci.pNext = NULL;
     sci.flags = 0;
@@ -1816,7 +1814,6 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
 
     err = vkCreateMetalSurfaceEXT(instance, &sci, allocator, surface);
 #endif
-
     if (err)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,

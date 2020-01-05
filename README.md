@@ -158,6 +158,7 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: Disabled cursor mode was interrupted by indicator windows
  - [X11] Bugfix: Monitor physical dimensions could be reported as zero mm
  - [X11] Bugfix: Window position events were not emitted during resizing (#1613)
+ - [X11] Bugfix: `glfwFocusWindow` could terminate on older WMs or without a WM
  - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled

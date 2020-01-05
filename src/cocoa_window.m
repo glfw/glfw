@@ -1746,7 +1746,7 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 101100
     VkResult err;
-    
+
 #if defined(VK_USE_PLATFORM_MACOS_MVK)
     VkMacOSSurfaceCreateInfoMVK sci;
 

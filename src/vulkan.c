@@ -132,7 +132,7 @@ GLFWbool _glfwInitVulkan(int mode)
         else if (strcmp(ep[i].extensionName, "VK_MVK_macos_surface") == 0)
             _glfw.vk.MVK_macos_surface = GLFW_TRUE;
     #elif defined(VK_USE_PLATFORM_METAL_EXT)
-        else if (strcmp(ep[i].extensionName, "VK_MVK_macos_surface") == 0)
+        else if (strcmp(ep[i].extensionName, "VK_EXT_metal_surface") == 0)
             _glfw.vk.EXT_metal_surface = GLFW_TRUE;
     #endif
 #elif defined(_GLFW_X11)

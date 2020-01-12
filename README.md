@@ -119,6 +119,7 @@ information on what to include when reporting a bug.
 ## Changelog
 
  - [X11] Bugfix: `glfwFocusWindow` could terminate on older WMs or without a WM
+ - [X11] Bugfix: Creating an undecorated window could fail with BadMatch (#1620)
 
 
 ## Contact

@@ -622,6 +622,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 
     _glfwGrabErrorHandlerX11();
 
+    window->x11.parent = _glfw.x11.root;
     window->x11.handle = XCreateWindow(_glfw.x11.display,
                                        _glfw.x11.root,
                                        0, 0,   // Position
@@ -1258,12 +1259,6 @@ static void processEvent(XEvent *event)
 
     switch (event->type)
     {
-        case CreateNotify:
-        {
-            window->x11.parent = event->xcreatewindow.parent;
-            return;
-        }
-
         case ReparentNotify:
         {
             window->x11.parent = event->xreparent.parent;

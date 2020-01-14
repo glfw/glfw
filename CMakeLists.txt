@@ -351,7 +351,7 @@ if (GLFW_INSTALL)
     install(FILES "${GLFW_BINARY_DIR}/src/glfw3.pc"
             DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
-    if (GLFW_BUILD_DOCS)
+    if (DOXYGEN_FOUND AND GLFW_BUILD_DOCS)
         install(DIRECTORY "${GLFW_BINARY_DIR}/docs/html"
                 DESTINATION "${CMAKE_INSTALL_DOCDIR}")
     endif()

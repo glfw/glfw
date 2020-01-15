@@ -119,6 +119,8 @@ information on what to include when reporting a bug.
 ## Changelog
 
  - [Win32] Bugfix: Super key was not released after Win+V hotkey (#1622)
+ - [Win32] Bugfix: `glfwGetKeyName` could access out of bounds and return an
+   invalid pointer
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [X11] Bugfix: `glfwFocusWindow` could terminate on older WMs or without a WM

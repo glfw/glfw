@@ -448,28 +448,6 @@ static int getKeyMods(void)
     return mods;
 }
 
-// Retrieves and translates modifier keys
-//
-static int getAsyncKeyMods(void)
-{
-    int mods = 0;
-
-    if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
-        mods |= GLFW_MOD_SHIFT;
-    if (GetAsyncKeyState(VK_CONTROL) & 0x8000)
-        mods |= GLFW_MOD_CONTROL;
-    if (GetAsyncKeyState(VK_MENU) & 0x8000)
-        mods |= GLFW_MOD_ALT;
-    if ((GetAsyncKeyState(VK_LWIN) | GetAsyncKeyState(VK_RWIN)) & 0x8000)
-        mods |= GLFW_MOD_SUPER;
-    if (GetAsyncKeyState(VK_CAPITAL) & 1)
-        mods |= GLFW_MOD_CAPS_LOCK;
-    if (GetAsyncKeyState(VK_NUMLOCK) & 1)
-        mods |= GLFW_MOD_NUM_LOCK;
-
-    return mods;
-}
-
 // Translates a Windows key to the corresponding GLFW key
 //
 static int translateKey(WPARAM wParam, LPARAM lParam)
@@ -1961,12 +1939,12 @@ void _glfwPlatformPollEvents(void)
                 const int key = keys[i][1];
                 const int scancode = _glfw.win32.scancodes[key];
 
-                if ((GetAsyncKeyState(vk) & 0x8000))
+                if ((GetKeyState(vk) & 0x8000))
                     continue;
                 if (window->keys[key] != GLFW_PRESS)
                     continue;
 
-                _glfwInputKey(window, key, scancode, GLFW_RELEASE, getAsyncKeyMods());
+                _glfwInputKey(window, key, scancode, GLFW_RELEASE, getKeyMods());
             }
         }
     }

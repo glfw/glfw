@@ -1918,6 +1918,7 @@ void _glfwPlatformPollEvents(void)
     // NOTE: Windows key is not reported as released by the Win+V hotkey
     //       Other Win hotkeys are handled implicitly by _glfwInputWindowFocus
     //       because they change the input focus
+    // NOTE: The other half of this is in the WM_*KEY* handler in windowProc
     handle = GetActiveWindow();
     if (handle)
     {

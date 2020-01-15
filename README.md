@@ -144,6 +144,8 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: Super key was not released after Win+V hotkey (#1622)
  - [Win32] Bugfix: `glfwGetKeyName` could access out of bounds and return an
    invalid pointer
+ - [Win32] Bugfix: Some synthetic key events were reported as `GLFW_KEY_UNKNOWN`
+   (#1623)
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Removed dependency on the CoreVideo framework

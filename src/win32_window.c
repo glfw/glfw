@@ -36,8 +36,6 @@
 #include <windowsx.h>
 #include <shellapi.h>
 
-#define _GLFW_KEY_INVALID -2
-
 // Returns the window style for the specified window
 //
 static DWORD getWindowStyle(const _GLFWwindow* window)
@@ -448,55 +446,6 @@ static int getKeyMods(void)
     return mods;
 }
 
-// Translates a Windows key to the corresponding GLFW key
-//
-static int translateKey(WPARAM wParam, LPARAM lParam)
-{
-    // The Ctrl keys require special handling
-    if (wParam == VK_CONTROL)
-    {
-        MSG next;
-        DWORD time;
-
-        // Right side keys have the extended key bit set
-        if (HIWORD(lParam) & KF_EXTENDED)
-            return GLFW_KEY_RIGHT_CONTROL;
-
-        // HACK: Alt Gr sends Left Ctrl and then Right Alt in close sequence
-        //       We only want the Right Alt message, so if the next message is
-        //       Right Alt we ignore this (synthetic) Left Ctrl message
-        time = GetMessageTime();
-
-        if (PeekMessageW(&next, NULL, 0, 0, PM_NOREMOVE))
-        {
-            if (next.message == WM_KEYDOWN ||
-                next.message == WM_SYSKEYDOWN ||
-                next.message == WM_KEYUP ||
-                next.message == WM_SYSKEYUP)
-            {
-                if (next.wParam == VK_MENU &&
-                    (HIWORD(next.lParam) & KF_EXTENDED) &&
-                    next.time == time)
-                {
-                    // Next message is Right Alt down so discard this
-                    return _GLFW_KEY_INVALID;
-                }
-            }
-        }
-
-        return GLFW_KEY_LEFT_CONTROL;
-    }
-
-    if (wParam == VK_PROCESSKEY)
-    {
-        // IME notifies that keys have been filtered by setting the virtual
-        // key-code to VK_PROCESSKEY
-        return _GLFW_KEY_INVALID;
-    }
-
-    return _glfw.win32.keycodes[HIWORD(lParam) & 0x1FF];
-}
-
 static void fitToMonitor(_GLFWwindow* window)
 {
     MONITORINFO mi = { sizeof(mi) };
@@ -726,13 +675,64 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_KEYUP:
         case WM_SYSKEYUP:
         {
-            const int key = translateKey(wParam, lParam);
-            const int scancode = (HIWORD(lParam) & 0x1ff);
+            int key, scancode;
             const int action = (HIWORD(lParam) & KF_UP) ? GLFW_RELEASE : GLFW_PRESS;
             const int mods = getKeyMods();
 
-            if (key == _GLFW_KEY_INVALID)
+            scancode = (HIWORD(lParam) & (KF_EXTENDED | 0xff));
+            if (!scancode)
+            {
+                // NOTE: Some synthetic key messages have a scancode of zero
+                // HACK: Map the virtual key back to a usable scancode
+                scancode = MapVirtualKeyW((UINT) wParam, MAPVK_VK_TO_VSC);
+            }
+
+            key = _glfw.win32.keycodes[scancode];
+
+            // The Ctrl keys require special handling
+            if (wParam == VK_CONTROL)
+            {
+                if (HIWORD(lParam) & KF_EXTENDED)
+                {
+                    // Right side keys have the extended key bit set
+                    key = GLFW_KEY_RIGHT_CONTROL;
+                }
+                else
+                {
+                    // NOTE: Alt Gr sends Left Ctrl followed by Right Alt
+                    // HACK: We only want one event for Alt Gr, so if we detect
+                    //       this sequence we discard this Left Ctrl message now
+                    //       and later report Right Alt normally
+                    MSG next;
+                    const DWORD time = GetMessageTime();
+
+                    if (PeekMessageW(&next, NULL, 0, 0, PM_NOREMOVE))
+                    {
+                        if (next.message == WM_KEYDOWN ||
+                            next.message == WM_SYSKEYDOWN ||
+                            next.message == WM_KEYUP ||
+                            next.message == WM_SYSKEYUP)
+                        {
+                            if (next.wParam == VK_MENU &&
+                                (HIWORD(next.lParam) & KF_EXTENDED) &&
+                                next.time == time)
+                            {
+                                // Next message is Right Alt down so discard this
+                                break;
+                            }
+                        }
+                    }
+
+                    // This is a regular Left Ctrl message
+                    key = GLFW_KEY_LEFT_CONTROL;
+                }
+            }
+            else if (wParam == VK_PROCESSKEY)
+            {
+                // IME notifies that keys have been filtered by setting the
+                // virtual key-code to VK_PROCESSKEY
                 break;
+            }
 
             if (action == GLFW_RELEASE && wParam == VK_SHIFT)
             {

@@ -118,6 +118,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [X11] Bugfix: `glfwFocusWindow` could terminate on older WMs or without a WM
  - [X11] Bugfix: Creating an undecorated window could fail with BadMatch (#1620)
 
@@ -213,6 +214,7 @@ skills.
  - Cem Karan
  - Osman Keskin
  - Josh Kilmer
+ - Byunghoon Kim
  - Cameron King
  - Peter Knut
  - Christoph Kubisch

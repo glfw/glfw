@@ -127,6 +127,7 @@ information on what to include when reporting a bug.
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [X11] Bugfix: `glfwFocusWindow` could terminate on older WMs or without a WM
  - [X11] Bugfix: Creating an undecorated window could fail with BadMatch (#1620)
+ - [X11] Bugfix: Querying a disconnected monitor could segfault (#1602)
 
 
 ## Contact
@@ -228,6 +229,7 @@ skills.
  - Rokas Kupstys
  - Konstantin Käfer
  - Eric Larson
+ - Francis Lecavalier
  - Robin Leffmann
  - Glenn Lewis
  - Shane Liesegang

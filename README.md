@@ -359,6 +359,7 @@ skills.
  - Paul Sultana
  - Nathan Sweet
  - TTK-Bandit
+ - Jared Tiala
  - Sergey Tikhomirov
  - Arthur Tombs
  - Ioannis Tsakpinis

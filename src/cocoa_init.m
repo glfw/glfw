@@ -464,6 +464,32 @@ static GLFWbool initializeTIS(void)
 
 
 //////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+void* _glfwLoadLocalVulkanLoaderNS(void)
+{
+    CFBundleRef bundle = CFBundleGetMainBundle();
+    if (!bundle)
+        return NULL;
+
+    CFURLRef url =
+        CFBundleCopyAuxiliaryExecutableURL(bundle, CFSTR("libvulkan.1.dylib"));
+    if (!url)
+        return NULL;
+
+    char path[PATH_MAX];
+    void* handle = NULL;
+
+    if (CFURLGetFileSystemRepresentation(url, true, (UInt8*) path, sizeof(path) - 1))
+        handle = _glfw_dlopen(path);
+
+    CFRelease(url);
+    return handle;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 

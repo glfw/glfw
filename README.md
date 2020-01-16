@@ -141,6 +141,7 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: The window hint `GLFW_MAXIMIZED` did not move or resize the
    window (#1499)
  - [Win32] Bugfix: Disabled cursor mode interfered with some non-client actions
+ - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Removed dependency on the CoreVideo framework
  - [Cocoa] Bugfix: `glfwSetWindowSize` used a bottom-left anchor point (#1553)
  - [Cocoa] Bugfix: Window remained on screen after destruction until event poll
@@ -260,6 +261,7 @@ skills.
  - Cem Karan
  - Osman Keskin
  - Josh Kilmer
+ - Byunghoon Kim
  - Cameron King
  - Peter Knut
  - Christoph Kubisch

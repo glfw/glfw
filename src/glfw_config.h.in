@@ -40,7 +40,6 @@
 #cmakedefine _GLFW_WIN32
 // Define this to 1 if building GLFW for Cocoa
 #cmakedefine _GLFW_COCOA
-#cmakedefine VK_USE_PLATFORM_METAL_EXT
 // Define this to 1 if building GLFW for Wayland
 #cmakedefine _GLFW_WAYLAND
 // Define this to 1 if building GLFW for OSMesa

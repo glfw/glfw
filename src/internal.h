@@ -559,11 +559,8 @@ struct _GLFWlibrary
 #if defined(_GLFW_WIN32)
         GLFWbool        KHR_win32_surface;
 #elif defined(_GLFW_COCOA)
-    #if defined(VK_USE_PLATFORM_MACOS_MVK)
         GLFWbool        MVK_macos_surface;
-    #elif defined(VK_USE_PLATFORM_METAL_EXT)
         GLFWbool        EXT_metal_surface;
-    #endif
 #elif defined(_GLFW_X11)
         GLFWbool        KHR_xlib_surface;
         GLFWbool        KHR_xcb_surface;

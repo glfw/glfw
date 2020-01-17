@@ -234,6 +234,7 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: `glfwWaitEventsTimeout` did not return for some sent messages (#2408)
  - [Win32] Bugfix: Fix pkg-config for dynamic library on Windows (#2386, #2420)
  - [Win32] Bugfix: XInput could reportedly provide invalid DPad bit masks (#2291)
+ - [Win32] Bugfix: Rapid clipboard calls could fail due to Clipboard History
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)

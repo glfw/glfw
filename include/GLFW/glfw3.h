@@ -5814,6 +5814,11 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
+ *  @remark @win32 The clipboard on Windows has a single global lock for reading and
+ *  writing.  GLFW tries to acquire it a few times, which is almost always enough.  If it
+ *  cannot acquire the lock then this function emits @ref GLFW_PLATFORM_ERROR and returns.
+ *  It is safe to try this multiple times.
+ *
  *  @pointer_lifetime The specified string is copied before this function
  *  returns.
  *
@@ -5841,6 +5846,11 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_FORMAT_UNAVAILABLE and @ref GLFW_PLATFORM_ERROR.
+ *
+ *  @remark @win32 The clipboard on Windows has a single global lock for reading and
+ *  writing.  GLFW tries to acquire it a few times, which is almost always enough.  If it
+ *  cannot acquire the lock then this function emits @ref GLFW_PLATFORM_ERROR and returns.
+ *  It is safe to try this multiple times.
  *
  *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
  *  should not free it yourself.  It is valid until the next call to @ref

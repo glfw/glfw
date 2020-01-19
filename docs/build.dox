@@ -78,6 +78,11 @@ compiler that the GLFW functions are defined in a DLL.
 The following macros control which OpenGL or OpenGL ES API header is included.
 Only one of these may be defined at a time.
 
+@note GLFW does not provide any of the API headers mentioned below.  They are
+provided by your development environment or your OpenGL, OpenGL ES or Vulkan
+SDK, and most of them can be downloaded from the
+[Khronos Registry](https://www.khronos.org/registry/).
+
 @anchor GLFW_INCLUDE_GLCOREARB
 __GLFW_INCLUDE_GLCOREARB__ makes the GLFW header include the modern
 `GL/glcorearb.h` header (`OpenGL/gl3.h` on macOS) instead of the regular OpenGL
@@ -129,10 +134,6 @@ header selected above.  This should only be used with the standard OpenGL header
 and only for compatibility with legacy code.  GLU has been deprecated and should
 not be used in new code.
 
-@note GLFW does not provide any of the API headers mentioned above.  They must
-be provided by your development environment or your OpenGL, OpenGL ES or Vulkan
-SDK.
-
 @note None of these macros may be defined during the compilation of GLFW itself.
 If your build includes GLFW and you define any these in your build files, make
 sure they are not applied to the GLFW sources.
@@ -166,15 +167,10 @@ must also explicitly link with `gdi32`. Other toolchains including MinGW-w64
 include it in the set of default libraries along with other dependencies like
 `user32` and `kernel32`.
 
-If you are using GLU, you must also link with `glu32`.
-
 The link library for the GLFW DLL is named `glfw3dll`.  When compiling an
 application that uses the DLL version of GLFW, you need to define the @ref
 GLFW_DLL macro _before_ any inclusion of the GLFW header.  This can be done
 either with a compiler switch or by defining it in your source code.
-
-An application using the GLFW DLL does not need to link against any of its
-dependencies, but you still have to link against `glu32` if it uses GLU.
 
 
 @subsection build_link_cmake_source With CMake and GLFW source
@@ -187,50 +183,37 @@ With a few changes to your `CMakeLists.txt` you can have the GLFW source tree
 built along with your application.
 
 Add the root directory of the GLFW source tree to your project.  This will add
-the `glfw` target and the necessary cache variables to your project.
+the `glfw` target to your project.
 
 @code{.cmake}
 add_subdirectory(path/to/glfw)
 @endcode
 
-Once GLFW has been added to the project, link against it with the `glfw` target.
-This adds all link-time dependencies of GLFW as it is currently configured,
-the include directory for the GLFW header and, when applicable, the @ref
-GLFW_DLL macro.
+Once GLFW has been added, link your application against the `glfw` target.
+This adds the GLFW library and its link-time dependencies as it is currently
+configured, the include directory for the GLFW header and, when applicable, the
+@ref GLFW_DLL macro.
 
 @code{.cmake}
 target_link_libraries(myapp glfw)
 @endcode
 
-Note that the dependencies do not include OpenGL or GLU, as GLFW loads any
-OpenGL, OpenGL ES or Vulkan libraries it needs at runtime and does not use GLU.
-If your application calls OpenGL directly, instead of using a modern
-[extension loader library](@ref context_glext_auto) you can find it by requiring
-the OpenGL package.
+Note that the `glfw` target does not depend on OpenGL, as GLFW loads any OpenGL,
+OpenGL ES or Vulkan libraries it needs at runtime.  If your application calls
+OpenGL directly, instead of using a modern
+[extension loader library](@ref context_glext_auto), use the OpenGL CMake
+package.
 
 @code{.cmake}
 find_package(OpenGL REQUIRED)
 @endcode
 
-If OpenGL is found, the `OPENGL_FOUND` variable is true and the
-`OPENGL_INCLUDE_DIR` and `OPENGL_gl_LIBRARY` cache variables can be used.
+If OpenGL is found, the `OpenGL::GL` target is added to your project, containing
+library and include directory paths.  Link against this like above.
 
 @code{.cmake}
-target_include_directories(myapp PUBLIC ${OPENGL_INCLUDE_DIR})
-target_link_libraries(myapp ${OPENGL_gl_LIBRARY})
+target_link_libraries(myapp OpenGL::GL)
 @endcode
-
-The OpenGL CMake package also looks for GLU.  If GLU is found, the
-`OPENGL_GLU_FOUND` variable is true and the `OPENGL_INCLUDE_DIR` and
-`OPENGL_glu_LIBRARY` cache variables can be used.
-
-@code{.cmake}
-target_link_libraries(myapp ${OPENGL_glu_LIBRARY})
-@endcode
-
-@note GLU has been deprecated and should not be used in new code, but some
-legacy code requires it.  See the [section on GLU](@ref moving_glu) in the
-transition guide for suggested replacements.
 
 
 @subsection build_link_cmake_package With CMake and installed GLFW binaries
@@ -247,43 +230,29 @@ find_package(glfw3 3.4 REQUIRED)
 @endcode
 
 Once GLFW has been added to the project, link against it with the `glfw` target.
-This adds all link-time dependencies of GLFW as it is currently configured,
-the include directory for the GLFW header and, when applicable, the @ref
-GLFW_DLL macro.
+This adds the GLFW library and its link-time dependencies, the include directory
+for the GLFW header and, when applicable, the @ref GLFW_DLL macro.
 
 @code{.cmake}
 target_link_libraries(myapp glfw)
 @endcode
 
-Note that the dependencies do not include OpenGL or GLU, as GLFW loads any
-OpenGL, OpenGL ES or Vulkan libraries it needs at runtime and does not use GLU.
-If your application calls OpenGL directly, instead of using a modern
-[extension loader library](@ref context_glext_auto) you can find it by requiring
-the OpenGL package.
+Note that the `glfw` target does not depend on OpenGL, as GLFW loads any OpenGL,
+OpenGL ES or Vulkan libraries it needs at runtime.  If your application calls
+OpenGL directly, instead of using a modern
+[extension loader library](@ref context_glext_auto), use the OpenGL CMake
+package.
 
 @code{.cmake}
 find_package(OpenGL REQUIRED)
 @endcode
 
-If OpenGL is found, the `OPENGL_FOUND` variable is true and the
-`OPENGL_INCLUDE_DIR` and `OPENGL_gl_LIBRARY` cache variables can be used.
+If OpenGL is found, the `OpenGL::GL` target is added to your project, containing
+library and include directory paths.  Link against this like above.
 
 @code{.cmake}
-target_include_directories(myapp PUBLIC ${OPENGL_INCLUDE_DIR})
-target_link_libraries(myapp ${OPENGL_gl_LIBRARY})
+target_link_libraries(myapp OpenGL::GL)
 @endcode
-
-The OpenGL CMake package also looks for GLU.  If GLU is found, the
-`OPENGL_GLU_FOUND` variable is true and the `OPENGL_INCLUDE_DIR` and
-`OPENGL_glu_LIBRARY` cache variables can be used.
-
-@code{.cmake}
-target_link_libraries(myapp ${OPENGL_glu_LIBRARY})
-@endcode
-
-@note GLU has been deprecated and should not be used in new code, but some
-legacy code requires it.  See the [section on GLU](@ref moving_glu) in the
-transition guide for suggested replacements.
 
 
 @subsection build_link_pkgconfig With makefiles and pkg-config on Unix
@@ -299,42 +268,31 @@ A typical compile and link command-line when using the static version of the
 GLFW library may look like this:
 
 @code{.sh}
-cc `pkg-config --cflags glfw3` -o myprog myprog.c `pkg-config --static --libs glfw3`
+cc $(pkg-config --cflags glfw3) -o myprog myprog.c $(pkg-config --static --libs glfw3)
 @endcode
 
 If you are using the shared version of the GLFW library, omit the `--static`
 flag.
 
 @code{.sh}
-cc `pkg-config --cflags glfw3` -o myprog myprog.c `pkg-config --libs glfw3`
+cc $(pkg-config --cflags glfw3) -o myprog myprog.c $(pkg-config --libs glfw3)
 @endcode
 
 You can also use the `glfw3.pc` file without installing it first, by using the
 `PKG_CONFIG_PATH` environment variable.
 
 @code{.sh}
-env PKG_CONFIG_PATH=path/to/glfw/src cc `pkg-config --cflags glfw3` -o myprog myprog.c `pkg-config --libs glfw3`
+env PKG_CONFIG_PATH=path/to/glfw/src cc $(pkg-config --cflags glfw3) -o myprog myprog.c $(pkg-config --libs glfw3)
 @endcode
 
-The dependencies do not include OpenGL or GLU, as GLFW loads any OpenGL, OpenGL
-ES or Vulkan libraries it needs at runtime and does not use GLU.  On macOS, GLU
-is built into the OpenGL framework, so if you need GLU you don't need to do
-anything extra.  If you need GLU and are using Linux or BSD, you should add the
-`glu` pkg-config package.
+The dependencies do not include OpenGL, as GLFW loads any OpenGL, OpenGL ES or
+Vulkan libraries it needs at runtime.  If your application calls OpenGL
+directly, instead of using a modern
+[extension loader library](@ref context_glext_auto), you should add the `gl`
+pkg-config package.
 
 @code{.sh}
-cc `pkg-config --cflags glfw3 glu` -o myprog myprog.c `pkg-config --libs glfw3 glu`
-@endcode
-
-@note GLU has been deprecated and should not be used in new code, but some
-legacy code requires it.  See the [section on GLU](@ref moving_glu) in the
-transition guide for suggested replacements.
-
-If you are using the static version of the GLFW library, make sure you don't
-link statically against GLU.
-
-@code{.sh}
-cc `pkg-config --cflags glfw3 glu` -o myprog myprog.c `pkg-config --static --libs glfw3` `pkg-config --libs glu`
+cc $(pkg-config --cflags glfw3 gl) -o myprog myprog.c $(pkg-config --libs glfw3 gl)
 @endcode
 
 
@@ -368,9 +326,7 @@ for `-lglfw`.
 Note that you do not add the `.framework` extension to a framework when linking
 against it from the command-line.
 
-The OpenGL framework contains both the OpenGL and GLU APIs, so there is nothing
-special to do when using GLU.  Also note that even though your machine may have
-`libGL`-style OpenGL libraries, they are for use with the X Window System and
-will _not_ work with the macOS native version of GLFW.
+@note Your machine may have `libGL.*.dylib` style OpenGL library, but that is
+for the X Window System and will not work with the macOS native version of GLFW.
 
 */

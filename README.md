@@ -238,6 +238,7 @@ skills.
  - Eyal Lotem
  - Aaron Loucks
  - Luflosi
+ - lukect
  - Tristam MacDonald
  - Hans Mackowiak
  - Дмитри Малышев

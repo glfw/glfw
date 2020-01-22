@@ -58,7 +58,7 @@ available for all supported compilers.
 See the [compilation guide](http://www.glfw.org/docs/latest/compile.html) for
 more information about how to compile GLFW yourself.
 
-# Package Managers
+## Package Managers
 
 You can download and install glfw using the [vcpkg](https://github.com/Microsoft/vcpkg) dependency manager:
 

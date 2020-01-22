@@ -104,6 +104,7 @@ typedef int (* PFN_XPending)(Display*);
 typedef Bool (* PFN_XQueryExtension)(Display*,const char*,int*,int*,int*);
 typedef Bool (* PFN_XQueryPointer)(Display*,Window,Window*,Window*,int*,int*,int*,int*,unsigned int*);
 typedef int (* PFN_XRaiseWindow)(Display*,Window);
+typedef Bool (* PFN_XRegisterIMInstantiateCallback)(Display*,void*,char*,char*,XIDProc,XPointer);
 typedef int (* PFN_XResizeWindow)(Display*,Window,unsigned int,unsigned int);
 typedef char* (* PFN_XResourceManagerString)(Display*);
 typedef int (* PFN_XSaveContext)(Display*,XID,XContext,const char*);
@@ -112,6 +113,7 @@ typedef Status (* PFN_XSendEvent)(Display*,Window,Bool,long,XEvent*);
 typedef int (* PFN_XSetClassHint)(Display*,Window,XClassHint*);
 typedef XErrorHandler (* PFN_XSetErrorHandler)(XErrorHandler);
 typedef void (* PFN_XSetICFocus)(XIC);
+typedef char* (* PFN_XSetIMValues)(XIM,...);
 typedef int (* PFN_XSetInputFocus)(Display*,Window,int,Time);
 typedef char* (* PFN_XSetLocaleModifiers)(const char*);
 typedef int (* PFN_XSetScreenSaver)(Display*,int,int,int,int);
@@ -142,6 +144,7 @@ typedef Bool (* PFN_XrmGetResource)(XrmDatabase,const char*,const char*,char**,X
 typedef XrmDatabase (* PFN_XrmGetStringDatabase)(const char*);
 typedef void (* PFN_XrmInitialize)(void);
 typedef XrmQuark (* PFN_XrmUniqueQuark)(void);
+typedef Bool (* PFN_XUnregisterIMInstantiateCallback)(Display*,void*,char*,char*,XIDProc,XPointer);
 typedef int (* PFN_Xutf8LookupString)(XIC,XKeyPressedEvent*,char*,int,KeySym*,Status*);
 typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char*,char**,int,XSizeHints*,XWMHints*,XClassHint*);
 #define XAllocClassHint _glfw.x11.xlib.AllocClassHint
@@ -200,6 +203,7 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XQueryExtension _glfw.x11.xlib.QueryExtension
 #define XQueryPointer _glfw.x11.xlib.QueryPointer
 #define XRaiseWindow _glfw.x11.xlib.RaiseWindow
+#define XRegisterIMInstantiateCallback _glfw.x11.xlib.RegisterIMInstantiateCallback
 #define XResizeWindow _glfw.x11.xlib.ResizeWindow
 #define XResourceManagerString _glfw.x11.xlib.ResourceManagerString
 #define XSaveContext _glfw.x11.xlib.SaveContext
@@ -208,6 +212,7 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XSetClassHint _glfw.x11.xlib.SetClassHint
 #define XSetErrorHandler _glfw.x11.xlib.SetErrorHandler
 #define XSetICFocus _glfw.x11.xlib.SetICFocus
+#define XSetIMValues _glfw.x11.xlib.SetIMValues
 #define XSetInputFocus _glfw.x11.xlib.SetInputFocus
 #define XSetLocaleModifiers _glfw.x11.xlib.SetLocaleModifiers
 #define XSetScreenSaver _glfw.x11.xlib.SetScreenSaver
@@ -238,6 +243,7 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XrmGetStringDatabase _glfw.x11.xrm.GetStringDatabase
 #define XrmInitialize _glfw.x11.xrm.Initialize
 #define XrmUniqueQuark _glfw.x11.xrm.UniqueQuark
+#define XUnregisterIMInstantiateCallback _glfw.x11.xlib.UnregisterIMInstantiateCallback
 #define Xutf8LookupString _glfw.x11.xlib.utf8LookupString
 #define Xutf8SetWMProperties _glfw.x11.xlib.utf8SetWMProperties
 
@@ -553,6 +559,7 @@ typedef struct _GLFWlibraryX11
         PFN_XQueryExtension QueryExtension;
         PFN_XQueryPointer QueryPointer;
         PFN_XRaiseWindow RaiseWindow;
+        PFN_XRegisterIMInstantiateCallback RegisterIMInstantiateCallback;
         PFN_XResizeWindow ResizeWindow;
         PFN_XResourceManagerString ResourceManagerString;
         PFN_XSaveContext SaveContext;
@@ -561,6 +568,7 @@ typedef struct _GLFWlibraryX11
         PFN_XSetClassHint SetClassHint;
         PFN_XSetErrorHandler SetErrorHandler;
         PFN_XSetICFocus SetICFocus;
+        PFN_XSetIMValues SetIMValues;
         PFN_XSetInputFocus SetInputFocus;
         PFN_XSetLocaleModifiers SetLocaleModifiers;
         PFN_XSetScreenSaver SetScreenSaver;
@@ -577,6 +585,7 @@ typedef struct _GLFWlibraryX11
         PFN_XUnsetICFocus UnsetICFocus;
         PFN_XVisualIDFromVisual VisualIDFromVisual;
         PFN_XWarpPointer WarpPointer;
+        PFN_XUnregisterIMInstantiateCallback UnregisterIMInstantiateCallback;
         PFN_Xutf8LookupString utf8LookupString;
         PFN_Xutf8SetWMProperties utf8SetWMProperties;
     } xlib;
@@ -753,4 +762,5 @@ void _glfwReleaseErrorHandlerX11(void);
 void _glfwInputErrorX11(int error, const char* message);
 
 void _glfwPushSelectionToManagerX11(void);
+void _glfwCreateInputContextX11(_GLFWwindow* window);
 

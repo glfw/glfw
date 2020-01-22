@@ -349,6 +349,40 @@ static GLFWbool hasUsableInputMethodStyle(void)
     return found;
 }
 
+static void inputMethodDestroyCallback(XIM im, XPointer clientData, XPointer callData)
+{
+    _glfw.x11.im = NULL;
+}
+
+static void inputMethodInstantiateCallback(Display* display,
+                                           XPointer clientData,
+                                           XPointer callData)
+{
+    if (_glfw.x11.im)
+        return;
+
+    _glfw.x11.im = XOpenIM(_glfw.x11.display, 0, NULL, NULL);
+    if (_glfw.x11.im)
+    {
+        if (!hasUsableInputMethodStyle())
+        {
+            XCloseIM(_glfw.x11.im);
+            _glfw.x11.im = NULL;
+        }
+    }
+
+    if (_glfw.x11.im)
+    {
+        XIMCallback callback;
+        callback.callback = (XIMProc) inputMethodDestroyCallback;
+        callback.client_data = NULL;
+        XSetIMValues(_glfw.x11.im, XNDestroyCallback, &callback, NULL);
+
+        for (_GLFWwindow* window = _glfw.windowListHead;  window;  window = window->next)
+            _glfwCreateInputContextX11(window);
+    }
+}
+
 // Check whether the specified atom is supported
 //
 static Atom getSupportedAtom(Atom* supportedAtoms,
@@ -1066,6 +1100,8 @@ int _glfwPlatformInit(void)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XQueryPointer");
     _glfw.x11.xlib.RaiseWindow = (PFN_XRaiseWindow)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XRaiseWindow");
+    _glfw.x11.xlib.RegisterIMInstantiateCallback = (PFN_XRegisterIMInstantiateCallback)
+        _glfw_dlsym(_glfw.x11.xlib.handle, "XRegisterIMInstantiateCallback");
     _glfw.x11.xlib.ResizeWindow = (PFN_XResizeWindow)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XResizeWindow");
     _glfw.x11.xlib.ResourceManagerString = (PFN_XResourceManagerString)
@@ -1082,6 +1118,8 @@ int _glfwPlatformInit(void)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XSetErrorHandler");
     _glfw.x11.xlib.SetICFocus = (PFN_XSetICFocus)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XSetICFocus");
+    _glfw.x11.xlib.SetIMValues = (PFN_XSetIMValues)
+        _glfw_dlsym(_glfw.x11.xlib.handle, "XSetIMValues");
     _glfw.x11.xlib.SetInputFocus = (PFN_XSetInputFocus)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XSetInputFocus");
     _glfw.x11.xlib.SetLocaleModifiers = (PFN_XSetLocaleModifiers)
@@ -1142,6 +1180,8 @@ int _glfwPlatformInit(void)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XrmInitialize");
     _glfw.x11.xrm.UniqueQuark = (PFN_XrmUniqueQuark)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XrmUniqueQuark");
+    _glfw.x11.xlib.UnregisterIMInstantiateCallback = (PFN_XUnregisterIMInstantiateCallback)
+        _glfw_dlsym(_glfw.x11.xlib.handle, "XUnregisterIMInstantiateCallback");
     _glfw.x11.xlib.utf8LookupString = (PFN_Xutf8LookupString)
         _glfw_dlsym(_glfw.x11.xlib.handle, "Xutf8LookupString");
     _glfw.x11.xlib.utf8SetWMProperties = (PFN_Xutf8SetWMProperties)
@@ -1184,15 +1224,11 @@ int _glfwPlatformInit(void)
     {
         XSetLocaleModifiers("");
 
-        _glfw.x11.im = XOpenIM(_glfw.x11.display, 0, NULL, NULL);
-        if (_glfw.x11.im)
-        {
-            if (!hasUsableInputMethodStyle())
-            {
-                XCloseIM(_glfw.x11.im);
-                _glfw.x11.im = NULL;
-            }
-        }
+        // If an IM is already present our callback will be called right away
+        XRegisterIMInstantiateCallback(_glfw.x11.display,
+                                       NULL, NULL, NULL,
+                                       inputMethodInstantiateCallback,
+                                       NULL);
     }
 
 #if defined(__linux__)
@@ -1228,6 +1264,11 @@ void _glfwPlatformTerminate(void)
 
     free(_glfw.x11.primarySelectionString);
     free(_glfw.x11.clipboardString);
+
+    XUnregisterIMInstantiateCallback(_glfw.x11.display,
+                                     NULL, NULL, NULL,
+                                     inputMethodInstantiateCallback,
+                                     NULL);
 
     if (_glfw.x11.im)
     {

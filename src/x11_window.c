@@ -590,6 +590,14 @@ static void enableCursor(_GLFWwindow* window)
     updateCursorImage(window);
 }
 
+// Clear its handle when the input context has been destroyed
+//
+static void inputContextDestroyCallback(XIC ic, XPointer clientData, XPointer callData)
+{
+    _GLFWwindow* window = (_GLFWwindow*) clientData;
+    window->x11.ic = NULL;
+}
+
 // Create the X11 window (and its colormap)
 //
 static GLFWbool createNativeWindow(_GLFWwindow* window,
@@ -768,27 +776,10 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                         PropModeReplace, (unsigned char*) &version, 1);
     }
 
-    _glfwPlatformSetWindowTitle(window, wndconfig->title);
-
     if (_glfw.x11.im)
-    {
-        window->x11.ic = XCreateIC(_glfw.x11.im,
-                                   XNInputStyle,
-                                   XIMPreeditNothing | XIMStatusNothing,
-                                   XNClientWindow,
-                                   window->x11.handle,
-                                   XNFocusWindow,
-                                   window->x11.handle,
-                                   NULL);
-    }
+        _glfwCreateInputContextX11(window);
 
-    if (window->x11.ic)
-    {
-        unsigned long filter = 0;
-        if (XGetICValues(window->x11.ic, XNFilterEvents, &filter, NULL) == NULL)
-            XSelectInput(_glfw.x11.display, window->x11.handle, wa.event_mask | filter);
-    }
-
+    _glfwPlatformSetWindowTitle(window, wndconfig->title);
     _glfwPlatformGetWindowPos(window, &window->x11.xpos, &window->x11.ypos);
     _glfwPlatformGetWindowSize(window, &window->x11.width, &window->x11.height);
 
@@ -1173,8 +1164,7 @@ static void processEvent(XEvent *event)
     if (event->type == KeyPress || event->type == KeyRelease)
         keycode = event->xkey.keycode;
 
-    if (_glfw.x11.im)
-        filtered = XFilterEvent(event, None);
+    filtered = XFilterEvent(event, None);
 
     if (_glfw.x11.randr.available)
     {
@@ -1958,6 +1948,38 @@ void _glfwPushSelectionToManagerX11(void)
         }
 
         waitForEvent(NULL);
+    }
+}
+
+void _glfwCreateInputContextX11(_GLFWwindow* window)
+{
+    XIMCallback callback;
+    callback.callback = (XIMProc) inputContextDestroyCallback;
+    callback.client_data = (XPointer) window;
+
+    window->x11.ic = XCreateIC(_glfw.x11.im,
+                               XNInputStyle,
+                               XIMPreeditNothing | XIMStatusNothing,
+                               XNClientWindow,
+                               window->x11.handle,
+                               XNFocusWindow,
+                               window->x11.handle,
+                               XNDestroyCallback,
+                               &callback,
+                               NULL);
+
+    if (window->x11.ic)
+    {
+        XWindowAttributes attribs;
+        XGetWindowAttributes(_glfw.x11.display, window->x11.handle, &attribs);
+
+        unsigned long filter = 0;
+        if (XGetICValues(window->x11.ic, XNFilterEvents, &filter, NULL) == NULL)
+        {
+            XSelectInput(_glfw.x11.display,
+                         window->x11.handle,
+                         attribs.your_event_mask | filter);
+        }
     }
 }
 

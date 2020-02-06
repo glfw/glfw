@@ -327,8 +327,10 @@ typedef struct LOGCONTEXTA {
 typedef UINT (WINAPI * PFN_WTInfoA)(UINT,UINT,LPVOID);
 typedef HCTX (WINAPI * PFN_WTOpenA)(HWND,LPLOGCONTEXTA,BOOL);
 typedef BOOL (WINAPI * PFN_WTQueueSizeSet)(HCTX,int);
+typedef int  (WINAPI * PFN_WTQueueSizeGet)(HCTX);
 typedef BOOL (WINAPI * PFN_WTClose)(HCTX);
 typedef BOOL (WINAPI * PFN_WTPacket)(HCTX,UINT,LPVOID);
+typedef int  (WINAPI * PFN_WTPacketsGet)(HCTX, int, LPVOID);
 
 typedef VkFlags VkWin32SurfaceCreateFlagsKHR;
 
@@ -460,8 +462,10 @@ typedef struct _GLFWlibraryWin32
         PFN_WTInfoA                     WTInfoA;
         PFN_WTOpenA                     WTOpenA;
         PFN_WTQueueSizeSet              WTQueueSizeSet;
+        PFN_WTQueueSizeGet              WTQueueSizeGet;
         PFN_WTClose                     WTClose;
         PFN_WTPacket                    WTPacket;
+        PFN_WTPacketsGet                WTPacketsGet;
         HCTX                            context;
         LOGCONTEXTA                     contextInfo;
         AXIS                            pressureInfo;

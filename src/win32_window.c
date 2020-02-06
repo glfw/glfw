@@ -626,33 +626,35 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (_glfw.win32.wintab32.instance)
             {
                 #define FIX2DOUBLE(x) ((double)(HIWORD(x))+((double)LOWORD(x)/65536))
-                PACKET packet;
+                static PACKET packet_buffer[256];
                 LOGCONTEXTA contextInfo = _glfw.win32.wintab32.contextInfo;
                 AXIS pressureInfo = _glfw.win32.wintab32.pressureInfo;
                 AXIS altInfo = _glfw.win32.wintab32.orientationInfo[1];
                 AXIS aziInfo = _glfw.win32.wintab32.orientationInfo[0];
                 AXIS rollInfo = _glfw.win32.wintab32.orientationInfo[2];
+				int i, packet_count;
 
-                while (_glfw.win32.wintab32.WTPacket(_glfw.win32.wintab32.context, (UINT)wParam, &packet)) {
+				packet_count = _glfw.win32.wintab32.WTPacketsGet(_glfw.win32.wintab32.context, 256, packet_buffer);
+				for (i = 0; i < packet_count; i++) {
 
                     double x, y, z, pressure, pitch=0, yaw=0, roll=0;
 
-                    x = ((double)(packet.x - contextInfo.lcInOrgX) / contextInfo.lcInExtX) * contextInfo.lcSysExtX + contextInfo.lcSysOrgX;
-                    y = ((double)(packet.y - contextInfo.lcInOrgY) / contextInfo.lcInExtY) * contextInfo.lcSysExtY + contextInfo.lcSysOrgY;
-                    z = packet.z / 1024.0;
-                    pressure = (double)(packet.normalPressure - pressureInfo.min) / (pressureInfo.max - pressureInfo.min);
+                    x = ((double)(packet_buffer[i].x - contextInfo.lcInOrgX) / contextInfo.lcInExtX) * contextInfo.lcSysExtX + contextInfo.lcSysOrgX;
+                    y = ((double)(packet_buffer[i].y - contextInfo.lcInOrgY) / contextInfo.lcInExtY) * contextInfo.lcSysExtY + contextInfo.lcSysOrgY;
+                    z = packet_buffer[i].z / 1024.0;
+                    pressure = (double)(packet_buffer[i].normalPressure - pressureInfo.min) / (pressureInfo.max - pressureInfo.min);
                     if (aziInfo.resolution && altInfo.resolution) {
-                        double alt = (double)(packet.orientation.altitude - altInfo.min) / (altInfo.max - altInfo.min);
-                        double azi = (double)(packet.orientation.azimuth  - aziInfo.min) / (aziInfo.max - aziInfo.min);
+                        double alt = (double)(packet_buffer[i].orientation.altitude - altInfo.min) / (altInfo.max - altInfo.min);
+                        double azi = (double)(packet_buffer[i].orientation.azimuth  - aziInfo.min) / (aziInfo.max - aziInfo.min);
                         pitch = alt * 3.14159265359;
                         yaw = azi * 6.28318530718;
                     }
                     if (rollInfo.resolution) { // roll seems to be mostly unsupported so this is untested
-                        roll = (double)(packet.orientation.twist - rollInfo.min) / (rollInfo.max - rollInfo.min) * 360.0;
+                        roll = (double)(packet_buffer[i].orientation.twist - rollInfo.min) / (rollInfo.max - rollInfo.min) * 360.0;
                     }
 
-                    if (packet.changed & 0x0020) { // CURSOR changed
-                        _glfwInputPenTabletCursor(packet.cursor);
+                    if (packet_buffer[i].changed & 0x0020) { // CURSOR changed
+                        _glfwInputPenTabletCursor(packet_buffer[i].cursor);
                     }
 
                     _glfwInputPenTabletData(x, y, z, pressure, pitch, yaw, roll);

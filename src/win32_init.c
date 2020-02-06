@@ -168,10 +168,14 @@ static GLFWbool loadLibraries(void)
             GetProcAddress(_glfw.win32.wintab32.instance, "WTOpenA");
         _glfw.win32.wintab32.WTQueueSizeSet = (PFN_WTQueueSizeSet)
             GetProcAddress(_glfw.win32.wintab32.instance, "WTQueueSizeSet");
+        _glfw.win32.wintab32.WTQueueSizeGet = (PFN_WTQueueSizeGet)
+            GetProcAddress(_glfw.win32.wintab32.instance, "WTQueueSizeGet");
         _glfw.win32.wintab32.WTClose = (PFN_WTClose)
             GetProcAddress(_glfw.win32.wintab32.instance, "WTClose");
         _glfw.win32.wintab32.WTPacket = (PFN_WTPacket)
             GetProcAddress(_glfw.win32.wintab32.instance, "WTPacket");
+        _glfw.win32.wintab32.WTPacketsGet = (PFN_WTPacketsGet)
+            GetProcAddress(_glfw.win32.wintab32.instance, "WTPacketsGet");
     }
 
     return GLFW_TRUE;
@@ -366,7 +370,9 @@ static void initWintabContext(HWND hwnd)
         // open wintab context
         _glfw.win32.wintab32.context = _glfw.win32.wintab32.WTOpenA(hwnd, &context, TRUE);
         if (_glfw.win32.wintab32.context) {
-            _glfw.win32.wintab32.WTQueueSizeSet(_glfw.win32.wintab32.context, 256);
+            int curr_queue_size = _glfw.win32.wintab32.WTQueueSizeGet(_glfw.win32.wintab32.context);
+            if (!_glfw.win32.wintab32.WTQueueSizeSet(_glfw.win32.wintab32.context, 256))
+				_glfw.win32.wintab32.WTQueueSizeSet(_glfw.win32.wintab32.context, curr_queue_size);
             _glfw.win32.wintab32.WTInfoA(4, 0, &_glfw.win32.wintab32.contextInfo);
             _glfw.win32.wintab32.WTInfoA(100, 15, &_glfw.win32.wintab32.pressureInfo);
             _glfw.win32.wintab32.WTInfoA(100, 17, &_glfw.win32.wintab32.orientationInfo);

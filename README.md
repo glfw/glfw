@@ -118,7 +118,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
-There is nothing here yet.
+ - [X11] Bugfix: IME input of CJK was broken for "C" locale (#1587,#1636)
 
 
 ## Contact

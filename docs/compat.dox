@@ -111,7 +111,7 @@ has been configured in the compositor.
 GLFW uses the [xdg-shell
 protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/stable/xdg-shell/xdg-shell.xml)
 to provide better window management.  This protocol is part of
-wayland-protocols 1.12, and mandatory at build time.
+wayland-protocols 1.12, and is mandatory for GLFW to display a window.
 
 GLFW uses the [relative pointer
 protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/unstable/relative-pointer/relative-pointer-unstable-v1.xml)

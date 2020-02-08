@@ -57,7 +57,9 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #include "osmesa_context.h"
 
 #include "wayland-xdg-shell-client-protocol.h"
+#ifdef HAS_PROTO_xdg_decoration
 #include "wayland-xdg-decoration-client-protocol.h"
+#endif
 #include "wayland-viewporter-client-protocol.h"
 #include "wayland-relative-pointer-unstable-v1-client-protocol.h"
 #include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
@@ -185,7 +187,9 @@ typedef struct _GLFWwindowWayland
     struct {
         struct xdg_surface*     surface;
         struct xdg_toplevel*    toplevel;
+#ifdef HAS_PROTO_xdg_decoration
         struct zxdg_toplevel_decoration_v1* decoration;
+#endif
     } xdg;
 
     _GLFWcursor*                currentCursor;
@@ -235,7 +239,9 @@ typedef struct _GLFWlibraryWayland
     struct wl_data_offer*       dataOffer;
     struct wl_data_source*      dataSource;
     struct xdg_wm_base*         wmBase;
+#ifdef HAS_PROTO_xdg_decoration
     struct zxdg_decoration_manager_v1*      decorationManager;
+#endif
     struct wp_viewporter*       viewporter;
     struct zwp_relative_pointer_manager_v1* relativePointerManager;
     struct zwp_pointer_constraints_v1*      pointerConstraints;

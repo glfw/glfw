@@ -265,6 +265,7 @@ static void destroyDecorations(_GLFWwindow* window)
     destroyDecoration(&window->wl.decorations.bottom);
 }
 
+#ifdef HAS_PROTO_xdg_decoration
 static void xdgDecorationHandleConfigure(void* data,
                                          struct zxdg_toplevel_decoration_v1* decoration,
                                          uint32_t mode)
@@ -280,6 +281,7 @@ static void xdgDecorationHandleConfigure(void* data,
 static const struct zxdg_toplevel_decoration_v1_listener xdgDecorationListener = {
     xdgDecorationHandleConfigure,
 };
+#endif
 
 // Makes the surface considered as XRGB instead of ARGB.
 static void setOpaqueRegion(_GLFWwindow* window)
@@ -560,6 +562,7 @@ static const struct xdg_surface_listener xdgSurfaceListener = {
 
 static void setXdgDecorations(_GLFWwindow* window)
 {
+#ifdef HAS_PROTO_xdg_decoration
     if (_glfw.wl.decorationManager)
     {
         window->wl.xdg.decoration =
@@ -573,6 +576,7 @@ static void setXdgDecorations(_GLFWwindow* window)
             ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
     }
     else
+#endif
     {
         window->wl.decorations.serverSide = GLFW_FALSE;
         createDecorations(window);
@@ -849,8 +853,10 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         window->context.destroy(window);
 
     destroyDecorations(window);
+#ifdef HAS_PROTO_xdg_decoration
     if (window->wl.xdg.decoration)
         zxdg_toplevel_decoration_v1_destroy(window->wl.xdg.decoration);
+#endif
 
     if (window->wl.decorations.buffer)
         wl_buffer_destroy(window->wl.decorations.buffer);
@@ -1055,8 +1061,10 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
         if (window->wl.xdg.toplevel)
             xdg_toplevel_unset_fullscreen(window->wl.xdg.toplevel);
         setIdleInhibitor(window, GLFW_FALSE);
+#ifdef HAS_PROTO_xdg_decoration
         if (!_glfw.wl.decorationManager)
             createDecorations(window);
+#endif
     }
     _glfwInputWindowMonitor(window, monitor);
 }

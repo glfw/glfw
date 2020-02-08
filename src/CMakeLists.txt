@@ -45,30 +45,37 @@ if (_GLFW_X11 OR _GLFW_WAYLAND)
 endif()
 
 if (_GLFW_WAYLAND)
-    ecm_add_wayland_client_protocol(GLFW_WAYLAND_PROTOCOL_SOURCES
-        PROTOCOL
+    set(PROTO_DEF
         "${WAYLAND_PROTOCOLS_PKGDATADIR}/stable/xdg-shell/xdg-shell.xml"
-        BASENAME xdg-shell)
-    ecm_add_wayland_client_protocol(GLFW_WAYLAND_PROTOCOL_SOURCES
-        PROTOCOL
         "${WAYLAND_PROTOCOLS_PKGDATADIR}/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml"
-        BASENAME xdg-decoration)
-    ecm_add_wayland_client_protocol(GLFW_WAYLAND_PROTOCOL_SOURCES
-        PROTOCOL
         "${WAYLAND_PROTOCOLS_PKGDATADIR}/stable/viewporter/viewporter.xml"
-        BASENAME viewporter)
-    ecm_add_wayland_client_protocol(GLFW_WAYLAND_PROTOCOL_SOURCES
-        PROTOCOL
         "${WAYLAND_PROTOCOLS_PKGDATADIR}/unstable/relative-pointer/relative-pointer-unstable-v1.xml"
-        BASENAME relative-pointer-unstable-v1)
-    ecm_add_wayland_client_protocol(GLFW_WAYLAND_PROTOCOL_SOURCES
-        PROTOCOL
         "${WAYLAND_PROTOCOLS_PKGDATADIR}/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml"
-        BASENAME pointer-constraints-unstable-v1)
-    ecm_add_wayland_client_protocol(GLFW_WAYLAND_PROTOCOL_SOURCES
-        PROTOCOL
         "${WAYLAND_PROTOCOLS_PKGDATADIR}/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml"
-        BASENAME idle-inhibit-unstable-v1)
+    )
+    set(PROTO_NAME
+        xdg-shell
+        xdg-decoration
+        viewporter
+        relative-pointer-unstable-v1
+        pointer-constraints-unstable-v1
+        idle-inhibit-unstable-v1
+    )
+
+    list(LENGTH PROTO_NAME count)
+    math(EXPR count "${count}-1")
+    foreach(i RANGE ${count})
+      list(GET PROTO_DEF ${i} def)
+      list(GET PROTO_NAME ${i} name)
+      if(EXISTS ${def})
+          ecm_add_wayland_client_protocol(GLFW_WAYLAND_PROTOCOL_SOURCES
+              PROTOCOL ${def} BASENAME ${name})
+          string(REPLACE "-" "_" nameR ${name})
+          add_definitions(-DHAS_PROTO_${nameR})
+      else()
+          message(WARNING "protocol definition ${def} not available")
+      endif()
+    endforeach()
     target_sources(glfw PRIVATE ${GLFW_WAYLAND_PROTOCOL_SOURCES})
 endif()
 

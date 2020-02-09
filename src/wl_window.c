@@ -40,6 +40,10 @@
 #include <sys/timerfd.h>
 #include <poll.h>
 
+#ifdef WITH_DECORATION
+#include <libdecoration.h>
+#endif
+
 
 static int createTmpfileCloexec(char* tmpname)
 {
@@ -182,6 +186,7 @@ static struct wl_buffer* createShmBuffer(const GLFWimage* image)
     return buffer;
 }
 
+#ifndef WITH_DECORATION
 static void createDecoration(_GLFWdecorationWayland* decoration,
                              struct wl_surface* parent,
                              struct wl_buffer* buffer, GLFWbool opaque,
@@ -211,7 +216,14 @@ static void createDecoration(_GLFWdecorationWayland* decoration,
     else
         wl_surface_commit(decoration->surface);
 }
+#endif
 
+#ifdef WITH_DECORATION
+static void createDecorations(_GLFWwindow* window)
+{
+    //
+}
+#else
 static void createDecorations(_GLFWwindow* window)
 {
     unsigned char data[] = { 224, 224, 224, 255 };
@@ -243,7 +255,9 @@ static void createDecorations(_GLFWwindow* window)
                      -_GLFW_DECORATION_WIDTH, window->wl.height,
                      window->wl.width + _GLFW_DECORATION_HORIZONTAL, _GLFW_DECORATION_WIDTH);
 }
+#endif
 
+#ifndef WITH_DECORATION
 static void destroyDecoration(_GLFWdecorationWayland* decoration)
 {
     if (decoration->subsurface)
@@ -256,7 +270,14 @@ static void destroyDecoration(_GLFWdecorationWayland* decoration)
     decoration->subsurface = NULL;
     decoration->viewport = NULL;
 }
+#endif
 
+#ifdef WITH_DECORATION
+static void destroyDecorations(_GLFWwindow* window)
+{
+    //
+}
+#else
 static void destroyDecorations(_GLFWwindow* window)
 {
     destroyDecoration(&window->wl.decorations.top);
@@ -264,6 +285,7 @@ static void destroyDecorations(_GLFWwindow* window)
     destroyDecoration(&window->wl.decorations.right);
     destroyDecoration(&window->wl.decorations.bottom);
 }
+#endif
 
 static void xdgDecorationHandleConfigure(void* data,
                                          struct zxdg_toplevel_decoration_v1* decoration,
@@ -271,9 +293,11 @@ static void xdgDecorationHandleConfigure(void* data,
 {
     _GLFWwindow* window = data;
 
-    window->wl.decorations.serverSide = (mode == ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
-
-    if (!window->wl.decorations.serverSide)
+#ifdef WITH_DECORATION
+    if (!(window->wl.ssd = (mode == ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE)))
+#else
+    if (!(window->wl.decorations.serverSide = (mode == ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE)))
+#endif
         createDecorations(window);
 }
 
@@ -307,6 +331,7 @@ static void resizeWindow(_GLFWwindow* window)
     _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
     _glfwInputWindowContentScale(window, scale, scale);
 
+#ifndef WITH_DECORATION
     if (!window->wl.decorations.top.surface)
         return;
 
@@ -333,6 +358,7 @@ static void resizeWindow(_GLFWwindow* window)
     wp_viewport_set_destination(window->wl.decorations.bottom.viewport,
                                 window->wl.width + _GLFW_DECORATION_HORIZONTAL, _GLFW_DECORATION_WIDTH);
     wl_surface_commit(window->wl.decorations.bottom.surface);
+#endif
 }
 
 static void checkScaleChange(_GLFWwindow* window)
@@ -465,7 +491,11 @@ static void setFullscreen(_GLFWwindow* window, _GLFWmonitor* monitor,
             monitor->wl.output);
     }
     setIdleInhibitor(window, GLFW_TRUE);
+#ifdef WITH_DECORATION
+    if (!window->wl.ssd)
+#else
     if (!window->wl.decorations.serverSide)
+#endif
         destroyDecorations(window);
 }
 
@@ -573,7 +603,11 @@ static void setXdgDecorations(_GLFWwindow* window)
     }
     else
     {
+#ifdef WITH_DECORATION
+        window->wl.ssd = GLFW_FALSE;
+#else
         window->wl.decorations.serverSide = GLFW_FALSE;
+#endif
         createDecorations(window);
     }
 }
@@ -689,8 +723,12 @@ static void incrementCursorImage(_GLFWwindow* window)
 {
     _GLFWcursor* cursor;
 
-    if (!window || window->wl.decorations.focus != mainWindow)
+    if (!window) return;
+
+#ifndef WITH_DECORATION
+    if (window->wl.decorations.focus != mainWindow)
         return;
+#endif
 
     cursor = window->wl.currentCursor;
     if (cursor && cursor->wl.cursor)
@@ -860,9 +898,10 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     destroyDecorations(window);
     if (window->wl.xdg.decoration)
         zxdg_toplevel_decoration_v1_destroy(window->wl.xdg.decoration);
-
+#ifndef WITH_DECORATION
     if (window->wl.decorations.buffer)
         wl_buffer_destroy(window->wl.decorations.buffer);
+#endif
 
     if (window->wl.native)
         wl_egl_window_destroy(window->wl.native);
@@ -967,6 +1006,7 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
                                      int* left, int* top,
                                      int* right, int* bottom)
 {
+#ifndef WITH_DECORATION
     if (window->decorated && !window->monitor && !window->wl.decorations.serverSide)
     {
         if (top)
@@ -978,6 +1018,7 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
         if (bottom)
             *bottom = _GLFW_DECORATION_WIDTH;
     }
+#endif
 }
 
 void _glfwPlatformGetWindowContentScale(_GLFWwindow* window,
@@ -1461,10 +1502,14 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 
     window->wl.currentCursor = cursor;
 
+    if (window != _glfw.wl.pointerFocus) return;
+
+#ifndef WITH_DECORATION
     // If we're not in the correct window just save the cursor
     // the next time the pointer enters the window the cursor will change
-    if (window != _glfw.wl.pointerFocus || window->wl.decorations.focus != mainWindow)
+    if (window->wl.decorations.focus != mainWindow)
         return;
+#endif
 
     // Unlock possible pointer lock if no longer disabled.
     if (window->cursorMode != GLFW_CURSOR_DISABLED && isPointerLocked(window))

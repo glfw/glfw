@@ -70,6 +70,11 @@ if (_GLFW_WAYLAND)
         "${WAYLAND_PROTOCOLS_PKGDATADIR}/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml"
         BASENAME idle-inhibit-unstable-v1)
     target_sources(glfw PRIVATE ${GLFW_WAYLAND_PROTOCOL_SOURCES})
+
+    if (GLFW_USE_LIBDECORATION)
+        include("${CMAKE_SOURCE_DIR}/external/libdecoration.cmake")
+        add_definitions(-DWITH_DECORATION)
+    endif()
 endif()
 
 if (WIN32 AND BUILD_SHARED_LIBS)

@@ -40,6 +40,8 @@ cmake_dependent_option(GLFW_USE_WAYLAND "Use Wayland for window creation" OFF
                        "UNIX;NOT APPLE" OFF)
 cmake_dependent_option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON
                        "MSVC" OFF)
+cmake_dependent_option(GLFW_USE_LIBDECOR "use libdecor for client-side window decorations" ON
+                       "GLFW_USE_WAYLAND" OFF)
 
 if (BUILD_SHARED_LIBS AND UNIX)
     # On Unix-like systems, shared libraries can use the soname system.
@@ -224,6 +226,14 @@ if (_GLFW_WAYLAND)
 
     list(APPEND glfw_INCLUDE_DIRS "${Wayland_INCLUDE_DIRS}")
     list(APPEND glfw_LIBRARIES "${Wayland_LINK_LIBRARIES}")
+
+    if (GLFW_USE_LIBDECOR)
+        pkg_check_modules(libdecor REQUIRED libdecor-0)
+        list(APPEND glfw_PKG_DEPS "libdecor-0")
+        list(APPEND glfw_INCLUDE_DIRS "${libdecor_INCLUDE_DIRS}")
+        list(APPEND glfw_LIBRARIES "${libdecor_LINK_LIBRARIES}")
+        add_definitions(-DWITH_DECORATION)
+    endif()
 
     include(CheckIncludeFiles)
     include(CheckFunctionExists)

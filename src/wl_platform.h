@@ -56,7 +56,9 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 
 #include "wayland-xdg-shell-client-protocol.h"
 #include "wayland-xdg-decoration-client-protocol.h"
+#ifndef WITH_DECORATION
 #include "wayland-viewporter-client-protocol.h"
+#endif
 #include "wayland-relative-pointer-unstable-v1-client-protocol.h"
 #include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
 #include "wayland-idle-inhibit-unstable-v1-client-protocol.h"
@@ -146,6 +148,7 @@ typedef xkb_keysym_t (* PFN_xkb_compose_state_get_one_sym)(struct xkb_compose_st
 #define _GLFW_DECORATION_VERTICAL (_GLFW_DECORATION_TOP + _GLFW_DECORATION_WIDTH)
 #define _GLFW_DECORATION_HORIZONTAL (2 * _GLFW_DECORATION_WIDTH)
 
+#ifndef WITH_DECORATION
 typedef enum _GLFWdecorationSideWayland
 {
     mainWindow,
@@ -163,6 +166,7 @@ typedef struct _GLFWdecorationWayland
     struct wp_viewport*         viewport;
 
 } _GLFWdecorationWayland;
+#endif
 
 // Wayland-specific per-window data
 //
@@ -204,12 +208,16 @@ typedef struct _GLFWwindowWayland
 
     GLFWbool                    wasFullscreen;
 
+#ifndef WITH_DECORATION
     struct {
         GLFWbool                           serverSide;
         struct wl_buffer*                  buffer;
         _GLFWdecorationWayland             top, left, right, bottom;
         int                                focus;
     } decorations;
+#else
+    GLFWbool                                ssd;
+#endif
 
 } _GLFWwindowWayland;
 
@@ -231,7 +239,9 @@ typedef struct _GLFWlibraryWayland
     struct wl_data_source*      dataSource;
     struct xdg_wm_base*         wmBase;
     struct zxdg_decoration_manager_v1*      decorationManager;
+#ifndef WITH_DECORATION
     struct wp_viewporter*       viewporter;
+#endif
     struct zwp_relative_pointer_manager_v1* relativePointerManager;
     struct zwp_pointer_constraints_v1*      pointerConstraints;
     struct zwp_idle_inhibit_manager_v1*     idleInhibitManager;

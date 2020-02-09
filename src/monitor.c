@@ -326,11 +326,6 @@ GLFWAPI void glfwGetMonitorPos(GLFWmonitor* handle, int* xpos, int* ypos)
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
     assert(monitor != NULL);
 
-    if (xpos)
-        *xpos = 0;
-    if (ypos)
-        *ypos = 0;
-
     _GLFW_REQUIRE_INIT();
 
     _glfwPlatformGetMonitorPos(monitor, xpos, ypos);

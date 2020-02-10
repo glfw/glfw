@@ -54,14 +54,17 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #endif
 #include "xkb_unicode.h"
 
-#include "wayland-xdg-shell-client-protocol.h"
-#include "wayland-xdg-decoration-client-protocol.h"
-#ifndef WITH_DECORATION
-#include "wayland-viewporter-client-protocol.h"
-#endif
 #include "wayland-relative-pointer-unstable-v1-client-protocol.h"
 #include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
 #include "wayland-idle-inhibit-unstable-v1-client-protocol.h"
+
+#ifdef WITH_DECORATION
+#include <libdecor.h>
+#else
+#include "wayland-xdg-shell-client-protocol.h"
+#include "wayland-xdg-decoration-client-protocol.h"
+#include "wayland-viewporter-client-protocol.h"
+#endif
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)
@@ -181,11 +184,13 @@ typedef struct _GLFWwindowWayland
     struct wl_egl_window*       native;
     struct wl_callback*         callback;
 
+#ifndef WITH_DECORATION
     struct {
         struct xdg_surface*     surface;
         struct xdg_toplevel*    toplevel;
         struct zxdg_toplevel_decoration_v1* decoration;
     } xdg;
+#endif
 
     _GLFWcursor*                currentCursor;
     double                      cursorPosX, cursorPosY;
@@ -216,7 +221,7 @@ typedef struct _GLFWwindowWayland
         int                                focus;
     } decorations;
 #else
-    GLFWbool                                ssd;
+    struct libdecor_frame                   *decoration_frame;
 #endif
 
 } _GLFWwindowWayland;
@@ -237,9 +242,11 @@ typedef struct _GLFWlibraryWayland
     struct wl_data_device*      dataDevice;
     struct wl_data_offer*       dataOffer;
     struct wl_data_source*      dataSource;
+#ifdef WITH_DECORATION
+    struct libdecor             *csd_context;
+#else
     struct xdg_wm_base*         wmBase;
     struct zxdg_decoration_manager_v1*      decorationManager;
-#ifndef WITH_DECORATION
     struct wp_viewporter*       viewporter;
 #endif
     struct zwp_relative_pointer_manager_v1* relativePointerManager;

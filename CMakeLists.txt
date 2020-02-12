@@ -235,7 +235,7 @@ if (_GLFW_WAYLAND)
     find_package(WaylandScanner REQUIRED)
     find_package(WaylandProtocols 1.15 REQUIRED)
 
-    list(APPEND glfw_PKG_DEPS "wayland-egl")
+    list(APPEND glfw_PKG_DEPS "wayland-client")
 
     list(APPEND glfw_INCLUDE_DIRS "${Wayland_INCLUDE_DIRS}")
     list(APPEND glfw_LIBRARIES "${Wayland_LIBRARIES}")

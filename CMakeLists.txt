@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(GLFW VERSION 3.3.2 LANGUAGES C)
+project(GLFW VERSION 3.3.3 LANGUAGES C)
 
 set(CMAKE_LEGACY_CYGWIN_WIN32 OFF)
 

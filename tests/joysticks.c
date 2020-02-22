@@ -29,6 +29,7 @@
 //========================================================================
 
 #include <glad/gl.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #define NK_IMPLEMENTATION
@@ -85,7 +86,7 @@ static void joystick_callback(int jid, int event)
         glfwRequestWindowAttention(window);
 }
 
-static void drop_callback(GLFWwindow* window, int count, const char** paths)
+static void drop_callback(GLFWwindow* window, int count, const char* paths[])
 {
     int i;
 
@@ -181,6 +182,7 @@ int main(void)
         exit(EXIT_FAILURE);
 
     glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
+    glfwWindowHint(GLFW_WIN32_KEYBOARD_MENU, GLFW_TRUE);
 
     window = glfwCreateWindow(800, 600, "Joystick Test", NULL, NULL);
     if (!window)

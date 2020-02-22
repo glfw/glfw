@@ -29,6 +29,7 @@
 //========================================================================
 
 #include <glad/gl.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -67,14 +68,6 @@ static const char* fragment_shader_text =
 static int swap_tear;
 static int swap_interval;
 static double frame_rate;
-
-static void usage(void)
-{
-    printf("Usage: tearing [-f] [-h]\n");
-    printf("Options:\n");
-    printf("  -f use full screen\n");
-    printf("  -h show this help\n");
-}
 
 static void update_window_title(GLFWwindow* window)
 {

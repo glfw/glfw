@@ -2177,6 +2177,7 @@ static void demo_resize(struct demo *demo) {
 
     if (demo->setup_cmd) {
         vkFreeCommandBuffers(demo->device, demo->cmd_pool, 1, &demo->setup_cmd);
+        demo->setup_cmd = VK_NULL_HANDLE;
     }
     vkFreeCommandBuffers(demo->device, demo->cmd_pool, 1, &demo->draw_cmd);
     vkDestroyCommandPool(demo->device, demo->cmd_pool, NULL);

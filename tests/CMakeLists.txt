@@ -1,7 +1,7 @@
 
 link_libraries(glfw)
 
-include_directories(${glfw_INCLUDE_DIRS} "${GLFW_SOURCE_DIR}/deps")
+include_directories("${GLFW_SOURCE_DIR}/deps")
 
 if (MATH_LIBRARY)
     link_libraries("${MATH_LIBRARY}")
@@ -39,27 +39,28 @@ add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c ${GLAD_GL})
 add_executable(threads WIN32 MACOSX_BUNDLE threads.c ${TINYCTHREAD} ${GLAD_GL})
 add_executable(timeout WIN32 MACOSX_BUNDLE timeout.c ${GLAD_GL})
 add_executable(title WIN32 MACOSX_BUNDLE title.c ${GLAD_GL})
-add_executable(vulkan WIN32 vulkan.c ${ICON} ${GLAD_VULKAN})
-add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GETOPT} ${GLAD_GL})
+add_executable(triangle-vulkan WIN32 triangle-vulkan.c ${GLAD_VULKAN})
+add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GLAD_GL})
 
-target_link_libraries(empty "${CMAKE_THREAD_LIBS_INIT}")
-target_link_libraries(threads "${CMAKE_THREAD_LIBS_INIT}")
+target_link_libraries(empty Threads::Threads)
+target_link_libraries(threads Threads::Threads)
 if (RT_LIBRARY)
     target_link_libraries(empty "${RT_LIBRARY}")
     target_link_libraries(threads "${RT_LIBRARY}")
 endif()
 
-set(WINDOWS_BINARIES empty gamma icon inputlag joysticks opacity tearing
-                     threads timeout title vulkan windows)
+set(GUI_ONLY_BINARIES empty gamma icon inputlag joysticks opacity tearing
+    threads timeout title triangle-vulkan windows)
 set(CONSOLE_BINARIES clipboard events msaa glfwinfo iconify monitors reopen
                      cursor)
 
-set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
+set_target_properties(${GUI_ONLY_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
+                      C_STANDARD 99
                       FOLDER "GLFW3/Tests")
 
 if (MSVC)
     # Tell MSVC to use main instead of WinMain for Windows subsystem executables
-    set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
+    set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES
                           LINK_FLAGS "/ENTRY:mainCRTStartup")
 endif()
 
@@ -73,12 +74,11 @@ if (APPLE)
     set_target_properties(threads PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Threads")
     set_target_properties(timeout PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Timeout")
     set_target_properties(title PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Title")
-    set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Vulkan")
     set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
 
-    set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
+    set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES
                           MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}
-                          MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION_FULL}
-                          MACOSX_BUNDLE_INFO_PLIST "${GLFW_SOURCE_DIR}/CMake/MacOSXBundleInfo.plist.in")
+                          MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION}
+                          MACOSX_BUNDLE_INFO_PLIST "${GLFW_SOURCE_DIR}/CMake/Info.plist.in")
 endif()
 

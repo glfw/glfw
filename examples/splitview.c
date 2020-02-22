@@ -3,7 +3,7 @@
 //
 // The program uses a "split window" view, rendering four views of the
 // same scene in one window (e.g. uesful for 3D modelling software). This
-// demo uses scissors to separete the four different rendering areas from
+// demo uses scissors to separate the four different rendering areas from
 // each other.
 //
 // (If the code seems a little bit strange here and there, it may be
@@ -11,6 +11,7 @@
 //========================================================================
 
 #include <glad/gl.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #if defined(_MSC_VER)

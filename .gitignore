@@ -8,15 +8,19 @@ _ReSharper*
 *.dir
 *.vcxproj*
 *.sln
-.vs/
+.vs
+CMakeSettings.json
 Win32
 x64
 Debug
 Release
 MinSizeRel
 RelWithDebInfo
-*.xcodeproj
 *.opensdf
+
+# Xcode clutter
+GLFW.build
+GLFW.xcodeproj
 
 # macOS clutter
 .DS_Store

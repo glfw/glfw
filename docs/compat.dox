@@ -111,7 +111,7 @@ has been configured in the compositor.
 GLFW uses the [xdg-shell
 protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/stable/xdg-shell/xdg-shell.xml)
 to provide better window management.  This protocol is part of
-wayland-protocols 1.12, and mandatory at build time.
+wayland-protocols 1.12, and is mandatory for GLFW to display a window.
 
 GLFW uses the [relative pointer
 protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/unstable/relative-pointer/relative-pointer-unstable-v1.xml)
@@ -268,10 +268,10 @@ surfaces on Microsoft Windows.  If any of these extensions are not available,
 @ref glfwGetRequiredInstanceExtensions will return an empty list and window
 surface creation will fail.
 
-GLFW uses the `VK_KHR_surface` and `VK_MVK_macos_surface` extensions to create
-surfaces on macOS.  If any of these extensions are not available, @ref
-glfwGetRequiredInstanceExtensions will return an empty list and window surface
-creation will fail.
+GLFW uses the `VK_KHR_surface` and either the `VK_MVK_macos_surface` or
+`VK_EXT_metal_surface` extensions to create surfaces on macOS.  If any of these
+extensions are not available, @ref glfwGetRequiredInstanceExtensions will
+return an empty list and window surface creation will fail.
 
 GLFW uses the `VK_KHR_surface` and either the `VK_KHR_xlib_surface` or
 `VK_KHR_xcb_surface` extensions to create surfaces on X11.  If `VK_KHR_surface`

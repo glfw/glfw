@@ -148,12 +148,15 @@ information on what to include when reporting a bug.
    (#1623)
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
+ - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)
  - [Cocoa] Removed dependency on the CoreVideo framework
  - [Cocoa] Bugfix: `glfwSetWindowSize` used a bottom-left anchor point (#1553)
  - [Cocoa] Bugfix: Window remained on screen after destruction until event poll
    (#1412)
  - [Cocoa] Bugfix: Event processing before window creation would assert (#1543)
  - [Cocoa] Bugfix: Undecorated windows could not be iconified on recent macOS
+ - [Cocoa] Bugfix: Touching event queue from secondary thread before main thread
+   would abort (#1649)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)

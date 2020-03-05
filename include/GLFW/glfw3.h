@@ -1831,6 +1831,14 @@ typedef struct GLFWgamepadstate
  *  bundle, if present.  This can be disabled with the @ref
  *  GLFW_COCOA_CHDIR_RESOURCES init hint.
  *
+ *  @remark @macos This function will create the main menu and dock icon for the
+ *  application.  If GLFW finds a `MainMenu.nib` it is loaded and assumed to
+ *  contain a menu bar.  Otherwise a minimal menu bar is created manually with
+ *  common commands like Hide, Quit and About.  The About entry opens a minimal
+ *  about dialog with information from the application's bundle.  The menu bar
+ *  and dock icon can be disabled entirely with the @ref GLFW_COCOA_MENUBAR init
+ *  hint.
+ *
  *  @remark @x11 This function will set the `LC_CTYPE` category of the
  *  application locale according to the current environment if that category is
  *  still "C".  This is because the "C" locale breaks Unicode text input.
@@ -2673,13 +2681,6 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *  For more information on bundles, see the
  *  [Bundle Programming Guide](https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/)
  *  in the Mac Developer Library.
- *
- *  @remark @macos The first time a window is created the menu bar is created.
- *  If GLFW finds a `MainMenu.nib` it is loaded and assumed to contain a menu
- *  bar.  Otherwise a minimal menu bar is created manually with common commands
- *  like Hide, Quit and About.  The About entry opens a minimal about dialog
- *  with information from the application's bundle.  Menu bar creation can be
- *  disabled entirely with the @ref GLFW_COCOA_MENUBAR init hint.
  *
  *  @remark @macos On OS X 10.10 and later the window frame will not be rendered
  *  at full resolution on Retina displays unless the

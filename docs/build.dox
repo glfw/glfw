@@ -209,7 +209,7 @@ find_package(OpenGL REQUIRED)
 @endcode
 
 If OpenGL is found, the `OpenGL::GL` target is added to your project, containing
-library and include directory paths.  Link against this like above.
+library and include directory paths.  Link against this like any other library.
 
 @code{.cmake}
 target_link_libraries(myapp OpenGL::GL)
@@ -248,7 +248,7 @@ find_package(OpenGL REQUIRED)
 @endcode
 
 If OpenGL is found, the `OpenGL::GL` target is added to your project, containing
-library and include directory paths.  Link against this like above.
+library and include directory paths.  Link against this like any other library.
 
 @code{.cmake}
 target_link_libraries(myapp OpenGL::GL)

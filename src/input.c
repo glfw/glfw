@@ -387,44 +387,45 @@ void _glfwInputGamepad(_GLFWjoystick* js)
 //
 void _glfwInputJoystick(_GLFWjoystick* js, int event)
 {
-    const int jid = (int) (js - _glfw.joysticks);
-
-    if (_glfw.callbacks.joystick)
+    if (_glfw.callbacks.joystick) {
+        const int jid = (int) (js - _glfw.joysticks);
         _glfw.callbacks.joystick(jid, event);
+    }
 }
+
 
 // Notifies shared code of the new value of a joystick axis
 //
 void _glfwInputJoystickAxis(_GLFWjoystick* js, int axis, float value)
 {
-    const int jid = (int) (js - _glfw.joysticks);
+    if (js->axes[axis] != value) {
+        const int jid = (int) (js - _glfw.joysticks);
 
-    if ((_glfw.callbacks.joystick_axis) && (js->axes[axis] != value))
-        _glfw.callbacks.joystick_axis(jid, axis, value);
-
-    js->axes[axis] = value;
-
-    _glfwInputGamepad(js);
+        js->axes[axis] = value;
+        if (_glfw.callbacks.joystick_axis)
+            _glfw.callbacks.joystick_axis(jid, axis, value);
+        _glfwInputGamepad(js);
+    }
 }
 
 // Notifies shared code of the new value of a joystick button
 //
 void _glfwInputJoystickButton(_GLFWjoystick* js, int button, char value)
 {
-    const int jid = (int) (js - _glfw.joysticks);
+    if (js->buttons[button] != value) {
+        const int jid = (int) (js - _glfw.joysticks);
 
-    js->buttons[button] = value;
-
-    if (_glfw.callbacks.joystick_button)
-        _glfw.callbacks.joystick_button(jid, button, value);
-    _glfwInputGamepad(js);
+        js->buttons[button] = value;
+        if(_glfw.callbacks.joystick_button)
+            _glfw.callbacks.joystick_button(jid, button, value);
+        _glfwInputGamepad(js);
+    }
 }
 
 // Notifies shared code of the new value of a joystick hat
 //
 void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value)
 {
-    const int jid = (int) (js - _glfw.joysticks);
     const int base = js->buttonCount + hat * 4;
 
     js->buttons[base + 0] = (value & 0x01) ? GLFW_PRESS : GLFW_RELEASE;
@@ -432,11 +433,14 @@ void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value)
     js->buttons[base + 2] = (value & 0x04) ? GLFW_PRESS : GLFW_RELEASE;
     js->buttons[base + 3] = (value & 0x08) ? GLFW_PRESS : GLFW_RELEASE;
 
-    js->hats[hat] = value;
+    if (js->hats[hat] != value) {
+        const int jid = (int) (js - _glfw.joysticks);
 
-    if (_glfw.callbacks.joystick_hat)
-        _glfw.callbacks.joystick_hat(jid, hat, value);
-    _glfwInputGamepad(js);
+        js->hats[hat] = value;
+        if(_glfw.callbacks.joystick_hat)
+          _glfw.callbacks.joystick_hat(jid, hat, value);
+        _glfwInputGamepad(js);
+    }
 }
 
 

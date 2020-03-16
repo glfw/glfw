@@ -119,6 +119,8 @@ information on what to include when reporting a bug.
 ## Changelog
 
  - [X11] Bugfix: IME input of CJK was broken for "C" locale (#1587,#1636)
+ - [X11] Bugfix: Xlib errors caused by other parts of the application could be
+   reported as GLFW errors
 
 
 ## Contact

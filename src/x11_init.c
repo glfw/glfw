@@ -44,10 +44,6 @@ static int translateKeyCode(int scancode)
 {
     int keySym;
 
-    // Valid key code range is  [8,255], according to the Xlib manual
-    if (scancode < 8 || scancode > 255)
-        return GLFW_KEY_UNKNOWN;
-
     {
         int dummy;
         KeySym* keySyms;
@@ -201,7 +197,7 @@ static int translateKeyCode(int scancode)
 //
 static void createKeyTables(void)
 {
-    int scancode, key;
+    int scancode, key, scancodeMin, scancodeMax;
 
     memset(_glfw.x11.keycodes, -1, sizeof(_glfw.x11.keycodes));
     memset(_glfw.x11.scancodes, -1, sizeof(_glfw.x11.scancodes));
@@ -215,8 +211,11 @@ static void createKeyTables(void)
         XkbDescPtr desc = XkbGetMap(_glfw.x11.display, 0, XkbUseCoreKbd);
         XkbGetNames(_glfw.x11.display, XkbKeyNamesMask, desc);
 
+        scancodeMin = desc->min_key_code;
+        scancodeMax = desc->max_key_code;
+
         // Find the X11 key code -> GLFW key code mapping
-        for (scancode = desc->min_key_code;  scancode <= desc->max_key_code;  scancode++)
+        for (scancode = scancodeMin;  scancode <= scancodeMax;  scancode++)
         {
             memcpy(name, desc->names->keys[scancode].name, XkbKeyNameLength);
             name[XkbKeyNameLength] = '\0';
@@ -346,15 +345,16 @@ static void createKeyTables(void)
             else if (strcmp(name, "COMP") == 0) key = GLFW_KEY_MENU;
             else key = GLFW_KEY_UNKNOWN;
 
-            if ((scancode >= 0) && (scancode < 256))
-                _glfw.x11.keycodes[scancode] = key;
+            _glfw.x11.keycodes[scancode] = key;
         }
 
         XkbFreeNames(desc, XkbKeyNamesMask, True);
         XkbFreeKeyboard(desc, 0, True);
     }
+    else
+        XDisplayKeycodes(_glfw.x11.display, &scancodeMin, &scancodeMax);
 
-    for (scancode = 0;  scancode < 256;  scancode++)
+    for (scancode = scancodeMin;  scancode <= scancodeMax;  scancode++)
     {
         // Translate the un-translated key codes using traditional X11 KeySym
         // lookups

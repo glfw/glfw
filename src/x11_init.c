@@ -890,6 +890,9 @@ static Window createHelperWindow(void)
 //
 static int errorHandler(Display *display, XErrorEvent* event)
 {
+    if (_glfw.x11.display != display)
+        return 0;
+
     _glfw.x11.errorCode = event->error_code;
     return 0;
 }

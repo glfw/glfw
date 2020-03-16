@@ -173,6 +173,8 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: IME input of CJK was broken for "C" locale (#1587,#1636)
  - [X11] Bugfix: Termination would segfault if the IM had been destroyed
  - [X11] Bugfix: Any IM started after initialization would not be detected
+ - [X11] Bugfix: Xlib errors caused by other parts of the application could be
+   reported as GLFW errors
  - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled

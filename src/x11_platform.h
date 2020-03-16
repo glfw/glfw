@@ -67,6 +67,7 @@ typedef int (* PFN_XDeleteContext)(Display*,XID,XContext);
 typedef int (* PFN_XDeleteProperty)(Display*,Window,Atom);
 typedef void (* PFN_XDestroyIC)(XIC);
 typedef int (* PFN_XDestroyWindow)(Display*,Window);
+typedef int (* PFN_XDisplayKeycodes)(Display*,int*,int*);
 typedef int (* PFN_XEventsQueued)(Display*,int);
 typedef Bool (* PFN_XFilterEvent)(XEvent*,Window);
 typedef int (* PFN_XFindContext)(Display*,XID,XContext,XPointer*);
@@ -166,6 +167,7 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XDeleteProperty _glfw.x11.xlib.DeleteProperty
 #define XDestroyIC _glfw.x11.xlib.DestroyIC
 #define XDestroyWindow _glfw.x11.xlib.DestroyWindow
+#define XDisplayKeycodes _glfw.x11.xlib.DisplayKeycodes
 #define XEventsQueued _glfw.x11.xlib.EventsQueued
 #define XFilterEvent _glfw.x11.xlib.FilterEvent
 #define XFindContext _glfw.x11.xlib.FindContext
@@ -522,6 +524,7 @@ typedef struct _GLFWlibraryX11
         PFN_XDeleteProperty DeleteProperty;
         PFN_XDestroyIC DestroyIC;
         PFN_XDestroyWindow DestroyWindow;
+        PFN_XDisplayKeycodes DisplayKeycodes;
         PFN_XEventsQueued EventsQueued;
         PFN_XFilterEvent FilterEvent;
         PFN_XFindContext FindContext;

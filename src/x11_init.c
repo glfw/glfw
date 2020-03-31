@@ -336,7 +336,7 @@ static void createKeyTables(void)
             { GLFW_KEY_RIGHT_CONTROL, "RCTL" },
             { GLFW_KEY_RIGHT_ALT, "RALT" },
             { GLFW_KEY_RIGHT_SUPER, "RWIN" },
-            { GLFW_KEY_MENU, "COMP" }
+            { GLFW_KEY_MENU, "MENU" }
         };
 
         // Find the X11 key code -> GLFW key code mapping

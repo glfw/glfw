@@ -176,6 +176,10 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: Xlib errors caused by other parts of the application could be
    reported as GLFW errors
  - [X11] Bugfix: A handle race condition could cause a `BadWindow` error (#1633)
+ - [X11] Bugfix: XKB path used keysyms instead of physical locations for
+   non-printable keys (#1598)
+ - [X11] Bugfix: Function keys were mapped to `GLFW_KEY_UNKNOWN` for some layout
+   combinaitons (#1598)
  - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
@@ -355,6 +359,7 @@ skills.
  - Matt Sealey
  - Steve Sexton
  - Arkady Shapkin
+ - Ali Sherief
  - Yoshiki Shibukawa
  - Dmitri Shuralyov
  - Daniel Skorupski

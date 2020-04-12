@@ -628,6 +628,7 @@ const char* _glfwPlatformGetClipboardString(void);
 
 int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode);
 void _glfwPlatformUpdateGamepadGUID(char* guid);
+int _glfwPlatformSetGamepadRumble(_GLFWjoystick* js, float slowMotorSpeed, float fastMotorSpeed);
 
 uint64_t _glfwPlatformGetTimerValue(void);
 uint64_t _glfwPlatformGetTimerFrequency(void);

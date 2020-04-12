@@ -292,7 +292,6 @@ static void setOpaqueRegion(_GLFWwindow* window)
 
     wl_region_add(region, 0, 0, window->wl.width, window->wl.height);
     wl_surface_set_opaque_region(window->wl.surface, region);
-    wl_surface_commit(window->wl.surface);
     wl_region_destroy(region);
 }
 

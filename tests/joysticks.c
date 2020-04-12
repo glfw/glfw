@@ -57,6 +57,9 @@ static GLFWwindow* window;
 static int joysticks[GLFW_JOYSTICK_LAST + 1];
 static int joystick_count = 0;
 
+static float slowRumble[GLFW_JOYSTICK_LAST + 1];
+static float fastRumble[GLFW_JOYSTICK_LAST + 1];
+
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
@@ -174,7 +177,9 @@ int main(void)
     struct nk_context* nk;
     struct nk_font_atlas* atlas;
 
-    memset(joysticks, 0, sizeof(joysticks));
+    memset(joysticks,  0, sizeof(joysticks));
+    memset(slowRumble, 0, sizeof(slowRumble));
+    memset(fastRumble, 0, sizeof(fastRumble));
 
     glfwSetErrorCallback(error_callback);
 
@@ -233,6 +238,11 @@ int main(void)
                 {
                     if (nk_button_label(nk, joystick_label(joysticks[i])))
                         nk_window_set_focus(nk, joystick_label(joysticks[i]));
+
+                    slowRumble[i] = nk_slide_float(nk, 0.0f, slowRumble[i], 1.0f, 0.05f);
+                    fastRumble[i] = nk_slide_float(nk, 0.0f, fastRumble[i], 1.0f, 0.05f);
+
+                    glfwSetGamepadRumble(joysticks[i], slowRumble[i], fastRumble[i]);
                 }
             }
             else

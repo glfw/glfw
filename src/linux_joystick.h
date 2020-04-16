@@ -43,6 +43,7 @@ typedef struct _GLFWjoystickLinux
     int                     absMap[ABS_CNT];
     struct input_absinfo    absInfo[ABS_CNT];
     int                     hats[4][2];
+    struct ff_effect        *rumble;
 } _GLFWjoystickLinux;
 
 // Linux-specific joystick API data

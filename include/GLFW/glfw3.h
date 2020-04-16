@@ -5348,16 +5348,18 @@ GLFWAPI const char* glfwGetGamepadName(int jid);
  */
 GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state);
 
-/*! @brief Sets the specified gamepad's vibration effect intensity.
+/*! @brief Sets the intensity of an Xbox-like gamepad's rumble effect.
  *  
- *  This function sends vibration data to the specified Xbox-like gamepad. 
+ *  This function sends vibration data to gamepads that implement haptic
+ *  feedback effects using two vibration motors: a low-frequency motor, and
+ *  a high-frequency motor.
  *  
  *  Vibration intensity is a value between 0.0 and 1.0 inclusive, where 0.0 is no 
  *  vibration, and 1.0 is maximum vibration. It is set separately for the 
  *  gamepad's low frequency and high frequency rumble motors.
  * 
  *  If the specified gamepad is not present or does not support the rumble 
- *  effect, this function will return `GLFW_FALSE` but will not generate an 
+ *  effect, this function will return `GLFW_FALSE` but will not generate an
  *  error. 
  *
  *  @param[in] jid The [joystick](@ref joysticks) to vibrate.
@@ -5377,7 +5379,7 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state);
  *
  *  @ingroup input
  */
-GLFWAPI int glfwSetGamepadRumble(int jid, float slowMotorSpeed, float fastMotorSpeed);
+GLFWAPI int glfwSetJoystickRumble(int jid, float slowMotorSpeed, float fastMotorSpeed);
 
 /*! @brief Sets the clipboard to the specified string.
  *

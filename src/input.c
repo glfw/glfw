@@ -1312,7 +1312,7 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state)
     return GLFW_TRUE;
 }
 
-GLFWAPI int glfwSetGamepadRumble(int jid, float slowMotorSpeed, float fastMotorSpeed)
+GLFWAPI int glfwSetJoystickRumble(int jid, float slowMotorSpeed, float fastMotorSpeed)
 {
     _GLFWjoystick* js;
 
@@ -1337,7 +1337,7 @@ GLFWAPI int glfwSetGamepadRumble(int jid, float slowMotorSpeed, float fastMotorS
     fastMotorSpeed = fastMotorSpeed < 0.0f ? 0.0f : fastMotorSpeed;
     fastMotorSpeed = fastMotorSpeed > 1.0f ? 1.0f : fastMotorSpeed;
 
-    return _glfwPlatformSetGamepadRumble(js, slowMotorSpeed, fastMotorSpeed);
+    return _glfwPlatformSetJoystickRumble(js, slowMotorSpeed, fastMotorSpeed);
 }
 
 GLFWAPI void glfwSetClipboardString(GLFWwindow* handle, const char* string)

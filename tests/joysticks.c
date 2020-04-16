@@ -242,7 +242,7 @@ int main(void)
                     slowRumble[i] = nk_slide_float(nk, 0.0f, slowRumble[i], 1.0f, 0.05f);
                     fastRumble[i] = nk_slide_float(nk, 0.0f, fastRumble[i], 1.0f, 0.05f);
 
-                    glfwSetGamepadRumble(joysticks[i], slowRumble[i], fastRumble[i]);
+                    glfwSetJoystickRumble(joysticks[i], slowRumble[i], fastRumble[i]);
                 }
             }
             else

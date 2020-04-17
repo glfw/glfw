@@ -122,7 +122,7 @@ static void pollAbsState(_GLFWjoystick* js)
 
 #define isBitSet(bit, arr) (arr[(bit) / 8] & (1 << ((bit) % 8)))
 
-static void checkForceFeedback(_GLFWjoystickLinux *linjs)
+static void initJoystickForceFeedback(_GLFWjoystickLinux *linjs)
 {
     linjs->rumble = NULL;
     struct ff_effect* effect = NULL;
@@ -265,7 +265,7 @@ static GLFWbool openJoystickDevice(const char* path)
         }
     }
 
-    checkForceFeedback(&linjs);
+    initJoystickForceFeedback(&linjs);
 
     _GLFWjoystick* js =
         _glfwAllocJoystick(name, guid, axisCount, buttonCount, hatCount);

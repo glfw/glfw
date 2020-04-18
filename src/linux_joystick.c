@@ -478,7 +478,7 @@ void _glfwPlatformUpdateGamepadGUID(char* guid)
 }
 
 
-int _glfwPlatformSetJoystickRumble(_GLFWjoystick* js, float slowMotorSpeed, float fastMotorSpeed)
+int _glfwPlatformSetJoystickRumble(_GLFWjoystick* js, float slowMotorIntensity, float fastMotorIntensity)
 {
     _GLFWjoystickLinux *linjs = &js->linjs;
 
@@ -487,8 +487,8 @@ int _glfwPlatformSetJoystickRumble(_GLFWjoystick* js, float slowMotorSpeed, floa
 
     js->linjs.rumble->u.rumble = (struct ff_rumble_effect)
     {
-        .strong_magnitude = 65535 * slowMotorSpeed,
-        .weak_magnitude   = 65535 * fastMotorSpeed
+        .strong_magnitude = 65535 * slowMotorIntensity,
+        .weak_magnitude   = 65535 * fastMotorIntensity
     };
 
     struct input_event play =

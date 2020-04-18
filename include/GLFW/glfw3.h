@@ -5363,8 +5363,8 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state);
  *  error. 
  *
  *  @param[in] jid The [joystick](@ref joysticks) to vibrate.
- *  @param[in] slowMotorSpeed The low frequency rumble intensity.
- *  @param[in] fastMotorSpeed The high frequency rumble intensity.
+ *  @param[in] slowMotorIntensity The low frequency rumble intensity.
+ *  @param[in] fastMotorIntensity The high frequency rumble intensity.
  *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if no joystick is
  *  connected, or the joystick does not support the rumble effect.
  * 
@@ -5373,13 +5373,16 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state);
  *
  *  @thread_safety This function must only be called from the main thread.
  *
+ *  @note @win32 This function is only implemented for XInput devices.
+ *  @note @macos This function is not implemented.
+ *
  *  @sa @ref gamepad
  *  @sa @ref glfwUpdateGamepadMappings
  *  @sa @ref glfwJoystickIsGamepad
  *
  *  @ingroup input
  */
-GLFWAPI int glfwSetJoystickRumble(int jid, float slowMotorSpeed, float fastMotorSpeed);
+GLFWAPI int glfwSetJoystickRumble(int jid, float slowMotorIntensity, float fastMotorIntensity);
 
 /*! @brief Sets the clipboard to the specified string.
  *

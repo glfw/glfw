@@ -158,7 +158,6 @@ static void initJoystickForceFeedback(_GLFWjoystickLinux *linjs)
         if (ioctl(linjs->fd, EVIOCSFF, effect) < 0)
         {
             free(effect);
-            return;
         } else {
             linjs->rumble = effect;
         }

@@ -182,8 +182,8 @@ typedef struct _XINPUT_STATE {
  */
 
 typedef struct _XINPUT_VIBRATION {
-    WORD wLeftMotorIntensity;
-    WORD wRightMotorIntensity;
+    WORD wLeftMotorSpeed;
+    WORD wRightMotorSpeed;
 } XINPUT_VIBRATION, *PXINPUT_VIBRATION;
 
 /*

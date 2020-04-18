@@ -761,8 +761,8 @@ int _glfwPlatformSetJoystickRumble(_GLFWjoystick* js, float slowMotorIntensity, 
     XINPUT_VIBRATION effect;
     ZeroMemory(&effect, sizeof(XINPUT_VIBRATION));
 
-    effect.wLeftMotorIntensity  = (WORD)(65535.0f * slowMotorIntensity);
-    effect.wRightMotorIntensity = (WORD)(65535.0f * fastMotorIntensity);
+    effect.wLeftMotorSpeed  = (WORD)(65535.0f * slowMotorIntensity);
+    effect.wRightMotorSpeed = (WORD)(65535.0f * fastMotorIntensity);
 
     return (int) (XInputSetState(js->win32.index, &effect) == ERROR_SUCCESS);
 }

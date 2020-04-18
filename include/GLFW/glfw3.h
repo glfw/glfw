@@ -5363,8 +5363,8 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state);
  *  error. 
  *
  *  @param[in] jid The [joystick](@ref joysticks) to vibrate.
- *  @param[in] slowMotorIntensity The low frequency rumble intensity.
- *  @param[in] fastMotorIntensity The high frequency rumble intensity.
+ *  @param[in] slowMotorIntensity The low frequency vibration intensity.
+ *  @param[in] fastMotorIntensity The high frequency vibration intensity.
  *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if no joystick is
  *  connected, or the joystick does not support the rumble effect.
  * 

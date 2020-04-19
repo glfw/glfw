@@ -334,7 +334,7 @@ int main(void)
                     nk_layout_row_dynamic(nk, 30, 2);
                     nk_label(nk, "Slow rumble motor intensity", NK_TEXT_LEFT);
                     nk_label(nk, "Fast rumble motor intensity", NK_TEXT_LEFT);
-                    
+
                     nk_layout_row_dynamic(nk, 30, 2);
                     slowRumble[i] = nk_slide_float(nk, 0.0f, slowRumble[i], 1.0f, 0.05f);
                     fastRumble[i] = nk_slide_float(nk, 0.0f, fastRumble[i], 1.0f, 0.05f);

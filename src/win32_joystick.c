@@ -759,7 +759,7 @@ int _glfwPlatformSetJoystickRumble(_GLFWjoystick* js, float slowMotorIntensity, 
 
     if (js->win32.device)
         return GLFW_FALSE;
-    
+
     ZeroMemory(&effect, sizeof(XINPUT_VIBRATION));
 
     effect.wLeftMotorSpeed  = (WORD)(65535.0f * slowMotorIntensity);

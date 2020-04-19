@@ -238,11 +238,6 @@ int main(void)
                 {
                     if (nk_button_label(nk, joystick_label(joysticks[i])))
                         nk_window_set_focus(nk, joystick_label(joysticks[i]));
-
-                    slowRumble[i] = nk_slide_float(nk, 0.0f, slowRumble[i], 1.0f, 0.05f);
-                    fastRumble[i] = nk_slide_float(nk, 0.0f, fastRumble[i], 1.0f, 0.05f);
-
-                    glfwSetJoystickRumble(joysticks[i], slowRumble[i], fastRumble[i]);
                 }
             }
             else
@@ -335,6 +330,16 @@ int main(void)
 
                     nk_layout_row_dynamic(nk, 30, 8);
                     hat_widget(nk, hat);
+
+                    nk_layout_row_dynamic(nk, 30, 2);
+                    nk_label(nk, "Slow rumble motor intensity", NK_TEXT_LEFT);
+                    nk_label(nk, "Fast rumble motor intensity", NK_TEXT_LEFT);
+                    
+                    nk_layout_row_dynamic(nk, 30, 2);
+                    slowRumble[i] = nk_slide_float(nk, 0.0f, slowRumble[i], 1.0f, 0.05f);
+                    fastRumble[i] = nk_slide_float(nk, 0.0f, fastRumble[i], 1.0f, 0.05f);
+
+                    glfwSetJoystickRumble(joysticks[i], slowRumble[i], fastRumble[i]);
                 }
                 else
                     nk_label(nk, "Joystick has no gamepad mapping", NK_TEXT_LEFT);

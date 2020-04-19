@@ -157,6 +157,7 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: Undecorated windows could not be iconified on recent macOS
  - [Cocoa] Bugfix: Touching event queue from secondary thread before main thread
    would abort (#1649)
+ - [Cocoa] Use `CALayer` instead of `NSView` for `EGLNativeWindowType` (#1169)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)

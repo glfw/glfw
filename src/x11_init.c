@@ -37,22 +37,35 @@
 #include <unistd.h>
 
 
-// Translate an X11 key code to a GLFW key code.
+// Translate the X11 KeySyms for a key to a GLFW key code
+// NOTE: This is only used as a fallback, in case the XKB method fails
+//       It is layout-dependent and will fail partially on most non-US layouts
 //
-static int translateKeyCode(int scancode)
+static int translateKeySyms(const KeySym* keysyms, int width)
 {
-    int keySym;
-
+    if (width > 1)
     {
-        int dummy;
-        KeySym* keySyms;
-
-        keySyms = XGetKeyboardMapping(_glfw.x11.display, scancode, 1, &dummy);
-        keySym = keySyms[0];
-        XFree(keySyms);
+        switch (keysyms[1])
+        {
+            case XK_KP_0:           return GLFW_KEY_KP_0;
+            case XK_KP_1:           return GLFW_KEY_KP_1;
+            case XK_KP_2:           return GLFW_KEY_KP_2;
+            case XK_KP_3:           return GLFW_KEY_KP_3;
+            case XK_KP_4:           return GLFW_KEY_KP_4;
+            case XK_KP_5:           return GLFW_KEY_KP_5;
+            case XK_KP_6:           return GLFW_KEY_KP_6;
+            case XK_KP_7:           return GLFW_KEY_KP_7;
+            case XK_KP_8:           return GLFW_KEY_KP_8;
+            case XK_KP_9:           return GLFW_KEY_KP_9;
+            case XK_KP_Separator:
+            case XK_KP_Decimal:     return GLFW_KEY_KP_DECIMAL;
+            case XK_KP_Equal:       return GLFW_KEY_KP_EQUAL;
+            case XK_KP_Enter:       return GLFW_KEY_KP_ENTER;
+            default:                break;
+        }
     }
 
-    switch (keySym)
+    switch (keysyms[0])
     {
         case XK_Escape:         return GLFW_KEY_ESCAPE;
         case XK_Tab:            return GLFW_KEY_TAB;
@@ -395,17 +408,28 @@ static void createKeyTables(void)
     else
         XDisplayKeycodes(_glfw.x11.display, &scancodeMin, &scancodeMax);
 
+    int width;
+    KeySym* keysyms = XGetKeyboardMapping(_glfw.x11.display,
+                                          scancodeMin,
+                                          scancodeMax - scancodeMin + 1,
+                                          &width);
+
     for (scancode = scancodeMin;  scancode <= scancodeMax;  scancode++)
     {
         // Translate the un-translated key codes using traditional X11 KeySym
         // lookups
         if (_glfw.x11.keycodes[scancode] < 0)
-            _glfw.x11.keycodes[scancode] = translateKeyCode(scancode);
+        {
+            const size_t base = (scancode - scancodeMin) * width;
+            _glfw.x11.keycodes[scancode] = translateKeySyms(&keysyms[base], width);
+        }
 
         // Store the reverse translation for faster key name lookup
         if (_glfw.x11.keycodes[scancode] > 0)
             _glfw.x11.scancodes[_glfw.x11.keycodes[scancode]] = scancode;
     }
+
+    XFree(keysyms);
 }
 
 // Check whether the IM has a usable style

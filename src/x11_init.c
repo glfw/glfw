@@ -335,6 +335,8 @@ static void createKeyTables(void)
             { GLFW_KEY_RIGHT_SHIFT, "RTSH" },
             { GLFW_KEY_RIGHT_CONTROL, "RCTL" },
             { GLFW_KEY_RIGHT_ALT, "RALT" },
+            { GLFW_KEY_RIGHT_ALT, "LVL3" },
+            { GLFW_KEY_RIGHT_ALT, "MDSW" },
             { GLFW_KEY_RIGHT_SUPER, "RWIN" },
             { GLFW_KEY_MENU, "MENU" }
         };

@@ -251,12 +251,16 @@ glViewport(0, 0, width, height);
 You can also set a framebuffer size callback using @ref
 glfwSetFramebufferSizeCallback and be notified when the size changes.
 
-Actual rendering with OpenGL is outside the scope of this tutorial, but there
-are [many](https://open.gl/) [excellent](https://learnopengl.com/)
-[tutorial](http://openglbook.com/) [sites](http://ogldev.atspace.co.uk/) that
-teach modern OpenGL.  Some of them use GLFW to create the context and window
-while others use GLUT or SDL, but remember that OpenGL itself always works the
-same.
+The details of how to render with OpenGL is outside the scope of this tutorial,
+but there are many excellent resources for learning modern OpenGL.  Here are
+a few of them:
+
+ - [Anton's OpenGL 4 Tutorials](https://antongerdelan.net/opengl/)
+ - [Learn OpenGL](https://learnopengl.com/)
+ - [Open.GL](https://open.gl/)
+
+These all happen to use GLFW, but OpenGL itself works the same whatever API you
+use to create the window and context.
 
 
 @subsection quick_timer Reading the timer

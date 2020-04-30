@@ -225,6 +225,9 @@ library and include directory paths.  Link against this like any other library.
 target_link_libraries(myapp OpenGL::GL)
 @endcode
 
+For a minimal example of a program and GLFW sources built with CMake, see the
+[GLFW CMake Starter](https://github.com/juliettef/GLFW-CMake-starter) on GitHub.
+
 
 @subsection build_link_cmake_package With CMake and installed GLFW binaries
 

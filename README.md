@@ -11,7 +11,7 @@ application development.  It provides a simple, platform-independent API for
 creating windows, contexts and surfaces, reading input, handling events, etc.
 
 GLFW natively supports Windows, macOS and Linux and other Unix-like systems.  On
-Linux both X11 and Wayland is supported.
+Linux both X11 and Wayland are supported.
 
 GLFW is licensed under the [zlib/libpng
 license](http://www.glfw.org/license.html).
@@ -85,10 +85,11 @@ in the documentation for more information.
 
 ## Dependencies
 
-GLFW itself depends only on the headers and libraries for your window system.
+GLFW itself needs only CMake 3.1 or later and the headers and libraries for your
+OS and window system.
 
 The (experimental) Wayland backend also depends on the `extra-cmake-modules`
-package, which is used to generated Wayland protocol headers.
+package, which is used to generate Wayland protocol headers.
 
 The examples and test programs depend on a number of tiny libraries.  These are
 located in the `deps/` directory.
@@ -123,29 +124,70 @@ information on what to include when reporting a bug.
  - Added `GLFW_RESIZE_EW_CURSOR` alias for `GLFW_HRESIZE_CURSOR` (#427)
  - Added `GLFW_RESIZE_NS_CURSOR` alias for `GLFW_VRESIZE_CURSOR` (#427)
  - Added `GLFW_POINTING_HAND_CURSOR` alias for `GLFW_HAND_CURSOR` (#427)
+ - Updated the minimum required CMake version to 3.1
  - Disabled tests and examples by default when built as a CMake subdirectory
  - Bugfix: The CMake config-file package used an absolute path and was not
    relocatable (#1470)
  - Bugfix: Video modes with a duplicate screen area were discarded (#1555,#1556)
  - Bugfix: Compiling with -Wextra-semi caused warnings (#1440)
+ - Bugfix: Built-in mappings failed because some OEMs re-used VID/PID (#1583)
  - [Win32] Added the `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access
            to the window menu
+ - [Win32] Added a version info resource to the GLFW DLL
  - [Win32] Bugfix: `GLFW_INCLUDE_VULKAN` plus `VK_USE_PLATFORM_WIN32_KHR` caused
    symbol redefinition (#1524)
  - [Win32] Bugfix: The cursor position event was emitted before its cursor enter
    event (#1490)
  - [Win32] Bugfix: The window hint `GLFW_MAXIMIZED` did not move or resize the
    window (#1499)
+ - [Win32] Bugfix: Disabled cursor mode interfered with some non-client actions
+ - [Win32] Bugfix: Super key was not released after Win+V hotkey (#1622)
+ - [Win32] Bugfix: `glfwGetKeyName` could access out of bounds and return an
+   invalid pointer
+ - [Win32] Bugfix: Some synthetic key events were reported as `GLFW_KEY_UNKNOWN`
+   (#1623)
+ - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
+ - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
+ - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)
+ - [Cocoa] Removed dependency on the CoreVideo framework
  - [Cocoa] Bugfix: `glfwSetWindowSize` used a bottom-left anchor point (#1553)
  - [Cocoa] Bugfix: Window remained on screen after destruction until event poll
    (#1412)
+ - [Cocoa] Bugfix: Event processing before window creation would assert (#1543)
+ - [Cocoa] Bugfix: Undecorated windows could not be iconified on recent macOS
+ - [Cocoa] Bugfix: Touching event queue from secondary thread before main thread
+   would abort (#1649)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
  - [X11] Bugfix: Decorations could not be enabled after window creation (#1566)
  - [X11] Bugfix: Content scale fallback value could be inconsistent (#1578)
+ - [X11] Bugfix: `glfwMaximizeWindow` had no effect on hidden windows
+ - [X11] Bugfix: Clearing `GLFW_FLOATING` on a hidden window caused invalid read
+ - [X11] Bugfix: Changing `GLFW_FLOATING` on a hidden window could silently fail
+ - [X11] Bugfix: Disabled cursor mode was interrupted by indicator windows
+ - [X11] Bugfix: Monitor physical dimensions could be reported as zero mm
+ - [X11] Bugfix: Window position events were not emitted during resizing (#1613)
+ - [X11] Bugfix: `glfwFocusWindow` could terminate on older WMs or without a WM
+ - [X11] Bugfix: Querying a disconnected monitor could segfault (#1602)
+ - [X11] Bugfix: IME input of CJK was broken for "C" locale (#1587,#1636)
+ - [X11] Bugfix: Termination would segfault if the IM had been destroyed
+ - [X11] Bugfix: Any IM started after initialization would not be detected
+ - [X11] Bugfix: Xlib errors caused by other parts of the application could be
+   reported as GLFW errors
+ - [X11] Bugfix: A handle race condition could cause a `BadWindow` error (#1633)
+ - [X11] Bugfix: XKB path used keysyms instead of physical locations for
+   non-printable keys (#1598)
+ - [X11] Bugfix: Function keys were mapped to `GLFW_KEY_UNKNOWN` for some layout
+   combinaitons (#1598)
+ - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
+ - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
+ - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
+ - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
+   macOS versions (#1442)
+ - [NSGL] Bugfix: Workaround for swap interval on 10.14 broke on 10.12 (#1483)
 
 
 ## Contact
@@ -218,6 +260,7 @@ skills.
  - GeO4d
  - Marcus Geelnard
  - Charles Giessen
+ - Ryan C. Gordon
  - Stephen Gowen
  - Kovid Goyal
  - Eloi Marín Gratacós
@@ -238,6 +281,7 @@ skills.
  - Cem Karan
  - Osman Keskin
  - Josh Kilmer
+ - Byunghoon Kim
  - Cameron King
  - Peter Knut
  - Christoph Kubisch
@@ -245,6 +289,7 @@ skills.
  - Rokas Kupstys
  - Konstantin Käfer
  - Eric Larson
+ - Francis Lecavalier
  - Robin Leffmann
  - Glenn Lewis
  - Shane Liesegang
@@ -253,6 +298,7 @@ skills.
  - Eyal Lotem
  - Aaron Loucks
  - Luflosi
+ - lukect
  - Tristam MacDonald
  - Hans Mackowiak
  - Дмитри Малышев
@@ -298,6 +344,7 @@ skills.
  - Alexandre Pretyman
  - Pablo Prietz
  - przemekmirek
+ - pthom
  - Guillaume Racicot
  - Philip Rideout
  - Eddie Ringle
@@ -312,6 +359,7 @@ skills.
  - Matt Sealey
  - Steve Sexton
  - Arkady Shapkin
+ - Ali Sherief
  - Yoshiki Shibukawa
  - Dmitri Shuralyov
  - Daniel Skorupski
@@ -328,6 +376,7 @@ skills.
  - Paul Sultana
  - Nathan Sweet
  - TTK-Bandit
+ - Jared Tiala
  - Sergey Tikhomirov
  - Arthur Tombs
  - Ioannis Tsakpinis

@@ -52,6 +52,19 @@ add_subdirectory(path/to/glfw)
 @endcode
 
 
+@subsubsection initmenu_34 macOS main menu now created at initialization
+
+GLFW now creates the main menu and completes the initialization of NSApplication
+during initialization.  Programs that do not want a main menu can disable it
+with the [GLFW_COCOA_MENUBAR](@ref GLFW_COCOA_MENUBAR_hint) init hint.
+
+
+@subsubsection corevideo_34 CoreVideo dependency has been removed
+
+GLFW no longer depends on the CoreVideo framework on macOS and it no longer
+needs to be specified during compilation or linking.
+
+
 @subsection deprecations_34 Deprecations in version 3.4
 
 @subsection removals_34 Removals in 3.4

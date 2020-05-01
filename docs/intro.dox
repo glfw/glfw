@@ -62,6 +62,11 @@ before the application exits.  Modern systems are very good at freeing resources
 allocated by programs that exit, but GLFW sometimes has to change global system
 settings and these might not be restored without termination.
 
+@macos When the library is initialized the main menu and dock icon are created.
+These are not desirable for a command-line only program.  The creation of the
+main menu and dock icon can be disabled with the @ref GLFW_COCOA_MENUBAR init
+hint.
+
 
 @subsection init_hints Initialization hints
 
@@ -97,9 +102,9 @@ the application to the `Contents/Resources` subdirectory of the application's
 bundle, if present.  Set this with @ref glfwInitHint.
 
 @anchor GLFW_COCOA_MENUBAR_hint
-__GLFW_COCOA_MENUBAR__ specifies whether to create a basic menu bar, either from
-a nib or manually, when the first window is created, which is when AppKit is
-initialized.  Set this with @ref glfwInitHint.
+__GLFW_COCOA_MENUBAR__ specifies whether to create the menu bar and dock icon
+when GLFW is initialized.  This applies whether the menu bar is created from
+a nib or manually by GLFW.  Set this with @ref glfwInitHint.
 
 
 @subsubsection init_hints_values Supported and default values

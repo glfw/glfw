@@ -84,10 +84,6 @@ objects are recommended for rendering with such contexts.
 You should still [process events](@ref events) as long as you have at least one
 window, even if none of them are visible.
 
-@macos The first time a window is created the menu bar is created.  This is not
-desirable for example when writing a command-line only application.  Menu bar
-creation can be disabled with the @ref GLFW_COCOA_MENUBAR init hint.
-
 
 @subsection context_less Windows without contexts
 

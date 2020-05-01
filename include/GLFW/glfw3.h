@@ -1831,6 +1831,18 @@ typedef struct GLFWgamepadstate
  *  bundle, if present.  This can be disabled with the @ref
  *  GLFW_COCOA_CHDIR_RESOURCES init hint.
  *
+ *  @remark @macos This function will create the main menu and dock icon for the
+ *  application.  If GLFW finds a `MainMenu.nib` it is loaded and assumed to
+ *  contain a menu bar.  Otherwise a minimal menu bar is created manually with
+ *  common commands like Hide, Quit and About.  The About entry opens a minimal
+ *  about dialog with information from the application's bundle.  The menu bar
+ *  and dock icon can be disabled entirely with the @ref GLFW_COCOA_MENUBAR init
+ *  hint.
+ *
+ *  @remark @x11 This function will set the `LC_CTYPE` category of the
+ *  application locale according to the current environment if that category is
+ *  still "C".  This is because the "C" locale breaks Unicode text input.
+ *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref intro_init
@@ -2670,13 +2682,6 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *  [Bundle Programming Guide](https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/)
  *  in the Mac Developer Library.
  *
- *  @remark @macos The first time a window is created the menu bar is created.
- *  If GLFW finds a `MainMenu.nib` it is loaded and assumed to contain a menu
- *  bar.  Otherwise a minimal menu bar is created manually with common commands
- *  like Hide, Quit and About.  The About entry opens a minimal about dialog
- *  with information from the application's bundle.  Menu bar creation can be
- *  disabled entirely with the @ref GLFW_COCOA_MENUBAR init hint.
- *
  *  @remark @macos On OS X 10.10 and later the window frame will not be rendered
  *  at full resolution on Retina displays unless the
  *  [GLFW_COCOA_RETINA_FRAMEBUFFER](@ref GLFW_COCOA_RETINA_FRAMEBUFFER_hint)
@@ -2685,7 +2690,7 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *  [High Resolution Guidelines for OS X](https://developer.apple.com/library/mac/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Explained/Explained.html)
  *  in the Mac Developer Library.  The GLFW test and example programs use
  *  a custom `Info.plist` template for this, which can be found as
- *  `CMake/MacOSXBundleInfo.plist.in` in the source tree.
+ *  `CMake/Info.plist.in` in the source tree.
  *
  *  @remark @macos When activating frame autosaving with
  *  [GLFW_COCOA_FRAME_NAME](@ref GLFW_COCOA_FRAME_NAME_hint), the specified
@@ -5776,8 +5781,9 @@ GLFWAPI int glfwVulkanSupported(void);
  *  returned array, as it is an error to specify an extension more than once in
  *  the `VkInstanceCreateInfo` struct.
  *
- *  @remark @macos This function currently only supports the
- *  `VK_MVK_macos_surface` extension from MoltenVK.
+ *  @remark @macos This function currently supports either the
+ *  `VK_MVK_macos_surface` extension from MoltenVK or `VK_EXT_metal_surface`
+ *  extension.
  *
  *  @pointer_lifetime The returned array is allocated and freed by GLFW.  You
  *  should not free it yourself.  It is guaranteed to be valid only until the

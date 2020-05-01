@@ -7,18 +7,24 @@ _ReSharper*
 *.dir
 *.vcxproj*
 *.sln
-.vs/
+.vs
+CMakeSettings.json
 Win32
 x64
 Debug
 Release
 MinSizeRel
 RelWithDebInfo
-*.xcodeproj
-bin
-bin-int
+*.opensdf
 
-# CMake files
+# Xcode clutter
+GLFW.build
+GLFW.xcodeproj
+
+# macOS clutter
+.DS_Store
+
+# Makefile generator clutter
 Makefile
 CMakeCache.txt
 CMakeFiles
@@ -85,3 +91,6 @@ tests/title
 tests/triangle-vulkan
 tests/windows
 
+# Hazel-specific
+bin
+bin-int

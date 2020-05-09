@@ -826,6 +826,9 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         window->wl.visible = GLFW_FALSE;
     }
 
+    if (window->monitor)
+        setFullscreen(window, window->monitor, window->videoMode.refreshRate);
+
     window->wl.currentCursor = NULL;
 
     window->wl.monitors = calloc(1, sizeof(_GLFWmonitor*));

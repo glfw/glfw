@@ -43,6 +43,8 @@ matrix:
                       - libwayland-dev
                       - libxkbcommon-dev
                       - libegl1-mesa-dev
+                      - meson
+                      - libdbus-1-dev
           env:
               - USE_WAYLAND=ON
               - BUILD_SHARED_LIBS=ON
@@ -57,6 +59,8 @@ matrix:
                       - libwayland-dev
                       - libxkbcommon-dev
                       - libegl1-mesa-dev
+                      - meson
+                      - libdbus-1-dev
           env:
               - USE_WAYLAND=ON
               - BUILD_SHARED_LIBS=OFF

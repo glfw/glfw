@@ -103,6 +103,10 @@ typedef VkResult (APIENTRY *PFN_vkCreateMetalSurfaceEXT)(VkInstance,const VkMeta
 
 // HIToolbox.framework pointer typedefs
 #define kTISPropertyUnicodeKeyLayoutData _glfw.ns.tis.kPropertyUnicodeKeyLayoutData
+#define kTISPropertyInputSourceID _glfw.ns.tis.kPropertyInputSourceID
+#define kTISPropertyLocalizedName _glfw.ns.tis.kPropertyLocalizedName
+typedef TISInputSourceRef (*PFN_TISCopyCurrentKeyboardInputSource)(void);
+#define TISCopyCurrentKeyboardInputSource _glfw.ns.tis.CopyCurrentKeyboardInputSource
 typedef TISInputSourceRef (*PFN_TISCopyCurrentKeyboardLayoutInputSource)(void);
 #define TISCopyCurrentKeyboardLayoutInputSource _glfw.ns.tis.CopyCurrentKeyboardLayoutInputSource
 typedef void* (*PFN_TISGetInputSourceProperty)(TISInputSourceRef,CFStringRef);
@@ -144,8 +148,9 @@ typedef struct _GLFWlibraryNS
     id                  delegate;
     GLFWbool            cursorHidden;
     TISInputSourceRef   inputSource;
+    TISInputSourceRef   keyboardLayout;
     IOHIDManagerRef     hidManager;
-    id                  unicodeData;
+    void*               unicodeData;
     id                  helper;
     id                  keyUpMonitor;
     id                  nibObjects;
@@ -154,6 +159,7 @@ typedef struct _GLFWlibraryNS
     short int           keycodes[256];
     short int           scancodes[GLFW_KEY_LAST + 1];
     char*               clipboardString;
+    char*               keyboardLayoutName;
     CGPoint             cascadePoint;
     // Where to place the cursor when re-enabled
     double              restoreCursorPosX, restoreCursorPosY;
@@ -162,10 +168,13 @@ typedef struct _GLFWlibraryNS
 
     struct {
         CFBundleRef     bundle;
+        PFN_TISCopyCurrentKeyboardInputSource CopyCurrentKeyboardInputSource;
         PFN_TISCopyCurrentKeyboardLayoutInputSource CopyCurrentKeyboardLayoutInputSource;
         PFN_TISGetInputSourceProperty GetInputSourceProperty;
         PFN_LMGetKbdType GetKbdType;
         CFStringRef     kPropertyUnicodeKeyLayoutData;
+        CFStringRef     kPropertyInputSourceID;
+        CFStringRef     kPropertyLocalizedName;
     } tis;
 
 } _GLFWlibraryNS;

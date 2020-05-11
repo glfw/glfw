@@ -230,6 +230,32 @@ specified key is `GLFW_KEY_UNKNOWN` then the scancode is used, otherwise it is
 ignored.  This matches the behavior of the key callback, meaning the callback
 arguments can always be passed unmodified to this function.
 
+The name of a key will not change unless the keyboard layout changes.
+
+
+@subsection keyboard_layout Keyboard layout
+
+The human-readable name of the current keyboard layout is returned by @ref
+glfwGetKeyboardLayoutName.
+
+If you wish to be notified when the keyboard layout changes, set a keyboard
+layout callback.
+
+@code
+glfwSetKeyboardLayoutCallback(keyboard_layout_callback);
+@endcode
+
+The callback is called when the new layout takes effect for the application,
+which on some platforms may not happen until one of its windows gets input
+focus.
+
+@code
+void keyboard_layout_callback(void)
+{
+    update_keyboard_layout_name(glfwGetKeyboardLayoutName());
+}
+@endcode
+
 
 @section input_mouse Mouse input
 

@@ -1516,6 +1516,12 @@ const char* _glfwPlatformGetScancodeName(int scancode)
         return NULL;
     }
 
+    if (!_glfw.ns.unicodeData)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Cocoa: Keyboard Unicode data missing");
+        return NULL;
+    }
+
     const int key = _glfw.ns.keycodes[scancode];
 
     UInt32 deadKeyState = 0;
@@ -1557,6 +1563,26 @@ const char* _glfwPlatformGetScancodeName(int scancode)
 int _glfwPlatformGetKeyScancode(int key)
 {
     return _glfw.ns.scancodes[key];
+}
+
+const char* _glfwPlatformGetKeyboardLayoutName(void)
+{
+    TISInputSourceRef source = TISCopyCurrentKeyboardInputSource();
+    NSString* name = (__bridge NSString*)
+        TISGetInputSourceProperty(source, kTISPropertyLocalizedName);
+    if (!name)
+    {
+        CFRelease(source);
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to retrieve keyboard layout name");
+        return NULL;
+    }
+
+    free(_glfw.ns.keyboardLayoutName);
+    _glfw.ns.keyboardLayoutName = _glfw_strdup([name UTF8String]);
+
+    CFRelease(source);
+    return _glfw.ns.keyboardLayoutName;
 }
 
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor,

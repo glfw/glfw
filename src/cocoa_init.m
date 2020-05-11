@@ -305,38 +305,6 @@ static void createKeyTables(void)
     }
 }
 
-// Retrieve Unicode data for the current keyboard layout
-//
-static GLFWbool updateUnicodeDataNS(void)
-{
-    if (_glfw.ns.inputSource)
-    {
-        CFRelease(_glfw.ns.inputSource);
-        _glfw.ns.inputSource = NULL;
-        _glfw.ns.unicodeData = nil;
-    }
-
-    _glfw.ns.inputSource = TISCopyCurrentKeyboardLayoutInputSource();
-    if (!_glfw.ns.inputSource)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Failed to retrieve keyboard layout input source");
-        return GLFW_FALSE;
-    }
-
-    _glfw.ns.unicodeData =
-        TISGetInputSourceProperty(_glfw.ns.inputSource,
-                                  kTISPropertyUnicodeKeyLayoutData);
-    if (!_glfw.ns.unicodeData)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Failed to retrieve keyboard layout Unicode data");
-        return GLFW_FALSE;
-    }
-
-    return GLFW_TRUE;
-}
-
 // Load HIToolbox.framework and the TIS symbols we need from it
 //
 static GLFWbool initializeTIS(void)
@@ -354,6 +322,15 @@ static GLFWbool initializeTIS(void)
     CFStringRef* kPropertyUnicodeKeyLayoutData =
         CFBundleGetDataPointerForName(_glfw.ns.tis.bundle,
                                       CFSTR("kTISPropertyUnicodeKeyLayoutData"));
+    CFStringRef* kPropertyInputSourceID =
+        CFBundleGetDataPointerForName(_glfw.ns.tis.bundle,
+                                      CFSTR("kTISPropertyInputSourceID"));
+    CFStringRef* kPropertyLocalizedName =
+        CFBundleGetDataPointerForName(_glfw.ns.tis.bundle,
+                                      CFSTR("kTISPropertyLocalizedName"));
+    _glfw.ns.tis.CopyCurrentKeyboardInputSource =
+        CFBundleGetFunctionPointerForName(_glfw.ns.tis.bundle,
+                                          CFSTR("TISCopyCurrentKeyboardInputSource"));
     _glfw.ns.tis.CopyCurrentKeyboardLayoutInputSource =
         CFBundleGetFunctionPointerForName(_glfw.ns.tis.bundle,
                                           CFSTR("TISCopyCurrentKeyboardLayoutInputSource"));
@@ -365,6 +342,9 @@ static GLFWbool initializeTIS(void)
                                           CFSTR("LMGetKbdType"));
 
     if (!kPropertyUnicodeKeyLayoutData ||
+        !kPropertyInputSourceID ||
+        !kPropertyLocalizedName ||
+        !TISCopyCurrentKeyboardInputSource ||
         !TISCopyCurrentKeyboardLayoutInputSource ||
         !TISGetInputSourceProperty ||
         !LMGetKbdType)
@@ -376,8 +356,18 @@ static GLFWbool initializeTIS(void)
 
     _glfw.ns.tis.kPropertyUnicodeKeyLayoutData =
         *kPropertyUnicodeKeyLayoutData;
+    _glfw.ns.tis.kPropertyInputSourceID =
+        *kPropertyInputSourceID;
+    _glfw.ns.tis.kPropertyLocalizedName =
+        *kPropertyLocalizedName;
 
-    return updateUnicodeDataNS();
+    _glfw.ns.inputSource = TISCopyCurrentKeyboardInputSource();
+    _glfw.ns.keyboardLayout = TISCopyCurrentKeyboardLayoutInputSource();
+    _glfw.ns.unicodeData =
+        TISGetInputSourceProperty(_glfw.ns.keyboardLayout,
+                                  kTISPropertyUnicodeKeyLayoutData);
+
+    return GLFW_TRUE;
 }
 
 @interface GLFWHelper : NSObject
@@ -387,7 +377,28 @@ static GLFWbool initializeTIS(void)
 
 - (void)selectedKeyboardInputSourceChanged:(NSObject* )object
 {
-    updateUnicodeDataNS();
+    // The keyboard layout is needed for Unicode data which is the source of
+    // GLFW key names on Cocoa (the generic input source may not have this)
+    CFRelease(_glfw.ns.keyboardLayout);
+    _glfw.ns.keyboardLayout = TISCopyCurrentKeyboardLayoutInputSource();
+    _glfw.ns.unicodeData =
+        TISGetInputSourceProperty(_glfw.ns.keyboardLayout,
+                                    kTISPropertyUnicodeKeyLayoutData);
+
+    // The generic input source may be something higher level than a keyboard
+    // layout and if so will provide a better layout name than the layout source
+    const TISInputSourceRef source = TISCopyCurrentKeyboardInputSource();
+    const CFStringRef newID =
+        TISGetInputSourceProperty(source, kTISPropertyInputSourceID);
+    const CFStringRef oldID =
+        TISGetInputSourceProperty(_glfw.ns.inputSource, kTISPropertyInputSourceID);
+    const CFComparisonResult result = CFStringCompare(oldID, newID, 0);
+    CFRelease(_glfw.ns.inputSource);
+    _glfw.ns.inputSource = source;
+
+    // Filter events as we may receive more than one per input source switch
+    if (result != kCFCompareEqualTo)
+        _glfwInputKeyboardLayout();
 }
 
 - (void)doNothing:(id)object
@@ -567,11 +578,17 @@ void _glfwPlatformTerminate(void)
 {
     @autoreleasepool {
 
+    if (_glfw.ns.keyboardLayout)
+    {
+        CFRelease(_glfw.ns.keyboardLayout);
+        _glfw.ns.keyboardLayout = NULL;
+        _glfw.ns.unicodeData = NULL;
+    }
+
     if (_glfw.ns.inputSource)
     {
         CFRelease(_glfw.ns.inputSource);
         _glfw.ns.inputSource = NULL;
-        _glfw.ns.unicodeData = nil;
     }
 
     if (_glfw.ns.eventSource)
@@ -603,6 +620,7 @@ void _glfwPlatformTerminate(void)
         [NSEvent removeMonitor:_glfw.ns.keyUpMonitor];
 
     free(_glfw.ns.clipboardString);
+    free(_glfw.ns.keyboardLayoutName);
 
     _glfwTerminateNSGL();
     _glfwTerminateJoysticksNS();

@@ -117,6 +117,7 @@ typedef void (* PFN_xkb_state_unref)(struct xkb_state*);
 typedef int (* PFN_xkb_state_key_get_syms)(struct xkb_state*, xkb_keycode_t, const xkb_keysym_t**);
 typedef enum xkb_state_component (* PFN_xkb_state_update_mask)(struct xkb_state*, xkb_mod_mask_t, xkb_mod_mask_t, xkb_mod_mask_t, xkb_layout_index_t, xkb_layout_index_t, xkb_layout_index_t);
 typedef xkb_mod_mask_t (* PFN_xkb_state_serialize_mods)(struct xkb_state*, enum xkb_state_component);
+typedef const char * (* PFN_xkb_keymap_layout_get_name)(struct xkb_keymap*,xkb_layout_index_t);
 #define xkb_context_new _glfw.wl.xkb.context_new
 #define xkb_context_unref _glfw.wl.xkb.context_unref
 #define xkb_keymap_new_from_string _glfw.wl.xkb.keymap_new_from_string
@@ -128,6 +129,7 @@ typedef xkb_mod_mask_t (* PFN_xkb_state_serialize_mods)(struct xkb_state*, enum 
 #define xkb_state_key_get_syms _glfw.wl.xkb.state_key_get_syms
 #define xkb_state_update_mask _glfw.wl.xkb.state_update_mask
 #define xkb_state_serialize_mods _glfw.wl.xkb.state_serialize_mods
+#define xkb_keymap_layout_get_name _glfw.wl.xkb.keymap_layout_get_name
 
 #ifdef HAVE_XKBCOMMON_COMPOSE_H
 typedef struct xkb_compose_table* (* PFN_xkb_compose_table_new_from_locale)(struct xkb_context*, const char*, enum xkb_compose_compile_flags);
@@ -259,6 +261,7 @@ typedef struct _GLFWlibraryWayland
     size_t                      clipboardSize;
     char*                       clipboardSendString;
     size_t                      clipboardSendSize;
+    char*                       keyboardLayoutName;
     int                         timerfd;
     short int                   keycodes[256];
     short int                   scancodes[GLFW_KEY_LAST + 1];
@@ -280,6 +283,7 @@ typedef struct _GLFWlibraryWayland
         xkb_mod_mask_t          capsLockMask;
         xkb_mod_mask_t          numLockMask;
         unsigned int            modifiers;
+        xkb_layout_index_t      group;
 
         PFN_xkb_context_new context_new;
         PFN_xkb_context_unref context_unref;
@@ -292,6 +296,7 @@ typedef struct _GLFWlibraryWayland
         PFN_xkb_state_key_get_syms state_key_get_syms;
         PFN_xkb_state_update_mask state_update_mask;
         PFN_xkb_state_serialize_mods state_serialize_mods;
+        PFN_xkb_keymap_layout_get_name keymap_layout_get_name;
 
 #ifdef HAVE_XKBCOMMON_COMPOSE_H
         PFN_xkb_compose_table_new_from_locale compose_table_new_from_locale;

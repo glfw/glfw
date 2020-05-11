@@ -1184,6 +1184,7 @@ static void processEvent(XEvent *event)
                 (((XkbEvent*) event)->state.changed & XkbGroupStateMask))
             {
                 _glfw.x11.xkb.group = ((XkbEvent*) event)->state.group;
+                _glfwInputKeyboardLayout();
             }
         }
     }
@@ -2918,6 +2919,42 @@ const char* _glfwPlatformGetScancodeName(int scancode)
 int _glfwPlatformGetKeyScancode(int key)
 {
     return _glfw.x11.scancodes[key];
+}
+
+const char* _glfwPlatformGetKeyboardLayoutName(void)
+{
+    if (!_glfw.x11.xkb.available)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "X11: XKB extension required for keyboard layout names");
+        return NULL;
+    }
+
+    XkbStateRec state = {0};
+    XkbGetState(_glfw.x11.display, XkbUseCoreKbd, &state);
+
+    XkbDescPtr desc = XkbAllocKeyboard();
+    if (XkbGetNames(_glfw.x11.display, XkbGroupNamesMask, desc) != Success)
+    {
+        XkbFreeKeyboard(desc, 0, True);
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "X11: Failed to retrieve keyboard layout names");
+        return NULL;
+    }
+
+    const Atom atom = desc->names->groups[state.group];
+    XkbFreeKeyboard(desc, 0, True);
+
+    if (atom == None)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "X11: Name missing for current keyboard layout");
+        return NULL;
+    }
+
+    free(_glfw.x11.keyboardLayoutName);
+    _glfw.x11.keyboardLayoutName = XGetAtomName(_glfw.x11.display, atom);
+    return _glfw.x11.keyboardLayoutName;
 }
 
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor,

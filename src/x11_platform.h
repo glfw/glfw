@@ -76,6 +76,7 @@ typedef int (* PFN_XFree)(void*);
 typedef int (* PFN_XFreeColormap)(Display*,Colormap);
 typedef int (* PFN_XFreeCursor)(Display*,Cursor);
 typedef void (* PFN_XFreeEventData)(Display*,XGenericEventCookie*);
+typedef char* (* PFN_XGetAtomName)(Display*,Atom);
 typedef int (* PFN_XGetErrorText)(Display*,int,char*,int);
 typedef Bool (* PFN_XGetEventData)(Display*,XGenericEventCookie*);
 typedef char* (* PFN_XGetICValues)(XIC,...);
@@ -133,6 +134,7 @@ typedef VisualID (* PFN_XVisualIDFromVisual)(Visual*);
 typedef int (* PFN_XWarpPointer)(Display*,Window,Window,int,int,unsigned int,unsigned int,int,int);
 typedef void (* PFN_XkbFreeKeyboard)(XkbDescPtr,unsigned int,Bool);
 typedef void (* PFN_XkbFreeNames)(XkbDescPtr,unsigned int,Bool);
+typedef XkbDescPtr (* PFN_XkbAllocKeyboard)(void);
 typedef XkbDescPtr (* PFN_XkbGetMap)(Display*,unsigned int,unsigned int);
 typedef Status (* PFN_XkbGetNames)(Display*,unsigned int,XkbDescPtr);
 typedef Status (* PFN_XkbGetState)(Display*,unsigned int,XkbStatePtr);
@@ -176,6 +178,7 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XFreeColormap _glfw.x11.xlib.FreeColormap
 #define XFreeCursor _glfw.x11.xlib.FreeCursor
 #define XFreeEventData _glfw.x11.xlib.FreeEventData
+#define XGetAtomName _glfw.x11.xlib.GetAtomName
 #define XGetErrorText _glfw.x11.xlib.GetErrorText
 #define XGetEventData _glfw.x11.xlib.GetEventData
 #define XGetICValues _glfw.x11.xlib.GetICValues
@@ -231,6 +234,7 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XUnsetICFocus _glfw.x11.xlib.UnsetICFocus
 #define XVisualIDFromVisual _glfw.x11.xlib.VisualIDFromVisual
 #define XWarpPointer _glfw.x11.xlib.WarpPointer
+#define XkbAllocKeyboard _glfw.x11.xkb.AllocKeyboard
 #define XkbFreeKeyboard _glfw.x11.xkb.FreeKeyboard
 #define XkbFreeNames _glfw.x11.xkb.FreeNames
 #define XkbGetMap _glfw.x11.xkb.GetMap
@@ -442,6 +446,7 @@ typedef struct _GLFWlibraryX11
     short int       keycodes[256];
     // GLFW key to X11 keycode LUT
     short int       scancodes[GLFW_KEY_LAST + 1];
+    char*           keyboardLayoutName;
     // Where to place the cursor when re-enabled
     double          restoreCursorPosX, restoreCursorPosY;
     // The window whose disabled cursor mode is active
@@ -533,6 +538,7 @@ typedef struct _GLFWlibraryX11
         PFN_XFreeColormap FreeColormap;
         PFN_XFreeCursor FreeCursor;
         PFN_XFreeEventData FreeEventData;
+        PFN_XGetAtomName GetAtomName;
         PFN_XGetErrorText GetErrorText;
         PFN_XGetEventData GetEventData;
         PFN_XGetICValues GetICValues;
@@ -638,6 +644,7 @@ typedef struct _GLFWlibraryX11
         int          major;
         int          minor;
         unsigned int group;
+        PFN_XkbAllocKeyboard AllocKeyboard;
         PFN_XkbFreeKeyboard FreeKeyboard;
         PFN_XkbFreeNames FreeNames;
         PFN_XkbGetMap GetMap;

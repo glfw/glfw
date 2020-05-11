@@ -1194,6 +1194,29 @@ int _glfwPlatformGetKeyScancode(int key)
     return _glfw.wl.scancodes[key];
 }
 
+const char* _glfwPlatformGetKeyboardLayoutName(void)
+{
+    if (!_glfw.wl.xkb.keymap)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Keymap missing");
+        return NULL;
+    }
+
+    const char* name = xkb_keymap_layout_get_name(_glfw.wl.xkb.keymap,
+                                                  _glfw.wl.xkb.group);
+    if (!name)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to query keyboard layout name");
+        return NULL;
+    }
+
+    free(_glfw.wl.keyboardLayoutName);
+    _glfw.wl.keyboardLayoutName = _glfw_strdup(name);
+    return _glfw.wl.keyboardLayoutName;
+}
+
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                               const GLFWimage* image,
                               int xhot, int yhot)

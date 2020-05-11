@@ -256,6 +256,14 @@ static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
 //////                         GLFW event API                       //////
 //////////////////////////////////////////////////////////////////////////
 
+// Notifies shared code of a keyboard layout change event
+//
+void _glfwInputKeyboardLayout(void)
+{
+    if (_glfw.callbacks.layout)
+        _glfw.callbacks.layout();
+}
+
 // Notifies shared code of a physical key event
 //
 void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -624,6 +632,19 @@ GLFWAPI int glfwGetKeyScancode(int key)
     }
 
     return _glfwPlatformGetKeyScancode(key);
+}
+
+GLFWAPI const char* glfwGetKeyboardLayoutName(void)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    return _glfwPlatformGetKeyboardLayoutName();
+}
+
+GLFWAPI GLFWkeyboardlayoutfun glfwSetKeyboardLayoutCallback(GLFWkeyboardlayoutfun cbfun)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(_glfw.callbacks.layout, cbfun);
+    return cbfun;
 }
 
 GLFWAPI int glfwGetKey(GLFWwindow* handle, int key)

@@ -1153,6 +1153,8 @@ int _glfwPlatformInit(void)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XFreeCursor");
     _glfw.x11.xlib.FreeEventData = (PFN_XFreeEventData)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XFreeEventData");
+    _glfw.x11.xlib.GetAtomName = (PFN_XGetAtomName)
+        _glfw_dlsym(_glfw.x11.xlib.handle, "XGetAtomName");
     _glfw.x11.xlib.GetErrorText = (PFN_XGetErrorText)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XGetErrorText");
     _glfw.x11.xlib.GetEventData = (PFN_XGetEventData)
@@ -1263,6 +1265,8 @@ int _glfwPlatformInit(void)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XVisualIDFromVisual");
     _glfw.x11.xlib.WarpPointer = (PFN_XWarpPointer)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XWarpPointer");
+    _glfw.x11.xkb.AllocKeyboard = (PFN_XkbAllocKeyboard)
+        _glfw_dlsym(_glfw.x11.xlib.handle, "XkbAllocKeyboard");
     _glfw.x11.xkb.FreeKeyboard = (PFN_XkbFreeKeyboard)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XkbFreeKeyboard");
     _glfw.x11.xkb.FreeNames = (PFN_XkbFreeNames)
@@ -1375,6 +1379,9 @@ void _glfwPlatformTerminate(void)
 
     free(_glfw.x11.primarySelectionString);
     free(_glfw.x11.clipboardString);
+
+    if (_glfw.x11.keyboardLayoutName)
+        XFree(_glfw.x11.keyboardLayoutName);
 
     XUnregisterIMInstantiateCallback(_glfw.x11.display,
                                      NULL, NULL, NULL,

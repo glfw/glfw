@@ -1,9 +1,9 @@
 /*************************************************************************
- * GLFW 3.3 - www.glfw.org
+ * GLFW 3.4 - www.glfw.org
  * A library for OpenGL, window and input
  *------------------------------------------------------------------------
  * Copyright (c) 2002-2006 Marcus Geelnard
- * Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+ * Copyright (c) 2006-2018 Camilla Löwy <elmindreda@glfw.org>
  *
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -62,7 +62,6 @@ extern "C" {
  *  * `GLFW_EXPOSE_NATIVE_COCOA`
  *  * `GLFW_EXPOSE_NATIVE_X11`
  *  * `GLFW_EXPOSE_NATIVE_WAYLAND`
- *  * `GLFW_EXPOSE_NATIVE_MIR`
  *
  *  The available context API macros are:
  *  * `GLFW_EXPOSE_NATIVE_WGL`
@@ -82,7 +81,7 @@ extern "C" {
  * System headers and types
  *************************************************************************/
 
-#if defined(GLFW_EXPOSE_NATIVE_WIN32)
+#if defined(GLFW_EXPOSE_NATIVE_WIN32) || defined(GLFW_EXPOSE_NATIVE_WGL)
  // This is a workaround for the fact that glfw3.h needs to export APIENTRY (for
  // example to allow applications to correctly declare a GL_ARB_debug_output
  // callback) but windows.h assumes no one will define APIENTRY before it does
@@ -91,20 +90,18 @@ extern "C" {
   #undef GLFW_APIENTRY_DEFINED
  #endif
  #include <windows.h>
-#elif defined(GLFW_EXPOSE_NATIVE_COCOA)
- #include <ApplicationServices/ApplicationServices.h>
+#elif defined(GLFW_EXPOSE_NATIVE_COCOA) || defined(GLFW_EXPOSE_NATIVE_NSGL)
  #if defined(__OBJC__)
   #import <Cocoa/Cocoa.h>
  #else
+  #include <ApplicationServices/ApplicationServices.h>
   typedef void* id;
  #endif
-#elif defined(GLFW_EXPOSE_NATIVE_X11)
+#elif defined(GLFW_EXPOSE_NATIVE_X11) || defined(GLFW_EXPOSE_NATIVE_GLX)
  #include <X11/Xlib.h>
  #include <X11/extensions/Xrandr.h>
 #elif defined(GLFW_EXPOSE_NATIVE_WAYLAND)
  #include <wayland-client.h>
-#elif defined(GLFW_EXPOSE_NATIVE_MIR)
- #include <mir_toolkit/mir_client_library.h>
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_WGL)
@@ -416,50 +413,6 @@ GLFWAPI struct wl_output* glfwGetWaylandMonitor(GLFWmonitor* monitor);
  *  @ingroup native
  */
 GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* window);
-#endif
-
-#if defined(GLFW_EXPOSE_NATIVE_MIR)
-/*! @brief Returns the `MirConnection*` used by GLFW.
- *
- *  @return The `MirConnection*` used by GLFW, or `NULL` if an
- *  [error](@ref error_handling) occurred.
- *
- *  @thread_safety This function may be called from any thread.  Access is not
- *  synchronized.
- *
- *  @since Added in version 3.2.
- *
- *  @ingroup native
- */
-GLFWAPI MirConnection* glfwGetMirDisplay(void);
-
-/*! @brief Returns the Mir output ID of the specified monitor.
- *
- *  @return The Mir output ID of the specified monitor, or zero if an
- *  [error](@ref error_handling) occurred.
- *
- *  @thread_safety This function may be called from any thread.  Access is not
- *  synchronized.
- *
- *  @since Added in version 3.2.
- *
- *  @ingroup native
- */
-GLFWAPI int glfwGetMirMonitor(GLFWmonitor* monitor);
-
-/*! @brief Returns the `MirWindow*` of the specified window.
- *
- *  @return The `MirWindow*` of the specified window, or `NULL` if an
- *  [error](@ref error_handling) occurred.
- *
- *  @thread_safety This function may be called from any thread.  Access is not
- *  synchronized.
- *
- *  @since Added in version 3.2.
- *
- *  @ingroup native
- */
-GLFWAPI MirWindow* glfwGetMirWindow(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_EGL)

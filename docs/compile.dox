@@ -10,12 +10,12 @@ build applications that use GLFW, see @ref build_guide.
 
 @section compile_cmake Using CMake
 
-GLFW uses [CMake](http://www.cmake.org/) to generate project files or makefiles
+GLFW uses [CMake](https://cmake.org/) to generate project files or makefiles
 for a particular development environment.  If you are on a Unix-like system such
 as Linux or FreeBSD or have a package system like Fink, MacPorts, Cygwin or
 Homebrew, you can install its CMake package.  If not, you can download
 installers for Windows and macOS from the
-[CMake website](http://www.cmake.org/).
+[CMake website](https://cmake.org/).
 
 @note CMake only generates project files or makefiles.  It does not compile the
 actual GLFW library.  To compile GLFW, first generate these files for your
@@ -71,7 +71,7 @@ cmake -DCMAKE_TOOLCHAIN_FILE=CMake/x86_64-w64-mingw32.cmake .
 @endcode
 
 For more details see the article
-[CMake Cross Compiling](http://www.paraview.org/Wiki/CMake_Cross_Compiling) on
+[CMake Cross Compiling](https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/CrossCompiling) on
 the CMake wiki.
 
 Once you have this set up, move on to @ref compile_generate.
@@ -210,18 +210,15 @@ cmake -DBUILD_SHARED_LIBS=ON .
 __BUILD_SHARED_LIBS__ determines whether GLFW is built as a static
 library or as a DLL / shared library / dynamic library.
 
-@anchor LIB_SUFFIX
-__LIB_SUFFIX__ affects where the GLFW shared /dynamic library is installed.  If
-it is empty, it is installed to `${CMAKE_INSTALL_PREFIX}/lib`.  If it is set to
-`64`, it is installed to `${CMAKE_INSTALL_PREFIX}/lib64`.
-
 @anchor GLFW_BUILD_EXAMPLES
 __GLFW_BUILD_EXAMPLES__ determines whether the GLFW examples are built
-along with the library.
+along with the library.  This is enabled by default unless GLFW is being built
+as a sub-project.
 
 @anchor GLFW_BUILD_TESTS
 __GLFW_BUILD_TESTS__ determines whether the GLFW test programs are
-built along with the library.
+built along with the library.  This is enabled by default unless GLFW is being
+built as a sub-project.
 
 @anchor GLFW_BUILD_DOCS
 __GLFW_BUILD_DOCS__ determines whether the GLFW documentation is built along
@@ -229,7 +226,7 @@ with the library.
 
 @anchor GLFW_VULKAN_STATIC
 __GLFW_VULKAN_STATIC__ determines whether to use the Vulkan loader linked
-statically into the application.
+directly with the application.
 
 
 @subsubsection compile_options_win32 Windows specific CMake options
@@ -268,13 +265,12 @@ ramps and clipboard.  The options are:
  - @b _GLFW_WIN32 to use the Win32 API
  - @b _GLFW_X11 to use the X Window System
  - @b _GLFW_WAYLAND to use the Wayland API (experimental and incomplete)
- - @b _GLFW_MIR to use the Mir API (experimental and incomplete)
  - @b _GLFW_OSMESA to use the OSMesa API (headless and non-interactive)
 
 If you are building GLFW as a shared library / dynamic library / DLL then you
 must also define @b _GLFW_BUILD_DLL.  Otherwise, you must not define it.
 
-If you are linking the Vulkan loader statically into your application then you
+If you are linking the Vulkan loader directly with your application then you
 must also define @b _GLFW_VULKAN_STATIC.  Otherwise, GLFW will attempt to use the
 external version.
 

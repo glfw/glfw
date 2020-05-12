@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.3 - www.glfw.org
+// GLFW 3.4 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -84,8 +84,8 @@ typedef GLFWglproc (* _GLFWgetprocaddressfun)(const char*);
 typedef void (* _GLFWdestroycontextfun)(_GLFWwindow*);
 
 #define GL_VERSION 0x1f02
-#define GL_NONE	0
-#define GL_COLOR_BUFFER_BIT	0x00004000
+#define GL_NONE 0
+#define GL_COLOR_BUFFER_BIT 0x00004000
 #define GL_UNSIGNED_BYTE 0x1401
 #define GL_EXTENSIONS 0x1f03
 #define GL_NUM_EXTENSIONS 0x821d
@@ -102,7 +102,7 @@ typedef void (* _GLFWdestroycontextfun)(_GLFWwindow*);
 #define GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH 0x82fc
 #define GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR 0x00000008
 
-typedef int	GLint;
+typedef int GLint;
 typedef unsigned int GLuint;
 typedef unsigned int GLenum;
 typedef unsigned int GLbitfield;
@@ -126,9 +126,9 @@ typedef enum VkStructureType
     VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR = 1000004000,
     VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR = 1000005000,
     VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR = 1000006000,
-    VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR = 1000007000,
     VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR = 1000009000,
     VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK = 1000123000,
+    VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT = 1000217000,
     VK_STRUCTURE_TYPE_MAX_ENUM = 0x7FFFFFFF
 } VkStructureType;
 
@@ -188,8 +188,6 @@ typedef void (APIENTRY * PFN_vkVoidFunction)(void);
  #include "x11_platform.h"
 #elif defined(_GLFW_WAYLAND)
  #include "wl_platform.h"
-#elif defined(_GLFW_MIR)
- #include "mir_platform.h"
 #elif defined(_GLFW_OSMESA)
  #include "null_platform.h"
 #else
@@ -268,6 +266,7 @@ struct _GLFWwndconfig
     GLFWbool      maximized;
     GLFWbool      centerCursor;
     GLFWbool      focusOnShow;
+    GLFWbool      scaleToMonitor;
     struct {
         GLFWbool  retina;
         char      frameName[256];
@@ -276,6 +275,9 @@ struct _GLFWwndconfig
         char      className[256];
         char      instanceName[256];
     } x11;
+    struct {
+        GLFWbool  keymenu;
+    } win32;
 };
 
 // Context configuration
@@ -392,6 +394,7 @@ struct _GLFWwindow
     char                keys[GLFW_KEY_LAST + 1];
     // Virtual cursor position when cursor is disabled
     double              virtualCursorPosX, virtualCursorPosY;
+    GLFWbool            rawMouseMotion;
 
     _GLFWcontext        context;
 
@@ -557,13 +560,12 @@ struct _GLFWlibrary
         GLFWbool        KHR_win32_surface;
 #elif defined(_GLFW_COCOA)
         GLFWbool        MVK_macos_surface;
+        GLFWbool        EXT_metal_surface;
 #elif defined(_GLFW_X11)
         GLFWbool        KHR_xlib_surface;
         GLFWbool        KHR_xcb_surface;
 #elif defined(_GLFW_WAYLAND)
         GLFWbool        KHR_wayland_surface;
-#elif defined(_GLFW_MIR)
-        GLFWbool        KHR_mir_surface;
 #endif
     } vk;
 
@@ -600,6 +602,8 @@ const char* _glfwPlatformGetVersionString(void);
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos);
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double xpos, double ypos);
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode);
+void _glfwPlatformSetRawMouseMotion(_GLFWwindow *window, GLFWbool enabled);
+GLFWbool _glfwPlatformRawMouseMotionSupported(void);
 int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
                               const GLFWimage* image, int xhot, int yhot);
 int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape);
@@ -613,9 +617,10 @@ void _glfwPlatformFreeMonitor(_GLFWmonitor* monitor);
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos);
 void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
                                          float* xscale, float* yscale);
+void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor, int* xpos, int* ypos, int *width, int *height);
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* count);
 void _glfwPlatformGetVideoMode(_GLFWmonitor* monitor, GLFWvidmode* mode);
-void _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
+GLFWbool _glfwPlatformGetGammaRamp(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
 void _glfwPlatformSetGammaRamp(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
 void _glfwPlatformSetClipboardString(const char* string);
@@ -764,10 +769,13 @@ _GLFWjoystick* _glfwAllocJoystick(const char* name,
                                   int buttonCount,
                                   int hatCount);
 void _glfwFreeJoystick(_GLFWjoystick* js);
+void _glfwCenterCursorInContentArea(_GLFWwindow* window);
 
 GLFWbool _glfwInitVulkan(int mode);
 void _glfwTerminateVulkan(void);
 const char* _glfwGetVulkanResultString(VkResult result);
 
 char* _glfw_strdup(const char* source);
+float _glfw_fminf(float a, float b);
+float _glfw_fmaxf(float a, float b);
 

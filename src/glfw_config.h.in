@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 - www.glfw.org
+// GLFW 3.4 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2010-2016 Camilla Löwy <elmindreda@glfw.org>
 //
@@ -42,13 +42,9 @@
 #cmakedefine _GLFW_COCOA
 // Define this to 1 if building GLFW for Wayland
 #cmakedefine _GLFW_WAYLAND
-// Define this to 1 if building GLFW for Mir
-#cmakedefine _GLFW_MIR
 // Define this to 1 if building GLFW for OSMesa
 #cmakedefine _GLFW_OSMESA
 
-// Define this to 1 if building as a shared library / dynamic library / DLL
-#cmakedefine _GLFW_BUILD_DLL
 // Define this to 1 to use Vulkan loader linked statically into application
 #cmakedefine _GLFW_VULKAN_STATIC
 
@@ -57,4 +53,6 @@
 
 // Define this to 1 if xkbcommon supports the compose key
 #cmakedefine HAVE_XKBCOMMON_COMPOSE_H
+// Define this to 1 if the libc supports memfd_create()
+#cmakedefine HAVE_MEMFD_CREATE
 

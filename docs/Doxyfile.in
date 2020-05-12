@@ -32,7 +32,7 @@ PROJECT_NAME           = "GLFW"
 # This could be handy for archiving the generated documentation or
 # if some version control system is used.
 
-PROJECT_NUMBER         = @GLFW_VERSION_FULL@
+PROJECT_NUMBER         = @GLFW_VERSION@
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer
@@ -195,12 +195,13 @@ TAB_SIZE               = 8
 # will result in a user-defined paragraph with heading "Side Effects:".
 # You can put \n's in the value part of an alias to insert newlines.
 
-ALIASES                = "thread_safety=@par Thread safety\n" \
-                         "pointer_lifetime=@par Pointer lifetime\n" \
-                         "analysis=@par Analysis\n" \
-                         "reentrancy=@par Reentrancy\n" \
-                         "errors=@par Errors\n" \
-                         "glfw3=@par\n__GLFW 3:__" \
+ALIASES                = "thread_safety=@par Thread safety^^" \
+                         "pointer_lifetime=@par Pointer lifetime^^" \
+                         "analysis=@par Analysis^^" \
+                         "reentrancy=@par Reentrancy^^" \
+                         "errors=@par Errors^^" \
+                         "callback_signature=@par Callback signature^^" \
+                         "glfw3=__GLFW 3:__" \
                          "x11=__X11:__" \
                          "wayland=__Wayland:__" \
                          "win32=__Windows:__" \
@@ -264,7 +265,7 @@ MARKDOWN_SUPPORT       = YES
 
 # When enabled doxygen tries to link words that correspond to documented classes,
 # or namespaces to their corresponding documentation. Such a link can be
-# prevented in individual cases by by putting a % sign in front of the word or
+# prevented in individual cases by putting a % sign in front of the word or
 # globally by setting AUTOLINK_SUPPORT to NO.
 
 AUTOLINK_SUPPORT       = YES
@@ -589,7 +590,7 @@ FILE_VERSION_FILTER    =
 # You can optionally specify a file name after the option, if omitted
 # DoxygenLayout.xml will be used as the name of the layout file.
 
-LAYOUT_FILE            =
+LAYOUT_FILE            = "@GLFW_SOURCE_DIR@/docs/DoxygenLayout.xml"
 
 # The CITE_BIB_FILES tag can be used to specify one or more bib files
 # containing the references data. This must be a list of .bib files. The
@@ -662,7 +663,7 @@ WARN_LOGFILE           = "@GLFW_BINARY_DIR@/docs/warnings.txt"
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = @GLFW_DOCS_SOURCES@
+INPUT                  = @GLFW_DOXYGEN_INPUT@
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -1573,7 +1574,6 @@ PREDEFINED             = GLFWAPI=                   \
                          GLFW_EXPOSE_NATIVE_WGL     \
                          GLFW_EXPOSE_NATIVE_X11     \
                          GLFW_EXPOSE_NATIVE_WAYLAND \
-                         GLFW_EXPOSE_NATIVE_MIR     \
                          GLFW_EXPOSE_NATIVE_GLX     \
                          GLFW_EXPOSE_NATIVE_COCOA   \
                          GLFW_EXPOSE_NATIVE_NSGL    \
@@ -1632,11 +1632,6 @@ ALLEXTERNALS           = NO
 
 EXTERNAL_GROUPS        = YES
 
-# The PERL_PATH should be the absolute path and name of the perl script
-# interpreter (i.e. the result of `which perl').
-
-PERL_PATH              = /usr/bin/perl
-
 #---------------------------------------------------------------------------
 # Configuration options related to the dot tool
 #---------------------------------------------------------------------------
@@ -1648,15 +1643,6 @@ PERL_PATH              = /usr/bin/perl
 # install and use dot, since it yields more powerful graphs.
 
 CLASS_DIAGRAMS         = YES
-
-# You can define message sequence charts within doxygen comments using the \msc
-# command. Doxygen will then run the mscgen tool (see
-# http://www.mcternan.me.uk/mscgen/) to produce the chart and insert it in the
-# documentation. The MSCGEN_PATH tag allows you to specify the directory where
-# the mscgen tool resides. If left empty the tool is assumed to be found in the
-# default search path.
-
-MSCGEN_PATH            =
 
 # If set to YES, the inheritance and collaboration graphs will hide
 # inheritance and usage relations if the target is undocumented
@@ -1728,7 +1714,7 @@ UML_LOOK               = NO
 # the class node. If there are many fields or methods and many nodes the
 # graph may become too big to be useful. The UML_LIMIT_NUM_FIELDS
 # threshold limits the number of items for each type to make the size more
-# managable. Set this to 0 for no limit. Note that the threshold may be
+# manageable. Set this to 0 for no limit. Note that the threshold may be
 # exceeded by 50% before the limit is enforced.
 
 UML_LIMIT_NUM_FIELDS   = 10

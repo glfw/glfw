@@ -805,7 +805,6 @@ static GLFWbool initExtensions(void)
                 _glfw.x11.xkb.detectable = GLFW_TRUE;
         }
 
-        _glfw.x11.xkb.group = 0;
         XkbStateRec state;
         if (XkbGetState(_glfw.x11.display, XkbUseCoreKbd, &state) == Success)
             _glfw.x11.xkb.group = (unsigned int)state.group;

@@ -1185,6 +1185,8 @@ static void processEvent(XEvent *event)
             {
                 _glfw.x11.xkb.group = ((XkbEvent*) event)->state.group;
             }
+
+            return;
         }
     }
 

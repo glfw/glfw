@@ -69,6 +69,28 @@ matrix:
               - USE_WAYLAND=ON
               - BUILD_SHARED_LIBS=OFF
               - CFLAGS=-Werror
+        - os: linux
+          dist: bionic
+          name: "Null shared library"
+          addons:
+              apt:
+                  packages:
+                      - libosmesa6-dev
+          env:
+              - BUILD_SHARED_LIBS=ON
+              - USE_OSMESA=ON
+              - CFLAGS=-Werror
+        - os: linux
+          dist: bionic
+          name: "Null static library"
+          addons:
+              apt:
+                  packages:
+                      - libosmesa6-dev
+          env:
+              - BUILD_SHARED_LIBS=OFF
+              - USE_OSMESA=ON
+              - CFLAGS=-Werror
         - os: osx
           sudo: false
           name: "Cocoa shared library"
@@ -96,7 +118,7 @@ script:
           git checkout 1.15 && ./autogen.sh --prefix=/usr && make && sudo make install;
           popd;
       fi
-    - cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} -DGLFW_USE_WAYLAND=${USE_WAYLAND} ..
+    - cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} -DGLFW_USE_WAYLAND=${USE_WAYLAND} -DGLFW_USE_OSMESA=${USE_OSMESA} ..
     - cmake --build .
 notifications:
     email:

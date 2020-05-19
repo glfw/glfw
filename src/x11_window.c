@@ -2001,7 +2001,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    Visual* visual;
+    Visual* visual = NULL;
     int depth;
 
     if (ctxconfig->client != GLFW_NO_API)
@@ -2027,8 +2027,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         }
     }
 
-    if (ctxconfig->client == GLFW_NO_API ||
-        ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
+    if (!visual)
     {
         visual = DefaultVisual(_glfw.x11.display, _glfw.x11.screen);
         depth = DefaultDepth(_glfw.x11.display, _glfw.x11.screen);

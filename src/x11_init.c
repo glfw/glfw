@@ -770,7 +770,8 @@ static GLFWbool initExtensions(void)
         if (XkbGetState(_glfw.x11.display, XkbUseCoreKbd, &state) == Success)
             _glfw.x11.xkb.group = (unsigned int)state.group;
 
-        XkbSelectEventDetails(_glfw.x11.display, XkbUseCoreKbd, XkbStateNotify, XkbAllStateComponentsMask, XkbGroupStateMask);
+        XkbSelectEventDetails(_glfw.x11.display, XkbUseCoreKbd, XkbStateNotify,
+                              XkbGroupStateMask, XkbGroupStateMask);
     }
 
 #if defined(__CYGWIN__)

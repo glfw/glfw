@@ -69,6 +69,13 @@ needs to be specified during compilation or linking.
 
 @subsection removals_34 Removals in 3.4
 
+@subsubsection wl_shell_34 Support for the wl_shell protocol has been removed
+
+Support for the wl_shell protocol has been removed and GLFW now only supports
+the XDG-Shell protocol.  If your Wayland compositor does not support XDG-Shell
+then GLFW will fail to initialize.
+
+
 @subsection symbols_34 New symbols in version 3.4
 
 @subsubsection functions_34 New functions in version 3.4

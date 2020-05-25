@@ -261,13 +261,6 @@ if (_GLFW_WAYLAND)
 endif()
 
 #--------------------------------------------------------------------
-# Use OSMesa for offscreen context creation
-#--------------------------------------------------------------------
-if (_GLFW_OSMESA)
-    find_package(OSMesa REQUIRED)
-endif()
-
-#--------------------------------------------------------------------
 # Use Cocoa for window creation and NSOpenGL for context creation
 #--------------------------------------------------------------------
 if (_GLFW_COCOA)

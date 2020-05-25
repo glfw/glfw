@@ -100,8 +100,8 @@ target_include_directories(glfw PRIVATE
                            ${glfw_INCLUDE_DIRS})
 target_link_libraries(glfw PRIVATE Threads::Threads ${glfw_LIBRARIES})
 
+# Workaround for CMake not knowing about .m files before version 3.16
 if (APPLE)
-    # For some reason CMake didn't know about .m until version 3.16
     set_source_files_properties(cocoa_init.m cocoa_joystick.m cocoa_monitor.m
                                 cocoa_window.m nsgl_context.m PROPERTIES
                                 LANGUAGE C)
@@ -146,16 +146,23 @@ if (MINGW)
     endif()
 endif()
 
+# Workaround for VS deprecating parts of the standard library
+if (MSVC)
+    target_compile_definitions(glfw PRIVATE _CRT_SECURE_NO_WARNINGS)
+endif()
+
+# Workaround for VS 2008 not shipping with stdint.h
 if (MSVC90)
-    # Workaround for VS 2008 not shipping with the DirectX 9 SDK
+    target_include_directories(glfw PUBLIC "${GLFW_SOURCE_DIR}/deps/vs2008")
+endif()
+
+# Check for the DirectX 9 SDK as it is not included with VS 2008
+if (MSVC90)
     include(CheckIncludeFile)
     check_include_file(dinput.h DINPUT_H_FOUND)
     if (NOT DINPUT_H_FOUND)
         message(FATAL_ERROR "DirectX 9 headers not found; install DirectX 9 SDK")
     endif()
-
-    # Workaround for VS 2008 not shipping with stdint.h
-    target_include_directories(glfw PRIVATE "${GLFW_SOURCE_DIR}/deps/vs2008")
 endif()
 
 if (BUILD_SHARED_LIBS)
@@ -214,10 +221,6 @@ if (BUILD_SHARED_LIBS)
         # Hide symbols not explicitly tagged for export from the shared library
         target_compile_options(glfw PRIVATE "-fvisibility=hidden")
     endif()
-endif()
-
-if (MSVC)
-    target_compile_definitions(glfw PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
 
 if (GLFW_INSTALL)

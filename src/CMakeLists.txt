@@ -136,6 +136,28 @@ if (MINGW)
     target_compile_definitions(glfw PRIVATE UNICODE WINVER=0x0501)
 endif()
 
+# Workaround for legacy MinGW not providing XInput and DirectInput
+if (MINGW)
+    include(CheckIncludeFile)
+    check_include_file(dinput.h DINPUT_H_FOUND)
+    check_include_file(xinput.h XINPUT_H_FOUND)
+    if (NOT DINPUT_H_FOUND OR NOT XINPUT_H_FOUND)
+        target_include_directories(glfw PRIVATE "${GLFW_SOURCE_DIR}/deps/mingw")
+    endif()
+endif()
+
+if (MSVC90)
+    # Workaround for VS 2008 not shipping with the DirectX 9 SDK
+    include(CheckIncludeFile)
+    check_include_file(dinput.h DINPUT_H_FOUND)
+    if (NOT DINPUT_H_FOUND)
+        message(FATAL_ERROR "DirectX 9 headers not found; install DirectX 9 SDK")
+    endif()
+
+    # Workaround for VS 2008 not shipping with stdint.h
+    target_include_directories(glfw PRIVATE "${GLFW_SOURCE_DIR}/deps/vs2008")
+endif()
+
 if (BUILD_SHARED_LIBS)
     if (WIN32)
         if (MINGW)
@@ -157,6 +179,35 @@ if (BUILD_SHARED_LIBS)
     elseif (APPLE)
         set_target_properties(glfw PROPERTIES
                               INSTALL_NAME_DIR "${CMAKE_INSTALL_LIBDIR}")
+    endif()
+
+    if (MINGW)
+        # Enable link-time exploit mitigation features enabled by default on MSVC
+        include(CheckCCompilerFlag)
+
+        # Compatibility with data execution prevention (DEP)
+        set(CMAKE_REQUIRED_FLAGS "-Wl,--nxcompat")
+        check_c_compiler_flag("" _GLFW_HAS_DEP)
+        if (_GLFW_HAS_DEP)
+            target_link_libraries(glfw PRIVATE "-Wl,--nxcompat")
+        endif()
+
+        # Compatibility with address space layout randomization (ASLR)
+        set(CMAKE_REQUIRED_FLAGS "-Wl,--dynamicbase")
+        check_c_compiler_flag("" _GLFW_HAS_ASLR)
+        if (_GLFW_HAS_ASLR)
+            target_link_libraries(glfw PRIVATE "-Wl,--dynamicbase")
+        endif()
+
+        # Compatibility with 64-bit address space layout randomization (ASLR)
+        set(CMAKE_REQUIRED_FLAGS "-Wl,--high-entropy-va")
+        check_c_compiler_flag("" _GLFW_HAS_64ASLR)
+        if (_GLFW_HAS_64ASLR)
+            target_link_libraries(glfw PRIVATE "-Wl,--high-entropy-va")
+        endif()
+
+        # Clear flags again to avoid breaking later tests
+        set(CMAKE_REQUIRED_FLAGS)
     endif()
 
     if (UNIX)

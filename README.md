@@ -133,6 +133,8 @@ information on what to include when reporting a bug.
  - Bugfix: Video modes with a duplicate screen area were discarded (#1555,#1556)
  - Bugfix: Compiling with -Wextra-semi caused warnings (#1440)
  - Bugfix: Built-in mappings failed because some OEMs re-used VID/PID (#1583)
+ - Bugfix: Some extension loader headers did not prevent default OpenGL header
+   inclusion (#1695)
  - [Win32] Added the `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access
            to the window menu
  - [Win32] Added a version info resource to the GLFW DLL

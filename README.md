@@ -129,6 +129,7 @@ information on what to include when reporting a bug.
    non-printable keys (#1598)
  - [X11] Bugfix: Function keys were mapped to `GLFW_KEY_UNKNOWN` for some layout
    combinaitons (#1598)
+ - [Wayland] Bugfix: Repeated keys could be reported with `NULL` window (#1704)
 
 
 ## Contact
@@ -333,6 +334,7 @@ skills.
  - Torsten Walluhn
  - Patrick Walton
  - Xo Wang
+ - Waris
  - Jay Weisskopf
  - Frank Wille
  - Ryogo Yoshimura

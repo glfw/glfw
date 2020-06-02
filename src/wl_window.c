@@ -870,10 +870,17 @@ static void handleEvents(int timeout)
             if (read_ret != 8)
                 return;
 
-            for (i = 0; i < repeats; ++i)
-                _glfwInputKey(_glfw.wl.keyboardFocus, _glfw.wl.keyboardLastKey,
-                              _glfw.wl.keyboardLastScancode, GLFW_REPEAT,
-                              _glfw.wl.xkb.modifiers);
+            if (_glfw.wl.keyboardFocus)
+            {
+                for (i = 0; i < repeats; ++i)
+                {
+                    _glfwInputKey(_glfw.wl.keyboardFocus,
+                                  _glfw.wl.keyboardLastKey,
+                                  _glfw.wl.keyboardLastScancode,
+                                  GLFW_REPEAT,
+                                  _glfw.wl.xkb.modifiers);
+                }
+            }
         }
 
         if (fds[2].revents & POLLIN)

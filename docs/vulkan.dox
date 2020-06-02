@@ -4,8 +4,8 @@
 
 @tableofcontents
 
-This guide is intended to fill the gaps between the [Vulkan
-documentation](https://www.khronos.org/vulkan/) and the rest of the GLFW
+This guide is intended to fill the gaps between the official [Vulkan
+resources](https://www.khronos.org/vulkan/) and the rest of the GLFW
 documentation and is not a replacement for either.  It assumes some familiarity
 with Vulkan concepts like loaders, devices, queues and surfaces and leaves it to
 the Vulkan documentation to explain the details of Vulkan functions.
@@ -14,7 +14,12 @@ To develop for Vulkan you should download the [LunarG Vulkan
 SDK](https://vulkan.lunarg.com/) for your platform.  Apart from headers and link
 libraries, they also provide the validation layers necessary for development.
 
-For details on a specific function in this category, see the @ref vulkan.  There
+The [Vulkan Tutorial](https://vulkan-tutorial.com/) has more information on how
+to use GLFW and Vulkan.  The [Khronos Vulkan
+Samples](https://github.com/KhronosGroup/Vulkan-Samples) also use GLFW, although
+with a small framework in between.
+
+For details on a specific Vulkan support function, see the @ref vulkan.  There
 are also guides for the other areas of the GLFW API.
 
  - @ref intro_guide

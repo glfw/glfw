@@ -1195,6 +1195,8 @@ static void processEvent(XEvent *event)
             {
                 _glfw.x11.xkb.group = ((XkbEvent*) event)->state.group;
             }
+
+            return;
         }
     }
 
@@ -1557,6 +1559,8 @@ static void processEvent(XEvent *event)
             //       the position into root (screen) coordinates
             if (!event->xany.send_event && window->x11.parent != _glfw.x11.root)
             {
+                _glfwGrabErrorHandlerX11();
+
                 Window dummy;
                 XTranslateCoordinates(_glfw.x11.display,
                                       window->x11.parent,
@@ -1564,6 +1568,10 @@ static void processEvent(XEvent *event)
                                       xpos, ypos,
                                       &xpos, &ypos,
                                       &dummy);
+
+                _glfwReleaseErrorHandlerX11();
+                if (_glfw.x11.errorCode == BadWindow)
+                    return;
             }
 
             if (xpos != window->x11.xpos || ypos != window->x11.ypos)
@@ -1971,7 +1979,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    Visual* visual;
+    Visual* visual = NULL;
     int depth;
 
     if (ctxconfig->client != GLFW_NO_API)
@@ -1997,8 +2005,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         }
     }
 
-    if (ctxconfig->client == GLFW_NO_API ||
-        ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
+    if (!visual)
     {
         visual = DefaultVisual(_glfw.x11.display, _glfw.x11.screen);
         depth = DefaultDepth(_glfw.x11.display, _glfw.x11.screen);

@@ -395,7 +395,7 @@ GLFWbool _glfwInitEGL(void)
         return GLFW_FALSE;
     }
 
-    _glfw.egl.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
+    _glfw.egl.display = eglGetDisplay(_glfwPlatformGetEGLNativeDisplay());
     if (_glfw.egl.display == EGL_NO_DISPLAY)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
@@ -601,7 +601,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
     window->context.egl.surface =
         eglCreateWindowSurface(_glfw.egl.display,
                                config,
-                               _GLFW_EGL_NATIVE_WINDOW,
+                               _glfwPlatformGetEGLNativeWindow(window),
                                attribs);
     if (window->context.egl.surface == EGL_NO_SURFACE)
     {

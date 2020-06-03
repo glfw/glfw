@@ -3048,6 +3048,16 @@ const char* _glfwPlatformGetClipboardString(void)
     return getSelectionString(_glfw.x11.CLIPBOARD);
 }
 
+EGLNativeDisplayType _glfwPlatformGetEGLNativeDisplay(void)
+{
+    return _glfw.x11.display;
+}
+
+EGLNativeWindowType _glfwPlatformGetEGLNativeWindow(_GLFWwindow* window)
+{
+    return (EGLNativeWindowType) window->x11.handle;
+}
+
 void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)
 {
     if (!_glfw.vk.KHR_surface)

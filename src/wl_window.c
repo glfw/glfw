@@ -1684,6 +1684,14 @@ const char* _glfwPlatformGetClipboardString(void)
     return _glfw.wl.clipboardString;
 }
 
+EGLenum _glfwPlatformGetEGLPlatform(void)
+{
+    if (_glfw.egl.EXT_platform_base && _glfw.egl.EXT_platform_wayland)
+        return EGL_PLATFORM_WAYLAND_EXT;
+    else
+        return 0;
+}
+
 EGLNativeDisplayType _glfwPlatformGetEGLNativeDisplay(void)
 {
     return _glfw.wl.display;

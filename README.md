@@ -194,6 +194,7 @@ information on what to include when reporting a bug.
  - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
    macOS versions (#1442)
  - [NSGL] Bugfix: Workaround for swap interval on 10.14 broke on 10.12 (#1483)
+ - [EGL] Added platform selection via the `EGL_EXT_platform_base` extension
 
 
 ## Contact

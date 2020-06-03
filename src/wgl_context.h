@@ -151,6 +151,11 @@ typedef struct _GLFWlibraryWGL
 
 } _GLFWlibraryWGL;
 
+typedef struct _GLFWusercontext
+{
+    _GLFWwindow* window;
+    HGLRC        handle;
+} _GLFWusercontext;
 
 GLFWbool _glfwInitWGL(void);
 void _glfwTerminateWGL(void);

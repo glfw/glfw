@@ -777,6 +777,62 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
 
 
 //////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+_GLFWusercontext* _glfwPlatformCreateUserContext(_GLFWwindow* window)
+{
+    _GLFWusercontext* context;
+    context = calloc(1, sizeof(_GLFWusercontext));
+
+    context->handle = wglCreateContext(window->context.wgl.dc);
+    context->window = window;
+    if (!context->handle)
+    {
+        _glfwInputErrorWin32(GLFW_VERSION_UNAVAILABLE,
+                                "WGL: Failed to create user OpenGL context");
+        free(context);
+        return GLFW_FALSE;
+    }
+
+    if (!wglShareLists(window->context.wgl.handle,context->handle))
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                "WGL: Failed to enable sharing with window OpenGL context and user context");
+        free(context);
+        return GLFW_FALSE;
+    }
+    return context;
+}
+
+void _glfwPlatformDestroyUserContext(_GLFWusercontext* context)
+{
+    wglDeleteContext(context->handle);
+    free(context);
+}
+
+void _glfwPlatformMakeUserContextCurrent(_GLFWusercontext* context)
+{
+    if(context)
+    {
+        if(!wglMakeCurrent(context->window->context.wgl.dc,context->handle))
+        {
+            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                 "WGL: Failed to set current user context");
+        }
+    }
+    else
+    {
+        if (!wglMakeCurrent(NULL, NULL))
+        {
+            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                 "WGL: Failed to clear current context");
+        }
+    }
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////
 

@@ -758,3 +758,26 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname)
     return window->context.getProcAddress(procname);
 }
 
+GLFWAPI GLFWusercontext* glfwCreateUserContext(GLFWwindow* handle)
+{
+    _GLFWusercontext* context;
+    _GLFWwindow* window = (_GLFWwindow*)handle;
+
+    context = _glfwPlatformCreateUserContext(window);
+
+    return (GLFWusercontext*)context;
+}
+
+GLFWAPI void glfwDestroyUserContext(GLFWusercontext* handle)
+{
+    _GLFWusercontext* context = (_GLFWusercontext*)handle;
+
+    _glfwPlatformDestroyUserContext(context);
+}
+
+GLFWAPI void glfwMakeUserContextCurrent(GLFWusercontext* handle)
+{
+    _GLFWusercontext* context = (_GLFWusercontext*)handle;
+
+    _glfwPlatformMakeUserContextCurrent(context);
+}

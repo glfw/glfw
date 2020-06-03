@@ -1276,6 +1276,18 @@ typedef struct GLFWmonitor GLFWmonitor;
  */
 typedef struct GLFWwindow GLFWwindow;
 
+/*! @brief Opaque user OpenGL context object.
+ *
+ *  Opaque user OpenGL context object.
+ *
+ *  @see @ref user_gl_context
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup window
+ */
+typedef struct GLFWusercontext GLFWusercontext;
+
 /*! @brief Opaque cursor object.
  *
  *  Opaque cursor object.
@@ -5771,6 +5783,21 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
  *  @ingroup context
  */
 GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);
+
+/*! @brief Create a new OpenGL user context for a window
+*
+*/ 
+GLFWAPI GLFWusercontext* glfwCreateUserContext(GLFWwindow* window);
+
+/*! @brief Delete an OpenGL user context
+*
+*/
+GLFWAPI void glfwDestroyUserContext(GLFWusercontext* context);
+
+/*! @brief Make an OpenGL user context
+*
+*/
+GLFWAPI void glfwMakeUserContextCurrent(GLFWusercontext* context);
 
 /*! @brief Returns whether the Vulkan loader and an ICD have been found.
  *

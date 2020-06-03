@@ -75,6 +75,7 @@ typedef struct _GLFWmapping     _GLFWmapping;
 typedef struct _GLFWjoystick    _GLFWjoystick;
 typedef struct _GLFWtls         _GLFWtls;
 typedef struct _GLFWmutex       _GLFWmutex;
+typedef struct _GLFWusercontext _GLFWusercontext;
 
 typedef void (* _GLFWmakecontextcurrentfun)(_GLFWwindow*);
 typedef void (* _GLFWswapbuffersfun)(_GLFWwindow*);
@@ -680,6 +681,11 @@ void _glfwPlatformPollEvents(void);
 void _glfwPlatformWaitEvents(void);
 void _glfwPlatformWaitEventsTimeout(double timeout);
 void _glfwPlatformPostEmptyEvent(void);
+
+_GLFWusercontext* _glfwPlatformCreateUserContext(_GLFWwindow* window);
+void _glfwPlatformDestroyUserContext(_GLFWusercontext* context);
+void _glfwPlatformMakeUserContextCurrent(_GLFWusercontext* context);
+
 
 void _glfwPlatformGetRequiredInstanceExtensions(char** extensions);
 int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,

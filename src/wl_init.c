@@ -1154,8 +1154,9 @@ int _glfwPlatformInit(void)
     _glfwInitTimerPOSIX();
 
     _glfw.wl.timerfd = -1;
-    if (_glfw.wl.seatVersion >= 4)
-        _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
+    if (_glfw.wl.seatVersion >= 4) {
+        _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
+    }
 
     if (!_glfw.wl.wmBase)
     {

@@ -194,6 +194,9 @@ typedef void (APIENTRY * PFN_vkVoidFunction)(void);
  #error "No supported window creation API selected"
 #endif
 
+#include "egl_context.h"
+#include "osmesa_context.h"
+
 // Constructs a version number string from the public header macros
 #define _GLFW_CONCAT_VERSION(m, n, r) #m "." #n "." #r
 #define _GLFW_MAKE_VERSION(m, n, r) _GLFW_CONCAT_VERSION(m, n, r)
@@ -359,9 +362,9 @@ struct _GLFWcontext
     // This is defined in the context API's context.h
     _GLFW_PLATFORM_CONTEXT_STATE;
     // This is defined in egl_context.h
-    _GLFW_EGL_CONTEXT_STATE;
+    _GLFWcontextEGL egl;
     // This is defined in osmesa_context.h
-    _GLFW_OSMESA_CONTEXT_STATE;
+    _GLFWcontextOSMesa osmesa;
 };
 
 // Window and context structure
@@ -581,9 +584,9 @@ struct _GLFWlibrary
     // This is defined in the platform's joystick.h
     _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE;
     // This is defined in egl_context.h
-    _GLFW_EGL_LIBRARY_CONTEXT_STATE;
+    _GLFWlibraryEGL egl;
     // This is defined in osmesa_context.h
-    _GLFW_OSMESA_LIBRARY_CONTEXT_STATE;
+    _GLFWlibraryOSMesa osmesa;
 };
 
 // Global state shared between compilation units of GLFW

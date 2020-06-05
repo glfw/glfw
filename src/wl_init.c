@@ -1336,7 +1336,7 @@ int _glfwInitWayland(void)
 
     _glfw.wl.timerfd = -1;
     if (_glfw.wl.seatVersion >= 4)
-        _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
+        _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
 
     if (!_glfw.wl.wmBase)
     {
@@ -1370,7 +1370,7 @@ int _glfwInitWayland(void)
             wl_cursor_theme_load(cursorTheme, 2 * cursorSize, _glfw.wl.shm);
         _glfw.wl.cursorSurface =
             wl_compositor_create_surface(_glfw.wl.compositor);
-        _glfw.wl.cursorTimerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
+        _glfw.wl.cursorTimerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
     }
 
     if (_glfw.wl.seat && _glfw.wl.dataDeviceManager)

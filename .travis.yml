@@ -38,8 +38,6 @@ matrix:
           name: "Wayland shared library"
           addons:
               apt:
-                  sources:
-                      - ppa:kubuntu-ppa/backports
                   packages:
                       - extra-cmake-modules
                       - libwayland-dev
@@ -54,8 +52,6 @@ matrix:
           name: "Wayland static library"
           addons:
               apt:
-                  sources:
-                      - ppa:kubuntu-ppa/backports
                   packages:
                       - extra-cmake-modules
                       - libwayland-dev

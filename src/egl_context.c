@@ -395,7 +395,13 @@ GLFWbool _glfwInitEGL(void)
         return GLFW_FALSE;
     }
 
+#if defined(_WIN32)
+    _GLFWwindow* mainWindow = _glfw.windowListHead;
+    HDC dc = GetDC(mainWindow->win32.handle);
+    _glfw.egl.display = eglGetDisplay(dc);
+#else
     _glfw.egl.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
+#endif
     if (_glfw.egl.display == EGL_NO_DISPLAY)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,

@@ -396,9 +396,7 @@ GLFWbool _glfwInitEGL(void)
     }
 
 #if defined(_WIN32)
-    _GLFWwindow* mainWindow = _glfw.windowListHead;
-    HDC dc = GetDC(mainWindow->win32.handle);
-    _glfw.egl.display = eglGetDisplay(dc);
+    _glfw.egl.display = eglGetDisplay(GetDC(_glfw.windowListHead->win32.handle));
 #else
     _glfw.egl.display = eglGetDisplay(_GLFW_EGL_NATIVE_DISPLAY);
 #endif

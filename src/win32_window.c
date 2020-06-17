@@ -2193,7 +2193,7 @@ EGLenum _glfwPlatformGetEGLPlatform(void)
 
 EGLNativeDisplayType _glfwPlatformGetEGLNativeDisplay(void)
 {
-    return EGL_DEFAULT_DISPLAY;
+    return GetDC(_glfw.win32.helperWindowHandle);
 }
 
 EGLNativeWindowType _glfwPlatformGetEGLNativeWindow(_GLFWwindow* window)

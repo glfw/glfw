@@ -402,6 +402,7 @@ skills.
  - Waris
  - Jay Weisskopf
  - Frank Wille
+ - Tatsuya Yatagawa
  - Ryogo Yoshimura
  - Lukas Zanner
  - Andrey Zholos

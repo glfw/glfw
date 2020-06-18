@@ -408,8 +408,7 @@ Forward-compatibility is described in detail in the
 @anchor GLFW_OPENGL_DEBUG_CONTEXT_hint
 __GLFW_OPENGL_DEBUG_CONTEXT__ specifies whether to create a debug OpenGL
 context, which may have additional error and performance issue reporting
-functionality.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.  If OpenGL ES
-is requested, this hint is ignored.
+functionality.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 
 @anchor GLFW_OPENGL_PROFILE_hint
 __GLFW_OPENGL_PROFILE__ specifies which OpenGL profile to create the context

@@ -1832,6 +1832,33 @@ typedef struct GLFWimage
     unsigned char* pixels;
 } GLFWimage;
 
+/*! @brief Rectangle.
+ *
+ *  This describes a single 2D box.  The origin is the bottom-left point of the
+ *  window.
+ *
+ *  @sa @ref buffer_swap
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup window
+ */
+typedef struct GLFWrect
+{
+    /*! The starting horizontal coordinate, in pixels, of this rect.
+     */
+    int x;
+    /*! The starting vertical coordinate, in pixels, of this rect.
+     */
+    int y;
+    /*! The width, in pixels, of this rect.
+     */
+    int width;
+    /*! The height, in pixels, of this rect.
+     */
+    int height;
+} GLFWrect;
+
 /*! @brief Gamepad input state
  *
  *  This describes the input state of a gamepad.
@@ -5647,6 +5674,7 @@ GLFWAPI GLFWwindow* glfwGetCurrentContext(void);
  *  @thread_safety This function may be called from any thread.
  *
  *  @sa @ref buffer_swap
+ *  @sa @ref glfwSwapBuffersWithDamage
  *  @sa @ref glfwSwapInterval
  *
  *  @since Added in version 1.0.
@@ -5655,6 +5683,49 @@ GLFWAPI GLFWwindow* glfwGetCurrentContext(void);
  *  @ingroup window
  */
 GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
+
+/*! @brief Swaps the front and back buffers of the specified window with damage
+ *  hints.
+ *
+ *  This function swaps the front and back buffers of the specified window when
+ *  rendering with OpenGL or OpenGL ES.  If the swap interval is greater than
+ *  zero, the GPU driver waits the specified number of screen updates before
+ *  swapping the buffers.
+ *
+ *  On supported platforms, this function can damage only the specified rects
+ *  instead of the entire buffer.  This is only one possible behaviour, it is
+ *  perfectly acceptable to damage the entire buffer so you shouldn’t rely on
+ *  that and keep providing a fully up to date buffer.
+ *
+ *  The specified window must have an OpenGL or OpenGL ES context.  Specifying
+ *  a window without a context will generate a @ref GLFW_NO_WINDOW_CONTEXT
+ *  error.
+ *
+ *  This function does not apply to Vulkan.  If you are rendering with Vulkan,
+ *  see `vkQueuePresentKHR` instead.
+ *
+ *  @param[in] window The window whose buffers to swap.
+ *  @param[in] rects The rects to update.
+ *  @param[in] n_rects How many rects there are.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_NO_WINDOW_CONTEXT and @ref GLFW_PLATFORM_ERROR.
+ *
+ *  @remark __EGL:__ The context of the specified window must be current on the
+ *  calling thread.
+ *
+ *  @thread_safety This function may be called from any thread.
+ *
+ *  @sa @ref buffer_swap
+ *  @sa @ref glfwSwapBuffers
+ *  @sa @ref glfwSwapInterval
+ *  @sa @ref glfwGetBufferAge
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwSwapBuffersWithDamage(GLFWwindow* window, GLFWrect* rects, int n_rects);
 
 /*! @brief Sets the swap interval for the current context.
  *
@@ -5701,6 +5772,36 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
  *  @ingroup context
  */
 GLFWAPI void glfwSwapInterval(int interval);
+
+/*! @brief Returns the buffer age of the window’s current buffer.
+ *
+ *  This function returns the age of the current buffer, in frames.  It may be
+ *  used to redraw only the parts of the buffer that have changed since this
+ *  buffer was last used, thus avoiding a clear and draw of the entire buffer.
+ *
+ *  A context must be current on the calling thread.  Calling this function
+ *  without a current context will cause a @ref GLFW_NO_CURRENT_CONTEXT error.
+ *
+ *  This function does not apply to Vulkan.  If you are rendering with Vulkan,
+ *  see the present mode of your swapchain instead.
+ *
+ *  @param[in] window The window whose buffers to swap.
+ *  @return The age of the back buffer if the extension is available, or 0
+ *  otherwise.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_NO_CURRENT_CONTEXT and @ref GLFW_PLATFORM_ERROR.
+ *
+ *  @thread_safety This function may be called from any thread.
+ *
+ *  @sa @ref buffer_swap
+ *  @sa @ref glfwSwapBuffersWithDamage
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup context
+ */
+GLFWAPI int glfwGetBufferAge(GLFWwindow* window);
 
 /*! @brief Returns whether the specified extension is available.
  *

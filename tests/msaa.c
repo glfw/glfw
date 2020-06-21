@@ -102,6 +102,19 @@ int main(int argc, char** argv)
     GLuint vertex_buffer, vertex_shader, fragment_shader, program;
     GLint mvp_location, vpos_location;
 
+    // Minimum static damage for both squares.
+    GLFWrect rects[8] =
+       {{ 25,  25, 350,  90},
+        { 25, 285, 350,  90},
+        { 25, 115,  90, 170},
+        {285, 115,  90, 170},
+
+        {425,  25, 350,  90},
+        {425, 285, 350,  90},
+        {425, 115,  90, 170},
+        {685, 115,  90, 170},
+       };
+
     while ((ch = getopt(argc, argv, "hs:")) != -1)
     {
         switch (ch)
@@ -178,11 +191,13 @@ int main(int argc, char** argv)
     while (!glfwWindowShouldClose(window))
     {
         float ratio;
+        int buffer_age;
         int width, height;
         mat4x4 m, p, mvp;
         const double angle = glfwGetTime() * M_PI / 180.0;
 
         glfwGetFramebufferSize(window, &width, &height);
+        buffer_age = glfwGetBufferAge(window);
         ratio = width / (float) height;
 
         glViewport(0, 0, width, height);
@@ -208,7 +223,12 @@ int main(int argc, char** argv)
         glEnable(GL_MULTISAMPLE);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-        glfwSwapBuffers(window);
+        // If buffer_age is 0, we can’t assume anything about the previous buffer
+        // so swap the entire buffer.
+        if (buffer_age > 0)
+            glfwSwapBuffersWithDamage(window, rects, 8);
+        else
+            glfwSwapBuffers(window);
         glfwPollEvents();
     }
 

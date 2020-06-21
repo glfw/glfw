@@ -233,9 +233,44 @@ static void swapBuffersEGL(_GLFWwindow* window)
     eglSwapBuffers(_glfw.egl.display, window->context.egl.surface);
 }
 
+static void swapBuffersWithDamageEGL(_GLFWwindow* window, GLFWrect* rects, int n_rects)
+{
+    if (window != _glfwPlatformGetTls(&_glfw.contextSlot))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "EGL: The context must be current on the calling thread when swapping buffers");
+        return;
+    }
+
+    if (eglSwapBuffersWithDamageKHR)
+        eglSwapBuffersWithDamageKHR(_glfw.egl.display,
+                                    window->context.egl.surface,
+                                    (EGLint*)rects, (EGLint)n_rects);
+    else
+        eglSwapBuffers(_glfw.egl.display, window->context.egl.surface);
+}
+
 static void swapIntervalEGL(int interval)
 {
     eglSwapInterval(_glfw.egl.display, interval);
+}
+
+static int getBufferAgeEGL(_GLFWwindow* window)
+{
+    EGLint buffer_age;
+
+    if (window != _glfwPlatformGetTls(&_glfw.contextSlot))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "EGL: The context must be current on the calling thread when swapping buffers");
+        return 0;
+    }
+
+    if (!eglQuerySurface(_glfw.egl.display, window->context.egl.surface,
+                         EGL_BUFFER_AGE_EXT, &buffer_age))
+        return 0;
+
+    return buffer_age;
 }
 
 static int extensionSupportedEGL(const char* extension)
@@ -368,6 +403,8 @@ GLFWbool _glfwInitEGL(void)
         _glfw_dlsym(_glfw.egl.handle, "eglSwapInterval");
     _glfw.egl.QueryString = (PFN_eglQueryString)
         _glfw_dlsym(_glfw.egl.handle, "eglQueryString");
+    _glfw.egl.QuerySurface = (PFN_eglQuerySurface)
+        _glfw_dlsym(_glfw.egl.handle, "eglQuerySurface");
     _glfw.egl.GetProcAddress = (PFN_eglGetProcAddress)
         _glfw_dlsym(_glfw.egl.handle, "eglGetProcAddress");
 
@@ -386,6 +423,7 @@ GLFWbool _glfwInitEGL(void)
         !_glfw.egl.SwapBuffers ||
         !_glfw.egl.SwapInterval ||
         !_glfw.egl.QueryString ||
+        !_glfw.egl.QuerySurface ||
         !_glfw.egl.GetProcAddress)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -426,6 +464,12 @@ GLFWbool _glfwInitEGL(void)
         extensionSupportedEGL("EGL_KHR_get_all_proc_addresses");
     _glfw.egl.KHR_context_flush_control =
         extensionSupportedEGL("EGL_KHR_context_flush_control");
+    _glfw.egl.KHR_swap_buffers_with_damage =
+        extensionSupportedEGL("EGL_KHR_swap_buffers_with_damage");
+
+    if (_glfw.egl.KHR_swap_buffers_with_damage)
+        _glfw.egl.SwapBuffersWithDamageKHR = (PFN_eglSwapBuffersWithDamageKHR)
+            _glfw.egl.GetProcAddress("eglSwapBuffersWithDamageKHR");
 
     return GLFW_TRUE;
 }
@@ -693,7 +737,9 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 
     window->context.makeCurrent = makeContextCurrentEGL;
     window->context.swapBuffers = swapBuffersEGL;
+    window->context.swapBuffersWithDamage = swapBuffersWithDamageEGL;
     window->context.swapInterval = swapIntervalEGL;
+    window->context.getBufferAge = getBufferAgeEGL;
     window->context.extensionSupported = extensionSupportedEGL;
     window->context.getProcAddress = getProcAddressEGL;
     window->context.destroy = destroyContextEGL;

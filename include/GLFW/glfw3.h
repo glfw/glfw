@@ -793,7 +793,7 @@ extern "C" {
  *  [custom cursor](@ref cursor_custom).
  */
 #define GLFW_CURSOR_UNAVAILABLE     0x0001000B
-/*! @brief The reuqested feature is not provided by the platform.
+/*! @brief The requested feature is not provided by the platform.
  *
  *  The requested feature is not provided by the platform, so GLFW is unable to
  *  implement it.  The documentation for each function notes if it could emit

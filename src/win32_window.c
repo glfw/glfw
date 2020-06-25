@@ -2186,8 +2186,44 @@ const char* _glfwPlatformGetClipboardString(void)
     return _glfw.win32.clipboardString;
 }
 
-EGLenum _glfwPlatformGetEGLPlatform(void)
+EGLenum _glfwPlatformGetEGLPlatform(EGLint** attribs)
 {
+    if (_glfw.egl.ANGLE_platform_angle)
+    {
+        int type = 0;
+
+        if (_glfw.egl.ANGLE_platform_angle_opengl)
+        {
+            if (_glfw.hints.init.angleType == GLFW_ANGLE_PLATFORM_TYPE_OPENGL)
+                type = EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE;
+            else if (_glfw.hints.init.angleType == GLFW_ANGLE_PLATFORM_TYPE_OPENGLES)
+                type = EGL_PLATFORM_ANGLE_TYPE_OPENGLES_ANGLE;
+        }
+
+        if (_glfw.egl.ANGLE_platform_angle_d3d)
+        {
+            if (_glfw.hints.init.angleType == GLFW_ANGLE_PLATFORM_TYPE_D3D9)
+                type = EGL_PLATFORM_ANGLE_TYPE_D3D9_ANGLE;
+            else if (_glfw.hints.init.angleType == GLFW_ANGLE_PLATFORM_TYPE_D3D11)
+                type = EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE;
+        }
+
+        if (_glfw.egl.ANGLE_platform_angle_vulkan)
+        {
+            if (_glfw.hints.init.angleType == GLFW_ANGLE_PLATFORM_TYPE_VULKAN)
+                type = EGL_PLATFORM_ANGLE_TYPE_VULKAN_ANGLE;
+        }
+
+        if (type)
+        {
+            *attribs = calloc(3, sizeof(EGLint));
+            (*attribs)[0] = EGL_PLATFORM_ANGLE_TYPE_ANGLE;
+            (*attribs)[1] = type;
+            (*attribs)[2] = EGL_NONE;
+            return EGL_PLATFORM_ANGLE_ANGLE;
+        }
+    }
+
     return 0;
 }
 

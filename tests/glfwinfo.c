@@ -55,6 +55,13 @@
 #define BEHAVIOR_NAME_NONE  "none"
 #define BEHAVIOR_NAME_FLUSH "flush"
 
+#define ANGLE_TYPE_OPENGL   "gl"
+#define ANGLE_TYPE_OPENGLES "es"
+#define ANGLE_TYPE_D3D9     "d3d9"
+#define ANGLE_TYPE_D3D11    "d3d11"
+#define ANGLE_TYPE_VULKAN   "vk"
+#define ANGLE_TYPE_METAL    "mtl"
+
 static void usage(void)
 {
     printf("Usage: glfwinfo [OPTION]...\n");
@@ -101,6 +108,13 @@ static void usage(void)
     printf("      --srgb                request an sRGB capable framebuffer\n");
     printf("      --singlebuffer        request single-buffering\n");
     printf("      --no-error            request a context that does not emit errors\n");
+    printf("      --angle-type=TYPE     the ANGLE platform type to use ("
+                                        ANGLE_TYPE_OPENGL ", "
+                                        ANGLE_TYPE_OPENGLES ", "
+                                        ANGLE_TYPE_D3D9 ", "
+                                        ANGLE_TYPE_D3D11 ", "
+                                        ANGLE_TYPE_VULKAN " or "
+                                        ANGLE_TYPE_METAL ")\n");
     printf("      --graphics-switching  request macOS graphics switching\n");
 }
 
@@ -344,6 +358,7 @@ int main(int argc, char** argv)
     bool fb_stereo = false;
     bool fb_srgb = false;
     bool fb_doublebuffer = true;
+    int angle_type = GLFW_ANGLE_PLATFORM_TYPE_NONE;
     bool cocoa_graphics_switching = false;
 
     enum { CLIENT, CONTEXT, BEHAVIOR, DEBUG_CONTEXT, FORWARD, HELP,
@@ -352,7 +367,7 @@ int main(int argc, char** argv)
            REDBITS, GREENBITS, BLUEBITS, ALPHABITS, DEPTHBITS, STENCILBITS,
            ACCUMREDBITS, ACCUMGREENBITS, ACCUMBLUEBITS, ACCUMALPHABITS,
            AUXBUFFERS, SAMPLES, STEREO, SRGB, SINGLEBUFFER, NOERROR_SRSLY,
-           GRAPHICS_SWITCHING };
+           ANGLE_TYPE, GRAPHICS_SWITCHING };
     const struct option options[] =
     {
         { "behavior",           1, NULL, BEHAVIOR },
@@ -384,6 +399,7 @@ int main(int argc, char** argv)
         { "srgb",               0, NULL, SRGB },
         { "singlebuffer",       0, NULL, SINGLEBUFFER },
         { "no-error",           0, NULL, NOERROR_SRSLY },
+        { "angle-type",         1, NULL, ANGLE_TYPE },
         { "graphics-switching", 0, NULL, GRAPHICS_SWITCHING },
         { NULL, 0, NULL, 0 }
     };
@@ -569,6 +585,25 @@ int main(int argc, char** argv)
             case NOERROR_SRSLY:
                 context_no_error = true;
                 break;
+            case ANGLE_TYPE:
+                if (strcmp(optarg, ANGLE_TYPE_OPENGL) == 0)
+                    angle_type = GLFW_ANGLE_PLATFORM_TYPE_OPENGL;
+                else if (strcmp(optarg, ANGLE_TYPE_OPENGLES) == 0)
+                    angle_type = GLFW_ANGLE_PLATFORM_TYPE_OPENGLES;
+                else if (strcmp(optarg, ANGLE_TYPE_D3D9) == 0)
+                    angle_type = GLFW_ANGLE_PLATFORM_TYPE_D3D9;
+                else if (strcmp(optarg, ANGLE_TYPE_D3D11) == 0)
+                    angle_type = GLFW_ANGLE_PLATFORM_TYPE_D3D11;
+                else if (strcmp(optarg, ANGLE_TYPE_VULKAN) == 0)
+                    angle_type = GLFW_ANGLE_PLATFORM_TYPE_VULKAN;
+                else if (strcmp(optarg, ANGLE_TYPE_METAL) == 0)
+                    angle_type = GLFW_ANGLE_PLATFORM_TYPE_METAL;
+                else
+                {
+                    usage();
+                    exit(EXIT_FAILURE);
+                }
+                break;
             case GRAPHICS_SWITCHING:
                 cocoa_graphics_switching = true;
                 break;
@@ -586,6 +621,8 @@ int main(int argc, char** argv)
     glfwSetErrorCallback(error_callback);
 
     glfwInitHint(GLFW_COCOA_MENUBAR, false);
+
+    glfwInitHint(GLFW_ANGLE_PLATFORM_TYPE, angle_type);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);

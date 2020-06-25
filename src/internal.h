@@ -243,6 +243,7 @@ struct _GLFWerror
 struct _GLFWinitconfig
 {
     GLFWbool      hatButtons;
+    int           angleType;
     struct {
         GLFWbool  menubar;
         GLFWbool  chdir;
@@ -684,7 +685,7 @@ void _glfwPlatformWaitEvents(void);
 void _glfwPlatformWaitEventsTimeout(double timeout);
 void _glfwPlatformPostEmptyEvent(void);
 
-EGLenum _glfwPlatformGetEGLPlatform(void);
+EGLenum _glfwPlatformGetEGLPlatform(EGLint** attribs);
 EGLNativeDisplayType _glfwPlatformGetEGLNativeDisplay(void);
 EGLNativeWindowType _glfwPlatformGetEGLNativeWindow(_GLFWwindow* window);
 

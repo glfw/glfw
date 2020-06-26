@@ -163,10 +163,9 @@ multisampling anti-aliasing.  Where this extension is unavailable, the
 GLFW uses the `GLX_ARB_create_context` extension when available, even when
 creating OpenGL contexts of version 2.1 and below.  Where this extension is
 unavailable, the `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR`
-hints will only be partially supported, the `GLFW_OPENGL_DEBUG_CONTEXT` hint
-will have no effect, and setting the `GLFW_OPENGL_PROFILE` or
-`GLFW_OPENGL_FORWARD_COMPAT` hints to `GLFW_TRUE` will cause @ref
-glfwCreateWindow to fail.
+hints will only be partially supported, the `GLFW_CONTEXT_DEBUG` hint will have
+no effect, and setting the `GLFW_OPENGL_PROFILE` or `GLFW_OPENGL_FORWARD_COMPAT`
+hints to `GLFW_TRUE` will cause @ref glfwCreateWindow to fail.
 
 GLFW uses the `GLX_ARB_create_context_profile` extension to provide support for
 context profiles.  Where this extension is unavailable, setting the
@@ -206,10 +205,9 @@ unavailable, the `GLFW_SAMPLES` hint will have no effect.
 GLFW uses the `WGL_ARB_create_context` extension when available, even when
 creating OpenGL contexts of version 2.1 and below.  Where this extension is
 unavailable, the `GLFW_CONTEXT_VERSION_MAJOR` and `GLFW_CONTEXT_VERSION_MINOR`
-hints will only be partially supported, the `GLFW_OPENGL_DEBUG_CONTEXT` hint
-will have no effect, and setting the `GLFW_OPENGL_PROFILE` or
-`GLFW_OPENGL_FORWARD_COMPAT` hints to `GLFW_TRUE` will cause @ref
-glfwCreateWindow to fail.
+hints will only be partially supported, the `GLFW_CONTEXT_DEBUG` hint will have
+no effect, and setting the `GLFW_OPENGL_PROFILE` or `GLFW_OPENGL_FORWARD_COMPAT`
+hints to `GLFW_TRUE` will cause @ref glfwCreateWindow to fail.
 
 GLFW uses the `WGL_ARB_create_context_profile` extension to provide support for
 context profiles.  Where this extension is unavailable, setting the
@@ -239,13 +237,13 @@ Because of this, on OS X 10.7 and later, the `GLFW_CONTEXT_VERSION_MAJOR` and
 `GLFW_CONTEXT_VERSION_MINOR` hints will cause @ref glfwCreateWindow to fail if
 given version 3.0 or 3.1.  The `GLFW_OPENGL_PROFILE` hint must be set to
 `GLFW_OPENGL_CORE_PROFILE` when creating OpenGL 3.2 and later contexts.  The
-`GLFW_OPENGL_DEBUG_CONTEXT` and `GLFW_CONTEXT_NO_ERROR` hints are ignored.
+`GLFW_CONTEXT_DEBUG` and `GLFW_CONTEXT_NO_ERROR` hints are ignored.
 
 Also, on Mac OS X 10.6 and below, the `GLFW_CONTEXT_VERSION_MAJOR` and
 `GLFW_CONTEXT_VERSION_MINOR` hints will fail if given a version above 2.1,
 setting the `GLFW_OPENGL_PROFILE` or `GLFW_OPENGL_FORWARD_COMPAT` hints to
 a non-default value will cause @ref glfwCreateWindow to fail and the
-`GLFW_OPENGL_DEBUG_CONTEXT` hint is ignored.
+`GLFW_CONTEXT_DEBUG` hint is ignored.
 
 
 @section compat_vulkan Vulkan loader and API

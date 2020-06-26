@@ -422,7 +422,7 @@ int main(int argc, char** argv)
                 break;
             case 'd':
             case DEBUG_CONTEXT:
-                glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+                glfwWindowHint(GLFW_CONTEXT_DEBUG, GLFW_TRUE);
                 break;
             case 'f':
             case FORWARD:
@@ -639,7 +639,7 @@ int main(int argc, char** argv)
 
             if (glfwGetWindowAttrib(window, GLFW_OPENGL_FORWARD_COMPAT))
                 printf(" forward-compatible");
-            if (glfwGetWindowAttrib(window, GLFW_OPENGL_DEBUG_CONTEXT))
+            if (glfwGetWindowAttrib(window, GLFW_CONTEXT_DEBUG))
                 printf(" debug");
             if (glfwGetWindowAttrib(window, GLFW_CONTEXT_ROBUSTNESS) == GLFW_LOSE_CONTEXT_ON_RESET)
                 printf(" robustness");

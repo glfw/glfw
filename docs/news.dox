@@ -91,6 +91,7 @@ then GLFW will fail to initialize.
  - @ref GLFW_NOT_ALLOWED_CURSOR
  - @ref GLFW_CURSOR_UNAVAILABLE
  - @ref GLFW_WIN32_KEYBOARD_MENU
+ - @ref GLFW_CONTEXT_DEBUG
 
 
 @section news_archive Release notes for earlier versions

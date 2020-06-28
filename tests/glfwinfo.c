@@ -278,7 +278,7 @@ static void list_vulkan_device_layers(VkInstance instance, VkPhysicalDevice devi
     free(lp);
 }
 
-static int valid_version(void)
+static bool valid_version(void)
 {
     int major, minor, revision;
     glfwGetVersion(&major, &minor, &revision);
@@ -286,13 +286,13 @@ static int valid_version(void)
     if (major != GLFW_VERSION_MAJOR)
     {
         printf("*** ERROR: GLFW major version mismatch! ***\n");
-        return GLFW_FALSE;
+        return false;
     }
 
     if (minor != GLFW_VERSION_MINOR || revision != GLFW_VERSION_REVISION)
         printf("*** WARNING: GLFW version mismatch! ***\n");
 
-    return GLFW_TRUE;
+    return true;
 }
 
 static void print_version(void)
@@ -444,10 +444,10 @@ int main(int argc, char** argv)
                 exit(EXIT_SUCCESS);
             case 'l':
             case EXTENSIONS:
-                list_extensions = GLFW_TRUE;
+                list_extensions = true;
                 break;
             case LAYERS:
-                list_layers = GLFW_TRUE;
+                list_layers = true;
                 break;
             case 'm':
             case MAJOR:
@@ -585,14 +585,14 @@ int main(int argc, char** argv)
 
     glfwSetErrorCallback(error_callback);
 
-    glfwInitHint(GLFW_COCOA_MENUBAR, GLFW_FALSE);
+    glfwInitHint(GLFW_COCOA_MENUBAR, false);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
     print_version();
 
-    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_VISIBLE, false);
 
     glfwWindowHint(GLFW_CLIENT_API, client_api);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, context_major);

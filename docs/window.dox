@@ -1332,8 +1332,8 @@ __GLFW_OPENGL_FORWARD_COMPAT__ is `GLFW_TRUE` if the window's context is an
 OpenGL forward-compatible one, or `GLFW_FALSE` otherwise.
 
 @anchor GLFW_OPENGL_DEBUG_CONTEXT_attrib
-__GLFW_OPENGL_DEBUG_CONTEXT__ is `GLFW_TRUE` if the window's context is an
-OpenGL debug context, or `GLFW_FALSE` otherwise.
+__GLFW_OPENGL_DEBUG_CONTEXT__ is `GLFW_TRUE` if the window's context is in debug
+mode, or `GLFW_FALSE` otherwise.
 
 @anchor GLFW_OPENGL_PROFILE_attrib
 __GLFW_OPENGL_PROFILE__ indicates the OpenGL profile used by the context.  This

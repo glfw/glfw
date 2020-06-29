@@ -744,7 +744,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
                            range:range
                   remainingRange:&range])
         {
-            if ((codepoint & 0xff00) == 0xf700)
+            if (codepoint >= 0xf700 && codepoint <= 0xf7ff)
                 continue;
 
             _glfwInputChar(window, codepoint, mods, plain);

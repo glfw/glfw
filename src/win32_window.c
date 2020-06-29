@@ -646,11 +646,38 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_CHAR:
         case WM_SYSCHAR:
+        {
+            if (wParam >= 0xd800 && wParam <= 0xdbff)
+                window->win32.highSurrogate = (WCHAR) wParam;
+            else
+            {
+                unsigned int codepoint = 0;
+
+                if (wParam >= 0xdc00 && wParam <= 0xdfff)
+                {
+                    if (window->win32.highSurrogate)
+                    {
+                        codepoint += (window->win32.highSurrogate - 0xd800) << 10;
+                        codepoint += (WCHAR) wParam - 0xdc00;
+                        codepoint += 0x10000;
+                    }
+                }
+                else
+                    codepoint = (WCHAR) wParam;
+
+                window->win32.highSurrogate = 0;
+                _glfwInputChar(window, codepoint, getKeyMods(), uMsg != WM_SYSCHAR);
+            }
+
+            if (uMsg == WM_SYSCHAR && window->win32.keymenu)
+                break;
+
+            return 0;
+        }
+
         case WM_UNICHAR:
         {
-            const GLFWbool plain = (uMsg != WM_SYSCHAR);
-
-            if (uMsg == WM_UNICHAR && wParam == UNICODE_NOCHAR)
+            if (wParam == UNICODE_NOCHAR)
             {
                 // WM_UNICHAR is not sent by Windows, but is sent by some
                 // third-party input method engine
@@ -658,11 +685,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 return TRUE;
             }
 
-            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), plain);
-
-            if (uMsg == WM_SYSCHAR && window->win32.keymenu)
-                break;
-
+            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), GLFW_TRUE);
             return 0;
         }
 

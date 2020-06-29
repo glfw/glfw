@@ -731,14 +731,24 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     else
         characters = (NSString*) string;
 
-    const NSUInteger length = [characters length];
-    for (NSUInteger i = 0;  i < length;  i++)
+    NSRange range = NSMakeRange(0, [characters length]);
+    while (range.length)
     {
-        const unichar codepoint = [characters characterAtIndex:i];
-        if ((codepoint & 0xff00) == 0xf700)
-            continue;
+        uint32_t codepoint = 0;
 
-        _glfwInputChar(window, codepoint, mods, plain);
+        if ([characters getBytes:&codepoint
+                       maxLength:sizeof(codepoint)
+                      usedLength:NULL
+                        encoding:NSUTF32StringEncoding
+                         options:0
+                           range:range
+                  remainingRange:&range])
+        {
+            if ((codepoint & 0xff00) == 0xf700)
+                continue;
+
+            _glfwInputChar(window, codepoint, mods, plain);
+        }
     }
 }
 

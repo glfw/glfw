@@ -1310,7 +1310,8 @@ void _glfwPlatformTerminate(void)
     if (_glfw.wl.shm)
         wl_shm_destroy(_glfw.wl.shm);
 #ifdef WITH_DECORATION
-    libdecor_unref(_glfw.wl.csd_context);
+    if (_glfw.wl.csd_context)
+        libdecor_unref(_glfw.wl.csd_context);
 #else
     if (_glfw.wl.viewporter)
         wp_viewporter_destroy(_glfw.wl.viewporter);

@@ -175,6 +175,14 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
         u->samples = getEGLConfigAttrib(n, EGL_SAMPLES);
         u->doublebuffer = GLFW_TRUE;
 
+#if defined(_GLFW_WAYLAND)
+        // Avoid using transparent buffer on Wayland if transparency is not requested.
+        // Otherwise mutter will fail to properly screenshot OpenGL content.
+        if (u->alphaBits > 0 && !desired->transparent) {
+            continue;
+        }
+#endif // _GLFW_WAYLAND
+
         u->handle = (uintptr_t) n;
         usableCount++;
     }

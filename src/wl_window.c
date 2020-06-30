@@ -354,6 +354,7 @@ static void setOpaqueRegion(_GLFWwindow* window)
 
     wl_region_add(region, 0, 0, window->wl.width, window->wl.height);
     wl_surface_set_opaque_region(window->wl.surface, region);
+    wl_surface_commit(window->wl.surface);
     wl_region_destroy(region);
 }
 
@@ -1560,8 +1561,9 @@ static void lockPointer(_GLFWwindow* window)
     window->wl.pointerLock.relativePointer = relativePointer;
     window->wl.pointerLock.lockedPointer = lockedPointer;
 
-    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.serial,
-                          NULL, 0, 0);
+    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.serial, NULL, 0, 0);
+    wl_surface_attach(_glfw.wl.cursorSurface, NULL, 0, 0);
+    wl_surface_commit(_glfw.wl.cursorSurface);
 }
 
 static GLFWbool isPointerLocked(_GLFWwindow* window)

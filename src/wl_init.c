@@ -1201,7 +1201,7 @@ int _glfwPlatformInit(void)
 
     _glfw.wl.timerfd = -1;
     if (_glfw.wl.seatVersion >= 4)
-        _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
+        _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
 
 #ifndef WITH_DECORATION
     if (!_glfw.wl.wmBase)

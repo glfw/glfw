@@ -132,6 +132,8 @@ information on what to include when reporting a bug.
    non-printable keys (#1598)
  - [X11] Bugfix: Function keys were mapped to `GLFW_KEY_UNKNOWN` for some layout
    combinaitons (#1598)
+ - [X11] Bugfix: Keys pressed simultaneously with others were not always
+   reported (#1112,#1415,#1472,#1616)
  - [Wayland] Bugfix: Repeated keys could be reported with `NULL` window (#1704)
 
 
@@ -295,8 +297,10 @@ skills.
  - Eddie Ringle
  - Max Risuhin
  - Jorge Rodriguez
+ - Luca Rood
  - Ed Ropple
  - Aleksey Rybalkin
+ - Mikko Rytkönen
  - Riku Salminen
  - Brandon Schaefer
  - Sebastian Schuberth

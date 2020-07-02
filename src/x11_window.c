@@ -463,7 +463,6 @@ static size_t encodeUTF8(char* s, unsigned int ch)
 // Decode a Unicode code point from a UTF-8 stream
 // Based on cutef8 by Jeff Bezanson (Public Domain)
 //
-#if defined(X_HAVE_UTF8_STRING)
 static unsigned int decodeUTF8(const char** s)
 {
     unsigned int ch = 0, count = 0;
@@ -483,7 +482,6 @@ static unsigned int decodeUTF8(const char** s)
     assert(count <= 6);
     return ch - offsets[count - 1];
 }
-#endif /*X_HAVE_UTF8_STRING*/
 
 // Convert the specified Latin-1 string to UTF-8
 //
@@ -1285,7 +1283,6 @@ static void processEvent(XEvent *event)
                 {
                     int count;
                     Status status;
-#if defined(X_HAVE_UTF8_STRING)
                     char buffer[100];
                     char* chars = buffer;
 
@@ -1310,33 +1307,6 @@ static void processEvent(XEvent *event)
                         while (c - chars < count)
                             _glfwInputChar(window, decodeUTF8(&c), mods, plain);
                     }
-#else /*X_HAVE_UTF8_STRING*/
-                    wchar_t buffer[16];
-                    wchar_t* chars = buffer;
-
-                    count = XwcLookupString(window->x11.ic,
-                                            &event->xkey,
-                                            buffer,
-                                            sizeof(buffer) / sizeof(wchar_t),
-                                            NULL,
-                                            &status);
-
-                    if (status == XBufferOverflow)
-                    {
-                        chars = calloc(count, sizeof(wchar_t));
-                        count = XwcLookupString(window->x11.ic,
-                                                &event->xkey,
-                                                chars, count,
-                                                NULL, &status);
-                    }
-
-                    if (status == XLookupChars || status == XLookupBoth)
-                    {
-                        int i;
-                        for (i = 0;  i < count;  i++)
-                            _glfwInputChar(window, chars[i], mods, plain);
-                    }
-#endif /*X_HAVE_UTF8_STRING*/
 
                     if (chars != buffer)
                         free(chars);
@@ -2106,21 +2076,14 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
-#if defined(X_HAVE_UTF8_STRING)
-    Xutf8SetWMProperties(_glfw.x11.display,
-                         window->x11.handle,
-                         title, title,
-                         NULL, 0,
-                         NULL, NULL, NULL);
-#else
-    // This may be a slightly better fallback than using XStoreName and
-    // XSetIconName, which always store their arguments using STRING
-    XmbSetWMProperties(_glfw.x11.display,
-                       window->x11.handle,
-                       title, title,
-                       NULL, 0,
-                       NULL, NULL, NULL);
-#endif
+    if (_glfw.x11.xlib.utf8)
+    {
+        Xutf8SetWMProperties(_glfw.x11.display,
+                             window->x11.handle,
+                             title, title,
+                             NULL, 0,
+                             NULL, NULL, NULL);
+    }
 
     XChangeProperty(_glfw.x11.display,  window->x11.handle,
                     _glfw.x11.NET_WM_NAME, _glfw.x11.UTF8_STRING, 8,

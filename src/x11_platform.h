@@ -501,6 +501,7 @@ typedef struct _GLFWlibraryX11
 
     struct {
         void*       handle;
+        GLFWbool    utf8;
         PFN_XAllocClassHint AllocClassHint;
         PFN_XAllocSizeHints AllocSizeHints;
         PFN_XAllocWMHints AllocWMHints;

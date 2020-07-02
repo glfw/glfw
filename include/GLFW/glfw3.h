@@ -193,6 +193,22 @@ extern "C" {
 
  #endif /*__APPLE__*/
 
+#elif defined(GLFW_INCLUDE_GLU)
+
+ #if defined(__APPLE__)
+
+  #if defined(GLFW_INCLUDE_GLU)
+   #include <OpenGL/glu.h>
+  #endif
+
+ #else /*__APPLE__*/
+
+  #if defined(GLFW_INCLUDE_GLU)
+   #include <GL/glu.h>
+  #endif
+
+ #endif /*__APPLE__*/
+
 #elif !defined(GLFW_INCLUDE_NONE) && \
       !defined(__gl_h_) && \
       !defined(__gles1_gl_h_) && \
@@ -216,18 +232,12 @@ extern "C" {
    #define GL_GLEXT_LEGACY
   #endif
   #include <OpenGL/gl.h>
-  #if defined(GLFW_INCLUDE_GLU)
-   #include <OpenGL/glu.h>
-  #endif
 
  #else /*__APPLE__*/
 
   #include <GL/gl.h>
   #if defined(GLFW_INCLUDE_GLEXT)
    #include <GL/glext.h>
-  #endif
-  #if defined(GLFW_INCLUDE_GLU)
-   #include <GL/glu.h>
   #endif
 
  #endif /*__APPLE__*/
@@ -975,9 +985,9 @@ extern "C" {
  *  and [attribute](@ref GLFW_OPENGL_FORWARD_COMPAT_attrib).
  */
 #define GLFW_OPENGL_FORWARD_COMPAT  0x00022006
-/*! @brief OpenGL debug context hint and attribute.
+/*! @brief Debug mode context hint and attribute.
  *
- *  OpenGL debug context [hint](@ref GLFW_OPENGL_DEBUG_CONTEXT_hint) and
+ *  Debug mode context [hint](@ref GLFW_OPENGL_DEBUG_CONTEXT_hint) and
  *  [attribute](@ref GLFW_OPENGL_DEBUG_CONTEXT_attrib).
  */
 #define GLFW_OPENGL_DEBUG_CONTEXT   0x00022007

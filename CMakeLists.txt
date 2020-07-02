@@ -128,6 +128,9 @@ if (MINGW)
     if (_GLFW_HAS_64ASLR)
         set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--high-entropy-va ${CMAKE_SHARED_LINKER_FLAGS}")
     endif()
+
+    # Clear flags again to avoid breaking later tests
+    set(CMAKE_REQUIRED_FLAGS)
 endif()
 
 #--------------------------------------------------------------------

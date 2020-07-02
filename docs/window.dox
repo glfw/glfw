@@ -408,10 +408,14 @@ Forward-compatibility is described in detail in the
 [OpenGL Reference Manual](https://www.opengl.org/registry/).
 
 @anchor GLFW_OPENGL_DEBUG_CONTEXT_hint
-__GLFW_OPENGL_DEBUG_CONTEXT__ specifies whether to create a debug OpenGL
-context, which may have additional error and performance issue reporting
-functionality.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.  If OpenGL ES
-is requested, this hint is ignored.
+__GLFW_OPENGL_DEBUG_CONTEXT__ specifies whether the context should be created
+in debug mode, which may provide additional error and diagnostic reporting
+functionality.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+
+@par
+Debug contexts for OpenGL and OpenGL ES are described in detail by the
+[GL_KHR_debug](https://www.khronos.org/registry/OpenGL/extensions/KHR/KHR_debug.txt)
+extension.
 
 @anchor GLFW_OPENGL_PROFILE_hint
 __GLFW_OPENGL_PROFILE__ specifies which OpenGL profile to create the context
@@ -1328,8 +1332,8 @@ __GLFW_OPENGL_FORWARD_COMPAT__ is `GLFW_TRUE` if the window's context is an
 OpenGL forward-compatible one, or `GLFW_FALSE` otherwise.
 
 @anchor GLFW_OPENGL_DEBUG_CONTEXT_attrib
-__GLFW_OPENGL_DEBUG_CONTEXT__ is `GLFW_TRUE` if the window's context is an
-OpenGL debug context, or `GLFW_FALSE` otherwise.
+__GLFW_OPENGL_DEBUG_CONTEXT__ is `GLFW_TRUE` if the window's context is in debug
+mode, or `GLFW_FALSE` otherwise.
 
 @anchor GLFW_OPENGL_PROFILE_attrib
 __GLFW_OPENGL_PROFILE__ indicates the OpenGL profile used by the context.  This

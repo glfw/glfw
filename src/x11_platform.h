@@ -129,7 +129,6 @@ typedef int (* PFN_XSync)(Display*,Bool);
 typedef Bool (* PFN_XTranslateCoordinates)(Display*,Window,Window,int,int,int*,int*,Window*);
 typedef int (* PFN_XUndefineCursor)(Display*,Window);
 typedef int (* PFN_XUngrabPointer)(Display*,Time);
-typedef int (* PFN_XUnionRectWithRegion)(XRectangle*,Region,Region);
 typedef int (* PFN_XUnmapWindow)(Display*,Window);
 typedef void (* PFN_XUnsetICFocus)(XIC);
 typedef VisualID (* PFN_XVisualIDFromVisual)(Visual*);
@@ -232,7 +231,6 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XTranslateCoordinates _glfw.x11.xlib.TranslateCoordinates
 #define XUndefineCursor _glfw.x11.xlib.UndefineCursor
 #define XUngrabPointer _glfw.x11.xlib.UngrabPointer
-#define XUnionRectWithRegion _glfw.x11.xlib.UnionRectWithRegion
 #define XUnmapWindow _glfw.x11.xlib.UnmapWindow
 #define XUnsetICFocus _glfw.x11.xlib.UnsetICFocus
 #define XVisualIDFromVisual _glfw.x11.xlib.VisualIDFromVisual
@@ -340,9 +338,12 @@ typedef XRenderPictFormat* (* PFN_XRenderFindVisualFormat)(Display*,Visual const
 typedef Bool (* PFN_XShapeQueryExtension)(Display*,int*,int*);
 typedef Status (* PFN_XShapeQueryVersion)(Display*dpy,int*,int*);
 typedef void (* PFN_XShapeCombineRegion)(Display*,Window,int,int,int,Region,int);
+typedef void (* PFN_XShapeCombineMask)(Display*,Window,int,int,int,Pixmap,int);
+
 #define XShapeQueryExtension _glfw.x11.xshape.QueryExtension
 #define XShapeQueryVersion _glfw.x11.xshape.QueryVersion
 #define XShapeCombineRegion _glfw.x11.xshape.ShapeCombineRegion
+#define XShapeCombineMask _glfw.x11.xshape.ShapeCombineMask
 
 typedef VkFlags VkXlibSurfaceCreateFlagsKHR;
 typedef VkFlags VkXcbSurfaceCreateFlagsKHR;
@@ -596,7 +597,6 @@ typedef struct _GLFWlibraryX11
         PFN_XTranslateCoordinates TranslateCoordinates;
         PFN_XUndefineCursor UndefineCursor;
         PFN_XUngrabPointer UngrabPointer;
-        PFN_XUnionRectWithRegion UnionRectWithRegion;
         PFN_XUnmapWindow UnmapWindow;
         PFN_XUnsetICFocus UnsetICFocus;
         PFN_XVisualIDFromVisual VisualIDFromVisual;
@@ -746,6 +746,7 @@ typedef struct _GLFWlibraryX11
         PFN_XShapeQueryExtension QueryExtension;
         PFN_XShapeCombineRegion ShapeCombineRegion;
         PFN_XShapeQueryVersion QueryVersion;
+        PFN_XShapeCombineMask ShapeCombineMask;
     } xshape;
 
 } _GLFWlibraryX11;

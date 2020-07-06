@@ -864,6 +864,8 @@ static GLFWbool initExtensions(void)
             _glfw_dlsym(_glfw.x11.xshape.handle, "XShapeCombineRegion");
         _glfw.x11.xshape.QueryVersion = (PFN_XShapeQueryVersion)
             _glfw_dlsym(_glfw.x11.xshape.handle, "XShapeQueryVersion");
+        _glfw.x11.xshape.ShapeCombineMask = (PFN_XShapeCombineMask)
+            _glfw_dlsym(_glfw.x11.xshape.handle, "XShapeCombineMask");
 
         if (XShapeQueryExtension(_glfw.x11.display,
             &_glfw.x11.xshape.errorBase,
@@ -1285,8 +1287,6 @@ int _glfwPlatformInit(void)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XUndefineCursor");
     _glfw.x11.xlib.UngrabPointer = (PFN_XUngrabPointer)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XUngrabPointer");
-    _glfw.x11.xlib.UnionRectWithRegion = (PFN_XUnionRectWithRegion)
-        _glfw_dlsym(_glfw.x11.xlib.handle, "XUnionRectWithRegion");
     _glfw.x11.xlib.UnmapWindow = (PFN_XUnmapWindow)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XUnmapWindow");
     _glfw.x11.xlib.UnsetICFocus = (PFN_XUnsetICFocus)

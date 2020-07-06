@@ -48,6 +48,9 @@
 // The XInput extension provides raw mouse motion input
 #include <X11/extensions/XInput2.h>
 
+// The Shape extension provides custom window shapes
+#include <X11/extensions/shape.h>
+
 typedef XClassHint* (* PFN_XAllocClassHint)(void);
 typedef XSizeHints* (* PFN_XAllocSizeHints)(void);
 typedef XWMHints* (* PFN_XAllocWMHints)(void);

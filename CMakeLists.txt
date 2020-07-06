@@ -176,6 +176,11 @@ if (_GLFW_X11)
     if (NOT X11_Xi_INCLUDE_PATH)
         message(FATAL_ERROR "XInput headers not found; install libxi development package")
     endif()
+
+    # Check for X Shape (custom window input shape)
+    if (NOT X11_Xshape_INCLUDE_PATH)
+        message(FATAL_ERROR "X Shape headers not found; install libxext development package")
+    endif()
 endif()
 
 #--------------------------------------------------------------------

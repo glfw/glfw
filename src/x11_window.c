@@ -2714,13 +2714,13 @@ void _glfwPlatformSetWindowMousePassthrough(_GLFWwindow* window, GLFWbool enable
     {
         Region region = XCreateRegion();
         XShapeCombineRegion(_glfw.x11.display, window->x11.handle,
-                            2/*ShapeInput*/, 0, 0, region, 0/*ShapeSet*/);
+                            ShapeInput, 0, 0, region, ShapeSet);
         XDestroyRegion(region);
     }
     else
     {
         XShapeCombineMask(_glfw.x11.display, window->x11.handle,
-                          2/*ShapeInput*/, 0, 0, None, 0/*ShapeSet*/);
+                          ShapeInput, 0, 0, None, ShapeSet);
     }
 
     window->mousePassthrough = enabled;

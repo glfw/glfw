@@ -17,6 +17,7 @@ matrix:
                       - libxinerama-dev
                       - libxcursor-dev
                       - libxi-dev
+                      - libxext-dev
           env:
               - BUILD_SHARED_LIBS=ON
               - CFLAGS=-Werror
@@ -30,6 +31,7 @@ matrix:
                       - libxinerama-dev
                       - libxcursor-dev
                       - libxi-dev
+                      - libxext-dev
           env:
               - BUILD_SHARED_LIBS=OFF
               - CFLAGS=-Werror

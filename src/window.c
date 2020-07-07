@@ -244,7 +244,8 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
         }
     }
 
-    _glfwPlatformSetWindowMousePassthrough(window, wndconfig.mousePassthrough);
+    if (wndconfig.mousePassthrough)
+        _glfwPlatformSetWindowMousePassthrough(window, GLFW_TRUE);
 
     return (GLFWwindow*) window;
 }

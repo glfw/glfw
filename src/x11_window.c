@@ -2576,11 +2576,19 @@ int _glfwPlatformWindowHovered(_GLFWwindow* window)
         int rootX, rootY, childX, childY;
         unsigned int mask;
 
-        if (!XQueryPointer(_glfw.x11.display, w,
-                           &root, &w, &rootX, &rootY, &childX, &childY, &mask))
-        {
+        _glfwGrabErrorHandlerX11();
+
+        const Bool result = XQueryPointer(_glfw.x11.display, w,
+                                          &root, &w, &rootX, &rootY,
+                                          &childX, &childY, &mask);
+
+        _glfwReleaseErrorHandlerX11();
+
+        if (_glfw.x11.errorCode == BadWindow)
+            w = _glfw.x11.root;
+
+        if (!result)
             return GLFW_FALSE;
-        }
 
         if (w == window->x11.handle)
             return GLFW_TRUE;

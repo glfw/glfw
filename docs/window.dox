@@ -255,6 +255,13 @@ This hint only has an effect on platforms where screen coordinates and pixels
 always map 1:1 such as Windows and X11.  On platforms like macOS the resolution
 of the framebuffer is changed independently of the window size.
 
+@anchor GLFW_MOUSE_PASSTHROUGH_hint
+__GLFW_MOUSE_PASSTHROUGH__ specifies whether the window is transparent to mouse
+input, letting any mouse events pass through to whatever window is behind it.
+This is only supported for undecorated windows.  Decorated windows with this
+enabled will behave differently between platforms.  Possible values are
+`GLFW_TRUE` and `GLFW_FALSE`.
+
 
 @subsubsection window_hints_fb Framebuffer related hints
 
@@ -523,6 +530,7 @@ GLFW_CENTER_CURSOR            | `GLFW_TRUE`                 | `GLFW_TRUE` or `GL
 GLFW_TRANSPARENT_FRAMEBUFFER  | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_FOCUS_ON_SHOW            | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_SCALE_TO_MONITOR         | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_MOUSE_PASSTHROUGH        | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_RED_BITS                 | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 GLFW_GREEN_BITS               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 GLFW_BLUE_BITS                | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
@@ -1225,6 +1233,10 @@ returns one.
 GLFW comes with a test program that lets you control whole window transparency
 at run-time called `opacity`.
 
+If you want to use either of these transparency methods to display a temporary
+overlay like for example a notification, the @ref GLFW_FLOATING and @ref
+GLFW_MOUSE_PASSTHROUGH window hints and attributes may be useful.
+
 
 @subsection window_attribs Window attributes
 
@@ -1312,6 +1324,15 @@ __GLFW_FOCUS_ON_SHOW__ specifies whether the window will be given input
 focus when @ref glfwShowWindow is called. This can be set before creation
 with the [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_hint) window hint or
 after with @ref glfwSetWindowAttrib.
+
+@anchor GLFW_MOUSE_PASSTHROUGH_attrib
+__GLFW_MOUSE_PASSTHROUGH__ specifies whether the window is transparent to mouse
+input, letting any mouse events pass through to whatever window is behind it.
+This can be set before creation with the
+[GLFW_MOUSE_PASSTHROUGH](@ref GLFW_MOUSE_PASSTHROUGH_hint) window hint or after
+with @ref glfwSetWindowAttrib.  This is only supported for undecorated windows.
+Decorated windows with this enabled will behave differently between platforms.
+
 
 @subsubsection window_attribs_ctx Context related attributes
 

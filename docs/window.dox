@@ -1231,7 +1231,7 @@ If the system does not support whole window transparency, this function always
 returns one.
 
 GLFW comes with a test program that lets you control whole window transparency
-at run-time called `opacity`.
+at run-time called `window`.
 
 If you want to use either of these transparency methods to display a temporary
 overlay like for example a notification, the @ref GLFW_FLOATING and @ref

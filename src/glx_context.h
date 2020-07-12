@@ -115,6 +115,7 @@ typedef GLXContext (*PFNGLXCREATECONTEXTATTRIBSARBPROC)(Display*,GLXFBConfig,GLX
 //
 typedef struct _GLFWcontextGLX
 {
+    GLXFBConfig     fbconfig;
     GLXContext      handle;
     GLXWindow       window;
 
@@ -167,6 +168,14 @@ typedef struct _GLFWlibraryGLX
     GLFWbool        ARB_context_flush_control;
 
 } _GLFWlibraryGLX;
+
+// GLX-specific user context data
+//
+typedef struct _GLFWusercontext
+{
+    _GLFWwindow* window;
+    GLXContext   handle;
+} _GLFWusercontext;
 
 GLFWbool _glfwInitGLX(void);
 void _glfwTerminateGLX(void);

@@ -531,6 +531,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             case WM_DEVICECHANGE:
             {
+                if (!_glfw.joysticksInitialized)
+                    break;
+
                 if (wParam == DBT_DEVICEARRIVAL)
                 {
                     DEV_BROADCAST_HDR* dbh = (DEV_BROADCAST_HDR*) lParam;

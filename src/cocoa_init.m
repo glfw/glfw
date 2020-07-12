@@ -551,7 +551,6 @@ int _glfwPlatformInit(void)
         return GLFW_FALSE;
 
     _glfwInitTimerNS();
-    _glfwInitJoysticksNS();
 
     _glfwPollMonitorsNS();
 
@@ -605,7 +604,6 @@ void _glfwPlatformTerminate(void)
     free(_glfw.ns.clipboardString);
 
     _glfwTerminateNSGL();
-    _glfwTerminateJoysticksNS();
 
     } // autoreleasepool
 }

@@ -493,7 +493,7 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
 
 // Initialize joystick interface
 //
-void _glfwInitJoysticksWin32(void)
+GLFWbool _glfwPlatformInitJoysticks(void)
 {
     if (_glfw.win32.dinput8.instance)
     {
@@ -505,15 +505,17 @@ void _glfwInitJoysticksWin32(void)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Win32: Failed to create interface");
+            return GLFW_FALSE;
         }
     }
 
     _glfwDetectJoystickConnectionWin32();
+    return GLFW_TRUE;
 }
 
 // Close all opened joystick handles
 //
-void _glfwTerminateJoysticksWin32(void)
+void _glfwPlatformTerminateJoysticks(void)
 {
     int jid;
 

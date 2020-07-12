@@ -55,6 +55,21 @@ applications.
 
 @subsection caveats_34 Caveats for version 3.4
 
+@subsubsection joysticks_34 Joystick support is initialized on demand
+
+The joystick part of GLFW is now initialized when first used, primarily to work
+around faulty Windows drivers that cause DirectInput to take up to several
+seconds to enumerate devices.
+
+This change will usually not be observable.  However, if your application waits
+for events without having first called any joystick function or created any
+visible windows, the wait may never unblock as GLFW may not yet have subscribed
+to joystick related OS events.
+
+To work around this, call any joystick function before waiting for events, for
+example by setting a [joystick callback](@ref joystick_event).
+
+
 @subsubsection standalone_34 Tests and examples are disabled when built as a sub-project
 
 GLFW now does not build the tests and examples when it is added as

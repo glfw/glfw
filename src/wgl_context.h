@@ -151,6 +151,8 @@ typedef struct _GLFWlibraryWGL
 
 } _GLFWlibraryWGL;
 
+// WGL-specific user context data
+//
 typedef struct _GLFWusercontext
 {
     _GLFWwindow* window;

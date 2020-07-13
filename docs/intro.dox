@@ -91,7 +91,22 @@ Setting these hints requires no platform specific headers or functions.
 @anchor GLFW_JOYSTICK_HAT_BUTTONS
 __GLFW_JOYSTICK_HAT_BUTTONS__ specifies whether to also expose joystick hats as
 buttons, for compatibility with earlier versions of GLFW that did not have @ref
-glfwGetJoystickHats.  Set this with @ref glfwInitHint.
+glfwGetJoystickHats.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+
+@anchor GLFW_ANGLE_PLATFORM_TYPE_hint
+__GLFW_ANGLE_PLATFORM_TYPE__ specifies the platform type (rendering backend) to
+request when using OpenGL ES and EGL via
+[ANGLE](https://chromium.googlesource.com/angle/angle/).  If the requested
+platform type is unavailable, ANGLE will use its default. Possible values are
+one of `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`,
+`GLFW_ANGLE_PLATFORM_TYPE_OPENGLES`, `GLFW_ANGLE_PLATFORM_TYPE_D3D9`,
+`GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` and
+`GLFW_ANGLE_PLATFORM_TYPE_METAL`.
+
+@par
+The ANGLE platform type is specified via the `EGL_ANGLE_platform_angle`
+extension.  This extension is not used if this hint is
+`GLFW_ANGLE_PLATFORM_TYPE_NONE`, which is the default value.
 
 
 @subsubsection init_hints_osx macOS specific init hints
@@ -99,21 +114,24 @@ glfwGetJoystickHats.  Set this with @ref glfwInitHint.
 @anchor GLFW_COCOA_CHDIR_RESOURCES_hint
 __GLFW_COCOA_CHDIR_RESOURCES__ specifies whether to set the current directory to
 the application to the `Contents/Resources` subdirectory of the application's
-bundle, if present.  Set this with @ref glfwInitHint.
+bundle, if present.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.  This is
+ignored on other platforms.
 
 @anchor GLFW_COCOA_MENUBAR_hint
 __GLFW_COCOA_MENUBAR__ specifies whether to create the menu bar and dock icon
 when GLFW is initialized.  This applies whether the menu bar is created from
-a nib or manually by GLFW.  Set this with @ref glfwInitHint.
+a nib or manually by GLFW.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+This is ignored on other platforms.
 
 
 @subsubsection init_hints_values Supported and default values
 
-Initialization hint             | Default value | Supported values
-------------------------------- | ------------- | ----------------
-@ref GLFW_JOYSTICK_HAT_BUTTONS  | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_COCOA_CHDIR_RESOURCES | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_COCOA_MENUBAR         | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
+Initialization hint             | Default value                   | Supported values
+------------------------------- | ------------------------------- | ----------------
+@ref GLFW_JOYSTICK_HAT_BUTTONS  | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_ANGLE_PLATFORM_TYPE   | `GLFW_ANGLE_PLATFORM_TYPE_NONE` | `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGLES`, `GLFW_ANGLE_PLATFORM_TYPE_D3D9`, `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` or `GLFW_ANGLE_PLATFORM_TYPE_METAL`
+@ref GLFW_COCOA_CHDIR_RESOURCES | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_COCOA_MENUBAR         | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
 
 
 @subsection intro_init_terminate Terminating GLFW

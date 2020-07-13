@@ -361,8 +361,6 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)(Vk
 #include "posix_time.h"
 #include "xkb_unicode.h"
 #include "glx_context.h"
-#include "egl_context.h"
-#include "osmesa_context.h"
 #if defined(__linux__)
 #include "linux_joystick.h"
 #else
@@ -372,9 +370,6 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)(Vk
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)
 #define _glfw_dlsym(handle, name) dlsym(handle, name)
-
-#define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->x11.handle)
-#define _GLFW_EGL_NATIVE_DISPLAY ((EGLNativeDisplayType) _glfw.x11.display)
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  x11
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11
@@ -407,8 +402,9 @@ typedef struct _GLFWwindowX11
     // The last position the cursor was warped to by GLFW
     int             warpCursorPosX, warpCursorPosY;
 
-    // The time of the last KeyPress event
-    Time            lastKeyTime;
+    // The time of the last KeyPress event per keycode, for discarding
+    // duplicate key events generated for some keys by ibus
+    Time            keyPressTimes[256];
 
 } _GLFWwindowX11;
 
@@ -505,6 +501,7 @@ typedef struct _GLFWlibraryX11
 
     struct {
         void*       handle;
+        GLFWbool    utf8;
         PFN_XAllocClassHint AllocClassHint;
         PFN_XAllocSizeHints AllocSizeHints;
         PFN_XAllocWMHints AllocWMHints;

@@ -1297,6 +1297,9 @@ int _glfwPlatformInit(void)
     _glfw.x11.xlib.utf8SetWMProperties = (PFN_Xutf8SetWMProperties)
         _glfw_dlsym(_glfw.x11.xlib.handle, "Xutf8SetWMProperties");
 
+    if (_glfw.x11.xlib.utf8LookupString && _glfw.x11.xlib.utf8SetWMProperties)
+        _glfw.x11.xlib.utf8 = GLFW_TRUE;
+
     XInitThreads();
     XrmInitialize();
 
@@ -1330,7 +1333,7 @@ int _glfwPlatformInit(void)
     _glfw.x11.helperWindowHandle = createHelperWindow();
     _glfw.x11.hiddenCursorHandle = createHiddenCursor();
 
-    if (XSupportsLocale())
+    if (XSupportsLocale() && _glfw.x11.xlib.utf8)
     {
         XSetLocaleModifiers("");
 

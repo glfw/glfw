@@ -34,10 +34,7 @@
 #define _GLFW_PLATFORM_CONTEXT_STATE         struct { int dummyContext; }
 #define _GLFW_PLATFORM_CURSOR_STATE          struct { int dummyCursor; }
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE struct { int dummyLibraryContext; }
-#define _GLFW_EGL_CONTEXT_STATE              struct { int dummyEGLContext; }
-#define _GLFW_EGL_LIBRARY_CONTEXT_STATE      struct { int dummyEGLLibraryContext; }
 
-#include "osmesa_context.h"
 #include "posix_time.h"
 #include "posix_thread.h"
 #include "null_joystick.h"

@@ -27,6 +27,15 @@ are still available.
 For more information see @ref cursor_standard.
 
 
+@subsubsection features_34_angle_backend Support for ANGLE rendering backend selection
+
+GLFW now provides the
+[GLFW_ANGLE_PLATFORM_TYPE](@ref GLFW_ANGLE_PLATFORM_TYPE_hint) init hint for
+requesting a specific rendering backend when using
+[ANGLE](https://chromium.googlesource.com/angle/angle/) to create OpenGL ES
+contexts.
+
+
 @subsubsection features_34_win32_keymenu Support for keyboard access to Windows window menu
 
 GLFW now provides the
@@ -91,6 +100,17 @@ then GLFW will fail to initialize.
  - @ref GLFW_NOT_ALLOWED_CURSOR
  - @ref GLFW_CURSOR_UNAVAILABLE
  - @ref GLFW_WIN32_KEYBOARD_MENU
+ - @ref GLFW_CONTEXT_DEBUG
+ - @ref GLFW_FEATURE_UNAVAILABLE
+ - @ref GLFW_FEATURE_UNIMPLEMENTED
+ - @ref GLFW_ANGLE_PLATFORM_TYPE
+ - @ref GLFW_ANGLE_PLATFORM_TYPE_NONE
+ - @ref GLFW_ANGLE_PLATFORM_TYPE_OPENGL
+ - @ref GLFW_ANGLE_PLATFORM_TYPE_OPENGLES
+ - @ref GLFW_ANGLE_PLATFORM_TYPE_D3D9
+ - @ref GLFW_ANGLE_PLATFORM_TYPE_D3D11
+ - @ref GLFW_ANGLE_PLATFORM_TYPE_VULKAN
+ - @ref GLFW_ANGLE_PLATFORM_TYPE_METAL
 
 
 @section news_archive Release notes for earlier versions

@@ -119,6 +119,13 @@ typedef struct _GLFWcontextWGL
 
 } _GLFWcontextWGL;
 
+// WGL-specific user context data
+//
+typedef struct _GLFWusercontextWGL
+{
+    HGLRC        handle;
+} _GLFWusercontextWGL;
+
 // WGL-specific global data
 //
 typedef struct _GLFWlibraryWGL
@@ -151,13 +158,6 @@ typedef struct _GLFWlibraryWGL
     GLFWbool                            ARB_context_flush_control;
 
 } _GLFWlibraryWGL;
-
-// WGL-specific user context data
-//
-typedef struct _GLFWusercontextWGL
-{
-    HGLRC        handle;
-} _GLFWusercontextWGL;
 
 GLFWbool _glfwInitWGL(void);
 void _glfwTerminateWGL(void);

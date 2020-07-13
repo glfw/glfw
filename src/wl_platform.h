@@ -72,6 +72,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 
 #define _GLFW_PLATFORM_CONTEXT_STATE         struct { int dummyContext; }
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE struct { int dummyLibraryContext; }
+#define _GLFW_PLATFORM_USER_CONTEXT_STATE    struct { int dummyUserContext; }
 
 struct wl_cursor_image {
     uint32_t width;

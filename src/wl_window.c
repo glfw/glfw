@@ -1765,6 +1765,19 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
     return err;
 }
 
+_GLFWusercontext* _glfwPlatformCreateUserContext(_GLFWwindow* window)
+{
+    if (window->context.egl.handle)
+    {
+        return _glfwCreateUserContextEGL(window);
+    }
+    else if (window->context.osmesa.handle)
+    {
+        return _glfwCreateUserContextOSMesa(window);
+    }
+
+    return GLFW_FALSE;
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

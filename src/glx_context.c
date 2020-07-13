@@ -678,43 +678,11 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
     return GLFW_TRUE;
 }
 
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW platform API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-_GLFWusercontext* _glfwPlatformCreateUserContext(_GLFWwindow* window)
-{
-    _GLFWusercontext* context;
-    _GLFWctxconfig ctxconfig;
-
-    context = calloc(1, sizeof(_GLFWusercontext));
-    context->window = window;
-
-    ctxconfig = _glfw.hints.context;
-    ctxconfig.share = window;
-
-    if(!_glfwCreateContextForFBGLX(window,&ctxconfig,&context->handle))
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                                "GLX: Failed to create user OpenGL context");
-        free(context);
-        return NULL;
-    }
-
-    return context;
-}
-
-void _glfwPlatformDestroyUserContext(_GLFWusercontext* context)
-{
-    glXDestroyContext(_glfw.x11.display, context->handle);
-    free(context);
-}
-
-void _glfwPlatformMakeUserContextCurrent(_GLFWusercontext* context)
+static void _glfwMakeUserContextCurrentGLX(_GLFWusercontext* context)
 {
     if(context)
     {
-        if(!glXMakeCurrent(_glfw.x11.display, context->window->context.glx.window,context->handle))
+        if(!glXMakeCurrent(_glfw.x11.display, context->window->context.glx.window,context->glx.handle))
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                                  "GLX: Failed to set current user context");
@@ -728,6 +696,38 @@ void _glfwPlatformMakeUserContextCurrent(_GLFWusercontext* context)
                                  "GLX: Failed to clear current context");
         }
     }
+}
+
+static void _glfwDestroyUserContextGLX(_GLFWusercontext* context)
+{
+    glXDestroyContext(_glfw.x11.display, context->glx.handle);
+    free(context);
+}
+
+_GLFWusercontext* _glfwCreateUserContextGLX(_GLFWwindow* window)
+{
+    _GLFWusercontext* context;
+    _GLFWctxconfig ctxconfig;
+
+    context = calloc(1, sizeof(_GLFWusercontext));
+    context->window = window;
+
+    ctxconfig = _glfw.hints.context;
+    ctxconfig.share = window;
+
+    if(!_glfwCreateContextForFBGLX(window,&ctxconfig,&context->glx.handle))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "GLX: Failed to create user OpenGL context");
+        free(context);
+        return NULL;
+    }
+
+    context->makeCurrent = _glfwMakeUserContextCurrentGLX;
+    context->destroy = _glfwDestroyUserContextGLX;
+
+
+    return context;
 }
 
 //////////////////////////////////////////////////////////////////////////

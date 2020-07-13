@@ -106,6 +106,7 @@ typedef BOOL (WINAPI * PFN_wglShareLists)(HGLRC,HGLRC);
 
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextWGL wgl
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryWGL wgl
+#define _GLFW_PLATFORM_USER_CONTEXT_STATE       _GLFWusercontextWGL wgl
 
 
 // WGL-specific per-context data
@@ -153,15 +154,17 @@ typedef struct _GLFWlibraryWGL
 
 // WGL-specific user context data
 //
-typedef struct _GLFWusercontext
+typedef struct _GLFWusercontextWGL
 {
-    _GLFWwindow* window;
     HGLRC        handle;
-} _GLFWusercontext;
+} _GLFWusercontextWGL;
 
 GLFWbool _glfwInitWGL(void);
 void _glfwTerminateWGL(void);
 GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig);
+_GLFWusercontext* _glfwCreateUserContextWGL(_GLFWwindow* window);
+
+
 

@@ -65,6 +65,13 @@ typedef struct _GLFWcontextOSMesa
 
 } _GLFWcontextOSMesa;
 
+// OSMesa-specific  per user context data
+//
+typedef struct _GLFWusercontextOSMesa
+{
+    OSMesaContext       handle;
+} _GLFWusercontextOSMesa;
+
 // OSMesa-specific global data
 //
 typedef struct _GLFWlibraryOSMesa
@@ -87,4 +94,4 @@ void _glfwTerminateOSMesa(void);
 GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
                                   const _GLFWctxconfig* ctxconfig,
                                   const _GLFWfbconfig* fbconfig);
-
+_GLFWusercontext* _glfwCreateUserContextOSMesa(_GLFWwindow* window);

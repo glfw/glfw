@@ -287,6 +287,11 @@ GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
 
 #undef setAttrib
 
+_GLFWusercontext* _glfwCreateUserContextOSMesa(_GLFWwindow* window)
+{
+    // TODO
+    return NULL;
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

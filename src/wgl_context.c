@@ -790,44 +790,11 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
 
 #undef setAttrib
 
-
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW platform API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-_GLFWusercontext* _glfwPlatformCreateUserContext(_GLFWwindow* window)
-{
-    _GLFWusercontext* context;
-    _GLFWctxconfig ctxconfig;
-
-    context = calloc(1, sizeof(_GLFWusercontext));
-    context->window = window;
-
-    ctxconfig = _glfw.hints.context;
-    ctxconfig.share = window;
-
-    if (!_glfwCreateContextForDCWGL(window->context.wgl.dc, &ctxconfig, &context->handle))
-    {
-        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                                "WGL: Failed to create user OpenGL context");
-        free(context);
-        return NULL;
-    }
-
-    return context;
-}
-
-void _glfwPlatformDestroyUserContext(_GLFWusercontext* context)
-{
-    wglDeleteContext(context->handle);
-    free(context);
-}
-
-void _glfwPlatformMakeUserContextCurrent(_GLFWusercontext* context)
+static void _glfwMakeUserContextCurrentWGL(_GLFWusercontext* context)
 {
     if(context)
     {
-        if(!wglMakeCurrent(context->window->context.wgl.dc,context->handle))
+        if(!wglMakeCurrent(context->window->context.wgl.dc,context->wgl.handle))
         {
             _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
                                  "WGL: Failed to set current user context");
@@ -841,6 +808,37 @@ void _glfwPlatformMakeUserContextCurrent(_GLFWusercontext* context)
                                  "WGL: Failed to clear current context");
         }
     }
+}
+
+static void _glfwDestroyUserContextWGL(_GLFWusercontext* context)
+{
+    wglDeleteContext(context->wgl.handle);
+    free(context);
+}
+
+_GLFWusercontext* _glfwCreateUserContextWGL(_GLFWwindow* window)
+{
+    _GLFWusercontext* context;
+    _GLFWctxconfig ctxconfig;
+
+    context = calloc(1, sizeof(_GLFWusercontext));
+    context->window = window;
+
+    ctxconfig = _glfw.hints.context;
+    ctxconfig.share = window;
+
+    if (!_glfwCreateContextForDCWGL(window->context.wgl.dc, &ctxconfig, &context->wgl.handle))
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                "WGL: Failed to create user OpenGL context");
+        free(context);
+        return NULL;
+    }
+
+    context->makeCurrent = _glfwMakeUserContextCurrentWGL;
+    context->destroy = _glfwDestroyUserContextWGL;
+
+    return context;
 }
 
 

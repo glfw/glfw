@@ -802,6 +802,13 @@ GLFWbool _glfwChooseVisualEGL(const _GLFWwndconfig* wndconfig,
 }
 #endif // _GLFW_X11
 
+_GLFWusercontext* _glfwCreateUserContextEGL(_GLFWwindow* window)
+{
+    // TODO
+    return NULL;
+}
+
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

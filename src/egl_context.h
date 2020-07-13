@@ -164,6 +164,14 @@ typedef struct _GLFWcontextEGL
 
 } _GLFWcontextEGL;
 
+// EGL-specific per user context data
+//
+typedef struct _GLFWusercontextEGL
+{
+   EGLContext       handle;
+} _GLFWusercontextEGL;
+
+
 // EGL-specific global data
 //
 typedef struct _GLFWlibraryEGL
@@ -218,6 +226,8 @@ void _glfwTerminateEGL(void);
 GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig);
+_GLFWusercontext* _glfwCreateUserContextEGL(_GLFWwindow* window);
+
 #if defined(_GLFW_X11)
 GLFWbool _glfwChooseVisualEGL(const _GLFWwndconfig* wndconfig,
                               const _GLFWctxconfig* ctxconfig,

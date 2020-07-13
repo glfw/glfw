@@ -109,6 +109,7 @@ typedef GLXContext (*PFNGLXCREATECONTEXTATTRIBSARBPROC)(Display*,GLXFBConfig,GLX
 
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextGLX glx
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryGLX glx
+#define _GLFW_PLATFORM_USER_CONTEXT_STATE       _GLFWusercontextGLX glx
 
 
 // GLX-specific per-context data
@@ -120,6 +121,13 @@ typedef struct _GLFWcontextGLX
     GLXWindow       window;
 
 } _GLFWcontextGLX;
+
+// GLX-specific per user context data
+//
+typedef struct _GLFWusercontextGLX
+{
+    GLXContext      handle;
+} _GLFWusercontextGLX;
 
 // GLX-specific global data
 //
@@ -169,13 +177,6 @@ typedef struct _GLFWlibraryGLX
 
 } _GLFWlibraryGLX;
 
-// GLX-specific user context data
-//
-typedef struct _GLFWusercontext
-{
-    _GLFWwindow* window;
-    GLXContext   handle;
-} _GLFWusercontext;
 
 GLFWbool _glfwInitGLX(void);
 void _glfwTerminateGLX(void);
@@ -187,4 +188,5 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig,
                               Visual** visual, int* depth);
+_GLFWusercontext* _glfwCreateUserContextGLX(_GLFWwindow* window);
 

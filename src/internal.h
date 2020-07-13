@@ -83,6 +83,8 @@ typedef void (* _GLFWswapintervalfun)(int);
 typedef int (* _GLFWextensionsupportedfun)(const char*);
 typedef GLFWglproc (* _GLFWgetprocaddressfun)(const char*);
 typedef void (* _GLFWdestroycontextfun)(_GLFWwindow*);
+typedef void (* _GLFWmakeusercontextcurrentfun)(_GLFWusercontext* context);
+typedef void (* _GLFWdestroyusercontextfun)(_GLFWusercontext* context);
 
 #define GL_VERSION 0x1f02
 #define GL_NONE 0
@@ -367,6 +369,24 @@ struct _GLFWcontext
     _GLFWcontextEGL egl;
     // This is defined in osmesa_context.h
     _GLFWcontextOSMesa osmesa;
+};
+
+
+// User Context structure
+//
+struct _GLFWusercontext
+{
+    _GLFWwindow* window;
+
+    // This is defined in the context API's context.h
+    _GLFW_PLATFORM_USER_CONTEXT_STATE;
+    // This is defined in egl_context.h
+    _GLFWusercontextEGL egl;
+    // This is defined in osmesa_context.h
+    _GLFWusercontextOSMesa osmesa;
+
+    _GLFWmakeusercontextcurrentfun makeCurrent;
+    _GLFWdestroyusercontextfun destroy;
 };
 
 // Window and context structure
@@ -687,8 +707,6 @@ void _glfwPlatformWaitEventsTimeout(double timeout);
 void _glfwPlatformPostEmptyEvent(void);
 
 _GLFWusercontext* _glfwPlatformCreateUserContext(_GLFWwindow* window);
-void _glfwPlatformDestroyUserContext(_GLFWusercontext* context);
-void _glfwPlatformMakeUserContextCurrent(_GLFWusercontext* context);
 
 EGLenum _glfwPlatformGetEGLPlatform(EGLint** attribs);
 EGLNativeDisplayType _glfwPlatformGetEGLNativeDisplay(void);

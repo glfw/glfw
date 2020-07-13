@@ -566,7 +566,7 @@ GLFWbool _glfwRefreshContextAttribs(_GLFWwindow* window,
 
     // Clearing the front buffer to black to avoid garbage pixels left over from
     // previous uses of our bit of VRAM
-    {
+    if (_glfwPlatformWindowVisible(window)) {
         PFNGLCLEARPROC glClear = (PFNGLCLEARPROC)
             window->context.getProcAddress("glClear");
         glClear(GL_COLOR_BUFFER_BIT);

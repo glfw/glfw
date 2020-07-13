@@ -777,6 +777,14 @@ static void handleEvents(int timeout)
     }
 }
 
+void swapBuffersEGL(_GLFWwindow* window);
+
+static void swapBuffersWL(_GLFWwindow* window)
+{
+    if (window->wl.visible)
+        swapBuffersEGL(window);
+}
+
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -800,6 +808,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
                 return GLFW_FALSE;
             if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
+            window->context.swapBuffers = swapBuffersWL;
         }
         else if (ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
         {
@@ -813,10 +822,11 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (wndconfig->title)
         window->wl.title = _glfw_strdup(wndconfig->title);
 
+    if (!createXdgSurface(window))
+        return GLFW_FALSE;
+
     if (wndconfig->visible)
     {
-        if (!createXdgSurface(window))
-            return GLFW_FALSE;
 
         window->wl.visible = GLFW_TRUE;
     }
@@ -1019,21 +1029,18 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
     if (!window->wl.visible)
     {
-        createXdgSurface(window);
         window->wl.visible = GLFW_TRUE;
     }
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
-    if (window->wl.xdg.toplevel)
+    if (window->wl.visible)
     {
-        xdg_toplevel_destroy(window->wl.xdg.toplevel);
-        xdg_surface_destroy(window->wl.xdg.surface);
-        window->wl.xdg.toplevel = NULL;
-        window->wl.xdg.surface = NULL;
+        wl_surface_attach(window->wl.surface, NULL, 0, 0);
+        wl_surface_commit(window->wl.surface);
+        window->wl.visible = GLFW_FALSE;
     }
-    window->wl.visible = GLFW_FALSE;
 }
 
 void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)

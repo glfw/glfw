@@ -221,7 +221,7 @@ static void makeContextCurrentEGL(_GLFWwindow* window)
     _glfwPlatformSetTls(&_glfw.contextSlot, window);
 }
 
-static void swapBuffersEGL(_GLFWwindow* window)
+void swapBuffersEGL(_GLFWwindow* window)
 {
     if (window != _glfwPlatformGetTls(&_glfw.contextSlot))
     {

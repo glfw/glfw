@@ -230,6 +230,12 @@ static void swapBuffersEGL(_GLFWwindow* window)
         return;
     }
 
+#if defined(_GLFW_WAYLAND)
+    // NOTE: Swapping buffers on a hidden window on Wayland makes it visible
+    if (!window->wl.visible)
+        return;
+#endif
+
     eglSwapBuffers(_glfw.egl.display, window->context.egl.surface);
 }
 

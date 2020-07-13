@@ -950,29 +950,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     if (wndconfig->title)
         window->wl.title = _glfw_strdup(wndconfig->title);
 
-    if (wndconfig->visible)
-    {
-        if (_glfw.wl.wmBase)
-        {
-            if (!createXdgSurface(window))
-                return GLFW_FALSE;
-        }
-        else
-        {
-            if (!createShellSurface(window))
-                return GLFW_FALSE;
-        }
-
-        window->wl.visible = GLFW_TRUE;
-    }
-    else
-    {
-        window->wl.xdg.surface = NULL;
-        window->wl.xdg.toplevel = NULL;
-        window->wl.shellSurface = NULL;
-        window->wl.visible = GLFW_FALSE;
-    }
-
     window->wl.currentCursor = NULL;
 
     window->wl.monitors = calloc(1, sizeof(_GLFWmonitor*));
@@ -1196,29 +1173,28 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
     if (!window->wl.visible)
     {
+        // NOTE: The XDG/shell surface is created here so command-line applications
+        //       with off-screen windows do not appear in for example the Unity dock
         if (_glfw.wl.wmBase)
-            createXdgSurface(window);
+        {
+            if (!window->wl.xdg.toplevel)
+                createXdgSurface(window);
+        }
         else if (!window->wl.shellSurface)
             createShellSurface(window);
+
         window->wl.visible = GLFW_TRUE;
     }
 }
 
 void _glfwPlatformHideWindow(_GLFWwindow* window)
 {
-    if (window->wl.xdg.toplevel)
+    if (window->wl.visible)
     {
-        xdg_toplevel_destroy(window->wl.xdg.toplevel);
-        xdg_surface_destroy(window->wl.xdg.surface);
-        window->wl.xdg.toplevel = NULL;
-        window->wl.xdg.surface = NULL;
+        window->wl.visible = GLFW_FALSE;
+        wl_surface_attach(window->wl.surface, NULL, 0, 0);
+        wl_surface_commit(window->wl.surface);
     }
-    else if (window->wl.shellSurface)
-    {
-        wl_shell_surface_destroy(window->wl.shellSurface);
-        window->wl.shellSurface = NULL;
-    }
-    window->wl.visible = GLFW_FALSE;
 }
 
 void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)

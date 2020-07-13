@@ -58,6 +58,7 @@ video tutorials.
  - TheExileFox
  - Felipe Ferreira
  - Michael Fogleman
+ - Jason Francis
  - Gerald Franz
  - Mário Freitas
  - GeO4d

@@ -503,8 +503,8 @@ void _glfwTerminateEGL(void)
 // Create the OpenGL or OpenGL ES context for the window eglConfig
 //
 GLFWbool _glfwCreateContextForConfigEGL(_GLFWwindow* window,
-                                    const _GLFWctxconfig* ctxconfig,
-                                    EGLContext* context)
+                                        const _GLFWctxconfig* ctxconfig,
+                                        EGLContext* context)
 {
     EGLint attribs[40];
     int index = 0;

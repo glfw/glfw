@@ -726,7 +726,6 @@ _GLFWusercontext* _glfwCreateUserContextGLX(_GLFWwindow* window)
     context->makeCurrent = _glfwMakeUserContextCurrentGLX;
     context->destroy = _glfwDestroyUserContextGLX;
 
-
     return context;
 }
 

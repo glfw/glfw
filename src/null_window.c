@@ -649,3 +649,12 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
     return VK_ERROR_EXTENSION_NOT_PRESENT;
 }
 
+_GLFWusercontext* _glfwPlatformCreateUserContext(_GLFWwindow* window)
+{
+    if (window->context.osmesa.handle)
+    {
+        return _glfwCreateUserContextOSMesa(window);
+    }
+
+    return GLFW_FALSE;
+}

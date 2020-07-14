@@ -34,6 +34,7 @@
 #define _GLFW_PLATFORM_CONTEXT_STATE         struct { int dummyContext; }
 #define _GLFW_PLATFORM_CURSOR_STATE          struct { int dummyCursor; }
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE struct { int dummyLibraryContext; }
+#define _GLFW_PLATFORM_USER_CONTEXT_STATE    struct { int dummyUserContext; }
 
 #include "posix_time.h"
 #include "posix_thread.h"

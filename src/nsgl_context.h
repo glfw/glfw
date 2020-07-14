@@ -34,6 +34,7 @@
 
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextNSGL nsgl
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryNSGL nsgl
+#define _GLFW_PLATFORM_USER_CONTEXT_STATE       _GLFWusercontextNSGL nsgl
 
 #include <stdatomic.h>
 
@@ -46,6 +47,14 @@ typedef struct _GLFWcontextNSGL
     id                object;
 
 } _GLFWcontextNSGL;
+
+// NSGL-specific per user context data
+//
+typedef struct _GLFWusercontextNSGL
+{
+    id                object;
+
+} _GLFWusercontextNSGL;
 
 // NSGL-specific global data
 //
@@ -63,4 +72,5 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                 const _GLFWctxconfig* ctxconfig,
                                 const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContextNSGL(_GLFWwindow* window);
+_GLFWusercontext* _glfwCreateUserContextNSGL(_GLFWwindow* window);
 

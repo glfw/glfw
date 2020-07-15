@@ -564,6 +564,7 @@ struct _GLFWlibrary
 
     _GLFWtls            errorSlot;
     _GLFWtls            contextSlot;
+    _GLFWtls            usercontextSlot;
     _GLFWmutex          errorLock;
 
     struct {

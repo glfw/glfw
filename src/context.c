@@ -617,6 +617,8 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
 
     _GLFW_REQUIRE_INIT();
 
+    _glfwPlatformSetTls(&_glfw.usercontextSlot, NULL);
+
     if (window && window->context.client == GLFW_NO_API)
     {
         _glfwInputError(GLFW_NO_WINDOW_CONTEXT,
@@ -773,11 +775,17 @@ GLFWAPI GLFWusercontext* glfwCreateUserContext(GLFWwindow* handle)
 GLFWAPI void glfwDestroyUserContext(GLFWusercontext* handle)
 {
     _GLFWusercontext* context = (_GLFWusercontext*)handle;
+    _GLFWusercontext* prev = _glfwPlatformGetTls(&_glfw.usercontextSlot);
 
     _GLFW_REQUIRE_INIT();
 
     if (context)
+    {
+        if(prev==context)
+            _glfwPlatformSetTls(&_glfw.usercontextSlot,NULL);
+
         context->destroy(context);
+    }
 }
 
 GLFWAPI void glfwMakeUserContextCurrent(GLFWusercontext* handle)
@@ -786,6 +794,9 @@ GLFWAPI void glfwMakeUserContextCurrent(GLFWusercontext* handle)
 
     _GLFW_REQUIRE_INIT();
 
+    // Call glfwMakeContextCurrent(NULL) to both clear context TLS and set
+    // context to NULL if required by platform & context, and this
+    // handles case of calling glfwMakeUserContextCurrent(NULL)
     glfwMakeContextCurrent(NULL);
 
     if (context)

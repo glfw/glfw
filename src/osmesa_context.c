@@ -301,18 +301,17 @@ GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
 
 static void _glfwMakeUserContextCurrentOSMesa(_GLFWusercontext* context)
 {
-    if(context)
+    if (!OSMesaMakeCurrent(context->osmesa.handle,
+                            context->window->context.osmesa.buffer,
+                            GL_UNSIGNED_BYTE,
+                            context->window->context.osmesa.width, context->window->context.osmesa.height))
     {
-        if (!OSMesaMakeCurrent(context->osmesa.handle,
-                               context->window->context.osmesa.buffer,
-                               GL_UNSIGNED_BYTE,
-                               context->window->context.osmesa.width, context->window->context.osmesa.height))
-        {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "OSMesa: Failed to make context current");
-            return;
-        }
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "OSMesa: Failed to make user context current");
+        _glfwPlatformSetTls(&_glfw.usercontextSlot, NULL);
+        return;
     }
+    _glfwPlatformSetTls(&_glfw.usercontextSlot, context);
 }
 
 static void _glfwDestroyUserContextOSMesa(_GLFWusercontext* context)

@@ -353,10 +353,9 @@ static void _glfwMakeUserContextCurrentNSGL(_GLFWusercontext* context)
 {
     @autoreleasepool {
 
-    if (context)
         [context->nsgl.object makeCurrentContext];
-    else
-        [NSOpenGLContext clearCurrentContext];
+
+        _glfwPlatformSetTls(&_glfw.usercontextSlot, context);
 
     } // autoreleasepool
 }
@@ -365,7 +364,6 @@ static void _glfwDestroyUserContextNSGL(_GLFWusercontext* context)
 {
     @autoreleasepool {
 
-    if (context->nsgl.object)
         [context->nsgl.object release];
 
     } // autoreleasepool

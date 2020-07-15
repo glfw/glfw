@@ -817,32 +817,18 @@ GLFWbool _glfwChooseVisualEGL(const _GLFWwndconfig* wndconfig,
 
 static void _glfwMakeUserContextCurrentEGL(_GLFWusercontext* context)
 {
-    if(context)
+    if (!eglMakeCurrent(_glfw.egl.display,
+                        context->window->context.egl.surface,
+                        context->window->context.egl.surface,
+                        context->egl.handle))
     {
-        if (!eglMakeCurrent(_glfw.egl.display,
-                            context->window->context.egl.surface,
-                            context->window->context.egl.surface,
-                            context->egl.handle))
-        {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "EGL: Failed to make context current: %s",
-                            getEGLErrorString(eglGetError()));
-            return;
-        }
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "EGL: Failed to make user context current: %s",
+                        getEGLErrorString(eglGetError()));
+        _glfwPlatformSetTls(&_glfw.usercontextSlot, NULL);
+        return;
     }
-    else
-    {
-        if (!eglMakeCurrent(_glfw.egl.display,
-                            EGL_NO_SURFACE,
-                            EGL_NO_SURFACE,
-                            EGL_NO_CONTEXT))
-        {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "EGL: Failed to clear current context: %s",
-                            getEGLErrorString(eglGetError()));
-            return;
-        }
-    }
+    _glfwPlatformSetTls(&_glfw.usercontextSlot, context);
 }
 
 static void _glfwDestroyUserContextEGL(_GLFWusercontext* context)

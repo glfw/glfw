@@ -792,22 +792,14 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
 
 static void _glfwMakeUserContextCurrentWGL(_GLFWusercontext* context)
 {
-    if(context)
+    if(!wglMakeCurrent(context->window->context.wgl.dc,context->wgl.handle))
     {
-        if(!wglMakeCurrent(context->window->context.wgl.dc,context->wgl.handle))
-        {
-            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                                 "WGL: Failed to set current user context");
-        }
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "WGL: Failed to make user context current");
+        _glfwPlatformSetTls(&_glfw.usercontextSlot, NULL);
+        return;
     }
-    else
-    {
-        if (!wglMakeCurrent(NULL, NULL))
-        {
-            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                                 "WGL: Failed to clear current context");
-        }
-    }
+    _glfwPlatformSetTls(&_glfw.usercontextSlot, context);
 }
 
 static void _glfwDestroyUserContextWGL(_GLFWusercontext* context)

@@ -820,8 +820,8 @@ GLFWbool _glfwChooseVisualEGL(const _GLFWwndconfig* wndconfig,
 static void _glfwMakeUserContextCurrentEGL(_GLFWusercontext* context)
 {
     if (!eglMakeCurrent(_glfw.egl.display,
-                        context->window->context.egl.surface,
-                        context->window->context.egl.surface,
+                        context->egl.surface,
+                        context->egl.surface,
                         context->egl.handle))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,

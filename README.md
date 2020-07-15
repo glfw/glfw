@@ -135,6 +135,7 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: Keys pressed simultaneously with others were not always
    reported (#1112,#1415,#1472,#1616)
  - [Wayland] Bugfix: Repeated keys could be reported with `NULL` window (#1704)
+ - [Wayland] Bugfix: Retrieving partial framebuffer size would segfault
 
 
 ## Contact

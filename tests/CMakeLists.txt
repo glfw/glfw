@@ -40,7 +40,6 @@ add_executable(timeout WIN32 MACOSX_BUNDLE timeout.c ${GLAD_GL})
 add_executable(title WIN32 MACOSX_BUNDLE title.c ${GLAD_GL})
 add_executable(triangle-vulkan WIN32 triangle-vulkan.c ${GLAD_VULKAN})
 add_executable(window WIN32 MACOSX_BUNDLE window.c ${GLAD_GL})
-add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${GLAD_GL})
 
 target_link_libraries(empty Threads::Threads)
 target_link_libraries(threads Threads::Threads)
@@ -50,7 +49,7 @@ if (RT_LIBRARY)
 endif()
 
 set(GUI_ONLY_BINARIES empty gamma icon inputlag joysticks tearing threads
-    timeout title triangle-vulkan window windows)
+    timeout title triangle-vulkan window)
 set(CONSOLE_BINARIES clipboard events msaa glfwinfo iconify monitors reopen
                      cursor)
 
@@ -73,7 +72,6 @@ if (APPLE)
     set_target_properties(threads PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Threads")
     set_target_properties(timeout PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Timeout")
     set_target_properties(title PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Title")
-    set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")
     set_target_properties(window PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Window")
 
     set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES

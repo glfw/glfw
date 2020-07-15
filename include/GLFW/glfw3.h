@@ -5827,6 +5827,12 @@ GLFWAPI void glfwDestroyUserContext(GLFWusercontext* context);
 */
 GLFWAPI void glfwMakeUserContextCurrent(GLFWusercontext* context);
 
+/*! @brief Get the current OpenGL user context
+*
+*/
+GLFWAPI GLFWusercontext* glfwGetCurrentUserContext(void);
+
+
 /*! @brief Returns whether the Vulkan loader and an ICD have been found.
  *
  *  This function returns whether the Vulkan loader and any minimally functional

@@ -802,3 +802,9 @@ GLFWAPI void glfwMakeUserContextCurrent(GLFWusercontext* handle)
     if (context)
         context->makeCurrent(context);
 }
+
+GLFWAPI GLFWusercontext* glfwGetCurrentUserContext(void)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    return _glfwPlatformGetTls(&_glfw.usercontextSlot);
+}

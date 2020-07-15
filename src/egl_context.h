@@ -71,6 +71,12 @@
 #define EGL_NO_DISPLAY ((EGLDisplay) 0)
 #define EGL_NO_CONTEXT ((EGLContext) 0)
 #define EGL_DEFAULT_DISPLAY ((EGLNativeDisplayType) 0)
+#define EGL_PBUFFER_BIT 0x0001
+#define EGL_HEIGHT 0x3056
+#define EGL_WIDTH 0x3057
+#define EGL_NO_TEXTURE 0x305C
+#define EGL_TEXTURE_FORMAT 0x3080
+#define EGL_TEXTURE_TARGET 0x3081
 
 #define EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR 0x00000002
 #define EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR 0x00000001
@@ -130,6 +136,8 @@ typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapBuffers)(EGLDisplay,EGLSurface);
 typedef EGLBoolean (EGLAPIENTRY * PFN_eglSwapInterval)(EGLDisplay,EGLint);
 typedef const char* (EGLAPIENTRY * PFN_eglQueryString)(EGLDisplay,EGLint);
 typedef GLFWglproc (EGLAPIENTRY * PFN_eglGetProcAddress)(const char*);
+typedef EGLSurface (EGLAPIENTRY * PFN_eglCreatePbufferSurface)(EGLDisplay,EGLConfig,const EGLint*);
+typedef EGLBoolean (EGLAPIENTRY * PFN_eglChooseConfig)(EGLDisplay,EGLint const*,EGLConfig*,EGLint,EGLint*);
 #define eglGetConfigAttrib _glfw.egl.GetConfigAttrib
 #define eglGetConfigs _glfw.egl.GetConfigs
 #define eglGetDisplay _glfw.egl.GetDisplay
@@ -146,6 +154,8 @@ typedef GLFWglproc (EGLAPIENTRY * PFN_eglGetProcAddress)(const char*);
 #define eglSwapInterval _glfw.egl.SwapInterval
 #define eglQueryString _glfw.egl.QueryString
 #define eglGetProcAddress _glfw.egl.GetProcAddress
+#define eglCreatePbufferSurface _glfw.egl.CreatePbufferSurface
+#define eglChooseConfig  _glfw.egl.ChooseConfig
 
 typedef EGLDisplay (EGLAPIENTRY * PFNEGLGETPLATFORMDISPLAYEXTPROC)(EGLenum,void*,const EGLint*);
 typedef EGLSurface (EGLAPIENTRY * PFNEGLCREATEPLATFORMWINDOWSURFACEEXTPROC)(EGLDisplay,EGLConfig,void*,const EGLint*);
@@ -169,6 +179,8 @@ typedef struct _GLFWcontextEGL
 typedef struct _GLFWusercontextEGL
 {
    EGLContext       handle;
+   EGLSurface       surface;
+
 } _GLFWusercontextEGL;
 
 
@@ -214,6 +226,8 @@ typedef struct _GLFWlibraryEGL
     PFN_eglSwapInterval         SwapInterval;
     PFN_eglQueryString          QueryString;
     PFN_eglGetProcAddress       GetProcAddress;
+    PFN_eglCreatePbufferSurface CreatePbufferSurface;
+    PFN_eglChooseConfig         ChooseConfig;
 
     PFNEGLGETPLATFORMDISPLAYEXTPROC GetPlatformDisplayEXT;
     PFNEGLCREATEPLATFORMWINDOWSURFACEEXTPROC CreatePlatformWindowSurfaceEXT;

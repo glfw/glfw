@@ -136,6 +136,8 @@ information on what to include when reporting a bug.
    reported (#1112,#1415,#1472,#1616)
  - [Wayland] Bugfix: Repeated keys could be reported with `NULL` window (#1704)
  - [Wayland] Bugfix: Retrieving partial framebuffer size would segfault
+ - [Wayland] Bugfix: Scrolling offsets were inverted compared to other platforms
+   (#1463)
 
 
 ## Contact
@@ -274,6 +276,7 @@ skills.
  - ndogxj
  - Kristian Nielsen
  - Kamil Nowakowski
+ - onox
  - Denis Ovod
  - Ozzy
  - Andri Pálsson

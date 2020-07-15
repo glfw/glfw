@@ -374,6 +374,8 @@ GLFWbool _glfwInitEGL(void)
         _glfw_dlsym(_glfw.egl.handle, "eglGetProcAddress");
     _glfw.egl.CreatePbufferSurface = (PFN_eglCreatePbufferSurface)
         _glfw_dlsym(_glfw.egl.handle, "eglCreatePbufferSurface");
+    _glfw.egl.ChooseConfig = (PFN_eglChooseConfig)
+        _glfw_dlsym(_glfw.egl.handle, "eglChooseConfig");
 
     if (!_glfw.egl.GetConfigAttrib ||
         !_glfw.egl.GetConfigs ||
@@ -390,7 +392,9 @@ GLFWbool _glfwInitEGL(void)
         !_glfw.egl.SwapBuffers ||
         !_glfw.egl.SwapInterval ||
         !_glfw.egl.QueryString ||
-        !_glfw.egl.GetProcAddress)
+        !_glfw.egl.GetProcAddress ||
+        !_glfw.egl.CreatePbufferSurface||
+        !_glfw.egl.ChooseConfig)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "EGL: Failed to load required entry points");
@@ -616,10 +620,9 @@ GLFWbool _glfwCreateContextForConfigEGL(_GLFWwindow* window,
 
     setAttrib(EGL_NONE, EGL_NONE);
 
-    window->context.egl.handle = eglCreateContext(_glfw.egl.display,
-                                                  window->context.egl.config, share, attribs);
+    *context = eglCreateContext(_glfw.egl.display, window->context.egl.config, share, attribs);
 
-    if (window->context.egl.handle == EGL_NO_CONTEXT)
+    if (*context == EGL_NO_CONTEXT)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "EGL: Failed to create context: %s",

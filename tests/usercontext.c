@@ -31,11 +31,9 @@ int main(void)
     }
 
     /* set the user context current */
-    glfwMakeContextCurrent(NULL);
     glfwMakeUserContextCurrent(usercontext);
 
     /* set the window context current */
-    glfwMakeUserContextCurrent(NULL);
     glfwMakeContextCurrent(window);
 
     glClearColor( 0.4f, 0.3f, 0.4f, 0.0f );

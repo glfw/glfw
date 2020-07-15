@@ -778,6 +778,9 @@ GLFWAPI void glfwDestroyUserContext(GLFWusercontext* handle)
 GLFWAPI void glfwMakeUserContextCurrent(GLFWusercontext* handle)
 {
     _GLFWusercontext* context = (_GLFWusercontext*)handle;
+
+    glfwMakeContextCurrent(NULL);
+
     if (context)
         context->makeCurrent(context);
 }

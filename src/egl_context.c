@@ -849,18 +849,15 @@ _GLFWusercontext* _glfwCreateUserContextEGL(_GLFWwindow* window)
 {
     _GLFWusercontext* context;
     _GLFWctxconfig ctxconfig;
-    const EGLint auxConfigAttribs[] =
+    EGLint dummyConfigAttribs[] =
     {
         EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
-        EGL_BLUE_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_RED_SIZE, 8, EGL_ALPHA_SIZE, 8,
-        EGL_DEPTH_SIZE, 0, EGL_STENCIL_SIZE, 0,
+        EGL_RED_SIZE, 1, EGL_GREEN_SIZE, 1, EGL_BLUE_SIZE, 1,
         EGL_NONE
     };
     EGLint dummySurfaceAttribs[] =
     {
         EGL_WIDTH, 1, EGL_HEIGHT, 1,
-        EGL_TEXTURE_TARGET, EGL_NO_TEXTURE,
-        EGL_TEXTURE_FORMAT, EGL_NO_TEXTURE,
         EGL_NONE
     };
     EGLint dummySurfaceNumConfigs;
@@ -883,14 +880,21 @@ _GLFWusercontext* _glfwCreateUserContextEGL(_GLFWwindow* window)
         context->egl.surface = EGL_NO_SURFACE;
     else
     {
-        // create dummy surface
-        eglChooseConfig(_glfw.egl.display, auxConfigAttribs, &dummySurfaceConfig, 1, &dummySurfaceNumConfigs);
-        context->egl.surface = eglCreatePbufferSurface(_glfw.egl.display, dummySurfaceConfig, dummySurfaceAttribs);
-        if (!context->egl.surface)
+        eglChooseConfig(_glfw.egl.display, dummyConfigAttribs, &dummySurfaceConfig, 1, &dummySurfaceNumConfigs);
+        if( !dummySurfaceNumConfigs)
         {
             eglDestroyContext(_glfw.egl.display, context->egl.handle);
             _glfwInputError(GLFW_PLATFORM_ERROR,
-                                    "EGL: Failed to create surface for user context and EGL_KHR_surfaceless_context not supported");
+                                    "EGL: Failed to find surface config for user context: %s", getEGLErrorString(eglGetError()));
+            free(context);
+            return NULL;
+        }
+        context->egl.surface = eglCreatePbufferSurface(_glfw.egl.display, dummySurfaceConfig, dummySurfaceAttribs);
+        if (context->egl.surface == EGL_NO_SURFACE)
+        {
+            eglDestroyContext(_glfw.egl.display, context->egl.handle);
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                                    "EGL: Failed to create surface for user context: %s for %s", getEGLErrorString(eglGetError()), eglQueryString(_glfw.egl.display,0x3054));
             free(context);
             return NULL;
         }

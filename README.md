@@ -199,6 +199,8 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
  - [Wayland] Bugfix: Repeated keys could be reported with `NULL` window (#1704)
  - [Wayland] Bugfix: Retrieving partial framebuffer size would segfault
+ - [Wayland] Bugfix: Scrolling offsets were inverted compared to other platforms
+   (#1463)
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
  - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
@@ -345,6 +347,7 @@ skills.
  - ndogxj
  - Kristian Nielsen
  - Kamil Nowakowski
+ - onox
  - Denis Ovod
  - Ozzy
  - Andri Pálsson

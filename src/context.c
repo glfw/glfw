@@ -763,6 +763,8 @@ GLFWAPI GLFWusercontext* glfwCreateUserContext(GLFWwindow* handle)
     _GLFWusercontext* context;
     _GLFWwindow* window = (_GLFWwindow*)handle;
 
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
     context = _glfwPlatformCreateUserContext(window);
 
     return (GLFWusercontext*)context;
@@ -771,6 +773,9 @@ GLFWAPI GLFWusercontext* glfwCreateUserContext(GLFWwindow* handle)
 GLFWAPI void glfwDestroyUserContext(GLFWusercontext* handle)
 {
     _GLFWusercontext* context = (_GLFWusercontext*)handle;
+
+    _GLFW_REQUIRE_INIT();
+
     if (context)
         context->destroy(context);
 }
@@ -778,6 +783,8 @@ GLFWAPI void glfwDestroyUserContext(GLFWusercontext* handle)
 GLFWAPI void glfwMakeUserContextCurrent(GLFWusercontext* handle)
 {
     _GLFWusercontext* context = (_GLFWusercontext*)handle;
+
+    _GLFW_REQUIRE_INIT();
 
     glfwMakeContextCurrent(NULL);
 

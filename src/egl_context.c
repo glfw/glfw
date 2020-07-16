@@ -508,7 +508,7 @@ void _glfwTerminateEGL(void)
 
 // Create the OpenGL or OpenGL ES context for the window eglConfig
 //
-GLFWbool _glfwCreateContextForConfigEGL(_GLFWwindow* window,
+GLFWbool _glfwCreateContextForConfigEGL(EGLConfig eglConfig,
                                         const _GLFWctxconfig* ctxconfig,
                                         EGLContext* context)
 {
@@ -620,7 +620,7 @@ GLFWbool _glfwCreateContextForConfigEGL(_GLFWwindow* window,
 
     setAttrib(EGL_NONE, EGL_NONE);
 
-    *context = eglCreateContext(_glfw.egl.display, window->context.egl.config, share, attribs);
+    *context = eglCreateContext(_glfw.egl.display, eglConfig, share, attribs);
 
     if (*context == EGL_NO_CONTEXT)
     {
@@ -650,7 +650,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    if (!_glfwCreateContextForConfigEGL(window,ctxconfig,&window->context.egl.handle))
+    if (!_glfwCreateContextForConfigEGL(window->context.egl.config,ctxconfig,&window->context.egl.handle))
     {
         return GLFW_FALSE;
     }
@@ -869,7 +869,7 @@ _GLFWusercontext* _glfwCreateUserContextEGL(_GLFWwindow* window)
     ctxconfig = _glfw.hints.context;
     ctxconfig.share = window;
 
-    if (!_glfwCreateContextForConfigEGL(window,&ctxconfig,&context->egl.handle))
+    if (!_glfwCreateContextForConfigEGL(window->context.egl.config,&ctxconfig,&context->egl.handle))
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                                 "EGL: Failed to create user OpenGL context");

@@ -767,6 +767,21 @@ GLFWAPI GLFWusercontext* glfwCreateUserContext(GLFWwindow* handle)
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
+    if (!window)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE,
+                        "Cannot create a user context without a valid window handle");
+        return NULL;
+    }
+
+    if (window->context.client == GLFW_NO_API)
+    {
+        _glfwInputError(GLFW_NO_WINDOW_CONTEXT,
+                        "Cannot create a user context for a window that has no OpenGL or OpenGL ES context");
+        return NULL;
+    }
+
+
     context = _glfwPlatformCreateUserContext(window);
 
     return (GLFWusercontext*)context;

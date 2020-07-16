@@ -5834,6 +5834,11 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);
  *  Contexts share resources with the window context and with any other
  *  user context created for that window.
  *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED,
+ *  @ref GLFW_INVALID_VALUE the window parameter is `NULL`,
+ *  @ref GLFW_NO_WINDOW_CONTEXT if the window has no OpenGL or
+ *  OpenGL US context, and @ref GLFW_PLATFORM_ERROR.
+ *
  *  @param[in] window The Window for which the user context is to be
  *  created.
  *  @return The handle of the user context created, or `NULL` if an

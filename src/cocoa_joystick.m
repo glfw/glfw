@@ -304,11 +304,9 @@ static void removeCallback(void* context,
 
 
 //////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
+//////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-// Initialize joystick interface
-//
 GLFWbool _glfwPlatformInitJoysticks(void)
 {
     CFMutableArrayRef matching;
@@ -386,8 +384,6 @@ GLFWbool _glfwPlatformInitJoysticks(void)
     return GLFW_TRUE;
 }
 
-// Close all opened joystick handles
-//
 void _glfwPlatformTerminateJoysticks(void)
 {
     int jid;
@@ -402,10 +398,6 @@ void _glfwPlatformTerminateJoysticks(void)
     }
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW platform API                      //////
-//////////////////////////////////////////////////////////////////////////
 
 int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
 {

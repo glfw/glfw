@@ -648,7 +648,7 @@ const char* name = glfwGetJoystickName(GLFW_JOYSTICK_4);
 @endcode
 
 Joystick names are not guaranteed to be unique.  Two joysticks of the same model
-and make may have the same name.  Only the [joystick token](@ref joysticks) is
+and make may have the same name.  Only the [joystick ID](@ref joysticks) is
 guaranteed to be unique, and only until that joystick is disconnected.
 
 

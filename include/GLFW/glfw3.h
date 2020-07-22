@@ -1736,7 +1736,7 @@ typedef void (* GLFWdropfun)(GLFWwindow*,int,const char*[]);
 
 /*! @brief The function pointer type for touch callbacks.
  *
- *  This is the function pointer type for touch callbacks. 
+ *  This is the function pointer type for touch callbacks.
  *  A touch callback function has the following signature:
  *  @code
  *  void function_name(GLFWwindow* window, int touch, int action, double xpos, double ypos)
@@ -4283,7 +4283,7 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  attempting to set this will emit @ref GLFW_FEATURE_UNAVAILABLE.  Call @ref
  *  glfwRawMouseMotionSupported to check for support.
  *
- *  If the mode is `GLFW_TOUCH`, the value must be either `GLFW_TRUE` to enable 
+ *  If the mode is `GLFW_TOUCH`, the value must be either `GLFW_TRUE` to enable
  *  touch input, or `GLFW_FALSE` to disable it. If touch input is not supported,
  *  attempting to set this will emit @ref GLFW_FEATURE_UNAVAILABLE.  Call @ref
  *  glfwTouchInputSupported to check for support.

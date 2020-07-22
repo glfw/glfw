@@ -269,6 +269,7 @@ skills.
  - Bailey Cosier
  - Noel Cower
  - Jason Daly
+ - Torkel Danielsson
  - Jarrod Davis
  - Olivier Delannoy
  - Paul R. Deppe
@@ -316,6 +317,7 @@ skills.
  - Yuri Kunde Schlesner
  - Rokas Kupstys
  - Konstantin Käfer
+ - Quinten Lansu
  - Eric Larson
  - Francis Lecavalier
  - Robin Leffmann

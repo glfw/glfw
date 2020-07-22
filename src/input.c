@@ -36,7 +36,7 @@
 #include <string.h>
 
 // Internal key state used for sticky keys
-#define _GLFW_STICK 3
+#define _GLFW_STICK 4
 
 // Internal constants for gamepad mapping source types
 #define _GLFW_JOYSTICK_AXIS     1
@@ -381,6 +381,14 @@ void _glfwInputDrop(_GLFWwindow* window, int count, const char** paths)
         window->callbacks.drop((GLFWwindow*) window, count, paths);
 }
 
+// Notifies shared code of touch events
+//
+void _glfwInputTouch(_GLFWwindow* window, int touch, int action, double xpos, double ypos)
+{
+    if (window->callbacks.touch)
+        window->callbacks.touch((GLFWwindow*) window, touch, action, xpos, ypos);
+}
+
 // Notifies shared code of a joystick connection or disconnection
 //
 void _glfwInputJoystick(_GLFWjoystick* js, int event)
@@ -501,6 +509,8 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* handle, int mode)
             return window->stickyKeys;
         case GLFW_STICKY_MOUSE_BUTTONS:
             return window->stickyMouseButtons;
+        case GLFW_TOUCH:
+            return window->touchInput;
         case GLFW_LOCK_KEY_MODS:
             return window->lockKeyMods;
         case GLFW_RAW_MOUSE_MOTION:
@@ -600,6 +610,22 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
         window->rawMouseMotion = value;
         _glfwPlatformSetRawMouseMotion(window, value);
     }
+    else if (mode == GLFW_TOUCH)
+    {
+        if (!_glfwPlatformTouchInputSupported())
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Touch input is not supported on this system");
+            return;
+        }
+
+        value = value ? GLFW_TRUE : GLFW_FALSE;
+        if (window->touchInput == value)
+            return;
+
+        window->touchInput = value;
+        _glfwPlatformSetTouchInput(window, value);
+    }
     else
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode 0x%08X", mode);
 }
@@ -608,6 +634,12 @@ GLFWAPI int glfwRawMouseMotionSupported(void)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
     return _glfwPlatformRawMouseMotionSupported();
+}
+
+GLFWAPI int glfwTouchInputSupported(void)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
+    return _glfwPlatformTouchInputSupported();
 }
 
 GLFWAPI const char* glfwGetKeyName(int key, int scancode)
@@ -1357,6 +1389,14 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state)
     }
 
     return GLFW_TRUE;
+}
+
+GLFWAPI GLFWtouchfun glfwSetTouchCallback(GLFWwindow* handle, GLFWtouchfun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(window->callbacks.touch, cbfun);
+    return cbfun;
 }
 
 GLFWAPI void glfwSetClipboardString(GLFWwindow* handle, const char* string)

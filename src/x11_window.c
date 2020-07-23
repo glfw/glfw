@@ -2776,7 +2776,8 @@ void _glfwPlatformPollEvents(void)
     _GLFWwindow* window;
 
 #if defined(__linux__)
-    _glfwDetectJoystickConnectionLinux();
+    if (_glfw.joysticksInitialized)
+        _glfwDetectJoystickConnectionLinux();
 #endif
     XPending(_glfw.x11.display);
 

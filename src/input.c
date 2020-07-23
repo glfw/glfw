@@ -974,7 +974,7 @@ GLFWAPI const float* glfwGetJoystickAxes(int jid, int* count)
     }
 
     if (!initJoysticks())
-        return GLFW_FALSE;
+        return NULL;
 
     js = _glfw.joysticks + jid;
     if (!js->present)
@@ -1006,7 +1006,7 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int jid, int* count)
     }
 
     if (!initJoysticks())
-        return GLFW_FALSE;
+        return NULL;
 
     js = _glfw.joysticks + jid;
     if (!js->present)
@@ -1042,7 +1042,7 @@ GLFWAPI const unsigned char* glfwGetJoystickHats(int jid, int* count)
     }
 
     if (!initJoysticks())
-        return GLFW_FALSE;
+        return NULL;
 
     js = _glfw.joysticks + jid;
     if (!js->present)
@@ -1071,7 +1071,7 @@ GLFWAPI const char* glfwGetJoystickName(int jid)
     }
 
     if (!initJoysticks())
-        return GLFW_FALSE;
+        return NULL;
 
     js = _glfw.joysticks + jid;
     if (!js->present)

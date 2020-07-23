@@ -124,6 +124,8 @@ information on what to include when reporting a bug.
  - [Cocoa] Changed `EGLNativeWindowType` from `NSView` to `CALayer` (#1169)
  - [Cocoa] Bugfix: Non-BMP Unicode codepoint input was reported as UTF-16
    (#1635)
+ - [Cocoa] Bugfix: Failing to retrieve the refresh rate of built-in displays
+   could leak memory
  - [X11] Bugfix: IME input of CJK was broken for "C" locale (#1587,#1636)
  - [X11] Bugfix: Xlib errors caused by other parts of the application could be
    reported as GLFW errors

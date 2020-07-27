@@ -77,6 +77,9 @@
 #ifndef WM_DWMCOMPOSITIONCHANGED
  #define WM_DWMCOMPOSITIONCHANGED 0x031E
 #endif
+#ifndef WM_DWMCOLORIZATIONCOLORCHANGED
+ #define WM_DWMCOLORIZATIONCOLORCHANGED 0x0320
+#endif
 #ifndef WM_COPYGLOBALDATA
  #define WM_COPYGLOBALDATA 0x0049
 #endif
@@ -244,9 +247,11 @@ typedef BOOL (WINAPI * PFN_AdjustWindowRectExForDpi)(LPRECT,DWORD,BOOL,DWORD,UIN
 typedef HRESULT (WINAPI * PFN_DwmIsCompositionEnabled)(BOOL*);
 typedef HRESULT (WINAPI * PFN_DwmFlush)(VOID);
 typedef HRESULT(WINAPI * PFN_DwmEnableBlurBehindWindow)(HWND,const DWM_BLURBEHIND*);
+typedef HRESULT (WINAPI * PFN_DwmGetColorizationColor)(DWORD*,BOOL*);
 #define DwmIsCompositionEnabled _glfw.win32.dwmapi.IsCompositionEnabled
 #define DwmFlush _glfw.win32.dwmapi.Flush
 #define DwmEnableBlurBehindWindow _glfw.win32.dwmapi.EnableBlurBehindWindow
+#define DwmGetColorizationColor _glfw.win32.dwmapi.GetColorizationColor
 
 // shcore.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_SetProcessDpiAwareness)(PROCESS_DPI_AWARENESS);
@@ -368,6 +373,7 @@ typedef struct _GLFWlibraryWin32
         PFN_DwmIsCompositionEnabled     IsCompositionEnabled;
         PFN_DwmFlush                    Flush;
         PFN_DwmEnableBlurBehindWindow   EnableBlurBehindWindow;
+        PFN_DwmGetColorizationColor     GetColorizationColor;
     } dwmapi;
 
     struct {

@@ -97,6 +97,13 @@ GLFW no longer depends on the CoreVideo framework on macOS and it no longer
 needs to be specified during compilation or linking.
 
 
+@subsubsection caveat_fbtransparency_34 Framebuffer transparency requires DWM transparency
+
+GLFW no longer supports framebuffer transparency enabled via @ref
+GLFW_TRANSPARENT_FRAMEBUFFER on Windows 7 if DWM transparency is off
+(the Transparency setting under Personalization > Window Color).
+
+
 @subsection deprecations_34 Deprecations in version 3.4
 
 @subsection removals_34 Removals in 3.4

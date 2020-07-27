@@ -120,6 +120,8 @@ information on what to include when reporting a bug.
 
  - Bugfix: Some extension loader headers did not prevent default OpenGL header
    inclusion (#1695)
+ - [Win32] Disabled framebuffer transparency on Windows 7 when DWM windows are
+   opaque (#1512)
  - [Win32] Bugfix: Non-BMP Unicode codepoint input was reported as UTF-16
  - [Cocoa] Changed `EGLNativeWindowType` from `NSView` to `CALayer` (#1169)
  - [Cocoa] Bugfix: Non-BMP Unicode codepoint input was reported as UTF-16

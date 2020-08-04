@@ -212,6 +212,7 @@ information on what to include when reporting a bug.
    macOS versions (#1442)
  - [NSGL] Bugfix: Workaround for swap interval on 10.14 broke on 10.12 (#1483)
  - [EGL] Added platform selection via the `EGL_EXT_platform_base` extension
+   (#442)
  - [EGL] Added ANGLE backend selection via `EGL_ANGLE_platform_angle` extension
    (#1380)
 

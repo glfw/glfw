@@ -33,7 +33,7 @@
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwPlatformInitJoysticks(void)
+GLFWbool _glfwPlatformInitJoysticks(void)
 {
     return GLFW_TRUE;
 }

@@ -48,6 +48,9 @@
 // The XInput extension provides raw mouse motion input
 #include <X11/extensions/XInput2.h>
 
+// The Shape extension provides custom window shapes
+#include <X11/extensions/shape.h>
+
 typedef XClassHint* (* PFN_XAllocClassHint)(void);
 typedef XSizeHints* (* PFN_XAllocSizeHints)(void);
 typedef XWMHints* (* PFN_XAllocWMHints)(void);
@@ -61,12 +64,15 @@ typedef int (* PFN_XConvertSelection)(Display*,Atom,Atom,Atom,Window,Time);
 typedef Colormap (* PFN_XCreateColormap)(Display*,Window,Visual*,int);
 typedef Cursor (* PFN_XCreateFontCursor)(Display*,unsigned int);
 typedef XIC (* PFN_XCreateIC)(XIM,...);
+typedef Region (* PFN_XCreateRegion)(void);
 typedef Window (* PFN_XCreateWindow)(Display*,Window,int,int,unsigned int,unsigned int,unsigned int,int,unsigned int,Visual*,unsigned long,XSetWindowAttributes*);
 typedef int (* PFN_XDefineCursor)(Display*,Window,Cursor);
 typedef int (* PFN_XDeleteContext)(Display*,XID,XContext);
 typedef int (* PFN_XDeleteProperty)(Display*,Window,Atom);
 typedef void (* PFN_XDestroyIC)(XIC);
+typedef int (* PFN_XDestroyRegion)(Region);
 typedef int (* PFN_XDestroyWindow)(Display*,Window);
+typedef int (* PFN_XDisplayKeycodes)(Display*,int*,int*);
 typedef int (* PFN_XEventsQueued)(Display*,int);
 typedef Bool (* PFN_XFilterEvent)(XEvent*,Window);
 typedef int (* PFN_XFindContext)(Display*,XID,XContext,XPointer*);
@@ -104,6 +110,7 @@ typedef int (* PFN_XPending)(Display*);
 typedef Bool (* PFN_XQueryExtension)(Display*,const char*,int*,int*,int*);
 typedef Bool (* PFN_XQueryPointer)(Display*,Window,Window*,Window*,int*,int*,int*,int*,unsigned int*);
 typedef int (* PFN_XRaiseWindow)(Display*,Window);
+typedef Bool (* PFN_XRegisterIMInstantiateCallback)(Display*,void*,char*,char*,XIDProc,XPointer);
 typedef int (* PFN_XResizeWindow)(Display*,Window,unsigned int,unsigned int);
 typedef char* (* PFN_XResourceManagerString)(Display*);
 typedef int (* PFN_XSaveContext)(Display*,XID,XContext,const char*);
@@ -112,6 +119,7 @@ typedef Status (* PFN_XSendEvent)(Display*,Window,Bool,long,XEvent*);
 typedef int (* PFN_XSetClassHint)(Display*,Window,XClassHint*);
 typedef XErrorHandler (* PFN_XSetErrorHandler)(XErrorHandler);
 typedef void (* PFN_XSetICFocus)(XIC);
+typedef char* (* PFN_XSetIMValues)(XIM,...);
 typedef int (* PFN_XSetInputFocus)(Display*,Window,int,Time);
 typedef char* (* PFN_XSetLocaleModifiers)(const char*);
 typedef int (* PFN_XSetScreenSaver)(Display*,int,int,int,int);
@@ -142,6 +150,7 @@ typedef Bool (* PFN_XrmGetResource)(XrmDatabase,const char*,const char*,char**,X
 typedef XrmDatabase (* PFN_XrmGetStringDatabase)(const char*);
 typedef void (* PFN_XrmInitialize)(void);
 typedef XrmQuark (* PFN_XrmUniqueQuark)(void);
+typedef Bool (* PFN_XUnregisterIMInstantiateCallback)(Display*,void*,char*,char*,XIDProc,XPointer);
 typedef int (* PFN_Xutf8LookupString)(XIC,XKeyPressedEvent*,char*,int,KeySym*,Status*);
 typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char*,char**,int,XSizeHints*,XWMHints*,XClassHint*);
 #define XAllocClassHint _glfw.x11.xlib.AllocClassHint
@@ -157,12 +166,15 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XCreateColormap _glfw.x11.xlib.CreateColormap
 #define XCreateFontCursor _glfw.x11.xlib.CreateFontCursor
 #define XCreateIC _glfw.x11.xlib.CreateIC
+#define XCreateRegion _glfw.x11.xlib.CreateRegion
 #define XCreateWindow _glfw.x11.xlib.CreateWindow
 #define XDefineCursor _glfw.x11.xlib.DefineCursor
 #define XDeleteContext _glfw.x11.xlib.DeleteContext
 #define XDeleteProperty _glfw.x11.xlib.DeleteProperty
 #define XDestroyIC _glfw.x11.xlib.DestroyIC
+#define XDestroyRegion _glfw.x11.xlib.DestroyRegion
 #define XDestroyWindow _glfw.x11.xlib.DestroyWindow
+#define XDisplayKeycodes _glfw.x11.xlib.DisplayKeycodes
 #define XEventsQueued _glfw.x11.xlib.EventsQueued
 #define XFilterEvent _glfw.x11.xlib.FilterEvent
 #define XFindContext _glfw.x11.xlib.FindContext
@@ -200,6 +212,7 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XQueryExtension _glfw.x11.xlib.QueryExtension
 #define XQueryPointer _glfw.x11.xlib.QueryPointer
 #define XRaiseWindow _glfw.x11.xlib.RaiseWindow
+#define XRegisterIMInstantiateCallback _glfw.x11.xlib.RegisterIMInstantiateCallback
 #define XResizeWindow _glfw.x11.xlib.ResizeWindow
 #define XResourceManagerString _glfw.x11.xlib.ResourceManagerString
 #define XSaveContext _glfw.x11.xlib.SaveContext
@@ -208,6 +221,7 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XSetClassHint _glfw.x11.xlib.SetClassHint
 #define XSetErrorHandler _glfw.x11.xlib.SetErrorHandler
 #define XSetICFocus _glfw.x11.xlib.SetICFocus
+#define XSetIMValues _glfw.x11.xlib.SetIMValues
 #define XSetInputFocus _glfw.x11.xlib.SetInputFocus
 #define XSetLocaleModifiers _glfw.x11.xlib.SetLocaleModifiers
 #define XSetScreenSaver _glfw.x11.xlib.SetScreenSaver
@@ -238,6 +252,7 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XrmGetStringDatabase _glfw.x11.xrm.GetStringDatabase
 #define XrmInitialize _glfw.x11.xrm.Initialize
 #define XrmUniqueQuark _glfw.x11.xrm.UniqueQuark
+#define XUnregisterIMInstantiateCallback _glfw.x11.xlib.UnregisterIMInstantiateCallback
 #define Xutf8LookupString _glfw.x11.xlib.utf8LookupString
 #define Xutf8SetWMProperties _glfw.x11.xlib.utf8SetWMProperties
 
@@ -323,6 +338,16 @@ typedef XRenderPictFormat* (* PFN_XRenderFindVisualFormat)(Display*,Visual const
 #define XRenderQueryVersion _glfw.x11.xrender.QueryVersion
 #define XRenderFindVisualFormat _glfw.x11.xrender.FindVisualFormat
 
+typedef Bool (* PFN_XShapeQueryExtension)(Display*,int*,int*);
+typedef Status (* PFN_XShapeQueryVersion)(Display*dpy,int*,int*);
+typedef void (* PFN_XShapeCombineRegion)(Display*,Window,int,int,int,Region,int);
+typedef void (* PFN_XShapeCombineMask)(Display*,Window,int,int,int,Pixmap,int);
+
+#define XShapeQueryExtension _glfw.x11.xshape.QueryExtension
+#define XShapeQueryVersion _glfw.x11.xshape.QueryVersion
+#define XShapeCombineRegion _glfw.x11.xshape.ShapeCombineRegion
+#define XShapeCombineMask _glfw.x11.xshape.ShapeCombineMask
+
 typedef VkFlags VkXlibSurfaceCreateFlagsKHR;
 typedef VkFlags VkXcbSurfaceCreateFlagsKHR;
 
@@ -353,8 +378,6 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)(Vk
 #include "posix_time.h"
 #include "xkb_unicode.h"
 #include "glx_context.h"
-#include "egl_context.h"
-#include "osmesa_context.h"
 #if defined(__linux__)
 #include "linux_joystick.h"
 #else
@@ -364,9 +387,6 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)(Vk
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)
 #define _glfw_dlsym(handle, name) dlsym(handle, name)
-
-#define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->x11.handle)
-#define _GLFW_EGL_NATIVE_DISPLAY ((EGLNativeDisplayType) _glfw.x11.display)
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  x11
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11
@@ -399,8 +419,9 @@ typedef struct _GLFWwindowX11
     // The last position the cursor was warped to by GLFW
     int             warpCursorPosX, warpCursorPosY;
 
-    // The time of the last KeyPress event
-    Time            lastKeyTime;
+    // The time of the last KeyPress event per keycode, for discarding
+    // duplicate key events generated for some keys by ibus
+    Time            keyPressTimes[256];
 
 } _GLFWwindowX11;
 
@@ -497,6 +518,7 @@ typedef struct _GLFWlibraryX11
 
     struct {
         void*       handle;
+        GLFWbool    utf8;
         PFN_XAllocClassHint AllocClassHint;
         PFN_XAllocSizeHints AllocSizeHints;
         PFN_XAllocWMHints AllocWMHints;
@@ -510,12 +532,15 @@ typedef struct _GLFWlibraryX11
         PFN_XCreateColormap CreateColormap;
         PFN_XCreateFontCursor CreateFontCursor;
         PFN_XCreateIC CreateIC;
+        PFN_XCreateRegion CreateRegion;
         PFN_XCreateWindow CreateWindow;
         PFN_XDefineCursor DefineCursor;
         PFN_XDeleteContext DeleteContext;
         PFN_XDeleteProperty DeleteProperty;
         PFN_XDestroyIC DestroyIC;
+        PFN_XDestroyRegion DestroyRegion;
         PFN_XDestroyWindow DestroyWindow;
+        PFN_XDisplayKeycodes DisplayKeycodes;
         PFN_XEventsQueued EventsQueued;
         PFN_XFilterEvent FilterEvent;
         PFN_XFindContext FindContext;
@@ -553,6 +578,7 @@ typedef struct _GLFWlibraryX11
         PFN_XQueryExtension QueryExtension;
         PFN_XQueryPointer QueryPointer;
         PFN_XRaiseWindow RaiseWindow;
+        PFN_XRegisterIMInstantiateCallback RegisterIMInstantiateCallback;
         PFN_XResizeWindow ResizeWindow;
         PFN_XResourceManagerString ResourceManagerString;
         PFN_XSaveContext SaveContext;
@@ -561,6 +587,7 @@ typedef struct _GLFWlibraryX11
         PFN_XSetClassHint SetClassHint;
         PFN_XSetErrorHandler SetErrorHandler;
         PFN_XSetICFocus SetICFocus;
+        PFN_XSetIMValues SetIMValues;
         PFN_XSetInputFocus SetInputFocus;
         PFN_XSetLocaleModifiers SetLocaleModifiers;
         PFN_XSetScreenSaver SetScreenSaver;
@@ -577,6 +604,7 @@ typedef struct _GLFWlibraryX11
         PFN_XUnsetICFocus UnsetICFocus;
         PFN_XVisualIDFromVisual VisualIDFromVisual;
         PFN_XWarpPointer WarpPointer;
+        PFN_XUnregisterIMInstantiateCallback UnregisterIMInstantiateCallback;
         PFN_Xutf8LookupString utf8LookupString;
         PFN_Xutf8SetWMProperties utf8SetWMProperties;
     } xlib;
@@ -711,6 +739,19 @@ typedef struct _GLFWlibraryX11
         PFN_XRenderFindVisualFormat FindVisualFormat;
     } xrender;
 
+    struct {
+        GLFWbool    available;
+        void*       handle;
+        int         major;
+        int         minor;
+        int         eventBase;
+        int         errorBase;
+        PFN_XShapeQueryExtension QueryExtension;
+        PFN_XShapeCombineRegion ShapeCombineRegion;
+        PFN_XShapeQueryVersion QueryVersion;
+        PFN_XShapeCombineMask ShapeCombineMask;
+    } xshape;
+
 } _GLFWlibraryX11;
 
 // X11-specific per-monitor data
@@ -753,4 +794,5 @@ void _glfwReleaseErrorHandlerX11(void);
 void _glfwInputErrorX11(int error, const char* message);
 
 void _glfwPushSelectionToManagerX11(void);
+void _glfwCreateInputContextX11(_GLFWwindow* window);
 

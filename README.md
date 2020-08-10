@@ -124,6 +124,13 @@ information on what to include when reporting a bug.
  - Added `GLFW_RESIZE_EW_CURSOR` alias for `GLFW_HRESIZE_CURSOR` (#427)
  - Added `GLFW_RESIZE_NS_CURSOR` alias for `GLFW_VRESIZE_CURSOR` (#427)
  - Added `GLFW_POINTING_HAND_CURSOR` alias for `GLFW_HAND_CURSOR` (#427)
+ - Added `GLFW_MOUSE_PASSTHROUGH` window hint for letting mouse input pass
+   through the window (#1236,#1568)
+ - Added `GLFW_FEATURE_UNAVAILABLE` error for platform limitations (#1692)
+ - Added `GLFW_FEATURE_UNIMPLEMENTED` error for incomplete backends (#1692)
+ - Added `GLFW_ANGLE_PLATFORM_TYPE` init hint and `GLFW_ANGLE_PLATFORM_TYPE_*`
+   values to select ANGLE backend (#1380)
+ - Made joystick subsystem initialize at first use (#1284,#1646)
  - Updated the minimum required CMake version to 3.1
  - Disabled tests and examples by default when built as a CMake subdirectory
  - Bugfix: The CMake config-file package used an absolute path and was not
@@ -131,9 +138,13 @@ information on what to include when reporting a bug.
  - Bugfix: Video modes with a duplicate screen area were discarded (#1555,#1556)
  - Bugfix: Compiling with -Wextra-semi caused warnings (#1440)
  - Bugfix: Built-in mappings failed because some OEMs re-used VID/PID (#1583)
+ - Bugfix: Some extension loader headers did not prevent default OpenGL header
+   inclusion (#1695)
  - [Win32] Added the `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access
            to the window menu
  - [Win32] Added a version info resource to the GLFW DLL
+ - [Win32] Disabled framebuffer transparency on Windows 7 when DWM windows are
+   opaque (#1512)
  - [Win32] Bugfix: `GLFW_INCLUDE_VULKAN` plus `VK_USE_PLATFORM_WIN32_KHR` caused
    symbol redefinition (#1524)
  - [Win32] Bugfix: The cursor position event was emitted before its cursor enter
@@ -146,14 +157,23 @@ information on what to include when reporting a bug.
    invalid pointer
  - [Win32] Bugfix: Some synthetic key events were reported as `GLFW_KEY_UNKNOWN`
    (#1623)
+ - [Win32] Bugfix: Non-BMP Unicode codepoint input was reported as UTF-16
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
+ - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)
+ - [Cocoa] Changed `EGLNativeWindowType` from `NSView` to `CALayer` (#1169)
  - [Cocoa] Removed dependency on the CoreVideo framework
  - [Cocoa] Bugfix: `glfwSetWindowSize` used a bottom-left anchor point (#1553)
  - [Cocoa] Bugfix: Window remained on screen after destruction until event poll
    (#1412)
  - [Cocoa] Bugfix: Event processing before window creation would assert (#1543)
  - [Cocoa] Bugfix: Undecorated windows could not be iconified on recent macOS
+ - [Cocoa] Bugfix: Touching event queue from secondary thread before main thread
+   would abort (#1649)
+ - [Cocoa] Bugfix: Non-BMP Unicode codepoint input was reported as UTF-16
+   (#1635)
+ - [Cocoa] Bugfix: Failing to retrieve the refresh rate of built-in displays
+   could leak memory
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -168,14 +188,32 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: `glfwFocusWindow` could terminate on older WMs or without a WM
  - [X11] Bugfix: Querying a disconnected monitor could segfault (#1602)
  - [X11] Bugfix: IME input of CJK was broken for "C" locale (#1587,#1636)
+ - [X11] Bugfix: Termination would segfault if the IM had been destroyed
+ - [X11] Bugfix: Any IM started after initialization would not be detected
+ - [X11] Bugfix: Xlib errors caused by other parts of the application could be
+   reported as GLFW errors
+ - [X11] Bugfix: A handle race condition could cause a `BadWindow` error (#1633)
+ - [X11] Bugfix: XKB path used keysyms instead of physical locations for
+   non-printable keys (#1598)
+ - [X11] Bugfix: Function keys were mapped to `GLFW_KEY_UNKNOWN` for some layout
+   combinaitons (#1598)
+ - [X11] Bugfix: Keys pressed simultaneously with others were not always
+   reported (#1112,#1415,#1472,#1616)
  - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
+ - [Wayland] Bugfix: Repeated keys could be reported with `NULL` window (#1704)
+ - [Wayland] Bugfix: Retrieving partial framebuffer size would segfault
+ - [Wayland] Bugfix: Scrolling offsets were inverted compared to other platforms
+   (#1463)
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
  - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
    macOS versions (#1442)
  - [NSGL] Bugfix: Workaround for swap interval on 10.14 broke on 10.12 (#1483)
+ - [EGL] Added platform selection via the `EGL_EXT_platform_base` extension
+ - [EGL] Added ANGLE backend selection via `EGL_ANGLE_platform_angle` extension
+   (#1380)
 
 
 ## Contact
@@ -314,6 +352,7 @@ skills.
  - ndogxj
  - Kristian Nielsen
  - Kamil Nowakowski
+ - onox
  - Denis Ovod
  - Ozzy
  - Andri Pálsson
@@ -338,8 +377,10 @@ skills.
  - Eddie Ringle
  - Max Risuhin
  - Jorge Rodriguez
+ - Luca Rood
  - Ed Ropple
  - Aleksey Rybalkin
+ - Mikko Rytkönen
  - Riku Salminen
  - Brandon Schaefer
  - Sebastian Schuberth
@@ -347,6 +388,7 @@ skills.
  - Matt Sealey
  - Steve Sexton
  - Arkady Shapkin
+ - Ali Sherief
  - Yoshiki Shibukawa
  - Dmitri Shuralyov
  - Daniel Skorupski
@@ -380,11 +422,14 @@ skills.
  - Torsten Walluhn
  - Patrick Walton
  - Xo Wang
+ - Waris
  - Jay Weisskopf
  - Frank Wille
+ - Tatsuya Yatagawa
  - Ryogo Yoshimura
  - Lukas Zanner
  - Andrey Zholos
+ - Aihui Zhu
  - Santi Zupancic
  - Jonas Ådahl
  - Lasse Öörni

@@ -3,7 +3,13 @@
 #       (i.e. Pages) list in the generated documentation
 set(GLFW_DOXYGEN_SOURCES
     "include/GLFW/glfw3.h"
-    "include/GLFW/glfw3native.h"
+    "include/GLFW/glfw3native.h")
+
+if (GLFW_HPP)
+    list(APPEND GLFW_DOXYGEN_SOURCES "include/GLFW/glfw3.hpp")
+endif()
+
+list(APPEND GLFW_DOXYGEN_SOURCES
     "docs/main.dox"
     "docs/news.dox"
     "docs/quick.dox"

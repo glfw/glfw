@@ -72,6 +72,10 @@ void _glfwPlatformFreeMonitor(_GLFWmonitor* monitor)
 
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {
+    if (xpos)
+        *xpos = 0;
+    if (ypos)
+        *ypos = 0;
 }
 
 void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,

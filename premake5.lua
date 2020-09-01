@@ -1,11 +1,10 @@
 project "GLFW"
 	kind "StaticLib"
 	language "C"
-	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-	
+
 	files
 	{
 		"include/GLFW/glfw3.h",
@@ -18,13 +17,12 @@ project "GLFW"
 		"src/vulkan.c",
 		"src/window.c"
 	}
-
 	filter "system:linux"
 		pic "On"
 
 		systemversion "latest"
 		staticruntime "On"
-		
+
 		files
 		{
 			"src/x11_init.c",
@@ -46,6 +44,7 @@ project "GLFW"
 
 	filter "system:windows"
 		systemversion "latest"
+		staticruntime "On"
 
 		files
 		{

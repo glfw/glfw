@@ -489,15 +489,15 @@ static void inputMethodInstantiateCallback(Display* display,
     }
 }
 
-// Check whether the specified atom is supported
+// Return the atom ID only if it is listed in the specified array
 //
-static Atom getSupportedAtom(Atom* supportedAtoms,
-                             unsigned long atomCount,
-                             const char* atomName)
+static Atom getAtomIfSupported(Atom* supportedAtoms,
+                               unsigned long atomCount,
+                               const char* atomName)
 {
     const Atom atom = XInternAtom(_glfw.x11.display, atomName, False);
 
-    for (unsigned int i = 0;  i < atomCount;  i++)
+    for (unsigned long i = 0;  i < atomCount;  i++)
     {
         if (supportedAtoms[i] == atom)
             return atom;
@@ -565,33 +565,33 @@ static void detectEWMH(void)
     // See which of the atoms we support that are supported by the WM
 
     _glfw.x11.NET_WM_STATE =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE");
+        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE");
     _glfw.x11.NET_WM_STATE_ABOVE =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_ABOVE");
+        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_ABOVE");
     _glfw.x11.NET_WM_STATE_FULLSCREEN =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_FULLSCREEN");
+        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_FULLSCREEN");
     _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_MAXIMIZED_VERT");
+        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_MAXIMIZED_VERT");
     _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_MAXIMIZED_HORZ");
+        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_MAXIMIZED_HORZ");
     _glfw.x11.NET_WM_STATE_DEMANDS_ATTENTION =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_STATE_DEMANDS_ATTENTION");
+        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_DEMANDS_ATTENTION");
     _glfw.x11.NET_WM_FULLSCREEN_MONITORS =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_FULLSCREEN_MONITORS");
+        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_FULLSCREEN_MONITORS");
     _glfw.x11.NET_WM_WINDOW_TYPE =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_WINDOW_TYPE");
+        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_WINDOW_TYPE");
     _glfw.x11.NET_WM_WINDOW_TYPE_NORMAL =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_WM_WINDOW_TYPE_NORMAL");
+        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_WINDOW_TYPE_NORMAL");
     _glfw.x11.NET_WORKAREA =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_WORKAREA");
+        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WORKAREA");
     _glfw.x11.NET_CURRENT_DESKTOP =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_CURRENT_DESKTOP");
+        getAtomIfSupported(supportedAtoms, atomCount, "_NET_CURRENT_DESKTOP");
     _glfw.x11.NET_ACTIVE_WINDOW =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_ACTIVE_WINDOW");
+        getAtomIfSupported(supportedAtoms, atomCount, "_NET_ACTIVE_WINDOW");
     _glfw.x11.NET_FRAME_EXTENTS =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_FRAME_EXTENTS");
+        getAtomIfSupported(supportedAtoms, atomCount, "_NET_FRAME_EXTENTS");
     _glfw.x11.NET_REQUEST_FRAME_EXTENTS =
-        getSupportedAtom(supportedAtoms, atomCount, "_NET_REQUEST_FRAME_EXTENTS");
+        getAtomIfSupported(supportedAtoms, atomCount, "_NET_REQUEST_FRAME_EXTENTS");
 
     if (supportedAtoms)
         XFree(supportedAtoms);
@@ -805,13 +805,12 @@ static GLFWbool initExtensions(void)
                 _glfw.x11.xkb.detectable = GLFW_TRUE;
         }
 
-        _glfw.x11.xkb.group = 0;
         XkbStateRec state;
         if (XkbGetState(_glfw.x11.display, XkbUseCoreKbd, &state) == Success)
-        {
-            XkbSelectEventDetails(_glfw.x11.display, XkbUseCoreKbd, XkbStateNotify, XkbAllStateComponentsMask, XkbGroupStateMask);
             _glfw.x11.xkb.group = (unsigned int)state.group;
-        }
+
+        XkbSelectEventDetails(_glfw.x11.display, XkbUseCoreKbd, XkbStateNotify,
+                              XkbGroupStateMask, XkbGroupStateMask);
     }
 
 #if defined(__CYGWIN__)
@@ -848,6 +847,35 @@ static GLFWbool initExtensions(void)
                                     &_glfw.x11.xrender.minor))
             {
                 _glfw.x11.xrender.available = GLFW_TRUE;
+            }
+        }
+    }
+
+#if defined(__CYGWIN__)
+    _glfw.x11.xshape.handle = _glfw_dlopen("libXext-6.so");
+#else
+    _glfw.x11.xshape.handle = _glfw_dlopen("libXext.so.6");
+#endif
+    if (_glfw.x11.xshape.handle)
+    {
+        _glfw.x11.xshape.QueryExtension = (PFN_XShapeQueryExtension)
+            _glfw_dlsym(_glfw.x11.xshape.handle, "XShapeQueryExtension");
+        _glfw.x11.xshape.ShapeCombineRegion = (PFN_XShapeCombineRegion)
+            _glfw_dlsym(_glfw.x11.xshape.handle, "XShapeCombineRegion");
+        _glfw.x11.xshape.QueryVersion = (PFN_XShapeQueryVersion)
+            _glfw_dlsym(_glfw.x11.xshape.handle, "XShapeQueryVersion");
+        _glfw.x11.xshape.ShapeCombineMask = (PFN_XShapeCombineMask)
+            _glfw_dlsym(_glfw.x11.xshape.handle, "XShapeCombineMask");
+
+        if (XShapeQueryExtension(_glfw.x11.display,
+            &_glfw.x11.xshape.errorBase,
+            &_glfw.x11.xshape.eventBase))
+        {
+            if (XShapeQueryVersion(_glfw.x11.display,
+                &_glfw.x11.xshape.major,
+                &_glfw.x11.xshape.minor))
+            {
+                _glfw.x11.xshape.available = GLFW_TRUE;
             }
         }
     }
@@ -1123,6 +1151,8 @@ int _glfwPlatformInit(void)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XCreateFontCursor");
     _glfw.x11.xlib.CreateIC = (PFN_XCreateIC)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XCreateIC");
+    _glfw.x11.xlib.CreateRegion = (PFN_XCreateRegion)
+        _glfw_dlsym(_glfw.x11.xlib.handle, "XCreateRegion");
     _glfw.x11.xlib.CreateWindow = (PFN_XCreateWindow)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XCreateWindow");
     _glfw.x11.xlib.DefineCursor = (PFN_XDefineCursor)
@@ -1133,6 +1163,8 @@ int _glfwPlatformInit(void)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XDeleteProperty");
     _glfw.x11.xlib.DestroyIC = (PFN_XDestroyIC)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XDestroyIC");
+    _glfw.x11.xlib.DestroyRegion = (PFN_XDestroyRegion)
+        _glfw_dlsym(_glfw.x11.xlib.handle, "XDestroyRegion");
     _glfw.x11.xlib.DestroyWindow = (PFN_XDestroyWindow)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XDestroyWindow");
     _glfw.x11.xlib.DisplayKeycodes = (PFN_XDisplayKeycodes)
@@ -1298,6 +1330,9 @@ int _glfwPlatformInit(void)
     _glfw.x11.xlib.utf8SetWMProperties = (PFN_Xutf8SetWMProperties)
         _glfw_dlsym(_glfw.x11.xlib.handle, "Xutf8SetWMProperties");
 
+    if (_glfw.x11.xlib.utf8LookupString && _glfw.x11.xlib.utf8SetWMProperties)
+        _glfw.x11.xlib.utf8 = GLFW_TRUE;
+
     XInitThreads();
     XrmInitialize();
 
@@ -1331,7 +1366,7 @@ int _glfwPlatformInit(void)
     _glfw.x11.helperWindowHandle = createHelperWindow();
     _glfw.x11.hiddenCursorHandle = createHiddenCursor();
 
-    if (XSupportsLocale())
+    if (XSupportsLocale() && _glfw.x11.xlib.utf8)
     {
         XSetLocaleModifiers("");
 
@@ -1341,11 +1376,6 @@ int _glfwPlatformInit(void)
                                        inputMethodInstantiateCallback,
                                        NULL);
     }
-
-#if defined(__linux__)
-    if (!_glfwInitJoysticksLinux())
-        return GLFW_FALSE;
-#endif
 
     _glfwInitTimerPOSIX();
 
@@ -1439,10 +1469,6 @@ void _glfwPlatformTerminate(void)
     //       cleanup callbacks that get called by that function
     _glfwTerminateEGL();
     _glfwTerminateGLX();
-
-#if defined(__linux__)
-    _glfwTerminateJoysticksLinux();
-#endif
 
     if (_glfw.x11.xlib.handle)
     {

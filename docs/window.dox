@@ -416,6 +416,10 @@ Debug contexts for OpenGL and OpenGL ES are described in detail by the
 [GL_KHR_debug](https://www.khronos.org/registry/OpenGL/extensions/KHR/KHR_debug.txt)
 extension.
 
+@par
+This is the new name, introduced in GLFW 3.4.  The older
+`GLFW_OPENGL_DEBUG_CONTEXT` name is also available for compatibility.
+
 @anchor GLFW_OPENGL_PROFILE_hint
 __GLFW_OPENGL_PROFILE__ specifies which OpenGL profile to create the context
 for.  Possible values are one of `GLFW_OPENGL_CORE_PROFILE` or
@@ -1357,6 +1361,10 @@ OpenGL forward-compatible one, or `GLFW_FALSE` otherwise.
 @anchor GLFW_OPENGL_DEBUG_CONTEXT_attrib
 __GLFW_CONTEXT_DEBUG__ is `GLFW_TRUE` if the window's context is in debug
 mode, or `GLFW_FALSE` otherwise.
+
+@par
+This is the new name, introduced in GLFW 3.4.  The older
+`GLFW_OPENGL_DEBUG_CONTEXT` name is also available for compatibility.
 
 @anchor GLFW_OPENGL_PROFILE_attrib
 __GLFW_OPENGL_PROFILE__ indicates the OpenGL profile used by the context.  This

@@ -159,11 +159,17 @@ h3 {
 
 .glfwheader {
 	font-size:16px;
-	height:64px;
+	min-height:64px;
 	max-width:920px;
-	min-width:800px;
 	padding:0 32px;
 	margin:0 auto;
+
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	align-items: center;
+	align-content: stretch;
 }
 
 #glfwhome {
@@ -176,7 +182,7 @@ h3 {
 
 .glfwnavbar {
 	list-style-type:none;
-	margin:0 auto;
+	margin:0 0 0 auto;
 	float:right;
 }
 
@@ -189,6 +195,10 @@ h3 {
 	margin-left:2em;
 	display:block;
 	color:@header-footer-link-color;
+}
+
+.glfwnavbar {
+	padding-left: 0;
 }
 
 #glfwhome,.glfwnavbar a,.glfwnavbar a:visited {
@@ -211,14 +221,12 @@ address.footer {
 
 #main-nav {
 	max-width:960px;
-	min-width:800px;
 	margin:0 auto;
 	font-size:13px;
 }
 
 #main-menu {
 	max-width:920px;
-	min-width:800px;
 	margin:0 auto;
 	font-size:13px;
 }
@@ -233,9 +241,13 @@ address.footer {
 }
 
 #main-menu {
-	height:36px;
-	display:block;
-	position:relative;
+	min-height:36px;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	align-items: center;
+	align-content: stretch;
 }
 
 #main-menu a,#main-menu a:visited,#main-menu a:hover,#main-menu li {
@@ -248,6 +260,10 @@ address.footer {
 
 #main-menu li ul.sm-nowrap li a:hover {
 	color:@default-link-color;
+}
+
+#main-menu > li:last-child {
+	margin: 0 0 0 auto;
 }
 
 .contents {

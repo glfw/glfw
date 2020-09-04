@@ -377,12 +377,17 @@ static void updateWindowStyles(const _GLFWwindow* window)
 //
 static void updateFramebufferTransparency(const _GLFWwindow* window)
 {
-    BOOL enabled;
+    BOOL composition, opaque;
+    DWORD color;
 
     if (!IsWindowsVistaOrGreater())
         return;
 
-    if (SUCCEEDED(DwmIsCompositionEnabled(&enabled)) && enabled)
+    if (FAILED(DwmIsCompositionEnabled(&composition)) || !composition)
+       return;
+
+    if (IsWindows8OrGreater() ||
+        (SUCCEEDED(DwmGetColorizationColor(&color, &opaque)) && !opaque))
     {
         HRGN region = CreateRectRgn(0, 0, -1, -1);
         DWM_BLURBEHIND bb = {0};
@@ -390,37 +395,18 @@ static void updateFramebufferTransparency(const _GLFWwindow* window)
         bb.hRgnBlur = region;
         bb.fEnable = TRUE;
 
-        if (SUCCEEDED(DwmEnableBlurBehindWindow(window->win32.handle, &bb)))
-        {
-            // Decorated windows don't repaint the transparent background
-            // leaving a trail behind animations
-            // HACK: Making the window layered with a transparency color key
-            //       seems to fix this.  Normally, when specifying
-            //       a transparency color key to be used when composing the
-            //       layered window, all pixels painted by the window in this
-            //       color will be transparent.  That doesn't seem to be the
-            //       case anymore, at least when used with blur behind window
-            //       plus negative region.
-            LONG exStyle = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
-            exStyle |= WS_EX_LAYERED;
-            SetWindowLongW(window->win32.handle, GWL_EXSTYLE, exStyle);
-
-            // Using a color key not equal to black to fix the trailing
-            // issue.  When set to black, something is making the hit test
-            // not resize with the window frame.
-            SetLayeredWindowAttributes(window->win32.handle,
-                                       RGB(255, 0, 255), 255, LWA_COLORKEY);
-        }
-
+        DwmEnableBlurBehindWindow(window->win32.handle, &bb);
         DeleteObject(region);
     }
     else
     {
-        LONG exStyle = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
-        exStyle &= ~WS_EX_LAYERED;
-        SetWindowLongW(window->win32.handle, GWL_EXSTYLE, exStyle);
-        RedrawWindow(window->win32.handle, NULL, NULL,
-                     RDW_ERASE | RDW_INVALIDATE | RDW_FRAME);
+        // HACK: Disable framebuffer transparency on Windows 7 when the
+        //       colorization color is opaque, because otherwise the window
+        //       contents is blended additively with the previous frame instead
+        //       of replacing it
+        DWM_BLURBEHIND bb = {0};
+        bb.dwFlags = DWM_BB_ENABLE;
+        DwmEnableBlurBehindWindow(window->win32.handle, &bb);
     }
 }
 
@@ -526,6 +512,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             case WM_DEVICECHANGE:
             {
+                if (!_glfw.joysticksInitialized)
+                    break;
+
                 if (wParam == DBT_DEVICEARRIVAL)
                 {
                     DEV_BROADCAST_HDR* dbh = (DEV_BROADCAST_HDR*) lParam;
@@ -1101,6 +1090,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         }
 
         case WM_DWMCOMPOSITIONCHANGED:
+        case WM_DWMCOLORIZATIONCOLORCHANGED:
         {
             if (window->win32.transparent)
                 updateFramebufferTransparency(window);
@@ -1826,7 +1816,8 @@ int _glfwPlatformWindowHovered(_GLFWwindow* window)
 
 int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
 {
-    BOOL enabled;
+    BOOL composition, opaque;
+    DWORD color;
 
     if (!window->win32.transparent)
         return GLFW_FALSE;
@@ -1834,7 +1825,20 @@ int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
     if (!IsWindowsVistaOrGreater())
         return GLFW_FALSE;
 
-    return SUCCEEDED(DwmIsCompositionEnabled(&enabled)) && enabled;
+    if (FAILED(DwmIsCompositionEnabled(&composition)) || !composition)
+        return GLFW_FALSE;
+
+    if (!IsWindows8OrGreater())
+    {
+        // HACK: Disable framebuffer transparency on Windows 7 when the
+        //       colorization color is opaque, because otherwise the window
+        //       contents is blended additively with the previous frame instead
+        //       of replacing it
+        if (FAILED(DwmGetColorizationColor(&color, &opaque)) || opaque)
+            return GLFW_FALSE;
+    }
+
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
@@ -1854,6 +1858,36 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
                  SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
 }
 
+void _glfwPlatformSetWindowMousePassthrough(_GLFWwindow* window, GLFWbool enabled)
+{
+    COLORREF key = 0;
+    BYTE alpha = 0;
+    DWORD flags = 0;
+    DWORD exStyle = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
+
+    if (exStyle & WS_EX_LAYERED)
+        GetLayeredWindowAttributes(window->win32.handle, &key, &alpha, &flags);
+
+    if (enabled)
+        exStyle |= (WS_EX_TRANSPARENT | WS_EX_LAYERED);
+    else
+    {
+        exStyle &= ~WS_EX_TRANSPARENT;
+        // NOTE: Window opacity also needs the layered window style so do not
+        //       remove it if the window is alpha blended
+        if (exStyle & WS_EX_LAYERED)
+        {
+            if (!(flags & LWA_ALPHA))
+                exStyle &= ~WS_EX_LAYERED;
+        }
+    }
+
+    SetWindowLongW(window->win32.handle, GWL_EXSTYLE, exStyle);
+
+    if (enabled)
+        SetLayeredWindowAttributes(window->win32.handle, key, alpha, flags);
+}
+
 float _glfwPlatformGetWindowOpacity(_GLFWwindow* window)
 {
     BYTE alpha;
@@ -1871,19 +1905,22 @@ float _glfwPlatformGetWindowOpacity(_GLFWwindow* window)
 
 void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
 {
-    if (opacity < 1.f)
+    LONG exStyle = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
+    if (opacity < 1.f || (exStyle & WS_EX_TRANSPARENT))
     {
         const BYTE alpha = (BYTE) (255 * opacity);
-        DWORD style = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
-        style |= WS_EX_LAYERED;
-        SetWindowLongW(window->win32.handle, GWL_EXSTYLE, style);
+        exStyle |= WS_EX_LAYERED;
+        SetWindowLongW(window->win32.handle, GWL_EXSTYLE, exStyle);
         SetLayeredWindowAttributes(window->win32.handle, 0, alpha, LWA_ALPHA);
+    }
+    else if (exStyle & WS_EX_TRANSPARENT)
+    {
+        SetLayeredWindowAttributes(window->win32.handle, 0, 0, 0);
     }
     else
     {
-        DWORD style = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
-        style &= ~WS_EX_LAYERED;
-        SetWindowLongW(window->win32.handle, GWL_EXSTYLE, style);
+        exStyle &= ~WS_EX_LAYERED;
+        SetWindowLongW(window->win32.handle, GWL_EXSTYLE, exStyle);
     }
 }
 

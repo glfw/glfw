@@ -8,6 +8,10 @@ if (POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
 
+if (POLICY CMP0069)
+    cmake_policy(SET CMP0069 NEW)
+endif()
+
 if (POLICY CMP0077)
     cmake_policy(SET CMP0077 NEW)
 endif()
@@ -175,6 +179,11 @@ if (_GLFW_X11)
     # Check for XInput (modern HID input)
     if (NOT X11_Xi_INCLUDE_PATH)
         message(FATAL_ERROR "XInput headers not found; install libxi development package")
+    endif()
+
+    # Check for X Shape (custom window input shape)
+    if (NOT X11_Xshape_INCLUDE_PATH)
+        message(FATAL_ERROR "X Shape headers not found; install libxext development package")
     endif()
 endif()
 

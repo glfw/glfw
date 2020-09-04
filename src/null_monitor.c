@@ -72,6 +72,10 @@ void _glfwPlatformFreeMonitor(_GLFWmonitor* monitor)
 
 void _glfwPlatformGetMonitorPos(_GLFWmonitor* monitor, int* xpos, int* ypos)
 {
+    if (xpos)
+        *xpos = 0;
+    if (ypos)
+        *ypos = 0;
 }
 
 void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
@@ -90,9 +94,9 @@ void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor,
     const GLFWvidmode mode = getVideoMode();
 
     if (xpos)
-        *xpos = 10;
+        *xpos = 0;
     if (ypos)
-        ypos = 0;
+        *ypos = 10;
     if (width)
         *width = mode.width;
     if (height)

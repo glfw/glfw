@@ -955,8 +955,10 @@ void _glfwPlatformGetFramebufferSize(_GLFWwindow* window,
                                      int* width, int* height)
 {
     _glfwPlatformGetWindowSize(window, width, height);
-    *width *= window->wl.scale;
-    *height *= window->wl.scale;
+    if (width)
+        *width *= window->wl.scale;
+    if (height)
+        *height *= window->wl.scale;
 }
 
 void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
@@ -1125,6 +1127,19 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
     // TODO
     _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
                     "Wayland: Window attribute setting not implemented yet");
+}
+
+void _glfwPlatformSetWindowMousePassthrough(_GLFWwindow* window, GLFWbool enabled)
+{
+    if (enabled)
+    {
+        struct wl_region* region = wl_compositor_create_region(_glfw.wl.compositor);
+        wl_surface_set_input_region(window->wl.surface, region);
+        wl_region_destroy(region);
+    }
+    else
+        wl_surface_set_input_region(window->wl.surface, 0);
+    wl_surface_commit(window->wl.surface);
 }
 
 float _glfwPlatformGetWindowOpacity(_GLFWwindow* window)

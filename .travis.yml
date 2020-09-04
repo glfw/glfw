@@ -17,6 +17,7 @@ matrix:
                       - libxinerama-dev
                       - libxcursor-dev
                       - libxi-dev
+                      - libxext-dev
           env:
               - BUILD_SHARED_LIBS=ON
               - CFLAGS=-Werror
@@ -30,18 +31,18 @@ matrix:
                       - libxinerama-dev
                       - libxcursor-dev
                       - libxi-dev
+                      - libxext-dev
           env:
               - BUILD_SHARED_LIBS=OFF
               - CFLAGS=-Werror
         - os: linux
-          dist: xenial
+          dist: focal
           name: "Wayland shared library"
           addons:
               apt:
-                  sources:
-                      - ppa:kubuntu-ppa/backports
                   packages:
                       - extra-cmake-modules
+                      - wayland-protocols
                       - libwayland-dev
                       - libxkbcommon-dev
                       - libegl1-mesa-dev
@@ -50,14 +51,13 @@ matrix:
               - BUILD_SHARED_LIBS=ON
               - CFLAGS=-Werror
         - os: linux
-          dist: xenial
+          dist: focal
           name: "Wayland static library"
           addons:
               apt:
-                  sources:
-                      - ppa:kubuntu-ppa/backports
                   packages:
                       - extra-cmake-modules
+                      - wayland-protocols
                       - libwayland-dev
                       - libxkbcommon-dev
                       - libegl1-mesa-dev
@@ -106,12 +106,6 @@ script:
       fi
     - mkdir build
     - cd build
-    - if test -n "${USE_WAYLAND}"; then
-          git clone git://anongit.freedesktop.org/wayland/wayland-protocols;
-          pushd wayland-protocols;
-          git checkout 1.15 && ./autogen.sh --prefix=/usr && make && sudo make install;
-          popd;
-      fi
     - cmake -DCMAKE_VERBOSE_MAKEFILE=ON -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} -DGLFW_USE_WAYLAND=${USE_WAYLAND} -DGLFW_USE_OSMESA=${USE_OSMESA} ..
     - cmake --build .
 notifications:

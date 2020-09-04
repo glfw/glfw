@@ -27,6 +27,14 @@ are still available.
 For more information see @ref cursor_standard.
 
 
+@subsubsection mouse_passthrough_34 Mouse event passthrough
+
+GLFW now provides the [GLFW_MOUSE_PASSTHROUGH](@ref GLFW_MOUSE_PASSTHROUGH_hint)
+window hint for making a window transparent to mouse input, lettings events pass
+to whatever window is behind it.  This can also be changed after window
+creation with the matching [window attribute](@ref GLFW_MOUSE_PASSTHROUGH_attrib).
+
+
 @subsubsection features_34_angle_backend Support for ANGLE rendering backend selection
 
 GLFW now provides the
@@ -46,6 +54,21 @@ applications.
 
 
 @subsection caveats_34 Caveats for version 3.4
+
+@subsubsection joysticks_34 Joystick support is initialized on demand
+
+The joystick part of GLFW is now initialized when first used, primarily to work
+around faulty Windows drivers that cause DirectInput to take up to several
+seconds to enumerate devices.
+
+This change will usually not be observable.  However, if your application waits
+for events without having first called any joystick function or created any
+visible windows, the wait may never unblock as GLFW may not yet have subscribed
+to joystick related OS events.
+
+To work around this, call any joystick function before waiting for events, for
+example by setting a [joystick callback](@ref joystick_event).
+
 
 @subsubsection standalone_34 Tests and examples are disabled when built as a sub-project
 
@@ -74,6 +97,13 @@ GLFW no longer depends on the CoreVideo framework on macOS and it no longer
 needs to be specified during compilation or linking.
 
 
+@subsubsection caveat_fbtransparency_34 Framebuffer transparency requires DWM transparency
+
+GLFW no longer supports framebuffer transparency enabled via @ref
+GLFW_TRANSPARENT_FRAMEBUFFER on Windows 7 if DWM transparency is off
+(the Transparency setting under Personalization > Window Color).
+
+
 @subsection deprecations_34 Deprecations in version 3.4
 
 @subsection removals_34 Removals in 3.4
@@ -97,6 +127,7 @@ then GLFW will fail to initialize.
  - @ref GLFW_RESIZE_NWSE_CURSOR
  - @ref GLFW_RESIZE_NESW_CURSOR
  - @ref GLFW_RESIZE_ALL_CURSOR
+ - @ref GLFW_MOUSE_PASSTHROUGH
  - @ref GLFW_NOT_ALLOWED_CURSOR
  - @ref GLFW_CURSOR_UNAVAILABLE
  - @ref GLFW_WIN32_KEYBOARD_MENU

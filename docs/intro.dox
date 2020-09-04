@@ -22,8 +22,8 @@ There are also guides for the other areas of GLFW.
 
 Before most GLFW functions may be called, the library must be initialized.
 This initialization checks what features are available on the machine,
-enumerates monitors and joysticks, initializes the timer and performs any
-required platform-specific initialization.
+enumerates monitors, initializes the timer and performs any required
+platform-specific initialization.
 
 Only the following functions may be called before the library has been
 successfully initialized, and only from the main thread.

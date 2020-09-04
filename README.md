@@ -124,10 +124,13 @@ information on what to include when reporting a bug.
  - Added `GLFW_RESIZE_EW_CURSOR` alias for `GLFW_HRESIZE_CURSOR` (#427)
  - Added `GLFW_RESIZE_NS_CURSOR` alias for `GLFW_VRESIZE_CURSOR` (#427)
  - Added `GLFW_POINTING_HAND_CURSOR` alias for `GLFW_HAND_CURSOR` (#427)
+ - Added `GLFW_MOUSE_PASSTHROUGH` window hint for letting mouse input pass
+   through the window (#1236,#1568)
  - Added `GLFW_FEATURE_UNAVAILABLE` error for platform limitations (#1692)
  - Added `GLFW_FEATURE_UNIMPLEMENTED` error for incomplete backends (#1692)
  - Added `GLFW_ANGLE_PLATFORM_TYPE` init hint and `GLFW_ANGLE_PLATFORM_TYPE_*`
    values to select ANGLE backend (#1380)
+ - Made joystick subsystem initialize at first use (#1284,#1646)
  - Updated the minimum required CMake version to 3.1
  - Disabled tests and examples by default when built as a CMake subdirectory
  - Bugfix: The CMake config-file package used an absolute path and was not
@@ -140,6 +143,8 @@ information on what to include when reporting a bug.
  - [Win32] Added the `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access
            to the window menu
  - [Win32] Added a version info resource to the GLFW DLL
+ - [Win32] Disabled framebuffer transparency on Windows 7 when DWM windows are
+   opaque (#1512)
  - [Win32] Bugfix: `GLFW_INCLUDE_VULKAN` plus `VK_USE_PLATFORM_WIN32_KHR` caused
    symbol redefinition (#1524)
  - [Win32] Bugfix: The cursor position event was emitted before its cursor enter
@@ -167,6 +172,8 @@ information on what to include when reporting a bug.
    would abort (#1649)
  - [Cocoa] Bugfix: Non-BMP Unicode codepoint input was reported as UTF-16
    (#1635)
+ - [Cocoa] Bugfix: Failing to retrieve the refresh rate of built-in displays
+   could leak memory
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -196,12 +203,16 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
  - [Wayland] Bugfix: Repeated keys could be reported with `NULL` window (#1704)
+ - [Wayland] Bugfix: Retrieving partial framebuffer size would segfault
+ - [Wayland] Bugfix: Scrolling offsets were inverted compared to other platforms
+   (#1463)
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
  - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
    macOS versions (#1442)
  - [NSGL] Bugfix: Workaround for swap interval on 10.14 broke on 10.12 (#1483)
  - [EGL] Added platform selection via the `EGL_EXT_platform_base` extension
+   (#442)
  - [EGL] Added ANGLE backend selection via `EGL_ANGLE_platform_angle` extension
    (#1380)
 
@@ -342,6 +353,7 @@ skills.
  - ndogxj
  - Kristian Nielsen
  - Kamil Nowakowski
+ - onox
  - Denis Ovod
  - Ozzy
  - Andri Pálsson

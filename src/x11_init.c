@@ -851,6 +851,35 @@ static GLFWbool initExtensions(void)
         }
     }
 
+#if defined(__CYGWIN__)
+    _glfw.x11.xshape.handle = _glfw_dlopen("libXext-6.so");
+#else
+    _glfw.x11.xshape.handle = _glfw_dlopen("libXext.so.6");
+#endif
+    if (_glfw.x11.xshape.handle)
+    {
+        _glfw.x11.xshape.QueryExtension = (PFN_XShapeQueryExtension)
+            _glfw_dlsym(_glfw.x11.xshape.handle, "XShapeQueryExtension");
+        _glfw.x11.xshape.ShapeCombineRegion = (PFN_XShapeCombineRegion)
+            _glfw_dlsym(_glfw.x11.xshape.handle, "XShapeCombineRegion");
+        _glfw.x11.xshape.QueryVersion = (PFN_XShapeQueryVersion)
+            _glfw_dlsym(_glfw.x11.xshape.handle, "XShapeQueryVersion");
+        _glfw.x11.xshape.ShapeCombineMask = (PFN_XShapeCombineMask)
+            _glfw_dlsym(_glfw.x11.xshape.handle, "XShapeCombineMask");
+
+        if (XShapeQueryExtension(_glfw.x11.display,
+            &_glfw.x11.xshape.errorBase,
+            &_glfw.x11.xshape.eventBase))
+        {
+            if (XShapeQueryVersion(_glfw.x11.display,
+                &_glfw.x11.xshape.major,
+                &_glfw.x11.xshape.minor))
+            {
+                _glfw.x11.xshape.available = GLFW_TRUE;
+            }
+        }
+    }
+
     // Update the key code LUT
     // FIXME: We should listen to XkbMapNotify events to track changes to
     // the keyboard mapping.
@@ -1122,6 +1151,8 @@ int _glfwPlatformInit(void)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XCreateFontCursor");
     _glfw.x11.xlib.CreateIC = (PFN_XCreateIC)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XCreateIC");
+    _glfw.x11.xlib.CreateRegion = (PFN_XCreateRegion)
+        _glfw_dlsym(_glfw.x11.xlib.handle, "XCreateRegion");
     _glfw.x11.xlib.CreateWindow = (PFN_XCreateWindow)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XCreateWindow");
     _glfw.x11.xlib.DefineCursor = (PFN_XDefineCursor)
@@ -1132,6 +1163,8 @@ int _glfwPlatformInit(void)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XDeleteProperty");
     _glfw.x11.xlib.DestroyIC = (PFN_XDestroyIC)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XDestroyIC");
+    _glfw.x11.xlib.DestroyRegion = (PFN_XDestroyRegion)
+        _glfw_dlsym(_glfw.x11.xlib.handle, "XDestroyRegion");
     _glfw.x11.xlib.DestroyWindow = (PFN_XDestroyWindow)
         _glfw_dlsym(_glfw.x11.xlib.handle, "XDestroyWindow");
     _glfw.x11.xlib.DisplayKeycodes = (PFN_XDisplayKeycodes)
@@ -1344,11 +1377,6 @@ int _glfwPlatformInit(void)
                                        NULL);
     }
 
-#if defined(__linux__)
-    if (!_glfwInitJoysticksLinux())
-        return GLFW_FALSE;
-#endif
-
     _glfwInitTimerPOSIX();
 
     _glfwPollMonitorsX11();
@@ -1441,10 +1469,6 @@ void _glfwPlatformTerminate(void)
     //       cleanup callbacks that get called by that function
     _glfwTerminateEGL();
     _glfwTerminateGLX();
-
-#if defined(__linux__)
-    _glfwTerminateJoysticksLinux();
-#endif
 
     if (_glfw.x11.xlib.handle)
     {

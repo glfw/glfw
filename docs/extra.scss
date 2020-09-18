@@ -77,8 +77,8 @@ $box-todo-color: hsl(200,80%,85%);
 }
 
 .sm-dox,.sm-dox a,.sm-dox a:focus,.sm-dox a:active,.sm-dox a:hover,.sm-dox a.highlighted,.sm-dox ul a:hover {
-    background:none;
-    text-shadow:none;
+	background:none;
+	text-shadow:none;
 }
 
 .sm-dox a span.sub-arrow {
@@ -94,13 +94,13 @@ $box-todo-color: hsl(200,80%,85%);
 }
 
 .sm-dox ul a:hover {
-    background:$header-footer-link-color;
-    text-shadow:none;
+	background:$header-footer-link-color;
+	text-shadow:none;
 }
 
 .sm-dox ul.sm-nowrap a {
 	color:$default-text-color;
-    text-shadow:none;
+	text-shadow:none;
 }
 
 #main-nav,#main-menu,#main-menu a,#main-menu a:visited,#main-menu a:hover,#main-menu li,.memdoc,dl.reflist dd,div.toc li,.ah,span.lineno,span.lineno a,span.lineno a:hover,.note code,.pre code,.post code,.invariant code,.warning code,.attention code,.deprecated code,.bug code,.todo code,.test code,.doxtable code,.markdownTable code {
@@ -141,20 +141,20 @@ h1,h2,h2.groupheader,h3,div.toc h3,h4,h5,h6,strong,em {
 }
 
 h1 {
-  padding-top:0.5em;
-  font-size:180%;
+	padding-top:0.5em;
+	font-size:180%;
 }
 
 h2 {
-  padding-top:0.5em;
-  margin-bottom:0;
-  font-size:140%;
+	padding-top:0.5em;
+	margin-bottom:0;
+	font-size:140%;
 }
 
 h3 {
-  padding-top:0.5em;
-  margin-bottom:0;
-  font-size:110%;
+	padding-top:0.5em;
+	margin-bottom:0;
+	font-size:110%;
 }
 
 .glfwheader {
@@ -232,12 +232,12 @@ address.footer {
 }
 
 .memtitle {
-    display:none;
+	display:none;
 }
 
 .memproto,.memname {
-    font-weight:bold;
-    text-shadow:none;
+	font-weight:bold;
+	text-shadow:none;
 }
 
 #main-menu {

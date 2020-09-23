@@ -123,6 +123,8 @@ information on what to include when reporting a bug.
  - [Win32] Disabled framebuffer transparency on Windows 7 when DWM windows are
    opaque (#1512)
  - [Win32] Bugfix: Non-BMP Unicode codepoint input was reported as UTF-16
+ - [Win32] Bugfix: Monitor functions could return invalid values after
+   configuration change (#1761)
  - [Cocoa] Changed `EGLNativeWindowType` from `NSView` to `CALayer` (#1169)
  - [Cocoa] Bugfix: Non-BMP Unicode codepoint input was reported as UTF-16
    (#1635)

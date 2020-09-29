@@ -52,10 +52,6 @@ src/glfw_config.h
 src/glfw3.pc
 src/glfw3Config.cmake
 src/glfw3ConfigVersion.cmake
-src/wayland-pointer-constraints-unstable-v1-client-protocol.h
-src/wayland-pointer-constraints-unstable-v1-protocol.c
-src/wayland-relative-pointer-unstable-v1-client-protocol.h
-src/wayland-relative-pointer-unstable-v1-protocol.c
 
 # Compiled binaries
 src/libglfw.so

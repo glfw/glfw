@@ -191,20 +191,18 @@ endif()
 # Use Wayland for window creation
 #--------------------------------------------------------------------
 if (_GLFW_WAYLAND)
-    find_package(ECM REQUIRED NO_MODULE)
-    list(APPEND CMAKE_MODULE_PATH "${ECM_MODULE_PATH}")
 
-    find_package(Wayland REQUIRED Client Cursor Egl)
-    find_package(WaylandScanner REQUIRED)
-    find_package(WaylandProtocols 1.15 REQUIRED)
+    include(FindPkgConfig)
+    pkg_check_modules(Wayland REQUIRED
+        wayland-client>=0.2.7
+        wayland-cursor>=0.2.7
+        wayland-egl>=0.2.7
+        xkbcommon)
 
     list(APPEND glfw_PKG_DEPS "wayland-client")
 
     list(APPEND glfw_INCLUDE_DIRS "${Wayland_INCLUDE_DIRS}")
-    list(APPEND glfw_LIBRARIES "${Wayland_LIBRARIES}")
-
-    find_package(XKBCommon REQUIRED)
-    list(APPEND glfw_INCLUDE_DIRS "${XKBCOMMON_INCLUDE_DIRS}")
+    list(APPEND glfw_LIBRARIES "${Wayland_LINK_LIBRARIES}")
 
     include(CheckIncludeFiles)
     include(CheckFunctionExists)

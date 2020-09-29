@@ -45,30 +45,44 @@ if (_GLFW_X11 OR _GLFW_WAYLAND)
 endif()
 
 if (_GLFW_WAYLAND)
-    ecm_add_wayland_client_protocol(GLFW_WAYLAND_PROTOCOL_SOURCES
-        PROTOCOL
-        "${WAYLAND_PROTOCOLS_PKGDATADIR}/stable/xdg-shell/xdg-shell.xml"
-        BASENAME xdg-shell)
-    ecm_add_wayland_client_protocol(GLFW_WAYLAND_PROTOCOL_SOURCES
-        PROTOCOL
-        "${WAYLAND_PROTOCOLS_PKGDATADIR}/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml"
-        BASENAME xdg-decoration)
-    ecm_add_wayland_client_protocol(GLFW_WAYLAND_PROTOCOL_SOURCES
-        PROTOCOL
-        "${WAYLAND_PROTOCOLS_PKGDATADIR}/stable/viewporter/viewporter.xml"
-        BASENAME viewporter)
-    ecm_add_wayland_client_protocol(GLFW_WAYLAND_PROTOCOL_SOURCES
-        PROTOCOL
-        "${WAYLAND_PROTOCOLS_PKGDATADIR}/unstable/relative-pointer/relative-pointer-unstable-v1.xml"
-        BASENAME relative-pointer-unstable-v1)
-    ecm_add_wayland_client_protocol(GLFW_WAYLAND_PROTOCOL_SOURCES
-        PROTOCOL
-        "${WAYLAND_PROTOCOLS_PKGDATADIR}/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml"
-        BASENAME pointer-constraints-unstable-v1)
-    ecm_add_wayland_client_protocol(GLFW_WAYLAND_PROTOCOL_SOURCES
-        PROTOCOL
-        "${WAYLAND_PROTOCOLS_PKGDATADIR}/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml"
-        BASENAME idle-inhibit-unstable-v1)
+    find_program(WAYLAND_SCANNER_EXECUTABLE NAMES wayland-scanner)
+    pkg_check_modules(WAYLAND_PROTOCOLS REQUIRED wayland-protocols>=1.15)
+    pkg_get_variable(WAYLAND_PROTOCOLS_BASE wayland-protocols pkgdatadir)
+
+    macro(wayland_generate protocol_file output_file)
+          add_custom_command(OUTPUT ${output_file}.h
+              COMMAND ${WAYLAND_SCANNER_EXECUTABLE} client-header
+              < ${protocol_file} > ${output_file}.h
+              DEPENDS ${protocol_file})
+          list(APPEND GLFW_WAYLAND_PROTOCOL_SOURCES ${output_file}.h)
+
+          add_custom_command(OUTPUT ${output_file}.c 
+              COMMAND ${WAYLAND_SCANNER_EXECUTABLE} private-code
+              < ${protocol_file} > ${output_file}.c
+              DEPENDS ${protocol_file})
+          list(APPEND GLFW_WAYLAND_PROTOCOL_SOURCES ${output_file}.c)
+    endmacro()
+
+    set(GLFW_WAYLAND_PROTOCOL_SOURCES)
+    wayland_generate(
+        ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml
+        ${CMAKE_BINARY_DIR}/src/wayland-xdg-shell-client-protocol)
+    wayland_generate(
+        ${WAYLAND_PROTOCOLS_BASE}/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml
+        ${CMAKE_BINARY_DIR}/src/wayland-xdg-decoration-client-protocol)
+    wayland_generate(
+        ${WAYLAND_PROTOCOLS_BASE}/stable/viewporter/viewporter.xml
+        ${CMAKE_BINARY_DIR}/src/wayland-viewporter-client-protocol)
+    wayland_generate(
+        ${WAYLAND_PROTOCOLS_BASE}/unstable/relative-pointer/relative-pointer-unstable-v1.xml
+        ${CMAKE_BINARY_DIR}/src/wayland-relative-pointer-unstable-v1-client-protocol)
+    wayland_generate(
+        ${WAYLAND_PROTOCOLS_BASE}/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml
+        ${CMAKE_BINARY_DIR}/src/wayland-pointer-constraints-unstable-v1-client-protocol)
+    wayland_generate(
+        ${WAYLAND_PROTOCOLS_BASE}/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml
+        ${CMAKE_BINARY_DIR}/src/wayland-idle-inhibit-unstable-v1-client-protocol)
+
     target_sources(glfw PRIVATE ${GLFW_WAYLAND_PROTOCOL_SOURCES})
 endif()
 

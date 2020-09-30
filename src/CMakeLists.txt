@@ -56,7 +56,7 @@ if (_GLFW_WAYLAND)
               DEPENDS ${protocol_file})
           list(APPEND GLFW_WAYLAND_PROTOCOL_SOURCES ${output_file}.h)
 
-          add_custom_command(OUTPUT ${output_file}.c 
+          add_custom_command(OUTPUT ${output_file}.c
               COMMAND ${WAYLAND_SCANNER_EXECUTABLE} private-code
               < ${protocol_file} > ${output_file}.c
               DEPENDS ${protocol_file})

@@ -41,7 +41,6 @@ matrix:
           addons:
               apt:
                   packages:
-                      - extra-cmake-modules
                       - wayland-protocols
                       - libwayland-dev
                       - libxkbcommon-dev
@@ -56,7 +55,6 @@ matrix:
           addons:
               apt:
                   packages:
-                      - extra-cmake-modules
                       - wayland-protocols
                       - libwayland-dev
                       - libxkbcommon-dev

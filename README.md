@@ -185,6 +185,7 @@ skills.
  - Rok Breulj
  - Kai Burjack
  - Martin Capitanio
+ - Nicolas Caramelli
  - David Carlier
  - Arturo Castro
  - Chi-kwan Chan

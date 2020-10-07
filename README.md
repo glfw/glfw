@@ -126,6 +126,7 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: Monitor functions could return invalid values after
    configuration change (#1761)
  - [Win32] Bugfix: Initialization would segfault on Windows 8 (not 8.1) (#1775)
+ - [Win32] Bugfix: Duplicate size events were not filtered (#1610)
  - [Cocoa] Changed `EGLNativeWindowType` from `NSView` to `CALayer` (#1169)
  - [Cocoa] Bugfix: Non-BMP Unicode codepoint input was reported as UTF-16
    (#1635)
@@ -254,6 +255,7 @@ skills.
  - Shane Liesegang
  - Anders Lindqvist
  - Leon Linhart
+ - Marco Lizza
  - Eyal Lotem
  - Aaron Loucks
  - Luflosi

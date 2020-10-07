@@ -321,6 +321,9 @@ typedef struct _GLFWwindowWin32
     GLFWbool            transparent;
     GLFWbool            scaleToMonitor;
 
+    // Cached size used to filter out duplicate events
+    int                 width, height;
+
     // The last received cursor position, regardless of source
     int                 lastCursorPosX, lastCursorPosY;
     // The last recevied high surrogate when decoding pairs of UTF-16 messages

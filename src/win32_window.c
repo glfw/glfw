@@ -954,6 +954,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_SIZE:
         {
+            const int width = LOWORD(lParam);
+            const int height = HIWORD(lParam);
             const GLFWbool iconified = wParam == SIZE_MINIMIZED;
             const GLFWbool maximized = wParam == SIZE_MAXIMIZED ||
                                        (window->win32.maximized &&
@@ -968,8 +970,14 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (window->win32.maximized != maximized)
                 _glfwInputWindowMaximize(window, maximized);
 
-            _glfwInputFramebufferSize(window, LOWORD(lParam), HIWORD(lParam));
-            _glfwInputWindowSize(window, LOWORD(lParam), HIWORD(lParam));
+            if (width != window->win32.width || height != window->win32.height)
+            {
+                window->win32.width = width;
+                window->win32.height = height;
+
+                _glfwInputFramebufferSize(window, width, height);
+                _glfwInputWindowSize(window, width, height);
+            }
 
             if (window->monitor && window->win32.iconified != iconified)
             {
@@ -1306,6 +1314,8 @@ static int createNativeWindow(_GLFWwindow* window,
         updateFramebufferTransparency(window);
         window->win32.transparent = GLFW_TRUE;
     }
+
+    _glfwPlatformGetWindowSize(window, &window->win32.width, &window->win32.height);
 
     return GLFW_TRUE;
 }

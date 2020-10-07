@@ -109,18 +109,20 @@ target_include_directories(glfw PRIVATE
                            ${glfw_INCLUDE_DIRS})
 target_link_libraries(glfw PRIVATE ${glfw_LIBRARIES})
 
-if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
-    "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR
-    "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
-
-    # Make GCC and Clang warn about declarations that VS 2010 and 2012 won't
-    # accept for all source files that VS will build
+# Make GCC warn about declarations that VS 2010 and 2012 won't accept for all
+# source files that VS will build (Clang ignores this because we set -std=c99)
+if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     set_source_files_properties(context.c init.c input.c monitor.c vulkan.c
                                 window.c win32_init.c win32_joystick.c
                                 win32_monitor.c win32_time.c win32_thread.c
                                 win32_window.c wgl_context.c egl_context.c
                                 osmesa_context.c PROPERTIES
                                 COMPILE_FLAGS -Wdeclaration-after-statement)
+endif()
+
+if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
+    "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR
+    "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
 
     # Enable a reasonable set of warnings (no, -Wextra is not reasonable)
     target_compile_options(glfw PRIVATE "-Wall")

@@ -66,22 +66,22 @@ if (_GLFW_WAYLAND)
     set(GLFW_WAYLAND_PROTOCOL_SOURCES)
     wayland_generate(
         ${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml
-        ${CMAKE_BINARY_DIR}/src/wayland-xdg-shell-client-protocol)
+        ${GLFW_BINARY_DIR}/src/wayland-xdg-shell-client-protocol)
     wayland_generate(
         ${WAYLAND_PROTOCOLS_BASE}/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml
-        ${CMAKE_BINARY_DIR}/src/wayland-xdg-decoration-client-protocol)
+        ${GLFW_BINARY_DIR}/src/wayland-xdg-decoration-client-protocol)
     wayland_generate(
         ${WAYLAND_PROTOCOLS_BASE}/stable/viewporter/viewporter.xml
-        ${CMAKE_BINARY_DIR}/src/wayland-viewporter-client-protocol)
+        ${GLFW_BINARY_DIR}/src/wayland-viewporter-client-protocol)
     wayland_generate(
         ${WAYLAND_PROTOCOLS_BASE}/unstable/relative-pointer/relative-pointer-unstable-v1.xml
-        ${CMAKE_BINARY_DIR}/src/wayland-relative-pointer-unstable-v1-client-protocol)
+        ${GLFW_BINARY_DIR}/src/wayland-relative-pointer-unstable-v1-client-protocol)
     wayland_generate(
         ${WAYLAND_PROTOCOLS_BASE}/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml
-        ${CMAKE_BINARY_DIR}/src/wayland-pointer-constraints-unstable-v1-client-protocol)
+        ${GLFW_BINARY_DIR}/src/wayland-pointer-constraints-unstable-v1-client-protocol)
     wayland_generate(
         ${WAYLAND_PROTOCOLS_BASE}/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml
-        ${CMAKE_BINARY_DIR}/src/wayland-idle-inhibit-unstable-v1-client-protocol)
+        ${GLFW_BINARY_DIR}/src/wayland-idle-inhibit-unstable-v1-client-protocol)
 
     target_sources(glfw PRIVATE ${GLFW_WAYLAND_PROTOCOL_SOURCES})
 endif()

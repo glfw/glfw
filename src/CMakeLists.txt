@@ -80,6 +80,9 @@ if (_GLFW_WAYLAND)
         ${WAYLAND_PROTOCOLS_BASE}/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml
         ${CMAKE_BINARY_DIR}/src/wayland-pointer-constraints-unstable-v1-client-protocol)
     wayland_generate(
+        ${WAYLAND_PROTOCOLS_BASE}/unstable/tablet/tablet-unstable-v2.xml
+        ${CMAKE_BINARY_DIR}/src/wayland-tablet-unstable-v2-client-protocol)
+    wayland_generate(
         ${WAYLAND_PROTOCOLS_BASE}/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml
         ${CMAKE_BINARY_DIR}/src/wayland-idle-inhibit-unstable-v1-client-protocol)
 

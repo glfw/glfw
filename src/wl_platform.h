@@ -59,6 +59,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #include "wayland-viewporter-client-protocol.h"
 #include "wayland-relative-pointer-unstable-v1-client-protocol.h"
 #include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
+#include "wayland-tablet-unstable-v2-client-protocol.h"
 #include "wayland-idle-inhibit-unstable-v1-client-protocol.h"
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
@@ -234,6 +235,13 @@ typedef struct _GLFWlibraryWayland
     struct wp_viewporter*       viewporter;
     struct zwp_relative_pointer_manager_v1* relativePointerManager;
     struct zwp_pointer_constraints_v1*      pointerConstraints;
+    struct zwp_tablet_manager_v2*           tabletManager;
+    struct zwp_tablet_seat_v2*              tabletSeat;
+    struct zwp_tablet_v2*                   tablet;
+    struct zwp_tablet_tool_v2**             tabletTools;
+    int                                     tabletToolsCount;
+    int                                     tabletToolsSize;
+    struct zwp_tablet_pad_v2*               tabletPad;
     struct zwp_idle_inhibit_manager_v1*     idleInhibitManager;
 
     int                         compositorVersion;

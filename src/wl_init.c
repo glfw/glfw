@@ -769,6 +769,390 @@ static const struct wl_data_device_listener dataDeviceListener = {
     dataDeviceHandleSelection,
 };
 
+void tabletName(void *data,
+                struct zwp_tablet_v2 *zwp_tablet_v2,
+                const char *name)
+{
+    printf("Tablet name: %s\n", name);
+}
+
+void tabletId(void *data,
+              struct zwp_tablet_v2 *zwp_tablet_v2,
+              uint32_t vid,
+              uint32_t pid)
+{
+    printf("Tablet id: %04u:%04u\n", vid, pid);
+}
+
+void tabletPath(void *data,
+                struct zwp_tablet_v2 *zwp_tablet_v2,
+                const char *path)
+{
+    printf("Tablet path: %s\n", path);
+}
+
+void tabletDone(void *data,
+                struct zwp_tablet_v2 *zwp_tablet_v2)
+{
+    printf("Tablet done\n");
+}
+
+void tabletRemoved(void *data,
+                   struct zwp_tablet_v2 *zwp_tablet_v2)
+{
+    printf("Tablet removed\n");
+    _glfw.wl.tablet = NULL;
+}
+
+static const struct zwp_tablet_v2_listener tabletListener = {
+    tabletName,
+    tabletId,
+    tabletPath,
+    tabletDone,
+    tabletRemoved,
+};
+
+void tabletToolType(void *data,
+                    struct zwp_tablet_tool_v2 *tool,
+                    uint32_t toolType)
+{
+    const char *name;
+    switch (toolType)
+    {
+        case ZWP_TABLET_TOOL_V2_TYPE_PEN:
+            name = "pen";
+            break;
+        case ZWP_TABLET_TOOL_V2_TYPE_ERASER:
+            name = "eraser";
+            break;
+        case ZWP_TABLET_TOOL_V2_TYPE_BRUSH:
+            name = "brush";
+            break;
+        case ZWP_TABLET_TOOL_V2_TYPE_PENCIL:
+            name = "pencil";
+            break;
+        case ZWP_TABLET_TOOL_V2_TYPE_AIRBRUSH:
+            name = "airbrush";
+            break;
+        case ZWP_TABLET_TOOL_V2_TYPE_FINGER:
+            name = "finger";
+            break;
+        case ZWP_TABLET_TOOL_V2_TYPE_MOUSE:
+            name = "mouse";
+            break;
+        case ZWP_TABLET_TOOL_V2_TYPE_LENS:
+            name = "lens";
+            break;
+        default:
+            name = "unknown";
+            break;
+    }
+    printf("Tablet tool type: %s\n", name);
+}
+
+void tabletToolHardwareSerial(void *data,
+                              struct zwp_tablet_tool_v2 *tool,
+                              uint32_t hardwareSerialHi,
+                              uint32_t hardwareSerialLo)
+{
+    uint64_t hardwareSerial = (uint64_t)hardwareSerialHi << 32 | (uint64_t)hardwareSerialLo;
+    printf("Tablet tool hardware serial: %"PRId64"\n", hardwareSerial);
+}
+
+void tabletToolHardwareIdWacom(void *data,
+                               struct zwp_tablet_tool_v2 *tool,
+                               uint32_t hardwareIdHi,
+                               uint32_t hardwareIdLo)
+{
+    uint64_t hardwareId = (uint64_t)hardwareIdHi << 32 | (uint64_t)hardwareIdLo;
+    printf("Tablet tool hardware id Wacom: %"PRId64"\n", hardwareId);
+}
+
+void tabletToolCapability(void *data,
+                          struct zwp_tablet_tool_v2 *tool,
+                          uint32_t capability)
+{
+    const char *name;
+    switch (capability)
+    {
+        case ZWP_TABLET_TOOL_V2_CAPABILITY_TILT:
+            name = "tilt";
+            break;
+        case ZWP_TABLET_TOOL_V2_CAPABILITY_PRESSURE:
+            name = "pressure";
+            break;
+        case ZWP_TABLET_TOOL_V2_CAPABILITY_DISTANCE:
+            name = "distance";
+            break;
+        case ZWP_TABLET_TOOL_V2_CAPABILITY_ROTATION:
+            name = "rotation";
+            break;
+        case ZWP_TABLET_TOOL_V2_CAPABILITY_SLIDER:
+            name = "slider";
+            break;
+        case ZWP_TABLET_TOOL_V2_CAPABILITY_WHEEL:
+            name = "wheel";
+            break;
+        default:
+            name = "unknown";
+            break;
+    }
+    printf("Tablet tool capability: %s\n", name);
+}
+
+void tabletToolDone(void *data,
+                    struct zwp_tablet_tool_v2 *tool)
+{
+    printf("Tablet tool done\n");
+}
+
+void tabletToolRemoved(void *data,
+                       struct zwp_tablet_tool_v2 *tool)
+{
+    printf("Tablet tool removed (unimplemented)\n");
+}
+
+void tabletToolProximityIn(void *data,
+                           struct zwp_tablet_tool_v2 *tool,
+                           uint32_t serial,
+                           struct zwp_tablet_v2 *tablet,
+                           struct wl_surface *surface)
+{
+    printf("Tablet tool proximity in: %p %p\n", tablet, surface);
+}
+
+void tabletToolProximityOut(void *data,
+                            struct zwp_tablet_tool_v2 *tool)
+{
+    printf("Tablet tool proximity out\n");
+}
+
+void tabletToolDown(void *data,
+                    struct zwp_tablet_tool_v2 *tool,
+                    uint32_t serial)
+{
+    printf("Tablet tool down\n");
+}
+
+void tabletToolUp(void *data,
+                  struct zwp_tablet_tool_v2 *tool)
+{
+    printf("Tablet tool up\n");
+}
+
+void tabletToolMotion(void *data,
+                      struct zwp_tablet_tool_v2 *tool,
+                      wl_fixed_t x,
+                      wl_fixed_t y)
+{
+    printf("Tablet tool motion: %f %f\n", wl_fixed_to_double(x), wl_fixed_to_double(y));
+}
+
+void tabletToolPressure(void *data,
+                        struct zwp_tablet_tool_v2 *tool,
+                        uint32_t pressure)
+{
+    printf("Tablet tool pressure: %u\n", pressure);
+}
+
+void tabletToolDistance(void *data,
+                        struct zwp_tablet_tool_v2 *tool,
+                        uint32_t distance)
+{
+    printf("Tablet tool distance: %u\n", distance);
+}
+
+void tabletToolTilt(void *data,
+                    struct zwp_tablet_tool_v2 *tool,
+                    wl_fixed_t tiltX,
+                    wl_fixed_t tiltY)
+{
+    printf("Tablet tool tilt: %f %f\n", wl_fixed_to_double(tiltX), wl_fixed_to_double(tiltY));
+}
+
+void tabletToolRotation(void *data,
+                        struct zwp_tablet_tool_v2 *tool,
+                        wl_fixed_t degrees)
+{
+    printf("Tablet tool rotation: %f°\n", wl_fixed_to_double(degrees));
+}
+
+void tabletToolSlider(void *data,
+                      struct zwp_tablet_tool_v2 *tool,
+                      int32_t position)
+{
+    printf("Tablet tool slider: %d\n", position);
+}
+
+void tabletToolWheel(void *data,
+                     struct zwp_tablet_tool_v2 *tool,
+                     wl_fixed_t degrees,
+                     int32_t clicks)
+{
+    printf("Tablet tool wheel: %f° %d\n", wl_fixed_to_double(degrees), clicks);
+}
+
+void tabletToolButton(void *data,
+                      struct zwp_tablet_tool_v2 *tool,
+                      uint32_t serial,
+                      uint32_t button,
+                      uint32_t state)
+{
+    printf("Tablet tool button: %u %u\n", button, state);
+}
+
+void tabletToolFrame(void *data,
+                     struct zwp_tablet_tool_v2 *tool,
+                     uint32_t time)
+{
+    printf("Tablet tool frame: %u\n", time);
+}
+
+struct zwp_tablet_tool_v2_listener tabletToolListener = {
+    tabletToolType,
+    tabletToolHardwareSerial,
+    tabletToolHardwareIdWacom,
+    tabletToolCapability,
+    tabletToolDone,
+    tabletToolRemoved,
+    tabletToolProximityIn,
+    tabletToolProximityOut,
+    tabletToolDown,
+    tabletToolUp,
+    tabletToolMotion,
+    tabletToolPressure,
+    tabletToolDistance,
+    tabletToolTilt,
+    tabletToolRotation,
+    tabletToolSlider,
+    tabletToolWheel,
+    tabletToolButton,
+    tabletToolFrame,
+};
+
+void tabletPadGroup(void *data,
+                    struct zwp_tablet_pad_v2 *pad,
+                    struct zwp_tablet_pad_group_v2 *padGroup)
+{
+    printf("New pad group: %p\n", padGroup);
+}
+
+void tabletPadPath(void *data,
+                   struct zwp_tablet_pad_v2 *pad,
+                   const char *path)
+{
+    printf("Tablet pad path: %s\n", path);
+}
+
+void tabletPadButtons(void *data,
+                      struct zwp_tablet_pad_v2 *pad,
+                      uint32_t buttons)
+{
+    printf("Tablet pad buttons: %u\n", buttons);
+}
+
+void tabletPadDone(void *data,
+                   struct zwp_tablet_pad_v2 *pad)
+{
+    printf("Tablet pad done\n");
+}
+
+void tabletPadButton(void *data,
+                     struct zwp_tablet_pad_v2 *pad,
+                     uint32_t time,
+                     uint32_t button,
+                     uint32_t state)
+{
+    printf("Tablet pad button: %u %u %u\n", time, button, state);
+}
+
+void tabletPadEnter(void *data,
+                    struct zwp_tablet_pad_v2 *pad,
+                    uint32_t serial,
+                    struct zwp_tablet_v2 *tablet,
+                    struct wl_surface *surface)
+{
+    printf("Tablet pad enter: %p %p\n", tablet, surface);
+}
+
+void tabletPadLeave(void *data,
+                    struct zwp_tablet_pad_v2 *pad,
+                    uint32_t serial,
+                    struct wl_surface *surface)
+{
+    printf("Tablet pad leave: %p\n", surface);
+}
+
+void tabletPadRemoved(void *data,
+                      struct zwp_tablet_pad_v2 *pad)
+{
+    printf("Tablet pad removed (unimplemented)\n");
+}
+
+struct zwp_tablet_pad_v2_listener tabletPadListener = {
+    tabletPadGroup,
+    tabletPadPath,
+    tabletPadButtons,
+    tabletPadDone,
+    tabletPadButton,
+    tabletPadEnter,
+    tabletPadLeave,
+    tabletPadRemoved,
+};
+
+void tabletSeatTabletAdded(void *data,
+                           struct zwp_tablet_seat_v2 *seat,
+                           struct zwp_tablet_v2 *tablet)
+{
+    printf("New tablet %p!\n", tablet);
+    if (_glfw.wl.tablet) {
+        printf("Already there, skipping…\n");
+        return;
+    }
+
+    _glfw.wl.tablet = tablet;
+    zwp_tablet_v2_add_listener(_glfw.wl.tablet, &tabletListener, NULL);
+}
+
+void tabletSeatToolAdded(void *data,
+                         struct zwp_tablet_seat_v2 *seat,
+                         struct zwp_tablet_tool_v2 *tool)
+{
+    printf("New tool %p!\n", tool);
+
+    if (_glfw.wl.tabletToolsCount + 1 > _glfw.wl.tabletToolsSize)
+    {
+        ++_glfw.wl.tabletToolsSize;
+        _glfw.wl.tabletTools =
+            realloc(_glfw.wl.tabletTools,
+                    _glfw.wl.tabletToolsSize * sizeof(struct zwp_tablet_tool_v2 *));
+    }
+
+    zwp_tablet_tool_v2_add_listener(tool, &tabletToolListener, NULL);
+    _glfw.wl.tabletTools[_glfw.wl.tabletToolsCount++] = tool;
+}
+
+void tabletSeatPadAdded(void *data,
+                        struct zwp_tablet_seat_v2 *seat,
+                        struct zwp_tablet_pad_v2 *pad)
+{
+    // TODO: Do we really want to implement that now?
+    printf("New pad %p\n", pad);
+    if (_glfw.wl.tabletPad) {
+        printf("Already there, skipping…\n");
+        return;
+    }
+
+    _glfw.wl.tabletPad = pad;
+    zwp_tablet_pad_v2_add_listener(_glfw.wl.tabletPad, &tabletPadListener, NULL);
+}
+
+static const struct zwp_tablet_seat_v2_listener tabletSeatListener = {
+    tabletSeatTabletAdded,
+    tabletSeatToolAdded,
+    tabletSeatPadAdded,
+};
+
 static void wmBaseHandlePing(void* data,
                              struct xdg_wm_base* wmBase,
                              uint32_t serial)
@@ -857,6 +1241,13 @@ static void registryHandleGlobal(void* data,
         _glfw.wl.pointerConstraints =
             wl_registry_bind(registry, name,
                              &zwp_pointer_constraints_v1_interface,
+                             1);
+    }
+    else if (strcmp(interface, "zwp_tablet_manager_v2") == 0)
+    {
+        _glfw.wl.tabletManager =
+            wl_registry_bind(registry, name,
+                             &zwp_tablet_manager_v2_interface,
                              1);
     }
     else if (strcmp(interface, "zwp_idle_inhibit_manager_v1") == 0)
@@ -1203,6 +1594,14 @@ int _glfwPlatformInit(void)
         _glfw.wl.clipboardSize = 4096;
     }
 
+    if (_glfw.wl.seat && _glfw.wl.tabletManager)
+    {
+        _glfw.wl.tabletSeat =
+            zwp_tablet_manager_v2_get_tablet_seat(_glfw.wl.tabletManager,
+                                                  _glfw.wl.seat);
+        zwp_tablet_seat_v2_add_listener(_glfw.wl.tabletSeat, &tabletSeatListener, NULL);
+    }
+
     return GLFW_TRUE;
 }
 
@@ -1273,6 +1672,10 @@ void _glfwPlatformTerminate(void)
         zwp_relative_pointer_manager_v1_destroy(_glfw.wl.relativePointerManager);
     if (_glfw.wl.pointerConstraints)
         zwp_pointer_constraints_v1_destroy(_glfw.wl.pointerConstraints);
+    if (_glfw.wl.tabletSeat)
+        zwp_tablet_seat_v2_destroy(_glfw.wl.tabletSeat);
+    if (_glfw.wl.tabletManager)
+        zwp_tablet_manager_v2_destroy(_glfw.wl.tabletManager);
     if (_glfw.wl.idleInhibitManager)
         zwp_idle_inhibit_manager_v1_destroy(_glfw.wl.idleInhibitManager);
     if (_glfw.wl.registry)

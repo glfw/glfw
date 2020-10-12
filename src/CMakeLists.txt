@@ -50,18 +50,18 @@ if (_GLFW_WAYLAND)
     pkg_get_variable(WAYLAND_PROTOCOLS_BASE wayland-protocols pkgdatadir)
 
     macro(wayland_generate protocol_file output_file)
-          add_custom_command(OUTPUT "${output_file}.h"
-              COMMAND "${WAYLAND_SCANNER_EXECUTABLE}" client-header "${protocol_file}" "${output_file}.h"
-              DEPENDS "${protocol_file}"
-              VERBATIM)
-          list(APPEND GLFW_WAYLAND_PROTOCOL_SOURCES "${output_file}.h)"
+        add_custom_command(OUTPUT "${output_file}.h"
+            COMMAND "${WAYLAND_SCANNER_EXECUTABLE}" client-header "${protocol_file}" "${output_file}.h"
+            DEPENDS "${protocol_file}"
+            VERBATIM)
+        list(APPEND GLFW_WAYLAND_PROTOCOL_SOURCES "${output_file}.h)"
 
-          add_custom_command(OUTPUT "${output_file}.c"
-              COMMAND "${WAYLAND_SCANNER_EXECUTABLE}" private-code "${protocol_file}" "${output_file}.c"
-              DEPENDS "${protocol_file}"
-              VERBATIM)
+        add_custom_command(OUTPUT "${output_file}.c"
+            COMMAND "${WAYLAND_SCANNER_EXECUTABLE}" private-code "${protocol_file}" "${output_file}.c"
+            DEPENDS "${protocol_file}"
+            VERBATIM)
 
-          list(APPEND GLFW_WAYLAND_PROTOCOL_SOURCES "${output_file}.c")
+        list(APPEND GLFW_WAYLAND_PROTOCOL_SOURCES "${output_file}.c")
     endmacro()
 
     set(GLFW_WAYLAND_PROTOCOL_SOURCES)

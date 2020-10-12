@@ -69,8 +69,8 @@ endif()
 #--------------------------------------------------------------------
 # Set compiler specific flags
 #--------------------------------------------------------------------
-if (MSVC)
-    if (NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
+if (MSVC AND NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
+    if (${CMAKE_VERSION} VERSION_LESS 3.15)
         foreach (flag CMAKE_C_FLAGS
                       CMAKE_C_FLAGS_DEBUG
                       CMAKE_C_FLAGS_RELEASE
@@ -85,6 +85,8 @@ if (MSVC)
             endif()
 
         endforeach()
+    else()
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     endif()
 endif()
 

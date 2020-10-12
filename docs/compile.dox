@@ -235,6 +235,10 @@ __USE_MSVC_RUNTIME_LIBRARY_DLL__ determines whether to use the DLL version or th
 static library version of the Visual C++ runtime library.  If set to `ON`, the
 DLL version of the Visual C++ library is used.
 
+@note On CMake 3.15 and later you can set the
+[CMAKE_MSVC_RUNTIME_LIBRARY](https://cmake.org/cmake/help/latest/variable/CMAKE_MSVC_RUNTIME_LIBRARY.html)
+variable instead of this option.
+
 @anchor GLFW_USE_HYBRID_HPG
 __GLFW_USE_HYBRID_HPG__ determines whether to export the `NvOptimusEnablement` and
 `AmdPowerXpressRequestHighPerformance` symbols, which force the use of the

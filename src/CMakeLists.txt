@@ -54,17 +54,15 @@ if (_GLFW_WAYLAND)
             COMMAND "${WAYLAND_SCANNER_EXECUTABLE}" client-header "${protocol_file}" "${output_file}.h"
             DEPENDS "${protocol_file}"
             VERBATIM)
-        list(APPEND GLFW_WAYLAND_PROTOCOL_SOURCES "${output_file}.h)"
 
         add_custom_command(OUTPUT "${output_file}.c"
             COMMAND "${WAYLAND_SCANNER_EXECUTABLE}" private-code "${protocol_file}" "${output_file}.c"
             DEPENDS "${protocol_file}"
             VERBATIM)
 
-        list(APPEND GLFW_WAYLAND_PROTOCOL_SOURCES "${output_file}.c")
+        target_sources(glfw PRIVATE "${output_file}.h" "${output_file}.c")
     endmacro()
 
-    set(GLFW_WAYLAND_PROTOCOL_SOURCES)
     wayland_generate(
         "${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml"
         "${GLFW_BINARY_DIR}/src/wayland-xdg-shell-client-protocol")
@@ -83,8 +81,6 @@ if (_GLFW_WAYLAND)
     wayland_generate(
         "${WAYLAND_PROTOCOLS_BASE}/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml"
         "${GLFW_BINARY_DIR}/src/wayland-idle-inhibit-unstable-v1-client-protocol")
-
-    target_sources(glfw PRIVATE ${GLFW_WAYLAND_PROTOCOL_SOURCES})
 endif()
 
 if (WIN32 AND BUILD_SHARED_LIBS)

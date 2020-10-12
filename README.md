@@ -434,6 +434,7 @@ skills.
  - Jay Weisskopf
  - Frank Wille
  - Andy Williams
+ - Joel Winarske
  - Tatsuya Yatagawa
  - Ryogo Yoshimura
  - Lukas Zanner

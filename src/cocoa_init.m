@@ -251,7 +251,7 @@ static void createKeyTables(void)
     _glfw.ns.keycodes[0x6D] = GLFW_KEY_F10;
     _glfw.ns.keycodes[0x67] = GLFW_KEY_F11;
     _glfw.ns.keycodes[0x6F] = GLFW_KEY_F12;
-    _glfw.ns.keycodes[0x69] = GLFW_KEY_F13;
+    _glfw.ns.keycodes[0x69] = GLFW_KEY_PRINT_SCREEN;
     _glfw.ns.keycodes[0x6B] = GLFW_KEY_F14;
     _glfw.ns.keycodes[0x71] = GLFW_KEY_F15;
     _glfw.ns.keycodes[0x6A] = GLFW_KEY_F16;

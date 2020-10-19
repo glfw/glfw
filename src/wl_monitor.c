@@ -81,7 +81,16 @@ static void outputHandleMode(void* data,
     monitor->modes[monitor->modeCount - 1] = mode;
 
     if (flags & WL_OUTPUT_MODE_CURRENT)
+    {
         monitor->wl.currentMode = monitor->modeCount - 1;
+
+        if (monitor->widthMM <= 0 || monitor->heightMM <= 0)
+        {
+            // If Wayland does not provide a physical size, assume the default 96 DPI
+            monitor->widthMM  = (int) (width * 25.4f / 96.f);
+            monitor->heightMM = (int) (height * 25.4f / 96.f);
+        }
+    }
 }
 
 static void outputHandleDone(void* data, struct wl_output* output)

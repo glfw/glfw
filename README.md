@@ -162,6 +162,8 @@ information on what to include when reporting a bug.
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)
  - [Cocoa] Changed `EGLNativeWindowType` from `NSView` to `CALayer` (#1169)
+ - [Cocoa] Changed F13 key to report Print Screen for cross-platform consistency
+   (#1786)
  - [Cocoa] Removed dependency on the CoreVideo framework
  - [Cocoa] Bugfix: `glfwSetWindowSize` used a bottom-left anchor point (#1553)
  - [Cocoa] Bugfix: Window remained on screen after destruction until event poll
@@ -428,6 +430,7 @@ skills.
  - Waris
  - Jay Weisskopf
  - Frank Wille
+ - Andy Williams
  - Tatsuya Yatagawa
  - Ryogo Yoshimura
  - Lukas Zanner

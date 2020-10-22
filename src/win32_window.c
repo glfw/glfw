@@ -1199,6 +1199,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             DragFinish(drop);
             return 0;
         }
+
+        case WM_QUERYENDSESSION:
+        case WM_ENDSESSION:
+        {
+            _glfwInputMachineShutdown(window);
+            return 0;
+        }
     }
 
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);

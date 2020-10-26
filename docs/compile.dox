@@ -233,7 +233,9 @@ directly with the application.
 @anchor USE_MSVC_RUNTIME_LIBRARY_DLL
 __USE_MSVC_RUNTIME_LIBRARY_DLL__ determines whether to use the DLL version or the
 static library version of the Visual C++ runtime library.  If set to `ON`, the
-DLL version of the Visual C++ library is used.
+DLL version of the Visual C++ library is used. This variable exists for cmake users
+whose version of cmake is less than 3.15 where this issue has been solved in a standard
+way, see the official cmake docs on 'CMAKE_MSVC_RUNTIME_LIBRARY'.
 
 @anchor GLFW_USE_HYBRID_HPG
 __GLFW_USE_HYBRID_HPG__ determines whether to export the `NvOptimusEnablement` and

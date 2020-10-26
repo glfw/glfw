@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.1...3.17 FATAL_ERROR)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Cmake/")
+
 project(GLFW VERSION 3.4.0 LANGUAGES C)
 
 set(CMAKE_LEGACY_CYGWIN_WIN32 OFF)
@@ -31,6 +33,7 @@ option(GLFW_VULKAN_STATIC "Assume the Vulkan loader is linked with the applicati
 
 include(GNUInstallDirs)
 include(CMakeDependentOption)
+include(glfw_msvc_runtime_library)
 
 cmake_dependent_option(GLFW_USE_OSMESA "Use OSMesa for offscreen context creation" OFF
                        "UNIX" OFF)
@@ -38,8 +41,8 @@ cmake_dependent_option(GLFW_USE_HYBRID_HPG "Force use of high-performance GPU on
                        "WIN32" OFF)
 cmake_dependent_option(GLFW_USE_WAYLAND "Use Wayland for window creation" OFF
                        "UNIX;NOT APPLE" OFF)
-cmake_dependent_option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON
-                       "MSVC" OFF)
+
+glfw_msvc_runtime_library(${GLFW_STANDALONE})
 
 if (BUILD_SHARED_LIBS AND UNIX)
     # On Unix-like systems, shared libraries can use the soname system.
@@ -64,28 +67,6 @@ find_package(Threads REQUIRED)
 if (GLFW_BUILD_DOCS)
     set(DOXYGEN_SKIP_DOT TRUE)
     find_package(Doxygen)
-endif()
-
-#--------------------------------------------------------------------
-# Set compiler specific flags
-#--------------------------------------------------------------------
-if (MSVC)
-    if (NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
-        foreach (flag CMAKE_C_FLAGS
-                      CMAKE_C_FLAGS_DEBUG
-                      CMAKE_C_FLAGS_RELEASE
-                      CMAKE_C_FLAGS_MINSIZEREL
-                      CMAKE_C_FLAGS_RELWITHDEBINFO)
-
-            if (${flag} MATCHES "/MD")
-                string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
-            endif()
-            if (${flag} MATCHES "/MDd")
-                string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
-            endif()
-
-        endforeach()
-    endif()
 endif()
 
 #--------------------------------------------------------------------

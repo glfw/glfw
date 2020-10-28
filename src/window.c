@@ -140,10 +140,12 @@ void _glfwInputWindowCloseRequest(_GLFWwindow* window)
 
 // Notifies shared code that the machine is shuting down
 //
-void _glfwInputMachineShutdown(_GLFWwindow *window)
+GLFWbool _glfwInputMachineShutdown(_GLFWwindow *window)
 {
-    if (window->callbacks.shutdown)
-        window->callbacks.shutdown((GLFWwindow*) window);
+    if (window->callbacks.shutdown) {
+        return window->callbacks.shutdown((GLFWwindow*) window);
+    }
+    return GLFW_TRUE;
 }
 
 // Notifies shared code that a window has changed its desired monitor

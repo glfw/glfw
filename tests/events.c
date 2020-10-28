@@ -329,11 +329,12 @@ static void window_close_callback(GLFWwindow* window)
     glfwSetWindowShouldClose(window, slot->closeable);
 }
 
-static void window_machine_shutdown_callback(GLFWwindow* window)
+static int window_machine_shutdown_callback(GLFWwindow* window)
 {
     printf("%08x at %0.3f: Machine shutdown detected\n",
            counter++,
            glfwGetTime());
+    return GLFW_TRUE;
 }
 
 static void window_refresh_callback(GLFWwindow* window)

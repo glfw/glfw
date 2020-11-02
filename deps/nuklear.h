@@ -2848,7 +2848,7 @@ NK_API void nk_group_set_scroll(struct nk_context*, const char *id, nk_uint x_of
 /// Parameter   | Description
 /// ------------|-----------------------------------------------------------
 /// __ctx__     | Must point to an previously initialized `nk_context` struct
-/// __type__    | Value from the nk_tree_type section to visually mark a tree node header as either a collapseable UI section or tree node
+/// __type__    | Value from the nk_tree_type section to visually mark a tree node header as either a collapsable UI section or tree node
 /// __title__   | Label printed in the tree header
 /// __state__   | Initial tree state value out of nk_collapse_states
 ///
@@ -2864,7 +2864,7 @@ NK_API void nk_group_set_scroll(struct nk_context*, const char *id, nk_uint x_of
 /// Parameter   | Description
 /// ------------|-----------------------------------------------------------
 /// __ctx__     | Must point to an previously initialized `nk_context` struct
-/// __type__    | Value from the nk_tree_type section to visually mark a tree node header as either a collapseable UI section or tree node
+/// __type__    | Value from the nk_tree_type section to visually mark a tree node header as either a collapsable UI section or tree node
 /// __title__   | Label printed in the tree header
 /// __state__   | Initial tree state value out of nk_collapse_states
 /// __id__      | Loop counter index if this function is called in a loop
@@ -2882,7 +2882,7 @@ NK_API void nk_group_set_scroll(struct nk_context*, const char *id, nk_uint x_of
 /// Parameter   | Description
 /// ------------|-----------------------------------------------------------
 /// __ctx__     | Must point to an previously initialized `nk_context` struct
-/// __type__    | Value from the nk_tree_type section to visually mark a tree node header as either a collapseable UI section or tree node
+/// __type__    | Value from the nk_tree_type section to visually mark a tree node header as either a collapsable UI section or tree node
 /// __title__   | Label printed in the tree header
 /// __state__   | Initial tree state value out of nk_collapse_states
 /// __hash__    | Memory block or string to generate the ID from
@@ -2907,7 +2907,7 @@ NK_API int nk_tree_push_hashed(struct nk_context*, enum nk_tree_type, const char
 /// Parameter   | Description
 /// ------------|-----------------------------------------------------------
 /// __ctx__     | Must point to an previously initialized `nk_context` struct
-/// __type__    | Value from the nk_tree_type section to visually mark a tree node header as either a collapseable UI section or tree node
+/// __type__    | Value from the nk_tree_type section to visually mark a tree node header as either a collapsable UI section or tree node
 /// __img__     | Image to display inside the header on the left of the label
 /// __title__   | Label printed in the tree header
 /// __state__   | Initial tree state value out of nk_collapse_states
@@ -2926,7 +2926,7 @@ NK_API int nk_tree_push_hashed(struct nk_context*, enum nk_tree_type, const char
 /// Parameter   | Description
 /// ------------|-----------------------------------------------------------
 /// __ctx__     | Must point to an previously initialized `nk_context` struct
-/// __type__    | Value from the nk_tree_type section to visually mark a tree node header as either a collapseable UI section or tree node
+/// __type__    | Value from the nk_tree_type section to visually mark a tree node header as either a collapsable UI section or tree node
 /// __img__     | Image to display inside the header on the left of the label
 /// __title__   | Label printed in the tree header
 /// __state__   | Initial tree state value out of nk_collapse_states
@@ -2945,7 +2945,7 @@ NK_API int nk_tree_push_hashed(struct nk_context*, enum nk_tree_type, const char
 /// Parameter   | Description
 /// ------------|-----------------------------------------------------------
 /// __ctx__     | Must point to an previously initialized `nk_context` struct
-/// __type__    | Value from the nk_tree_type section to visually mark a tree node header as either a collapseable UI section or tree node
+/// __type__    | Value from the nk_tree_type section to visually mark a tree node header as either a collapsable UI section or tree node
 /// __img__     | Image to display inside the header on the left of the label
 /// __title__   | Label printed in the tree header
 /// __state__   | Initial tree state value out of nk_collapse_states
@@ -2976,7 +2976,7 @@ NK_API void nk_tree_pop(struct nk_context*);
 /// Parameter   | Description
 /// ------------|-----------------------------------------------------------
 /// __ctx__     | Must point to an previously initialized `nk_context` struct after calling `nk_tree_xxx_push_xxx`
-/// __type__    | Value from the nk_tree_type section to visually mark a tree node header as either a collapseable UI section or tree node
+/// __type__    | Value from the nk_tree_type section to visually mark a tree node header as either a collapsable UI section or tree node
 /// __title__   | Label printed in the tree header
 /// __state__   | Persistent state to update
 ///
@@ -2993,7 +2993,7 @@ NK_API int nk_tree_state_push(struct nk_context*, enum nk_tree_type, const char 
 /// ------------|-----------------------------------------------------------
 /// __ctx__     | Must point to an previously initialized `nk_context` struct after calling `nk_tree_xxx_push_xxx`
 /// __img__     | Image to display inside the header on the left of the label
-/// __type__    | Value from the nk_tree_type section to visually mark a tree node header as either a collapseable UI section or tree node
+/// __type__    | Value from the nk_tree_type section to visually mark a tree node header as either a collapsable UI section or tree node
 /// __title__   | Label printed in the tree header
 /// __state__   | Persistent state to update
 ///

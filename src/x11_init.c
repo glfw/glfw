@@ -813,7 +813,7 @@ static GLFWbool initExtensions(void)
                               XkbGroupStateMask, XkbGroupStateMask);
     }
 
-    if (!getenv("GLFW_NO_XCB"))
+    if (_glfw.hints.init.x11_xcb)
     {
 #if defined(__CYGWIN__)
         _glfw.x11.x11xcb.handle = _glfw_dlopen("libX11-xcb-1.so");

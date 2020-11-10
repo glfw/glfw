@@ -248,6 +248,7 @@ struct _GLFWinitconfig
         GLFWbool  menubar;
         GLFWbool  chdir;
     } ns;
+    GLFWbool      x11_xcb;
 };
 
 // Window configuration

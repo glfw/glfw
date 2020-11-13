@@ -1,22 +1,14 @@
 cmake_minimum_required(VERSION 3.1...3.17 FATAL_ERROR)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Cmake/")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake/modules")
+include(glfw)
 
 project(GLFW VERSION 3.4.0 LANGUAGES C)
 
 set(CMAKE_LEGACY_CYGWIN_WIN32 OFF)
 
-if (POLICY CMP0054)
-    cmake_policy(SET CMP0054 NEW)
-endif()
-
-if (POLICY CMP0069)
-    cmake_policy(SET CMP0069 NEW)
-endif()
-
-if (POLICY CMP0077)
-    cmake_policy(SET CMP0077 NEW)
-endif()
+glfw_set_new_policies()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -33,7 +25,6 @@ option(GLFW_VULKAN_STATIC "Assume the Vulkan loader is linked with the applicati
 
 include(GNUInstallDirs)
 include(CMakeDependentOption)
-include(glfw_msvc_runtime_library)
 
 cmake_dependent_option(GLFW_USE_OSMESA "Use OSMesa for offscreen context creation" OFF
                        "UNIX" OFF)
@@ -59,8 +50,6 @@ if (GLFW_VULKAN_STATIC)
     endif()
     set(_GLFW_VULKAN_STATIC 1)
 endif()
-
-list(APPEND CMAKE_MODULE_PATH "${GLFW_SOURCE_DIR}/CMake/modules")
 
 find_package(Threads REQUIRED)
 

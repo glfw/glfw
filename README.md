@@ -219,6 +219,7 @@ information on what to include when reporting a bug.
    (#442)
  - [EGL] Added ANGLE backend selection via `EGL_ANGLE_platform_angle` extension
    (#1380)
+ - [Win32] Added a machine shutdown callback that can interrupt shutdowns
 
 
 ## Contact
@@ -273,6 +274,7 @@ skills.
  - Bailey Cosier
  - Noel Cower
  - Jason Daly
+ - Torkel Danielsson
  - Jarrod Davis
  - Olivier Delannoy
  - Paul R. Deppe

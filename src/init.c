@@ -58,7 +58,9 @@ static _GLFWinitconfig _glfwInitHints =
         GLFW_TRUE,  // macOS menu bar
         GLFW_TRUE   // macOS bundle chdir
     },
-    GLFW_TRUE,      // X11 XCB
+    {
+        GLFW_TRUE,  // X11 XCB Vulkan surface
+    },
 };
 
 // Terminate the library
@@ -299,8 +301,8 @@ GLFWAPI void glfwInitHint(int hint, int value)
         case GLFW_COCOA_MENUBAR:
             _glfwInitHints.ns.menubar = value;
             return;
-        case GLFW_X11_XCB:
-            _glfwInitHints.x11_xcb = value;
+        case GLFW_X11_XCB_VULKAN_SURFACE:
+            _glfwInitHints.x11.xcbVulkanSurface = value;
             return;
     }
 

@@ -618,7 +618,7 @@ void window_close_callback(GLFWwindow* window)
 }
 @endcode
 
-If you wish to be notified when the user attempts to shut down the machine, or 
+If you wish to be notified when the user attempts to shut down the machine, or
 interrupt a shutdown, then set a machine shutdown callback.
 
 @code

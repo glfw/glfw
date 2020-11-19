@@ -148,6 +148,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Scrolling offsets were inverted compared to other platforms
    (#1463)
  - [Wayland] Bugfix: Client-Side Decorations were destroyed in the wrong worder
+   (#1798)
 
 
 ## Contact

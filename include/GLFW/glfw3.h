@@ -895,6 +895,13 @@ extern "C" {
  */
 #define GLFW_FOCUS_ON_SHOW          0x0002000C
 
+/*! @brief Mouse input transparency window hint and attribute
+ *
+ *  Mouse input transparency [window hint](@ref GLFW_MOUSE_PASSTHROUGH_hint) or
+ *  [window attribute](@ref GLFW_MOUSE_PASSTHROUGH_attrib).
+ */
+#define GLFW_MOUSE_PASSTHROUGH      0x0002000D
+
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_RED_BITS).
@@ -1012,12 +1019,17 @@ extern "C" {
  *  and [attribute](@ref GLFW_OPENGL_FORWARD_COMPAT_attrib).
  */
 #define GLFW_OPENGL_FORWARD_COMPAT  0x00022006
-/*! @brief OpenGL debug context hint and attribute.
+/*! @brief Debug mode context hint and attribute.
  *
- *  OpenGL debug context [hint](@ref GLFW_OPENGL_DEBUG_CONTEXT_hint) and
- *  [attribute](@ref GLFW_OPENGL_DEBUG_CONTEXT_attrib).
+ *  Debug mode context [hint](@ref GLFW_CONTEXT_DEBUG_hint) and
+ *  [attribute](@ref GLFW_CONTEXT_DEBUG_attrib).
  */
-#define GLFW_OPENGL_DEBUG_CONTEXT   0x00022007
+#define GLFW_CONTEXT_DEBUG          0x00022007
+/*! @brief Legacy name for compatibility.
+ *
+ *  This is an alias for compatibility with earlier versions.
+ */
+#define GLFW_OPENGL_DEBUG_CONTEXT   GLFW_CONTEXT_DEBUG
 /*! @brief OpenGL profile hint and attribute.
  *
  *  OpenGL profile [hint](@ref GLFW_OPENGL_PROFILE_hint) and
@@ -1098,6 +1110,14 @@ extern "C" {
 #define GLFW_NATIVE_CONTEXT_API     0x00036001
 #define GLFW_EGL_CONTEXT_API        0x00036002
 #define GLFW_OSMESA_CONTEXT_API     0x00036003
+
+#define GLFW_ANGLE_PLATFORM_TYPE_NONE    0x00037001
+#define GLFW_ANGLE_PLATFORM_TYPE_OPENGL  0x00037002
+#define GLFW_ANGLE_PLATFORM_TYPE_OPENGLES 0x00037003
+#define GLFW_ANGLE_PLATFORM_TYPE_D3D9    0x00037004
+#define GLFW_ANGLE_PLATFORM_TYPE_D3D11   0x00037005
+#define GLFW_ANGLE_PLATFORM_TYPE_VULKAN  0x00037007
+#define GLFW_ANGLE_PLATFORM_TYPE_METAL   0x00037008
 
 /*! @defgroup shapes Standard cursor shapes
  *  @brief Standard system cursor shapes.
@@ -1215,6 +1235,11 @@ extern "C" {
  *  Joystick hat buttons [init hint](@ref GLFW_JOYSTICK_HAT_BUTTONS).
  */
 #define GLFW_JOYSTICK_HAT_BUTTONS   0x00050001
+/*! @brief ANGLE rendering backend init hint.
+ *
+ *  ANGLE rendering backend [init hint](@ref GLFW_ANGLE_PLATFORM_TYPE_hint).
+ */
+#define GLFW_ANGLE_PLATFORM_TYPE    0x00050002
 /*! @brief macOS specific init hint.
  *
  *  macOS specific [init hint](@ref GLFW_COCOA_CHDIR_RESOURCES_hint).
@@ -1458,7 +1483,7 @@ typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
  *  @endcode
  *
  *  @param[in] window The window that was maximized or restored.
- *  @param[in] iconified `GLFW_TRUE` if the window was maximized, or
+ *  @param[in] maximized `GLFW_TRUE` if the window was maximized, or
  *  `GLFW_FALSE` if it was restored.
  *
  *  @sa @ref window_maximize
@@ -3638,6 +3663,7 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* window, int attrib);
  *  [GLFW_FLOATING](@ref GLFW_FLOATING_attrib),
  *  [GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib) and
  *  [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_attrib).
+ *  [GLFW_MOUSE_PASSTHROUGH](@ref GLFW_MOUSE_PASSTHROUGH_attrib)
  *
  *  Some of these attributes are ignored for full screen windows.  The new
  *  value will take effect if the window is later made windowed.

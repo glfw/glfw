@@ -103,8 +103,7 @@ To compile GLFW for Wayland, you need to have the Wayland packages installed,
 as well as the basic development tools like GCC and make.  For example, on
 Ubuntu and other distributions based on Debian GNU/Linux, you need to install
 the `libwayland-dev` package, which contains all Wayland headers and pulls in
-wayland-scanner, as well as the `wayland-protocols` and `extra-cmake-modules`
-packages.
+wayland-scanner, as well as the `wayland-protocols` package.
 
 Once you have installed the necessary packages, move on to @ref
 compile_generate.

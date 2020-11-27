@@ -731,14 +731,24 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     else
         characters = (NSString*) string;
 
-    const NSUInteger length = [characters length];
-    for (NSUInteger i = 0;  i < length;  i++)
+    NSRange range = NSMakeRange(0, [characters length]);
+    while (range.length)
     {
-        const unichar codepoint = [characters characterAtIndex:i];
-        if ((codepoint & 0xff00) == 0xf700)
-            continue;
+        uint32_t codepoint = 0;
 
-        _glfwInputChar(window, codepoint, mods, plain);
+        if ([characters getBytes:&codepoint
+                       maxLength:sizeof(codepoint)
+                      usedLength:NULL
+                        encoding:NSUTF32StringEncoding
+                         options:0
+                           range:range
+                  remainingRange:&range])
+        {
+            if (codepoint >= 0xf700 && codepoint <= 0xf7ff)
+                continue;
+
+            _glfwInputChar(window, codepoint, mods, plain);
+        }
     }
 }
 
@@ -1361,6 +1371,13 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
     } // autoreleasepool
 }
 
+void _glfwPlatformSetWindowMousePassthrough(_GLFWwindow* window, GLFWbool enabled)
+{
+    @autoreleasepool {
+    [window->ns.object setIgnoresMouseEvents:enabled];
+    }
+}
+
 float _glfwPlatformGetWindowOpacity(_GLFWwindow* window)
 {
     @autoreleasepool {
@@ -1721,8 +1738,34 @@ const char* _glfwPlatformGetClipboardString(void)
     } // autoreleasepool
 }
 
-EGLenum _glfwPlatformGetEGLPlatform(void)
+EGLenum _glfwPlatformGetEGLPlatform(EGLint** attribs)
 {
+    if (_glfw.egl.ANGLE_platform_angle)
+    {
+        int type = 0;
+
+        if (_glfw.egl.ANGLE_platform_angle_opengl)
+        {
+            if (_glfw.hints.init.angleType == GLFW_ANGLE_PLATFORM_TYPE_OPENGL)
+                type = EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE;
+        }
+
+        if (_glfw.egl.ANGLE_platform_angle_metal)
+        {
+            if (_glfw.hints.init.angleType == GLFW_ANGLE_PLATFORM_TYPE_METAL)
+                type = EGL_PLATFORM_ANGLE_TYPE_METAL_ANGLE;
+        }
+
+        if (type)
+        {
+            *attribs = calloc(3, sizeof(EGLint));
+            (*attribs)[0] = EGL_PLATFORM_ANGLE_TYPE_ANGLE;
+            (*attribs)[1] = type;
+            (*attribs)[2] = EGL_NONE;
+            return EGL_PLATFORM_ANGLE_ANGLE;
+        }
+    }
+
     return 0;
 }
 

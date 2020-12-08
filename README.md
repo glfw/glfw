@@ -134,6 +134,8 @@ information on what to include when reporting a bug.
    could leak memory
  - [Cocoa] Bugfix: Objective-C files were compiled as C with CMake 3.19 (#1787)
  - [Cocoa] Bugfix: Duplicate video modes were not filtered out (#1830)
+ - [Cocoa] Bugfix: Menubar was not clickable on macOS 10.15+ until it lost and
+   regained focus (#1648,#1802)
  - [X11] Bugfix: IME input of CJK was broken for "C" locale (#1587,#1636)
  - [X11] Bugfix: Xlib errors caused by other parts of the application could be
    reported as GLFW errors
@@ -366,6 +368,7 @@ skills.
  - Waris
  - Jay Weisskopf
  - Frank Wille
+ - Richard A. Wilkes
  - Tatsuya Yatagawa
  - Ryogo Yoshimura
  - Lukas Zanner

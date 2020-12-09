@@ -6018,6 +6018,12 @@ GLFWAPI int glfwGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhys
  *  @remark @macos This function creates and sets a `CAMetalLayer` instance for
  *  the window content view, which is required for MoltenVK to function.
  *
+ *  @remark @x11 GLFW by default attempts to use the `VK_KHR_xcb_surface`
+ *  extension, if available.  You can make it prefer the `VK_KHR_xlib_surface`
+ *  extension by setting the
+ *  [GLFW_X11_XCB_VULKAN_SURFACE](@ref GLFW_X11_XCB_VULKAN_SURFACE_hint) init
+ *  hint.
+ *
  *  @thread_safety This function may be called from any thread.  For
  *  synchronization details of Vulkan objects, see the Vulkan specification.
  *

@@ -155,10 +155,16 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: Some synthetic key events were reported as `GLFW_KEY_UNKNOWN`
    (#1623)
  - [Win32] Bugfix: Non-BMP Unicode codepoint input was reported as UTF-16
+ - [Win32] Bugfix: Monitor functions could return invalid values after
+   configuration change (#1761)
+ - [Win32] Bugfix: Initialization would segfault on Windows 8 (not 8.1) (#1775)
+ - [Win32] Bugfix: Duplicate size events were not filtered (#1610)
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)
  - [Cocoa] Changed `EGLNativeWindowType` from `NSView` to `CALayer` (#1169)
+ - [Cocoa] Changed F13 key to report Print Screen for cross-platform consistency
+   (#1786)
  - [Cocoa] Removed dependency on the CoreVideo framework
  - [Cocoa] Bugfix: `glfwSetWindowSize` used a bottom-left anchor point (#1553)
  - [Cocoa] Bugfix: Window remained on screen after destruction until event poll
@@ -171,6 +177,7 @@ information on what to include when reporting a bug.
    (#1635)
  - [Cocoa] Bugfix: Failing to retrieve the refresh rate of built-in displays
    could leak memory
+ - [Cocoa] Bugfix: Objective-C files were compiled as C with CMake 3.19 (#1787)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -203,6 +210,8 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Retrieving partial framebuffer size would segfault
  - [Wayland] Bugfix: Scrolling offsets were inverted compared to other platforms
    (#1463)
+ - [Wayland] Bugfix: Client-Side Decorations were destroyed in the wrong worder
+   (#1798)
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
  - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
@@ -252,6 +261,7 @@ skills.
  - Rok Breulj
  - Kai Burjack
  - Martin Capitanio
+ - Nicolas Caramelli
  - David Carlier
  - Arturo Castro
  - Chi-kwan Chan
@@ -290,6 +300,7 @@ skills.
  - Eloi Marín Gratacós
  - Stefan Gustavson
  - Jonathan Hale
+ - hdf89shfdfs
  - Sylvain Hellegouarch
  - Matthew Henry
  - heromyth
@@ -314,11 +325,13 @@ skills.
  - Konstantin Käfer
  - Eric Larson
  - Francis Lecavalier
+ - Jong Won Lee
  - Robin Leffmann
  - Glenn Lewis
  - Shane Liesegang
  - Anders Lindqvist
  - Leon Linhart
+ - Marco Lizza
  - Eyal Lotem
  - Aaron Loucks
  - Luflosi
@@ -358,6 +371,7 @@ skills.
  - Braden Pellett
  - Christopher Pelloux
  - Arturo J. Pérez
+ - Vladimir Perminov
  - Anthony Pesch
  - Orson Peters
  - Emmanuel Gil Peyrot
@@ -423,6 +437,8 @@ skills.
  - Waris
  - Jay Weisskopf
  - Frank Wille
+ - Andy Williams
+ - Joel Winarske
  - Tatsuya Yatagawa
  - Ryogo Yoshimura
  - Lukas Zanner
@@ -431,6 +447,7 @@ skills.
  - Santi Zupancic
  - Jonas Ådahl
  - Lasse Öörni
+ - Leonard König
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

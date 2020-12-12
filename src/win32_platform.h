@@ -102,7 +102,7 @@
  #define DISPLAY_DEVICE_ACTIVE 0x00000001
 #endif
 #ifndef _WIN32_WINNT_WINBLUE
- #define _WIN32_WINNT_WINBLUE 0x0602
+ #define _WIN32_WINNT_WINBLUE 0x0603
 #endif
 #ifndef _WIN32_WINNT_WIN8
  #define _WIN32_WINNT_WIN8 0x0602
@@ -313,6 +313,9 @@ typedef struct _GLFWwindowWin32
     GLFWbool            transparent;
     GLFWbool            scaleToMonitor;
     GLFWbool            keymenu;
+
+    // Cached size used to filter out duplicate events
+    int                 width, height;
 
     // The last received cursor position, regardless of source
     int                 lastCursorPosX, lastCursorPosY;

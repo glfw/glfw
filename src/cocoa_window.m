@@ -1403,6 +1403,17 @@ GLFWbool _glfwPlatformRawMouseMotionSupported(void)
     return GLFW_FALSE;
 }
 
+void _glfwPlatformSetTouchInput(_GLFWwindow *window, GLFWbool enabled)
+{
+    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
+                    "Cocoa: Touch input not yet implemented");
+}
+
+GLFWbool _glfwPlatformTouchInputSupported(void)
+{
+    return GLFW_FALSE;
+}
+
 void _glfwPlatformPollEvents(void)
 {
     @autoreleasepool {

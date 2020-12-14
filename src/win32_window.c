@@ -773,6 +773,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         {
             int i, button, action;
 
+            if (window->touchInput)
+            {
+                // Skip emulated button events when touch input is enabled
+                if ((GetMessageExtraInfo() & 0xffffff00) == 0xff515700)
+                    break;
+            }
+
             if (uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP)
                 button = GLFW_MOUSE_BUTTON_LEFT;
             else if (uMsg == WM_RBUTTONDOWN || uMsg == WM_RBUTTONUP)
@@ -856,7 +863,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             window->win32.lastCursorPosX = x;
             window->win32.lastCursorPosY = y;
 
-            return 0;
+            // NOTE: WM_MOUSEMOVE messages must be passed on to DefWindowProc
+            //       for WM_TOUCH messages to be emitted
+            break;
         }
 
         case WM_INPUT:
@@ -1073,6 +1082,60 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             }
 
             return 0;
+        }
+
+        case WM_TOUCH:
+        {
+            TOUCHINPUT* inputs;
+            UINT count = LOWORD(wParam);
+
+            if (!_glfw.win32.touch.available)
+                return 0;
+
+            inputs = (TOUCHINPUT*) malloc(sizeof(TOUCHINPUT) * count);
+
+            if (GetTouchInputInfo((HTOUCHINPUT) lParam,
+                                        count, inputs, sizeof(TOUCHINPUT)))
+            {
+                UINT i;
+                int width, height, xpos, ypos;
+
+                _glfwPlatformGetWindowSize(window, &width, &height);
+                _glfwPlatformGetWindowPos(window, &xpos, &ypos);
+
+                for (i = 0;  i < count;  i++)
+                {
+                    int action;
+                    POINT pos;
+
+                    pos.x = TOUCH_COORD_TO_PIXEL(inputs[i].x) - xpos;
+                    pos.y = TOUCH_COORD_TO_PIXEL(inputs[i].y) - ypos;
+
+                    // Discard any points that lie outside of the client area
+                    if (pos.x < 0 || pos.x >= width ||
+                        pos.y < 0 || pos.y >= height)
+                    {
+                        continue;
+                    }
+
+                    if (inputs[i].dwFlags & TOUCHEVENTF_DOWN)
+                        action = GLFW_PRESS;
+                    else if (inputs[i].dwFlags & TOUCHEVENTF_UP)
+                        action = GLFW_RELEASE;
+                    else
+                        action = GLFW_MOVE;
+
+                    _glfwInputTouch(window,
+                                    (int) inputs[i].dwID, action,
+                                    inputs[i].x / 100.0 - xpos,
+                                    inputs[i].y / 100.0 - ypos);
+                }
+
+                CloseTouchInputHandle((HTOUCHINPUT) lParam);
+            }
+
+            free(inputs);
+            break;
         }
 
         case WM_PAINT:
@@ -1948,6 +2011,22 @@ void _glfwPlatformSetRawMouseMotion(_GLFWwindow *window, GLFWbool enabled)
 GLFWbool _glfwPlatformRawMouseMotionSupported(void)
 {
     return GLFW_TRUE;
+}
+
+void _glfwPlatformSetTouchInput(_GLFWwindow* window, int enabled)
+{
+    if (!_glfw.win32.touch.available)
+        return;
+
+    if (enabled)
+        RegisterTouchWindow(window->win32.handle, 0);
+    else
+        UnregisterTouchWindow(window->win32.handle);
+}
+
+GLFWbool _glfwPlatformTouchInputSupported(void)
+{
+    return _glfw.win32.touch.available;
 }
 
 void _glfwPlatformPollEvents(void)

@@ -299,6 +299,13 @@ a requirement of the GLFW CMake files.  The GLFW source files do not depend on
 CMake.
 
 
+@subsubsection caveat_fbtransparency_33 Framebuffer transparency requires DWM transparency
+
+GLFW no longer supports framebuffer transparency enabled via @ref
+GLFW_TRANSPARENT_FRAMEBUFFER on Windows 7 if DWM transparency is off
+(the Transparency setting under Personalization > Window Color).
+
+
 @subsection deprecations_33 Deprecations in version 3.3
 
 @subsubsection charmods_callback_33 Character with modifiers callback

@@ -72,8 +72,8 @@ if (_GLFW_X11 OR _GLFW_WAYLAND)
     endif()
 endif()
 
-if (APPLE)
-    # For some reason CMake didn't know about .m until version 3.16
+# Workaround for CMake not knowing about .m files before version 3.16
+if ("${CMAKE_VERSION}" VERSION_LESS "3.16" AND APPLE)
     set_source_files_properties(cocoa_init.m cocoa_joystick.m cocoa_monitor.m
                                 cocoa_window.m nsgl_context.m PROPERTIES
                                 LANGUAGE C)
@@ -109,21 +109,30 @@ target_include_directories(glfw PRIVATE
                            ${glfw_INCLUDE_DIRS})
 target_link_libraries(glfw PRIVATE ${glfw_LIBRARIES})
 
-if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
-    "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR
-    "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
-
-    # Make GCC and Clang warn about declarations that VS 2010 and 2012 won't
-    # accept for all source files that VS will build
+# Make GCC warn about declarations that VS 2010 and 2012 won't accept for all
+# source files that VS will build (Clang ignores this because we set -std=c99)
+if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     set_source_files_properties(context.c init.c input.c monitor.c vulkan.c
                                 window.c win32_init.c win32_joystick.c
                                 win32_monitor.c win32_time.c win32_thread.c
                                 win32_window.c wgl_context.c egl_context.c
                                 osmesa_context.c PROPERTIES
                                 COMPILE_FLAGS -Wdeclaration-after-statement)
+endif()
 
-    # Enable a reasonable set of warnings (no, -Wextra is not reasonable)
-    target_compile_options(glfw PRIVATE "-Wall")
+# Enable a reasonable set of warnings
+if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
+    "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR
+    "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
+
+    if ("${CMAKE_C_SIMULATE_ID}" STREQUAL "MSVC")
+        # Tell Clang-CL that this is a Clang flag
+        target_compile_options(glfw PRIVATE "/clang:-Wall")
+    else()
+        target_compile_options(glfw PRIVATE "-Wall")
+    endif()
+elseif (MSVC)
+    target_compile_options(glfw PRIVATE "/W3")
 endif()
 
 if (WIN32)

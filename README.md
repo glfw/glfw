@@ -247,6 +247,7 @@ skills.
 
  - Bobyshev Alexander
  - Matt Arsenault
+ - ashishgamedev
  - David Avedissian
  - Keith Bauer
  - John Bartholomew

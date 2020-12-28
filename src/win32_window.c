@@ -627,6 +627,11 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             return 0;
         }
 
+        case WM_QUERYENDSESSION:
+        {
+            return _glfwInputMachineShutdown(window);
+        }
+
         case WM_INPUTLANGCHANGE:
         {
             _glfwUpdateKeyNamesWin32();

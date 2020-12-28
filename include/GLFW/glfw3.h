@@ -1412,6 +1412,22 @@ typedef void (* GLFWwindowsizefun)(GLFWwindow*,int,int);
  */
 typedef void (* GLFWwindowclosefun)(GLFWwindow*);
 
+/*! @brief The function pointer type for machine shutdown callbacks.
+ *
+ *  This is the function pointer type for machine shutdown callbacks.
+ *  A machine shutdown callback function has the following signature:
+ *  @code
+ *  void function_name(GLFWwindow* window)
+ *  @endcode
+ *
+ *  @sa @ref machine_shutdown
+ *  @sa @ref glfwSetMachineShutdownCallback
+ *  @return GLFW_TRUE to accept the shutdown or GLFW_FALSE to interrupt it
+ *
+ *  @ingroup window
+ */
+typedef int (* GLFWmachineShutdownfun)(GLFWwindow*);
+
 /*! @brief The function pointer type for window content refresh callbacks.
  *
  *  This is the function pointer type for window content refresh callbacks.
@@ -3842,6 +3858,34 @@ GLFWAPI GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwind
  *  @ingroup window
  */
 GLFWAPI GLFWwindowclosefun glfwSetWindowCloseCallback(GLFWwindow* window, GLFWwindowclosefun callback);
+
+/*! @brief Sets the machine shutdown callback for the specified window.
+ *
+ *  This function sets the machine shutdown callback of the specified window, which is
+ *  called when the operating system is preparing to shut down the machine.
+ *
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] callback The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  @callback_signature
+ *  @code
+ *  void function_name(GLFWwindow* window)
+ *  @endcode
+ *  For more information about the callback parameters, see the
+ *  [function pointer type](@ref GLFWmachineShutdownfun).
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref machine_shutdown
+ *
+ *  @ingroup window
+ */
+GLFWAPI GLFWmachineShutdownfun glfwSetMachineShutdownCallback(GLFWwindow* window, GLFWmachineShutdownfun callback);
 
 /*! @brief Sets the refresh callback for the specified window.
  *

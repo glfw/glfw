@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.3 - www.glfw.org
+// GLFW 3.4 - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2006-2017 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -24,8 +24,8 @@
 //
 //========================================================================
 
-#define _GLFW_PLATFORM_JOYSTICK_STATE         int nulljs
-#define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE int nulljs
+#define _GLFW_PLATFORM_JOYSTICK_STATE         struct { int dummyJoystick; }
+#define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE struct { int dummyLibraryJoystick; }
 
 #define _GLFW_PLATFORM_MAPPING_NAME ""
 

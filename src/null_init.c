@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.3 - www.glfw.org
+// GLFW 3.4 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2016 Google Inc.
-// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2016-2017 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -24,8 +24,12 @@
 //    distribution.
 //
 //========================================================================
+// It is fine to use C99 in this file because it will not be built with VS
+//========================================================================
 
 #include "internal.h"
+
+#include <stdlib.h>
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -35,11 +39,14 @@
 int _glfwPlatformInit(void)
 {
     _glfwInitTimerPOSIX();
+    _glfwPollMonitorsNull();
+
     return GLFW_TRUE;
 }
 
 void _glfwPlatformTerminate(void)
 {
+    free(_glfw.null.clipboardString);
     _glfwTerminateOSMesa();
 }
 

@@ -68,9 +68,9 @@ set for the chosen monitor as long as the window has input focus.  For more
 information about retrieving video modes, see @ref monitor_modes.
 
 Video mode field        | Corresponds to
------------------------ | ------------------------
-GLFWvidmode.width       | `width` parameter
-GLFWvidmode.height      | `height` parameter
+----------------        | --------------
+GLFWvidmode.width       | `width` parameter of @ref glfwCreateWindow
+GLFWvidmode.height      | `height` parameter of @ref glfwCreateWindow
 GLFWvidmode.redBits     | @ref GLFW_RED_BITS hint
 GLFWvidmode.greenBits   | @ref GLFW_GREEN_BITS hint
 GLFWvidmode.blueBits    | @ref GLFW_BLUE_BITS hint
@@ -234,6 +234,27 @@ alpha channel will be used to combine the framebuffer with the background.  This
 does not affect window decorations.  Possible values are `GLFW_TRUE` and
 `GLFW_FALSE`.
 
+@anchor GLFW_FOCUS_ON_SHOW_hint
+__GLFW_FOCUS_ON_SHOW__ specifies whether the window will be given input
+focus when @ref glfwShowWindow is called. Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+
+@anchor GLFW_SCALE_TO_MONITOR
+__GLFW_SCALE_TO_MONITOR__ specified whether the window content area should be
+resized based on the [monitor content scale](@ref monitor_scale) of any monitor
+it is placed on.  This includes the initial placement when the window is
+created.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+
+This hint only has an effect on platforms where screen coordinates and pixels
+always map 1:1 such as Windows and X11.  On platforms like macOS the resolution
+of the framebuffer is changed independently of the window size.
+
+@anchor GLFW_MOUSE_PASSTHROUGH_hint
+__GLFW_MOUSE_PASSTHROUGH__ specifies whether the window is transparent to mouse
+input, letting any mouse events pass through to whatever window is behind it.
+This is only supported for undecorated windows.  Decorated windows with this
+enabled will behave differently between platforms.  Possible values are
+`GLFW_TRUE` and `GLFW_FALSE`.
+
 
 @subsubsection window_hints_fb Framebuffer related hints
 
@@ -323,7 +344,7 @@ constraint.  If no client API is requested, this hint is ignored.
 will fail.
 
 @par
-__Wayland, Mir:__ The EGL API _is_ the native context creation API, so this hint
+__Wayland:__ The EGL API _is_ the native context creation API, so this hint
 will have no effect.
 
 @par
@@ -369,12 +390,10 @@ Additionally, OpenGL ES 1.x cannot be returned if 2.0 or later was requested,
 and vice versa.  This is because OpenGL ES 3.x is backward compatible with 2.0,
 but OpenGL ES 2.0 is not backward compatible with 1.x.
 
-@note @macos The OS only supports forward-compatible core profile contexts for
-OpenGL versions 3.2 and later.  Before creating an OpenGL context of version
-3.2 or later you must set the
-[GLFW_OPENGL_FORWARD_COMPAT](@ref GLFW_OPENGL_FORWARD_COMPAT_hint) and
-[GLFW_OPENGL_PROFILE](@ref GLFW_OPENGL_PROFILE_hint) hints accordingly.  OpenGL
-3.0 and 3.1 contexts are not supported at all on macOS.
+@note @macos The OS only supports core profile contexts for OpenGL versions 3.2
+and later.  Before creating an OpenGL context of version 3.2 or later you must
+set the [GLFW_OPENGL_PROFILE](@ref GLFW_OPENGL_PROFILE_hint) hint accordingly.
+OpenGL 3.0 and 3.1 contexts are not supported at all on macOS.
 
 @anchor GLFW_OPENGL_FORWARD_COMPAT_hint
 __GLFW_OPENGL_FORWARD_COMPAT__ specifies whether the OpenGL context should be
@@ -386,11 +405,20 @@ version is 3.0 or above.  If OpenGL ES is requested, this hint is ignored.
 Forward-compatibility is described in detail in the
 [OpenGL Reference Manual](https://www.opengl.org/registry/).
 
+@anchor GLFW_CONTEXT_DEBUG_hint
 @anchor GLFW_OPENGL_DEBUG_CONTEXT_hint
-__GLFW_OPENGL_DEBUG_CONTEXT__ specifies whether to create a debug OpenGL
-context, which may have additional error and performance issue reporting
-functionality.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.  If OpenGL ES
-is requested, this hint is ignored.
+__GLFW_CONTEXT_DEBUG__ specifies whether the context should be created in debug
+mode, which may provide additional error and diagnostic reporting functionality.
+Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+
+@par
+Debug contexts for OpenGL and OpenGL ES are described in detail by the
+[GL_KHR_debug](https://www.khronos.org/registry/OpenGL/extensions/KHR/KHR_debug.txt)
+extension.
+
+@par
+This is the new name, introduced in GLFW 3.4.  The older
+`GLFW_OPENGL_DEBUG_CONTEXT` name is also available for compatibility.
 
 @anchor GLFW_OPENGL_PROFILE_hint
 __GLFW_OPENGL_PROFILE__ specifies which OpenGL profile to create the context
@@ -436,6 +464,14 @@ The no error mode for OpenGL and OpenGL ES is described in detail by the
 extension.
 
 
+@subsubsection window_hints_win32 Windows specific window hints
+
+@anchor GLFW_WIN32_KEYBOARD_MENU_hint
+__GLFW_WIN32_KEYBOARD_MENU__ specifies whether to allow access to the window
+menu via the Alt+Space and Alt-and-then-Space keyboard shortcuts.  This is
+ignored on other platforms.
+
+
 @subsubsection window_hints_osx macOS specific window hints
 
 @anchor GLFW_COCOA_RETINA_FRAMEBUFFER_hint
@@ -469,8 +505,8 @@ should also declare this in its `Info.plist` by setting the
 
 @subsubsection window_hints_x11 X11 specific window hints
 
-@anchor GLFW_X11_CLASS_NAME
-@anchor GLFW_X11_INSTANCE_NAME
+@anchor GLFW_X11_CLASS_NAME_hint
+@anchor GLFW_X11_INSTANCE_NAME_hint
 __GLFW_X11_CLASS_NAME__ and __GLFW_X11_INSTANCE_NAME__ specifies the desired
 ASCII encoded class and instance parts of the ICCCM `WM_CLASS` window property.
 These are set with @ref glfwWindowHintString.
@@ -489,6 +525,9 @@ GLFW_FLOATING                 | `GLFW_FALSE`                | `GLFW_TRUE` or `GL
 GLFW_MAXIMIZED                | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_CENTER_CURSOR            | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_TRANSPARENT_FRAMEBUFFER  | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_FOCUS_ON_SHOW            | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_SCALE_TO_MONITOR         | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_MOUSE_PASSTHROUGH        | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_RED_BITS                 | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 GLFW_GREEN_BITS               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 GLFW_BLUE_BITS                | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
@@ -512,8 +551,9 @@ GLFW_CONTEXT_VERSION_MINOR    | 0                           | Any valid minor ve
 GLFW_CONTEXT_ROBUSTNESS       | `GLFW_NO_ROBUSTNESS`        | `GLFW_NO_ROBUSTNESS`, `GLFW_NO_RESET_NOTIFICATION` or `GLFW_LOSE_CONTEXT_ON_RESET`
 GLFW_CONTEXT_RELEASE_BEHAVIOR | `GLFW_ANY_RELEASE_BEHAVIOR` | `GLFW_ANY_RELEASE_BEHAVIOR`, `GLFW_RELEASE_BEHAVIOR_FLUSH` or `GLFW_RELEASE_BEHAVIOR_NONE`
 GLFW_OPENGL_FORWARD_COMPAT    | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_OPENGL_DEBUG_CONTEXT     | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_CONTEXT_DEBUG            | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_OPENGL_PROFILE           | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE`
+GLFW_WIN32_KEYBOARD_MENU      | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_COCOA_RETINA_FRAMEBUFFER | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_COCOA_FRAME_NAME         | `""`                        | A UTF-8 encoded frame autosave name
 GLFW_COCOA_GRAPHICS_SWITCHING | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
@@ -583,7 +623,7 @@ void window_close_callback(GLFWwindow* window)
 
 The size of a window can be changed with @ref glfwSetWindowSize.  For windowed
 mode windows, this sets the size, in
-[screen coordinates](@ref coordinate_systems) of the _client area_ or _content
+[screen coordinates](@ref coordinate_systems) of the _content area_ or _content
 area_ of the window.  The window system may impose limits on window size.
 
 @code
@@ -603,7 +643,7 @@ glfwSetWindowSizeCallback(window, window_size_callback);
 @endcode
 
 The callback function receives the new size, in screen coordinates, of the
-client area of the window when the window is resized.
+content area of the window when the window is resized.
 
 @code
 void window_size_callback(GLFWwindow* window, int width, int height)
@@ -624,9 +664,9 @@ calls.  The window size is in screen coordinates, not pixels.  Use the
 [framebuffer size](@ref window_fbsize), which is in pixels, for pixel-based
 calls.
 
-The above functions work with the size of the client area, but decorated windows
-typically have title bars and window frames around this rectangle.  You can
-retrieve the extents of these with @ref glfwGetWindowFrameSize.
+The above functions work with the size of the content area, but decorated
+windows typically have title bars and window frames around this rectangle.  You
+can retrieve the extents of these with @ref glfwGetWindowFrameSize.
 
 @code
 int left, top, right, bottom;
@@ -634,7 +674,7 @@ glfwGetWindowFrameSize(window, &left, &top, &right, &bottom);
 @endcode
 
 The returned values are the distances, in screen coordinates, from the edges of
-the client area to the corresponding edges of the full window.  As they are
+the content area to the corresponding edges of the full window.  As they are
 distances and not coordinates, they are always zero or positive.
 
 
@@ -686,10 +726,12 @@ float xscale, yscale;
 glfwGetWindowContentScale(window, &xscale, &yscale);
 @endcode
 
-The content scale of a window is the ratio between the current DPI and the
-platform's default DPI.  If you scale all pixel dimensions by this scale then
-your content should appear at an appropriate size.  This is especially important
-for text and any UI elements.
+The content scale is the ratio between the current DPI and the platform's
+default DPI.  This is especially important for text and any UI elements.  If the
+pixel dimensions of your UI scaled by this look appropriate on your machine then
+it should appear at a reasonable size on other machines regardless of their DPI
+and scaling settings.  This relies on the system DPI and scaling settings being
+somewhat correct.
 
 On systems where each monitors can have its own content scale, the window
 content scale will depend on which monitor the system considers the window to be
@@ -712,13 +754,19 @@ void window_content_scale_callback(GLFWwindow* window, float xscale, float yscal
 }
 @endcode
 
+On platforms where pixels and screen coordinates always map 1:1, the window
+will need to be resized to appear the same size when it is moved to a monitor
+with a different content scale.  To have this done automatically both when the
+window is created and when its content scale later changes, set the @ref
+GLFW_SCALE_TO_MONITOR window hint.
+
 
 @subsection window_sizelimits Window size limits
 
-The minimum and maximum size of the client area of a windowed mode window can be
-enforced with @ref glfwSetWindowSizeLimits.  The user may resize the window to
-any size and aspect ratio within the specified limits, unless the aspect ratio
-is also set.
+The minimum and maximum size of the content area of a windowed mode window can
+be enforced with @ref glfwSetWindowSizeLimits.  The user may resize the window
+to any size and aspect ratio within the specified limits, unless the aspect
+ratio is also set.
 
 @code
 glfwSetWindowSizeLimits(window, 200, 200, 400, 400);
@@ -733,7 +781,7 @@ glfwSetWindowSizeLimits(window, 640, 480, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 To disable size limits for a window, set them all to `GLFW_DONT_CARE`.
 
-The aspect ratio of the client area of a windowed mode window can be enforced
+The aspect ratio of the content area of a windowed mode window can be enforced
 with @ref glfwSetWindowAspectRatio.  The user may resize the window freely
 unless size limits are also set, but the size will be constrained to maintain
 the aspect ratio.
@@ -763,7 +811,7 @@ are undefined if they conflict.
 
 The position of a windowed-mode window can be changed with @ref
 glfwSetWindowPos.  This moves the window so that the upper-left corner of its
-client area has the specified [screen coordinates](@ref coordinate_systems).
+content area has the specified [screen coordinates](@ref coordinate_systems).
 The window system may put limitations on window placement.
 
 @code
@@ -778,7 +826,7 @@ glfwSetWindowPosCallback(window, window_pos_callback);
 @endcode
 
 The callback function receives the new position, in screen coordinates, of the
-upper-left corner of the client area when the window is moved.
+upper-left corner of the content area when the window is moved.
 
 @code
 void window_pos_callback(GLFWwindow* window, int xpos, int ypos)
@@ -787,7 +835,7 @@ void window_pos_callback(GLFWwindow* window, int xpos, int ypos)
 @endcode
 
 There is also @ref glfwGetWindowPos for directly retrieving the current position
-of the client area of the window.
+of the content area of the window.
 
 @code
 int xpos, ypos;
@@ -906,7 +954,7 @@ When a full screen window is restored, the desired video mode is restored to its
 monitor as well.
 
 If you wish to be notified when a window is iconified or restored, whether by
-the user, system or your own code, set a iconify callback.
+the user, system or your own code, set an iconify callback.
 
 @code
 glfwSetWindowIconifyCallback(window, window_iconify_callback);
@@ -1009,6 +1057,10 @@ Hidden windows can be shown with @ref glfwShowWindow.
 glfwShowWindow(window);
 @endcode
 
+By default, this function will also set the input focus to that window. Set
+the [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_hint) window hint to change
+this behavior for all newly created windows, or change the behavior for an
+existing window with @ref glfwSetWindowAttrib.
 
 You can also get the current visibility state with @ref glfwGetWindowAttrib.
 
@@ -1176,7 +1228,11 @@ If the system does not support whole window transparency, this function always
 returns one.
 
 GLFW comes with a test program that lets you control whole window transparency
-at run-time called `opacity`.
+at run-time called `window`.
+
+If you want to use either of these transparency methods to display a temporary
+overlay like for example a notification, the @ref GLFW_FLOATING and @ref
+GLFW_MOUSE_PASSTHROUGH window hints and attributes may be useful.
 
 
 @subsection window_attribs Window attributes
@@ -1196,8 +1252,9 @@ if (glfwGetWindowAttrib(window, GLFW_FOCUSED))
 
 The [GLFW_DECORATED](@ref GLFW_DECORATED_attrib),
 [GLFW_RESIZABLE](@ref GLFW_RESIZABLE_attrib),
-[GLFW_FLOATING](@ref GLFW_FLOATING_attrib) and
-[GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib) window attributes can be
+[GLFW_FLOATING](@ref GLFW_FLOATING_attrib),
+[GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib) and
+[GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_attrib) window attributes can be
 changed with @ref glfwSetWindowAttrib.
 
 @code
@@ -1222,8 +1279,8 @@ __GLFW_MAXIMIZED__ indicates whether the specified window is maximized.  See
 
 @anchor GLFW_HOVERED_attrib
 __GLFW_HOVERED__ indicates whether the cursor is currently directly over the
-client area of the window, with no other windows between.  See @ref cursor_enter
-for details.
+content area of the window, with no other windows between.  See @ref
+cursor_enter for details.
 
 @anchor GLFW_VISIBLE_attrib
 __GLFW_VISIBLE__ indicates whether the specified window is visible.  See @ref
@@ -1259,6 +1316,20 @@ a transparent framebuffer, i.e. the window contents is composited with the
 background using the window framebuffer alpha channel.  See @ref
 window_transparency for details.
 
+@anchor GLFW_FOCUS_ON_SHOW_attrib
+__GLFW_FOCUS_ON_SHOW__ specifies whether the window will be given input
+focus when @ref glfwShowWindow is called. This can be set before creation
+with the [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_hint) window hint or
+after with @ref glfwSetWindowAttrib.
+
+@anchor GLFW_MOUSE_PASSTHROUGH_attrib
+__GLFW_MOUSE_PASSTHROUGH__ specifies whether the window is transparent to mouse
+input, letting any mouse events pass through to whatever window is behind it.
+This can be set before creation with the
+[GLFW_MOUSE_PASSTHROUGH](@ref GLFW_MOUSE_PASSTHROUGH_hint) window hint or after
+with @ref glfwSetWindowAttrib.  This is only supported for undecorated windows.
+Decorated windows with this enabled will behave differently between platforms.
+
 
 @subsubsection window_attribs_ctx Context related attributes
 
@@ -1286,9 +1357,14 @@ of the GLFW header.
 __GLFW_OPENGL_FORWARD_COMPAT__ is `GLFW_TRUE` if the window's context is an
 OpenGL forward-compatible one, or `GLFW_FALSE` otherwise.
 
+@anchor GLFW_CONTEXT_DEBUG_attrib
 @anchor GLFW_OPENGL_DEBUG_CONTEXT_attrib
-__GLFW_OPENGL_DEBUG_CONTEXT__ is `GLFW_TRUE` if the window's context is an
-OpenGL debug context, or `GLFW_FALSE` otherwise.
+__GLFW_CONTEXT_DEBUG__ is `GLFW_TRUE` if the window's context is in debug
+mode, or `GLFW_FALSE` otherwise.
+
+@par
+This is the new name, introduced in GLFW 3.4.  The older
+`GLFW_OPENGL_DEBUG_CONTEXT` name is also available for compatibility.
 
 @anchor GLFW_OPENGL_PROFILE_attrib
 __GLFW_OPENGL_PROFILE__ indicates the OpenGL profile used by the context.  This
@@ -1297,6 +1373,21 @@ uses a known profile, or `GLFW_OPENGL_ANY_PROFILE` if the OpenGL profile is
 unknown or the context is an OpenGL ES context.  Note that the returned profile
 may not match the profile bits of the context flags, as GLFW will try other
 means of detecting the profile when no bits are set.
+
+@anchor GLFW_CONTEXT_RELEASE_BEHAVIOR_attrib
+__GLFW_CONTEXT_RELEASE_BEHAVIOR__ indicates the release used by the context.
+Possible values are one of `GLFW_ANY_RELEASE_BEHAVIOR`,
+`GLFW_RELEASE_BEHAVIOR_FLUSH` or `GLFW_RELEASE_BEHAVIOR_NONE`.  If the
+behavior is `GLFW_ANY_RELEASE_BEHAVIOR`, the default behavior of the context
+creation API will be used.  If the behavior is `GLFW_RELEASE_BEHAVIOR_FLUSH`,
+the pipeline will be flushed whenever the context is released from being the
+current one.  If the behavior is `GLFW_RELEASE_BEHAVIOR_NONE`, the pipeline will
+not be flushed on release.
+
+@anchor GLFW_CONTEXT_NO_ERROR_attrib
+__GLFW_CONTEXT_NO_ERROR__ indicates whether errors are generated by the context.
+Possible values are `GLFW_TRUE` and `GLFW_FALSE`.  If enabled, situations that
+would have generated errors instead cause undefined behavior.
 
 @anchor GLFW_CONTEXT_ROBUSTNESS_attrib
 __GLFW_CONTEXT_ROBUSTNESS__ indicates the robustness strategy used by the
@@ -1351,7 +1442,7 @@ glfwSwapBuffers(window);
 
 Sometimes it can be useful to select when the buffer swap will occur.  With the
 function @ref glfwSwapInterval it is possible to select the minimum number of
-monitor refreshes the driver wait should from the time @ref glfwSwapBuffers was
+monitor refreshes the driver should wait from the time @ref glfwSwapBuffers was
 called before swapping the buffers:
 
 @code

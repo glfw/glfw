@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.3 Win32 - www.glfw.org
+// GLFW 3.4 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -61,6 +61,9 @@
 // GLFW uses DirectInput8 interfaces
 #define DIRECTINPUT_VERSION 0x0800
 
+// GLFW uses OEM cursor resources
+#define OEMRESOURCE
+
 #include <wctype.h>
 #include <windows.h>
 #include <dinput.h>
@@ -73,6 +76,9 @@
 #endif
 #ifndef WM_DWMCOMPOSITIONCHANGED
  #define WM_DWMCOMPOSITIONCHANGED 0x031E
+#endif
+#ifndef WM_DWMCOLORIZATIONCOLORCHANGED
+ #define WM_DWMCOLORIZATIONCOLORCHANGED 0x0320
 #endif
 #ifndef WM_COPYGLOBALDATA
  #define WM_COPYGLOBALDATA 0x0049
@@ -96,7 +102,19 @@
  #define DISPLAY_DEVICE_ACTIVE 0x00000001
 #endif
 #ifndef _WIN32_WINNT_WINBLUE
- #define _WIN32_WINNT_WINBLUE 0x0602
+ #define _WIN32_WINNT_WINBLUE 0x0603
+#endif
+#ifndef _WIN32_WINNT_WIN8
+ #define _WIN32_WINNT_WIN8 0x0602
+#endif
+#ifndef WM_GETDPISCALEDSIZE
+ #define WM_GETDPISCALEDSIZE 0x02e4
+#endif
+#ifndef USER_DEFAULT_SCREEN_DPI
+ #define USER_DEFAULT_SCREEN_DPI 96
+#endif
+#ifndef OCR_HAND
+ #define OCR_HAND 32649
 #endif
 
 #if WINVER < 0x0601
@@ -140,20 +158,28 @@ typedef enum
 } MONITOR_DPI_TYPE;
 #endif /*DPI_ENUMS_DECLARED*/
 
+#ifndef DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
+#define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 ((HANDLE) -4)
+#endif /*DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2*/
+
 // HACK: Define versionhelpers.h functions manually as MinGW lacks the header
-BOOL IsWindowsVersionOrGreater(WORD major, WORD minor, WORD sp);
-#define IsWindowsVistaOrGreater()                              \
-    IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_VISTA),      \
-                              LOBYTE(_WIN32_WINNT_VISTA), 0)
-#define IsWindows7OrGreater()                                  \
-    IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN7),       \
-                              LOBYTE(_WIN32_WINNT_WIN7), 0)
-#define IsWindows8OrGreater()                                  \
-    IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN8),       \
-                              LOBYTE(_WIN32_WINNT_WIN8), 0)
-#define IsWindows8Point1OrGreater()                            \
-    IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINBLUE),    \
-                              LOBYTE(_WIN32_WINNT_WINBLUE), 0)
+#define IsWindowsVistaOrGreater()                                     \
+    _glfwIsWindowsVersionOrGreaterWin32(HIBYTE(_WIN32_WINNT_VISTA),   \
+                                        LOBYTE(_WIN32_WINNT_VISTA), 0)
+#define IsWindows7OrGreater()                                         \
+    _glfwIsWindowsVersionOrGreaterWin32(HIBYTE(_WIN32_WINNT_WIN7),    \
+                                        LOBYTE(_WIN32_WINNT_WIN7), 0)
+#define IsWindows8OrGreater()                                         \
+    _glfwIsWindowsVersionOrGreaterWin32(HIBYTE(_WIN32_WINNT_WIN8),    \
+                                        LOBYTE(_WIN32_WINNT_WIN8), 0)
+#define IsWindows8Point1OrGreater()                                   \
+    _glfwIsWindowsVersionOrGreaterWin32(HIBYTE(_WIN32_WINNT_WINBLUE), \
+                                        LOBYTE(_WIN32_WINNT_WINBLUE), 0)
+
+#define _glfwIsWindows10AnniversaryUpdateOrGreaterWin32() \
+    _glfwIsWindows10BuildOrGreaterWin32(14393)
+#define _glfwIsWindows10CreatorsUpdateOrGreaterWin32() \
+    _glfwIsWindows10BuildOrGreaterWin32(15063)
 
 // HACK: Define macros that some xinput.h variants don't
 #ifndef XINPUT_CAPS_WIRELESS
@@ -186,7 +212,7 @@ BOOL IsWindowsVersionOrGreater(WORD major, WORD minor, WORD sp);
 
 // HACK: Define macros that some dinput.h variants don't
 #ifndef DIDFT_OPTIONAL
- #define DIDFT_OPTIONAL	0x80000000
+ #define DIDFT_OPTIONAL 0x80000000
 #endif
 
 // winmm.dll function pointer typedefs
@@ -206,22 +232,36 @@ typedef HRESULT (WINAPI * PFN_DirectInput8Create)(HINSTANCE,DWORD,REFIID,LPVOID*
 // user32.dll function pointer typedefs
 typedef BOOL (WINAPI * PFN_SetProcessDPIAware)(void);
 typedef BOOL (WINAPI * PFN_ChangeWindowMessageFilterEx)(HWND,UINT,DWORD,CHANGEFILTERSTRUCT*);
+typedef BOOL (WINAPI * PFN_EnableNonClientDpiScaling)(HWND);
+typedef BOOL (WINAPI * PFN_SetProcessDpiAwarenessContext)(HANDLE);
+typedef UINT (WINAPI * PFN_GetDpiForWindow)(HWND);
+typedef BOOL (WINAPI * PFN_AdjustWindowRectExForDpi)(LPRECT,DWORD,BOOL,DWORD,UINT);
 #define SetProcessDPIAware _glfw.win32.user32.SetProcessDPIAware_
 #define ChangeWindowMessageFilterEx _glfw.win32.user32.ChangeWindowMessageFilterEx_
+#define EnableNonClientDpiScaling _glfw.win32.user32.EnableNonClientDpiScaling_
+#define SetProcessDpiAwarenessContext _glfw.win32.user32.SetProcessDpiAwarenessContext_
+#define GetDpiForWindow _glfw.win32.user32.GetDpiForWindow_
+#define AdjustWindowRectExForDpi _glfw.win32.user32.AdjustWindowRectExForDpi_
 
 // dwmapi.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_DwmIsCompositionEnabled)(BOOL*);
 typedef HRESULT (WINAPI * PFN_DwmFlush)(VOID);
 typedef HRESULT(WINAPI * PFN_DwmEnableBlurBehindWindow)(HWND,const DWM_BLURBEHIND*);
+typedef HRESULT (WINAPI * PFN_DwmGetColorizationColor)(DWORD*,BOOL*);
 #define DwmIsCompositionEnabled _glfw.win32.dwmapi.IsCompositionEnabled
 #define DwmFlush _glfw.win32.dwmapi.Flush
 #define DwmEnableBlurBehindWindow _glfw.win32.dwmapi.EnableBlurBehindWindow
+#define DwmGetColorizationColor _glfw.win32.dwmapi.GetColorizationColor
 
 // shcore.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_SetProcessDpiAwareness)(PROCESS_DPI_AWARENESS);
 typedef HRESULT (WINAPI * PFN_GetDpiForMonitor)(HMONITOR,MONITOR_DPI_TYPE,UINT*,UINT*);
 #define SetProcessDpiAwareness _glfw.win32.shcore.SetProcessDpiAwareness_
 #define GetDpiForMonitor _glfw.win32.shcore.GetDpiForMonitor_
+
+// ntdll.dll function pointer typedefs
+typedef LONG (WINAPI * PFN_RtlVerifyVersionInfo)(OSVERSIONINFOEXW*,ULONG,ULONGLONG);
+#define RtlVerifyVersionInfo _glfw.win32.ntdll.RtlVerifyVersionInfo_
 
 typedef VkFlags VkWin32SurfaceCreateFlagsKHR;
 
@@ -239,17 +279,14 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(
 
 #include "win32_joystick.h"
 #include "wgl_context.h"
-#include "egl_context.h"
-#include "osmesa_context.h"
 
-#define _GLFW_WNDCLASSNAME L"GLFW30"
+#if !defined(_GLFW_WNDCLASSNAME)
+ #define _GLFW_WNDCLASSNAME L"GLFW30"
+#endif
 
 #define _glfw_dlopen(name) LoadLibraryA(name)
 #define _glfw_dlclose(handle) FreeLibrary((HMODULE) handle)
 #define _glfw_dlsym(handle, name) GetProcAddress((HMODULE) handle, name)
-
-#define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->win32.handle)
-#define _GLFW_EGL_NATIVE_DISPLAY EGL_DEFAULT_DISPLAY
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWin32  win32
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 win32
@@ -274,9 +311,16 @@ typedef struct _GLFWwindowWin32
     GLFWbool            maximized;
     // Whether to enable framebuffer transparency on DWM
     GLFWbool            transparent;
+    GLFWbool            scaleToMonitor;
+    GLFWbool            keymenu;
+
+    // Cached size used to filter out duplicate events
+    int                 width, height;
 
     // The last received cursor position, regardless of source
     int                 lastCursorPosX, lastCursorPosY;
+    // The last recevied high surrogate when decoding pairs of UTF-16 messages
+    WCHAR               highSurrogate;
 
 } _GLFWwindowWin32;
 
@@ -298,6 +342,7 @@ typedef struct _GLFWlibraryWin32
     _GLFWwindow*        disabledCursorWindow;
     RAWINPUT*           rawInput;
     int                 rawInputSize;
+    UINT                mouseTrailSize;
 
     struct {
         HINSTANCE                       instance;
@@ -320,6 +365,10 @@ typedef struct _GLFWlibraryWin32
         HINSTANCE                       instance;
         PFN_SetProcessDPIAware          SetProcessDPIAware_;
         PFN_ChangeWindowMessageFilterEx ChangeWindowMessageFilterEx_;
+        PFN_EnableNonClientDpiScaling   EnableNonClientDpiScaling_;
+        PFN_SetProcessDpiAwarenessContext SetProcessDpiAwarenessContext_;
+        PFN_GetDpiForWindow             GetDpiForWindow_;
+        PFN_AdjustWindowRectExForDpi    AdjustWindowRectExForDpi_;
     } user32;
 
     struct {
@@ -327,6 +376,7 @@ typedef struct _GLFWlibraryWin32
         PFN_DwmIsCompositionEnabled     IsCompositionEnabled;
         PFN_DwmFlush                    Flush;
         PFN_DwmEnableBlurBehindWindow   EnableBlurBehindWindow;
+        PFN_DwmGetColorizationColor     GetColorizationColor;
     } dwmapi;
 
     struct {
@@ -334,6 +384,11 @@ typedef struct _GLFWlibraryWin32
         PFN_SetProcessDpiAwareness      SetProcessDpiAwareness_;
         PFN_GetDpiForMonitor            GetDpiForMonitor_;
     } shcore;
+
+    struct {
+        HINSTANCE                       instance;
+        PFN_RtlVerifyVersionInfo        RtlVerifyVersionInfo_;
+    } ntdll;
 
 } _GLFWlibraryWin32;
 
@@ -390,10 +445,11 @@ typedef struct _GLFWmutexWin32
 
 GLFWbool _glfwRegisterWindowClassWin32(void);
 void _glfwUnregisterWindowClassWin32(void);
-GLFWbool _glfwIsCompositionEnabledWin32(void);
 
 WCHAR* _glfwCreateWideStringFromUTF8Win32(const char* source);
 char* _glfwCreateUTF8FromWideStringWin32(const WCHAR* source);
+BOOL _glfwIsWindowsVersionOrGreaterWin32(WORD major, WORD minor, WORD sp);
+BOOL _glfwIsWindows10BuildOrGreaterWin32(WORD build);
 void _glfwInputErrorWin32(int error, const char* description);
 void _glfwUpdateKeyNamesWin32(void);
 

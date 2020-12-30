@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 Wayland - www.glfw.org
+// GLFW 3.4 Wayland - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -53,10 +53,9 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #include "null_joystick.h"
 #endif
 #include "xkb_unicode.h"
-#include "egl_context.h"
-#include "osmesa_context.h"
 
 #include "wayland-xdg-shell-client-protocol.h"
+#include "wayland-xdg-decoration-client-protocol.h"
 #include "wayland-viewporter-client-protocol.h"
 #include "wayland-relative-pointer-unstable-v1-client-protocol.h"
 #include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
@@ -66,16 +65,13 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #define _glfw_dlclose(handle) dlclose(handle)
 #define _glfw_dlsym(handle, name) dlsym(handle, name)
 
-#define _GLFW_EGL_NATIVE_WINDOW         ((EGLNativeWindowType) window->wl.native)
-#define _GLFW_EGL_NATIVE_DISPLAY        ((EGLNativeDisplayType) _glfw.wl.display)
-
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWayland  wl
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWayland wl
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWayland wl
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorWayland  wl
 
-#define _GLFW_PLATFORM_CONTEXT_STATE
-#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
+#define _GLFW_PLATFORM_CONTEXT_STATE         struct { int dummyContext; }
+#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE struct { int dummyLibraryContext; }
 
 struct wl_cursor_image {
     uint32_t width;
@@ -179,12 +175,12 @@ typedef struct _GLFWwindowWayland
     GLFWbool                    transparent;
     struct wl_surface*          surface;
     struct wl_egl_window*       native;
-    struct wl_shell_surface*    shellSurface;
     struct wl_callback*         callback;
 
     struct {
         struct xdg_surface*     surface;
         struct xdg_toplevel*    toplevel;
+        struct zxdg_toplevel_decoration_v1* decoration;
     } xdg;
 
     _GLFWcursor*                currentCursor;
@@ -206,10 +202,10 @@ typedef struct _GLFWwindowWayland
 
     struct zwp_idle_inhibitor_v1*          idleInhibitor;
 
-    // This is a hack to prevent auto-iconification on creation.
-    GLFWbool                    justCreated;
+    GLFWbool                    wasFullscreen;
 
     struct {
+        GLFWbool                           serverSide;
         struct wl_buffer*                  buffer;
         _GLFWdecorationWayland             top, left, right, bottom;
         int                                focus;
@@ -225,12 +221,16 @@ typedef struct _GLFWlibraryWayland
     struct wl_registry*         registry;
     struct wl_compositor*       compositor;
     struct wl_subcompositor*    subcompositor;
-    struct wl_shell*            shell;
     struct wl_shm*              shm;
     struct wl_seat*             seat;
     struct wl_pointer*          pointer;
     struct wl_keyboard*         keyboard;
+    struct wl_data_device_manager*          dataDeviceManager;
+    struct wl_data_device*      dataDevice;
+    struct wl_data_offer*       dataOffer;
+    struct wl_data_source*      dataSource;
     struct xdg_wm_base*         wmBase;
+    struct zxdg_decoration_manager_v1*      decorationManager;
     struct wp_viewporter*       viewporter;
     struct zwp_relative_pointer_manager_v1* relativePointerManager;
     struct zwp_pointer_constraints_v1*      pointerConstraints;
@@ -240,13 +240,20 @@ typedef struct _GLFWlibraryWayland
     int                         seatVersion;
 
     struct wl_cursor_theme*     cursorTheme;
+    struct wl_cursor_theme*     cursorThemeHiDPI;
     struct wl_surface*          cursorSurface;
-    uint32_t                    pointerSerial;
+    const char*                 cursorPreviousName;
+    int                         cursorTimerfd;
+    uint32_t                    serial;
 
     int32_t                     keyboardRepeatRate;
     int32_t                     keyboardRepeatDelay;
     int                         keyboardLastKey;
     int                         keyboardLastScancode;
+    char*                       clipboardString;
+    size_t                      clipboardSize;
+    char*                       clipboardSendString;
+    size_t                      clipboardSendSize;
     int                         timerfd;
     short int                   keycodes[256];
     short int                   scancodes[GLFW_KEY_LAST + 1];
@@ -319,7 +326,7 @@ typedef struct _GLFWlibraryWayland
 typedef struct _GLFWmonitorWayland
 {
     struct wl_output*           output;
-    int                         name;
+    uint32_t                    name;
     int                         currentMode;
 
     int                         x;
@@ -332,10 +339,12 @@ typedef struct _GLFWmonitorWayland
 //
 typedef struct _GLFWcursorWayland
 {
-    struct wl_cursor_image*     image;
+    struct wl_cursor*           cursor;
+    struct wl_cursor*           cursorHiDPI;
     struct wl_buffer*           buffer;
     int                         width, height;
     int                         xhot, yhot;
+    int                         currentImage;
 } _GLFWcursorWayland;
 
 

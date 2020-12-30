@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.3 GLX - www.glfw.org
+// GLFW 3.4 GLX - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2006-2017 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -29,11 +29,11 @@
 #define GLX_RGBA_BIT 0x00000001
 #define GLX_WINDOW_BIT 0x00000001
 #define GLX_DRAWABLE_TYPE 0x8010
-#define GLX_RENDER_TYPE	0x8011
+#define GLX_RENDER_TYPE 0x8011
 #define GLX_RGBA_TYPE 0x8014
 #define GLX_DOUBLEBUFFER 5
 #define GLX_STEREO 6
-#define GLX_AUX_BUFFERS	7
+#define GLX_AUX_BUFFERS 7
 #define GLX_RED_SIZE 8
 #define GLX_GREEN_SIZE 9
 #define GLX_BLUE_SIZE 10
@@ -42,7 +42,7 @@
 #define GLX_STENCIL_SIZE 13
 #define GLX_ACCUM_RED_SIZE 14
 #define GLX_ACCUM_GREEN_SIZE 15
-#define GLX_ACCUM_BLUE_SIZE	16
+#define GLX_ACCUM_BLUE_SIZE 16
 #define GLX_ACCUM_ALPHA_SIZE 17
 #define GLX_SAMPLES 0x186a1
 #define GLX_VISUAL_ID 0x800b

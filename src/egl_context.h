@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.3 EGL - www.glfw.org
+// GLFW 3.4 EGL - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2006-2017 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -25,52 +25,32 @@
 //
 //========================================================================
 
-#if defined(_GLFW_USE_EGLPLATFORM_H)
- #include <EGL/eglplatform.h>
-#elif defined(_GLFW_WIN32)
+#if defined(_GLFW_WIN32)
  #define EGLAPIENTRY __stdcall
-typedef HDC EGLNativeDisplayType;
-typedef HWND EGLNativeWindowType;
-#elif defined(_GLFW_COCOA)
- #define EGLAPIENTRY
-typedef void* EGLNativeDisplayType;
-typedef id EGLNativeWindowType;
-#elif defined(_GLFW_X11)
- #define EGLAPIENTRY
-typedef Display* EGLNativeDisplayType;
-typedef Window EGLNativeWindowType;
-#elif defined(_GLFW_WAYLAND)
- #define EGLAPIENTRY
-typedef struct wl_display* EGLNativeDisplayType;
-typedef struct wl_egl_window* EGLNativeWindowType;
-#elif defined(_GLFW_MIR)
- #define EGLAPIENTRY
-typedef MirEGLNativeDisplayType EGLNativeDisplayType;
-typedef MirEGLNativeWindowType EGLNativeWindowType;
 #else
- #error "No supported EGL platform selected"
+ #define EGLAPIENTRY
 #endif
 
-#define EGL_SUCCESS	0x3000
-#define EGL_NOT_INITIALIZED	0x3001
+#define EGL_SUCCESS 0x3000
+#define EGL_NOT_INITIALIZED 0x3001
 #define EGL_BAD_ACCESS 0x3002
 #define EGL_BAD_ALLOC 0x3003
 #define EGL_BAD_ATTRIBUTE 0x3004
 #define EGL_BAD_CONFIG 0x3005
-#define EGL_BAD_CONTEXT	0x3006
-#define EGL_BAD_CURRENT_SURFACE	0x3007
-#define EGL_BAD_DISPLAY	0x3008
+#define EGL_BAD_CONTEXT 0x3006
+#define EGL_BAD_CURRENT_SURFACE 0x3007
+#define EGL_BAD_DISPLAY 0x3008
 #define EGL_BAD_MATCH 0x3009
 #define EGL_BAD_NATIVE_PIXMAP 0x300a
 #define EGL_BAD_NATIVE_WINDOW 0x300b
 #define EGL_BAD_PARAMETER 0x300c
-#define EGL_BAD_SURFACE	0x300d
+#define EGL_BAD_SURFACE 0x300d
 #define EGL_CONTEXT_LOST 0x300e
 #define EGL_COLOR_BUFFER_TYPE 0x303f
 #define EGL_RGB_BUFFER 0x308e
 #define EGL_SURFACE_TYPE 0x3033
 #define EGL_WINDOW_BIT 0x0004
-#define EGL_RENDERABLE_TYPE	0x3040
+#define EGL_RENDERABLE_TYPE 0x3040
 #define EGL_OPENGL_ES_BIT 0x0001
 #define EGL_OPENGL_ES2_BIT 0x0004
 #define EGL_OPENGL_BIT 0x0008
@@ -80,7 +60,7 @@ typedef MirEGLNativeWindowType EGLNativeWindowType;
 #define EGL_RED_SIZE 0x3024
 #define EGL_DEPTH_SIZE 0x3025
 #define EGL_STENCIL_SIZE 0x3026
-#define EGL_SAMPLES	0x3031
+#define EGL_SAMPLES 0x3031
 #define EGL_OPENGL_ES_API 0x30a0
 #define EGL_OPENGL_API 0x30a2
 #define EGL_NONE 0x3038
@@ -110,6 +90,17 @@ typedef MirEGLNativeWindowType EGLNativeWindowType;
 #define EGL_CONTEXT_RELEASE_BEHAVIOR_KHR 0x2097
 #define EGL_CONTEXT_RELEASE_BEHAVIOR_NONE_KHR 0
 #define EGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR 0x2098
+#define EGL_PLATFORM_X11_EXT 0x31d5
+#define EGL_PLATFORM_WAYLAND_EXT 0x31d8
+#define EGL_PLATFORM_ANGLE_ANGLE 0x3202
+#define EGL_PLATFORM_ANGLE_TYPE_ANGLE 0x3203
+#define EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE 0x320d
+#define EGL_PLATFORM_ANGLE_TYPE_OPENGLES_ANGLE 0x320e
+#define EGL_PLATFORM_ANGLE_TYPE_D3D9_ANGLE 0x3207
+#define EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE 0x3208
+#define EGL_PLATFORM_ANGLE_TYPE_VULKAN_ANGLE 0x3450
+#define EGL_PLATFORM_ANGLE_TYPE_METAL_ANGLE 0x3489
+#define EGL_PLATFORM_ANGLE_NATIVE_PLATFORM_TYPE_ANGLE 0x348f
 
 typedef int EGLint;
 typedef unsigned int EGLBoolean;
@@ -118,6 +109,9 @@ typedef void* EGLConfig;
 typedef void* EGLContext;
 typedef void* EGLDisplay;
 typedef void* EGLSurface;
+
+typedef void* EGLNativeDisplayType;
+typedef void* EGLNativeWindowType;
 
 // EGL function pointer typedefs
 typedef EGLBoolean (EGLAPIENTRY * PFN_eglGetConfigAttrib)(EGLDisplay,EGLConfig,EGLint,EGLint*);
@@ -153,9 +147,10 @@ typedef GLFWglproc (EGLAPIENTRY * PFN_eglGetProcAddress)(const char*);
 #define eglQueryString _glfw.egl.QueryString
 #define eglGetProcAddress _glfw.egl.GetProcAddress
 
-#define _GLFW_EGL_CONTEXT_STATE            _GLFWcontextEGL egl
-#define _GLFW_EGL_LIBRARY_CONTEXT_STATE    _GLFWlibraryEGL egl
-
+typedef EGLDisplay (EGLAPIENTRY * PFNEGLGETPLATFORMDISPLAYEXTPROC)(EGLenum,void*,const EGLint*);
+typedef EGLSurface (EGLAPIENTRY * PFNEGLCREATEPLATFORMWINDOWSURFACEEXTPROC)(EGLDisplay,EGLConfig,void*,const EGLint*);
+#define eglGetPlatformDisplayEXT _glfw.egl.GetPlatformDisplayEXT
+#define eglCreatePlatformWindowSurfaceEXT _glfw.egl.CreatePlatformWindowSurfaceEXT
 
 // EGL-specific per-context data
 //
@@ -173,6 +168,7 @@ typedef struct _GLFWcontextEGL
 //
 typedef struct _GLFWlibraryEGL
 {
+    EGLenum         platform;
     EGLDisplay      display;
     EGLint          major, minor;
     GLFWbool        prefix;
@@ -182,6 +178,15 @@ typedef struct _GLFWlibraryEGL
     GLFWbool        KHR_gl_colorspace;
     GLFWbool        KHR_get_all_proc_addresses;
     GLFWbool        KHR_context_flush_control;
+    GLFWbool        EXT_client_extensions;
+    GLFWbool        EXT_platform_base;
+    GLFWbool        EXT_platform_x11;
+    GLFWbool        EXT_platform_wayland;
+    GLFWbool        ANGLE_platform_angle;
+    GLFWbool        ANGLE_platform_angle_opengl;
+    GLFWbool        ANGLE_platform_angle_d3d;
+    GLFWbool        ANGLE_platform_angle_vulkan;
+    GLFWbool        ANGLE_platform_angle_metal;
 
     void*           handle;
 
@@ -201,6 +206,9 @@ typedef struct _GLFWlibraryEGL
     PFN_eglSwapInterval         SwapInterval;
     PFN_eglQueryString          QueryString;
     PFN_eglGetProcAddress       GetProcAddress;
+
+    PFNEGLGETPLATFORMDISPLAYEXTPROC GetPlatformDisplayEXT;
+    PFNEGLCREATEPLATFORMWINDOWSURFACEEXTPROC CreatePlatformWindowSurfaceEXT;
 
 } _GLFWlibraryEGL;
 

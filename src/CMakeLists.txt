@@ -133,13 +133,7 @@ endif()
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
     "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR
     "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
-
-    if ("${CMAKE_C_SIMULATE_ID}" STREQUAL "MSVC")
-        # Tell Clang-CL that this is a Clang flag
-        target_compile_options(glfw PRIVATE "/clang:-Wall")
-    else()
-        target_compile_options(glfw PRIVATE "-Wall")
-    endif()
+    target_compile_options(glfw PRIVATE "-Wall")
 elseif (MSVC)
     target_compile_options(glfw PRIVATE "/W3")
 endif()

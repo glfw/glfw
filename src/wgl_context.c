@@ -159,7 +159,8 @@ static int choosePixelFormat(_GLFWwindow* window,
                 continue;
             }
 
-            if (findAttribValue(WGL_PIXEL_TYPE_ARB) != WGL_TYPE_RGBA_ARB)
+            const int pixelType = findAttribValue( WGL_PIXEL_TYPE_ARB );
+            if ( pixelType != WGL_TYPE_RGBA_ARB && pixelType != WGL_TYPE_RGBA_FLOAT_ARB )
                 continue;
 
             if (findAttribValue(WGL_ACCELERATION_ARB) == WGL_NO_ACCELERATION_ARB)

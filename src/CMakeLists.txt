@@ -136,6 +136,7 @@ if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
     target_compile_options(glfw PRIVATE "-Wall")
       if(CMAKE_GENERATOR MATCHES "Visual Studio")
         # Tell Clang-CL that this is a Clang flag
+        # Clang won't recognize forward slash flags with any other generator
         target_compile_options(glfw PRIVATE "/clang:-Wall")
     else()
         target_compile_options(glfw PRIVATE "-Wall")

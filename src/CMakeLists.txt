@@ -133,7 +133,6 @@ endif()
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
     "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR
     "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
-    target_compile_options(glfw PRIVATE "-Wall")
       if(CMAKE_GENERATOR MATCHES "Visual Studio")
         # Tell Clang-CL that this is a Clang flag
         # Clang won't recognize forward slash flags with any other generator

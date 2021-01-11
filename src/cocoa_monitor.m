@@ -41,6 +41,22 @@
 //
 static char* getDisplayName(CGDirectDisplayID displayID)
 {
+    // IOKit doesn't work on Apple Silicon anymore. Luckilly, 10.15 introduced -[NSScreen localizedName].
+    // Use it if available, and fall back to IOKit otherwise.
+    if ([NSScreen instancesRespondToSelector:@selector(localizedName)])
+    {
+        for(NSScreen *screen in [NSScreen screens])
+        {
+            if ([[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue] == displayID)
+            {
+                NSString *name = [screen valueForKey:@"localizedName"];
+                if (name)
+                {
+                    return _glfw_strdup([name UTF8String]);
+                }
+            }
+        }
+    }
     io_iterator_t it;
     io_service_t service;
     CFDictionaryRef info;

@@ -49,7 +49,7 @@ static char* getDisplayName(CGDirectDisplayID displayID)
         {
             if ([[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue] == displayID)
             {
-                NSString *name = [screen localizedName];
+                NSString *name = [screen valueForKey:@"localizedName"];
                 if (name)
                 {
                     return _glfw_strdup([name UTF8String]);

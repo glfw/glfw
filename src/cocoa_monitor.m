@@ -39,24 +39,21 @@
 
 // Get the name of the specified display, or NULL
 //
-static char* getDisplayName(CGDirectDisplayID displayID)
+static char* getMonitorName(CGDirectDisplayID displayID, NSScreen* screen)
 {
-    // IOKit doesn't work on Apple Silicon anymore. Luckilly, 10.15 introduced -[NSScreen localizedName].
+    // IOKit doesn't work on Apple Silicon anymore
+    // Luckily, 10.15 introduced -[NSScreen localizedName].
     // Use it if available, and fall back to IOKit otherwise.
-    if ([NSScreen instancesRespondToSelector:@selector(localizedName)])
+    if (screen)
     {
-        for(NSScreen *screen in [NSScreen screens])
+        if ([screen respondsToSelector:@selector(localizedName)])
         {
-            if ([[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue] == displayID)
-            {
-                NSString *name = [screen valueForKey:@"localizedName"];
-                if (name)
-                {
-                    return _glfw_strdup([name UTF8String]);
-                }
-            }
+            NSString* name = [screen valueForKey:@"localizedName"];
+            if (name)
+                return _glfw_strdup([name UTF8String]);
         }
     }
+
     io_iterator_t it;
     io_service_t service;
     CFDictionaryRef info;
@@ -225,31 +222,6 @@ static void endFadeReservation(CGDisplayFadeReservationToken token)
     }
 }
 
-// Finds and caches the NSScreen corresponding to the specified monitor
-//
-static GLFWbool refreshMonitorScreen(_GLFWmonitor* monitor)
-{
-    if (monitor->ns.screen)
-        return GLFW_TRUE;
-
-    for (NSScreen* screen in [NSScreen screens])
-    {
-        NSNumber* displayID = [screen deviceDescription][@"NSScreenNumber"];
-
-        // HACK: Compare unit numbers instead of display IDs to work around
-        //       display replacement on machines with automatic graphics
-        //       switching
-        if (monitor->ns.unitNumber == CGDisplayUnitNumber([displayID unsignedIntValue]))
-        {
-            monitor->ns.screen = screen;
-            return GLFW_TRUE;
-        }
-    }
-
-    _glfwInputError(GLFW_PLATFORM_ERROR, "Cocoa: Failed to find a screen for monitor");
-    return GLFW_FALSE;
-}
-
 // Returns the display refresh rate queried from the I/O registry
 //
 static double getFallbackRefreshRate(CGDirectDisplayID displayID)
@@ -350,15 +322,29 @@ void _glfwPollMonitorsNS(void)
         if (CGDisplayIsAsleep(displays[i]))
             continue;
 
+        const uint32_t unitNumber = CGDisplayUnitNumber(displays[i]);
+        NSScreen* screen = nil;
+
+        for (screen in [NSScreen screens])
+        {
+            NSNumber* screenNumber = [screen deviceDescription][@"NSScreenNumber"];
+
+            // HACK: Compare unit numbers instead of display IDs to work around
+            //       display replacement on machines with automatic graphics
+            //       switching
+            if (CGDisplayUnitNumber([screenNumber unsignedIntValue]) == unitNumber)
+                break;
+        }
+
         // HACK: Compare unit numbers instead of display IDs to work around
         //       display replacement on machines with automatic graphics
         //       switching
-        const uint32_t unitNumber = CGDisplayUnitNumber(displays[i]);
         uint32_t j;
         for (j = 0;  j < disconnectedCount;  j++)
         {
             if (disconnected[j] && disconnected[j]->ns.unitNumber == unitNumber)
             {
+                disconnected[j]->ns.screen = screen;
                 disconnected[j] = NULL;
                 break;
             }
@@ -368,13 +354,14 @@ void _glfwPollMonitorsNS(void)
             continue;
 
         const CGSize size = CGDisplayScreenSize(displays[i]);
-        char* name = getDisplayName(displays[i]);
+        char* name = getMonitorName(displays[i], screen);
         if (!name)
             name = _glfw_strdup("Unknown");
 
         _GLFWmonitor* monitor = _glfwAllocMonitor(name, size.width, size.height);
         monitor->ns.displayID  = displays[i];
         monitor->ns.unitNumber = unitNumber;
+        monitor->ns.screen     = screen;
 
         free(name);
 
@@ -483,8 +470,11 @@ void _glfwPlatformGetMonitorContentScale(_GLFWmonitor* monitor,
 {
     @autoreleasepool {
 
-    if (!refreshMonitorScreen(monitor))
-        return;
+    if (!monitor->ns.screen)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Cannot query content scale without screen");
+    }
 
     const NSRect points = [monitor->ns.screen frame];
     const NSRect pixels = [monitor->ns.screen convertRectToBacking:points];
@@ -503,8 +493,11 @@ void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor,
 {
     @autoreleasepool {
 
-    if (!refreshMonitorScreen(monitor))
-        return;
+    if (!monitor->ns.screen)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Cannot query workarea without screen");
+    }
 
     const NSRect frameRect = [monitor->ns.screen visibleFrame];
 

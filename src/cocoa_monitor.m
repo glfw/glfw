@@ -338,7 +338,8 @@ void _glfwPollMonitorsNS(void)
         //       display replacement on machines with automatic graphics
         //       switching
         const uint32_t unitNumber = CGDisplayUnitNumber(displays[i]);
-        for (uint32_t j = 0;  j < disconnectedCount;  j++)
+        uint32_t j;
+        for (j = 0;  j < disconnectedCount;  j++)
         {
             if (disconnected[j] && disconnected[j]->ns.unitNumber == unitNumber)
             {
@@ -346,6 +347,9 @@ void _glfwPollMonitorsNS(void)
                 break;
             }
         }
+
+        if (j < disconnectedCount)
+            continue;
 
         const CGSize size = CGDisplayScreenSize(displays[i]);
         char* name = getDisplayName(displays[i]);

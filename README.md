@@ -137,6 +137,7 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: Menubar was not clickable on macOS 10.15+ until it lost and
    regained focus (#1648,#1802)
  - [Cocoa] Bugfix: Monitor name query could segfault on macOS 11 (#1809,#1833)
+ - [Cocoa] Bugfix: The install name of the installed dylib was relative (#1504)
  - [X11] Bugfix: IME input of CJK was broken for "C" locale (#1587,#1636)
  - [X11] Bugfix: Xlib errors caused by other parts of the application could be
    reported as GLFW errors
@@ -178,6 +179,7 @@ GLFW exists because people around the world donated their time and lent their
 skills.
 
  - Bobyshev Alexander
+ - Laurent Aphecetche
  - Matt Arsenault
  - ashishgamedev
  - David Avedissian

@@ -136,6 +136,7 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: Duplicate video modes were not filtered out (#1830)
  - [Cocoa] Bugfix: Menubar was not clickable on macOS 10.15+ until it lost and
    regained focus (#1648,#1802)
+ - [Cocoa] Bugfix: Monitor name query could segfault on macOS 11 (#1809,#1833)
  - [X11] Bugfix: IME input of CJK was broken for "C" locale (#1587,#1636)
  - [X11] Bugfix: Xlib errors caused by other parts of the application could be
    reported as GLFW errors
@@ -185,6 +186,7 @@ skills.
  - Coşku Baş
  - Niklas Behrens
  - Andrew Belt
+ - Nevyn Bengtsson
  - Niklas Bergström
  - Denis Bernard
  - Doug Binks

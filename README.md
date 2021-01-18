@@ -181,6 +181,7 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: Duplicate video modes were not filtered out (#1830)
  - [Cocoa] Bugfix: Menubar was not clickable on macOS 10.15+ until it lost and
    regained focus (#1648,#1802)
+ - [Cocoa] Bugfix: Monitor name query could segfault on macOS 11 (#1809,#1833)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -257,6 +258,7 @@ skills.
  - Coşku Baş
  - Niklas Behrens
  - Andrew Belt
+ - Nevyn Bengtsson
  - Niklas Bergström
  - Denis Bernard
  - Doug Binks

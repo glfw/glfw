@@ -133,6 +133,7 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: Failing to retrieve the refresh rate of built-in displays
    could leak memory
  - [Cocoa] Bugfix: Objective-C files were compiled as C with CMake 3.19 (#1787)
+ - [Cocoa] Bugfix: Duplicate video modes were not filtered out (#1830)
  - [X11] Bugfix: IME input of CJK was broken for "C" locale (#1587,#1636)
  - [X11] Bugfix: Xlib errors caused by other parts of the application could be
    reported as GLFW errors

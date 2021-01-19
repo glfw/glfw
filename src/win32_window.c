@@ -1140,7 +1140,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             // Only apply the suggested size if the OS is new enough to have
             // sent a WM_GETDPISCALEDSIZE before this
-            if (_glfwIsWindows10CreatorsUpdateOrGreaterWin32())
+            if (_glfwIsWindows10CreatorsUpdateOrGreaterWin32() && !window->monitor)
             {
                 RECT* suggested = (RECT*) lParam;
                 SetWindowPos(window->win32.handle, HWND_TOP,

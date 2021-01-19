@@ -159,6 +159,8 @@ information on what to include when reporting a bug.
    configuration change (#1761)
  - [Win32] Bugfix: Initialization would segfault on Windows 8 (not 8.1) (#1775)
  - [Win32] Bugfix: Duplicate size events were not filtered (#1610)
+ - [Win32] Bugfix: Full screen windows were incorrectly resized by DPI changes
+   (#1582)
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)

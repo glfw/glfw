@@ -129,6 +129,8 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: Duplicate size events were not filtered (#1610)
  - [Win32] Bugfix: Full screen windows were incorrectly resized by DPI changes
    (#1582)
+ - [Win32] Bugfix: `GLFW_SCALE_TO_MONITOR` had no effect on systems older than
+   Windows 10 version 1703 (#1511)
  - [Cocoa] Changed `EGLNativeWindowType` from `NSView` to `CALayer` (#1169)
  - [Cocoa] Bugfix: Non-BMP Unicode codepoint input was reported as UTF-16
    (#1635)

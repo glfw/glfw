@@ -161,6 +161,8 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: Duplicate size events were not filtered (#1610)
  - [Win32] Bugfix: Full screen windows were incorrectly resized by DPI changes
    (#1582)
+ - [Win32] Bugfix: `GLFW_SCALE_TO_MONITOR` had no effect on systems older than
+   Windows 10 version 1703 (#1511)
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)

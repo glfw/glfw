@@ -428,9 +428,6 @@ static GLFWbool initializeTIS(void)
 {
     if (_glfw.hints.init.ns.menubar)
     {
-        // In case we are unbundled, make us a proper UI application
-        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
-
         // Menu bar setup must go between sharedApplication and finishLaunching
         // in order to properly emulate the behavior of NSApplicationMain
 
@@ -449,6 +446,11 @@ static GLFWbool initializeTIS(void)
 {
     _glfw.ns.finishedLaunching = GLFW_TRUE;
     _glfwPlatformPostEmptyEvent();
+
+    // In case we are unbundled, make us a proper UI application
+    if (_glfw.hints.init.ns.menubar)
+        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+
     [NSApp stop:nil];
 }
 

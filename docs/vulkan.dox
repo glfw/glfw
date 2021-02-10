@@ -93,7 +93,7 @@ if (glfwVulkanSupported())
 This function returns `GLFW_TRUE` if the Vulkan loader and any minimally
 functional ICD was found.
 
-If if one or both were not found, calling any other Vulkan related GLFW function
+If one or both were not found, calling any other Vulkan related GLFW function
 will generate a @ref GLFW_API_UNAVAILABLE error.
 
 

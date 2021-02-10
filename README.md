@@ -101,7 +101,7 @@ located in the `deps/` directory.
    functions
  - [linmath.h](https://github.com/datenwolf/linmath.h) for linear algebra in
    examples
- - [Nuklear](https://github.com/vurtun/nuklear) for test and example UI
+ - [Nuklear](https://github.com/Immediate-Mode-UI/Nuklear) for test and example UI
  - [stb\_image\_write](https://github.com/nothings/stb) for writing images to disk
 
 The documentation is generated with [Doxygen](http://doxygen.org/) if CMake can
@@ -138,6 +138,11 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: Failing to retrieve the refresh rate of built-in displays
    could leak memory
  - [Cocoa] Bugfix: Objective-C files were compiled as C with CMake 3.19 (#1787)
+ - [Cocoa] Bugfix: Duplicate video modes were not filtered out (#1830)
+ - [Cocoa] Bugfix: Menubar was not clickable on macOS 10.15+ until it lost and
+   regained focus (#1648,#1802)
+ - [Cocoa] Bugfix: Monitor name query could segfault on macOS 11 (#1809,#1833)
+ - [Cocoa] Bugfix: The install name of the installed dylib was relative (#1504)
  - [X11] Bugfix: IME input of CJK was broken for "C" locale (#1587,#1636)
  - [X11] Bugfix: Xlib errors caused by other parts of the application could be
    reported as GLFW errors
@@ -179,13 +184,16 @@ GLFW exists because people around the world donated their time and lent their
 skills.
 
  - Bobyshev Alexander
+ - Laurent Aphecetche
  - Matt Arsenault
+ - ashishgamedev
  - David Avedissian
  - Keith Bauer
  - John Bartholomew
  - Coşku Baş
  - Niklas Behrens
  - Andrew Belt
+ - Nevyn Bengtsson
  - Niklas Bergström
  - Denis Bernard
  - Doug Binks
@@ -369,6 +377,7 @@ skills.
  - Waris
  - Jay Weisskopf
  - Frank Wille
+ - Richard A. Wilkes
  - Tatsuya Yatagawa
  - Ryogo Yoshimura
  - Lukas Zanner

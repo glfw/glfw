@@ -555,7 +555,8 @@ int _glfwPlatformInit(void)
         [NSApp run];
 
     // In case we are unbundled, make us a proper UI application
-    [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+    if (_glfw.hints.init.ns.menubar)
+        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
     return GLFW_TRUE;
 

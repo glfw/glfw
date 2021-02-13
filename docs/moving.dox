@@ -44,7 +44,7 @@ traction.
 
 If you wish to use the C++11 or C11 facilities but your compiler doesn't yet
 support them, see the
-[TinyThread++](https://gitorious.org/tinythread/tinythreadpp) and
+[TinyThread++](https://github.com/mbitsnbites/tinythreadpp) and
 [TinyCThread](https://github.com/tinycthread/tinycthread) projects created by
 the original author of GLFW.  These libraries implement a usable subset of the
 threading APIs in C++11 and C11, and in fact some GLFW 3 test programs use

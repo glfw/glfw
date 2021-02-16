@@ -788,7 +788,6 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 //
 static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
 {
-    int i;
     char* selectionString = NULL;
     const Atom formats[] = { _glfw.x11.UTF8_STRING, XA_STRING };
     const int formatCount = sizeof(formats) / sizeof(formats[0]);
@@ -831,14 +830,13 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
         // Multiple conversions were requested
 
         Atom* targets;
-        unsigned long i, count;
+        const unsigned long count =
+            _glfwGetWindowPropertyX11(request->requestor,
+                                      request->property,
+                                      _glfw.x11.ATOM_PAIR,
+                                      (unsigned char**) &targets);
 
-        count = _glfwGetWindowPropertyX11(request->requestor,
-                                          request->property,
-                                          _glfw.x11.ATOM_PAIR,
-                                          (unsigned char**) &targets);
-
-        for (i = 0;  i < count;  i += 2)
+        for (unsigned long i = 0;  i < count;  i += 2)
         {
             int j;
 
@@ -896,7 +894,7 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
 
     // Conversion to a data target was requested
 
-    for (i = 0;  i < formatCount;  i++)
+    for (int i = 0;  i < formatCount;  i++)
     {
         if (request->target == formats[i])
         {
@@ -1588,7 +1586,7 @@ static void processEvent(XEvent *event)
             else if (event->xclient.message_type == _glfw.x11.XdndEnter)
             {
                 // A drag operation has entered the window
-                unsigned long i, count;
+                unsigned long count;
                 Atom* formats = NULL;
                 const GLFWbool list = event->xclient.data.l[1] & 1;
 
@@ -1612,7 +1610,7 @@ static void processEvent(XEvent *event)
                     formats = (Atom*) event->xclient.data.l + 2;
                 }
 
-                for (i = 0;  i < count;  i++)
+                for (unsigned int i = 0;  i < count;  i++)
                 {
                     if (formats[i] == _glfw.x11.text_uri_list)
                     {
@@ -1718,12 +1716,12 @@ static void processEvent(XEvent *event)
 
                 if (result)
                 {
-                    int i, count;
+                    int count;
                     char** paths = parseUriList(data, &count);
 
                     _glfwInputDrop(window, count, (const char**) paths);
 
-                    for (i = 0;  i < count;  i++)
+                    for (int i = 0;  i < count;  i++)
                         _glfw_free(paths[i]);
                     _glfw_free(paths);
                 }
@@ -2102,20 +2100,20 @@ void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* imag
 {
     if (count)
     {
-        int i, j, longCount = 0;
+        int longCount = 0;
 
-        for (i = 0;  i < count;  i++)
+        for (int i = 0;  i < count;  i++)
             longCount += 2 + images[i].width * images[i].height;
 
         long* icon = _glfw_calloc(longCount, sizeof(long));
         long* target = icon;
 
-        for (i = 0;  i < count;  i++)
+        for (int i = 0;  i < count;  i++)
         {
             *target++ = images[i].width;
             *target++ = images[i].height;
 
-            for (j = 0;  j < images[i].width * images[i].height;  j++)
+            for (int j = 0;  j < images[i].width * images[i].height;  j++)
             {
                 *target++ = (images[i].pixels[j * 4 + 0] << 16) |
                             (images[i].pixels[j * 4 + 1] <<  8) |
@@ -2537,7 +2535,6 @@ int _glfwWindowVisibleX11(_GLFWwindow* window)
 int _glfwWindowMaximizedX11(_GLFWwindow* window)
 {
     Atom* states;
-    unsigned long i;
     GLFWbool maximized = GLFW_FALSE;
 
     if (!_glfw.x11.NET_WM_STATE ||
@@ -2553,7 +2550,7 @@ int _glfwWindowMaximizedX11(_GLFWwindow* window)
                                   XA_ATOM,
                                   (unsigned char**) &states);
 
-    for (i = 0;  i < count;  i++)
+    for (unsigned long i = 0;  i < count;  i++)
     {
         if (states[i] == _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT ||
             states[i] == _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ)
@@ -2651,18 +2648,19 @@ void _glfwSetWindowFloatingX11(_GLFWwindow* window, GLFWbool enabled)
     else
     {
         Atom* states = NULL;
-        unsigned long i, count;
-
-        count = _glfwGetWindowPropertyX11(window->x11.handle,
-                                          _glfw.x11.NET_WM_STATE,
-                                          XA_ATOM,
-                                          (unsigned char**) &states);
+        const unsigned long count =
+            _glfwGetWindowPropertyX11(window->x11.handle,
+                                      _glfw.x11.NET_WM_STATE,
+                                      XA_ATOM,
+                                      (unsigned char**) &states);
 
         // NOTE: We don't check for failure as this property may not exist yet
         //       and that's fine (and we'll create it implicitly with append)
 
         if (enabled)
         {
+            unsigned long i;
+
             for (i = 0;  i < count;  i++)
             {
                 if (states[i] == _glfw.x11.NET_WM_STATE_ABOVE)
@@ -2680,20 +2678,16 @@ void _glfwSetWindowFloatingX11(_GLFWwindow* window, GLFWbool enabled)
         }
         else if (states)
         {
-            for (i = 0;  i < count;  i++)
+            for (unsigned long i = 0;  i < count;  i++)
             {
                 if (states[i] == _glfw.x11.NET_WM_STATE_ABOVE)
+                {
+                    states[i] = states[count - 1];
+                    XChangeProperty(_glfw.x11.display, window->x11.handle,
+                                    _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
+                                    PropModeReplace, (unsigned char*) states, count - 1);
                     break;
-            }
-
-            if (i < count)
-            {
-                states[i] = states[count - 1];
-                count--;
-
-                XChangeProperty(_glfw.x11.display, window->x11.handle,
-                                _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
-                                PropModeReplace, (unsigned char*) states, count);
+                }
             }
         }
 

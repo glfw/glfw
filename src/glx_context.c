@@ -55,7 +55,7 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired,
     GLXFBConfig* nativeConfigs;
     _GLFWfbconfig* usableConfigs;
     const _GLFWfbconfig* closest;
-    int i, nativeCount, usableCount;
+    int nativeCount, usableCount;
     const char* vendor;
     GLFWbool trustWindowBit = GLFW_TRUE;
 
@@ -76,7 +76,7 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired,
     usableConfigs = _glfw_calloc(nativeCount, sizeof(_GLFWfbconfig));
     usableCount = 0;
 
-    for (i = 0;  i < nativeCount;  i++)
+    for (int i = 0;  i < nativeCount;  i++)
     {
         const GLXFBConfig n = nativeConfigs[i];
         _GLFWfbconfig* u = usableConfigs + usableCount;
@@ -253,7 +253,6 @@ static void destroyContextGLX(_GLFWwindow* window)
 //
 GLFWbool _glfwInitGLX(void)
 {
-    int i;
     const char* sonames[] =
     {
 #if defined(_GLFW_GLX_LIBRARY)
@@ -270,7 +269,7 @@ GLFWbool _glfwInitGLX(void)
     if (_glfw.glx.handle)
         return GLFW_TRUE;
 
-    for (i = 0;  sonames[i];  i++)
+    for (int i = 0;  sonames[i];  i++)
     {
         _glfw.glx.handle = _glfwPlatformLoadModule(sonames[i]);
         if (_glfw.glx.handle)

@@ -209,7 +209,7 @@ static int translateKeySyms(const KeySym* keysyms, int width)
 //
 static void createKeyTables(void)
 {
-    int scancode, scancodeMin, scancodeMax;
+    int scancodeMin, scancodeMax;
 
     memset(_glfw.x11.keycodes, -1, sizeof(_glfw.x11.keycodes));
     memset(_glfw.x11.scancodes, -1, sizeof(_glfw.x11.scancodes));
@@ -355,7 +355,7 @@ static void createKeyTables(void)
         };
 
         // Find the X11 key code -> GLFW key code mapping
-        for (scancode = scancodeMin;  scancode <= scancodeMax;  scancode++)
+        for (int scancode = scancodeMin;  scancode <= scancodeMax;  scancode++)
         {
             int key = GLFW_KEY_UNKNOWN;
 
@@ -414,7 +414,7 @@ static void createKeyTables(void)
                                           scancodeMax - scancodeMin + 1,
                                           &width);
 
-    for (scancode = scancodeMin;  scancode <= scancodeMax;  scancode++)
+    for (int scancode = scancodeMin;  scancode <= scancodeMax;  scancode++)
     {
         // Translate the un-translated key codes using traditional X11 KeySym
         // lookups
@@ -1072,7 +1072,6 @@ void _glfwInputErrorX11(int error, const char* message)
 //
 Cursor _glfwCreateNativeCursorX11(const GLFWimage* image, int xhot, int yhot)
 {
-    int i;
     Cursor cursor;
 
     if (!_glfw.x11.xcursor.handle)
@@ -1088,7 +1087,7 @@ Cursor _glfwCreateNativeCursorX11(const GLFWimage* image, int xhot, int yhot)
     unsigned char* source = (unsigned char*) image->pixels;
     XcursorPixel* target = native->pixels;
 
-    for (i = 0;  i < image->width * image->height;  i++, target++, source += 4)
+    for (int i = 0;  i < image->width * image->height;  i++, target++, source += 4)
     {
         unsigned int alpha = source[3];
 

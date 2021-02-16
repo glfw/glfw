@@ -144,9 +144,8 @@ static struct wl_buffer* createShmBuffer(const GLFWimage* image)
     int stride = image->width * 4;
     int length = image->width * image->height * 4;
     void* data;
-    int fd, i;
 
-    fd = createAnonymousFile(length);
+    const int fd = createAnonymousFile(length);
     if (fd < 0)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -169,7 +168,7 @@ static struct wl_buffer* createShmBuffer(const GLFWimage* image)
     close(fd);
     unsigned char* source = (unsigned char*) image->pixels;
     unsigned char* target = data;
-    for (i = 0;  i < image->width * image->height;  i++, source += 4)
+    for (int i = 0;  i < image->width * image->height;  i++, source += 4)
     {
         unsigned int alpha = source[3];
 
@@ -347,7 +346,6 @@ static void resizeWindow(_GLFWwindow* window)
 static void checkScaleChange(_GLFWwindow* window)
 {
     int scale = 1;
-    int i;
     int monitorScale;
 
     // Check if we will be able to set the buffer scale or not.
@@ -355,7 +353,7 @@ static void checkScaleChange(_GLFWwindow* window)
         return;
 
     // Get the scale factor from the highest scale monitor.
-    for (i = 0; i < window->wl.monitorsCount; ++i)
+    for (int i = 0; i < window->wl.monitorsCount; ++i)
     {
         monitorScale = window->wl.monitors[i]->wl.scale;
         if (scale < monitorScale)
@@ -397,10 +395,9 @@ static void surfaceHandleLeave(void *data,
 {
     _GLFWwindow* window = data;
     _GLFWmonitor* monitor = wl_output_get_user_data(output);
-    GLFWbool found;
-    int i;
+    GLFWbool found = GLFW_FALSE;
 
-    for (i = 0, found = GLFW_FALSE; i < window->wl.monitorsCount - 1; ++i)
+    for (int i = 0; i < window->wl.monitorsCount - 1; ++i)
     {
         if (monitor == window->wl.monitors[i])
             found = GLFW_TRUE;
@@ -719,7 +716,7 @@ static void handleEvents(int timeout)
         { _glfw.wl.cursorTimerfd, POLLIN },
     };
     ssize_t read_ret;
-    uint64_t repeats, i;
+    uint64_t repeats;
 
     while (wl_display_prepare_read(display) != 0)
         wl_display_dispatch_pending(display);
@@ -759,7 +756,7 @@ static void handleEvents(int timeout)
 
             if (_glfw.wl.keyboardFocus)
             {
-                for (i = 0; i < repeats; ++i)
+                for (uint64_t i = 0; i < repeats; ++i)
                 {
                     _glfwInputKey(_glfw.wl.keyboardFocus,
                                   _glfw.wl.keyboardLastKey,

@@ -886,10 +886,9 @@ static void registryHandleGlobalRemove(void *data,
                                        struct wl_registry *registry,
                                        uint32_t name)
 {
-    int i;
     _GLFWmonitor* monitor;
 
-    for (i = 0; i < _glfw.monitorCount; ++i)
+    for (int i = 0; i < _glfw.monitorCount; ++i)
     {
         monitor = _glfw.monitors[i];
         if (monitor->wl.name == name)
@@ -910,8 +909,6 @@ static const struct wl_registry_listener registryListener = {
 //
 static void createKeyTables(void)
 {
-    int scancode;
-
     memset(_glfw.wl.keycodes, -1, sizeof(_glfw.wl.keycodes));
     memset(_glfw.wl.scancodes, -1, sizeof(_glfw.wl.scancodes));
 
@@ -1033,7 +1030,7 @@ static void createKeyTables(void)
     _glfw.wl.keycodes[KEY_KPEQUAL]    = GLFW_KEY_KP_EQUAL;
     _glfw.wl.keycodes[KEY_KPENTER]    = GLFW_KEY_KP_ENTER;
 
-    for (scancode = 0;  scancode < 256;  scancode++)
+    for (int scancode = 0;  scancode < 256;  scancode++)
     {
         if (_glfw.wl.keycodes[scancode] > 0)
             _glfw.wl.scancodes[_glfw.wl.keycodes[scancode]] = scancode;

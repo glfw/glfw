@@ -221,6 +221,7 @@ information on what to include when reporting a bug.
    (#1463)
  - [Wayland] Bugfix: Client-Side Decorations were destroyed in the wrong worder
    (#1798)
+ - [Wayland] Bugfix: Monitors physical size could report zero (#1784,#1792)
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
  - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer

@@ -158,6 +158,7 @@ information on what to include when reporting a bug.
    (#1463)
  - [Wayland] Bugfix: Client-Side Decorations were destroyed in the wrong worder
    (#1798)
+ - [Wayland] Bugfix: Monitors physical size could report zero (#1784,#1792)
 
 
 ## Contact

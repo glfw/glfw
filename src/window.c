@@ -162,10 +162,12 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     assert(title != NULL);
     assert(width >= 0);
     assert(height >= 0);
+    assert(width <= 32767);
+    assert(height <= 32767);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
-    if (width <= 0 || height <= 0)
+    if (width <= 0 || height <= 0 || width > 32767 || height > 32767)
     {
         _glfwInputError(GLFW_INVALID_VALUE,
                         "Invalid window size %ix%i",
@@ -941,10 +943,12 @@ GLFWAPI void glfwSetWindowMonitor(GLFWwindow* wh,
     assert(window != NULL);
     assert(width >= 0);
     assert(height >= 0);
+    assert(width <= 32767);
+    assert(height <= 32767);
 
     _GLFW_REQUIRE_INIT();
 
-    if (width <= 0 || height <= 0)
+    if (width <= 0 || height <= 0 || width > 32767 || height > 32767)
     {
         _glfwInputError(GLFW_INVALID_VALUE,
                         "Invalid window size %ix%i",

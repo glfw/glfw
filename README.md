@@ -212,6 +212,8 @@ information on what to include when reporting a bug.
    combinaitons (#1598)
  - [X11] Bugfix: Keys pressed simultaneously with others were not always
    reported (#1112,#1415,#1472,#1616)
+ - [X11] Bugfix: Desktop Environment freezes when window width or height is
+   over 32767
  - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled

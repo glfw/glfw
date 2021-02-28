@@ -119,7 +119,7 @@ static GLFWbool waitForVisibilityNotify(_GLFWwindow* window)
         if (!waitForEvent(&timeout))
             return GLFW_FALSE;
     }
-
+    window->visible = GLFW_TRUE;
     return GLFW_TRUE;
 }
 
@@ -1838,6 +1838,12 @@ static void processEvent(XEvent *event)
             return;
         }
 
+        case VisibilityNotify :
+        {
+          if (event->xvisibility.state == VisibilityFullyObscured) window->visible = GLFW_FALSE;
+          else   window->visible = GLFW_TRUE;
+        }
+
         case DestroyNotify:
             return;
     }
@@ -2529,7 +2535,7 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
 {
     XWindowAttributes wa;
     XGetWindowAttributes(_glfw.x11.display, window->x11.handle, &wa);
-    return wa.map_state == IsViewable;
+    return wa.map_state == IsViewable && window->visible == GLFW_TRUE;
 }
 
 int _glfwPlatformWindowMaximized(_GLFWwindow* window)

@@ -1,20 +1,13 @@
-cmake_minimum_required(VERSION 3.1...3.17 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13...3.17 FATAL_ERROR)
 
-project(GLFW VERSION 3.4.0 LANGUAGES C)
+project(GLFW
+    VERSION 3.4.0
+    DESCRIPTION "Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan development."
+    HOMEPAGE_URL "https://www.glfw.org/"
+    LANGUAGES C
+)
 
 set(CMAKE_LEGACY_CYGWIN_WIN32 OFF)
-
-if (POLICY CMP0054)
-    cmake_policy(SET CMP0054 NEW)
-endif()
-
-if (POLICY CMP0069)
-    cmake_policy(SET CMP0069 NEW)
-endif()
-
-if (POLICY CMP0077)
-    cmake_policy(SET CMP0077 NEW)
-endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 

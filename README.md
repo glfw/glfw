@@ -118,7 +118,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
-There is nothing here yet.
+ - [X11] Bugfix: Some window attributes were not applied on leaving fullscreen
 
 
 ## Contact

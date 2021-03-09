@@ -614,7 +614,9 @@ void _glfwPlatformTerminate(void)
 const char* _glfwPlatformGetVersionString(void)
 {
     return _GLFW_VERSION_NUMBER " Win32 WGL EGL OSMesa"
-#if defined(__MINGW32__)
+#if defined(__MINGW64_VERSION_MAJOR)
+        " MinGW-w64"
+#elif defined(__MINGW32__)
         " MinGW"
 #elif defined(_MSC_VER)
         " VisualC"

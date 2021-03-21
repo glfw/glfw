@@ -55,4 +55,6 @@
 #cmakedefine HAVE_XKBCOMMON_COMPOSE_H
 // Define this to 1 if the libc supports memfd_create()
 #cmakedefine HAVE_MEMFD_CREATE
+// Define this to 1 if xxhash has been found at build time
+#cmakedefine HAVE_XXHASH
 

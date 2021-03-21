@@ -35,6 +35,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef HAVE_XXHASH
+#include "cache.h"
+#endif
+
 // Internal key state used for sticky keys
 #define _GLFW_STICK 3
 
@@ -1158,10 +1162,24 @@ GLFWAPI int glfwUpdateGamepadMappings(const char* string)
 {
     int jid;
     const char* c = string;
+#ifdef HAVE_XXHASH
+    char *cachePath;
+    GLFWbool usableCache, readFromCache = GLFW_FALSE;
+#endif
 
     assert(string != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
+
+#ifdef HAVE_XXHASH
+    usableCache = cacheGetPathFromString(string, &cachePath);
+
+    if (usableCache && cacheRead(cachePath, &_glfw.mappings, &_glfw.mappingCount))
+    {
+        readFromCache = GLFW_TRUE;
+        goto doMapping;
+    }
+#endif
 
     while (*c)
     {
@@ -1204,12 +1222,23 @@ GLFWAPI int glfwUpdateGamepadMappings(const char* string)
         }
     }
 
+#ifdef HAVE_XXHASH
+doMapping:
+#endif
+
     for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         _GLFWjoystick* js = _glfw.joysticks + jid;
         if (js->present)
             js->mapping = findValidMapping(js);
     }
+
+#ifdef HAVE_XXHASH
+    if (usableCache && !readFromCache)
+        cacheWrite(cachePath, _glfw.mappings, _glfw.mappingCount);
+
+    free(cachePath);
+#endif
 
     return GLFW_TRUE;
 }

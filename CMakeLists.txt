@@ -218,6 +218,16 @@ if (_GLFW_WAYLAND)
     endif()
 endif()
 
+# TODO: Move that elsewhere, as other platforms would equally benefit from it.
+if (_GLFW_X11 OR _GLFW_WAYLAND)
+    include(FindPkgConfig)
+    pkg_check_modules(XXHash3 libxxhash)
+    if (XXHash3_FOUND)
+        list(APPEND glfw_INCLUDE_DIRS "${XXHash3_INCLUDE_DIRS}")
+        set(HAVE_XXHASH TRUE)
+    endif()
+endif()
+
 #--------------------------------------------------------------------
 # Use Cocoa for window creation and NSOpenGL for context creation
 #--------------------------------------------------------------------

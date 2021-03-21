@@ -4,6 +4,10 @@ add_library(glfw "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"
                  internal.h mappings.h context.c init.c input.c monitor.c
                  vulkan.c window.c)
 
+if (HAVE_XXHASH)
+    target_sources(glfw PRIVATE cache.c cache.h)
+endif()
+
 if (_GLFW_COCOA)
     target_sources(glfw PRIVATE cocoa_platform.h cocoa_joystick.h posix_thread.h
                                 nsgl_context.h egl_context.h osmesa_context.h

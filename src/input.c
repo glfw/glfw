@@ -71,7 +71,7 @@ static _GLFWmapping* findMapping(const char* guid)
 
     for (i = 0;  i < _glfw.mappingCount;  i++)
     {
-        if (strcmp(_glfw.mappings[i].guid, guid) == 0)
+        if (strncmp(_glfw.mappings[i].guid, guid, 32) == 0)
             return _glfw.mappings + i;
     }
 

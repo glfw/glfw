@@ -260,15 +260,25 @@ GLFWAPI int glfwInit(void)
 
     {
         int i;
+        char *mappings;
+
+        // This is a hack because MSVC still doesn’t support literal strings
+        // longer than 65535 bytes.
+        // TODO: find the maximum length of an entry, currently I took the
+        // longest one instead of properly calculating it.
+        mappings = malloc(326 * sizeof(_glfwDefaultMappings) / sizeof(char *));
+        memset(mappings, '\n', 326 * sizeof(_glfwDefaultMappings) / sizeof(char *));
 
         for (i = 0;  _glfwDefaultMappings[i];  i++)
+            memcpy(&mappings[326 * i], _glfwDefaultMappings[i], strlen(_glfwDefaultMappings[i]));
+
+        if (!glfwUpdateGamepadMappings(mappings))
         {
-            if (!glfwUpdateGamepadMappings(_glfwDefaultMappings[i]))
-            {
-                terminate();
-                return GLFW_FALSE;
-            }
+            free(mappings);
+            terminate();
+            return GLFW_FALSE;
         }
+        free(mappings);
     }
 
     return GLFW_TRUE;

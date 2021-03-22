@@ -4,7 +4,7 @@
 src/wl_*        @linkmauve
 
 docs/*.css      @glfw/webdev
-docs/*.less     @glfw/webdev
+docs/*.scss     @glfw/webdev
 docs/*.html     @glfw/webdev
 docs/*.xml      @glfw/webdev
 

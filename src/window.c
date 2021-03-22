@@ -882,27 +882,18 @@ GLFWAPI void glfwSetWindowAttrib(GLFWwindow* handle, int attrib, int value)
         window->autoIconify = value;
     else if (attrib == GLFW_RESIZABLE)
     {
-        if (window->resizable == value)
-            return;
-
         window->resizable = value;
         if (!window->monitor)
             _glfwPlatformSetWindowResizable(window, value);
     }
     else if (attrib == GLFW_DECORATED)
     {
-        if (window->decorated == value)
-            return;
-
         window->decorated = value;
         if (!window->monitor)
             _glfwPlatformSetWindowDecorated(window, value);
     }
     else if (attrib == GLFW_FLOATING)
     {
-        if (window->floating == value)
-            return;
-
         window->floating = value;
         if (!window->monitor)
             _glfwPlatformSetWindowFloating(window, value);
@@ -911,9 +902,6 @@ GLFWAPI void glfwSetWindowAttrib(GLFWwindow* handle, int attrib, int value)
         window->focusOnShow = value;
     else if (attrib == GLFW_MOUSE_PASSTHROUGH)
     {
-        if (window->mousePassthrough == value)
-            return;
-
         window->mousePassthrough = value;
         _glfwPlatformSetWindowMousePassthrough(window, value);
     }

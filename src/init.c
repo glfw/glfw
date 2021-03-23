@@ -36,6 +36,10 @@
 #include <stdarg.h>
 #include <assert.h>
 
+#ifdef HAVE_XXHASH
+#include <sys/mman.h>
+#endif
+
 
 // The global variables below comprise all mutable global data in GLFW
 //
@@ -86,7 +90,12 @@ static void terminate(void)
     _glfw.monitors = NULL;
     _glfw.monitorCount = 0;
 
-    free(_glfw.mappings);
+#ifdef HAVE_XXHASH
+    if (_glfw.mappingMmapped)
+        munmap((void*)_glfw.mappings - 4, 4 + _glfw.mappingCount * sizeof(_GLFWmapping));
+    else
+#endif
+        free(_glfw.mappings);
     _glfw.mappings = NULL;
     _glfw.mappingCount = 0;
 

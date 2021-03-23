@@ -544,6 +544,9 @@ struct _GLFWlibrary
     _GLFWjoystick       joysticks[GLFW_JOYSTICK_LAST + 1];
     _GLFWmapping*       mappings;
     int                 mappingCount;
+#ifdef HAVE_XXHASH
+    GLFWbool            mappingMmapped;
+#endif
 
     _GLFWtls            errorSlot;
     _GLFWtls            contextSlot;

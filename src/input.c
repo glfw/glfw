@@ -1194,7 +1194,7 @@ GLFWAPI int glfwUpdateGamepadMappings(const char* string)
     const char* c = string;
 #ifdef HAVE_XXHASH
     char *cachePath;
-    GLFWbool usableCache, readFromCache = GLFW_FALSE;
+    GLFWbool usableCache;
 #endif
 
     assert(string != NULL);
@@ -1206,9 +1206,10 @@ GLFWAPI int glfwUpdateGamepadMappings(const char* string)
 
     if (usableCache && cacheRead(cachePath, &_glfw.mappings, &_glfw.mappingCount))
     {
-        readFromCache = GLFW_TRUE;
+        _glfw.mappingMmapped = GLFW_TRUE;
         goto doMapping;
     }
+    _glfw.mappingMmapped = GLFW_FALSE;
 #endif
 
     while (*c)
@@ -1264,7 +1265,7 @@ doMapping:
     }
 
 #ifdef HAVE_XXHASH
-    if (usableCache && !readFromCache)
+    if (usableCache && !_glfw.mappingMmapped)
         cacheWrite(cachePath, _glfw.mappings, _glfw.mappingCount);
 
     free(cachePath);

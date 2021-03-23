@@ -34,9 +34,11 @@
 #error "libxxhash is required for the compose cache"
 #endif
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #define XXH_INLINE_ALL
@@ -126,53 +128,30 @@ cacheGetPathFromString(const char *string, char **cachePath)
 GLFWbool
 cacheRead(const char *path, _GLFWmapping** out, int* count)
 {
-    FILE *f;
-    int length, i;
-    _GLFWmapping* mappings;
-    _GLFWmapping* mapping;
+    int fd;
+    int length;
+    void* map;
 
-#define FREAD(ptr, size, nmemb, stream) \
-    do \
-    { \
-        if (fread(ptr, size, nmemb, stream) < nmemb) \
-            return GLFW_FALSE; \
-    } while (0)
-#define FREAD_n(ptr, nmemb, stream) \
-    FREAD(ptr, sizeof(*ptr), nmemb, stream)
-#define FREAD_1(value, stream) \
-    FREAD_n(&value, 1, stream)
-
-    f = fopen(path, "rb");
-    if (!f)
+    fd = open(path, O_RDONLY);
+    if (fd < 0)
         return GLFW_FALSE;
 
-    FREAD_1(length, f);
-    mappings = malloc(length * sizeof(_GLFWmapping));
-    if (!mappings)
-        goto error;
-
-    for (i = 0; i < length; ++i)
+    if (read(fd, &length, 4) != 4)
     {
-        mapping = &mappings[i];
-        FREAD_n(mapping->name, 128, f);
-        FREAD_n(mapping->guid, 16, f);
-        FREAD_n(mapping->buttons, 15, f);
-        FREAD_n(mapping->axes, 6, f);
+        close(fd);
+        return GLFW_FALSE;
     }
 
-#undef FREAD_1
-#undef FREAD_n
-#undef FREAD
+    map = mmap(NULL, 4 + length * sizeof(_GLFWmapping), PROT_READ, MAP_PRIVATE, fd, 0);
+    if (map == MAP_FAILED)
+    {
+        close(fd);
+        return GLFW_FALSE;
+    }
 
-    fclose(f);
     *count = length;
-    *out = mappings;
+    *out = map + 4;
     return GLFW_TRUE;
-
-error:
-    fclose(f);
-    unlink(path);
-    return GLFW_FALSE;
 }
 
 void

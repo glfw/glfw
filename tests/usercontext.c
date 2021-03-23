@@ -72,7 +72,7 @@ int main(void)
         return -1;
     }
 
-    glClearColor( 0.4f, 0.3f, 0.4f, 0.0f );
+    glClearColor( 0.4f, 0.3f, 0.4f, 1.0f );
 
 
     /* Loop until the user closes the window */

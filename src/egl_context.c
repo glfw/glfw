@@ -840,7 +840,7 @@ static void _glfwDestroyUserContextEGL(_GLFWusercontext* context)
 {
     if (context->egl.surface!=EGL_NO_SURFACE)
         eglDestroySurface(_glfw.egl.display,context->egl.surface);
-        
+
     eglDestroyContext(_glfw.egl.display, context->egl.handle);
     free(context);
 }

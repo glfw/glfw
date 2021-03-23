@@ -43,13 +43,13 @@ int main(void)
     /* set the user context current */
     glfwMakeUserContextCurrent(usercontext);
 
-    if (glfwGetCurrentContext()!=NULL)
+    if (glfwGetCurrentContext() != NULL)
     {
         fprintf(stderr, "Current glfw window context not NULL after glfwMakeUserContextCurrent\n");
         glfwTerminate();
         return -1;
     }
-    if (glfwGetCurrentUserContext()!=usercontext)
+    if (glfwGetCurrentUserContext() != usercontext)
     {
         fprintf(stderr, "Current user context not correct after glfwMakeUserContextCurrent\n");
         glfwTerminate();
@@ -59,13 +59,13 @@ int main(void)
     /* set the window context current */
     glfwMakeContextCurrent(window);
 
-    if ( glfwGetCurrentUserContext() != NULL )
+    if (glfwGetCurrentUserContext() != NULL)
     {
         fprintf(stderr, "Current user context not NULL after glfwMakeContextCurrent\n");
         glfwTerminate();
         return -1;
     }
-    if ( glfwGetCurrentContext() != window )
+    if (glfwGetCurrentContext() != window)
     {
         fprintf(stderr, "Current glfw window context not correct after glfwMakeContextCurrent\n");
         glfwTerminate();

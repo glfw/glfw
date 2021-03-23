@@ -881,7 +881,7 @@ _GLFWusercontext* _glfwCreateUserContextEGL(_GLFWwindow* window)
     else
     {
         eglChooseConfig(_glfw.egl.display, dummyConfigAttribs, &dummySurfaceConfig, 1, &dummySurfaceNumConfigs);
-        if( !dummySurfaceNumConfigs)
+        if (!dummySurfaceNumConfigs)
         {
             eglDestroyContext(_glfw.egl.display, context->egl.handle);
             _glfwInputError(GLFW_PLATFORM_ERROR,

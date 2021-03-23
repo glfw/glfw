@@ -126,7 +126,7 @@ static void matchCallback(void* context,
 {
     int jid;
     char name[256];
-    char guid[33];
+    uint8_t guid[16];
     CFIndex i;
     CFTypeRef property;
     uint32_t vendor = 0, product = 0, version = 0;
@@ -169,17 +169,18 @@ static void matchCallback(void* context,
     // Generate a joystick GUID that matches the SDL 2.0.5+ one
     if (vendor && product)
     {
-        sprintf(guid, "03000000%02x%02x0000%02x%02x0000%02x%02x0000",
-                (uint8_t) vendor, (uint8_t) (vendor >> 8),
-                (uint8_t) product, (uint8_t) (product >> 8),
-                (uint8_t) version, (uint8_t) (version >> 8));
+        guid[0] = 3;
+        guid[4] = vendor & 0xff;
+        guid[5] = vendor >> 8;
+        guid[8] = product & 0xff;
+        guid[9] = product >> 8;
+        guid[12] = version & 0xff;
+        guid[13] = version >> 8;
     }
     else
     {
-        sprintf(guid, "05000000%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x00",
-                name[0], name[1], name[2], name[3],
-                name[4], name[5], name[6], name[7],
-                name[8], name[9], name[10]);
+        guid[0] = 5;
+        memcpy(&guid[4], name, 11);
     }
 
     CFArrayRef elements =
@@ -469,15 +470,17 @@ int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
     return js->present;
 }
 
-void _glfwPlatformUpdateGamepadGUID(char* guid)
+void _glfwPlatformUpdateGamepadGUID(uint8_t guid[16])
 {
-    if ((strncmp(guid + 4, "000000000000", 12) == 0) &&
-        (strncmp(guid + 20, "000000000000", 12) == 0))
+    if ((memcmp(guid + 2, "\0\0\0\0\0\0", 6) == 0) &&
+        (memcmp(guid + 10, "\0\0\0\0\0\0", 6) == 0))
     {
-        char original[33];
-        strncpy(original, guid, sizeof(original) - 1);
-        sprintf(guid, "03000000%.4s0000%.4s000000000000",
-                original, original + 16);
+        uint8_t original[16];
+        memcpy(original, guid, sizeof(original));
+        memset(guid, '\0', sizeof(original));
+        guid[0] = 3;
+        memcpy(guid + 4, original, 2);
+        memcpy(guid + 8, original + 8, 2);
     }
 }
 

@@ -168,24 +168,25 @@ static GLFWbool openJoystickDevice(const char* path)
     if (ioctl(linjs.fd, EVIOCGNAME(sizeof(name)), name) < 0)
         strncpy(name, "Unknown", sizeof(name));
 
-    char guid[33] = "";
+    uint8_t guid[16] = {0};
 
     // Generate a joystick GUID that matches the SDL 2.0.5+ one
     if (id.vendor && id.product && id.version)
     {
-        sprintf(guid, "%02x%02x0000%02x%02x0000%02x%02x0000%02x%02x0000",
-                id.bustype & 0xff, id.bustype >> 8,
-                id.vendor & 0xff,  id.vendor >> 8,
-                id.product & 0xff, id.product >> 8,
-                id.version & 0xff, id.version >> 8);
+        guid[0] = id.bustype & 0xff;
+        guid[1] = id.bustype >> 8;
+        guid[4] = id.vendor & 0xff;
+        guid[5] = id.vendor >> 8;
+        guid[8] = id.product & 0xff;
+        guid[9] = id.product >> 8;
+        guid[12] = id.version & 0xff;
+        guid[13] = id.version >> 8;
     }
     else
     {
-        sprintf(guid, "%02x%02x0000%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x00",
-                id.bustype & 0xff, id.bustype >> 8,
-                name[0], name[1], name[2], name[3],
-                name[4], name[5], name[6], name[7],
-                name[8], name[9], name[10]);
+        guid[0] = id.bustype & 0xff;
+        guid[1] = id.bustype >> 8;
+        memcpy(&guid[4], name, 11);
     }
 
     int axisCount = 0, buttonCount = 0, hatCount = 0;
@@ -422,7 +423,7 @@ int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
     return js->present;
 }
 
-void _glfwPlatformUpdateGamepadGUID(char* guid)
+void _glfwPlatformUpdateGamepadGUID(uint8_t guid[16])
 {
 }
 

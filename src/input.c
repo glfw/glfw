@@ -30,8 +30,10 @@
 #include "internal.h"
 
 #include <assert.h>
+#include <ctype.h>
 #include <float.h>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -65,13 +67,13 @@ static GLFWbool initJoysticks(void)
 
 // Finds a mapping based on joystick GUID
 //
-static _GLFWmapping* findMapping(const char* guid)
+static _GLFWmapping* findMapping(const uint8_t guid[16])
 {
     int i;
 
     for (i = 0;  i < _glfw.mappingCount;  i++)
     {
-        if (strncmp(_glfw.mappings[i].guid, guid, 32) == 0)
+        if (memcmp(_glfw.mappings[i].guid, guid, sizeof(_glfw.mappings[i].guid)) == 0)
             return _glfw.mappings + i;
     }
 
@@ -93,6 +95,19 @@ static GLFWbool isValidElementForJoystick(const _GLFWmapelement* e,
     return GLFW_TRUE;
 }
 
+// Converts a binary joystick GUID into a string
+//
+static void generateUserReadableGUID(const uint8_t guid[16],
+                                     char out[33])
+{
+    snprintf(out, 33,
+             "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+             guid[0], guid[1], guid[2], guid[3],
+             guid[4], guid[5], guid[6], guid[7],
+             guid[8], guid[9], guid[10], guid[11],
+             guid[12], guid[13], guid[14], guid[15]);
+}
+
 // Finds a mapping based on joystick GUID and verifies element indices
 //
 static _GLFWmapping* findValidMapping(const _GLFWjoystick* js)
@@ -106,9 +121,11 @@ static _GLFWmapping* findValidMapping(const _GLFWjoystick* js)
         {
             if (!isValidElementForJoystick(mapping->buttons + i, js))
             {
+                char guid[33];
+                generateUserReadableGUID(mapping->guid, guid);
                 _glfwInputError(GLFW_INVALID_VALUE,
                                 "Invalid button in gamepad mapping %s (%s)",
-                                mapping->guid,
+                                guid,
                                 mapping->name);
                 return NULL;
             }
@@ -118,9 +135,11 @@ static _GLFWmapping* findValidMapping(const _GLFWjoystick* js)
         {
             if (!isValidElementForJoystick(mapping->axes + i, js))
             {
+                char guid[33];
+                generateUserReadableGUID(mapping->guid, guid);
                 _glfwInputError(GLFW_INVALID_VALUE,
                                 "Invalid axis in gamepad mapping %s (%s)",
-                                mapping->guid,
+                                guid,
                                 mapping->name);
                 return NULL;
             }
@@ -173,7 +192,23 @@ static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
         return GLFW_FALSE;
     }
 
-    memcpy(mapping->guid, c, length);
+    for (i = 0;  i < 16;  i++)
+    {
+        char nibble1 = c[2 * i];
+        char nibble2 = c[2 * i + 1];
+        uint8_t value;
+        if (!isxdigit(nibble1) || !isxdigit(nibble2))
+        {
+            _glfwInputError(GLFW_INVALID_VALUE, NULL);
+            return GLFW_FALSE;
+        }
+        nibble1 = toupper(nibble1);
+        nibble2 = toupper(nibble2);
+        value = ((nibble1 >= 'A') ? nibble1 - 'A' + 10 : nibble1 - '0') << 4
+              | ((nibble2 >= 'A') ? nibble2 - 'A' + 10 : nibble2 - '0');
+        mapping->guid[i] = value;
+    }
+
     c += length + 1;
 
     length = strcspn(c, ",");
@@ -259,12 +294,6 @@ static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
 
         c += strcspn(c, ",");
         c += strspn(c, ",");
-    }
-
-    for (i = 0;  i < 32;  i++)
-    {
-        if (mapping->guid[i] >= 'A' && mapping->guid[i] <= 'F')
-            mapping->guid[i] += 'a' - 'A';
     }
 
     _glfwPlatformUpdateGamepadGUID(mapping->guid);
@@ -431,7 +460,7 @@ void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value)
 // Returns an available joystick object with arrays and name allocated
 //
 _GLFWjoystick* _glfwAllocJoystick(const char* name,
-                                  const char* guid,
+                                  const uint8_t guid[16],
                                   int axisCount,
                                   int buttonCount,
                                   int hatCount)
@@ -458,7 +487,8 @@ _GLFWjoystick* _glfwAllocJoystick(const char* name,
     js->buttonCount = buttonCount;
     js->hatCount    = hatCount;
 
-    strncpy(js->guid, guid, sizeof(js->guid) - 1);
+    memcpy(js->guid, guid, sizeof(js->guid));
+    generateUserReadableGUID(guid, js->userReadableGUID);
     js->mapping = findValidMapping(js);
 
     return js;
@@ -1112,7 +1142,7 @@ GLFWAPI const char* glfwGetJoystickGUID(int jid)
     if (!_glfwPlatformPollJoystick(js, _GLFW_POLL_PRESENCE))
         return NULL;
 
-    return js->guid;
+    return js->userReadableGUID;
 }
 
 GLFWAPI void glfwSetJoystickUserPointer(int jid, void* pointer)

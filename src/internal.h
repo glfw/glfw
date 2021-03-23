@@ -477,7 +477,7 @@ struct _GLFWmapelement
 struct _GLFWmapping
 {
     char            name[128];
-    char            guid[33];
+    uint8_t         guid[16];
     _GLFWmapelement buttons[15];
     _GLFWmapelement axes[6];
 };
@@ -495,7 +495,8 @@ struct _GLFWjoystick
     int             hatCount;
     char*           name;
     void*           userPointer;
-    char            guid[33];
+    uint8_t         guid[16];
+    char            userReadableGUID[33];
     _GLFWmapping*   mapping;
 
     // This is defined in the joystick API's joystick.h
@@ -636,7 +637,7 @@ const char* _glfwPlatformGetClipboardString(void);
 GLFWbool _glfwPlatformInitJoysticks(void);
 void _glfwPlatformTerminateJoysticks(void);
 int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode);
-void _glfwPlatformUpdateGamepadGUID(char* guid);
+void _glfwPlatformUpdateGamepadGUID(uint8_t guid[16]);
 
 uint64_t _glfwPlatformGetTimerValue(void);
 uint64_t _glfwPlatformGetTimerFrequency(void);
@@ -778,7 +779,7 @@ void _glfwFreeGammaArrays(GLFWgammaramp* ramp);
 void _glfwSplitBPP(int bpp, int* red, int* green, int* blue);
 
 _GLFWjoystick* _glfwAllocJoystick(const char* name,
-                                  const char* guid,
+                                  const uint8_t guid[16],
                                   int axisCount,
                                   int buttonCount,
                                   int hatCount);

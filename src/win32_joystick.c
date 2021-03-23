@@ -351,7 +351,7 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
     IDirectInputDevice8* device;
     _GLFWobjenumWin32 data;
     _GLFWjoystick* js;
-    char guid[33];
+    uint8_t guid[16] = {0};
     char name[256];
 
     for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
@@ -452,18 +452,16 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
     // Generate a joystick GUID that matches the SDL 2.0.5+ one
     if (memcmp(&di->guidProduct.Data4[2], "PIDVID", 6) == 0)
     {
-        sprintf(guid, "03000000%02x%02x0000%02x%02x000000000000",
-                (uint8_t) di->guidProduct.Data1,
-                (uint8_t) (di->guidProduct.Data1 >> 8),
-                (uint8_t) (di->guidProduct.Data1 >> 16),
-                (uint8_t) (di->guidProduct.Data1 >> 24));
+        guid[0] = 3;
+        guid[4] = di->guidProduct.Data1 & 0xff;
+        guid[5] = (di->guidProduct.Data1 >> 8) & 0xff;
+        guid[8] = (di->guidProduct.Data1 >> 16) & 0xff;
+        guid[9] = (di->guidProduct.Data1 >> 24) & 0xff;
     }
     else
     {
-        sprintf(guid, "05000000%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x00",
-                name[0], name[1], name[2], name[3],
-                name[4], name[5], name[6], name[7],
-                name[8], name[9], name[10]);
+        guid[0] = 5;
+        memcpy(&guid[4], name, 11);
     }
 
     js = _glfwAllocJoystick(name, guid,
@@ -502,7 +500,7 @@ void _glfwDetectJoystickConnectionWin32(void)
         for (index = 0;  index < XUSER_MAX_COUNT;  index++)
         {
             int jid;
-            char guid[33];
+            uint8_t guid[16] = {0};
             XINPUT_CAPABILITIES xic;
             _GLFWjoystick* js;
 
@@ -523,8 +521,8 @@ void _glfwDetectJoystickConnectionWin32(void)
                 continue;
 
             // Generate a joystick GUID that matches the SDL 2.0.5+ one
-            sprintf(guid, "78696e707574%02x000000000000000000",
-                    xic.SubType & 0xff);
+            memcpy(guid, "\x78\x69\x6e\x70\x75\x74", 6);
+            guid[6] = xic.SubType & 0xff;
 
             js = _glfwAllocJoystick(getDeviceDescription(&xic), guid, 6, 10, 1);
             if (!js)
@@ -740,14 +738,16 @@ int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
     return GLFW_TRUE;
 }
 
-void _glfwPlatformUpdateGamepadGUID(char* guid)
+void _glfwPlatformUpdateGamepadGUID(uint8_t guid[16])
 {
-    if (strcmp(guid + 20, "504944564944") == 0)
+    if (memcmp(guid + 10, "\x50\x49\x44\x56\x49\x44", 6) == 0)
     {
-        char original[33];
-        strncpy(original, guid, sizeof(original) - 1);
-        sprintf(guid, "03000000%.4s0000%.4s000000000000",
-                original, original + 4);
+        uint8_t original[16];
+        memcpy(original, guid, sizeof(original));
+        memset(guid, '\0', sizeof(original));
+        guid[0] = 3;
+        memcpy(guid + 4, original, 2);
+        memcpy(guid + 8, original + 2, 2);
     }
 }
 

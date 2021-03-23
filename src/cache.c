@@ -155,8 +155,7 @@ cacheRead(const char *path, _GLFWmapping** out, int* count)
     {
         mapping = &mappings[i];
         FREAD_n(mapping->name, 128, f);
-        FREAD_n(mapping->guid, 32, f);
-        mapping->guid[32] = '\0';
+        FREAD_n(mapping->guid, 16, f);
         FREAD_n(mapping->buttons, 15, f);
         FREAD_n(mapping->axes, 6, f);
     }
@@ -202,7 +201,7 @@ cacheWrite(const char *path, const _GLFWmapping* mappings, int count)
     for (i = 0; i < count; ++i) {
         mapping = &mappings[i];
         FWRITE_n(mapping->name, 128, f);
-        FWRITE_n(mapping->guid, 32, f);
+        FWRITE_n(mapping->guid, 16, f);
         FWRITE_n(mapping->buttons, 15, f);
         FWRITE_n(mapping->axes, 6, f);
     }

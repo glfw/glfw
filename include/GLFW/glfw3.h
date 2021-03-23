@@ -1315,7 +1315,7 @@ typedef struct GLFWwindow GLFWwindow;
  *
  *  Opaque user OpenGL OpenGL ES context object.
  *
- *  @see @ref usercontext
+ *  @see @ref context_user
  *
  *  @since Added in version 3.4.
  *
@@ -5635,7 +5635,7 @@ GLFWAPI uint64_t glfwGetTimerFrequency(void);
  *
  *  @sa @ref context_current
  *  @sa @ref glfwGetCurrentContext
- *  @sa @ref usercontext_current
+ *  @sa @ref context_current_user
  *  @sa @ref glfwMakeUserContextCurrent
  *  @sa @ref glfwGetCurrentUserContext
  *
@@ -5854,6 +5854,7 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);
  *
  *  @thread_safety This function must only be called from the main thread.
  *
+ *  @sa @ref context_user
  *  @sa @ref usercontext_creation
  *  @sa @ref glfwDestroyUserContext
  *  @sa @ref window_creation
@@ -5887,6 +5888,7 @@ GLFWAPI GLFWusercontext* glfwCreateUserContext(GLFWwindow* window);
  *
  *  @thread_safety This function must only be called from the main thread.
  *
+ *  @sa @ref context_user
  *  @sa @ref usercontext_creation
  *  @sa @ref glfwCreateUserContext
  *  @sa @ref window_creation
@@ -5926,7 +5928,8 @@ GLFWAPI void glfwDestroyUserContext(GLFWusercontext* context);
  *
  *  @thread_safety This function may be called from any thread.
  *
- *  @sa @ref usercontext_current
+ *  @sa @ref context_user
+ *  @sa @ref context_current_user
  *  @sa @ref glfwGetCurrentUserContext
  *  @sa @ref context_current
  *  @sa @ref glfwMakeContextCurrent
@@ -5950,7 +5953,8 @@ GLFWAPI void glfwMakeUserContextCurrent(GLFWusercontext* context);
  *
  *  @thread_safety This function may be called from any thread.
  *
- *  @sa @ref usercontext_current
+ *  @sa @ref context_user
+ *  @sa @ref context_current_user
  *  @sa @ref glfwMakeUserContextCurrent
  *  @sa @ref context_current
  *  @sa @ref glfwMakeContextCurrent

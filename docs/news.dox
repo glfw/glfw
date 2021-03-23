@@ -9,14 +9,14 @@
 
 @subsection features_34 New features in version 3.4
 
-@subsubsection user_context_34 Multiple window contexts
+@subsubsection context_user_34 Multiple window contexts
 
 GLFW now provides the ability to create multiple OpenGL and OpenGL ES
-contexts for a given window. Called user contexts, a [GLFWusercontext](@ref usercontext)
+contexts for a given window. Called user contexts, a [GLFWusercontext](@ref context_user)
 can be created using @ref glfwCreateUserContext,
 destroyed using @ref glfwDestroyUserContext, and managed with
 @ref glfwMakeUserContextCurrent and @ref glfwGetCurrentUserContext.
-For more information see the [user context](@ref usercontext) documentation.
+For more information see the [user context](@ref context_user) documentation.
 
 @subsubsection standard_cursors_34 More standard cursors
 

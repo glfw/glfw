@@ -5833,12 +5833,12 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);
  *  another thread. For a valid user context the window must be created
  *  with a [GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint) other than
  *  `GLFW_NO_API`.
- *  
+ *
  *  User context creation uses the window context and framebuffer related
  *  hints to ensure a valid context is created for that window, these hints
  *  should be the same at the time of user context creation as when the
  *  window was created.
- *  
+ *
  *  Contexts share resources with the window context and with any other
  *  user context created for that window.
  *

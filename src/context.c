@@ -570,7 +570,9 @@ GLFWbool _glfwRefreshContextAttribs(_GLFWwindow* window,
         PFNGLCLEARPROC glClear = (PFNGLCLEARPROC)
             window->context.getProcAddress("glClear");
         glClear(GL_COLOR_BUFFER_BIT);
-        window->context.swapBuffers(window);
+        if (_glfw.hints.framebuffer.doublebuffer) {
+            window->context.swapBuffers(window);
+        }
     }
 
     glfwMakeContextCurrent((GLFWwindow*) previous);

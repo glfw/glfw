@@ -37,7 +37,7 @@ elseif (_GLFW_OSMESA)
 endif()
 
 if (_GLFW_X11 OR _GLFW_WAYLAND)
-    if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         target_sources(glfw PRIVATE linux_joystick.h linux_joystick.c)
     else()
         target_sources(glfw PRIVATE null_joystick.h null_joystick.c)
@@ -120,7 +120,7 @@ endif()
 
 # Make GCC warn about declarations that VS 2010 and 2012 won't accept for all
 # source files that VS will build (Clang ignores this because we set -std=c99)
-if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
     set_source_files_properties(context.c init.c input.c monitor.c vulkan.c
                                 window.c win32_init.c win32_joystick.c
                                 win32_monitor.c win32_time.c win32_thread.c
@@ -130,11 +130,11 @@ if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 endif()
 
 # Enable a reasonable set of warnings
-if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
-    "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR
-    "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
+if (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR
+    CMAKE_C_COMPILER_ID STREQUAL "Clang" OR
+    CMAKE_C_COMPILER_ID STREQUAL "AppleClang")
 
-    if ("${CMAKE_C_SIMULATE_ID}" STREQUAL "MSVC")
+    if (CMAKE_C_SIMULATE_ID STREQUAL "MSVC")
         # Tell Clang-CL that this is a Clang flag
         target_compile_options(glfw PRIVATE "/clang:-Wall")
     else()
@@ -203,9 +203,6 @@ if (BUILD_SHARED_LIBS)
         endif()
 
         target_compile_definitions(glfw INTERFACE GLFW_DLL)
-    elseif (APPLE)
-        set_target_properties(glfw PROPERTIES
-                              INSTALL_NAME_DIR "${CMAKE_INSTALL_LIBDIR}")
     endif()
 
     if (MINGW)

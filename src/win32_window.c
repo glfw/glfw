@@ -501,7 +501,17 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             case WM_NCCREATE:
             {
                 if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
-                    EnableNonClientDpiScaling(hWnd);
+                {
+                    const CREATESTRUCTW* cs = (const CREATESTRUCTW*) lParam;
+                    const _GLFWwndconfig* wndconfig = cs->lpCreateParams;
+
+                    // On per-monitor DPI aware V1 systems, only enable
+                    // non-client scaling for windows that scale the client area
+                    // We need WM_GETDPISCALEDSIZE from V2 to keep the client
+                    // area static when the non-client area is scaled
+                    if (wndconfig && wndconfig->scaleToMonitor)
+                        EnableNonClientDpiScaling(hWnd);
+                }
 
                 break;
             }
@@ -1138,9 +1148,11 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             const float xscale = HIWORD(wParam) / (float) USER_DEFAULT_SCREEN_DPI;
             const float yscale = LOWORD(wParam) / (float) USER_DEFAULT_SCREEN_DPI;
 
-            // Only apply the suggested size if the OS is new enough to have
-            // sent a WM_GETDPISCALEDSIZE before this
-            if (_glfwIsWindows10CreatorsUpdateOrGreaterWin32())
+            // Resize windowed mode windows that either permit rescaling or that
+            // need it to compensate for non-client area scaling
+            if (!window->monitor &&
+                (window->win32.scaleToMonitor ||
+                 _glfwIsWindows10CreatorsUpdateOrGreaterWin32()))
             {
                 RECT* suggested = (RECT*) lParam;
                 SetWindowPos(window->win32.handle, HWND_TOP,
@@ -1255,7 +1267,7 @@ static int createNativeWindow(_GLFWwindow* window,
 											wndconfig->parent ? wndconfig->parent->win32.handle : NULL,
                                            NULL, // No window menu
                                            GetModuleHandleW(NULL),
-                                           NULL);
+                                           (LPVOID) wndconfig);
 
     free(wideTitle);
 

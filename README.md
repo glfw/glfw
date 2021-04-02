@@ -99,7 +99,7 @@ located in the `deps/` directory.
    functions
  - [linmath.h](https://github.com/datenwolf/linmath.h) for linear algebra in
    examples
- - [Nuklear](https://github.com/vurtun/nuklear) for test and example UI
+ - [Nuklear](https://github.com/Immediate-Mode-UI/Nuklear) for test and example UI
  - [stb\_image\_write](https://github.com/nothings/stb) for writing images to disk
 
 The documentation is generated with [Doxygen](http://doxygen.org/) if CMake can
@@ -159,6 +159,10 @@ information on what to include when reporting a bug.
    configuration change (#1761)
  - [Win32] Bugfix: Initialization would segfault on Windows 8 (not 8.1) (#1775)
  - [Win32] Bugfix: Duplicate size events were not filtered (#1610)
+ - [Win32] Bugfix: Full screen windows were incorrectly resized by DPI changes
+   (#1582)
+ - [Win32] Bugfix: `GLFW_SCALE_TO_MONITOR` had no effect on systems older than
+   Windows 10 version 1703 (#1511)
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)
@@ -178,6 +182,11 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: Failing to retrieve the refresh rate of built-in displays
    could leak memory
  - [Cocoa] Bugfix: Objective-C files were compiled as C with CMake 3.19 (#1787)
+ - [Cocoa] Bugfix: Duplicate video modes were not filtered out (#1830)
+ - [Cocoa] Bugfix: Menubar was not clickable on macOS 10.15+ until it lost and
+   regained focus (#1648,#1802)
+ - [Cocoa] Bugfix: Monitor name query could segfault on macOS 11 (#1809,#1833)
+ - [Cocoa] Bugfix: The install name of the installed dylib was relative (#1504)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -203,6 +212,8 @@ information on what to include when reporting a bug.
    combinaitons (#1598)
  - [X11] Bugfix: Keys pressed simultaneously with others were not always
    reported (#1112,#1415,#1472,#1616)
+ - [X11] Bugfix: Some window attributes were not applied on leaving fullscreen
+   (#1863)
  - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
@@ -212,6 +223,7 @@ information on what to include when reporting a bug.
    (#1463)
  - [Wayland] Bugfix: Client-Side Decorations were destroyed in the wrong worder
    (#1798)
+ - [Wayland] Bugfix: Monitors physical size could report zero (#1784,#1792)
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
  - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
@@ -246,13 +258,16 @@ GLFW exists because people around the world donated their time and lent their
 skills.
 
  - Bobyshev Alexander
+ - Laurent Aphecetche
  - Matt Arsenault
+ - ashishgamedev
  - David Avedissian
  - Keith Bauer
  - John Bartholomew
  - Coşku Baş
  - Niklas Behrens
  - Andrew Belt
+ - Nevyn Bengtsson
  - Niklas Bergström
  - Denis Bernard
  - Doug Binks
@@ -439,6 +454,7 @@ skills.
  - Frank Wille
  - Andy Williams
  - Joel Winarske
+ - Richard A. Wilkes
  - Tatsuya Yatagawa
  - Ryogo Yoshimura
  - Lukas Zanner

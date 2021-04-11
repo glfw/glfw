@@ -116,6 +116,7 @@ static void usage(void)
                                         ANGLE_TYPE_VULKAN " or "
                                         ANGLE_TYPE_METAL ")\n");
     printf("      --graphics-switching  request macOS graphics switching\n");
+    printf("      --disable-xcb-surface disable VK_KHR_xcb_surface extension\n");
 }
 
 static void error_callback(int error, const char* description)
@@ -360,6 +361,7 @@ int main(int argc, char** argv)
     bool fb_doublebuffer = true;
     int angle_type = GLFW_ANGLE_PLATFORM_TYPE_NONE;
     bool cocoa_graphics_switching = false;
+    bool disable_xcb_surface = false;
 
     enum { CLIENT, CONTEXT, BEHAVIOR, DEBUG_CONTEXT, FORWARD, HELP,
            EXTENSIONS, LAYERS,
@@ -367,7 +369,7 @@ int main(int argc, char** argv)
            REDBITS, GREENBITS, BLUEBITS, ALPHABITS, DEPTHBITS, STENCILBITS,
            ACCUMREDBITS, ACCUMGREENBITS, ACCUMBLUEBITS, ACCUMALPHABITS,
            AUXBUFFERS, SAMPLES, STEREO, SRGB, SINGLEBUFFER, NOERROR_SRSLY,
-           ANGLE_TYPE, GRAPHICS_SWITCHING };
+           ANGLE_TYPE, GRAPHICS_SWITCHING, XCB_SURFACE };
     const struct option options[] =
     {
         { "behavior",           1, NULL, BEHAVIOR },
@@ -401,6 +403,7 @@ int main(int argc, char** argv)
         { "no-error",           0, NULL, NOERROR_SRSLY },
         { "angle-type",         1, NULL, ANGLE_TYPE },
         { "graphics-switching", 0, NULL, GRAPHICS_SWITCHING },
+        { "vk-xcb-surface",     0, NULL, XCB_SURFACE },
         { NULL, 0, NULL, 0 }
     };
 
@@ -607,6 +610,9 @@ int main(int argc, char** argv)
             case GRAPHICS_SWITCHING:
                 cocoa_graphics_switching = true;
                 break;
+            case XCB_SURFACE:
+                disable_xcb_surface = true;
+                break;
             default:
                 usage();
                 exit(EXIT_FAILURE);
@@ -623,6 +629,7 @@ int main(int argc, char** argv)
     glfwInitHint(GLFW_COCOA_MENUBAR, false);
 
     glfwInitHint(GLFW_ANGLE_PLATFORM_TYPE, angle_type);
+    glfwInitHint(GLFW_X11_XCB_VULKAN_SURFACE, !disable_xcb_surface);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);

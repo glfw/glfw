@@ -850,6 +850,17 @@ int main(int argc, char** argv)
     if (list_extensions)
         list_context_extensions(client, major, minor);
 
+    glfwDestroyWindow(window);
+
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+
+    window = glfwCreateWindow(200, 200, "Version", NULL, NULL);
+    if (!window)
+    {
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
+
     printf("Vulkan loader: %s\n",
            glfwVulkanSupported() ? "available" : "missing");
 
@@ -873,15 +884,14 @@ int main(int argc, char** argv)
         uint32_t re_count;
         const char** re = glfwGetRequiredInstanceExtensions(&re_count);
 
-        printf("Vulkan required instance extensions:");
         if (re)
         {
+            printf("Vulkan window surface required instance extensions:\n");
             for (uint32_t i = 0;  i < re_count;  i++)
-                printf(" %s", re[i]);
-            putchar('\n');
+                printf(" %s\n", re[i]);
         }
         else
-            printf(" missing\n");
+            printf("Vulkan window surface extensions missing\n");
 
         if (list_extensions)
             list_vulkan_instance_extensions();
@@ -915,6 +925,19 @@ int main(int argc, char** argv)
 
         gladLoadVulkanUserPtr(NULL, glad_vulkan_callback, instance);
 
+        if (re)
+        {
+            VkSurfaceKHR surface = VK_NULL_HANDLE;
+
+            if (glfwCreateWindowSurface(instance, window, NULL, &surface) == VK_SUCCESS)
+            {
+                printf("Vulkan window surface created successfully\n");
+                vkDestroySurfaceKHR(instance, surface, NULL);
+            }
+            else
+                printf("Failed to create Vulkan window surface\n");
+        }
+
         uint32_t pd_count;
         vkEnumeratePhysicalDevices(instance, &pd_count, NULL);
         VkPhysicalDevice* pd = calloc(pd_count, sizeof(VkPhysicalDevice));
@@ -942,6 +965,8 @@ int main(int argc, char** argv)
         free(pd);
         vkDestroyInstance(instance, NULL);
     }
+
+    glfwDestroyWindow(window);
 
     glfwTerminate();
     exit(EXIT_SUCCESS);

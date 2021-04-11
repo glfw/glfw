@@ -946,7 +946,6 @@ int main(int argc, char** argv)
         for (uint32_t i = 0;  i < pd_count;  i++)
         {
             VkPhysicalDeviceProperties pdp;
-
             vkGetPhysicalDeviceProperties(pd[i], &pdp);
 
             printf("Vulkan %s device: \"%s\" (API version %i.%i)\n",
@@ -954,6 +953,19 @@ int main(int argc, char** argv)
                    pdp.deviceName,
                    VK_VERSION_MAJOR(pdp.apiVersion),
                    VK_VERSION_MINOR(pdp.apiVersion));
+
+            uint32_t qfp_count;
+            vkGetPhysicalDeviceQueueFamilyProperties(pd[i], &qfp_count, NULL);
+
+            printf("Vulkan device queue family presentation support:\n");
+            for (uint32_t j = 0;  j < qfp_count;  j++)
+            {
+                printf(" %u: ", j);
+                if (glfwGetPhysicalDevicePresentationSupport(instance, pd[i], j))
+                    printf("supported\n");
+                else
+                    printf("no\n");
+            }
 
             if (list_extensions)
                 list_vulkan_device_extensions(instance, pd[i]);

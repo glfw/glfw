@@ -121,18 +121,14 @@ if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
 endif()
 
 # Enable a reasonable set of warnings
-if (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR
-    CMAKE_C_COMPILER_ID STREQUAL "Clang" OR
-    CMAKE_C_COMPILER_ID STREQUAL "AppleClang")
-
-    if (CMAKE_C_SIMULATE_ID STREQUAL "MSVC")
-        # Tell Clang-CL that this is a Clang flag
-        target_compile_options(glfw PRIVATE "/clang:-Wall")
-    else()
-        target_compile_options(glfw PRIVATE "-Wall")
-    endif()
-elseif (MSVC)
+# NOTE: The order matters here, Clang-CL matches both MSVC and Clang
+if (MSVC)
     target_compile_options(glfw PRIVATE "/W3")
+elseif (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR
+        CMAKE_C_COMPILER_ID STREQUAL "Clang" OR
+        CMAKE_C_COMPILER_ID STREQUAL "AppleClang")
+
+    target_compile_options(glfw PRIVATE "-Wall")
 endif()
 
 if (WIN32)
@@ -176,7 +172,7 @@ if (BUILD_SHARED_LIBS)
     endif()
 endif()
 
-if (MSVC)
+if (MSVC OR CMAKE_C_SIMULATE_ID STREQUAL "MSVC")
     target_compile_definitions(glfw PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
 

@@ -15,18 +15,21 @@ add_custom_target(update_mappings
 set_target_properties(update_mappings PROPERTIES FOLDER "GLFW3")
 
 if (_GLFW_COCOA)
+    target_compile_definitions(glfw PRIVATE _GLFW_COCOA)
     target_sources(glfw PRIVATE cocoa_platform.h cocoa_joystick.h posix_thread.h
                                 nsgl_context.h egl_context.h osmesa_context.h
                                 cocoa_init.m cocoa_joystick.m cocoa_monitor.m
                                 cocoa_window.m cocoa_time.c posix_thread.c
                                 nsgl_context.m egl_context.c osmesa_context.c)
 elseif (_GLFW_WIN32)
+    target_compile_definitions(glfw PRIVATE _GLFW_WIN32)
     target_sources(glfw PRIVATE win32_platform.h win32_joystick.h wgl_context.h
                                 egl_context.h osmesa_context.h win32_init.c
                                 win32_joystick.c win32_monitor.c win32_time.c
                                 win32_thread.c win32_window.c wgl_context.c
                                 egl_context.c osmesa_context.c)
 elseif (_GLFW_X11)
+    target_compile_definitions(glfw PRIVATE _GLFW_X11)
     target_sources(glfw PRIVATE x11_platform.h xkb_unicode.h posix_time.h
                                 posix_thread.h glx_context.h egl_context.h
                                 osmesa_context.h x11_init.c x11_monitor.c
@@ -34,12 +37,14 @@ elseif (_GLFW_X11)
                                 posix_thread.c glx_context.c egl_context.c
                                 osmesa_context.c)
 elseif (_GLFW_WAYLAND)
+    target_compile_definitions(glfw PRIVATE _GLFW_WAYLAND)
     target_sources(glfw PRIVATE wl_platform.h posix_time.h posix_thread.h
                                 xkb_unicode.h egl_context.h osmesa_context.h
                                 wl_init.c wl_monitor.c wl_window.c posix_time.c
                                 posix_thread.c xkb_unicode.c egl_context.c
                                 osmesa_context.c)
 elseif (_GLFW_OSMESA)
+    target_compile_definitions(glfw PRIVATE _GLFW_OSMESA)
     target_sources(glfw PRIVATE null_platform.h null_joystick.h posix_time.h
                                 posix_thread.h osmesa_context.h null_init.c
                                 null_monitor.c null_window.c null_joystick.c
@@ -55,6 +60,17 @@ if (_GLFW_X11 OR _GLFW_WAYLAND)
 endif()
 
 if (_GLFW_WAYLAND)
+    include(CheckIncludeFiles)
+    include(CheckFunctionExists)
+    check_include_files(xkbcommon/xkbcommon-compose.h HAVE_XKBCOMMON_COMPOSE_H)
+    if (HAVE_XKBCOMMON_COMPOSE_H)
+        target_compile_definitions(glfw PRIVATE HAVE_XKBCOMMON_COMPOSE_H)
+    endif()
+    check_function_exists(memfd_create HAVE_MEMFD_CREATE)
+    if (HAVE_MEMFD_CREATE)
+        target_compile_definitions(glfw PRIVATE HAVE_MEMFD_CREATE)
+    endif()
+
     find_program(WAYLAND_SCANNER_EXECUTABLE NAMES wayland-scanner)
     pkg_check_modules(WAYLAND_PROTOCOLS REQUIRED wayland-protocols>=1.15)
     pkg_get_variable(WAYLAND_PROTOCOLS_BASE wayland-protocols pkgdatadir)
@@ -102,10 +118,6 @@ if (WIN32 AND GLFW_BUILD_SHARED_LIBRARY)
     target_sources(glfw PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/glfw.rc")
 endif()
 
-configure_file(glfw_config.h.in glfw_config.h @ONLY)
-target_compile_definitions(glfw PRIVATE _GLFW_USE_CONFIG_H)
-target_sources(glfw PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/glfw_config.h")
-
 set_target_properties(glfw PROPERTIES
                       OUTPUT_NAME ${GLFW_LIB_NAME}
                       VERSION ${GLFW_VERSION_MAJOR}.${GLFW_VERSION_MINOR}
@@ -132,6 +144,10 @@ if (CMAKE_VERSION VERSION_LESS "3.16" AND APPLE)
                                 LANGUAGE C)
 endif()
 
+if (GLFW_VULKAN_STATIC)
+    target_compile_definitions(glfw PRIVATE _GLFW_VULKAN_STATIC)
+endif()
+
 # Make GCC warn about declarations that VS 2010 and 2012 won't accept for all
 # source files that VS will build (Clang ignores this because we set -std=c99)
 if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
@@ -141,6 +157,12 @@ if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
                                 win32_window.c wgl_context.c egl_context.c
                                 osmesa_context.c PROPERTIES
                                 COMPILE_FLAGS -Wdeclaration-after-statement)
+endif()
+
+if (WIN32)
+    if (GLFW_USE_HYBRID_HPG)
+        target_compile_definitions(glfw PRIVATE _GLFW_USE_HYBRID_HPG)
+    endif()
 endif()
 
 # Enable a reasonable set of warnings

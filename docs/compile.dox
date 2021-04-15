@@ -341,11 +341,10 @@ a configuration macro to be defined in order to know what window system it is
 being compiled for and also has optional, platform-specific ones for various
 features.
 
-When building with CMake, the `glfw_config.h` configuration header is generated
-based on the current platform and CMake options.  The GLFW CMake environment
-defines @b GLFW_USE_CONFIG_H, which causes this header to be included by
-`internal.h`.  Without this macro, GLFW will expect the necessary configuration
-macros to be defined on the command-line.
+When building, GLFW will expect the necessary configuration macros to be defined
+on the command-line.  The GLFW CMake files set these as private compile
+definitions on the GLFW target but if you compile the GLFW sources manually you
+will need to define them yourself.
 
 The window creation API is used to create windows, handle input, monitors, gamma
 ramps and clipboard.  The options are:

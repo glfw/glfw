@@ -61,15 +61,6 @@ else()
     set(GLFW_LIB_NAME glfw3)
 endif()
 
-if (GLFW_VULKAN_STATIC)
-    if (GLFW_BUILD_SHARED_LIBRARY)
-        # If you absolutely must do this, remove this line and add the Vulkan
-        # loader static library via the CMAKE_SHARED_LINKER_FLAGS
-        message(FATAL_ERROR "You are trying to link the Vulkan loader static library into the GLFW shared library")
-    endif()
-    set(_GLFW_VULKAN_STATIC 1)
-endif()
-
 list(APPEND CMAKE_MODULE_PATH "${GLFW_SOURCE_DIR}/CMake/modules")
 
 find_package(Threads REQUIRED)
@@ -154,12 +145,7 @@ endif()
 # Use Win32 for window creation
 #--------------------------------------------------------------------
 if (_GLFW_WIN32)
-
     list(APPEND glfw_PKG_LIBS "-lgdi32")
-
-    if (GLFW_USE_HYBRID_HPG)
-        set(_GLFW_USE_HYBRID_HPG 1)
-    endif()
 endif()
 
 #--------------------------------------------------------------------
@@ -217,11 +203,6 @@ if (_GLFW_WAYLAND)
 
     list(APPEND glfw_INCLUDE_DIRS "${Wayland_INCLUDE_DIRS}")
 
-    include(CheckIncludeFiles)
-    include(CheckFunctionExists)
-    check_include_files(xkbcommon/xkbcommon-compose.h HAVE_XKBCOMMON_COMPOSE_H)
-    check_function_exists(memfd_create HAVE_MEMFD_CREATE)
-
     if (NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
         find_package(EpollShim)
         if (EPOLLSHIM_FOUND)
@@ -249,6 +230,11 @@ endif()
 # Add the Vulkan loader as a dependency if necessary
 #--------------------------------------------------------------------
 if (GLFW_VULKAN_STATIC)
+    if (BUILD_SHARED_LIBS)
+        # If you absolutely must do this, remove this line and add the Vulkan
+        # loader static library via the CMAKE_SHARED_LINKER_FLAGS
+        message(FATAL_ERROR "You are trying to link the Vulkan loader static library into the GLFW shared library")
+    endif()
     list(APPEND glfw_PKG_DEPS "vulkan")
 endif()
 

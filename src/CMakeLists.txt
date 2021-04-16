@@ -140,7 +140,7 @@ elseif (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR
     target_compile_options(glfw PRIVATE "-Wall")
 endif()
 
-if (WIN32)
+if (_GLFW_WIN32)
     target_compile_definitions(glfw PRIVATE _UNICODE)
 endif()
 

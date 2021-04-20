@@ -132,7 +132,7 @@ elseif (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR
 endif()
 
 if (_GLFW_WIN32)
-    target_compile_definitions(glfw PRIVATE _UNICODE)
+    target_compile_definitions(glfw PRIVATE UNICODE _UNICODE)
 endif()
 
 # HACK: When building on MinGW, WINVER and UNICODE need to be defined before
@@ -140,7 +140,7 @@ endif()
 # win32_platform.h.  We define them here until a saner solution can be found
 # NOTE: MinGW-w64 and Visual C++ do /not/ need this hack.
 if (MINGW)
-    target_compile_definitions(glfw PRIVATE UNICODE WINVER=0x0501)
+    target_compile_definitions(glfw PRIVATE WINVER=0x0501)
 endif()
 
 if (BUILD_SHARED_LIBS)

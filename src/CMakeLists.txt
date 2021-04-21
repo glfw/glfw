@@ -121,7 +121,7 @@ target_include_directories(glfw PRIVATE
 target_link_libraries(glfw PRIVATE Threads::Threads ${glfw_LIBRARIES})
 
 # Workaround for CMake not knowing about .m files before version 3.16
-if ("${CMAKE_VERSION}" VERSION_LESS "3.16" AND APPLE)
+if (CMAKE_VERSION VERSION_LESS "3.16" AND APPLE)
     set_source_files_properties(cocoa_init.m cocoa_joystick.m cocoa_monitor.m
                                 cocoa_window.m nsgl_context.m PROPERTIES
                                 LANGUAGE C)

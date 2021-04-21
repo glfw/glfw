@@ -67,7 +67,8 @@ if (GLFW_BUILD_DOCS)
 endif()
 
 #--------------------------------------------------------------------
-# Set compiler specific flags
+# Apply Microsoft C runtime library option
+# This is here because it also applies to tests and examples
 #--------------------------------------------------------------------
 if (MSVC AND NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
     if (${CMAKE_VERSION} VERSION_LESS 3.15)

@@ -31,16 +31,16 @@ are also guides for the other areas of the GLFW API.
 
 @section vulkan_loader Linking against the Vulkan loader
 
-By default, GLFW will look for the Vulkan loader on demand at runtime via its
+GLFW looks for the Vulkan loader on demand at runtime via its
 standard name (`vulkan-1.dll` on Windows, `libvulkan.so.1` on Linux and other
 Unix-like systems and `libvulkan.1.dylib` on macOS).  This means that GLFW does
-not need to be linked against the loader.  However, it also means that if you
-are using the static library form of the Vulkan loader GLFW will either fail to
-find it or (worse) use the wrong one.
+not need to be linked against the loader.
 
-The @ref GLFW_VULKAN_STATIC CMake option makes GLFW call the Vulkan loader
-directly instead of dynamically loading it at runtime.  Not linking against the
-Vulkan loader will then be a compile-time error.
+@macos On Apple platforms it is possible to link to the library form of the Vulkan
+Loader using the @ref GLFW_VULKAN_STATIC CMake option. Not linking against the
+Vulkan loader will then be a compile-time error. If you are using the static
+library form of the Vulkan Loader but do not enable @ref GLFW_VULKAN_STATIC,
+GLFW will either fail to find it or (worse) use the wrong one.
 
 @macos Because the Vulkan loader and ICD are not installed globally on macOS,
 you need to set up the application bundle according to the LunarG SDK

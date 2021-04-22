@@ -177,6 +177,7 @@ skills.
  - Andrew Corrigan
  - Bailey Cosier
  - Noel Cower
+ - CuriouserThing
  - Jason Daly
  - Jarrod Davis
  - Olivier Delannoy

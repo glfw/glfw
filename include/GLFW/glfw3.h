@@ -2279,8 +2279,9 @@ GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun callback);
  *
  *  This function returns an array of all video modes supported by the specified
  *  monitor.  The returned array is sorted in ascending order, first by color
- *  bit depth (the sum of all channel depths) and then by resolution area (the
- *  product of width and height).
+ *  bit depth (the sum of all channel depths), then by resolution area (the
+ *  product of width and height), then resolution width and finally by refresh
+ *  rate.
  *
  *  @param[in] monitor The monitor to query.
  *  @param[out] count Where to store the number of video modes in the returned

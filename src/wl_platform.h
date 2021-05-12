@@ -245,6 +245,7 @@ typedef struct _GLFWlibraryWayland
     const char*                 cursorPreviousName;
     int                         cursorTimerfd;
     uint32_t                    serial;
+    uint32_t                    pointerEnterSerial;
 
     int32_t                     keyboardRepeatRate;
     int32_t                     keyboardRepeatDelay;

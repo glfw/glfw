@@ -105,6 +105,7 @@ static void pointerHandleEnter(void* data,
 
     window->wl.decorations.focus = focus;
     _glfw.wl.serial = serial;
+    _glfw.wl.pointerEnterSerial = serial;
     _glfw.wl.pointerFocus = window;
 
     window->wl.hovered = GLFW_TRUE;
@@ -164,7 +165,7 @@ static void setCursor(_GLFWwindow* window, const char* name)
     buffer = wl_cursor_image_get_buffer(image);
     if (!buffer)
         return;
-    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.serial,
+    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial,
                           surface,
                           image->hotspot_x / scale,
                           image->hotspot_y / scale);

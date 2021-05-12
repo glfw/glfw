@@ -229,6 +229,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Client-Side Decorations were destroyed in the wrong worder
    (#1798)
  - [Wayland] Bugfix: Monitors physical size could report zero (#1784,#1792)
+ - [Wayland] Bugfix: Non-arrow cursors are offset from the hotspot (#1706)
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
  - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
@@ -455,7 +456,7 @@ skills.
  - Torsten Walluhn
  - Patrick Walton
  - Xo Wang
- - Waris
+ - Waris Boonyasiriwat
  - Jay Weisskopf
  - Frank Wille
  - Andy Williams
@@ -470,6 +471,8 @@ skills.
  - Jonas Ådahl
  - Lasse Öörni
  - Leonard König
+ - Koray Kilinc
+ - Joseph Chua
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

@@ -103,7 +103,6 @@ one of `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`,
 `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` and
 `GLFW_ANGLE_PLATFORM_TYPE_METAL`.
 
-@par
 The ANGLE platform type is specified via the `EGL_ANGLE_platform_angle`
 extension.  This extension is not used if this hint is
 `GLFW_ANGLE_PLATFORM_TYPE_NONE`, which is the default value.

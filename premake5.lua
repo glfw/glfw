@@ -1,8 +1,4 @@
-workspace "glfw"
-configurations { "Release", "Debug"}
-architecture "x86_64"
-
-project "glfw"
+project "glfw3"
 kind "StaticLib"
 language "C"
 
@@ -27,6 +23,9 @@ filter "system:Windows"
     files {
         "src/win32_**.c",
         "src/win32_**.h",
-        "src/wgl_context.**"
+        "src/wgl_**",
+        "src/egl_**",
+        "src/osmesa_**",
+        "src/vulkan.**"
     }
     defines {"_GLFW_WIN32"}

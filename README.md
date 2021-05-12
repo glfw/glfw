@@ -128,6 +128,7 @@ information on what to include when reporting a bug.
    related events were emitted
  - [X11] Bugfix: Changing `GLFW_FLOATING` could leak memory
  - [Wayland] Bugfix: Some keys were not repeating in Wayland (#1908)
+ - [Wayland] Bugfix: Non-arrow cursors are offset from the hotspot (#1706,#1899)
  - [NSGL] Bugfix: Defining `GL_SILENCE_DEPRECATION` externally caused
    a duplicate definition warning (#1840)
  - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
@@ -170,6 +171,7 @@ skills.
  - Denis Bernard
  - Doug Binks
  - blanco
+ - Waris Boonyasiriwat
  - Kyle Brenneman
  - Rok Breulj
  - Kai Burjack
@@ -178,6 +180,7 @@ skills.
  - David Carlier
  - Arturo Castro
  - Chi-kwan Chan
+ - Joseph Chua
  - Ian Clarkson
  - Michał Cichoń
  - Lambert Clara
@@ -349,7 +352,6 @@ skills.
  - Torsten Walluhn
  - Patrick Walton
  - Xo Wang
- - Waris
  - Jay Weisskopf
  - Frank Wille
  - Richard A. Wilkes

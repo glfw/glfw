@@ -375,6 +375,7 @@ struct _GLFWwindow
     GLFWbool            focusOnShow;
     GLFWbool            shouldClose;
     void*               userPointer;
+    GLFWbool            doublebuffer;
     GLFWvidmode         videoMode;
     _GLFWmonitor*       monitor;
     _GLFWcursor*        cursor;

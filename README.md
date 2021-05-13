@@ -130,6 +130,7 @@ information on what to include when reporting a bug.
  - Added `GLFW_X11_XCB_VULKAN_SURFACE` init hint for selecting X11 Vulkan
    surface extension (#1793)
  - Made joystick subsystem initialize at first use (#1284,#1646)
+ - Made `GLFW_DOUBLEBUFFER` a read-only window attribute
  - Updated the minimum required CMake version to 3.1
  - Disabled tests and examples by default when built as a CMake subdirectory
  - Bugfix: The CMake config-file package used an absolute path and was not

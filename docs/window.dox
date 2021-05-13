@@ -310,6 +310,7 @@ rendering will be disabled.
 always have sRGB rendering enabled.
 
 @anchor GLFW_DOUBLEBUFFER
+@anchor GLFW_DOUBLEBUFFER_hint
 __GLFW_DOUBLEBUFFER__ specifies whether the framebuffer should be double
 buffered.  You nearly always want to use double buffering.  This is a hard
 constraint.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
@@ -1377,9 +1378,11 @@ if the window's context supports robustness, or `GLFW_NO_ROBUSTNESS` otherwise.
 
 @subsubsection window_attribs_fb Framebuffer related attributes
 
-GLFW does not expose attributes of the default framebuffer (i.e. the framebuffer
-attached to the window) as these can be queried directly with either OpenGL,
-OpenGL ES or Vulkan.
+GLFW does not expose most attributes of the default framebuffer (i.e. the
+framebuffer attached to the window) as these can be queried directly with either
+OpenGL, OpenGL ES or Vulkan.  The one exception is
+[GLFW_DOUBLEBUFFER](@ref GLFW_DOUBLEBUFFER_attrib), as this is not provided by
+OpenGL ES.
 
 If you are using version 3.0 or later of OpenGL or OpenGL ES, the
 `glGetFramebufferAttachmentParameteriv` function can be used to retrieve the
@@ -1404,6 +1407,11 @@ When calling `glGetFramebufferAttachmentParameteriv`, the red, green, blue and
 alpha sizes are queried from the `GL_BACK_LEFT`, while the depth and stencil
 sizes are queried from the `GL_DEPTH` and `GL_STENCIL` attachments,
 respectively.
+
+@anchor GLFW_DOUBLEBUFFER_attrib
+__GLFW_DOUBLEBUFFER__ indicates whether the specified window is double-buffered
+when rendering with OpenGL or OpenGL ES.  This can be set before creation with
+the [GLFW_DOUBLEBUFFER](@ref GLFW_DOUBLEBUFFER_hint) window hint.
 
 
 @section buffer_swap Buffer swapping

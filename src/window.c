@@ -206,6 +206,8 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->mousePassthrough = wndconfig.mousePassthrough;
     window->cursorMode       = GLFW_CURSOR_NORMAL;
 
+    window->doublebuffer = fbconfig.doublebuffer;
+
     window->minwidth    = GLFW_DONT_CARE;
     window->minheight   = GLFW_DONT_CARE;
     window->maxwidth    = GLFW_DONT_CARE;
@@ -841,6 +843,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->floating;
         case GLFW_AUTO_ICONIFY:
             return window->autoIconify;
+        case GLFW_DOUBLEBUFFER:
+            return window->doublebuffer;
         case GLFW_CLIENT_API:
             return window->context.client;
         case GLFW_CONTEXT_CREATION_API:

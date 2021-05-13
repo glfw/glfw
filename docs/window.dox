@@ -334,9 +334,6 @@ which API was used to create the current context may fail if you change this
 hint.  This can be resolved by having it load functions via @ref
 glfwGetProcAddress.
 
-@note @macos The EGL API is not available on this platform and requests to use
-it will fail.
-
 @note @wayland The EGL API _is_ the native context creation API, so this hint
 will have no effect.
 

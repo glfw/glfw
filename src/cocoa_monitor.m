@@ -63,7 +63,7 @@ static char* getMonitorName(CGDirectDisplayID displayID, NSScreen* screen)
                                      &it) != 0)
     {
         // This may happen if a desktop Mac is running headless
-        return NULL;
+        return _glfw_strdup("Display");
     }
 
     while ((service = IOIteratorNext(it)) != 0)
@@ -101,7 +101,7 @@ static char* getMonitorName(CGDirectDisplayID displayID, NSScreen* screen)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Cocoa: Failed to find service port for display");
-        return NULL;
+        return _glfw_strdup("Display");
     }
 
     CFDictionaryRef names =
@@ -114,7 +114,7 @@ static char* getMonitorName(CGDirectDisplayID displayID, NSScreen* screen)
     {
         // This may happen if a desktop Mac is running headless
         CFRelease(info);
-        return NULL;
+        return _glfw_strdup("Display");
     }
 
     const CFIndex size =
@@ -356,7 +356,7 @@ void _glfwPollMonitorsNS(void)
         const CGSize size = CGDisplayScreenSize(displays[i]);
         char* name = getMonitorName(displays[i], screen);
         if (!name)
-            name = _glfw_strdup("Unknown");
+            continue;
 
         _GLFWmonitor* monitor = _glfwAllocMonitor(name, size.width, size.height);
         monitor->ns.displayID  = displays[i];

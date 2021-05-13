@@ -430,7 +430,6 @@ _GLFWjoystick* _glfwAllocJoystick(const char* name,
 
     js = _glfw.joysticks + jid;
     js->present     = GLFW_TRUE;
-    js->name        = _glfw_strdup(name);
     js->axes        = calloc(axisCount, sizeof(float));
     js->buttons     = calloc(buttonCount + (size_t) hatCount * 4, 1);
     js->hats        = calloc(hatCount, 1);
@@ -438,6 +437,7 @@ _GLFWjoystick* _glfwAllocJoystick(const char* name,
     js->buttonCount = buttonCount;
     js->hatCount    = hatCount;
 
+    strncpy(js->name, name, sizeof(js->name) - 1);
     strncpy(js->guid, guid, sizeof(js->guid) - 1);
     js->mapping = findValidMapping(js);
 
@@ -448,7 +448,6 @@ _GLFWjoystick* _glfwAllocJoystick(const char* name,
 //
 void _glfwFreeJoystick(_GLFWjoystick* js)
 {
-    free(js->name);
     free(js->axes);
     free(js->buttons);
     free(js->hats);

@@ -40,6 +40,8 @@ cmake_dependent_option(GLFW_USE_WAYLAND "Use Wayland for window creation" OFF
                        "UNIX;NOT APPLE" OFF)
 cmake_dependent_option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON
                        "MSVC" OFF)
+cmake_dependent_option(GLFW_USE_LIBDECORATION "use libdecoration" ON
+                       "GLFW_USE_WAYLAND" OFF)
 
 if (BUILD_SHARED_LIBS AND UNIX)
     # On Unix-like systems, shared libraries can use the soname system.
@@ -59,12 +61,31 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH "${GLFW_SOURCE_DIR}/CMake/modules")
 
+include(ExternalProject)
+
 find_package(Threads REQUIRED)
 
 if (GLFW_BUILD_DOCS)
     set(DOXYGEN_SKIP_DOT TRUE)
     find_package(Doxygen)
 endif()
+
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} \
+    -fsanitize=address \
+    -fsanitize=bool \
+    -fsanitize=bounds \
+    -fsanitize=enum \
+    -fsanitize=float-cast-overflow \
+    -fsanitize=float-divide-by-zero \
+    -fsanitize=nonnull-attribute \
+    -fsanitize=returns-nonnull-attribute \
+    -fsanitize=signed-integer-overflow \
+    -fsanitize=undefined \
+    -fsanitize=vla-bound \
+    -fno-sanitize=alignment \
+    -fsanitize=leak \
+    -fsanitize=object-size \
+")
 
 #--------------------------------------------------------------------
 # Set compiler specific flags

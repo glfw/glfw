@@ -44,11 +44,14 @@
 #include <wayland-client.h>
 
 
+const char *proxy_tag = "glfw-surface";
+
 static inline int min(int n1, int n2)
 {
     return n1 < n2 ? n1 : n2;
 }
 
+#ifndef WITH_DECORATION
 static _GLFWwindow* findWindowFromDecorationSurface(struct wl_surface* surface,
                                                     int* which)
 {
@@ -82,6 +85,20 @@ static _GLFWwindow* findWindowFromDecorationSurface(struct wl_surface* surface,
     }
     return window;
 }
+#endif
+
+#ifdef WITH_DECORATION
+void decoration_error(struct libdecor *context,
+                      enum libdecor_error error,
+                      const char *message)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR, "Wayland: Caught error (%d): %s\n", error, message);
+}
+
+static struct libdecor_interface decoration_interface = {
+    decoration_error,
+};
+#endif
 
 static void pointerHandleEnter(void* data,
                                struct wl_pointer* pointer,
@@ -94,8 +111,16 @@ static void pointerHandleEnter(void* data,
     if (!surface)
         return;
 
-    int focus = 0;
+    if (wl_proxy_get_tag((struct wl_proxy *) surface) != &proxy_tag)
+        return;
+
     _GLFWwindow* window = wl_surface_get_user_data(surface);
+
+#ifdef WITH_DECORATION
+    if (surface != window->wl.surface)
+        return;
+#else
+    int focus = 0;
     if (!window)
     {
         window = findWindowFromDecorationSurface(surface, &focus);
@@ -104,6 +129,8 @@ static void pointerHandleEnter(void* data,
     }
 
     window->wl.decorations.focus = focus;
+#endif
+
     _glfw.wl.serial = serial;
     _glfw.wl.pointerFocus = window;
 
@@ -191,9 +218,16 @@ static void pointerHandleMotion(void* data,
 
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
         return;
+
     x = wl_fixed_to_double(sx);
     y = wl_fixed_to_double(sy);
 
+#ifdef WITH_DECORATION
+    window->wl.cursorPosX = x;
+    window->wl.cursorPosY = y;
+    _glfwInputCursorPos(window, x, y);
+    _glfw.wl.cursorPreviousName = NULL;
+#else
     switch (window->wl.decorations.focus)
     {
         case mainWindow:
@@ -231,6 +265,7 @@ static void pointerHandleMotion(void* data,
         default:
             assert(0);
     }
+#endif
     if (_glfw.wl.cursorPreviousName != cursorName)
         setCursor(window, cursorName);
 }
@@ -244,10 +279,11 @@ static void pointerHandleButton(void* data,
 {
     _GLFWwindow* window = _glfw.wl.pointerFocus;
     int glfwButton;
-    uint32_t edges = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
 
     if (!window)
         return;
+#ifndef WITH_DECORATION
+    uint32_t edges = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
     if (button == BTN_LEFT)
     {
         switch (window->wl.decorations.focus)
@@ -306,6 +342,7 @@ static void pointerHandleButton(void* data,
     // Don’t pass the button to the user if it was related to a decoration.
     if (window->wl.decorations.focus != mainWindow)
         return;
+#endif
 
     _glfw.wl.serial = serial;
 
@@ -469,12 +506,17 @@ static void keyboardHandleEnter(void* data,
         return;
 
     _GLFWwindow* window = wl_surface_get_user_data(surface);
+#ifdef WITH_DECORATION
+    if (surface != window->wl.surface)
+        return;
+#else
     if (!window)
     {
         window = findWindowFromDecorationSurface(surface, NULL);
         if (!window)
             return;
     }
+#endif
 
     _glfw.wl.serial = serial;
     _glfw.wl.keyboardFocus = window;
@@ -769,6 +811,7 @@ static const struct wl_data_device_listener dataDeviceListener = {
     dataDeviceHandleSelection,
 };
 
+#ifndef WITH_DECORATION
 static void wmBaseHandlePing(void* data,
                              struct xdg_wm_base* wmBase,
                              uint32_t serial)
@@ -779,6 +822,7 @@ static void wmBaseHandlePing(void* data,
 static const struct xdg_wm_base_listener wmBaseListener = {
     wmBaseHandlePing
 };
+#endif
 
 static void registryHandleGlobal(void* data,
                                  struct wl_registry* registry,
@@ -827,6 +871,7 @@ static void registryHandleGlobal(void* data,
                                  &wl_data_device_manager_interface, 1);
         }
     }
+#ifndef WITH_DECORATION
     else if (strcmp(interface, "xdg_wm_base") == 0)
     {
         _glfw.wl.wmBase =
@@ -845,6 +890,7 @@ static void registryHandleGlobal(void* data,
         _glfw.wl.viewporter =
             wl_registry_bind(registry, name, &wp_viewporter_interface, 1);
     }
+#endif
     else if (strcmp(interface, "zwp_relative_pointer_manager_v1") == 0)
     {
         _glfw.wl.relativePointerManager =
@@ -1150,14 +1196,16 @@ int _glfwPlatformInit(void)
 
     _glfw.wl.timerfd = -1;
     if (_glfw.wl.seatVersion >= 4)
-        _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
+        _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
 
+#ifndef WITH_DECORATION
     if (!_glfw.wl.wmBase)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Failed to find xdg-shell in your compositor");
         return GLFW_FALSE;
     }
+#endif
 
     if (_glfw.wl.pointer && _glfw.wl.shm)
     {
@@ -1202,6 +1250,10 @@ int _glfwPlatformInit(void)
         }
         _glfw.wl.clipboardSize = 4096;
     }
+
+#ifdef WITH_DECORATION
+    _glfw.wl.csd_context = libdecor_new(_glfw.wl.display, &decoration_interface);
+#endif
 
     return GLFW_TRUE;
 }
@@ -1249,12 +1301,17 @@ void _glfwPlatformTerminate(void)
         wl_compositor_destroy(_glfw.wl.compositor);
     if (_glfw.wl.shm)
         wl_shm_destroy(_glfw.wl.shm);
+#ifdef WITH_DECORATION
+    if (_glfw.wl.csd_context)
+        libdecor_unref(_glfw.wl.csd_context);
+#else
     if (_glfw.wl.viewporter)
         wp_viewporter_destroy(_glfw.wl.viewporter);
     if (_glfw.wl.decorationManager)
         zxdg_decoration_manager_v1_destroy(_glfw.wl.decorationManager);
     if (_glfw.wl.wmBase)
         xdg_wm_base_destroy(_glfw.wl.wmBase);
+#endif
     if (_glfw.wl.dataSource)
         wl_data_source_destroy(_glfw.wl.dataSource);
     if (_glfw.wl.dataDevice)

@@ -8,7 +8,7 @@ branches:
 matrix:
     include:
         - os: linux
-          dist: xenial
+          dist: focal
           name: "X11 shared library"
           addons:
               apt:
@@ -22,7 +22,7 @@ matrix:
               - BUILD_SHARED_LIBS=ON
               - CFLAGS=-Werror
         - os: linux
-          dist: xenial
+          dist: focal
           name: "X11 static library"
           addons:
               apt:
@@ -45,6 +45,8 @@ matrix:
                       - libwayland-dev
                       - libxkbcommon-dev
                       - libegl1-mesa-dev
+                      - meson
+                      - libdbus-1-dev
           env:
               - USE_WAYLAND=ON
               - BUILD_SHARED_LIBS=ON
@@ -59,12 +61,14 @@ matrix:
                       - libwayland-dev
                       - libxkbcommon-dev
                       - libegl1-mesa-dev
+                      - meson
+                      - libdbus-1-dev
           env:
               - USE_WAYLAND=ON
               - BUILD_SHARED_LIBS=OFF
               - CFLAGS=-Werror
         - os: linux
-          dist: bionic
+          dist: focal
           name: "Null shared library"
           addons:
               apt:
@@ -75,7 +79,7 @@ matrix:
               - USE_OSMESA=ON
               - CFLAGS=-Werror
         - os: linux
-          dist: bionic
+          dist: focal
           name: "Null static library"
           addons:
               apt:

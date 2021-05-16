@@ -37,7 +37,7 @@ elseif (_GLFW_OSMESA)
 endif()
 
 if (_GLFW_X11 OR _GLFW_WAYLAND)
-    if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         target_sources(glfw PRIVATE linux_joystick.h linux_joystick.c)
     else()
         target_sources(glfw PRIVATE null_joystick.h null_joystick.c)
@@ -120,7 +120,7 @@ endif()
 
 # Make GCC warn about declarations that VS 2010 and 2012 won't accept for all
 # source files that VS will build (Clang ignores this because we set -std=c99)
-if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
     set_source_files_properties(context.c init.c input.c monitor.c vulkan.c
                                 window.c win32_init.c win32_joystick.c
                                 win32_monitor.c win32_time.c win32_thread.c
@@ -130,22 +130,18 @@ if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 endif()
 
 # Enable a reasonable set of warnings
-if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR
-    "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR
-    "${CMAKE_C_COMPILER_ID}" STREQUAL "AppleClang")
-
-    if ("${CMAKE_C_SIMULATE_ID}" STREQUAL "MSVC")
-        # Tell Clang-CL that this is a Clang flag
-        target_compile_options(glfw PRIVATE "/clang:-Wall")
-    else()
-        target_compile_options(glfw PRIVATE "-Wall")
-    endif()
-elseif (MSVC)
+# NOTE: The order matters here, Clang-CL matches both MSVC and Clang
+if (MSVC)
     target_compile_options(glfw PRIVATE "/W3")
+elseif (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR
+        CMAKE_C_COMPILER_ID STREQUAL "Clang" OR
+        CMAKE_C_COMPILER_ID STREQUAL "AppleClang")
+
+    target_compile_options(glfw PRIVATE "-Wall")
 endif()
 
-if (WIN32)
-    target_compile_definitions(glfw PRIVATE _UNICODE)
+if (_GLFW_WIN32)
+    target_compile_definitions(glfw PRIVATE UNICODE _UNICODE)
 endif()
 
 # HACK: When building on MinGW, WINVER and UNICODE need to be defined before
@@ -153,7 +149,7 @@ endif()
 # win32_platform.h.  We define them here until a saner solution can be found
 # NOTE: MinGW-w64 and Visual C++ do /not/ need this hack.
 if (MINGW)
-    target_compile_definitions(glfw PRIVATE UNICODE WINVER=0x0501)
+    target_compile_definitions(glfw PRIVATE WINVER=0x0501)
 endif()
 
 # Workaround for legacy MinGW not providing XInput and DirectInput
@@ -166,8 +162,8 @@ if (MINGW)
     endif()
 endif()
 
-# Workaround for VS deprecating parts of the standard library
-if (MSVC)
+# Workaround for the MS CRT deprecating parts of the standard library
+if (MSVC OR CMAKE_C_SIMULATE_ID STREQUAL "MSVC")
     target_compile_definitions(glfw PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
 
@@ -203,9 +199,6 @@ if (BUILD_SHARED_LIBS)
         endif()
 
         target_compile_definitions(glfw INTERFACE GLFW_DLL)
-    elseif (APPLE)
-        set_target_properties(glfw PROPERTIES
-                              INSTALL_NAME_DIR "${CMAKE_INSTALL_LIBDIR}")
     endif()
 
     if (MINGW)
@@ -246,7 +239,7 @@ endif()
 if (GLFW_INSTALL)
     install(TARGETS glfw
             EXPORT glfwTargets
-            RUNTIME DESTINATION "bin"
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 endif()

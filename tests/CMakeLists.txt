@@ -7,7 +7,8 @@ if (MATH_LIBRARY)
     link_libraries("${MATH_LIBRARY}")
 endif()
 
-if (MSVC)
+# Workaround for the MS CRT deprecating parts of the standard library
+if (MSVC OR CMAKE_C_SIMULATE_ID STREQUAL "MSVC")
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
@@ -58,9 +59,13 @@ set_target_properties(${GUI_ONLY_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
                       FOLDER "GLFW3/Tests")
 
 if (MSVC)
-    # Tell MSVC to use main instead of WinMain for Windows subsystem executables
+    # Tell MSVC to use main instead of WinMain
     set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES
                           LINK_FLAGS "/ENTRY:mainCRTStartup")
+elseif (CMAKE_C_SIMULATE_ID STREQUAL "MSVC")
+    # Tell Clang using MS CRT to use main instead of WinMain
+    set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES
+                          LINK_FLAGS "-Wl,/entry:mainCRTStartup")
 endif()
 
 if (APPLE)

@@ -19,6 +19,16 @@ files {
     "src/monitor.**"
 }
 
+filter "configurations:Debug"
+	optimize "Debug"
+    defines { "_DEBUG"}
+
+filter "configurations:Release"
+    optimize "Speed"
+    defines { "NDEBUG"}
+
+filter {}
+
 filter "system:Windows"
     files {
         "src/win32_**.c",
@@ -29,3 +39,4 @@ filter "system:Windows"
         "src/vulkan.**"
     }
     defines {"_GLFW_WIN32"}
+

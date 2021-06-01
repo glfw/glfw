@@ -127,6 +127,7 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: The MoltenVK layer contents scale was updated only after
    related events were emitted
  - [X11] Bugfix: Changing `GLFW_FLOATING` could leak memory
+ - [Wayland] Bugfix: Some keys were not repeating in Wayland (#1908)
  - [NSGL] Bugfix: Defining `GL_SILENCE_DEPRECATION` externally caused
    a duplicate definition warning (#1840)
  - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
@@ -228,6 +229,7 @@ skills.
  - Arseny Kapoulkine
  - Cem Karan
  - Osman Keskin
+ - Koray Kilinc
  - Josh Kilmer
  - Byunghoon Kim
  - Cameron King

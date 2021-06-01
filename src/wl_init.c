@@ -565,7 +565,7 @@ static GLFWbool inputChar(_GLFWwindow* window, uint32_t key)
         }
     }
 
-    return xkb_keymap_key_repeats(_glfw.wl.xkb.keymap, syms[0]);
+    return xkb_keymap_key_repeats(_glfw.wl.xkb.keymap, code);
 }
 
 static void keyboardHandleKey(void* data,

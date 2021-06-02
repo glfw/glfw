@@ -2074,6 +2074,64 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     XFlush(_glfw.x11.display);
 }
 
+char* _glfwPlatformGetWindowTitle(_GLFWwindow* window)
+{
+    // Uses XGetWMName instead of XFetchName (which occasionally fails for some reason)
+    XTextProperty textProperty;
+    int len;
+	char** charList = NULL;
+    char* title;
+
+    _glfwGrabErrorHandlerX11();
+    
+    if (XGetWMName(_glfw.x11.display, window->x11.handle, &textProperty) != 0)
+    {
+        _glfwInputErrorX11(GLFW_PLATFORM_ERROR, "X11: Could not get window title");
+        _glfwReleaseErrorHandlerX11();
+        return NULL;
+    }
+
+    int ret = Xutf8TextPropertyToTextList(_glfw.x11.display, &textProperty, &charList, &len);
+    if (ret != Success)
+    {
+        _glfwReleaseErrorHandlerX11();
+
+        if (ret == XNoMemory)
+            _glfwInputErrorX11(GLFW_PLATFORM_ERROR, "X11: No memory to convert window title to UTF-8");
+        else if (ret == XLocaleNotSupported || ret == XConverterNotFound)
+            _glfwInputErrorX11(GLFW_PLATFORM_ERROR, "X11: Cannot convert window title, unsupported locale");
+            
+        if (textProperty.value != NULL)
+            XFree(textProperty.value);
+        
+        return NULL;
+    }
+    if (len < 1)
+    {
+        _glfwReleaseErrorHandlerX11();
+
+        _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Could not convert window title to UTF-8");
+
+        if (textProperty.value != NULL)
+            XFree(textProperty.value); 
+        if (charList != NULL)
+	        XFreeStringList(charList);
+        
+        return NULL;
+    }
+    
+    title = _glfw_strdup(charList[0]);
+    
+    _glfwReleaseErrorHandlerX11();
+
+    if (textProperty.value != NULL)
+        XFree(textProperty.value);    
+    if (charList != NULL)
+	    XFreeStringList(charList);
+
+    return title;
+}
+
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
     if (_glfw.x11.xlib.utf8)

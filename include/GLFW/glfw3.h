@@ -2906,6 +2906,8 @@ GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int value);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
+ * @remark Do not forget to free the returned char* when you are done with it.
+ * 
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_title

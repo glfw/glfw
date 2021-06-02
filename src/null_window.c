@@ -150,6 +150,11 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
         window->context.destroy(window);
 }
 
+char* _glfwPlatformGetWindowTitle(_GLFWwindow* window)
+{
+    return NULL;
+}
+
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
 }

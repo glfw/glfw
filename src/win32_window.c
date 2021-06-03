@@ -1464,11 +1464,14 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
 
 char* _glfwPlatformGetWindowTitle(_GLFWwindow* window)
 {
-    int count = GetWindowTextLengthW(window->win32.handle);
+    int count;
+    SetLastError(0);
+
+    count = GetWindowTextLengthW(window->win32.handle);
     if(count == 0)
     {
-        SetLastError(0);
-        int error = GetLastError();
+        int error;
+        error = GetLastError();
 
         if(error != 0)
         {
@@ -1477,18 +1480,21 @@ char* _glfwPlatformGetWindowTitle(_GLFWwindow* window)
         }
         else
             return calloc(1, sizeof(char)); // single \0
-        
+
     }
     else
     {
+        WCHAR* wideTitle;
+        char* title;
         count += 1; // the \0
-        WCHAR* wideTitle = calloc(count, sizeof(WCHAR));
+
+        wideTitle = calloc(count, sizeof(WCHAR));
         GetWindowTextW(window->win32.handle, wideTitle, count);
-        
-        char* title = _glfwCreateUTF8FromWideStringWin32(wideTitle);
+
+        title = _glfwCreateUTF8FromWideStringWin32(wideTitle);
         if(!title)
             return calloc(1, sizeof(char)); // single \0
-            
+
         return title;
     }
 }

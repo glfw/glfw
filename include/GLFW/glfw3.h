@@ -2907,7 +2907,7 @@ GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int value);
  *  GLFW_PLATFORM_ERROR.
  *
  * @remark Do not forget to free the returned char* when you are done with it.
- * 
+ *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_title
@@ -2935,7 +2935,7 @@ GLFWAPI char* glfwGetWindowTitle(GLFWwindow* window);
  *
  *  @sa @ref window_title
  *  @sa @ref glfwGetWindowTitle
- * 
+ *
  *  @since Added in version 1.0.
  *  @glfw3 Added window handle parameter.
  *

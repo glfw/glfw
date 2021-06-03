@@ -878,6 +878,13 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     free(window->wl.monitors);
 }
 
+char* _glfwPlatformGetWindowTitle(_GLFWwindow* window)
+{
+    if(window->wl.title)
+        return _glfw_strdup(window->wl.title);
+    return calloc(1, sizeof(char));
+}
+
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
     if (window->wl.title)

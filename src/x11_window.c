@@ -31,7 +31,8 @@
 
 #include <X11/cursorfont.h>
 #include <X11/Xmd.h>
-
+#include <X11/Xutil.h>
+#include <X11/Xlib.h>
 #include <sys/select.h>
 
 #include <string.h>
@@ -2084,7 +2085,7 @@ char* _glfwPlatformGetWindowTitle(_GLFWwindow* window)
 
     _glfwGrabErrorHandlerX11();
     
-    if (XGetWMName(_glfw.x11.display, window->x11.handle, &textProperty) != 0)
+    if (XGetWMName(_glfw.x11.display, window->x11.handle, &textProperty) == 0)
     {
         _glfwInputErrorX11(GLFW_PLATFORM_ERROR, "X11: Could not get window title");
         _glfwReleaseErrorHandlerX11();
@@ -2095,7 +2096,6 @@ char* _glfwPlatformGetWindowTitle(_GLFWwindow* window)
     if (ret != Success)
     {
         _glfwReleaseErrorHandlerX11();
-
         if (ret == XNoMemory)
             _glfwInputErrorX11(GLFW_PLATFORM_ERROR, "X11: No memory to convert window title to UTF-8");
         else if (ret == XLocaleNotSupported || ret == XConverterNotFound)
@@ -2106,18 +2106,17 @@ char* _glfwPlatformGetWindowTitle(_GLFWwindow* window)
         
         return NULL;
     }
-    if (len < 1)
+
+    if (len < 1) // empty title
     {
         _glfwReleaseErrorHandlerX11();
-
-        _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Could not convert window title to UTF-8");
 
         if (textProperty.value != NULL)
             XFree(textProperty.value); 
         if (charList != NULL)
 	        XFreeStringList(charList);
         
-        return NULL;
+        return calloc(1, sizeof(char));
     }
     
     title = _glfw_strdup(charList[0]);

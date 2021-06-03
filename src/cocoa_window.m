@@ -978,6 +978,14 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     } // autoreleasepool
 }
 
+void _glfwPlatformGetWindowTitle(_GLFWwindow* window)
+{
+    // TODO: This is UNTESTED
+    @autoreleasepool {
+    return window->ns.object.title;
+    }
+}
+
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
     @autoreleasepool {

@@ -158,6 +158,10 @@ if (_GLFW_X11)
     # Set up library and include paths
     list(APPEND glfw_INCLUDE_DIRS "${X11_X11_INCLUDE_PATH}")
 
+    if (NOT X11_X11_INCLUDE_PATH)
+        message(FATAL_ERROR "X111 headers not found; install libx11 development package")
+    endif()
+
     # Check for XRandR (modern resolution switching and gamma control)
     if (NOT X11_Xrandr_INCLUDE_PATH)
         message(FATAL_ERROR "RandR headers not found; install libxrandr development package")
@@ -187,6 +191,8 @@ if (_GLFW_X11)
     if (NOT X11_Xshape_INCLUDE_PATH)
         message(FATAL_ERROR "X Shape headers not found; install libxext development package")
     endif()
+
+    list(APPEND glfw_LIBRARIES ${X11_X11_LIB})
 endif()
 
 #--------------------------------------------------------------------

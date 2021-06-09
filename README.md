@@ -249,7 +249,7 @@ well as news, documentation and other information about the project.
 
 If you have questions related to the use of GLFW, we have a
 [forum](https://discourse.glfw.org/), and the `#glfw` IRC channel on
-[Freenode](http://freenode.net/).
+[Libera.Chat](https://libera.chat/).
 
 If you have a bug to report, a patch to submit or a feature you'd like to
 request, please file it in the

@@ -1,6 +1,6 @@
 # Support resources
 
-See the [latest documentation](http://www.glfw.org/docs/latest/) for tutorials,
+See the [latest documentation](https://www.glfw.org/docs/latest/) for tutorials,
 guides and the API reference.
 
 If you have questions about using GLFW, we have a

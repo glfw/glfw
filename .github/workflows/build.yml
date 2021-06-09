@@ -6,14 +6,14 @@ on:
 permissions:
     statuses: write
     contents: read
-env:
-    CC: clang
-    CFLAGS: -Werror
 
 jobs:
     build-linux-x11-clang:
         name: X11 (Linux, Clang)
         runs-on: ubuntu-latest
+        env:
+            CC: clang
+            CFLAGS: -Werror
         steps:
             - uses: actions/checkout@v2
             - name: Install dependencies
@@ -34,6 +34,9 @@ jobs:
     build-linux-wayland-clang:
         name: Wayland (Linux, Clang)
         runs-on: ubuntu-latest
+        env:
+            CC: clang
+            CFLAGS: -Werror
         steps:
             - uses: actions/checkout@v2
             - name: Install dependencies
@@ -54,6 +57,9 @@ jobs:
     build-linux-null-clang:
         name: Null (Linux, Clang)
         runs-on: ubuntu-latest
+        env:
+            CC: clang
+            CFLAGS: -Werror
         steps:
             - uses: actions/checkout@v2
             - name: Install dependencies
@@ -75,6 +81,7 @@ jobs:
         name: Cocoa (macOS, Clang)
         runs-on: macos-latest
         env:
+            CFLAGS: -Werror
             MACOSX_DEPLOYMENT_TARGET: 10.8
         steps:
             - uses: actions/checkout@v2
@@ -86,6 +93,24 @@ jobs:
 
             - name: Configure shared library
               run: cmake -S . -B build-shared -D BUILD_SHARED_LIBS=ON
+            - name: Build shared library
+              run: cmake --build build-shared --parallel
+
+    build-windows-win32-vs2019:
+        name: Win32 (Windows, VS2019)
+        runs-on: windows-latest
+        env:
+            CFLAGS: /WX
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Configure static library
+              run: cmake -S . -B build-static -G "Visual Studio 16 2019"
+            - name: Build static library
+              run: cmake --build build-static --parallel
+
+            - name: Configure shared library
+              run: cmake -S . -B build-shared -G "Visual Studio 16 2019" -D BUILD_SHARED_LIBS=ON
             - name: Build shared library
               run: cmake --build build-shared --parallel
 

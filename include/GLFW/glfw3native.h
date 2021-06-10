@@ -185,6 +185,20 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* window);
  *  @ingroup native
  */
 GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* window);
+
+/*! @brief Returns the `HDC` of the specified window.
+ *
+ *  @return The `HDC` of the specified window, or `NULL` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @since Added in version 3.TODO.
+ *
+ *  @ingroup native
+ */
+GLFWAPI HDC glfwGetWGLContextDC(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_COCOA)

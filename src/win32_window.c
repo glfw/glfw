@@ -1471,6 +1471,7 @@ char* _glfwPlatformGetWindowTitle(_GLFWwindow* window)
     if(count == 0)
     {
         int error;
+        SetLastError(0);
         error = GetLastError();
 
         if(error != 0)

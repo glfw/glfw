@@ -60,7 +60,7 @@ uint64_t _glfwPlatformGetTimerValue(void)
 {
     struct timespec ts;
     clock_gettime(_glfw.timer.posix.clock, &ts);
-    return (uint64_t) ts.tv_sec * (uint64_t) 1000000000 + (uint64_t) ts.tv_nsec;
+    return (uint64_t) ts.tv_sec * _glfw.timer.posix.frequency + (uint64_t) ts.tv_nsec;
 }
 
 uint64_t _glfwPlatformGetTimerFrequency(void)

@@ -190,6 +190,13 @@ if (MSVC90)
     endif()
 endif()
 
+# Workaround for -std=c99 on Linux disabling _DEFAULT_SOURCE (POSIX 2008 and more)
+if (_GLFW_X11 OR _GLFW_WAYLAND OR _GLFW_OSMESA)
+    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        target_compile_definitions(glfw PRIVATE _DEFAULT_SOURCE)
+    endif()
+endif()
+
 if (BUILD_SHARED_LIBS)
     if (WIN32)
         if (MINGW)

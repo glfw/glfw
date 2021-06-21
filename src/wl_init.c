@@ -26,8 +26,6 @@
 // It is fine to use C99 in this file because it will not be built with VS
 //========================================================================
 
-#define _POSIX_C_SOURCE 200809L
-
 #include "internal.h"
 
 #include <assert.h>
@@ -1297,10 +1295,8 @@ void _glfwPlatformTerminate(void)
 const char* _glfwPlatformGetVersionString(void)
 {
     return _GLFW_VERSION_NUMBER " Wayland EGL OSMesa"
-#if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
-        " clock_gettime"
-#else
-        " gettimeofday"
+#if defined(_POSIX_MONOTONIC_CLOCK)
+        " monotonic"
 #endif
         " evdev"
 #if defined(_GLFW_BUILD_DLL)

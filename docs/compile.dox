@@ -109,7 +109,7 @@ Once you have installed the necessary packages, move on to @ref
 compile_generate.
 
 
-@subsection compile_deps_osmesa Dependencies for Linux and OSMesa
+@subsubsection compile_deps_osmesa Dependencies for Linux and OSMesa
 
 To compile GLFW for OSMesa, you need to install the OSMesa library and header
 packages.  For example, on Ubuntu and other distributions based on Debian

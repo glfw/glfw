@@ -28,6 +28,7 @@
 //========================================================================
 
 #include "internal.h"
+#include "mappings.h"
 
 #include <assert.h>
 #include <float.h>
@@ -411,6 +412,21 @@ void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value)
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
+
+// Adds the built-in set of gamepad mappings
+//
+void _glfwInitGamepadMappings(void)
+{
+    size_t i;
+    const size_t count = sizeof(_glfwDefaultMappings) / sizeof(char*);
+    _glfw.mappings = calloc(count, sizeof(_GLFWmapping));
+
+    for (i = 0;  i < count;  i++)
+    {
+        if (parseMapping(&_glfw.mappings[_glfw.mappingCount], _glfwDefaultMappings[i]))
+            _glfw.mappingCount++;
+    }
+}
 
 // Returns an available joystick object with arrays and name allocated
 //

@@ -78,7 +78,5 @@ const char* _glfwDefaultMappings[] =
 #if defined(GLFW_BUILD_LINUX_MAPPINGS)
 @GLFW_LINUX_MAPPINGS@
 #endif // GLFW_BUILD_LINUX_MAPPINGS
-
-NULL
 };
 

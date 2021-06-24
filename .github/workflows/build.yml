@@ -39,7 +39,7 @@ jobs:
             - name: Install dependencies
               run: |
                   sudo apt update
-                  sudo apt install wayland-protocols libwayland-dev libxkbcommon-dev
+                  sudo apt install wayland-protocols libwayland-dev libxkbcommon-dev extra-cmake-modules
 
             - name: Configure static library
               run: cmake -S . -B build-static -D GLFW_USE_WAYLAND=ON

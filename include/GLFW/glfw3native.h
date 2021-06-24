@@ -83,8 +83,8 @@ extern "C" {
 
 #if defined(GLFW_EXPOSE_NATIVE_WIN32) || defined(GLFW_EXPOSE_NATIVE_WGL)
  // This is a workaround for the fact that glfw3.h needs to export APIENTRY (for
- // example to allow applications to correctly declare a GL_ARB_debug_output
- // callback) but windows.h assumes no one will define APIENTRY before it does
+ // example to allow applications to correctly declare a GL_KHR_debug callback)
+ // but windows.h assumes no one will define APIENTRY before it does
  #if defined(GLFW_APIENTRY_DEFINED)
   #undef APIENTRY
   #undef GLFW_APIENTRY_DEFINED
@@ -161,6 +161,14 @@ GLFWAPI const char* glfwGetWin32Monitor(GLFWmonitor* monitor);
  *  @return The `HWND` of the specified window, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
+ *  @remark The `HDC` associated with the window can be queried with the
+ *  [GetDC](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdc)
+ *  function.
+ *  @code
+ *  HDC dc = GetDC(glfwGetWin32Window(window));
+ *  @endcode
+ *  This DC is private and does not need to be released.
+ *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
@@ -176,6 +184,14 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* window);
  *
  *  @return The `HGLRC` of the specified window, or `NULL` if an
  *  [error](@ref error_handling) occurred.
+ *
+ *  @remark The `HDC` associated with the window can be queried with the
+ *  [GetDC](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdc)
+ *  function.
+ *  @code
+ *  HDC dc = GetDC(glfwGetWin32Window(window));
+ *  @endcode
+ *  This DC is private and does not need to be released.
  *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.

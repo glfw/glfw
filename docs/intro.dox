@@ -86,7 +86,7 @@ Setting these hints requires no platform specific headers or functions.
 @anchor GLFW_JOYSTICK_HAT_BUTTONS
 __GLFW_JOYSTICK_HAT_BUTTONS__ specifies whether to also expose joystick hats as
 buttons, for compatibility with earlier versions of GLFW that did not have @ref
-glfwGetJoystickHats.  Set this with @ref glfwInitHint.
+glfwGetJoystickHats.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 
 
 @subsubsection init_hints_osx macOS specific init hints

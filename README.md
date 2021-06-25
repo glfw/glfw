@@ -141,6 +141,8 @@ information on what to include when reporting a bug.
  - Bugfix: Some extension loader headers did not prevent default OpenGL header
    inclusion (#1695)
  - Bugfix: Buffers were swapped at creation on single-buffered windows (#1873)
+ - Bugfix: Gamepad mapping updates could spam `GLFW_INVALID_VALUE` due to
+   incompatible controllers sharing hardware ID (#1763)
  - [Win32] Added the `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access
            to the window menu
  - [Win32] Added a version info resource to the GLFW DLL

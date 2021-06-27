@@ -123,6 +123,7 @@ information on what to include when reporting a bug.
  - Added `GLFW_UNLIMITED_MOUSE_BUTTONS` input mode that allows mouse buttons beyond
    the limit of the mouse button tokens to be reported (#2423)
  - Added `glfwGetEGLConfig` function to query the `EGLConfig` of a window (#2045)
+ - Added `glfwGetGLXFBConfig` function to query the `GLXFBConfig` of a window (#1925)
  - Updated minimum CMake version to 3.16 (#2541)
  - Removed support for building with original MinGW (#2540)
  - [Win32] Removed support for Windows XP and Vista (#2505)

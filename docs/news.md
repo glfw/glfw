@@ -21,6 +21,12 @@ GLFW now provides the @ref glfwGetEGLConfig native access function for querying
 the `EGLConfig` of a window that has a `EGLSurface`.
 
 
+### GLXFBConfig native access function {#glxfbconfig}
+
+GLFW now provides the @ref glfwGetGLXFBConfig native access function for
+querying the `GLXFBConfig` of a window that has a `GLXWindow`.
+
+
 ## Caveats {#caveats}
 
 ## Deprecations {#deprecations}
@@ -47,6 +53,7 @@ actively maintained and available on many platforms.
 ### New functions {#new_functions}
 
  - @ref glfwGetEGLConfig
+ - @ref glfwGetGLXFBConfig
 
 
 ### New types {#new_types}

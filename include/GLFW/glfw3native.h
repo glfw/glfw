@@ -478,6 +478,29 @@ GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* window);
  *  @ingroup native
  */
 GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* window);
+
+/*! @brief Retrieves the `GLXFBConfig` of the specified window's `GLXWindow`.
+ *
+ *  @param[in] window The window whose `GLXWindow` to query.
+ *  @param[out] config The `GLXFBConfig` of the window `GLXWindow`, if available.
+ *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_NO_WINDOW_CONTEXT and @ref GLFW_PLATFORM_UNAVAILABLE.
+ *
+ *  @remark `GLXFBConfig` is an opaque type.  Unlike other GLFW functions, the
+ *  @p config out parameter is not cleared on error, as core GLX does not define
+ *  any invalid value.
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @since Added in version 3.5
+ *
+ *  @ingroup native
+ */
+GLFWAPI int glfwGetGLXFBConfig(GLFWwindow* window, GLXFBConfig* config);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_WAYLAND)

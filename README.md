@@ -243,6 +243,7 @@ information on what to include when reporting a bug.
  - [EGL] Added ANGLE backend selection via `EGL_ANGLE_platform_angle` extension
    (#1380)
  - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
+ - [GLX] Made it possible to query the `GLXFBConfig` that was chosen to create a given window via `glfwGetGLXFBConfig`
 
 
 ## Contact

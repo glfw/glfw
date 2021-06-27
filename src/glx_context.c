@@ -242,6 +242,11 @@ static void destroyContextGLX(_GLFWwindow* window)
         glXDestroyContext(_glfw.x11.display, window->context.glx.handle);
         window->context.glx.handle = NULL;
     }
+
+    if (window->context.glx.fbConfig)
+    {
+        window->context.glx.fbConfig = NULL;
+    }
 }
 
 
@@ -620,6 +625,8 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
+    window->context.glx.fbConfig = native;
+
     window->context.makeCurrent = makeContextCurrentGLX;
     window->context.swapBuffers = swapBuffersGLX;
     window->context.swapInterval = swapIntervalGLX;
@@ -697,3 +704,16 @@ GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* handle)
     return window->context.glx.window;
 }
 
+GLFWAPI GLXFBConfig glfwGetGLXFBConfig(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN(None);
+
+    if (window->context.client == GLFW_NO_API)
+    {
+        _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
+        return NULL;
+    }
+
+    return window->context.glx.fbConfig;
+}

@@ -385,6 +385,21 @@ GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* window);
  *  @ingroup native
  */
 GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* window);
+
+/*! @brief Returns the `GLXFBConfig` that was chosen to create the 
+ *  specified window.
+ *
+ *  @return The `GLXFBConfig` that was chosen to create the specified 
+ *  window, or `NULL` if an [error](@ref error_handling) occurred.
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @since Added in version 3.3.5
+ *
+ *  @ingroup native
+ */
+GLFWAPI GLXFBConfig glfwGetGLXFBConfig(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_WAYLAND)

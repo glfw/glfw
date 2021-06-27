@@ -395,7 +395,7 @@ GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* window);
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
- *  @since Added in version 3.3.5
+ *  @since Added in version 3.4
  *
  *  @ingroup native
  */

@@ -53,6 +53,13 @@ Alt-and-then-Space shortcuts.  This may be useful for more GUI-oriented
 applications.
 
 
+@subsubsection features_34_glx_getfbconfig Query GLXFBConfig
+
+GLFW now provides the [glfwGetGLXFBConfig](@ref glfwGetGLXFBConfig)
+function that returns the GLXFBConfig that was chosen to create the 
+given window handle.
+
+
 @subsection caveats_34 Caveats for version 3.4
 
 @subsubsection joysticks_34 Joystick support is initialized on demand
@@ -118,6 +125,10 @@ then GLFW will fail to initialize.
 @subsection symbols_34 New symbols in version 3.4
 
 @subsubsection functions_34 New functions in version 3.4
+
+ - @ref glfwGetGLXFBConfig
+
+
 @subsubsection types_34 New types in version 3.4
 @subsubsection constants_34 New constants in version 3.4
 

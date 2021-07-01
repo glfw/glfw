@@ -199,14 +199,14 @@ Finally, if you don't want to use any GUI, you can set options from the `cmake`
 command-line with the `-D` flag.
 
 @code{.sh}
-cmake -DBUILD_SHARED_LIBS=ON .
+cmake -DGLFW_BUILD_SHARED_LIBS=ON .
 @endcode
 
 
 @subsubsection compile_options_shared Shared CMake options
 
-@anchor BUILD_SHARED_LIBS
-__BUILD_SHARED_LIBS__ determines whether GLFW is built as a static
+@anchor GLFW_BUILD_SHARED_LIBS
+__GLFW_BUILD_SHARED_LIBS__ determines whether GLFW is built as a static
 library or as a DLL / shared library / dynamic library.
 
 @anchor GLFW_BUILD_EXAMPLES

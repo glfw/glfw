@@ -27,7 +27,7 @@ jobs:
               run: cmake --build build-static --parallel
 
             - name: Configure shared library
-              run: cmake -S . -B build-shared -D BUILD_SHARED_LIBS=ON
+              run: cmake -S . -B build-shared -D GLFW_BUILD_SHARED_LIBS=ON
             - name: Build shared library
               run: cmake --build build-shared --parallel
 
@@ -50,7 +50,7 @@ jobs:
               run: cmake --build build-static --parallel
 
             - name: Configure shared library
-              run: cmake -S . -B build-shared -D GLFW_USE_WAYLAND=ON -D BUILD_SHARED_LIBS=ON
+              run: cmake -S . -B build-shared -D GLFW_USE_WAYLAND=ON -D GLFW_BUILD_SHARED_LIBS=ON
             - name: Build shared library
               run: cmake --build build-shared --parallel
 
@@ -73,7 +73,7 @@ jobs:
               run: cmake --build build-static --parallel
 
             - name: Configure shared library
-              run: cmake -S . -B build-shared -D GLFW_USE_OSMESA=ON -D BUILD_SHARED_LIBS=ON
+              run: cmake -S . -B build-shared -D GLFW_USE_OSMESA=ON -D GLFW_BUILD_SHARED_LIBS=ON
             - name: Build shared library
               run: cmake --build build-shared --parallel
 
@@ -92,7 +92,7 @@ jobs:
               run: cmake --build build-static --parallel
 
             - name: Configure shared library
-              run: cmake -S . -B build-shared -D BUILD_SHARED_LIBS=ON
+              run: cmake -S . -B build-shared -D GLFW_BUILD_SHARED_LIBS=ON
             - name: Build shared library
               run: cmake --build build-shared --parallel
 
@@ -110,7 +110,7 @@ jobs:
               run: cmake --build build-static --parallel
 
             - name: Configure shared library
-              run: cmake -S . -B build-shared -G "Visual Studio 16 2019" -D BUILD_SHARED_LIBS=ON
+              run: cmake -S . -B build-shared -G "Visual Studio 16 2019" -D GLFW_BUILD_SHARED_LIBS=ON
             - name: Build shared library
               run: cmake --build build-shared --parallel
 

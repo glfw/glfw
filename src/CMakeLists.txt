@@ -1,5 +1,10 @@
+if(GLFW_BUILD_SHARED_LIBS)
+    add_library(glfw SHARED)
+else()
+    add_library(glfw STATIC)
+endif()
 
-add_library(glfw "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"
+target_sources(glfw PRIVATE "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"
                  "${GLFW_SOURCE_DIR}/include/GLFW/glfw3native.h"
                  internal.h mappings.h context.c init.c input.c monitor.c
                  vulkan.c window.c)
@@ -83,7 +88,7 @@ if (_GLFW_WAYLAND)
         "${GLFW_BINARY_DIR}/src/wayland-idle-inhibit-unstable-v1-client-protocol")
 endif()
 
-if (WIN32 AND BUILD_SHARED_LIBS)
+if (WIN32 AND GLFW_BUILD_SHARED_LIBS)
     configure_file(glfw.rc.in glfw.rc @ONLY)
     target_sources(glfw PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/glfw.rc")
 endif()
@@ -181,7 +186,7 @@ if (MSVC90)
     endif()
 endif()
 
-if (BUILD_SHARED_LIBS)
+if (GLFW_BUILD_SHARED_LIBS)
     if (WIN32)
         if (MINGW)
             # Remove the dependency on the shared version of libgcc

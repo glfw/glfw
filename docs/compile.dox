@@ -239,9 +239,18 @@ cmake -S path/to/glfw -B path/to/build -D BUILD_SHARED_LIBS=ON
 @subsection compile_options_shared Shared CMake options
 
 @anchor BUILD_SHARED_LIBS
-__BUILD_SHARED_LIBS__ determines whether GLFW is built as a static
-library or as a DLL / shared library / dynamic library.  This is disabled by
-default, producing a static GLFW library.
+__BUILD_SHARED_LIBS__ determines whether GLFW is built as a static library or as
+a DLL / shared library / dynamic library.  This is disabled by default,
+producing a static GLFW library.  This variable has no `GLFW_` prefix because it
+is defined by CMake.  If you want to change the library only for GLFW when it is
+part of a larger project, see @ref GLFW_LIBRARY_TYPE.
+
+@anchor GLFW_LIBRARY_TYPE
+__GLFW_LIBRARY_TYPE__ allows you to override @ref BUILD_SHARED_LIBS only for
+GLFW, without affecting other libraries in a larger project.  When set, the
+value of this option must be a valid CMake library type.  Set it to `STATIC` to
+build GLFW as a static library, `SHARED` to build it as a shared library
+/ dynamic library / DLL, or `OBJECT` to make GLFW a CMake object library.
 
 @anchor GLFW_BUILD_EXAMPLES
 __GLFW_BUILD_EXAMPLES__ determines whether the GLFW examples are built

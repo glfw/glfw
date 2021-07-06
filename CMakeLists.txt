@@ -41,7 +41,20 @@ cmake_dependent_option(GLFW_USE_WAYLAND "Use Wayland for window creation" OFF
 cmake_dependent_option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON
                        "MSVC" OFF)
 
-if (BUILD_SHARED_LIBS AND UNIX)
+set(GLFW_LIBRARY_TYPE "${GLFW_LIBRARY_TYPE}" CACHE STRING
+    "Library type override for GLFW (SHARED, STATIC, OBJECT, or empty to follow BUILD_SHARED_LIBS)")
+
+if (GLFW_LIBRARY_TYPE)
+    if (GLFW_LIBRARY_TYPE STREQUAL "SHARED")
+        set(GLFW_BUILD_SHARED_LIBRARY TRUE)
+    else()
+        set(GLFW_BUILD_SHARED_LIBRARY FALSE)
+    endif()
+else()
+    set(GLFW_BUILD_SHARED_LIBRARY ${BUILD_SHARED_LIBS})
+endif()
+
+if (UNIX AND GLFW_BUILD_SHARED_LIBRARY)
     # On Unix-like systems, shared libraries can use the soname system.
     set(GLFW_LIB_NAME glfw)
 else()
@@ -49,7 +62,7 @@ else()
 endif()
 
 if (GLFW_VULKAN_STATIC)
-    if (BUILD_SHARED_LIBS)
+    if (GLFW_BUILD_SHARED_LIBRARY)
         # If you absolutely must do this, remove this line and add the Vulkan
         # loader static library via the CMAKE_SHARED_LINKER_FLAGS
         message(FATAL_ERROR "You are trying to link the Vulkan loader static library into the GLFW shared library")

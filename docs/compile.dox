@@ -179,10 +179,12 @@ You should now have all required dependencies and the project files or makefiles
 necessary to compile GLFW.  Go ahead and compile the actual GLFW library with
 these files, as you would with any other project:
 
+e.g. on linux or unix,
 @code{.sh}
 cd <glfw-root-dir>
 make install
 @endcode
+or on Windows, open the .sln file in Visual Studio and build via the file menu.
 
 Once the GLFW library is compiled, you are ready to build your applications,
 linking it to the GLFW library.  See @ref build_guide for more information.

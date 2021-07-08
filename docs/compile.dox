@@ -178,7 +178,12 @@ development environment, move on to @ref compile_compile.
 
 You should now have all required dependencies and the project files or makefiles
 necessary to compile GLFW.  Go ahead and compile the actual GLFW library with
-these files, as you would with any other project.
+these files, as you would with any other project:
+
+@code{.sh}
+cd <glfw-root-dir>
+make install
+@endcode
 
 Once the GLFW library is compiled, you are ready to build your applications,
 linking it to the GLFW library.  See @ref build_guide for more information.

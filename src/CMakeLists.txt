@@ -48,6 +48,7 @@ if (_GLFW_WAYLAND)
     find_program(WAYLAND_SCANNER_EXECUTABLE NAMES wayland-scanner)
     pkg_check_modules(WAYLAND_PROTOCOLS REQUIRED wayland-protocols>=1.15)
     pkg_get_variable(WAYLAND_PROTOCOLS_BASE wayland-protocols pkgdatadir)
+    pkg_get_variable(WAYLAND_CLIENT_PKGDATADIR wayland-client pkgdatadir)
 
     macro(wayland_generate protocol_file output_file)
         add_custom_command(OUTPUT "${output_file}.h"
@@ -55,14 +56,17 @@ if (_GLFW_WAYLAND)
             DEPENDS "${protocol_file}"
             VERBATIM)
 
-        add_custom_command(OUTPUT "${output_file}.c"
-            COMMAND "${WAYLAND_SCANNER_EXECUTABLE}" private-code "${protocol_file}" "${output_file}.c"
+        add_custom_command(OUTPUT "${output_file}-code.h"
+            COMMAND "${WAYLAND_SCANNER_EXECUTABLE}" private-code "${protocol_file}" "${output_file}-code.h"
             DEPENDS "${protocol_file}"
             VERBATIM)
 
-        target_sources(glfw PRIVATE "${output_file}.h" "${output_file}.c")
+        target_sources(glfw PRIVATE "${output_file}.h" "${output_file}-code.h")
     endmacro()
 
+    wayland_generate(
+        "${WAYLAND_CLIENT_PKGDATADIR}/wayland.xml"
+        "${GLFW_BINARY_DIR}/src/wayland-client-protocol")
     wayland_generate(
         "${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml"
         "${GLFW_BINARY_DIR}/src/wayland-xdg-shell-client-protocol")

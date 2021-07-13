@@ -204,7 +204,6 @@ if (_GLFW_WAYLAND)
     list(APPEND glfw_PKG_DEPS "wayland-client")
 
     list(APPEND glfw_INCLUDE_DIRS "${Wayland_INCLUDE_DIRS}")
-    list(APPEND glfw_LIBRARIES "${Wayland_LINK_LIBRARIES}")
 
     include(CheckIncludeFiles)
     include(CheckFunctionExists)

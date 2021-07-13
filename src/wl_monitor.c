@@ -34,6 +34,8 @@
 #include <errno.h>
 #include <math.h>
 
+#include "wayland-client-protocol.h"
+
 
 static void outputHandleGeometry(void* data,
                                  struct wl_output* output,

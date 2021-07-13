@@ -116,6 +116,13 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - Added `GLFW_PLATFORM` init hint for runtime platform selection (#1958)
+ - Added `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`,
+   `GLFW_PLATFORM_WAYLAND`, `GLFW_PLATFORM_X11` and `GLFW_PLATFORM_NULL` symbols to
+   specify the desired platform (#1958)
+ - Added `glfwGetPlatform` function to query what platform was selected (#1655,#1958)
+ - Added `glfwPlatformSupported` function to query if a platform is supported
+   (#1655,#1958)
  - Added `glfwInitAllocator` for setting a custom memory allocator (#544,#1628,#1947)
  - Added `GLFWallocator` struct and `GLFWallocatefun`, `GLFWreallocatefun` and
    `GLFWdeallocatefun` types (#544,#1628,#1947)
@@ -126,12 +133,16 @@ information on what to include when reporting a bug.
  - Added `GLFW_POINTING_HAND_CURSOR` alias for `GLFW_HAND_CURSOR` (#427)
  - Added `GLFW_MOUSE_PASSTHROUGH` window hint for letting mouse input pass
    through the window (#1236,#1568)
+ - Added `GLFW_PLATFORM_UNAVAILABLE` error for platform detection failures (#1958)
  - Added `GLFW_FEATURE_UNAVAILABLE` error for platform limitations (#1692)
  - Added `GLFW_FEATURE_UNIMPLEMENTED` error for incomplete backends (#1692)
  - Added `GLFW_ANGLE_PLATFORM_TYPE` init hint and `GLFW_ANGLE_PLATFORM_TYPE_*`
    values to select ANGLE backend (#1380)
  - Added `GLFW_X11_XCB_VULKAN_SURFACE` init hint for selecting X11 Vulkan
    surface extension (#1793)
+ - Added `GLFW_BUILD_WIN32` CMake option for enabling Win32 support (#1958)
+ - Added `GLFW_BUILD_COCOA` CMake option for enabling Cocoa support (#1958)
+ - Added `GLFW_BUILD_X11` CMake option for enabling X11 support (#1958)
  - Added `GLFW_LIBRARY_TYPE` CMake variable for overriding the library type
    (#279,#1307,#1497,#1574,#1928)
  - Added `GLFW_PKG_CONFIG_REQUIRES_PRIVATE` and `GLFW_PKG_CONFIG_LIBS_PRIVATE` CMake
@@ -140,6 +151,8 @@ information on what to include when reporting a bug.
  - Made `GLFW_DOUBLEBUFFER` a read-only window attribute
  - Updated the minimum required CMake version to 3.1
  - Disabled tests and examples by default when built as a CMake subdirectory
+ - Renamed `GLFW_USE_WAYLAND` CMake option to `GLFW_BUILD_WAYLAND` (#1958)
+ - Removed `GLFW_USE_OSMESA` CMake option enabling the Null platform (#1958)
  - Removed CMake generated configuration header
  - Bugfix: The CMake config-file package used an absolute path and was not
    relocatable (#1470)
@@ -442,6 +455,7 @@ skills.
  - Eddie Ringle
  - Max Risuhin
  - Jorge Rodriguez
+ - Jari Ronkainen
  - Luca Rood
  - Ed Ropple
  - Aleksey Rybalkin

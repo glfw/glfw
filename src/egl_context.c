@@ -123,6 +123,7 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
             continue;
 
 #if defined(_GLFW_X11)
+        if (_glfw.platform.platformID == GLFW_PLATFORM_X11)
         {
             XVisualInfo vi = {0};
 
@@ -267,11 +268,10 @@ static GLFWglproc getProcAddressEGL(const char* procname)
 
 static void destroyContextEGL(_GLFWwindow* window)
 {
-#if defined(_GLFW_X11)
     // NOTE: Do not unload libGL.so.1 while the X11 display is still open,
     //       as it will make XCloseDisplay segfault
-    if (window->context.client != GLFW_OPENGL_API)
-#endif // _GLFW_X11
+    if (_glfw.platform.platformID != GLFW_PLATFORM_X11 ||
+        window->context.client != GLFW_OPENGL_API)
     {
         if (window->context.egl.client)
         {
@@ -429,16 +429,16 @@ GLFWbool _glfwInitEGL(void)
             eglGetProcAddress("eglCreatePlatformWindowSurfaceEXT");
     }
 
-    _glfw.egl.platform = _glfwPlatformGetEGLPlatform(&attribs);
+    _glfw.egl.platform = _glfw.platform.getEGLPlatform(&attribs);
     if (_glfw.egl.platform)
     {
         _glfw.egl.display =
             eglGetPlatformDisplayEXT(_glfw.egl.platform,
-                                     _glfwPlatformGetEGLNativeDisplay(),
+                                     _glfw.platform.getEGLNativeDisplay(),
                                      attribs);
     }
     else
-        _glfw.egl.display = eglGetDisplay(_glfwPlatformGetEGLNativeDisplay());
+        _glfw.egl.display = eglGetDisplay(_glfw.platform.getEGLNativeDisplay());
 
     _glfw_free(attribs);
 
@@ -648,7 +648,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 
     setAttrib(EGL_NONE, EGL_NONE);
 
-    native = _glfwPlatformGetEGLNativeWindow(window);
+    native = _glfw.platform.getEGLNativeWindow(window);
     // HACK: ANGLE does not implement eglCreatePlatformWindowSurfaceEXT
     //       despite reporting EGL_EXT_platform_base
     if (_glfw.egl.platform && _glfw.egl.platform != EGL_PLATFORM_ANGLE_ANGLE)

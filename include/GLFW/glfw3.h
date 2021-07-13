@@ -717,7 +717,7 @@ extern "C" {
  *  GLFW could not find support for the requested API on the system.
  *
  *  @analysis The installed graphics driver does not support the requested
- *  API, or does not support it via the chosen context creation backend.
+ *  API, or does not support it via the chosen context creation API.
  *  Below are a few examples.
  *
  *  @par
@@ -786,7 +786,7 @@ extern "C" {
 /*! @brief The specified cursor shape is not available.
  *
  *  The specified standard cursor shape is not available, either because the
- *  current system cursor theme does not provide it or because it is not
+ *  current platform cursor theme does not provide it or because it is not
  *  available on the platform.
  *
  *  @analysis Platform or system settings limitation.  Pick another
@@ -821,6 +821,28 @@ extern "C" {
  *  updating any existing out parameters.
  */
 #define GLFW_FEATURE_UNIMPLEMENTED  0x0001000D
+/*! @brief Platform unavailable or no matching platform was found.
+ *
+ *  If emitted during initialization, no matching platform was found.  If @ref
+ *  GLFW_PLATFORM is set to `GLFW_ANY_PLATFORM`, GLFW could not detect any of the
+ *  platforms supported by this library binary, except for the Null platform.  If set to
+ *  a specific platform, it is either not supported by this library binary or GLFW was not
+ *  able to detect it.
+ *
+ *  If emitted by a native access function, GLFW was initialized for a different platform
+ *  than the function is for.
+ *
+ *  @analysis Failure to detect any platform usually only happens on non-macOS Unix
+ *  systems, either when no window system is running or the program was run from
+ *  a terminal that does not have the necessary environment variables.  Fall back to
+ *  a different platform if possible or notify the user that no usable platform was
+ *  detected.
+ *
+ *  Failure to detect a specific platform may have the same cause as above or be because
+ *  support for that platform was not compiled in.  Call @ref glfwPlatformSupported to
+ *  check whether a specific platform is supported by a library binary.
+ */
+#define GLFW_PLATFORM_UNAVAILABLE   0x0001000E
 /*! @} */
 
 /*! @addtogroup window
@@ -1125,7 +1147,7 @@ extern "C" {
  *  @brief Standard system cursor shapes.
  *
  *  These are the [standard cursor shapes](@ref cursor_standard) that can be
- *  requested from the window system.
+ *  requested from the platform (window system).
  *
  *  @ingroup input
  *  @{ */
@@ -1242,6 +1264,11 @@ extern "C" {
  *  ANGLE rendering backend [init hint](@ref GLFW_ANGLE_PLATFORM_TYPE_hint).
  */
 #define GLFW_ANGLE_PLATFORM_TYPE    0x00050002
+/*! @brief Platform selection init hint.
+ *
+ *  Platform selection [init hint](@ref GLFW_PLATFORM).
+ */
+#define GLFW_PLATFORM               0x00050003
 /*! @brief macOS specific init hint.
  *
  *  macOS specific [init hint](@ref GLFW_COCOA_CHDIR_RESOURCES_hint).
@@ -1257,6 +1284,20 @@ extern "C" {
  *  X11 specific [init hint](@ref GLFW_X11_XCB_VULKAN_SURFACE_hint).
  */
 #define GLFW_X11_XCB_VULKAN_SURFACE 0x00052001
+/*! @} */
+
+/*! @addtogroup init
+ *  @{ */
+/*! @brief Hint value that enables automatic platform selection.
+ *
+ *  Hint value for @ref GLFW_PLATFORM that enables automatic platform selection.
+ */
+#define GLFW_ANY_PLATFORM           0x00060000
+#define GLFW_PLATFORM_WIN32         0x00060001
+#define GLFW_PLATFORM_COCOA         0x00060002
+#define GLFW_PLATFORM_WAYLAND       0x00060003
+#define GLFW_PLATFORM_X11           0x00060004
+#define GLFW_PLATFORM_NULL          0x00060005
 /*! @} */
 
 #define GLFW_DONT_CARE              -1
@@ -1770,7 +1811,7 @@ typedef void (* GLFWscrollfun)(GLFWwindow* window, double xoffset, double yoffse
  *
  *  @param[in] window The window that received the event.
  *  @param[in] key The [keyboard key](@ref keys) that was pressed or released.
- *  @param[in] scancode The system-specific scancode of the key.
+ *  @param[in] scancode The platform-specific scancode of the key.
  *  @param[in] action `GLFW_PRESS`, `GLFW_RELEASE` or `GLFW_REPEAT`.  Future
  *  releases may add more actions.
  *  @param[in] mods Bit field describing which [modifier keys](@ref mods) were
@@ -2047,10 +2088,15 @@ typedef struct GLFWallocator
  *  Additional calls to this function after successful initialization but before
  *  termination will return `GLFW_TRUE` immediately.
  *
+ *  The @ref GLFW_PLATFORM init hint controls which platforms are considered during
+ *  initialization.  This also depends on which platforms the library was compiled to
+ *  support.
+ *
  *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @errors Possible errors include @ref GLFW_PLATFORM_ERROR.
+ *  @errors Possible errors include @ref GLFW_PLATFORM_UNAVAILABLE and @ref
+ *  GLFW_PLATFORM_ERROR.
  *
  *  @remark @macos This function will change the current directory of the
  *  application to the `Contents/Resources` subdirectory of the application's
@@ -2205,14 +2251,17 @@ GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
 /*! @brief Returns a string describing the compile-time configuration.
  *
  *  This function returns the compile-time generated
- *  [version string](@ref intro_version_string) of the GLFW library binary.  It
- *  describes the version, platform, compiler and any platform-specific
- *  compile-time options.  It should not be confused with the OpenGL or OpenGL
- *  ES version string, queried with `glGetString`.
+ *  [version string](@ref intro_version_string) of the GLFW library binary.  It describes
+ *  the version, platforms, compiler and any platform or operating system specific
+ *  compile-time options.  It should not be confused with the OpenGL or OpenGL ES version
+ *  string, queried with `glGetString`.
  *
  *  __Do not use the version string__ to parse the GLFW library version.  The
  *  @ref glfwGetVersion function provides the version of the running library
  *  binary in numerical format.
+ *
+ *  __Do not use the version string__ to parse what platforms are supported.  The @ref
+ *  glfwPlatformSupported function lets you query platform support.
  *
  *  @return The ASCII encoded GLFW version string.
  *
@@ -2310,6 +2359,51 @@ GLFWAPI int glfwGetError(const char** description);
  */
 GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun callback);
 
+/*! @brief Returns the currently selected platform.
+ *
+ *  This function returns the platform that was selected during initialization.  The
+ *  returned value will be one of `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`,
+ *  `GLFW_PLATFORM_WAYLAND`, `GLFW_PLATFORM_X11` or `GLFW_PLATFORM_NULL`.
+ *
+ *  @return The currently selected platform, or zero if an error occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function may be called from any thread.
+ *
+ *  @sa @ref platform
+ *  @sa @ref glfwPlatformSupported
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup init
+ */
+GLFWAPI int glfwGetPlatform(void);
+
+/*! @brief Returns whether the library includes support for the specified platform.
+ *
+ *  This function returns whether the library was compiled with support for the specified
+ *  platform.  The platform must be one of `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`,
+ *  `GLFW_PLATFORM_WAYLAND`, `GLFW_PLATFORM_X11` or `GLFW_PLATFORM_NULL`.
+ *
+ *  @param[in] platform The platform to query.
+ *  @return `GLFW_TRUE` if the platform is supported, or `GLFW_FALSE` otherwise.
+ *
+ *  @errors Possible errors include @ref GLFW_INVALID_ENUM.
+ *
+ *  @remark This function may be called before @ref glfwInit.
+ *
+ *  @thread_safety This function may be called from any thread.
+ *
+ *  @sa @ref platform
+ *  @sa @ref glfwGetPlatform
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup init
+ */
+GLFWAPI int glfwPlatformSupported(int platform);
+
 /*! @brief Returns the currently connected monitors.
  *
  *  This function returns an array of handles for all currently connected
@@ -2393,7 +2487,7 @@ GLFWAPI void glfwGetMonitorPos(GLFWmonitor* monitor, int* xpos, int* ypos);
  *  This function returns the position, in screen coordinates, of the upper-left
  *  corner of the work area of the specified monitor along with the work area
  *  size in screen coordinates. The work area is defined as the area of the
- *  monitor not occluded by the operating system task bar where present. If no
+ *  monitor not occluded by the window system task bar where present. If no
  *  task bar exists then the work area is the monitor resolution in screen
  *  coordinates.
  *
@@ -2424,7 +2518,7 @@ GLFWAPI void glfwGetMonitorWorkarea(GLFWmonitor* monitor, int* xpos, int* ypos, 
  *  This function returns the size, in millimetres, of the display area of the
  *  specified monitor.
  *
- *  Some systems do not provide accurate monitor size information, either
+ *  Some platforms do not provide accurate monitor size information, either
  *  because the monitor
  *  [EDID](https://en.wikipedia.org/wiki/Extended_display_identification_data)
  *  data is incorrect or because the driver does not report it accurately.
@@ -3438,7 +3532,7 @@ GLFWAPI void glfwGetWindowFrameSize(GLFWwindow* window, int* left, int* top, int
  *  regardless of their DPI and scaling settings.  This relies on the system DPI
  *  and scaling settings being somewhat correct.
  *
- *  On systems where each monitors can have its own content scale, the window
+ *  On platforms where each monitors can have its own content scale, the window
  *  content scale will depend on which monitor the system considers the window
  *  to be on.
  *
@@ -5677,7 +5771,7 @@ GLFWAPI const char* glfwGetClipboardString(GLFWwindow* window);
  *
  *  The resolution of the timer is system dependent, but is usually on the order
  *  of a few micro- or nanoseconds.  It uses the highest-resolution monotonic
- *  time source on each supported platform.
+ *  time source on each operating system.
  *
  *  @return The current time, in seconds, or zero if an
  *  [error](@ref error_handling) occurred.
@@ -5888,7 +5982,7 @@ GLFWAPI void glfwSwapBuffers(GLFWwindow* window);
  *  GLFW_NO_CURRENT_CONTEXT and @ref GLFW_PLATFORM_ERROR.
  *
  *  @remark This function is not called during context creation, leaving the
- *  swap interval set to whatever is the default on that platform.  This is done
+ *  swap interval set to whatever is the default for that API.  This is done
  *  because some swap interval extensions used by GLFW do not allow the swap
  *  interval to be reset to zero once it has been set to a non-zero value.
  *

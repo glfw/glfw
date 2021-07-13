@@ -123,7 +123,7 @@ static void pointerHandleEnter(void* data,
 
     window->wl.hovered = GLFW_TRUE;
 
-    _glfwPlatformSetCursor(window, window->wl.currentCursor);
+    _glfwSetCursorWayland(window, window->wl.currentCursor);
     _glfwInputCursorEnter(window, GLFW_TRUE);
 }
 
@@ -1045,21 +1045,142 @@ static void createKeyTables(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwPlatformInit(void)
+GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
+{
+    const _GLFWplatform wayland =
+    {
+        GLFW_PLATFORM_WAYLAND,
+        _glfwInitWayland,
+        _glfwTerminateWayland,
+        _glfwGetCursorPosWayland,
+        _glfwSetCursorPosWayland,
+        _glfwSetCursorModeWayland,
+        _glfwSetRawMouseMotionWayland,
+        _glfwRawMouseMotionSupportedWayland,
+        _glfwCreateCursorWayland,
+        _glfwCreateStandardCursorWayland,
+        _glfwDestroyCursorWayland,
+        _glfwSetCursorWayland,
+        _glfwGetScancodeNameWayland,
+        _glfwGetKeyScancodeWayland,
+        _glfwSetClipboardStringWayland,
+        _glfwGetClipboardStringWayland,
+#if defined(__linux__)
+        _glfwInitJoysticksLinux,
+        _glfwTerminateJoysticksLinux,
+        _glfwPollJoystickLinux,
+        _glfwGetMappingNameLinux,
+        _glfwUpdateGamepadGUIDLinux,
+#else
+        _glfwInitJoysticksNull,
+        _glfwTerminateJoysticksNull,
+        _glfwPollJoystickNull,
+        _glfwGetMappingNameNull,
+        _glfwUpdateGamepadGUIDNull,
+#endif
+        _glfwFreeMonitorWayland,
+        _glfwGetMonitorPosWayland,
+        _glfwGetMonitorContentScaleWayland,
+        _glfwGetMonitorWorkareaWayland,
+        _glfwGetVideoModesWayland,
+        _glfwGetVideoModeWayland,
+        _glfwGetGammaRampWayland,
+        _glfwSetGammaRampWayland,
+        _glfwCreateWindowWayland,
+        _glfwDestroyWindowWayland,
+        _glfwSetWindowTitleWayland,
+        _glfwSetWindowIconWayland,
+        _glfwGetWindowPosWayland,
+        _glfwSetWindowPosWayland,
+        _glfwGetWindowSizeWayland,
+        _glfwSetWindowSizeWayland,
+        _glfwSetWindowSizeLimitsWayland,
+        _glfwSetWindowAspectRatioWayland,
+        _glfwGetFramebufferSizeWayland,
+        _glfwGetWindowFrameSizeWayland,
+        _glfwGetWindowContentScaleWayland,
+        _glfwIconifyWindowWayland,
+        _glfwRestoreWindowWayland,
+        _glfwMaximizeWindowWayland,
+        _glfwShowWindowWayland,
+        _glfwHideWindowWayland,
+        _glfwRequestWindowAttentionWayland,
+        _glfwFocusWindowWayland,
+        _glfwSetWindowMonitorWayland,
+        _glfwWindowFocusedWayland,
+        _glfwWindowIconifiedWayland,
+        _glfwWindowVisibleWayland,
+        _glfwWindowMaximizedWayland,
+        _glfwWindowHoveredWayland,
+        _glfwFramebufferTransparentWayland,
+        _glfwGetWindowOpacityWayland,
+        _glfwSetWindowResizableWayland,
+        _glfwSetWindowDecoratedWayland,
+        _glfwSetWindowFloatingWayland,
+        _glfwSetWindowOpacityWayland,
+        _glfwSetWindowMousePassthroughWayland,
+        _glfwPollEventsWayland,
+        _glfwWaitEventsWayland,
+        _glfwWaitEventsTimeoutWayland,
+        _glfwPostEmptyEventWayland,
+        _glfwGetEGLPlatformWayland,
+        _glfwGetEGLNativeDisplayWayland,
+        _glfwGetEGLNativeWindowWayland,
+        _glfwGetRequiredInstanceExtensionsWayland,
+        _glfwGetPhysicalDevicePresentationSupportWayland,
+        _glfwCreateWindowSurfaceWayland,
+    };
+
+    void* module = _glfwPlatformLoadModule("libwayland-client.so.0");
+    if (!module)
+    {
+        if (platformID == GLFW_PLATFORM_WAYLAND)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Wayland: Failed to open libwayland-client");
+        }
+
+        return GLFW_FALSE;
+    }
+
+    PFN_wl_display_connect wl_display_connect = (PFN_wl_display_connect)
+        _glfwPlatformGetModuleSymbol(module, "wl_display_connect");
+    if (!wl_display_connect)
+    {
+        if (platformID == GLFW_PLATFORM_WAYLAND)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Wayland: Failed to load libwayland-client entry point");
+        }
+
+        _glfwPlatformFreeModule(module);
+        return GLFW_FALSE;
+    }
+
+    struct wl_display* display = wl_display_connect(NULL);
+    if (!display)
+    {
+        if (platformID == GLFW_PLATFORM_WAYLAND)
+            _glfwInputError(GLFW_PLATFORM_ERROR, "Wayland: Failed to connect to display");
+
+        _glfwPlatformFreeModule(module);
+        return GLFW_FALSE;
+    }
+
+    _glfw.wl.display = display;
+    _glfw.wl.client.handle = module;
+
+    *platform = wayland;
+    return GLFW_TRUE;
+}
+
+int _glfwInitWayland(void)
 {
     const char *cursorTheme;
     const char *cursorSizeStr;
     char *cursorSizeEnd;
     long cursorSizeLong;
     int cursorSize;
-
-    _glfw.wl.client.handle = _glfwPlatformLoadModule("libwayland-client.so.0");
-    if (!_glfw.wl.client.handle)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Failed to open libwayland-client");
-        return GLFW_FALSE;
-    }
 
     _glfw.wl.client.display_flush = (PFN_wl_display_flush)
         _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_flush");
@@ -1069,8 +1190,6 @@ int _glfwPlatformInit(void)
         _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_dispatch_pending");
     _glfw.wl.client.display_read_events = (PFN_wl_display_read_events)
         _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_read_events");
-    _glfw.wl.client.display_connect = (PFN_wl_display_connect)
-        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_connect");
     _glfw.wl.client.display_disconnect = (PFN_wl_display_disconnect)
         _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_disconnect");
     _glfw.wl.client.display_roundtrip = (PFN_wl_display_roundtrip)
@@ -1102,7 +1221,6 @@ int _glfwPlatformInit(void)
         !_glfw.wl.client.display_cancel_read ||
         !_glfw.wl.client.display_dispatch_pending ||
         !_glfw.wl.client.display_read_events ||
-        !_glfw.wl.client.display_connect ||
         !_glfw.wl.client.display_disconnect ||
         !_glfw.wl.client.display_roundtrip ||
         !_glfw.wl.client.display_get_fd ||
@@ -1200,14 +1318,6 @@ int _glfwPlatformInit(void)
         _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_compose_state_get_one_sym");
 #endif
 
-    _glfw.wl.display = wl_display_connect(NULL);
-    if (!_glfw.wl.display)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Failed to connect to display");
-        return GLFW_FALSE;
-    }
-
     _glfw.wl.registry = wl_display_get_registry(_glfw.wl.display);
     wl_registry_add_listener(_glfw.wl.registry, &registryListener, NULL);
 
@@ -1285,7 +1395,7 @@ int _glfwPlatformInit(void)
     return GLFW_TRUE;
 }
 
-void _glfwPlatformTerminate(void)
+void _glfwTerminateWayland(void)
 {
     _glfwTerminateEGL();
     if (_glfw.wl.egl.handle)
@@ -1373,15 +1483,3 @@ void _glfwPlatformTerminate(void)
         _glfw_free(_glfw.wl.clipboardSendString);
 }
 
-const char* _glfwPlatformGetVersionString(void)
-{
-    return _GLFW_VERSION_NUMBER " Wayland EGL OSMesa"
-#if defined(_POSIX_MONOTONIC_CLOCK)
-        " monotonic"
-#endif
-        " evdev"
-#if defined(_GLFW_BUILD_DLL)
-        " shared"
-#endif
-        ;
-}

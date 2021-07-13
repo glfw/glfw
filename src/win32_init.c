@@ -536,12 +536,89 @@ BOOL _glfwIsWindows10BuildOrGreaterWin32(WORD build)
     return RtlVerifyVersionInfo(&osvi, mask, cond) == 0;
 }
 
+GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
+{
+    const _GLFWplatform win32 =
+    {
+        GLFW_PLATFORM_WIN32,
+        _glfwInitWin32,
+        _glfwTerminateWin32,
+        _glfwGetCursorPosWin32,
+        _glfwSetCursorPosWin32,
+        _glfwSetCursorModeWin32,
+        _glfwSetRawMouseMotionWin32,
+        _glfwRawMouseMotionSupportedWin32,
+        _glfwCreateCursorWin32,
+        _glfwCreateStandardCursorWin32,
+        _glfwDestroyCursorWin32,
+        _glfwSetCursorWin32,
+        _glfwGetScancodeNameWin32,
+        _glfwGetKeyScancodeWin32,
+        _glfwSetClipboardStringWin32,
+        _glfwGetClipboardStringWin32,
+        _glfwInitJoysticksWin32,
+        _glfwTerminateJoysticksWin32,
+        _glfwPollJoystickWin32,
+        _glfwGetMappingNameWin32,
+        _glfwUpdateGamepadGUIDWin32,
+        _glfwFreeMonitorWin32,
+        _glfwGetMonitorPosWin32,
+        _glfwGetMonitorContentScaleWin32,
+        _glfwGetMonitorWorkareaWin32,
+        _glfwGetVideoModesWin32,
+        _glfwGetVideoModeWin32,
+        _glfwGetGammaRampWin32,
+        _glfwSetGammaRampWin32,
+        _glfwCreateWindowWin32,
+        _glfwDestroyWindowWin32,
+        _glfwSetWindowTitleWin32,
+        _glfwSetWindowIconWin32,
+        _glfwGetWindowPosWin32,
+        _glfwSetWindowPosWin32,
+        _glfwGetWindowSizeWin32,
+        _glfwSetWindowSizeWin32,
+        _glfwSetWindowSizeLimitsWin32,
+        _glfwSetWindowAspectRatioWin32,
+        _glfwGetFramebufferSizeWin32,
+        _glfwGetWindowFrameSizeWin32,
+        _glfwGetWindowContentScaleWin32,
+        _glfwIconifyWindowWin32,
+        _glfwRestoreWindowWin32,
+        _glfwMaximizeWindowWin32,
+        _glfwShowWindowWin32,
+        _glfwHideWindowWin32,
+        _glfwRequestWindowAttentionWin32,
+        _glfwFocusWindowWin32,
+        _glfwSetWindowMonitorWin32,
+        _glfwWindowFocusedWin32,
+        _glfwWindowIconifiedWin32,
+        _glfwWindowVisibleWin32,
+        _glfwWindowMaximizedWin32,
+        _glfwWindowHoveredWin32,
+        _glfwFramebufferTransparentWin32,
+        _glfwGetWindowOpacityWin32,
+        _glfwSetWindowResizableWin32,
+        _glfwSetWindowDecoratedWin32,
+        _glfwSetWindowFloatingWin32,
+        _glfwSetWindowOpacityWin32,
+        _glfwSetWindowMousePassthroughWin32,
+        _glfwPollEventsWin32,
+        _glfwWaitEventsWin32,
+        _glfwWaitEventsTimeoutWin32,
+        _glfwPostEmptyEventWin32,
+        _glfwGetEGLPlatformWin32,
+        _glfwGetEGLNativeDisplayWin32,
+        _glfwGetEGLNativeWindowWin32,
+        _glfwGetRequiredInstanceExtensionsWin32,
+        _glfwGetPhysicalDevicePresentationSupportWin32,
+        _glfwCreateWindowSurfaceWin32,
+    };
 
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW platform API                      //////
-//////////////////////////////////////////////////////////////////////////
+    *platform = win32;
+    return GLFW_TRUE;
+}
 
-int _glfwPlatformInit(void)
+int _glfwInitWin32(void)
 {
     if (!loadLibraries())
         return GLFW_FALSE;
@@ -566,7 +643,7 @@ int _glfwPlatformInit(void)
     return GLFW_TRUE;
 }
 
-void _glfwPlatformTerminate(void)
+void _glfwTerminateWin32(void)
 {
     if (_glfw.win32.deviceNotificationHandle)
         UnregisterDeviceNotification(_glfw.win32.deviceNotificationHandle);
@@ -583,24 +660,5 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateEGL();
 
     freeLibraries();
-}
-
-const char* _glfwPlatformGetVersionString(void)
-{
-    return _GLFW_VERSION_NUMBER " Win32 WGL EGL OSMesa"
-#if defined(__MINGW64_VERSION_MAJOR)
-        " MinGW-w64"
-#elif defined(__MINGW32__)
-        " MinGW"
-#elif defined(_MSC_VER)
-        " VisualC"
-#endif
-#if defined(_GLFW_USE_HYBRID_HPG) || defined(_GLFW_USE_OPTIMUS_HPG)
-        " hybrid-GPU"
-#endif
-#if defined(_GLFW_BUILD_DLL)
-        " DLL"
-#endif
-        ;
 }
 

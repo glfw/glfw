@@ -33,26 +33,26 @@
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWbool _glfwPlatformInitJoysticks(void)
+GLFWbool _glfwInitJoysticksNull(void)
 {
     return GLFW_TRUE;
 }
 
-void _glfwPlatformTerminateJoysticks(void)
+void _glfwTerminateJoysticksNull(void)
 {
 }
 
-int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
+int _glfwPollJoystickNull(_GLFWjoystick* js, int mode)
 {
     return GLFW_FALSE;
 }
 
-const char* _glfwPlatformGetMappingName(void)
+const char* _glfwGetMappingNameNull(void)
 {
     return "";
 }
 
-void _glfwPlatformUpdateGamepadGUID(char* guid)
+void _glfwUpdateGamepadGUIDNull(char* guid)
 {
 }
 

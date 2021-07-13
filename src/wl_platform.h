@@ -44,13 +44,6 @@ typedef struct VkWaylandSurfaceCreateInfoKHR
 typedef VkResult (APIENTRY *PFN_vkCreateWaylandSurfaceKHR)(VkInstance,const VkWaylandSurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR)(VkPhysicalDevice,uint32_t,struct wl_display*);
 
-#include "posix_thread.h"
-#include "posix_time.h"
-#ifdef __linux__
-#include "linux_joystick.h"
-#else
-#include "null_joystick.h"
-#endif
 #include "xkb_unicode.h"
 
 typedef int (* PFN_wl_display_flush)(struct wl_display *display);
@@ -75,7 +68,6 @@ typedef struct wl_proxy* (* PFN_wl_proxy_marshal_flags)(struct wl_proxy*,uint32_
 #define wl_display_cancel_read _glfw.wl.client.display_cancel_read
 #define wl_display_dispatch_pending _glfw.wl.client.display_dispatch_pending
 #define wl_display_read_events _glfw.wl.client.display_read_events
-#define wl_display_connect _glfw.wl.client.display_connect
 #define wl_display_disconnect _glfw.wl.client.display_disconnect
 #define wl_display_roundtrip _glfw.wl.client.display_roundtrip
 #define wl_display_get_fd _glfw.wl.client.display_get_fd
@@ -132,13 +124,10 @@ struct wl_shm;
 #define xdg_toplevel_interface _glfw_xdg_toplevel_interface
 #define xdg_wm_base_interface _glfw_xdg_wm_base_interface
 
-#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWayland  wl
-#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWayland wl
-#define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWayland wl
-#define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorWayland  wl
-
-#define _GLFW_PLATFORM_CONTEXT_STATE         struct { int dummyContext; }
-#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE struct { int dummyLibraryContext; }
+#define GLFW_WAYLAND_WINDOW_STATE         _GLFWwindowWayland  wl;
+#define GLFW_WAYLAND_LIBRARY_WINDOW_STATE _GLFWlibraryWayland wl;
+#define GLFW_WAYLAND_MONITOR_STATE        _GLFWmonitorWayland wl;
+#define GLFW_WAYLAND_CURSOR_STATE         _GLFWcursorWayland  wl;
 
 struct wl_cursor_image {
     uint32_t width;
@@ -373,7 +362,6 @@ typedef struct _GLFWlibraryWayland
         PFN_wl_display_cancel_read                  display_cancel_read;
         PFN_wl_display_dispatch_pending             display_dispatch_pending;
         PFN_wl_display_read_events                  display_read_events;
-        PFN_wl_display_connect                      display_connect;
         PFN_wl_display_disconnect                   display_disconnect;
         PFN_wl_display_roundtrip                    display_roundtrip;
         PFN_wl_display_get_fd                       display_get_fd;
@@ -432,6 +420,80 @@ typedef struct _GLFWcursorWayland
     int                         currentImage;
 } _GLFWcursorWayland;
 
+GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform);
+int _glfwInitWayland(void);
+void _glfwTerminateWayland(void);
+
+int _glfwCreateWindowWayland(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
+void _glfwDestroyWindowWayland(_GLFWwindow* window);
+void _glfwSetWindowTitleWayland(_GLFWwindow* window, const char* title);
+void _glfwSetWindowIconWayland(_GLFWwindow* window, int count, const GLFWimage* images);
+void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos);
+void _glfwSetWindowPosWayland(_GLFWwindow* window, int xpos, int ypos);
+void _glfwGetWindowSizeWayland(_GLFWwindow* window, int* width, int* height);
+void _glfwSetWindowSizeWayland(_GLFWwindow* window, int width, int height);
+void _glfwSetWindowSizeLimitsWayland(_GLFWwindow* window, int minwidth, int minheight, int maxwidth, int maxheight);
+void _glfwSetWindowAspectRatioWayland(_GLFWwindow* window, int numer, int denom);
+void _glfwGetFramebufferSizeWayland(_GLFWwindow* window, int* width, int* height);
+void _glfwGetWindowFrameSizeWayland(_GLFWwindow* window, int* left, int* top, int* right, int* bottom);
+void _glfwGetWindowContentScaleWayland(_GLFWwindow* window, float* xscale, float* yscale);
+void _glfwIconifyWindowWayland(_GLFWwindow* window);
+void _glfwRestoreWindowWayland(_GLFWwindow* window);
+void _glfwMaximizeWindowWayland(_GLFWwindow* window);
+void _glfwShowWindowWayland(_GLFWwindow* window);
+void _glfwHideWindowWayland(_GLFWwindow* window);
+void _glfwRequestWindowAttentionWayland(_GLFWwindow* window);
+void _glfwFocusWindowWayland(_GLFWwindow* window);
+void _glfwSetWindowMonitorWayland(_GLFWwindow* window, _GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);
+int _glfwWindowFocusedWayland(_GLFWwindow* window);
+int _glfwWindowIconifiedWayland(_GLFWwindow* window);
+int _glfwWindowVisibleWayland(_GLFWwindow* window);
+int _glfwWindowMaximizedWayland(_GLFWwindow* window);
+int _glfwWindowHoveredWayland(_GLFWwindow* window);
+int _glfwFramebufferTransparentWayland(_GLFWwindow* window);
+void _glfwSetWindowResizableWayland(_GLFWwindow* window, GLFWbool enabled);
+void _glfwSetWindowDecoratedWayland(_GLFWwindow* window, GLFWbool enabled);
+void _glfwSetWindowFloatingWayland(_GLFWwindow* window, GLFWbool enabled);
+float _glfwGetWindowOpacityWayland(_GLFWwindow* window);
+void _glfwSetWindowOpacityWayland(_GLFWwindow* window, float opacity);
+void _glfwSetWindowMousePassthroughWayland(_GLFWwindow* window, GLFWbool enabled);
+
+void _glfwSetRawMouseMotionWayland(_GLFWwindow *window, GLFWbool enabled);
+GLFWbool _glfwRawMouseMotionSupportedWayland(void);
+
+void _glfwPollEventsWayland(void);
+void _glfwWaitEventsWayland(void);
+void _glfwWaitEventsTimeoutWayland(double timeout);
+void _glfwPostEmptyEventWayland(void);
+
+void _glfwGetCursorPosWayland(_GLFWwindow* window, double* xpos, double* ypos);
+void _glfwSetCursorPosWayland(_GLFWwindow* window, double xpos, double ypos);
+void _glfwSetCursorModeWayland(_GLFWwindow* window, int mode);
+const char* _glfwGetScancodeNameWayland(int scancode);
+int _glfwGetKeyScancodeWayland(int key);
+int _glfwCreateCursorWayland(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot);
+int _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape);
+void _glfwDestroyCursorWayland(_GLFWcursor* cursor);
+void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor);
+void _glfwSetClipboardStringWayland(const char* string);
+const char* _glfwGetClipboardStringWayland(void);
+
+EGLenum _glfwGetEGLPlatformWayland(EGLint** attribs);
+EGLNativeDisplayType _glfwGetEGLNativeDisplayWayland(void);
+EGLNativeWindowType _glfwGetEGLNativeWindowWayland(_GLFWwindow* window);
+
+void _glfwGetRequiredInstanceExtensionsWayland(char** extensions);
+int _glfwGetPhysicalDevicePresentationSupportWayland(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
+VkResult _glfwCreateWindowSurfaceWayland(VkInstance instance, _GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
+
+void _glfwFreeMonitorWayland(_GLFWmonitor* monitor);
+void _glfwGetMonitorPosWayland(_GLFWmonitor* monitor, int* xpos, int* ypos);
+void _glfwGetMonitorContentScaleWayland(_GLFWmonitor* monitor, float* xscale, float* yscale);
+void _glfwGetMonitorWorkareaWayland(_GLFWmonitor* monitor, int* xpos, int* ypos, int* width, int* height);
+GLFWvidmode* _glfwGetVideoModesWayland(_GLFWmonitor* monitor, int* count);
+void _glfwGetVideoModeWayland(_GLFWmonitor* monitor, GLFWvidmode* mode);
+GLFWbool _glfwGetGammaRampWayland(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
+void _glfwSetGammaRampWayland(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
 void _glfwAddOutputWayland(uint32_t name, uint32_t version);
 

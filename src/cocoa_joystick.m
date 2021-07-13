@@ -307,7 +307,7 @@ static void removeCallback(void* context,
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWbool _glfwPlatformInitJoysticks(void)
+GLFWbool _glfwInitJoysticksCocoa(void)
 {
     CFMutableArrayRef matching;
     const long usages[] =
@@ -384,7 +384,7 @@ GLFWbool _glfwPlatformInitJoysticks(void)
     return GLFW_TRUE;
 }
 
-void _glfwPlatformTerminateJoysticks(void)
+void _glfwTerminateJoysticksCocoa(void)
 {
     int jid;
 
@@ -399,7 +399,7 @@ void _glfwPlatformTerminateJoysticks(void)
 }
 
 
-int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
+int _glfwPollJoystickCocoa(_GLFWjoystick* js, int mode)
 {
     if (mode & _GLFW_POLL_AXES)
     {
@@ -469,12 +469,12 @@ int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
     return js->present;
 }
 
-const char* _glfwPlatformGetMappingName(void)
+const char* _glfwGetMappingNameCocoa(void)
 {
     return "Mac OS X";
 }
 
-void _glfwPlatformUpdateGamepadGUID(char* guid)
+void _glfwUpdateGamepadGUIDCocoa(char* guid)
 {
     if ((strncmp(guid + 4, "000000000000", 12) == 0) &&
         (strncmp(guid + 20, "000000000000", 12) == 0))

@@ -425,7 +425,7 @@ GLFWbool _glfwInitGLX(void)
 void _glfwTerminateGLX(void)
 {
     // NOTE: This function must not call any X11 functions, as it is called
-    //       after XCloseDisplay (see _glfwPlatformTerminate for details)
+    //       after XCloseDisplay (see _glfwTerminateX11 for details)
 
     if (_glfw.glx.handle)
     {
@@ -674,6 +674,12 @@ GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* handle)
     _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
+    if (_glfw.platform.platformID != GLFW_PLATFORM_X11)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "GLX: Platform not initialized");
+        return NULL;
+    }
+
     if (window->context.client != GLFW_NATIVE_CONTEXT_API)
     {
         _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
@@ -687,6 +693,12 @@ GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(None);
+
+    if (_glfw.platform.platformID != GLFW_PLATFORM_X11)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "GLX: Platform not initialized");
+        return None;
+    }
 
     if (window->context.client != GLFW_NATIVE_CONTEXT_API)
     {

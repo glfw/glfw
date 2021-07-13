@@ -39,7 +39,22 @@
 #include <sys/timerfd.h>
 #include <unistd.h>
 #include <time.h>
-#include <wayland-client.h>
+
+#include "wayland-client-protocol.h"
+#include "wayland-xdg-shell-client-protocol.h"
+#include "wayland-xdg-decoration-client-protocol.h"
+#include "wayland-viewporter-client-protocol.h"
+#include "wayland-relative-pointer-unstable-v1-client-protocol.h"
+#include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
+#include "wayland-idle-inhibit-unstable-v1-client-protocol.h"
+
+#include "wayland-client-protocol-code.h"
+#include "wayland-xdg-shell-client-protocol-code.h"
+#include "wayland-xdg-decoration-client-protocol-code.h"
+#include "wayland-viewporter-client-protocol-code.h"
+#include "wayland-relative-pointer-unstable-v1-client-protocol-code.h"
+#include "wayland-pointer-constraints-unstable-v1-client-protocol-code.h"
+#include "wayland-idle-inhibit-unstable-v1-client-protocol-code.h"
 
 
 static inline int min(int n1, int n2)
@@ -1036,6 +1051,69 @@ int _glfwPlatformInit(void)
     char *cursorSizeEnd;
     long cursorSizeLong;
     int cursorSize;
+
+    _glfw.wl.client.handle = _glfw_dlopen("libwayland-client.so.0");
+    if (!_glfw.wl.client.handle)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to open libwayland-client");
+        return GLFW_FALSE;
+    }
+
+    _glfw.wl.client.display_flush = (PFN_wl_display_flush)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_flush");
+    _glfw.wl.client.display_cancel_read = (PFN_wl_display_cancel_read)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_cancel_read");
+    _glfw.wl.client.display_dispatch_pending = (PFN_wl_display_dispatch_pending)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_dispatch_pending");
+    _glfw.wl.client.display_read_events = (PFN_wl_display_read_events)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_read_events");
+    _glfw.wl.client.display_connect = (PFN_wl_display_connect)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_connect");
+    _glfw.wl.client.display_disconnect = (PFN_wl_display_disconnect)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_disconnect");
+    _glfw.wl.client.display_roundtrip = (PFN_wl_display_roundtrip)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_roundtrip");
+    _glfw.wl.client.display_get_fd = (PFN_wl_display_get_fd)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_get_fd");
+    _glfw.wl.client.display_prepare_read = (PFN_wl_display_prepare_read)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_prepare_read");
+    _glfw.wl.client.proxy_marshal = (PFN_wl_proxy_marshal)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_marshal");
+    _glfw.wl.client.proxy_add_listener = (PFN_wl_proxy_add_listener)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_add_listener");
+    _glfw.wl.client.proxy_destroy = (PFN_wl_proxy_destroy)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_destroy");
+    _glfw.wl.client.proxy_marshal_constructor = (PFN_wl_proxy_marshal_constructor)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_marshal_constructor");
+    _glfw.wl.client.proxy_marshal_constructor_versioned = (PFN_wl_proxy_marshal_constructor_versioned)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_marshal_constructor_versioned");
+    _glfw.wl.client.proxy_get_user_data = (PFN_wl_proxy_get_user_data)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_get_user_data");
+    _glfw.wl.client.proxy_set_user_data = (PFN_wl_proxy_set_user_data)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_set_user_data");
+
+    if (!_glfw.wl.client.display_flush ||
+        !_glfw.wl.client.display_cancel_read ||
+        !_glfw.wl.client.display_dispatch_pending ||
+        !_glfw.wl.client.display_read_events ||
+        !_glfw.wl.client.display_connect ||
+        !_glfw.wl.client.display_disconnect ||
+        !_glfw.wl.client.display_roundtrip ||
+        !_glfw.wl.client.display_get_fd ||
+        !_glfw.wl.client.display_prepare_read ||
+        !_glfw.wl.client.proxy_marshal ||
+        !_glfw.wl.client.proxy_add_listener ||
+        !_glfw.wl.client.proxy_destroy ||
+        !_glfw.wl.client.proxy_marshal_constructor ||
+        !_glfw.wl.client.proxy_marshal_constructor_versioned ||
+        !_glfw.wl.client.proxy_get_user_data ||
+        !_glfw.wl.client.proxy_set_user_data)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to load libwayland-client entry point");
+        return GLFW_FALSE;
+    }
 
     _glfw.wl.cursor.handle = _glfw_dlopen("libwayland-cursor.so.0");
     if (!_glfw.wl.cursor.handle)

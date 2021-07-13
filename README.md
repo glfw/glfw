@@ -116,6 +116,9 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - Added `GLFW_PLATFORM` init hint for runtime platform selection
+ - Added `glfwGetPlatform` function to query what platform was selected
+ - Added `glfwPlatformSupported` function to query if a platform is supported
  - Added `glfwInitAllocator` for setting a custom memory allocator (#544,#1628,#1947)
  - Added `GLFWallocator` struct and `GLFWallocatefun`, `GLFWreallocatefun` and
    `GLFWdeallocatefun` types (#544,#1628,#1947)
@@ -434,6 +437,7 @@ skills.
  - Eddie Ringle
  - Max Risuhin
  - Jorge Rodriguez
+ - Jari Ronkainen
  - Luca Rood
  - Ed Ropple
  - Aleksey Rybalkin

@@ -821,6 +821,23 @@ extern "C" {
  *  updating any existing out parameters.
  */
 #define GLFW_FEATURE_UNIMPLEMENTED  0x0001000D
+/*! @brief No matching platform was found.
+ *
+ *  If @ref GLFW_PLATFORM is set to `GLFW_ANY_PLATFORM`, GLFW could not detect any of the
+ *  platforms supported by this library binary.  If a specific platform was requested, it
+ *  is either not supported by this library binary or it was not detected.
+ *
+ *  @analysis Failure to detect any platform usually only happens on non-macOS Unix
+ *  systems, either when no window system is running or the program was run from
+ *  a terminal that does not have the necessary environment variables.  Fall back to
+ *  a different platform if possible or notify the user that no usable platform was
+ *  detected.
+ *
+ *  Failure to detect a specific platform may have the same cause as above or be because
+ *  support for that platform was not compiled in.  Call @ref glfwPlatformSupported to
+ *  check whether a specific platform is supported by a library binary.
+ */
+#define GLFW_PLATFORM_UNAVAILABLE   0x0001000E
 /*! @} */
 
 /*! @addtogroup window
@@ -1242,6 +1259,7 @@ extern "C" {
  *  ANGLE rendering backend [init hint](@ref GLFW_ANGLE_PLATFORM_TYPE_hint).
  */
 #define GLFW_ANGLE_PLATFORM_TYPE    0x00050002
+#define GLFW_PLATFORM               0x00050003
 /*! @brief macOS specific init hint.
  *
  *  macOS specific [init hint](@ref GLFW_COCOA_CHDIR_RESOURCES_hint).
@@ -1258,6 +1276,13 @@ extern "C" {
  */
 #define GLFW_X11_XCB_VULKAN_SURFACE 0x00052001
 /*! @} */
+
+#define GLFW_ANY_PLATFORM           0x00060000
+#define GLFW_PLATFORM_WIN32         0x00060001
+#define GLFW_PLATFORM_COCOA         0x00060002
+#define GLFW_PLATFORM_X11           0x00060003
+#define GLFW_PLATFORM_WAYLAND       0x00060004
+#define GLFW_PLATFORM_NULL          0x00060005
 
 #define GLFW_DONT_CARE              -1
 
@@ -2050,7 +2075,8 @@ typedef struct GLFWallocator
  *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @errors Possible errors include @ref GLFW_PLATFORM_ERROR.
+ *  @errors Possible errors include @ref GLFW_PLATFORM_UNAVAILABLE and @ref
+ *  GLFW_PLATFORM_ERROR.
  *
  *  @remark @macos This function will change the current directory of the
  *  application to the `Contents/Resources` subdirectory of the application's
@@ -2309,6 +2335,44 @@ GLFWAPI int glfwGetError(const char** description);
  *  @ingroup init
  */
 GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun callback);
+
+/*! @brief Returns the currently selected platform.
+ *
+ *  This function returns the currently selected platform.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function may be called from any thread.
+ *
+ *  @sa @ref platform
+ *  @sa @ref glfwPlatformSupported
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup init
+ */
+GLFWAPI int glfwGetPlatform(void);
+
+/*! @brief Returns whether the specified platform is supported by the library.
+ *
+ *  This function returns whether the specified platform is supported by the
+ *  library.
+ *
+ *  @param[in] platform The platform to query.
+ *
+ *  @errors Possible errors include @ref GLFW_INVALID_ENUM and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @thread_safety This function may be called from any thread.
+ *
+ *  @sa @ref platform
+ *  @sa @ref glfwGetPlatform
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup init
+ */
+GLFWAPI int glfwPlatformSupported(int platform);
 
 /*! @brief Returns the currently connected monitors.
  *

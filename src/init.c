@@ -54,6 +54,7 @@ static _GLFWinitconfig _glfwInitHints =
 {
     GLFW_TRUE,      // hat buttons
     GLFW_ANGLE_PLATFORM_TYPE_NONE, // ANGLE backend
+    GLFW_ANY_PLATFORM, // preferred platform
     {
         GLFW_TRUE,  // macOS menu bar
         GLFW_TRUE   // macOS bundle chdir
@@ -102,7 +103,7 @@ static void terminate(void)
     {
         _GLFWmonitor* monitor = _glfw.monitors[i];
         if (monitor->originalRamp.size)
-            _glfwPlatformSetGammaRamp(monitor, &monitor->originalRamp);
+            _glfw.platform.setGammaRamp(monitor, &monitor->originalRamp);
         _glfwFreeMonitor(monitor);
     }
 
@@ -115,8 +116,8 @@ static void terminate(void)
     _glfw.mappingCount = 0;
 
     _glfwTerminateVulkan();
-    _glfwPlatformTerminateJoysticks();
-    _glfwPlatformTerminate();
+    _glfw.platform.terminateJoysticks();
+    _glfw.platform.terminate();
 
     _glfw.initialized = GLFW_FALSE;
 
@@ -274,6 +275,8 @@ void _glfwInputError(int code, const char* format, ...)
             strcpy(description, "The requested feature cannot be implemented for this platform");
         else if (code == GLFW_FEATURE_UNIMPLEMENTED)
             strcpy(description, "The requested feature has not yet been implemented for this platform");
+        else if (code == GLFW_PLATFORM_UNAVAILABLE)
+            strcpy(description, "The requested platform is unavailable");
         else
             strcpy(description, "ERROR: UNKNOWN GLFW ERROR");
     }
@@ -322,7 +325,10 @@ GLFWAPI int glfwInit(void)
         _glfw.allocator.deallocate = defaultDeallocate;
     }
 
-    if (!_glfwPlatformInit())
+    if (!_glfwSelectPlatform(_glfw.hints.init.platformID, &_glfw.platform))
+        return GLFW_FALSE;
+
+    if (!_glfw.platform.init())
     {
         terminate();
         return GLFW_FALSE;
@@ -367,6 +373,9 @@ GLFWAPI void glfwInitHint(int hint, int value)
         case GLFW_ANGLE_PLATFORM_TYPE:
             _glfwInitHints.angleType = value;
             return;
+        case GLFW_PLATFORM:
+            _glfwInitHints.platformID = value;
+            return;
         case GLFW_COCOA_CHDIR_RESOURCES:
             _glfwInitHints.ns.chdir = value;
             return;
@@ -403,11 +412,6 @@ GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)
         *minor = GLFW_VERSION_MINOR;
     if (rev != NULL)
         *rev = GLFW_VERSION_REVISION;
-}
-
-GLFWAPI const char* glfwGetVersionString(void)
-{
-    return _glfwPlatformGetVersionString();
 }
 
 GLFWAPI int glfwGetError(const char** description)

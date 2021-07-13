@@ -27,7 +27,7 @@
 
 #include <windows.h>
 
-#define _GLFW_PLATFORM_LIBRARY_TIMER_STATE  _GLFWtimerWin32   win32
+#define GLFW_WIN32_LIBRARY_TIMER_STATE  _GLFWtimerWin32   win32;
 
 // Win32-specific global timer data
 //

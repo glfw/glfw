@@ -1007,7 +1007,7 @@ static Cursor createHiddenCursor(void)
 {
     unsigned char pixels[16 * 16 * 4] = { 0 };
     GLFWimage image = { 16, 16, pixels };
-    return _glfwCreateCursorX11(&image, 0, 0);
+    return _glfwCreateNativeCursorX11(&image, 0, 0);
 }
 
 // Create a helper window for IPC
@@ -1070,7 +1070,7 @@ void _glfwInputErrorX11(int error, const char* message)
 
 // Creates a native cursor object from the specified image and hotspot
 //
-Cursor _glfwCreateCursorX11(const GLFWimage* image, int xhot, int yhot)
+Cursor _glfwCreateNativeCursorX11(const GLFWimage* image, int xhot, int yhot)
 {
     int i;
     Cursor cursor;
@@ -1109,7 +1109,108 @@ Cursor _glfwCreateCursorX11(const GLFWimage* image, int xhot, int yhot)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwPlatformInit(void)
+GLFWbool _glfwDetectX11(int platformID, _GLFWplatform* platform)
+{
+    const _GLFWplatform x11 =
+    {
+        GLFW_PLATFORM_X11,
+        _glfwInitX11,
+        _glfwTerminateX11,
+        _glfwGetCursorPosX11,
+        _glfwSetCursorPosX11,
+        _glfwSetCursorModeX11,
+        _glfwSetRawMouseMotionX11,
+        _glfwRawMouseMotionSupportedX11,
+        _glfwCreateCursorX11,
+        _glfwCreateStandardCursorX11,
+        _glfwDestroyCursorX11,
+        _glfwSetCursorX11,
+        _glfwGetScancodeNameX11,
+        _glfwGetKeyScancodeX11,
+        _glfwSetClipboardStringX11,
+        _glfwGetClipboardStringX11,
+#if defined(__linux__)
+        _glfwInitJoysticksLinux,
+        _glfwTerminateJoysticksLinux,
+        _glfwPollJoystickLinux,
+        _glfwGetMappingNameLinux,
+        _glfwUpdateGamepadGUIDLinux,
+#else
+        _glfwInitJoysticksNull,
+        _glfwTerminateJoysticksNull,
+        _glfwPollJoystickNull,
+        _glfwGetMappingNameNull,
+        _glfwUpdateGamepadGUIDNull,
+#endif
+        _glfwFreeMonitorX11,
+        _glfwGetMonitorPosX11,
+        _glfwGetMonitorContentScaleX11,
+        _glfwGetMonitorWorkareaX11,
+        _glfwGetVideoModesX11,
+        _glfwGetVideoModeX11,
+        _glfwGetGammaRampX11,
+        _glfwSetGammaRampX11,
+        _glfwCreateWindowX11,
+        _glfwDestroyWindowX11,
+        _glfwSetWindowTitleX11,
+        _glfwSetWindowIconX11,
+        _glfwGetWindowPosX11,
+        _glfwSetWindowPosX11,
+        _glfwGetWindowSizeX11,
+        _glfwSetWindowSizeX11,
+        _glfwSetWindowSizeLimitsX11,
+        _glfwSetWindowAspectRatioX11,
+        _glfwGetFramebufferSizeX11,
+        _glfwGetWindowFrameSizeX11,
+        _glfwGetWindowContentScaleX11,
+        _glfwIconifyWindowX11,
+        _glfwRestoreWindowX11,
+        _glfwMaximizeWindowX11,
+        _glfwShowWindowX11,
+        _glfwHideWindowX11,
+        _glfwRequestWindowAttentionX11,
+        _glfwFocusWindowX11,
+        _glfwSetWindowMonitorX11,
+        _glfwWindowFocusedX11,
+        _glfwWindowIconifiedX11,
+        _glfwWindowVisibleX11,
+        _glfwWindowMaximizedX11,
+        _glfwWindowHoveredX11,
+        _glfwFramebufferTransparentX11,
+        _glfwGetWindowOpacityX11,
+        _glfwSetWindowResizableX11,
+        _glfwSetWindowDecoratedX11,
+        _glfwSetWindowFloatingX11,
+        _glfwSetWindowOpacityX11,
+        _glfwSetWindowMousePassthroughX11,
+        _glfwPollEventsX11,
+        _glfwWaitEventsX11,
+        _glfwWaitEventsTimeoutX11,
+        _glfwPostEmptyEventX11,
+        _glfwGetEGLPlatformX11,
+        _glfwGetEGLNativeDisplayX11,
+        _glfwGetEGLNativeWindowX11,
+        _glfwGetRequiredInstanceExtensionsX11,
+        _glfwGetPhysicalDevicePresentationSupportX11,
+        _glfwCreateWindowSurfaceX11,
+    };
+
+    if (!getenv("DISPLAY"))
+    {
+        if (platformID == GLFW_PLATFORM_X11)
+        {
+            _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
+                            "X11: The DISPLAY environment variable is missing");
+        }
+
+        return GLFW_FALSE;
+    }
+
+    *platform = x11;
+    return GLFW_TRUE;
+}
+
+int _glfwInitX11(void)
 {
     // HACK: If the application has left the locale as "C" then both wide
     //       character text input and explicit UTF-8 input via XIM will break
@@ -1346,12 +1447,12 @@ int _glfwPlatformInit(void)
         const char* display = getenv("DISPLAY");
         if (display)
         {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
+            _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
                             "X11: Failed to open display %s", display);
         }
         else
         {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
+            _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
                             "X11: The DISPLAY environment variable is missing");
         }
 
@@ -1385,7 +1486,7 @@ int _glfwPlatformInit(void)
     return GLFW_TRUE;
 }
 
-void _glfwPlatformTerminate(void)
+void _glfwTerminateX11(void)
 {
     if (_glfw.x11.helperWindowHandle)
     {
@@ -1477,20 +1578,5 @@ void _glfwPlatformTerminate(void)
         _glfwPlatformFreeModule(_glfw.x11.xlib.handle);
         _glfw.x11.xlib.handle = NULL;
     }
-}
-
-const char* _glfwPlatformGetVersionString(void)
-{
-    return _GLFW_VERSION_NUMBER " X11 GLX EGL OSMesa"
-#if defined(_POSIX_MONOTONIC_CLOCK)
-        " monotonic"
-#endif
-#if defined(__linux__)
-        " evdev"
-#endif
-#if defined(_GLFW_BUILD_DLL)
-        " shared"
-#endif
-        ;
 }
 

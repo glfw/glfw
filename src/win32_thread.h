@@ -27,8 +27,8 @@
 
 #include <windows.h>
 
-#define _GLFW_PLATFORM_TLS_STATE            _GLFWtlsWin32     win32
-#define _GLFW_PLATFORM_MUTEX_STATE          _GLFWmutexWin32   win32
+#define GLFW_WIN32_TLS_STATE            _GLFWtlsWin32     win32;
+#define GLFW_WIN32_MUTEX_STATE          _GLFWmutexWin32   win32;
 
 // Win32-specific thread local storage data
 //

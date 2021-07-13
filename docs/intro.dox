@@ -30,6 +30,7 @@ successfully initialized, and only from the main thread.
 
  - @ref glfwGetVersion
  - @ref glfwGetVersionString
+ - @ref glfwPlatformSupported
  - @ref glfwGetError
  - @ref glfwSetErrorCallback
  - @ref glfwInitHint
@@ -89,6 +90,15 @@ Setting these hints requires no platform specific headers or functions.
 
 @subsubsection init_hints_shared Shared init hints
 
+@anchor GLFW_PLATFORM
+__GLFW_PLATFORM__ specifies the platform to use for windowing and input.
+Possible values are `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`,
+`GLFW_PLATFORM_COCOA`, `GLFW_PLATFORM_X11`, `GLFW_PLATFORM_WAYLAND` and
+`GLFW_PLATFORM_NULL`.  The default value is `GLFW_ANY_PLATFORM`, which will
+choose any platform the library includes support for except for the null
+backend.
+
+
 @anchor GLFW_JOYSTICK_HAT_BUTTONS
 __GLFW_JOYSTICK_HAT_BUTTONS__ specifies whether to also expose joystick hats as
 buttons, for compatibility with earlier versions of GLFW that did not have @ref
@@ -137,6 +147,7 @@ the `VK_KHR_xlib_surface` extension.  Possible values are `GLFW_TRUE` and
 
 Initialization hint              | Default value                   | Supported values
 -------------------------------- | ------------------------------- | ----------------
+@ref GLFW_PLATFORM               | `GLFW_ANY_PLATFORM`             | `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`, `GLFW_PLATFORM_X11`, `GLFW_PLATFORM_WAYLAND` or `GLFW_PLATFORM_NULL`
 @ref GLFW_JOYSTICK_HAT_BUTTONS   | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_ANGLE_PLATFORM_TYPE    | `GLFW_ANGLE_PLATFORM_TYPE_NONE` | `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGLES`, `GLFW_ANGLE_PLATFORM_TYPE_D3D9`, `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` or `GLFW_ANGLE_PLATFORM_TYPE_METAL`
 @ref GLFW_COCOA_CHDIR_RESOURCES  | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`

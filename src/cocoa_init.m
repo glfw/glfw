@@ -444,7 +444,7 @@ static GLFWbool initializeTIS(void)
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
-    _glfwPlatformPostEmptyEvent();
+    _glfwPostEmptyEventCocoa();
     [NSApp stop:nil];
 }
 
@@ -489,7 +489,89 @@ void* _glfwLoadLocalVulkanLoaderCocoa(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwPlatformInit(void)
+GLFWbool _glfwDetectCocoa(int platformID, _GLFWplatform* platform)
+{
+    const _GLFWplatform cocoa =
+    {
+        GLFW_PLATFORM_COCOA,
+        _glfwInitCocoa,
+        _glfwTerminateCocoa,
+        _glfwGetCursorPosCocoa,
+        _glfwSetCursorPosCocoa,
+        _glfwSetCursorModeCocoa,
+        _glfwSetRawMouseMotionCocoa,
+        _glfwRawMouseMotionSupportedCocoa,
+        _glfwCreateCursorCocoa,
+        _glfwCreateStandardCursorCocoa,
+        _glfwDestroyCursorCocoa,
+        _glfwSetCursorCocoa,
+        _glfwGetScancodeNameCocoa,
+        _glfwGetKeyScancodeCocoa,
+        _glfwSetClipboardStringCocoa,
+        _glfwGetClipboardStringCocoa,
+        _glfwInitJoysticksCocoa,
+        _glfwTerminateJoysticksCocoa,
+        _glfwPollJoystickCocoa,
+        _glfwGetMappingNameCocoa,
+        _glfwUpdateGamepadGUIDCocoa,
+        _glfwFreeMonitorCocoa,
+        _glfwGetMonitorPosCocoa,
+        _glfwGetMonitorContentScaleCocoa,
+        _glfwGetMonitorWorkareaCocoa,
+        _glfwGetVideoModesCocoa,
+        _glfwGetVideoModeCocoa,
+        _glfwGetGammaRampCocoa,
+        _glfwSetGammaRampCocoa,
+        _glfwCreateWindowCocoa,
+        _glfwDestroyWindowCocoa,
+        _glfwSetWindowTitleCocoa,
+        _glfwSetWindowIconCocoa,
+        _glfwGetWindowPosCocoa,
+        _glfwSetWindowPosCocoa,
+        _glfwGetWindowSizeCocoa,
+        _glfwSetWindowSizeCocoa,
+        _glfwSetWindowSizeLimitsCocoa,
+        _glfwSetWindowAspectRatioCocoa,
+        _glfwGetFramebufferSizeCocoa,
+        _glfwGetWindowFrameSizeCocoa,
+        _glfwGetWindowContentScaleCocoa,
+        _glfwIconifyWindowCocoa,
+        _glfwRestoreWindowCocoa,
+        _glfwMaximizeWindowCocoa,
+        _glfwShowWindowCocoa,
+        _glfwHideWindowCocoa,
+        _glfwRequestWindowAttentionCocoa,
+        _glfwFocusWindowCocoa,
+        _glfwSetWindowMonitorCocoa,
+        _glfwWindowFocusedCocoa,
+        _glfwWindowIconifiedCocoa,
+        _glfwWindowVisibleCocoa,
+        _glfwWindowMaximizedCocoa,
+        _glfwWindowHoveredCocoa,
+        _glfwFramebufferTransparentCocoa,
+        _glfwGetWindowOpacityCocoa,
+        _glfwSetWindowResizableCocoa,
+        _glfwSetWindowDecoratedCocoa,
+        _glfwSetWindowFloatingCocoa,
+        _glfwSetWindowOpacityCocoa,
+        _glfwSetWindowMousePassthroughCocoa,
+        _glfwPollEventsCocoa,
+        _glfwWaitEventsCocoa,
+        _glfwWaitEventsTimeoutCocoa,
+        _glfwPostEmptyEventCocoa,
+        _glfwGetEGLPlatformCocoa,
+        _glfwGetEGLNativeDisplayCocoa,
+        _glfwGetEGLNativeWindowCocoa,
+        _glfwGetRequiredInstanceExtensionsCocoa,
+        _glfwGetPhysicalDevicePresentationSupportCocoa,
+        _glfwCreateWindowSurfaceCocoa,
+    };
+
+    *platform = cocoa;
+    return GLFW_TRUE;
+}
+
+int _glfwInitCocoa(void)
 {
     @autoreleasepool {
 
@@ -561,7 +643,7 @@ int _glfwPlatformInit(void)
     } // autoreleasepool
 }
 
-void _glfwPlatformTerminate(void)
+void _glfwTerminateCocoa(void)
 {
     @autoreleasepool {
 
@@ -605,14 +687,5 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateNSGL();
 
     } // autoreleasepool
-}
-
-const char* _glfwPlatformGetVersionString(void)
-{
-    return _GLFW_VERSION_NUMBER " Cocoa NSGL EGL OSMesa"
-#if defined(_GLFW_BUILD_DLL)
-        " dynamic"
-#endif
-        ;
 }
 

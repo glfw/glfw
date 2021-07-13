@@ -25,7 +25,7 @@
 //
 //========================================================================
 
-#define _GLFW_PLATFORM_LIBRARY_TIMER_STATE _GLFWtimerPOSIX posix
+#define GLFW_POSIX_LIBRARY_TIMER_STATE _GLFWtimerPOSIX posix;
 
 #include <stdint.h>
 #include <time.h>

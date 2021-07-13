@@ -352,21 +352,17 @@ typedef struct VkWin32SurfaceCreateInfoKHR
 typedef VkResult (APIENTRY *PFN_vkCreateWin32SurfaceKHR)(VkInstance,const VkWin32SurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(VkPhysicalDevice,uint32_t);
 
-#include "win32_time.h"
-#include "win32_thread.h"
-#include "win32_joystick.h"
-
 #if !defined(_GLFW_WNDCLASSNAME)
  #define _GLFW_WNDCLASSNAME L"GLFW30"
 #endif
 
-#define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWin32  win32
-#define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 win32
-#define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWin32 win32
-#define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorWin32  win32
+#define GLFW_WIN32_WINDOW_STATE         _GLFWwindowWin32  win32;
+#define GLFW_WIN32_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 win32;
+#define GLFW_WIN32_MONITOR_STATE        _GLFWmonitorWin32 win32;
+#define GLFW_WIN32_CURSOR_STATE         _GLFWcursorWin32  win32;
 
-#define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextWGL wgl
-#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryWGL wgl
+#define GLFW_WGL_CONTEXT_STATE          _GLFWcontextWGL wgl;
+#define GLFW_WGL_LIBRARY_CONTEXT_STATE  _GLFWlibraryWGL wgl;
 
 
 // WGL-specific per-context data
@@ -519,6 +515,10 @@ typedef struct _GLFWcursorWin32
 } _GLFWcursorWin32;
 
 
+GLFWbool _glfwDetectWin32(int platformID, _GLFWplatform* platform);
+int _glfwInitWin32(void);
+void _glfwTerminateWin32(void);
+
 GLFWbool _glfwRegisterWindowClassWin32(void);
 void _glfwUnregisterWindowClassWin32(void);
 
@@ -532,7 +532,84 @@ void _glfwUpdateKeyNamesWin32(void);
 void _glfwPollMonitorsWin32(void);
 void _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoModeWin32(_GLFWmonitor* monitor);
-void _glfwGetMonitorContentScaleWin32(HMONITOR handle, float* xscale, float* yscale);
+void _glfwGetHMONITORContentScaleWin32(HMONITOR handle, float* xscale, float* yscale);
+
+int _glfwCreateWindowWin32(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
+void _glfwDestroyWindowWin32(_GLFWwindow* window);
+void _glfwSetWindowTitleWin32(_GLFWwindow* window, const char* title);
+void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* images);
+void _glfwGetWindowPosWin32(_GLFWwindow* window, int* xpos, int* ypos);
+void _glfwSetWindowPosWin32(_GLFWwindow* window, int xpos, int ypos);
+void _glfwGetWindowSizeWin32(_GLFWwindow* window, int* width, int* height);
+void _glfwSetWindowSizeWin32(_GLFWwindow* window, int width, int height);
+void _glfwSetWindowSizeLimitsWin32(_GLFWwindow* window, int minwidth, int minheight, int maxwidth, int maxheight);
+void _glfwSetWindowAspectRatioWin32(_GLFWwindow* window, int numer, int denom);
+void _glfwGetFramebufferSizeWin32(_GLFWwindow* window, int* width, int* height);
+void _glfwGetWindowFrameSizeWin32(_GLFWwindow* window, int* left, int* top, int* right, int* bottom);
+void _glfwGetWindowContentScaleWin32(_GLFWwindow* window, float* xscale, float* yscale);
+void _glfwIconifyWindowWin32(_GLFWwindow* window);
+void _glfwRestoreWindowWin32(_GLFWwindow* window);
+void _glfwMaximizeWindowWin32(_GLFWwindow* window);
+void _glfwShowWindowWin32(_GLFWwindow* window);
+void _glfwHideWindowWin32(_GLFWwindow* window);
+void _glfwRequestWindowAttentionWin32(_GLFWwindow* window);
+void _glfwFocusWindowWin32(_GLFWwindow* window);
+void _glfwSetWindowMonitorWin32(_GLFWwindow* window, _GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);
+int _glfwWindowFocusedWin32(_GLFWwindow* window);
+int _glfwWindowIconifiedWin32(_GLFWwindow* window);
+int _glfwWindowVisibleWin32(_GLFWwindow* window);
+int _glfwWindowMaximizedWin32(_GLFWwindow* window);
+int _glfwWindowHoveredWin32(_GLFWwindow* window);
+int _glfwFramebufferTransparentWin32(_GLFWwindow* window);
+void _glfwSetWindowResizableWin32(_GLFWwindow* window, GLFWbool enabled);
+void _glfwSetWindowDecoratedWin32(_GLFWwindow* window, GLFWbool enabled);
+void _glfwSetWindowFloatingWin32(_GLFWwindow* window, GLFWbool enabled);
+void _glfwSetWindowMousePassthroughWin32(_GLFWwindow* window, GLFWbool enabled);
+float _glfwGetWindowOpacityWin32(_GLFWwindow* window);
+void _glfwSetWindowOpacityWin32(_GLFWwindow* window, float opacity);
+
+void _glfwSetRawMouseMotionWin32(_GLFWwindow *window, GLFWbool enabled);
+GLFWbool _glfwRawMouseMotionSupportedWin32(void);
+
+void _glfwPollEventsWin32(void);
+void _glfwWaitEventsWin32(void);
+void _glfwWaitEventsTimeoutWin32(double timeout);
+void _glfwPostEmptyEventWin32(void);
+
+void _glfwGetCursorPosWin32(_GLFWwindow* window, double* xpos, double* ypos);
+void _glfwSetCursorPosWin32(_GLFWwindow* window, double xpos, double ypos);
+void _glfwSetCursorModeWin32(_GLFWwindow* window, int mode);
+const char* _glfwGetScancodeNameWin32(int scancode);
+int _glfwGetKeyScancodeWin32(int key);
+int _glfwCreateCursorWin32(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot);
+int _glfwCreateStandardCursorWin32(_GLFWcursor* cursor, int shape);
+void _glfwDestroyCursorWin32(_GLFWcursor* cursor);
+void _glfwSetCursorWin32(_GLFWwindow* window, _GLFWcursor* cursor);
+void _glfwSetClipboardStringWin32(const char* string);
+const char* _glfwGetClipboardStringWin32(void);
+
+EGLenum _glfwGetEGLPlatformWin32(EGLint** attribs);
+EGLNativeDisplayType _glfwGetEGLNativeDisplayWin32(void);
+EGLNativeWindowType _glfwGetEGLNativeWindowWin32(_GLFWwindow* window);
+
+void _glfwGetRequiredInstanceExtensionsWin32(char** extensions);
+int _glfwGetPhysicalDevicePresentationSupportWin32(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
+VkResult _glfwCreateWindowSurfaceWin32(VkInstance instance, _GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
+
+void _glfwFreeMonitorWin32(_GLFWmonitor* monitor);
+void _glfwGetMonitorPosWin32(_GLFWmonitor* monitor, int* xpos, int* ypos);
+void _glfwGetMonitorContentScaleWin32(_GLFWmonitor* monitor, float* xscale, float* yscale);
+void _glfwGetMonitorWorkareaWin32(_GLFWmonitor* monitor, int* xpos, int* ypos, int* width, int* height);
+GLFWvidmode* _glfwGetVideoModesWin32(_GLFWmonitor* monitor, int* count);
+void _glfwGetVideoModeWin32(_GLFWmonitor* monitor, GLFWvidmode* mode);
+GLFWbool _glfwGetGammaRampWin32(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
+void _glfwSetGammaRampWin32(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
+
+GLFWbool _glfwInitJoysticksWin32(void);
+void _glfwTerminateJoysticksWin32(void);
+int _glfwPollJoystickWin32(_GLFWjoystick* js, int mode);
+const char* _glfwGetMappingNameWin32(void);
+void _glfwUpdateGamepadGUIDWin32(char* guid);
 
 GLFWbool _glfwInitWGL(void);
 void _glfwTerminateWGL(void);

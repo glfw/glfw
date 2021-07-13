@@ -34,10 +34,10 @@
 
 // Return the value corresponding to the specified attribute
 //
-static int findPixelFormatAttribValue(const int* attribs,
-                                      int attribCount,
-                                      const int* values,
-                                      int attrib)
+static int findPixelFormatAttribValueWGL(const int* attribs,
+                                         int attribCount,
+                                         const int* values,
+                                         int attrib)
 {
     int i;
 
@@ -58,13 +58,13 @@ static int findPixelFormatAttribValue(const int* attribs,
     attribs[attribCount++] = a; \
 }
 #define findAttribValue(a) \
-    findPixelFormatAttribValue(attribs, attribCount, values, a)
+    findPixelFormatAttribValueWGL(attribs, attribCount, values, a)
 
 // Return a list of available and usable framebuffer configs
 //
-static int choosePixelFormat(_GLFWwindow* window,
-                             const _GLFWctxconfig* ctxconfig,
-                             const _GLFWfbconfig* fbconfig)
+static int choosePixelFormatWGL(_GLFWwindow* window,
+                                const _GLFWctxconfig* ctxconfig,
+                                const _GLFWfbconfig* fbconfig)
 {
     _GLFWfbconfig* usableConfigs;
     const _GLFWfbconfig* closest;
@@ -399,11 +399,6 @@ static void destroyContextWGL(_GLFWwindow* window)
     }
 }
 
-
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
-
 // Initialize WGL
 //
 GLFWbool _glfwInitWGL(void)
@@ -561,7 +556,7 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    pixelFormat = choosePixelFormat(window, ctxconfig, fbconfig);
+    pixelFormat = choosePixelFormatWGL(window, ctxconfig, fbconfig);
     if (!pixelFormat)
         return GLFW_FALSE;
 
@@ -776,15 +771,17 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
 
 #undef setAttrib
 
-
-//////////////////////////////////////////////////////////////////////////
-//////                        GLFW native API                       //////
-//////////////////////////////////////////////////////////////////////////
-
 GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+    if (_glfw.platform.platformID != GLFW_PLATFORM_WIN32)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
+                        "WGL: Platform not initialized");
+        return NULL;
+    }
 
     if (window->context.client == GLFW_NO_API)
     {

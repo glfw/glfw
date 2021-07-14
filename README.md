@@ -369,6 +369,7 @@ skills.
  - Adam Marcus
  - Célestin Marot
  - Kyle McDonald
+ - David V. McKay
  - David Medlock
  - Bryce Mehring
  - Jonathan Mercier

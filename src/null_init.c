@@ -48,10 +48,11 @@ void _glfwPlatformTerminate(void)
 {
     _glfw_free(_glfw.null.clipboardString);
     _glfwTerminateOSMesa();
+    _glfwTerminateEGL();
 }
 
 const char* _glfwPlatformGetVersionString(void)
 {
-    return _GLFW_VERSION_NUMBER " null OSMesa";
+    return _GLFW_VERSION_NUMBER " null OSMesa EGL";
 }
 

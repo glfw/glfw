@@ -234,8 +234,9 @@ static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
             }
             else
             {
-                length = strlen(_GLFW_PLATFORM_MAPPING_NAME);
-                if (strncmp(c, _GLFW_PLATFORM_MAPPING_NAME, length) != 0)
+                const char* name = _glfwPlatformGetMappingName();
+                length = strlen(name);
+                if (strncmp(c, name, length) != 0)
                     return GLFW_FALSE;
             }
 

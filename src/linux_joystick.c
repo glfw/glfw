@@ -422,6 +422,11 @@ int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
     return js->present;
 }
 
+const char* _glfwPlatformGetMappingName(void)
+{
+    return "Linux";
+}
+
 void _glfwPlatformUpdateGamepadGUID(char* guid)
 {
 }

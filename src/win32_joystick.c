@@ -740,6 +740,11 @@ int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
     return GLFW_TRUE;
 }
 
+const char* _glfwPlatformGetMappingName(void)
+{
+    return "Windows";
+}
+
 void _glfwPlatformUpdateGamepadGUID(char* guid)
 {
     if (strcmp(guid + 20, "504944564944") == 0)

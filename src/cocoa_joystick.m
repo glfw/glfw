@@ -469,6 +469,11 @@ int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
     return js->present;
 }
 
+const char* _glfwPlatformGetMappingName(void)
+{
+    return "Mac OS X";
+}
+
 void _glfwPlatformUpdateGamepadGUID(char* guid)
 {
     if ((strncmp(guid + 4, "000000000000", 12) == 0) &&

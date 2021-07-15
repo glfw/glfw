@@ -32,7 +32,6 @@
 #define _GLFW_PLATFORM_JOYSTICK_STATE         _GLFWjoystickNS ns
 #define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE struct { int dummyJoystick; }
 
-#define _GLFW_PLATFORM_MAPPING_NAME "Mac OS X"
 #define GLFW_BUILD_COCOA_MAPPINGS
 
 // Cocoa-specific per-joystick data

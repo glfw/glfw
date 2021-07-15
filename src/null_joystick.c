@@ -47,6 +47,11 @@ int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
     return GLFW_FALSE;
 }
 
+const char* _glfwPlatformGetMappingName(void)
+{
+    return "";
+}
+
 void _glfwPlatformUpdateGamepadGUID(char* guid)
 {
 }

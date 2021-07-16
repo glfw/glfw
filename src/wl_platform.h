@@ -29,7 +29,6 @@
 #ifdef HAVE_XKBCOMMON_COMPOSE_H
 #include <xkbcommon/xkbcommon-compose.h>
 #endif
-#include <dlfcn.h>
 
 typedef VkFlags VkWaylandSurfaceCreateFlagsKHR;
 
@@ -132,10 +131,6 @@ struct wl_shm;
 #define xdg_surface_interface _glfw_xdg_surface_interface
 #define xdg_toplevel_interface _glfw_xdg_toplevel_interface
 #define xdg_wm_base_interface _glfw_xdg_wm_base_interface
-
-#define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
-#define _glfw_dlclose(handle) dlclose(handle)
-#define _glfw_dlsym(handle, name) dlsym(handle, name)
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWayland  wl
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWayland wl

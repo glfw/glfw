@@ -52,6 +52,12 @@ elseif (_GLFW_OSMESA)
                                 osmesa_context.c)
 endif()
 
+if (WIN32)
+    target_sources(glfw PRIVATE win32_module.c)
+else()
+    target_sources(glfw PRIVATE posix_module.c)
+endif()
+
 if (_GLFW_X11 OR _GLFW_WAYLAND)
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         target_sources(glfw PRIVATE linux_joystick.h linux_joystick.c)
@@ -250,7 +256,7 @@ endif()
 if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
     set_source_files_properties(context.c init.c input.c monitor.c vulkan.c
                                 window.c win32_init.c win32_joystick.c
-                                win32_monitor.c win32_time.c win32_thread.c
+                                win32_module.c win32_monitor.c win32_time.c win32_thread.c
                                 win32_window.c wgl_context.c egl_context.c
                                 osmesa_context.c PROPERTIES
                                 COMPILE_FLAGS -Wdeclaration-after-statement)

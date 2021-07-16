@@ -52,15 +52,15 @@ GLFWbool _glfwInitVulkan(int mode)
 
 #if !defined(_GLFW_VULKAN_STATIC)
 #if defined(_GLFW_VULKAN_LIBRARY)
-    _glfw.vk.handle = _glfw_dlopen(_GLFW_VULKAN_LIBRARY);
+    _glfw.vk.handle = _glfwPlatformLoadModule(_GLFW_VULKAN_LIBRARY);
 #elif defined(_GLFW_WIN32)
-    _glfw.vk.handle = _glfw_dlopen("vulkan-1.dll");
+    _glfw.vk.handle = _glfwPlatformLoadModule("vulkan-1.dll");
 #elif defined(_GLFW_COCOA)
-    _glfw.vk.handle = _glfw_dlopen("libvulkan.1.dylib");
+    _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.1.dylib");
     if (!_glfw.vk.handle)
         _glfw.vk.handle = _glfwLoadLocalVulkanLoaderNS();
 #else
-    _glfw.vk.handle = _glfw_dlopen("libvulkan.so.1");
+    _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.so.1");
 #endif
     if (!_glfw.vk.handle)
     {
@@ -71,7 +71,7 @@ GLFWbool _glfwInitVulkan(int mode)
     }
 
     _glfw.vk.GetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)
-        _glfw_dlsym(_glfw.vk.handle, "vkGetInstanceProcAddr");
+        _glfwPlatformGetModuleSymbol(_glfw.vk.handle, "vkGetInstanceProcAddr");
     if (!_glfw.vk.GetInstanceProcAddr)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
@@ -158,7 +158,7 @@ void _glfwTerminateVulkan(void)
 {
 #if !defined(_GLFW_VULKAN_STATIC)
     if (_glfw.vk.handle)
-        _glfw_dlclose(_glfw.vk.handle);
+        _glfwPlatformFreeModule(_glfw.vk.handle);
 #endif
 }
 
@@ -266,7 +266,7 @@ GLFWAPI GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance,
     }
 #else
     if (!proc)
-        proc = (GLFWvkproc) _glfw_dlsym(_glfw.vk.handle, procname);
+        proc = (GLFWvkproc) _glfwPlatformGetModuleSymbol(_glfw.vk.handle, procname);
 #endif
 
     return proc;

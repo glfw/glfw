@@ -28,7 +28,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdint.h>
-#include <dlfcn.h>
 
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
@@ -383,10 +382,6 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)(Vk
 #else
 #include "null_joystick.h"
 #endif
-
-#define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
-#define _glfw_dlclose(handle) dlclose(handle)
-#define _glfw_dlsym(handle, name) dlsym(handle, name)
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowX11  x11
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryX11 x11

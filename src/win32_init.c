@@ -576,8 +576,6 @@ int _glfwPlatformInit(void)
     if (!createHelperWindow())
         return GLFW_FALSE;
 
-    _glfwInitTimerWin32();
-
     _glfwPollMonitorsWin32();
     return GLFW_TRUE;
 }

@@ -547,8 +547,6 @@ int _glfwPlatformInit(void)
     if (!initializeTIS())
         return GLFW_FALSE;
 
-    _glfwInitTimerNS();
-
     _glfwPollMonitorsNS();
 
     if (![[NSRunningApplication currentApplication] isFinishedLaunching])

@@ -1053,7 +1053,7 @@ int _glfwPlatformInit(void)
     long cursorSizeLong;
     int cursorSize;
 
-    _glfw.wl.client.handle = _glfw_dlopen("libwayland-client.so.0");
+    _glfw.wl.client.handle = _glfwPlatformLoadModule("libwayland-client.so.0");
     if (!_glfw.wl.client.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -1062,41 +1062,41 @@ int _glfwPlatformInit(void)
     }
 
     _glfw.wl.client.display_flush = (PFN_wl_display_flush)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_flush");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_flush");
     _glfw.wl.client.display_cancel_read = (PFN_wl_display_cancel_read)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_cancel_read");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_cancel_read");
     _glfw.wl.client.display_dispatch_pending = (PFN_wl_display_dispatch_pending)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_dispatch_pending");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_dispatch_pending");
     _glfw.wl.client.display_read_events = (PFN_wl_display_read_events)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_read_events");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_read_events");
     _glfw.wl.client.display_connect = (PFN_wl_display_connect)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_connect");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_connect");
     _glfw.wl.client.display_disconnect = (PFN_wl_display_disconnect)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_disconnect");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_disconnect");
     _glfw.wl.client.display_roundtrip = (PFN_wl_display_roundtrip)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_roundtrip");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_roundtrip");
     _glfw.wl.client.display_get_fd = (PFN_wl_display_get_fd)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_get_fd");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_get_fd");
     _glfw.wl.client.display_prepare_read = (PFN_wl_display_prepare_read)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_display_prepare_read");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_prepare_read");
     _glfw.wl.client.proxy_marshal = (PFN_wl_proxy_marshal)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_marshal");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_proxy_marshal");
     _glfw.wl.client.proxy_add_listener = (PFN_wl_proxy_add_listener)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_add_listener");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_proxy_add_listener");
     _glfw.wl.client.proxy_destroy = (PFN_wl_proxy_destroy)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_destroy");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_proxy_destroy");
     _glfw.wl.client.proxy_marshal_constructor = (PFN_wl_proxy_marshal_constructor)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_marshal_constructor");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_proxy_marshal_constructor");
     _glfw.wl.client.proxy_marshal_constructor_versioned = (PFN_wl_proxy_marshal_constructor_versioned)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_marshal_constructor_versioned");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_proxy_marshal_constructor_versioned");
     _glfw.wl.client.proxy_get_user_data = (PFN_wl_proxy_get_user_data)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_get_user_data");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_proxy_get_user_data");
     _glfw.wl.client.proxy_set_user_data = (PFN_wl_proxy_set_user_data)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_set_user_data");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_proxy_set_user_data");
     _glfw.wl.client.proxy_get_version = (PFN_wl_proxy_get_version)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_get_version");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_proxy_get_version");
     _glfw.wl.client.proxy_marshal_flags = (PFN_wl_proxy_marshal_flags)
-        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_marshal_flags");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_proxy_marshal_flags");
 
     if (!_glfw.wl.client.display_flush ||
         !_glfw.wl.client.display_cancel_read ||
@@ -1120,7 +1120,7 @@ int _glfwPlatformInit(void)
         return GLFW_FALSE;
     }
 
-    _glfw.wl.cursor.handle = _glfw_dlopen("libwayland-cursor.so.0");
+    _glfw.wl.cursor.handle = _glfwPlatformLoadModule("libwayland-cursor.so.0");
     if (!_glfw.wl.cursor.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -1129,15 +1129,15 @@ int _glfwPlatformInit(void)
     }
 
     _glfw.wl.cursor.theme_load = (PFN_wl_cursor_theme_load)
-        _glfw_dlsym(_glfw.wl.cursor.handle, "wl_cursor_theme_load");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.cursor.handle, "wl_cursor_theme_load");
     _glfw.wl.cursor.theme_destroy = (PFN_wl_cursor_theme_destroy)
-        _glfw_dlsym(_glfw.wl.cursor.handle, "wl_cursor_theme_destroy");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.cursor.handle, "wl_cursor_theme_destroy");
     _glfw.wl.cursor.theme_get_cursor = (PFN_wl_cursor_theme_get_cursor)
-        _glfw_dlsym(_glfw.wl.cursor.handle, "wl_cursor_theme_get_cursor");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.cursor.handle, "wl_cursor_theme_get_cursor");
     _glfw.wl.cursor.image_get_buffer = (PFN_wl_cursor_image_get_buffer)
-        _glfw_dlsym(_glfw.wl.cursor.handle, "wl_cursor_image_get_buffer");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.cursor.handle, "wl_cursor_image_get_buffer");
 
-    _glfw.wl.egl.handle = _glfw_dlopen("libwayland-egl.so.1");
+    _glfw.wl.egl.handle = _glfwPlatformLoadModule("libwayland-egl.so.1");
     if (!_glfw.wl.egl.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -1146,13 +1146,13 @@ int _glfwPlatformInit(void)
     }
 
     _glfw.wl.egl.window_create = (PFN_wl_egl_window_create)
-        _glfw_dlsym(_glfw.wl.egl.handle, "wl_egl_window_create");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.egl.handle, "wl_egl_window_create");
     _glfw.wl.egl.window_destroy = (PFN_wl_egl_window_destroy)
-        _glfw_dlsym(_glfw.wl.egl.handle, "wl_egl_window_destroy");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.egl.handle, "wl_egl_window_destroy");
     _glfw.wl.egl.window_resize = (PFN_wl_egl_window_resize)
-        _glfw_dlsym(_glfw.wl.egl.handle, "wl_egl_window_resize");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.egl.handle, "wl_egl_window_resize");
 
-    _glfw.wl.xkb.handle = _glfw_dlopen("libxkbcommon.so.0");
+    _glfw.wl.xkb.handle = _glfwPlatformLoadModule("libxkbcommon.so.0");
     if (!_glfw.wl.xkb.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -1161,43 +1161,43 @@ int _glfwPlatformInit(void)
     }
 
     _glfw.wl.xkb.context_new = (PFN_xkb_context_new)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_context_new");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_context_new");
     _glfw.wl.xkb.context_unref = (PFN_xkb_context_unref)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_context_unref");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_context_unref");
     _glfw.wl.xkb.keymap_new_from_string = (PFN_xkb_keymap_new_from_string)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_keymap_new_from_string");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_keymap_new_from_string");
     _glfw.wl.xkb.keymap_unref = (PFN_xkb_keymap_unref)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_keymap_unref");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_keymap_unref");
     _glfw.wl.xkb.keymap_mod_get_index = (PFN_xkb_keymap_mod_get_index)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_keymap_mod_get_index");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_keymap_mod_get_index");
     _glfw.wl.xkb.keymap_key_repeats = (PFN_xkb_keymap_key_repeats)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_keymap_key_repeats");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_keymap_key_repeats");
     _glfw.wl.xkb.state_new = (PFN_xkb_state_new)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_new");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_state_new");
     _glfw.wl.xkb.state_unref = (PFN_xkb_state_unref)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_unref");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_state_unref");
     _glfw.wl.xkb.state_key_get_syms = (PFN_xkb_state_key_get_syms)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_key_get_syms");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_state_key_get_syms");
     _glfw.wl.xkb.state_update_mask = (PFN_xkb_state_update_mask)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_update_mask");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_state_update_mask");
     _glfw.wl.xkb.state_serialize_mods = (PFN_xkb_state_serialize_mods)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_serialize_mods");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_state_serialize_mods");
 
 #ifdef HAVE_XKBCOMMON_COMPOSE_H
     _glfw.wl.xkb.compose_table_new_from_locale = (PFN_xkb_compose_table_new_from_locale)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_table_new_from_locale");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_compose_table_new_from_locale");
     _glfw.wl.xkb.compose_table_unref = (PFN_xkb_compose_table_unref)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_table_unref");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_compose_table_unref");
     _glfw.wl.xkb.compose_state_new = (PFN_xkb_compose_state_new)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_new");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_compose_state_new");
     _glfw.wl.xkb.compose_state_unref = (PFN_xkb_compose_state_unref)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_unref");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_compose_state_unref");
     _glfw.wl.xkb.compose_state_feed = (PFN_xkb_compose_state_feed)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_feed");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_compose_state_feed");
     _glfw.wl.xkb.compose_state_get_status = (PFN_xkb_compose_state_get_status)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_get_status");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_compose_state_get_status");
     _glfw.wl.xkb.compose_state_get_one_sym = (PFN_xkb_compose_state_get_one_sym)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_get_one_sym");
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_compose_state_get_one_sym");
 #endif
 
     _glfw.wl.display = wl_display_connect(NULL);
@@ -1290,7 +1290,7 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateEGL();
     if (_glfw.wl.egl.handle)
     {
-        _glfw_dlclose(_glfw.wl.egl.handle);
+        _glfwPlatformFreeModule(_glfw.wl.egl.handle);
         _glfw.wl.egl.handle = NULL;
     }
 
@@ -1306,7 +1306,7 @@ void _glfwPlatformTerminate(void)
         xkb_context_unref(_glfw.wl.xkb.context);
     if (_glfw.wl.xkb.handle)
     {
-        _glfw_dlclose(_glfw.wl.xkb.handle);
+        _glfwPlatformFreeModule(_glfw.wl.xkb.handle);
         _glfw.wl.xkb.handle = NULL;
     }
 
@@ -1316,7 +1316,7 @@ void _glfwPlatformTerminate(void)
         wl_cursor_theme_destroy(_glfw.wl.cursorThemeHiDPI);
     if (_glfw.wl.cursor.handle)
     {
-        _glfw_dlclose(_glfw.wl.cursor.handle);
+        _glfwPlatformFreeModule(_glfw.wl.cursor.handle);
         _glfw.wl.cursor.handle = NULL;
     }
 

@@ -71,7 +71,7 @@ BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
 //
 static GLFWbool loadLibraries(void)
 {
-    _glfw.win32.winmm.instance = LoadLibraryA("winmm.dll");
+    _glfw.win32.winmm.instance = _glfwPlatformLoadModule("winmm.dll");
     if (!_glfw.win32.winmm.instance)
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
@@ -80,9 +80,9 @@ static GLFWbool loadLibraries(void)
     }
 
     _glfw.win32.winmm.GetTime = (PFN_timeGetTime)
-        GetProcAddress(_glfw.win32.winmm.instance, "timeGetTime");
+        _glfwPlatformGetModuleSymbol(_glfw.win32.winmm.instance, "timeGetTime");
 
-    _glfw.win32.user32.instance = LoadLibraryA("user32.dll");
+    _glfw.win32.user32.instance = _glfwPlatformLoadModule("user32.dll");
     if (!_glfw.win32.user32.instance)
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
@@ -91,23 +91,23 @@ static GLFWbool loadLibraries(void)
     }
 
     _glfw.win32.user32.SetProcessDPIAware_ = (PFN_SetProcessDPIAware)
-        GetProcAddress(_glfw.win32.user32.instance, "SetProcessDPIAware");
+        _glfwPlatformGetModuleSymbol(_glfw.win32.user32.instance, "SetProcessDPIAware");
     _glfw.win32.user32.ChangeWindowMessageFilterEx_ = (PFN_ChangeWindowMessageFilterEx)
-        GetProcAddress(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
+        _glfwPlatformGetModuleSymbol(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
     _glfw.win32.user32.EnableNonClientDpiScaling_ = (PFN_EnableNonClientDpiScaling)
-        GetProcAddress(_glfw.win32.user32.instance, "EnableNonClientDpiScaling");
+        _glfwPlatformGetModuleSymbol(_glfw.win32.user32.instance, "EnableNonClientDpiScaling");
     _glfw.win32.user32.SetProcessDpiAwarenessContext_ = (PFN_SetProcessDpiAwarenessContext)
-        GetProcAddress(_glfw.win32.user32.instance, "SetProcessDpiAwarenessContext");
+        _glfwPlatformGetModuleSymbol(_glfw.win32.user32.instance, "SetProcessDpiAwarenessContext");
     _glfw.win32.user32.GetDpiForWindow_ = (PFN_GetDpiForWindow)
-        GetProcAddress(_glfw.win32.user32.instance, "GetDpiForWindow");
+        _glfwPlatformGetModuleSymbol(_glfw.win32.user32.instance, "GetDpiForWindow");
     _glfw.win32.user32.AdjustWindowRectExForDpi_ = (PFN_AdjustWindowRectExForDpi)
-        GetProcAddress(_glfw.win32.user32.instance, "AdjustWindowRectExForDpi");
+        _glfwPlatformGetModuleSymbol(_glfw.win32.user32.instance, "AdjustWindowRectExForDpi");
 
-    _glfw.win32.dinput8.instance = LoadLibraryA("dinput8.dll");
+    _glfw.win32.dinput8.instance = _glfwPlatformLoadModule("dinput8.dll");
     if (_glfw.win32.dinput8.instance)
     {
         _glfw.win32.dinput8.Create = (PFN_DirectInput8Create)
-            GetProcAddress(_glfw.win32.dinput8.instance, "DirectInput8Create");
+            _glfwPlatformGetModuleSymbol(_glfw.win32.dinput8.instance, "DirectInput8Create");
     }
 
     {
@@ -124,46 +124,46 @@ static GLFWbool loadLibraries(void)
 
         for (i = 0;  names[i];  i++)
         {
-            _glfw.win32.xinput.instance = LoadLibraryA(names[i]);
+            _glfw.win32.xinput.instance = _glfwPlatformLoadModule(names[i]);
             if (_glfw.win32.xinput.instance)
             {
                 _glfw.win32.xinput.GetCapabilities = (PFN_XInputGetCapabilities)
-                    GetProcAddress(_glfw.win32.xinput.instance, "XInputGetCapabilities");
+                    _glfwPlatformGetModuleSymbol(_glfw.win32.xinput.instance, "XInputGetCapabilities");
                 _glfw.win32.xinput.GetState = (PFN_XInputGetState)
-                    GetProcAddress(_glfw.win32.xinput.instance, "XInputGetState");
+                    _glfwPlatformGetModuleSymbol(_glfw.win32.xinput.instance, "XInputGetState");
 
                 break;
             }
         }
     }
 
-    _glfw.win32.dwmapi.instance = LoadLibraryA("dwmapi.dll");
+    _glfw.win32.dwmapi.instance = _glfwPlatformLoadModule("dwmapi.dll");
     if (_glfw.win32.dwmapi.instance)
     {
         _glfw.win32.dwmapi.IsCompositionEnabled = (PFN_DwmIsCompositionEnabled)
-            GetProcAddress(_glfw.win32.dwmapi.instance, "DwmIsCompositionEnabled");
+            _glfwPlatformGetModuleSymbol(_glfw.win32.dwmapi.instance, "DwmIsCompositionEnabled");
         _glfw.win32.dwmapi.Flush = (PFN_DwmFlush)
-            GetProcAddress(_glfw.win32.dwmapi.instance, "DwmFlush");
+            _glfwPlatformGetModuleSymbol(_glfw.win32.dwmapi.instance, "DwmFlush");
         _glfw.win32.dwmapi.EnableBlurBehindWindow = (PFN_DwmEnableBlurBehindWindow)
-            GetProcAddress(_glfw.win32.dwmapi.instance, "DwmEnableBlurBehindWindow");
+            _glfwPlatformGetModuleSymbol(_glfw.win32.dwmapi.instance, "DwmEnableBlurBehindWindow");
         _glfw.win32.dwmapi.GetColorizationColor = (PFN_DwmGetColorizationColor)
-            GetProcAddress(_glfw.win32.dwmapi.instance, "DwmGetColorizationColor");
+            _glfwPlatformGetModuleSymbol(_glfw.win32.dwmapi.instance, "DwmGetColorizationColor");
     }
 
-    _glfw.win32.shcore.instance = LoadLibraryA("shcore.dll");
+    _glfw.win32.shcore.instance = _glfwPlatformLoadModule("shcore.dll");
     if (_glfw.win32.shcore.instance)
     {
         _glfw.win32.shcore.SetProcessDpiAwareness_ = (PFN_SetProcessDpiAwareness)
-            GetProcAddress(_glfw.win32.shcore.instance, "SetProcessDpiAwareness");
+            _glfwPlatformGetModuleSymbol(_glfw.win32.shcore.instance, "SetProcessDpiAwareness");
         _glfw.win32.shcore.GetDpiForMonitor_ = (PFN_GetDpiForMonitor)
-            GetProcAddress(_glfw.win32.shcore.instance, "GetDpiForMonitor");
+            _glfwPlatformGetModuleSymbol(_glfw.win32.shcore.instance, "GetDpiForMonitor");
     }
 
-    _glfw.win32.ntdll.instance = LoadLibraryA("ntdll.dll");
+    _glfw.win32.ntdll.instance = _glfwPlatformLoadModule("ntdll.dll");
     if (_glfw.win32.ntdll.instance)
     {
         _glfw.win32.ntdll.RtlVerifyVersionInfo_ = (PFN_RtlVerifyVersionInfo)
-            GetProcAddress(_glfw.win32.ntdll.instance, "RtlVerifyVersionInfo");
+            _glfwPlatformGetModuleSymbol(_glfw.win32.ntdll.instance, "RtlVerifyVersionInfo");
     }
 
     return GLFW_TRUE;
@@ -174,25 +174,25 @@ static GLFWbool loadLibraries(void)
 static void freeLibraries(void)
 {
     if (_glfw.win32.xinput.instance)
-        FreeLibrary(_glfw.win32.xinput.instance);
+        _glfwPlatformFreeModule(_glfw.win32.xinput.instance);
 
     if (_glfw.win32.dinput8.instance)
-        FreeLibrary(_glfw.win32.dinput8.instance);
+        _glfwPlatformFreeModule(_glfw.win32.dinput8.instance);
 
     if (_glfw.win32.winmm.instance)
-        FreeLibrary(_glfw.win32.winmm.instance);
+        _glfwPlatformFreeModule(_glfw.win32.winmm.instance);
 
     if (_glfw.win32.user32.instance)
-        FreeLibrary(_glfw.win32.user32.instance);
+        _glfwPlatformFreeModule(_glfw.win32.user32.instance);
 
     if (_glfw.win32.dwmapi.instance)
-        FreeLibrary(_glfw.win32.dwmapi.instance);
+        _glfwPlatformFreeModule(_glfw.win32.dwmapi.instance);
 
     if (_glfw.win32.shcore.instance)
-        FreeLibrary(_glfw.win32.shcore.instance);
+        _glfwPlatformFreeModule(_glfw.win32.shcore.instance);
 
     if (_glfw.win32.ntdll.instance)
-        FreeLibrary(_glfw.win32.ntdll.instance);
+        _glfwPlatformFreeModule(_glfw.win32.ntdll.instance);
 }
 
 // Create key code translation tables

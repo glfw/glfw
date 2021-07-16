@@ -478,7 +478,7 @@ void* _glfwLoadLocalVulkanLoaderNS(void)
     void* handle = NULL;
 
     if (CFURLGetFileSystemRepresentation(url, true, (UInt8*) path, sizeof(path) - 1))
-        handle = _glfw_dlopen(path);
+        handle = _glfwPlatformLoadModule(path);
 
     CFRelease(url);
     return handle;

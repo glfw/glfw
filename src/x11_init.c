@@ -1381,8 +1381,6 @@ int _glfwPlatformInit(void)
                                        NULL);
     }
 
-    _glfwInitTimerPOSIX();
-
     _glfwPollMonitorsX11();
     return GLFW_TRUE;
 }

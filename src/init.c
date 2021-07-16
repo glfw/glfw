@@ -340,8 +340,10 @@ GLFWAPI int glfwInit(void)
 
     _glfwInitGamepadMappings();
 
-    _glfw.initialized = GLFW_TRUE;
+    _glfwPlatformInitTimer();
     _glfw.timer.offset = _glfwPlatformGetTimerValue();
+
+    _glfw.initialized = GLFW_TRUE;
 
     glfwDefaultWindowHints();
     return GLFW_TRUE;

@@ -38,7 +38,6 @@
 
 int _glfwPlatformInit(void)
 {
-    _glfwInitTimerPOSIX();
     _glfwPollMonitorsNull();
 
     return GLFW_TRUE;

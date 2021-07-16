@@ -644,6 +644,7 @@ int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode);
 void _glfwPlatformUpdateGamepadGUID(char* guid);
 const char* _glfwPlatformGetMappingName(void);
 
+void _glfwPlatformInitTimer(void);
 uint64_t _glfwPlatformGetTimerValue(void);
 uint64_t _glfwPlatformGetTimerFrequency(void);
 

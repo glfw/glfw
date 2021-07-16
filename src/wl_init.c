@@ -1226,8 +1226,6 @@ int _glfwPlatformInit(void)
     // Sync so we got all initial output events
     wl_display_roundtrip(_glfw.wl.display);
 
-    _glfwInitTimerPOSIX();
-
     _glfw.wl.timerfd = -1;
     if (_glfw.wl.seatVersion >= 4)
         _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);

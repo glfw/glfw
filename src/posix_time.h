@@ -39,6 +39,3 @@ typedef struct _GLFWtimerPOSIX
     uint64_t    frequency;
 } _GLFWtimerPOSIX;
 
-
-void _glfwInitTimerPOSIX(void);
-

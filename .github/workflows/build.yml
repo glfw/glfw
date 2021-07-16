@@ -43,6 +43,12 @@ jobs:
               run: |
                   sudo apt update
                   sudo apt install wayland-protocols libwayland-dev libxkbcommon-dev
+                  sudo apt install meson libpango1.0-dev
+                  git clone --depth 1 https://gitlab.gnome.org/jadahl/libdecor.git --branch 0.1.0
+                  cd libdecor
+                  meson build --buildtype release -Ddemo=false -Ddbus=disabled
+                  ninja -C build
+                  sudo meson install -C build
 
             - name: Configure static library
               run: cmake -S . -B build-static -D GLFW_USE_WAYLAND=ON

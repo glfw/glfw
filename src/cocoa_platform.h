@@ -43,6 +43,14 @@ typedef void* id;
 // NOTE: Many Cocoa enum values have been renamed and we need to build across
 //       SDK versions where one is unavailable or the other deprecated
 //       We use the newer names in code and these macros to handle compatibility
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 101400
+ #define NSOpenGLContextParameterSwapInterval NSOpenGLCPSwapInterval
+ #define NSOpenGLContextParameterSurfaceOpacity NSOpenGLCPSurfaceOpacity
+#endif
+
+// NOTE: Many Cocoa enum values have been renamed and we need to build across
+//       SDK versions where one is unavailable or the other deprecated
+//       We use the newer names in code and these macros to handle compatibility
 #if MAC_OS_X_VERSION_MAX_ALLOWED < 101200
  #define NSBitmapFormatAlphaNonpremultiplied NSAlphaNonpremultipliedBitmapFormat
  #define NSEventMaskAny NSAnyEventMask
@@ -85,13 +93,15 @@ typedef VkResult (APIENTRY *PFN_vkCreateMetalSurfaceEXT)(VkInstance,const VkMeta
 
 #include "posix_thread.h"
 #include "cocoa_joystick.h"
-#include "nsgl_context.h"
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  ns
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS ns
 #define _GLFW_PLATFORM_LIBRARY_TIMER_STATE  _GLFWtimerNS   ns
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorNS ns
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorNS  ns
+
+#define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextNSGL nsgl
+#define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryNSGL nsgl
 
 // HIToolbox.framework pointer typedefs
 #define kTISPropertyUnicodeKeyLayoutData _glfw.ns.tis.kPropertyUnicodeKeyLayoutData
@@ -102,6 +112,22 @@ typedef void* (*PFN_TISGetInputSourceProperty)(TISInputSourceRef,CFStringRef);
 typedef UInt8 (*PFN_LMGetKbdType)(void);
 #define LMGetKbdType _glfw.ns.tis.GetKbdType
 
+
+// NSGL-specific per-context data
+//
+typedef struct _GLFWcontextNSGL
+{
+    id                pixelFormat;
+    id                object;
+} _GLFWcontextNSGL;
+
+// NSGL-specific global data
+//
+typedef struct _GLFWlibraryNSGL
+{
+    // dlopen handle for OpenGL.framework (for glfwGetProcAddress)
+    CFBundleRef     framework;
+} _GLFWlibraryNSGL;
 
 // Cocoa-specific per-window data
 //
@@ -193,4 +219,11 @@ void _glfwRestoreVideoModeNS(_GLFWmonitor* monitor);
 float _glfwTransformYNS(float y);
 
 void* _glfwLoadLocalVulkanLoaderNS(void);
+
+GLFWbool _glfwInitNSGL(void);
+void _glfwTerminateNSGL(void);
+GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
+                                const _GLFWctxconfig* ctxconfig,
+                                const _GLFWfbconfig* fbconfig);
+void _glfwDestroyContextNSGL(_GLFWwindow* window);
 

@@ -17,39 +17,34 @@ set_target_properties(update_mappings PROPERTIES FOLDER "GLFW3")
 if (_GLFW_COCOA)
     target_compile_definitions(glfw PRIVATE _GLFW_COCOA)
     target_sources(glfw PRIVATE cocoa_platform.h cocoa_joystick.h posix_thread.h
-                                nsgl_context.h egl_context.h osmesa_context.h
                                 cocoa_init.m cocoa_joystick.m cocoa_monitor.m
                                 cocoa_window.m cocoa_time.c posix_thread.c
                                 nsgl_context.m egl_context.c osmesa_context.c)
 elseif (_GLFW_WIN32)
     target_compile_definitions(glfw PRIVATE _GLFW_WIN32)
-    target_sources(glfw PRIVATE win32_platform.h win32_joystick.h wgl_context.h
-                                egl_context.h osmesa_context.h win32_init.c
-                                win32_joystick.c win32_monitor.c win32_time.c
-                                win32_thread.c win32_window.c wgl_context.c
-                                egl_context.c osmesa_context.c)
+    target_sources(glfw PRIVATE win32_platform.h win32_joystick.h
+                                win32_init.c win32_joystick.c win32_monitor.c
+                                win32_time.c win32_thread.c win32_window.c
+                                wgl_context.c egl_context.c osmesa_context.c)
 elseif (_GLFW_X11)
     target_compile_definitions(glfw PRIVATE _GLFW_X11)
     target_sources(glfw PRIVATE x11_platform.h xkb_unicode.h posix_time.h
-                                posix_thread.h glx_context.h egl_context.h
-                                osmesa_context.h x11_init.c x11_monitor.c
+                                posix_thread.h x11_init.c x11_monitor.c
                                 x11_window.c xkb_unicode.c posix_time.c
                                 posix_thread.c glx_context.c egl_context.c
                                 osmesa_context.c)
 elseif (_GLFW_WAYLAND)
     target_compile_definitions(glfw PRIVATE _GLFW_WAYLAND)
     target_sources(glfw PRIVATE wl_platform.h posix_time.h posix_thread.h
-                                xkb_unicode.h egl_context.h osmesa_context.h
-                                wl_init.c wl_monitor.c wl_window.c posix_time.c
-                                posix_thread.c xkb_unicode.c egl_context.c
-                                osmesa_context.c)
+                                xkb_unicode.h wl_init.c wl_monitor.c wl_window.c
+                                posix_time.c posix_thread.c xkb_unicode.c
+                                egl_context.c osmesa_context.c)
 elseif (_GLFW_OSMESA)
     target_compile_definitions(glfw PRIVATE _GLFW_OSMESA)
     target_sources(glfw PRIVATE null_platform.h null_joystick.h posix_time.h
-                                posix_thread.h osmesa_context.h null_init.c
-                                null_monitor.c null_window.c null_joystick.c
-                                posix_time.c posix_thread.c egl_context.c
-                                osmesa_context.c)
+                                posix_thread.h null_init.c null_monitor.c
+                                null_window.c null_joystick.c posix_time.c
+                                posix_thread.c egl_context.c osmesa_context.c)
 endif()
 
 if (WIN32)

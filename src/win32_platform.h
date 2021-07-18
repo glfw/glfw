@@ -218,10 +218,6 @@ typedef enum
  #define DIDFT_OPTIONAL 0x80000000
 #endif
 
-// winmm.dll function pointer typedefs
-typedef DWORD (WINAPI * PFN_timeGetTime)(void);
-#define timeGetTime _glfw.win32.winmm.GetTime
-
 // xinput.dll function pointer typedefs
 typedef DWORD (WINAPI * PFN_XInputGetCapabilities)(DWORD,DWORD,XINPUT_CAPABILITIES*);
 typedef DWORD (WINAPI * PFN_XInputGetState)(DWORD,XINPUT_STATE*);
@@ -352,11 +348,6 @@ typedef struct _GLFWlibraryWin32
 
     struct {
         HINSTANCE                       instance;
-        PFN_timeGetTime                 GetTime;
-    } winmm;
-
-    struct {
-        HINSTANCE                       instance;
         PFN_DirectInput8Create          Create;
         IDirectInput8W*                 api;
     } dinput8;
@@ -422,7 +413,6 @@ typedef struct _GLFWcursorWin32
 //
 typedef struct _GLFWtimerWin32
 {
-    GLFWbool            hasPC;
     uint64_t            frequency;
 } _GLFWtimerWin32;
 

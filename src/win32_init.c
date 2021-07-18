@@ -71,17 +71,6 @@ BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
 //
 static GLFWbool loadLibraries(void)
 {
-    _glfw.win32.winmm.instance = _glfwPlatformLoadModule("winmm.dll");
-    if (!_glfw.win32.winmm.instance)
-    {
-        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                             "Win32: Failed to load winmm.dll");
-        return GLFW_FALSE;
-    }
-
-    _glfw.win32.winmm.GetTime = (PFN_timeGetTime)
-        _glfwPlatformGetModuleSymbol(_glfw.win32.winmm.instance, "timeGetTime");
-
     _glfw.win32.user32.instance = _glfwPlatformLoadModule("user32.dll");
     if (!_glfw.win32.user32.instance)
     {
@@ -178,9 +167,6 @@ static void freeLibraries(void)
 
     if (_glfw.win32.dinput8.instance)
         _glfwPlatformFreeModule(_glfw.win32.dinput8.instance);
-
-    if (_glfw.win32.winmm.instance)
-        _glfwPlatformFreeModule(_glfw.win32.winmm.instance);
 
     if (_glfw.win32.user32.instance)
         _glfwPlatformFreeModule(_glfw.win32.user32.instance);

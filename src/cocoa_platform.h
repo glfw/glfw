@@ -91,12 +91,12 @@ typedef struct VkMetalSurfaceCreateInfoEXT
 typedef VkResult (APIENTRY *PFN_vkCreateMacOSSurfaceMVK)(VkInstance,const VkMacOSSurfaceCreateInfoMVK*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 typedef VkResult (APIENTRY *PFN_vkCreateMetalSurfaceEXT)(VkInstance,const VkMetalSurfaceCreateInfoEXT*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 
+#include "cocoa_time.h"
 #include "posix_thread.h"
 #include "cocoa_joystick.h"
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  ns
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS ns
-#define _GLFW_PLATFORM_LIBRARY_TIMER_STATE  _GLFWtimerNS   ns
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorNS ns
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorNS  ns
 
@@ -203,13 +203,6 @@ typedef struct _GLFWcursorNS
 {
     id              object;
 } _GLFWcursorNS;
-
-// Cocoa-specific global timer data
-//
-typedef struct _GLFWtimerNS
-{
-    uint64_t        frequency;
-} _GLFWtimerNS;
 
 
 void _glfwPollMonitorsNS(void);

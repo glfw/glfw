@@ -16,10 +16,11 @@ set_target_properties(update_mappings PROPERTIES FOLDER "GLFW3")
 
 if (_GLFW_COCOA)
     target_compile_definitions(glfw PRIVATE _GLFW_COCOA)
-    target_sources(glfw PRIVATE cocoa_platform.h cocoa_joystick.h posix_thread.h
-                                cocoa_init.m cocoa_joystick.m cocoa_monitor.m
-                                cocoa_window.m cocoa_time.c posix_thread.c
-                                nsgl_context.m egl_context.c osmesa_context.c)
+    target_sources(glfw PRIVATE cocoa_platform.h cocoa_joystick.h cocoa_time.h
+                                posix_thread.h cocoa_init.m cocoa_joystick.m
+                                cocoa_monitor.m cocoa_window.m cocoa_time.c
+                                posix_thread.c nsgl_context.m egl_context.c
+                                osmesa_context.c)
 elseif (_GLFW_WIN32)
     target_compile_definitions(glfw PRIVATE _GLFW_WIN32)
     target_sources(glfw PRIVATE win32_platform.h win32_joystick.h win32_time.h

@@ -356,6 +356,7 @@ typedef struct VkWin32SurfaceCreateInfoKHR
 typedef VkResult (APIENTRY *PFN_vkCreateWin32SurfaceKHR)(VkInstance,const VkWin32SurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(VkPhysicalDevice,uint32_t);
 
+#include "win32_thread.h"
 #include "win32_joystick.h"
 
 #if !defined(_GLFW_WNDCLASSNAME)
@@ -367,8 +368,6 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(
 #define _GLFW_PLATFORM_LIBRARY_TIMER_STATE  _GLFWtimerWin32   win32
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWin32 win32
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorWin32  win32
-#define _GLFW_PLATFORM_TLS_STATE            _GLFWtlsWin32     win32
-#define _GLFW_PLATFORM_MUTEX_STATE          _GLFWmutexWin32   win32
 
 #define _GLFW_PLATFORM_CONTEXT_STATE            _GLFWcontextWGL wgl
 #define _GLFW_PLATFORM_LIBRARY_CONTEXT_STATE    _GLFWlibraryWGL wgl
@@ -535,22 +534,6 @@ typedef struct _GLFWtimerWin32
     GLFWbool            hasPC;
     uint64_t            frequency;
 } _GLFWtimerWin32;
-
-// Win32-specific thread local storage data
-//
-typedef struct _GLFWtlsWin32
-{
-    GLFWbool            allocated;
-    DWORD               index;
-} _GLFWtlsWin32;
-
-// Win32-specific mutex data
-//
-typedef struct _GLFWmutexWin32
-{
-    GLFWbool            allocated;
-    CRITICAL_SECTION    section;
-} _GLFWmutexWin32;
 
 
 GLFWbool _glfwRegisterWindowClassWin32(void);

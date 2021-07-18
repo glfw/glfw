@@ -352,6 +352,7 @@ typedef struct VkWin32SurfaceCreateInfoKHR
 typedef VkResult (APIENTRY *PFN_vkCreateWin32SurfaceKHR)(VkInstance,const VkWin32SurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(VkPhysicalDevice,uint32_t);
 
+#include "win32_time.h"
 #include "win32_thread.h"
 #include "win32_joystick.h"
 
@@ -361,7 +362,6 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWin32  win32
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 win32
-#define _GLFW_PLATFORM_LIBRARY_TIMER_STATE  _GLFWtimerWin32   win32
 #define _GLFW_PLATFORM_MONITOR_STATE        _GLFWmonitorWin32 win32
 #define _GLFW_PLATFORM_CURSOR_STATE         _GLFWcursorWin32  win32
 
@@ -517,13 +517,6 @@ typedef struct _GLFWcursorWin32
 {
     HCURSOR             handle;
 } _GLFWcursorWin32;
-
-// Win32-specific global timer data
-//
-typedef struct _GLFWtimerWin32
-{
-    uint64_t            frequency;
-} _GLFWtimerWin32;
 
 
 GLFWbool _glfwRegisterWindowClassWin32(void);

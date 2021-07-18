@@ -22,10 +22,11 @@ if (_GLFW_COCOA)
                                 nsgl_context.m egl_context.c osmesa_context.c)
 elseif (_GLFW_WIN32)
     target_compile_definitions(glfw PRIVATE _GLFW_WIN32)
-    target_sources(glfw PRIVATE win32_platform.h win32_joystick.h win32_thread.h
-                                win32_init.c win32_joystick.c win32_monitor.c
-                                win32_time.c win32_thread.c win32_window.c
-                                wgl_context.c egl_context.c osmesa_context.c)
+    target_sources(glfw PRIVATE win32_platform.h win32_joystick.h win32_time.h
+                                win32_thread.h win32_init.c win32_joystick.c
+                                win32_monitor.c win32_time.c win32_thread.c
+                                win32_window.c wgl_context.c egl_context.c
+                                osmesa_context.c)
 elseif (_GLFW_X11)
     target_compile_definitions(glfw PRIVATE _GLFW_X11)
     target_sources(glfw PRIVATE x11_platform.h xkb_unicode.h posix_time.h

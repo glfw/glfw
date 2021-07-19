@@ -882,35 +882,41 @@ GLFWAPI void glfwSetWindowAttrib(GLFWwindow* handle, int attrib, int value)
 
     value = value ? GLFW_TRUE : GLFW_FALSE;
 
-    if (attrib == GLFW_AUTO_ICONIFY)
-        window->autoIconify = value;
-    else if (attrib == GLFW_RESIZABLE)
+    switch (attrib)
     {
-        window->resizable = value;
-        if (!window->monitor)
-            _glfw.platform.setWindowResizable(window, value);
+        case GLFW_AUTO_ICONIFY:
+            window->autoIconify = value;
+            return;
+
+        case GLFW_RESIZABLE:
+            window->resizable = value;
+            if (!window->monitor)
+                _glfw.platform.setWindowResizable(window, value);
+            return;
+
+        case GLFW_DECORATED:
+            window->decorated = value;
+            if (!window->monitor)
+                _glfw.platform.setWindowDecorated(window, value);
+            return;
+
+        case GLFW_FLOATING:
+            window->floating = value;
+            if (!window->monitor)
+                _glfw.platform.setWindowFloating(window, value);
+            return;
+
+        case GLFW_FOCUS_ON_SHOW:
+            window->focusOnShow = value;
+            return;
+
+        case GLFW_MOUSE_PASSTHROUGH:
+            window->mousePassthrough = value;
+            _glfw.platform.setWindowMousePassthrough(window, value);
+            return;
     }
-    else if (attrib == GLFW_DECORATED)
-    {
-        window->decorated = value;
-        if (!window->monitor)
-            _glfw.platform.setWindowDecorated(window, value);
-    }
-    else if (attrib == GLFW_FLOATING)
-    {
-        window->floating = value;
-        if (!window->monitor)
-            _glfw.platform.setWindowFloating(window, value);
-    }
-    else if (attrib == GLFW_FOCUS_ON_SHOW)
-        window->focusOnShow = value;
-    else if (attrib == GLFW_MOUSE_PASSTHROUGH)
-    {
-        window->mousePassthrough = value;
-        _glfw.platform.setWindowMousePassthrough(window, value);
-    }
-    else
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute 0x%08X", attrib);
+
+    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute 0x%08X", attrib);
 }
 
 GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* handle)

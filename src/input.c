@@ -522,90 +522,102 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
 
     _GLFW_REQUIRE_INIT();
 
-    if (mode == GLFW_CURSOR)
+    switch (mode)
     {
-        if (value != GLFW_CURSOR_NORMAL &&
-            value != GLFW_CURSOR_HIDDEN &&
-            value != GLFW_CURSOR_DISABLED)
+        case GLFW_CURSOR:
         {
-            _glfwInputError(GLFW_INVALID_ENUM,
-                            "Invalid cursor mode 0x%08X",
-                            value);
-            return;
-        }
-
-        if (window->cursorMode == value)
-            return;
-
-        window->cursorMode = value;
-
-        _glfw.platform.getCursorPos(window,
-                                    &window->virtualCursorPosX,
-                                    &window->virtualCursorPosY);
-        _glfw.platform.setCursorMode(window, value);
-    }
-    else if (mode == GLFW_STICKY_KEYS)
-    {
-        value = value ? GLFW_TRUE : GLFW_FALSE;
-        if (window->stickyKeys == value)
-            return;
-
-        if (!value)
-        {
-            int i;
-
-            // Release all sticky keys
-            for (i = 0;  i <= GLFW_KEY_LAST;  i++)
+            if (value != GLFW_CURSOR_NORMAL &&
+                value != GLFW_CURSOR_HIDDEN &&
+                value != GLFW_CURSOR_DISABLED)
             {
-                if (window->keys[i] == _GLFW_STICK)
-                    window->keys[i] = GLFW_RELEASE;
+                _glfwInputError(GLFW_INVALID_ENUM,
+                                "Invalid cursor mode 0x%08X",
+                                value);
+                return;
             }
+
+            if (window->cursorMode == value)
+                return;
+
+            window->cursorMode = value;
+
+            _glfw.platform.getCursorPos(window,
+                                        &window->virtualCursorPosX,
+                                        &window->virtualCursorPosY);
+            _glfw.platform.setCursorMode(window, value);
+            return;
         }
 
-        window->stickyKeys = value;
-    }
-    else if (mode == GLFW_STICKY_MOUSE_BUTTONS)
-    {
-        value = value ? GLFW_TRUE : GLFW_FALSE;
-        if (window->stickyMouseButtons == value)
-            return;
-
-        if (!value)
+        case GLFW_STICKY_KEYS:
         {
-            int i;
+            value = value ? GLFW_TRUE : GLFW_FALSE;
+            if (window->stickyKeys == value)
+                return;
 
-            // Release all sticky mouse buttons
-            for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
+            if (!value)
             {
-                if (window->mouseButtons[i] == _GLFW_STICK)
-                    window->mouseButtons[i] = GLFW_RELEASE;
+                int i;
+
+                // Release all sticky keys
+                for (i = 0;  i <= GLFW_KEY_LAST;  i++)
+                {
+                    if (window->keys[i] == _GLFW_STICK)
+                        window->keys[i] = GLFW_RELEASE;
+                }
             }
+
+            window->stickyKeys = value;
+            return;
         }
 
-        window->stickyMouseButtons = value;
-    }
-    else if (mode == GLFW_LOCK_KEY_MODS)
-    {
-        window->lockKeyMods = value ? GLFW_TRUE : GLFW_FALSE;
-    }
-    else if (mode == GLFW_RAW_MOUSE_MOTION)
-    {
-        if (!_glfw.platform.rawMouseMotionSupported())
+        case GLFW_STICKY_MOUSE_BUTTONS:
         {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Raw mouse motion is not supported on this system");
+            value = value ? GLFW_TRUE : GLFW_FALSE;
+            if (window->stickyMouseButtons == value)
+                return;
+
+            if (!value)
+            {
+                int i;
+
+                // Release all sticky mouse buttons
+                for (i = 0;  i <= GLFW_MOUSE_BUTTON_LAST;  i++)
+                {
+                    if (window->mouseButtons[i] == _GLFW_STICK)
+                        window->mouseButtons[i] = GLFW_RELEASE;
+                }
+            }
+
+            window->stickyMouseButtons = value;
             return;
         }
 
-        value = value ? GLFW_TRUE : GLFW_FALSE;
-        if (window->rawMouseMotion == value)
+        case GLFW_LOCK_KEY_MODS:
+        {
+            window->lockKeyMods = value ? GLFW_TRUE : GLFW_FALSE;
             return;
+        }
 
-        window->rawMouseMotion = value;
-        _glfw.platform.setRawMouseMotion(window, value);
+        case GLFW_RAW_MOUSE_MOTION:
+        {
+            if (!_glfw.platform.rawMouseMotionSupported())
+            {
+                _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "Raw mouse motion is not supported on this system");
+                return;
+            }
+
+            value = value ? GLFW_TRUE : GLFW_FALSE;
+            if (window->rawMouseMotion == value)
+                return;
+
+            window->rawMouseMotion = value;
+            _glfw.platform.setRawMouseMotion(window, value);
+            return;
+        }
     }
-    else
-        _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode 0x%08X", mode);
+
+    _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode 0x%08X", mode);
 }
 
 GLFWAPI int glfwRawMouseMotionSupported(void)

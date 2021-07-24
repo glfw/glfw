@@ -1,6 +1,6 @@
 # GLFW
 
-[![Build status](https://travis-ci.org/glfw/glfw.svg?branch=master)](https://travis-ci.org/glfw/glfw)
+[![Build status](https://github.com/glfw/glfw/actions/workflows/build.yml/badge.svg)](https://github.com/glfw/glfw/actions)
 [![Build status](https://ci.appveyor.com/api/projects/status/0kf0ct9831i5l6sp/branch/master?svg=true)](https://ci.appveyor.com/project/elmindreda/glfw)
 [![Coverity Scan](https://scan.coverity.com/projects/4884/badge.svg)](https://scan.coverity.com/projects/glfw-glfw)
 
@@ -14,18 +14,18 @@ GLFW natively supports Windows, macOS and Linux and other Unix-like systems.  On
 Linux both X11 and Wayland are supported.
 
 GLFW is licensed under the [zlib/libpng
-license](http://www.glfw.org/license.html).
+license](https://www.glfw.org/license.html).
 
-You can [download](http://www.glfw.org/download.html) the latest stable release
+You can [download](https://www.glfw.org/download.html) the latest stable release
 as source or Windows binaries, or fetch the `latest` branch from GitHub.  Each
 release starting with 3.0 also has a corresponding [annotated
 tag](https://github.com/glfw/glfw/releases) with source and binary archives.
 
-The [documentation](http://www.glfw.org/docs/latest/) is available online and is
+The [documentation](https://www.glfw.org/docs/latest/) is available online and is
 included in all source and binary archives.  See the [release
 notes](https://www.glfw.org/docs/latest/news.html) for new features, caveats and
 deprecations in the latest release.  For more details see the [version
-history](http://www.glfw.org/changelog.html).
+history](https://www.glfw.org/changelog.html).
 
 The `master` branch is the stable integration branch and _should_ always compile
 and run on all supported platforms, although details of newly added features may
@@ -34,9 +34,9 @@ fixes live in [other branches](https://github.com/glfw/glfw/branches/all) until
 they are stable enough to merge.
 
 If you are new to GLFW, you may find the
-[tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW 3 useful.  If
+[tutorial](https://www.glfw.org/docs/latest/quick.html) for GLFW 3 useful.  If
 you have used GLFW 2 in the past, there is a [transition
-guide](http://www.glfw.org/docs/latest/moving.html) for moving to the GLFW
+guide](https://www.glfw.org/docs/latest/moving.html) for moving to the GLFW
 3 API.
 
 
@@ -52,16 +52,16 @@ MinGW-w64, on macOS with Clang and on Linux and other Unix-like systems with GCC
 and Clang.  It will likely compile in other environments as well, but this is
 not regularly tested.
 
-There are [pre-compiled Windows binaries](http://www.glfw.org/download.html)
+There are [pre-compiled Windows binaries](https://www.glfw.org/download.html)
 available for all supported compilers.
 
-See the [compilation guide](http://www.glfw.org/docs/latest/compile.html) for
+See the [compilation guide](https://www.glfw.org/docs/latest/compile.html) for
 more information about how to compile GLFW yourself.
 
 
 ## Using GLFW
 
-See the [documentation](http://www.glfw.org/docs/latest/) for tutorials, guides
+See the [documentation](https://www.glfw.org/docs/latest/) for tutorials, guides
 and the API reference.
 
 
@@ -79,7 +79,7 @@ Unix-like systems running the X Window System are supported even without
 a desktop environment or modern extensions, although some features require
 a running window or clipboard manager.  The OSMesa backend requires Mesa 6.3.
 
-See the [compatibility guide](http://www.glfw.org/docs/latest/compat.html)
+See the [compatibility guide](https://www.glfw.org/docs/latest/compat.html)
 in the documentation for more information.
 
 
@@ -102,7 +102,7 @@ located in the `deps/` directory.
  - [Nuklear](https://github.com/Immediate-Mode-UI/Nuklear) for test and example UI
  - [stb\_image\_write](https://github.com/nothings/stb) for writing images to disk
 
-The documentation is generated with [Doxygen](http://doxygen.org/) if CMake can
+The documentation is generated with [Doxygen](https://doxygen.org/) if CMake can
 find that tool.
 
 
@@ -141,6 +141,8 @@ information on what to include when reporting a bug.
  - Bugfix: Some extension loader headers did not prevent default OpenGL header
    inclusion (#1695)
  - Bugfix: Buffers were swapped at creation on single-buffered windows (#1873)
+ - Bugfix: Gamepad mapping updates could spam `GLFW_INVALID_VALUE` due to
+   incompatible controllers sharing hardware ID (#1763)
  - [Win32] Added the `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access
            to the window menu
  - [Win32] Added a version info resource to the GLFW DLL
@@ -194,6 +196,8 @@ information on what to include when reporting a bug.
    regained focus (#1648,#1802)
  - [Cocoa] Bugfix: Monitor name query could segfault on macOS 11 (#1809,#1833)
  - [Cocoa] Bugfix: The install name of the installed dylib was relative (#1504)
+ - [Cocoa] Bugfix: The MoltenVK layer contents scale was updated only after
+   related events were emitted
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -240,16 +244,17 @@ information on what to include when reporting a bug.
    (#442)
  - [EGL] Added ANGLE backend selection via `EGL_ANGLE_platform_angle` extension
    (#1380)
+ - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
 
 
 ## Contact
 
-On [glfw.org](http://www.glfw.org/) you can find the latest version of GLFW, as
+On [glfw.org](https://www.glfw.org/) you can find the latest version of GLFW, as
 well as news, documentation and other information about the project.
 
 If you have questions related to the use of GLFW, we have a
 [forum](https://discourse.glfw.org/), and the `#glfw` IRC channel on
-[Freenode](http://freenode.net/).
+[Libera.Chat](https://libera.chat/).
 
 If you have a bug to report, a patch to submit or a feature you'd like to
 request, please file it in the
@@ -366,6 +371,7 @@ skills.
  - Adam Marcus
  - Célestin Marot
  - Kyle McDonald
+ - David V. McKay
  - David Medlock
  - Bryce Mehring
  - Jonathan Mercier

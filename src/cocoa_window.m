@@ -243,7 +243,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-    if (window->context.client != GLFW_NO_API)
+    if (window->context.source == GLFW_NATIVE_CONTEXT_API)
         [window->context.nsgl.object update];
 
     if (_glfw.ns.disabledCursorWindow == window)
@@ -278,7 +278,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)windowDidMove:(NSNotification *)notification
 {
-    if (window->context.client != GLFW_NO_API)
+    if (window->context.source == GLFW_NATIVE_CONTEXT_API)
         [window->context.nsgl.object update];
 
     if (_glfw.ns.disabledCursorWindow == window)
@@ -397,7 +397,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)updateLayer
 {
-    if (window->context.client != GLFW_NO_API)
+    if (window->context.source == GLFW_NATIVE_CONTEXT_API)
         [window->context.nsgl.object update];
 
     _glfwInputWindowDamage(window);
@@ -520,6 +520,18 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 {
     const NSRect contentRect = [window->ns.view frame];
     const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+    const float xscale = fbRect.size.width / contentRect.size.width;
+    const float yscale = fbRect.size.height / contentRect.size.height;
+
+    if (xscale != window->ns.xscale || yscale != window->ns.yscale)
+    {
+        if (window->ns.retina && window->ns.layer)
+            [window->ns.layer setContentsScale:[window->ns.object backingScaleFactor]];
+
+        window->ns.xscale = xscale;
+        window->ns.yscale = yscale;
+        _glfwInputWindowContentScale(window, xscale, yscale);
+    }
 
     if (fbRect.size.width != window->ns.fbWidth ||
         fbRect.size.height != window->ns.fbHeight)
@@ -527,19 +539,6 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         window->ns.fbWidth  = fbRect.size.width;
         window->ns.fbHeight = fbRect.size.height;
         _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
-    }
-
-    const float xscale = fbRect.size.width / contentRect.size.width;
-    const float yscale = fbRect.size.height / contentRect.size.height;
-
-    if (xscale != window->ns.xscale || yscale != window->ns.yscale)
-    {
-        window->ns.xscale = xscale;
-        window->ns.yscale = yscale;
-        _glfwInputWindowContentScale(window, xscale, yscale);
-
-        if (window->ns.retina && window->ns.layer)
-            [window->ns.layer setContentsScale:[window->ns.object backingScaleFactor]];
     }
 }
 

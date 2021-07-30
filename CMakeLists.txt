@@ -258,11 +258,16 @@ endif()
 # Export GLFW library dependencies
 #--------------------------------------------------------------------
 foreach(arg ${glfw_PKG_DEPS})
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} ${arg}")
+    set(deps "${deps} ${arg}")
 endforeach()
 foreach(arg ${glfw_PKG_LIBS})
-    set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} ${arg}")
+    set(libs "${libs} ${arg}")
 endforeach()
+
+set(GLFW_PKG_CONFIG_REQUIRES_PRIVATE "${deps}" CACHE INTERNAL
+    "GLFW pkg-config Requires.private")
+set(GLFW_PKG_CONFIG_LIBS_PRIVATE "${libs}" CACHE INTERNAL
+    "GLFW pkg-config Libs.private")
 
 #--------------------------------------------------------------------
 # Create generated files

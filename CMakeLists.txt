@@ -28,6 +28,12 @@ option(GLFW_BUILD_TESTS "Build the GLFW test programs" ${GLFW_STANDALONE})
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" ON)
 option(GLFW_INSTALL "Generate installation target" ON)
 option(GLFW_VULKAN_STATIC "Assume the Vulkan loader is linked with the application" OFF)
+option(GLFW_HPP "Use the glfw3.hpp wrapper for C++" OFF)
+
+if (GLFW_HPP)
+    enable_language(CXX)
+    set(CMAKE_CXX_STANDARD 17)
+endif()
 
 include(GNUInstallDirs)
 include(CMakeDependentOption)
@@ -293,6 +299,11 @@ endif()
 if (GLFW_INSTALL)
     install(DIRECTORY include/GLFW DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
             FILES_MATCHING PATTERN glfw3.h PATTERN glfw3native.h)
+
+    if (GLFW_HPP)
+        install(DIRECTORY include/GLFW DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+                FILES_MATCHING PATTERN glfw3.hpp)
+    endif()
 
     install(FILES "${GLFW_BINARY_DIR}/src/glfw3Config.cmake"
                   "${GLFW_BINARY_DIR}/src/glfw3ConfigVersion.cmake"

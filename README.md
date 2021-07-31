@@ -1,8 +1,13 @@
-# GLFW
+<div align="center">
+
+# Graphics Library Framework (GLFW)
 
 [![Build status](https://github.com/glfw/glfw/actions/workflows/build.yml/badge.svg)](https://github.com/glfw/glfw/actions)
 [![Build status](https://ci.appveyor.com/api/projects/status/0kf0ct9831i5l6sp/branch/master?svg=true)](https://ci.appveyor.com/project/elmindreda/glfw)
 [![Coverity Scan](https://scan.coverity.com/projects/4884/badge.svg)](https://scan.coverity.com/projects/glfw-glfw)
+
+  <img src="https://www.glfw.org//img/favicon/favicon-128x128.png" />
+</div>
 
 ## Introduction
 

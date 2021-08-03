@@ -602,7 +602,7 @@ void _glfwPlatformTerminate(void)
     if (_glfw.ns.keyUpMonitor)
         [NSEvent removeMonitor:_glfw.ns.keyUpMonitor];
 
-    free(_glfw.ns.clipboardString);
+    _glfw_free(_glfw.ns.clipboardString);
 
     _glfwTerminateNSGL();
 

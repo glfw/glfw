@@ -1407,8 +1407,8 @@ void _glfwPlatformTerminate(void)
         _glfw.x11.hiddenCursorHandle = (Cursor) 0;
     }
 
-    free(_glfw.x11.primarySelectionString);
-    free(_glfw.x11.clipboardString);
+    _glfw_free(_glfw.x11.primarySelectionString);
+    _glfw_free(_glfw.x11.clipboardString);
 
     XUnregisterIMInstantiateCallback(_glfw.x11.display,
                                      NULL, NULL, NULL,

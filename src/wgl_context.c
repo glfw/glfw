@@ -30,7 +30,6 @@
 #include "internal.h"
 
 #include <stdlib.h>
-#include <malloc.h>
 #include <assert.h>
 
 // Return the value corresponding to the specified attribute
@@ -130,7 +129,7 @@ static int choosePixelFormat(_GLFWwindow* window,
                                           NULL);
     }
 
-    usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
+    usableConfigs = _glfw_calloc(nativeCount, sizeof(_GLFWfbconfig));
 
     for (i = 0;  i < nativeCount;  i++)
     {
@@ -149,7 +148,7 @@ static int choosePixelFormat(_GLFWwindow* window,
                 _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
                                     "WGL: Failed to retrieve pixel format attributes");
 
-                free(usableConfigs);
+                _glfw_free(usableConfigs);
                 return 0;
             }
 
@@ -221,7 +220,7 @@ static int choosePixelFormat(_GLFWwindow* window,
                 _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
                                     "WGL: Failed to describe pixel format");
 
-                free(usableConfigs);
+                _glfw_free(usableConfigs);
                 return 0;
             }
 
@@ -271,7 +270,7 @@ static int choosePixelFormat(_GLFWwindow* window,
         _glfwInputError(GLFW_API_UNAVAILABLE,
                         "WGL: The driver does not appear to support OpenGL");
 
-        free(usableConfigs);
+        _glfw_free(usableConfigs);
         return 0;
     }
 
@@ -281,12 +280,12 @@ static int choosePixelFormat(_GLFWwindow* window,
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "WGL: Failed to find a suitable pixel format");
 
-        free(usableConfigs);
+        _glfw_free(usableConfigs);
         return 0;
     }
 
     pixelFormat = (int) closest->handle;
-    free(usableConfigs);
+    _glfw_free(usableConfigs);
 
     return pixelFormat;
 }

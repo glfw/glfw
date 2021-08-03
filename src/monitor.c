@@ -80,7 +80,7 @@ static GLFWbool refreshVideoModes(_GLFWmonitor* monitor)
 
     qsort(modes, modeCount, sizeof(GLFWvidmode), compareVideoModes);
 
-    free(monitor->modes);
+    _glfw_free(monitor->modes);
     monitor->modes = modes;
     monitor->modeCount = modeCount;
 
@@ -100,7 +100,8 @@ void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement)
     {
         _glfw.monitorCount++;
         _glfw.monitors =
-            realloc(_glfw.monitors, sizeof(_GLFWmonitor*) * _glfw.monitorCount);
+            _glfw_realloc(_glfw.monitors,
+                          sizeof(_GLFWmonitor*) * _glfw.monitorCount);
 
         if (placement == _GLFW_INSERT_FIRST)
         {
@@ -166,7 +167,7 @@ void _glfwInputMonitorWindow(_GLFWmonitor* monitor, _GLFWwindow* window)
 //
 _GLFWmonitor* _glfwAllocMonitor(const char* name, int widthMM, int heightMM)
 {
-    _GLFWmonitor* monitor = calloc(1, sizeof(_GLFWmonitor));
+    _GLFWmonitor* monitor = _glfw_calloc(1, sizeof(_GLFWmonitor));
     monitor->widthMM = widthMM;
     monitor->heightMM = heightMM;
 
@@ -187,17 +188,17 @@ void _glfwFreeMonitor(_GLFWmonitor* monitor)
     _glfwFreeGammaArrays(&monitor->originalRamp);
     _glfwFreeGammaArrays(&monitor->currentRamp);
 
-    free(monitor->modes);
-    free(monitor);
+    _glfw_free(monitor->modes);
+    _glfw_free(monitor);
 }
 
 // Allocates red, green and blue value arrays of the specified size
 //
 void _glfwAllocGammaArrays(GLFWgammaramp* ramp, unsigned int size)
 {
-    ramp->red = calloc(size, sizeof(unsigned short));
-    ramp->green = calloc(size, sizeof(unsigned short));
-    ramp->blue = calloc(size, sizeof(unsigned short));
+    ramp->red = _glfw_calloc(size, sizeof(unsigned short));
+    ramp->green = _glfw_calloc(size, sizeof(unsigned short));
+    ramp->blue = _glfw_calloc(size, sizeof(unsigned short));
     ramp->size = size;
 }
 
@@ -205,9 +206,9 @@ void _glfwAllocGammaArrays(GLFWgammaramp* ramp, unsigned int size)
 //
 void _glfwFreeGammaArrays(GLFWgammaramp* ramp)
 {
-    free(ramp->red);
-    free(ramp->green);
-    free(ramp->blue);
+    _glfw_free(ramp->red);
+    _glfw_free(ramp->green);
+    _glfw_free(ramp->blue);
 
     memset(ramp, 0, sizeof(GLFWgammaramp));
 }
@@ -472,7 +473,7 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
     if (!original)
         return;
 
-    values = calloc(original->size, sizeof(unsigned short));
+    values = _glfw_calloc(original->size, sizeof(unsigned short));
 
     for (i = 0;  i < original->size;  i++)
     {
@@ -494,7 +495,7 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
     ramp.size = original->size;
 
     glfwSetGammaRamp(handle, &ramp);
-    free(values);
+    _glfw_free(values);
 }
 
 GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* handle)

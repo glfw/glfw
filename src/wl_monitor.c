@@ -77,7 +77,7 @@ static void outputHandleMode(void* data,
 
     monitor->modeCount++;
     monitor->modes =
-        realloc(monitor->modes, monitor->modeCount * sizeof(GLFWvidmode));
+        _glfw_realloc(monitor->modes, monitor->modeCount * sizeof(GLFWvidmode));
     monitor->modes[monitor->modeCount - 1] = mode;
 
     if (flags & WL_OUTPUT_MODE_CURRENT)

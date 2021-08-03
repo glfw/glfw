@@ -73,7 +73,7 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired,
         return GLFW_FALSE;
     }
 
-    usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));
+    usableConfigs = _glfw_calloc(nativeCount, sizeof(_GLFWfbconfig));
     usableCount = 0;
 
     for (i = 0;  i < nativeCount;  i++)
@@ -138,7 +138,7 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired,
         *result = (GLXFBConfig) closest->handle;
 
     XFree(nativeConfigs);
-    free(usableConfigs);
+    _glfw_free(usableConfigs);
 
     return closest != NULL;
 }

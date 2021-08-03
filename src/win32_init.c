@@ -30,7 +30,6 @@
 #include "internal.h"
 
 #include <stdlib.h>
-#include <malloc.h>
 
 static const GUID _glfw_GUID_DEVINTERFACE_HID =
     {0x4d1e55b2,0xf16f,0x11cf,{0x88,0xcb,0x00,0x11,0x11,0x00,0x00,0x30}};
@@ -405,13 +404,13 @@ WCHAR* _glfwCreateWideStringFromUTF8Win32(const char* source)
         return NULL;
     }
 
-    target = calloc(count, sizeof(WCHAR));
+    target = _glfw_calloc(count, sizeof(WCHAR));
 
     if (!MultiByteToWideChar(CP_UTF8, 0, source, -1, target, count))
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
                              "Win32: Failed to convert string from UTF-8");
-        free(target);
+        _glfw_free(target);
         return NULL;
     }
 
@@ -433,13 +432,13 @@ char* _glfwCreateUTF8FromWideStringWin32(const WCHAR* source)
         return NULL;
     }
 
-    target = calloc(size, 1);
+    target = _glfw_calloc(size, 1);
 
     if (!WideCharToMultiByte(CP_UTF8, 0, source, -1, target, size, NULL, NULL))
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
                              "Win32: Failed to convert string to UTF-8");
-        free(target);
+        _glfw_free(target);
         return NULL;
     }
 
@@ -593,8 +592,8 @@ void _glfwPlatformTerminate(void)
 
     _glfwUnregisterWindowClassWin32();
 
-    free(_glfw.win32.clipboardString);
-    free(_glfw.win32.rawInput);
+    _glfw_free(_glfw.win32.clipboardString);
+    _glfw_free(_glfw.win32.rawInput);
 
     _glfwTerminateWGL();
     _glfwTerminateEGL();

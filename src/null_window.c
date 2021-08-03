@@ -513,7 +513,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 void _glfwPlatformSetClipboardString(const char* string)
 {
     char* copy = _glfw_strdup(string);
-    free(_glfw.null.clipboardString);
+    _glfw_free(_glfw.null.clipboardString);
     _glfw.null.clipboardString = copy;
 }
 

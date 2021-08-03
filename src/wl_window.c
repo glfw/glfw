@@ -112,12 +112,12 @@ static int createAnonymousFile(off_t size)
             return -1;
         }
 
-        name = calloc(strlen(path) + sizeof(template), 1);
+        name = _glfw_calloc(strlen(path) + sizeof(template), 1);
         strcpy(name, path);
         strcat(name, template);
 
         fd = createTmpfileCloexec(name);
-        free(name);
+        _glfw_free(name);
         if (fd < 0)
             return -1;
     }
@@ -382,8 +382,8 @@ static void surfaceHandleEnter(void *data,
     {
         ++window->wl.monitorsSize;
         window->wl.monitors =
-            realloc(window->wl.monitors,
-                    window->wl.monitorsSize * sizeof(_GLFWmonitor*));
+            _glfw_realloc(window->wl.monitors,
+                          window->wl.monitorsSize * sizeof(_GLFWmonitor*));
     }
 
     window->wl.monitors[window->wl.monitorsCount++] = monitor;
@@ -837,7 +837,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     window->wl.currentCursor = NULL;
 
-    window->wl.monitors = calloc(1, sizeof(_GLFWmonitor*));
+    window->wl.monitors = _glfw_calloc(1, sizeof(_GLFWmonitor*));
     window->wl.monitorsCount = 0;
     window->wl.monitorsSize = 1;
 
@@ -882,14 +882,14 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     if (window->wl.surface)
         wl_surface_destroy(window->wl.surface);
 
-    free(window->wl.title);
-    free(window->wl.monitors);
+    _glfw_free(window->wl.title);
+    _glfw_free(window->wl.monitors);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
     if (window->wl.title)
-        free(window->wl.title);
+        _glfw_free(window->wl.title);
     window->wl.title = _glfw_strdup(title);
     if (window->wl.xdg.toplevel)
         xdg_toplevel_set_title(window->wl.xdg.toplevel, title);
@@ -1608,11 +1608,11 @@ void _glfwPlatformSetClipboardString(const char* string)
 
     if (_glfw.wl.clipboardSendString)
     {
-        free(_glfw.wl.clipboardSendString);
+        _glfw_free(_glfw.wl.clipboardSendString);
         _glfw.wl.clipboardSendString = NULL;
     }
 
-    _glfw.wl.clipboardSendString = strdup(string);
+    _glfw.wl.clipboardSendString = _glfw_strdup(string);
     if (!_glfw.wl.clipboardSendString)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -1626,7 +1626,7 @@ void _glfwPlatformSetClipboardString(const char* string)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Impossible to create clipboard source");
-        free(_glfw.wl.clipboardSendString);
+        _glfw_free(_glfw.wl.clipboardSendString);
         return;
     }
     wl_data_source_add_listener(_glfw.wl.dataSource,
@@ -1642,7 +1642,7 @@ static GLFWbool growClipboardString(void)
 {
     char* clipboard = _glfw.wl.clipboardString;
 
-    clipboard = realloc(clipboard, _glfw.wl.clipboardSize * 2);
+    clipboard = _glfw_realloc(clipboard, _glfw.wl.clipboardSize * 2);
     if (!clipboard)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,

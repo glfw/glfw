@@ -524,6 +524,12 @@ const char* _glfwPlatformGetClipboardString(void)
 
 const char* _glfwPlatformGetScancodeName(int scancode)
 {
+    if (scancode < GLFW_KEY_SPACE || scancode > GLFW_KEY_LAST)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode %i", scancode);
+        return NULL;
+    }
+
     switch (scancode)
     {
         case GLFW_KEY_APOSTROPHE:

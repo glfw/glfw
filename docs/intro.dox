@@ -103,7 +103,6 @@ one of `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`,
 `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` and
 `GLFW_ANGLE_PLATFORM_TYPE_METAL`.
 
-@par
 The ANGLE platform type is specified via the `EGL_ANGLE_platform_angle`
 extension.  This extension is not used if this hint is
 `GLFW_ANGLE_PLATFORM_TYPE_NONE`, which is the default value.
@@ -124,14 +123,24 @@ a nib or manually by GLFW.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 This is ignored on other platforms.
 
 
+@subsubsection init_hints_x11 X11 specific init hints
+
+@anchor GLFW_X11_XCB_VULKAN_SURFACE_hint
+__GLFW_X11_XCB_VULKAN_SURFACE__ specifies whether to prefer the
+`VK_KHR_xcb_surface` extension for creating Vulkan surfaces, or whether to use
+the `VK_KHR_xlib_surface` extension.  Possible values are `GLFW_TRUE` and
+`GLFW_FALSE`.  This is ignored on other platforms.
+
+
 @subsubsection init_hints_values Supported and default values
 
-Initialization hint             | Default value                   | Supported values
-------------------------------- | ------------------------------- | ----------------
-@ref GLFW_JOYSTICK_HAT_BUTTONS  | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_ANGLE_PLATFORM_TYPE   | `GLFW_ANGLE_PLATFORM_TYPE_NONE` | `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGLES`, `GLFW_ANGLE_PLATFORM_TYPE_D3D9`, `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` or `GLFW_ANGLE_PLATFORM_TYPE_METAL`
-@ref GLFW_COCOA_CHDIR_RESOURCES | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_COCOA_MENUBAR         | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+Initialization hint              | Default value                   | Supported values
+-------------------------------- | ------------------------------- | ----------------
+@ref GLFW_JOYSTICK_HAT_BUTTONS   | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_ANGLE_PLATFORM_TYPE    | `GLFW_ANGLE_PLATFORM_TYPE_NONE` | `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGLES`, `GLFW_ANGLE_PLATFORM_TYPE_D3D9`, `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` or `GLFW_ANGLE_PLATFORM_TYPE_METAL`
+@ref GLFW_COCOA_CHDIR_RESOURCES  | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_COCOA_MENUBAR          | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_X11_XCB_VULKAN_SURFACE | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
 
 
 @subsection intro_init_terminate Terminating GLFW

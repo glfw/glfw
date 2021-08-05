@@ -116,6 +116,7 @@ static void usage(void)
                                         ANGLE_TYPE_VULKAN " or "
                                         ANGLE_TYPE_METAL ")\n");
     printf("      --graphics-switching  request macOS graphics switching\n");
+    printf("      --disable-xcb-surface disable VK_KHR_xcb_surface extension\n");
 }
 
 static void error_callback(int error, const char* description)
@@ -360,6 +361,7 @@ int main(int argc, char** argv)
     bool fb_doublebuffer = true;
     int angle_type = GLFW_ANGLE_PLATFORM_TYPE_NONE;
     bool cocoa_graphics_switching = false;
+    bool disable_xcb_surface = false;
 
     enum { CLIENT, CONTEXT, BEHAVIOR, DEBUG_CONTEXT, FORWARD, HELP,
            EXTENSIONS, LAYERS,
@@ -367,7 +369,7 @@ int main(int argc, char** argv)
            REDBITS, GREENBITS, BLUEBITS, ALPHABITS, DEPTHBITS, STENCILBITS,
            ACCUMREDBITS, ACCUMGREENBITS, ACCUMBLUEBITS, ACCUMALPHABITS,
            AUXBUFFERS, SAMPLES, STEREO, SRGB, SINGLEBUFFER, NOERROR_SRSLY,
-           ANGLE_TYPE, GRAPHICS_SWITCHING };
+           ANGLE_TYPE, GRAPHICS_SWITCHING, XCB_SURFACE };
     const struct option options[] =
     {
         { "behavior",           1, NULL, BEHAVIOR },
@@ -401,6 +403,7 @@ int main(int argc, char** argv)
         { "no-error",           0, NULL, NOERROR_SRSLY },
         { "angle-type",         1, NULL, ANGLE_TYPE },
         { "graphics-switching", 0, NULL, GRAPHICS_SWITCHING },
+        { "vk-xcb-surface",     0, NULL, XCB_SURFACE },
         { NULL, 0, NULL, 0 }
     };
 
@@ -607,6 +610,9 @@ int main(int argc, char** argv)
             case GRAPHICS_SWITCHING:
                 cocoa_graphics_switching = true;
                 break;
+            case XCB_SURFACE:
+                disable_xcb_surface = true;
+                break;
             default:
                 usage();
                 exit(EXIT_FAILURE);
@@ -623,6 +629,7 @@ int main(int argc, char** argv)
     glfwInitHint(GLFW_COCOA_MENUBAR, false);
 
     glfwInitHint(GLFW_ANGLE_PLATFORM_TYPE, angle_type);
+    glfwInitHint(GLFW_X11_XCB_VULKAN_SURFACE, !disable_xcb_surface);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
@@ -843,6 +850,17 @@ int main(int argc, char** argv)
     if (list_extensions)
         list_context_extensions(client, major, minor);
 
+    glfwDestroyWindow(window);
+
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+
+    window = glfwCreateWindow(200, 200, "Version", NULL, NULL);
+    if (!window)
+    {
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
+
     printf("Vulkan loader: %s\n",
            glfwVulkanSupported() ? "available" : "missing");
 
@@ -866,15 +884,14 @@ int main(int argc, char** argv)
         uint32_t re_count;
         const char** re = glfwGetRequiredInstanceExtensions(&re_count);
 
-        printf("Vulkan required instance extensions:");
         if (re)
         {
+            printf("Vulkan window surface required instance extensions:\n");
             for (uint32_t i = 0;  i < re_count;  i++)
-                printf(" %s", re[i]);
-            putchar('\n');
+                printf(" %s\n", re[i]);
         }
         else
-            printf(" missing\n");
+            printf("Vulkan window surface extensions missing\n");
 
         if (list_extensions)
             list_vulkan_instance_extensions();
@@ -908,6 +925,19 @@ int main(int argc, char** argv)
 
         gladLoadVulkanUserPtr(NULL, glad_vulkan_callback, instance);
 
+        if (re)
+        {
+            VkSurfaceKHR surface = VK_NULL_HANDLE;
+
+            if (glfwCreateWindowSurface(instance, window, NULL, &surface) == VK_SUCCESS)
+            {
+                printf("Vulkan window surface created successfully\n");
+                vkDestroySurfaceKHR(instance, surface, NULL);
+            }
+            else
+                printf("Failed to create Vulkan window surface\n");
+        }
+
         uint32_t pd_count;
         vkEnumeratePhysicalDevices(instance, &pd_count, NULL);
         VkPhysicalDevice* pd = calloc(pd_count, sizeof(VkPhysicalDevice));
@@ -916,7 +946,6 @@ int main(int argc, char** argv)
         for (uint32_t i = 0;  i < pd_count;  i++)
         {
             VkPhysicalDeviceProperties pdp;
-
             vkGetPhysicalDeviceProperties(pd[i], &pdp);
 
             printf("Vulkan %s device: \"%s\" (API version %i.%i)\n",
@@ -924,6 +953,19 @@ int main(int argc, char** argv)
                    pdp.deviceName,
                    VK_VERSION_MAJOR(pdp.apiVersion),
                    VK_VERSION_MINOR(pdp.apiVersion));
+
+            uint32_t qfp_count;
+            vkGetPhysicalDeviceQueueFamilyProperties(pd[i], &qfp_count, NULL);
+
+            printf("Vulkan device queue family presentation support:\n");
+            for (uint32_t j = 0;  j < qfp_count;  j++)
+            {
+                printf(" %u: ", j);
+                if (glfwGetPhysicalDevicePresentationSupport(instance, pd[i], j))
+                    printf("supported\n");
+                else
+                    printf("no\n");
+            }
 
             if (list_extensions)
                 list_vulkan_device_extensions(instance, pd[i]);
@@ -935,6 +977,8 @@ int main(int argc, char** argv)
         free(pd);
         vkDestroyInstance(instance, NULL);
     }
+
+    glfwDestroyWindow(window);
 
     glfwTerminate();
     exit(EXIT_SUCCESS);

@@ -4,6 +4,15 @@ add_library(glfw "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"
                  internal.h mappings.h context.c init.c input.c monitor.c
                  vulkan.c window.c)
 
+add_custom_target(update_mappings
+    COMMAND "${CMAKE_COMMAND}" -P "${GLFW_SOURCE_DIR}/CMake/GenerateMappings.cmake" mappings.h.in mappings.h
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    COMMENT "Updating gamepad mappings from upstream repository"
+    SOURCES mappings.h.in "${GLFW_SOURCE_DIR}/CMake/GenerateMappings.cmake"
+    VERBATIM)
+
+set_target_properties(update_mappings PROPERTIES FOLDER "GLFW3")
+
 if (_GLFW_COCOA)
     target_sources(glfw PRIVATE cocoa_platform.h cocoa_joystick.h posix_thread.h
                                 nsgl_context.h egl_context.h osmesa_context.h
@@ -130,22 +139,18 @@ if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
 endif()
 
 # Enable a reasonable set of warnings
-if (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR
-    CMAKE_C_COMPILER_ID STREQUAL "Clang" OR
-    CMAKE_C_COMPILER_ID STREQUAL "AppleClang")
-
-    if (CMAKE_C_SIMULATE_ID STREQUAL "MSVC")
-        # Tell Clang-CL that this is a Clang flag
-        target_compile_options(glfw PRIVATE "/clang:-Wall")
-    else()
-        target_compile_options(glfw PRIVATE "-Wall")
-    endif()
-elseif (MSVC)
+# NOTE: The order matters here, Clang-CL matches both MSVC and Clang
+if (MSVC)
     target_compile_options(glfw PRIVATE "/W3")
+elseif (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR
+        CMAKE_C_COMPILER_ID STREQUAL "Clang" OR
+        CMAKE_C_COMPILER_ID STREQUAL "AppleClang")
+
+    target_compile_options(glfw PRIVATE "-Wall")
 endif()
 
-if (WIN32)
-    target_compile_definitions(glfw PRIVATE _UNICODE)
+if (_GLFW_WIN32)
+    target_compile_definitions(glfw PRIVATE UNICODE _UNICODE)
 endif()
 
 # HACK: When building on MinGW, WINVER and UNICODE need to be defined before
@@ -153,7 +158,7 @@ endif()
 # win32_platform.h.  We define them here until a saner solution can be found
 # NOTE: MinGW-w64 and Visual C++ do /not/ need this hack.
 if (MINGW)
-    target_compile_definitions(glfw PRIVATE UNICODE WINVER=0x0501)
+    target_compile_definitions(glfw PRIVATE WINVER=0x0501)
 endif()
 
 # Workaround for legacy MinGW not providing XInput and DirectInput
@@ -166,8 +171,8 @@ if (MINGW)
     endif()
 endif()
 
-# Workaround for VS deprecating parts of the standard library
-if (MSVC)
+# Workaround for the MS CRT deprecating parts of the standard library
+if (MSVC OR CMAKE_C_SIMULATE_ID STREQUAL "MSVC")
     target_compile_definitions(glfw PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
 
@@ -243,7 +248,7 @@ endif()
 if (GLFW_INSTALL)
     install(TARGETS glfw
             EXPORT glfwTargets
-            RUNTIME DESTINATION "bin"
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 endif()

@@ -142,6 +142,7 @@ then GLFW will fail to initialize.
  - @ref GLFW_ANGLE_PLATFORM_TYPE_D3D11
  - @ref GLFW_ANGLE_PLATFORM_TYPE_VULKAN
  - @ref GLFW_ANGLE_PLATFORM_TYPE_METAL
+ - @ref GLFW_X11_XCB_VULKAN_SURFACE
 
 
 @section news_archive Release notes for earlier versions

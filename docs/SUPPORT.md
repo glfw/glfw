@@ -1,11 +1,11 @@
 # Support resources
 
-See the [latest documentation](http://www.glfw.org/docs/latest/) for tutorials,
+See the [latest documentation](https://www.glfw.org/docs/latest/) for tutorials,
 guides and the API reference.
 
 If you have questions about using GLFW, we have a
 [forum](https://discourse.glfw.org/), and the `#glfw` IRC channel on
-[Freenode](http://freenode.net/).
+[Libera.Chat](https://libera.chat/).
 
 Bugs are reported to our [issue tracker](https://github.com/glfw/glfw/issues).
 Please check the [contribution

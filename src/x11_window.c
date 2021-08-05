@@ -2485,7 +2485,11 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
     }
 
     if (window->monitor)
+    {
+        _glfwPlatformSetWindowDecorated(window, window->decorated);
+        _glfwPlatformSetWindowFloating(window, window->floating);
         releaseMonitor(window);
+    }
 
     _glfwInputWindowMonitor(window, monitor);
     updateNormalHints(window, width, height);
@@ -2887,7 +2891,7 @@ const char* _glfwPlatformGetScancodeName(int scancode)
     if (scancode < 0 || scancode > 0xff ||
         _glfw.x11.keycodes[scancode] == GLFW_KEY_UNKNOWN)
     {
-        _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode");
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode %i", scancode);
         return NULL;
     }
 

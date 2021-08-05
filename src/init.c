@@ -28,7 +28,6 @@
 //========================================================================
 
 #include "internal.h"
-#include "mappings.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -57,7 +56,10 @@ static _GLFWinitconfig _glfwInitHints =
     {
         GLFW_TRUE,  // macOS menu bar
         GLFW_TRUE   // macOS bundle chdir
-    }
+    },
+    {
+        GLFW_TRUE,  // X11 XCB Vulkan surface
+    },
 };
 
 // Terminate the library
@@ -253,24 +255,12 @@ GLFWAPI int glfwInit(void)
 
     _glfwPlatformSetTls(&_glfw.errorSlot, &_glfwMainThreadError);
 
+    _glfwInitGamepadMappings();
+
     _glfw.initialized = GLFW_TRUE;
     _glfw.timer.offset = _glfwPlatformGetTimerValue();
 
     glfwDefaultWindowHints();
-
-    {
-        int i;
-
-        for (i = 0;  _glfwDefaultMappings[i];  i++)
-        {
-            if (!glfwUpdateGamepadMappings(_glfwDefaultMappings[i]))
-            {
-                terminate();
-                return GLFW_FALSE;
-            }
-        }
-    }
-
     return GLFW_TRUE;
 }
 
@@ -297,6 +287,9 @@ GLFWAPI void glfwInitHint(int hint, int value)
             return;
         case GLFW_COCOA_MENUBAR:
             _glfwInitHints.ns.menubar = value;
+            return;
+        case GLFW_X11_XCB_VULKAN_SURFACE:
+            _glfwInitHints.x11.xcbVulkanSurface = value;
             return;
     }
 

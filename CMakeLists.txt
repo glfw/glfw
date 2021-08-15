@@ -215,8 +215,6 @@ if (_GLFW_WAYLAND)
         wayland-egl>=0.2.7
         xkbcommon)
 
-    list(APPEND glfw_PKG_DEPS "wayland-client")
-
     list(APPEND glfw_INCLUDE_DIRS "${Wayland_INCLUDE_DIRS}")
 
     include(CheckIncludeFiles)

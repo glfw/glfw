@@ -126,6 +126,7 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: Compilation with LLVM for Windows failed (#1807,#1824,#1874)
  - [Cocoa] Bugfix: The MoltenVK layer contents scale was updated only after
    related events were emitted
+ - [X11] Bugfix: Changing `GLFW_FLOATING` could leak memory
  - [NSGL] Bugfix: Defining `GL_SILENCE_DEPRECATION` externally caused
    a duplicate definition warning (#1840)
  - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)

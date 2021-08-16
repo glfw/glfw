@@ -447,6 +447,7 @@ skills.
  - Yoshiki Shibukawa
  - Dmitri Shuralyov
  - Daniel Skorupski
+ - Anthony Smith
  - Bradley Smith
  - Cliff Smolinsky
  - Patrick Snape

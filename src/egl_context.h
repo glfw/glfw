@@ -163,7 +163,6 @@ typedef struct _GLFWcontextEGL
    EGLSurface       surface;
 
    void*            client;
-
 } _GLFWcontextEGL;
 
 // EGL-specific global data
@@ -211,7 +210,6 @@ typedef struct _GLFWlibraryEGL
 
     PFNEGLGETPLATFORMDISPLAYEXTPROC GetPlatformDisplayEXT;
     PFNEGLCREATEPLATFORMWINDOWSURFACEEXTPROC CreatePlatformWindowSurfaceEXT;
-
 } _GLFWlibraryEGL;
 
 

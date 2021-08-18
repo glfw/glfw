@@ -164,7 +164,6 @@ typedef struct _GLFWcontextEGL
    EGLSurface       surface;
 
    void*            client;
-
 } _GLFWcontextEGL;
 
 // EGL-specific global data
@@ -199,7 +198,6 @@ typedef struct _GLFWlibraryEGL
     PFN_eglSwapInterval         SwapInterval;
     PFN_eglQueryString          QueryString;
     PFN_eglGetProcAddress       GetProcAddress;
-
 } _GLFWlibraryEGL;
 
 

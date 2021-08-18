@@ -328,7 +328,6 @@ typedef struct _GLFWwindowWin32
     int                 lastCursorPosX, lastCursorPosY;
     // The last recevied high surrogate when decoding pairs of UTF-16 messages
     WCHAR               highSurrogate;
-
 } _GLFWwindowWin32;
 
 // Win32-specific global data
@@ -396,7 +395,6 @@ typedef struct _GLFWlibraryWin32
         HINSTANCE                       instance;
         PFN_RtlVerifyVersionInfo        RtlVerifyVersionInfo_;
     } ntdll;
-
 } _GLFWlibraryWin32;
 
 // Win32-specific per-monitor data
@@ -411,7 +409,6 @@ typedef struct _GLFWmonitorWin32
     char                publicDisplayName[32];
     GLFWbool            modesPruned;
     GLFWbool            modeChanged;
-
 } _GLFWmonitorWin32;
 
 // Win32-specific per-cursor data
@@ -419,7 +416,6 @@ typedef struct _GLFWmonitorWin32
 typedef struct _GLFWcursorWin32
 {
     HCURSOR             handle;
-
 } _GLFWcursorWin32;
 
 // Win32-specific global timer data
@@ -428,7 +424,6 @@ typedef struct _GLFWtimerWin32
 {
     GLFWbool            hasPC;
     uint64_t            frequency;
-
 } _GLFWtimerWin32;
 
 // Win32-specific thread local storage data
@@ -437,7 +432,6 @@ typedef struct _GLFWtlsWin32
 {
     GLFWbool            allocated;
     DWORD               index;
-
 } _GLFWtlsWin32;
 
 // Win32-specific mutex data
@@ -446,7 +440,6 @@ typedef struct _GLFWmutexWin32
 {
     GLFWbool            allocated;
     CRITICAL_SECTION    section;
-
 } _GLFWmutexWin32;
 
 

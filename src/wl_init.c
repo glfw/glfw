@@ -1092,6 +1092,10 @@ int _glfwPlatformInit(void)
         _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_get_user_data");
     _glfw.wl.client.proxy_set_user_data = (PFN_wl_proxy_set_user_data)
         _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_set_user_data");
+    _glfw.wl.client.proxy_get_version = (PFN_wl_proxy_get_version)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_get_version");
+    _glfw.wl.client.proxy_marshal_flags = (PFN_wl_proxy_marshal_flags)
+        _glfw_dlsym(_glfw.wl.client.handle, "wl_proxy_marshal_flags");
 
     if (!_glfw.wl.client.display_flush ||
         !_glfw.wl.client.display_cancel_read ||

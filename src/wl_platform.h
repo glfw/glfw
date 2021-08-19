@@ -70,6 +70,8 @@ typedef struct wl_proxy* (* PFN_wl_proxy_marshal_constructor)(struct wl_proxy*,u
 typedef struct wl_proxy* (* PFN_wl_proxy_marshal_constructor_versioned)(struct wl_proxy*,uint32_t,const struct wl_interface*,uint32_t,...);
 typedef void* (* PFN_wl_proxy_get_user_data)(struct wl_proxy*);
 typedef void (* PFN_wl_proxy_set_user_data)(struct wl_proxy*,void*);
+typedef uint32_t (* PFN_wl_proxy_get_version)(struct wl_proxy*);
+typedef struct wl_proxy* (* PFN_wl_proxy_marshal_flags)(struct wl_proxy*,uint32_t,const struct wl_interface*,uint32_t,uint32_t,...);
 #define wl_display_flush _glfw.wl.client.display_flush
 #define wl_display_cancel_read _glfw.wl.client.display_cancel_read
 #define wl_display_dispatch_pending _glfw.wl.client.display_dispatch_pending
@@ -86,6 +88,8 @@ typedef void (* PFN_wl_proxy_set_user_data)(struct wl_proxy*,void*);
 #define wl_proxy_marshal_constructor_versioned _glfw.wl.client.proxy_marshal_constructor_versioned
 #define wl_proxy_get_user_data _glfw.wl.client.proxy_get_user_data
 #define wl_proxy_set_user_data _glfw.wl.client.proxy_set_user_data
+#define wl_proxy_get_version _glfw.wl.client.proxy_get_version
+#define wl_proxy_marshal_flags _glfw.wl.client.proxy_marshal_flags
 
 struct wl_shm;
 
@@ -388,6 +392,8 @@ typedef struct _GLFWlibraryWayland
         PFN_wl_proxy_marshal_constructor_versioned  proxy_marshal_constructor_versioned;
         PFN_wl_proxy_get_user_data                  proxy_get_user_data;
         PFN_wl_proxy_set_user_data                  proxy_set_user_data;
+        PFN_wl_proxy_get_version                    proxy_get_version;
+        PFN_wl_proxy_marshal_flags                  proxy_marshal_flags;
     } client;
 
     struct {

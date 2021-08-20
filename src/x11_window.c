@@ -1271,7 +1271,7 @@ static void processEvent(XEvent *event)
                 //       (the server never sends a timestamp of zero)
                 // NOTE: Timestamp difference is compared to handle wrap-around
                 Time diff = event->xkey.time - window->x11.keyPressTimes[keycode];
-                if (diff == event->xkey.time || (diff > 0 && diff < (1 << 31)))
+                if (diff == event->xkey.time || (diff > 0 && diff < (1 << 30)))
                 {
                     if (keycode)
                         _glfwInputKey(window, key, keycode, GLFW_PRESS, mods);

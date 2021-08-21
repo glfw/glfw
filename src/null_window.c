@@ -654,6 +654,11 @@ int _glfwPlatformGetKeyScancode(int key)
     return key;
 }
 
+const char* _glfwPlatformGetKeyboardLayoutName(void)
+{
+    return "";
+}
+
 void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)
 {
 }

@@ -653,6 +653,12 @@ static void keyboardHandleModifiers(void* data,
     if (mask & _glfw.wl.xkb.numLockMask)
         modifiers |= GLFW_MOD_NUM_LOCK;
     _glfw.wl.xkb.modifiers = modifiers;
+
+    if (_glfw.wl.xkb.group != group)
+    {
+        _glfw.wl.xkb.group = group;
+        _glfwInputKeyboardLayout();
+    }
 }
 
 #ifdef WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION
@@ -1181,6 +1187,8 @@ int _glfwPlatformInit(void)
         _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_update_mask");
     _glfw.wl.xkb.state_serialize_mods = (PFN_xkb_state_serialize_mods)
         _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_serialize_mods");
+    _glfw.wl.xkb.keymap_layout_get_name = (PFN_xkb_keymap_layout_get_name)
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_keymap_layout_get_name");
 
 #ifdef HAVE_XKBCOMMON_COMPOSE_H
     _glfw.wl.xkb.compose_table_new_from_locale = (PFN_xkb_compose_table_new_from_locale)
@@ -1372,6 +1380,8 @@ void _glfwPlatformTerminate(void)
         free(_glfw.wl.clipboardString);
     if (_glfw.wl.clipboardSendString)
         free(_glfw.wl.clipboardSendString);
+    if (_glfw.wl.keyboardLayoutName)
+        free(_glfw.wl.keyboardLayoutName);
 }
 
 const char* _glfwPlatformGetVersionString(void)

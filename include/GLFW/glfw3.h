@@ -1354,6 +1354,23 @@ typedef struct GLFWcursor GLFWcursor;
  */
 typedef void (* GLFWerrorfun)(int,const char*);
 
+/*! @brief The function pointer type for keyboard layout callbacks.
+ *
+ *  This is the function pointer type for keyboard layout callbacks.  A keyboard
+ *  layout callback function has the following signature:
+ *  @code
+ *  void callback_name(void);
+ *  @endcode
+ *
+ *  @sa @ref keyboard_layout
+ *  @sa @ref glfwSetKeyboardLayoutCallback
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWkeyboardlayoutfun)(void);
+
 /*! @brief The function pointer type for window position callbacks.
  *
  *  This is the function pointer type for window position callbacks.  A window
@@ -4357,15 +4374,17 @@ GLFWAPI int glfwRawMouseMotionSupported(void);
  *  non-printable keys are the same across layouts but depend on the application
  *  language and should be localized along with other user interface text.
  *
+ *  The contents of the returned string may change when a keyboard
+ *  layout change event is received.  Set a
+ *  [keyboard layout](@ref keyboard_layout) callback to be notified when the
+ *  layout changes.
+ *
  *  @param[in] key The key to query, or `GLFW_KEY_UNKNOWN`.
  *  @param[in] scancode The scancode of the key to query.
  *  @return The UTF-8 encoded, layout-specific name of the key, or `NULL`.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
- *
- *  @remark The contents of the returned string may change when a keyboard
- *  layout change event is received.
  *
  *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
  *  should not free it yourself.  It is valid until the library is terminated.
@@ -4403,6 +4422,73 @@ GLFWAPI const char* glfwGetKeyName(int key, int scancode);
  *  @ingroup input
  */
 GLFWAPI int glfwGetKeyScancode(int key);
+
+/*! @brief Returns the human-readable name of the current keyboard layout.
+ *
+ *  This function returns the human-readable name, encoded as UTF-8, of the
+ *  current keyboard layout.  On some platforms this may not be updated until
+ *  one of the application's windows gets input focus.
+ *
+ *  The keyboard layout name is intended to be shown to the user during text
+ *  input, especially in full screen applications.
+ *
+ *  The name may be localized into the current operating system UI language.  It
+ *  is provided by the operating system and may not be identical for a given
+ *  layout across platforms.
+ *
+ *  @return The UTF-8 encoded name of the current keyboard layout, or `NULL` if
+ *  an [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_PLATFORM_ERROR and @ref
+ *  GLFW_NOT_INITIALIZED.
+ *
+ *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is valid until the next call to this
+ *  function or the library is terminated.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref keyboard_layout
+ *  @sa @ref glfwSetKeyboardLayoutCallback
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup input
+ */
+GLFWAPI const char* glfwGetKeyboardLayoutName(void);
+
+/*! @brief Sets the keyboard layout callback.
+ *
+ *  This function sets the keyboard layout callback, which is called when the
+ *  keyboard layout is changed.  The name of the current layout is returned by
+ *  @ref glfwGetKeyboardLayoutName.
+ *
+ *  On some platforms the keyboard layout event may not arrive until one of the
+ *  application's windows get input focus.  Layout changes may not be reported
+ *  while other applications have input focus.
+ *
+ *  @param[in] callback The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  @callback_signature
+ *  @code
+ *  void function_name(void)
+ *  @endcode
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref keyboard_layout
+ *  @sa @ref glfwGetKeyboardLayoutName
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWkeyboardlayoutfun glfwSetKeyboardLayoutCallback(GLFWkeyboardlayoutfun callback);
 
 /*! @brief Returns the last reported state of a keyboard key for the specified
  *  window.

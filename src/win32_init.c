@@ -594,6 +594,7 @@ void _glfwPlatformTerminate(void)
     _glfwUnregisterWindowClassWin32();
 
     free(_glfw.win32.clipboardString);
+    free(_glfw.win32.keyboardLayoutName);
     free(_glfw.win32.rawInput);
 
     _glfwTerminateWGL();

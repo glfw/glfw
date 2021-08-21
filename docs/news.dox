@@ -9,6 +9,15 @@
 
 @subsection features_34 New features in version 3.4
 
+@subsubsection keyboard_layout_34 Keyboard layouts
+
+GLFW can now notify when the keyboard layout has changed with @ref
+glfwSetKeyboardLayoutCallback and provides the human-readable name of the
+current layout with @ref glfwGetKeyboardLayoutName.
+
+For more information, see @ref keyboard_layout.
+
+
 @subsubsection standard_cursors_34 More standard cursors
 
 GLFW now provides the standard cursor shapes @ref GLFW_RESIZE_NWSE_CURSOR and

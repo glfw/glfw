@@ -67,7 +67,7 @@ static GLFWbool waitForEvent(double* timeout)
     const int fd = ConnectionNumber(_glfw.x11.display);
     int count = fd + 1;
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(__FreeBSD__)
     if (_glfw.linjs.inotify > fd)
         count = _glfw.linjs.inotify + 1;
 #endif
@@ -75,7 +75,7 @@ static GLFWbool waitForEvent(double* timeout)
     {
         FD_ZERO(&fds);
         FD_SET(fd, &fds);
-#if defined(__linux__)
+#if defined(__linux__) || defined(__FreeBSD__)
         if (_glfw.linjs.inotify > 0)
             FD_SET(_glfw.linjs.inotify, &fds);
 #endif
@@ -2779,7 +2779,7 @@ void _glfwPlatformPollEvents(void)
 {
     _GLFWwindow* window;
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(__FreeBSD__)
     if (_glfw.joysticksInitialized)
         _glfwDetectJoystickConnectionLinux();
 #endif

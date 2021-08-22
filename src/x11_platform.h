@@ -378,7 +378,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)(Vk
 #include "posix_time.h"
 #include "xkb_unicode.h"
 #include "glx_context.h"
-#if defined(__linux__)
+#if defined(__linux__) || defined(__FreeBSD__)
 #include "linux_joystick.h"
 #else
 #include "null_joystick.h"

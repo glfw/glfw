@@ -88,6 +88,10 @@ in the documentation for more information.
 GLFW itself needs only CMake 3.1 or later and the headers and libraries for your
 OS and window system.
 
+As an exception, on FreeBSD, the `devel/evdev-proto` and `devel/libinotify`
+ports need to be installed; furthermore, to actually use gamepads/joysticks,
+`multimedia/webcamd` needs to be installed and configured.
+
 The examples and test programs depend on a number of tiny libraries.  These are
 located in the `deps/` directory.
 

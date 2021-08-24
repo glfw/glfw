@@ -18,8 +18,7 @@ elseif (APPLE)
     set(ICON glfw.icns)
 endif()
 
-set(GLAD_GL "${GLFW_SOURCE_DIR}/deps/glad/gl.h"
-            "${GLFW_SOURCE_DIR}/deps/glad_gl.c")
+set(GLAD_GL "${GLFW_SOURCE_DIR}/deps/glad/gl.h")
 set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"
            "${GLFW_SOURCE_DIR}/deps/getopt.c")
 set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"

@@ -23,7 +23,9 @@
 //
 //========================================================================
 
+#define GLAD_GL_IMPLEMENTATION
 #include <glad/gl.h>
+#define GLAD_VULKAN_IMPLEMENTATION
 #include <glad/vulkan.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -321,11 +323,6 @@ static void print_version(void)
            GLFW_VERSION_REVISION);
     printf("GLFW library version: %u.%u.%u\n", major, minor, revision);
     printf("GLFW library version string: \"%s\"\n", glfwGetVersionString());
-}
-
-static GLADapiproc glad_vulkan_callback(const char* name, void* user)
-{
-    return glfwGetInstanceProcAddress((VkInstance) user, name);
 }
 
 int main(int argc, char** argv)
@@ -866,7 +863,7 @@ int main(int argc, char** argv)
 
     if (glfwVulkanSupported())
     {
-        gladLoadVulkanUserPtr(NULL, glad_vulkan_callback, NULL);
+        gladLoadVulkanUserPtr(NULL, (GLADuserptrloadfunc) glfwGetInstanceProcAddress, NULL);
 
         uint32_t loader_version = VK_API_VERSION_1_0;
 
@@ -923,7 +920,7 @@ int main(int argc, char** argv)
             exit(EXIT_FAILURE);
         }
 
-        gladLoadVulkanUserPtr(NULL, glad_vulkan_callback, instance);
+        gladLoadVulkanUserPtr(NULL, (GLADuserptrloadfunc) glfwGetInstanceProcAddress, instance);
 
         if (re)
         {

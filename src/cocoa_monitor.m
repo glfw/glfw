@@ -297,7 +297,7 @@ static double getFallbackRefreshRate(CGDirectDisplayID displayID)
 
 // Poll for changes in the set of connected monitors
 //
-void _glfwPollMonitorsNS(void)
+void _glfwPollMonitorsCocoa(void)
 {
     uint32_t displayCount;
     CGGetOnlineDisplayList(0, NULL, &displayCount);
@@ -385,7 +385,7 @@ void _glfwPollMonitorsNS(void)
 
 // Change the current video mode
 //
-void _glfwSetVideoModeNS(_GLFWmonitor* monitor, const GLFWvidmode* desired)
+void _glfwSetVideoModeCocoa(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 {
     GLFWvidmode current;
     _glfwPlatformGetVideoMode(monitor, &current);
@@ -428,7 +428,7 @@ void _glfwSetVideoModeNS(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 
 // Restore the previously saved (original) video mode
 //
-void _glfwRestoreVideoModeNS(_GLFWmonitor* monitor)
+void _glfwRestoreVideoModeCocoa(_GLFWmonitor* monitor)
 {
     if (monitor->ns.previousMode)
     {
@@ -504,7 +504,7 @@ void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor,
     if (xpos)
         *xpos = frameRect.origin.x;
     if (ypos)
-        *ypos = _glfwTransformYNS(frameRect.origin.y + frameRect.size.height - 1);
+        *ypos = _glfwTransformYCocoa(frameRect.origin.y + frameRect.size.height - 1);
     if (width)
         *width = frameRect.size.width;
     if (height)

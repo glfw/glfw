@@ -205,13 +205,13 @@ typedef struct _GLFWcursorNS
 } _GLFWcursorNS;
 
 
-void _glfwPollMonitorsNS(void);
-void _glfwSetVideoModeNS(_GLFWmonitor* monitor, const GLFWvidmode* desired);
-void _glfwRestoreVideoModeNS(_GLFWmonitor* monitor);
+void _glfwPollMonitorsCocoa(void);
+void _glfwSetVideoModeCocoa(_GLFWmonitor* monitor, const GLFWvidmode* desired);
+void _glfwRestoreVideoModeCocoa(_GLFWmonitor* monitor);
 
-float _glfwTransformYNS(float y);
+float _glfwTransformYCocoa(float y);
 
-void* _glfwLoadLocalVulkanLoaderNS(void);
+void* _glfwLoadLocalVulkanLoaderCocoa(void);
 
 GLFWbool _glfwInitNSGL(void);
 void _glfwTerminateNSGL(void);

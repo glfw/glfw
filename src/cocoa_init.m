@@ -307,7 +307,7 @@ static void createKeyTables(void)
 
 // Retrieve Unicode data for the current keyboard layout
 //
-static GLFWbool updateUnicodeDataNS(void)
+static GLFWbool updateUnicodeData(void)
 {
     if (_glfw.ns.inputSource)
     {
@@ -377,7 +377,7 @@ static GLFWbool initializeTIS(void)
     _glfw.ns.tis.kPropertyUnicodeKeyLayoutData =
         *kPropertyUnicodeKeyLayoutData;
 
-    return updateUnicodeDataNS();
+    return updateUnicodeData();
 }
 
 @interface GLFWHelper : NSObject
@@ -387,7 +387,7 @@ static GLFWbool initializeTIS(void)
 
 - (void)selectedKeyboardInputSourceChanged:(NSObject* )object
 {
-    updateUnicodeDataNS();
+    updateUnicodeData();
 }
 
 - (void)doNothing:(id)object
@@ -421,7 +421,7 @@ static GLFWbool initializeTIS(void)
             [window->context.nsgl.object update];
     }
 
-    _glfwPollMonitorsNS();
+    _glfwPollMonitorsCocoa();
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification
@@ -453,7 +453,7 @@ static GLFWbool initializeTIS(void)
     int i;
 
     for (i = 0;  i < _glfw.monitorCount;  i++)
-        _glfwRestoreVideoModeNS(_glfw.monitors[i]);
+        _glfwRestoreVideoModeCocoa(_glfw.monitors[i]);
 }
 
 @end // GLFWApplicationDelegate
@@ -463,7 +463,7 @@ static GLFWbool initializeTIS(void)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-void* _glfwLoadLocalVulkanLoaderNS(void)
+void* _glfwLoadLocalVulkanLoaderCocoa(void)
 {
     CFBundleRef bundle = CFBundleGetMainBundle();
     if (!bundle)
@@ -547,7 +547,7 @@ int _glfwPlatformInit(void)
     if (!initializeTIS())
         return GLFW_FALSE;
 
-    _glfwPollMonitorsNS();
+    _glfwPollMonitorsCocoa();
 
     if (![[NSRunningApplication currentApplication] isFinishedLaunching])
         [NSApp run];

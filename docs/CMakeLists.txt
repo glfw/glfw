@@ -21,7 +21,7 @@ set(GLFW_DOXYGEN_SOURCES
 
 # Format the source list into a Doxyfile INPUT value that Doxygen can parse
 foreach(path IN LISTS GLFW_DOXYGEN_SOURCES)
-    set(GLFW_DOXYGEN_INPUT "${GLFW_DOXYGEN_INPUT} \\\n\"${GLFW_SOURCE_DIR}/${path}\"")
+    string(APPEND GLFW_DOXYGEN_INPUT " \\\n\"${GLFW_SOURCE_DIR}/${path}\"")
 endforeach()
 
 configure_file(Doxyfile.in Doxyfile @ONLY)

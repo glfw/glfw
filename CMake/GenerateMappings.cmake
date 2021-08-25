@@ -23,7 +23,7 @@ endif()
 
 file(STRINGS "${source_path}" lines)
 foreach(line ${lines})
-    if (line MATCHES "^[0-9a-fA-F].*$")
+    if (line MATCHES "^[0-9a-fA-F]")
         if (line MATCHES "platform:Windows")
             if (GLFW_WIN32_MAPPINGS)
                 set(GLFW_WIN32_MAPPINGS "${GLFW_WIN32_MAPPINGS}\n")

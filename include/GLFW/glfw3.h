@@ -1352,7 +1352,7 @@ typedef struct GLFWcursor GLFWcursor;
  *
  *  @ingroup init
  */
-typedef void (* GLFWerrorfun)(int,const char*);
+typedef void (* GLFWerrorfun)(int error_code, const char* description);
 
 /*! @brief The function pointer type for window position callbacks.
  *
@@ -1375,7 +1375,7 @@ typedef void (* GLFWerrorfun)(int,const char*);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowposfun)(GLFWwindow*,int,int);
+typedef void (* GLFWwindowposfun)(GLFWwindow* window, int xpos, int ypos);
 
 /*! @brief The function pointer type for window size callbacks.
  *
@@ -1397,7 +1397,7 @@ typedef void (* GLFWwindowposfun)(GLFWwindow*,int,int);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowsizefun)(GLFWwindow*,int,int);
+typedef void (* GLFWwindowsizefun)(GLFWwindow* window, int width, int height);
 
 /*! @brief The function pointer type for window close callbacks.
  *
@@ -1417,7 +1417,7 @@ typedef void (* GLFWwindowsizefun)(GLFWwindow*,int,int);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowclosefun)(GLFWwindow*);
+typedef void (* GLFWwindowclosefun)(GLFWwindow* window);
 
 /*! @brief The function pointer type for window content refresh callbacks.
  *
@@ -1437,7 +1437,7 @@ typedef void (* GLFWwindowclosefun)(GLFWwindow*);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowrefreshfun)(GLFWwindow*);
+typedef void (* GLFWwindowrefreshfun)(GLFWwindow* window);
 
 /*! @brief The function pointer type for window focus callbacks.
  *
@@ -1458,7 +1458,7 @@ typedef void (* GLFWwindowrefreshfun)(GLFWwindow*);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowfocusfun)(GLFWwindow*,int);
+typedef void (* GLFWwindowfocusfun)(GLFWwindow* window, int focused);
 
 /*! @brief The function pointer type for window iconify callbacks.
  *
@@ -1479,7 +1479,7 @@ typedef void (* GLFWwindowfocusfun)(GLFWwindow*,int);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
+typedef void (* GLFWwindowiconifyfun)(GLFWwindow* window, int iconified);
 
 /*! @brief The function pointer type for window maximize callbacks.
  *
@@ -1500,7 +1500,7 @@ typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowmaximizefun)(GLFWwindow*,int);
+typedef void (* GLFWwindowmaximizefun)(GLFWwindow* window, int maximized);
 
 /*! @brief The function pointer type for framebuffer size callbacks.
  *
@@ -1521,7 +1521,7 @@ typedef void (* GLFWwindowmaximizefun)(GLFWwindow*,int);
  *
  *  @ingroup window
  */
-typedef void (* GLFWframebuffersizefun)(GLFWwindow*,int,int);
+typedef void (* GLFWframebuffersizefun)(GLFWwindow* window, int width, int height);
 
 /*! @brief The function pointer type for window content scale callbacks.
  *
@@ -1542,7 +1542,7 @@ typedef void (* GLFWframebuffersizefun)(GLFWwindow*,int,int);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowcontentscalefun)(GLFWwindow*,float,float);
+typedef void (* GLFWwindowcontentscalefun)(GLFWwindow* window, float xscale, float yscale);
 
 /*! @brief The function pointer type for mouse button callbacks.
  *
@@ -1568,7 +1568,7 @@ typedef void (* GLFWwindowcontentscalefun)(GLFWwindow*,float,float);
  *
  *  @ingroup input
  */
-typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int,int);
+typedef void (* GLFWmousebuttonfun)(GLFWwindow* window, int button, int action, int mods);
 
 /*! @brief The function pointer type for cursor position callbacks.
  *
@@ -1591,7 +1591,7 @@ typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int,int);
  *
  *  @ingroup input
  */
-typedef void (* GLFWcursorposfun)(GLFWwindow*,double,double);
+typedef void (* GLFWcursorposfun)(GLFWwindow* window, double xpos, double ypos);
 
 /*! @brief The function pointer type for cursor enter/leave callbacks.
  *
@@ -1612,7 +1612,7 @@ typedef void (* GLFWcursorposfun)(GLFWwindow*,double,double);
  *
  *  @ingroup input
  */
-typedef void (* GLFWcursorenterfun)(GLFWwindow*,int);
+typedef void (* GLFWcursorenterfun)(GLFWwindow* window, int entered);
 
 /*! @brief The function pointer type for scroll callbacks.
  *
@@ -1633,7 +1633,7 @@ typedef void (* GLFWcursorenterfun)(GLFWwindow*,int);
  *
  *  @ingroup input
  */
-typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
+typedef void (* GLFWscrollfun)(GLFWwindow* window, double xoffset, double yoffset);
 
 /*! @brief The function pointer type for keyboard key callbacks.
  *
@@ -1659,7 +1659,7 @@ typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
  *
  *  @ingroup input
  */
-typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int);
+typedef void (* GLFWkeyfun)(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 /*! @brief The function pointer type for Unicode character callbacks.
  *
@@ -1680,7 +1680,7 @@ typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int);
  *
  *  @ingroup input
  */
-typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
+typedef void (* GLFWcharfun)(GLFWwindow* window, unsigned int codepoint);
 
 /*! @brief The function pointer type for Unicode character with modifiers
  *  callbacks.
@@ -1707,7 +1707,7 @@ typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
  *
  *  @ingroup input
  */
-typedef void (* GLFWcharmodsfun)(GLFWwindow*,unsigned int,int);
+typedef void (* GLFWcharmodsfun)(GLFWwindow* window, unsigned int codepoint, int mods);
 
 /*! @brief The function pointer type for path drop callbacks.
  *
@@ -1731,7 +1731,7 @@ typedef void (* GLFWcharmodsfun)(GLFWwindow*,unsigned int,int);
  *
  *  @ingroup input
  */
-typedef void (* GLFWdropfun)(GLFWwindow*,int,const char*[]);
+typedef void (* GLFWdropfun)(GLFWwindow* window, int path_count, const char* paths[]);
 
 /*! @brief The function pointer type for monitor configuration callbacks.
  *
@@ -1752,7 +1752,7 @@ typedef void (* GLFWdropfun)(GLFWwindow*,int,const char*[]);
  *
  *  @ingroup monitor
  */
-typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
+typedef void (* GLFWmonitorfun)(GLFWmonitor* monitor, int event);
 
 /*! @brief The function pointer type for joystick configuration callbacks.
  *
@@ -1773,7 +1773,7 @@ typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
  *
  *  @ingroup input
  */
-typedef void (* GLFWjoystickfun)(int,int);
+typedef void (* GLFWjoystickfun)(int jid, int event);
 
 /*! @brief Video mode type.
  *

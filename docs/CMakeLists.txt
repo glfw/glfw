@@ -17,7 +17,7 @@ set(source_files
     compat.dox
     internal.dox)
 
-set(extra_files DoxygenLayout.xml extra.css spaces.svg)
+set(extra_files DoxygenLayout.xml header.html footer.html extra.css spaces.svg)
 
 set(header_paths
     "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"

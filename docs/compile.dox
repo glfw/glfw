@@ -278,7 +278,7 @@ __GLFW_VULKAN_STATIC__ determines whether to use the Vulkan loader linked
 directly with the application.  This is disabled by default.
 
 
-@subsection compile_options_win32 Windows specific CMake options
+@subsection compile_options_win32 Win32 specific CMake options
 
 @anchor GLFW_BUILD_WIN32
 __GLFW_BUILD_WIN32__ determines whether to include support for Win32 when compiling the

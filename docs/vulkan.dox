@@ -48,7 +48,7 @@ documentation.  This is explained in more detail in the
 [SDK documentation for macOS](https://vulkan.lunarg.com/doc/sdk/latest/mac/getting_started.html).
 
 
-@section vulkan_include Including the Vulkan and GLFW header files
+@section vulkan_include Including the Vulkan header file
 
 To include the Vulkan header, define @ref GLFW_INCLUDE_VULKAN before including
 the GLFW header.

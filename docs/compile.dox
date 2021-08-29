@@ -10,8 +10,8 @@ build applications that use GLFW, see @ref build_guide.
 
 @section compile_cmake Using CMake
 
-@note GLFW behaves like most other libraries that use CMake so this guide mostly
-describes the basic configure/generate/compile sequence.  If you are already
+GLFW behaves like most other libraries that use CMake so this guide mostly
+describes the standard configure, generate and compile sequence.  If you are already
 familiar with this from other projects, you may want to focus on the @ref
 compile_deps and @ref compile_options sections for GLFW-specific information.
 
@@ -40,7 +40,7 @@ all necessary dependencies for compiling GLFW, but on Unix-like systems like
 Linux and FreeBSD you will need a few extra packages.
 
 
-@subsubsection compile_deps_x11 Dependencies for X11 on Unix-like systems
+@subsubsection compile_deps_x11 Dependencies for X11
 
 To compile GLFW for X11, you need to have the X11 development packages
 installed.  They are not needed to build or run programs that use GLFW.
@@ -74,7 +74,7 @@ install the headers and other development related files for all of X11.
 Once you have the required dependencies, move on to @ref compile_generate.
 
 
-@subsubsection compile_deps_wayland Dependencies for Wayland and X11 on Unix-like systems
+@subsubsection compile_deps_wayland Dependencies for Wayland and X11
 
 To compile GLFW for both Wayland and X11, you need to have the X11, Wayland and xkbcommon
 development packages installed.  They are not needed to build or run programs that use
@@ -131,7 +131,7 @@ A common pattern when building a single configuration is to have a build
 directory named `build` in the root of the source tree.
 
 
-@subsubsection compile_generate_gui Generating files with the CMake GUI
+@subsubsection compile_generate_gui Generating with the CMake GUI
 
 Start the CMake GUI and set the paths to the source and build directories
 described above.  Then press _Configure_ and _Generate_.
@@ -148,7 +148,7 @@ Once you have generated the project files or makefiles for your chosen
 development environment, move on to @ref compile_compile.
 
 
-@subsubsection compile_generate_cli Generating files with the CMake command-line tool
+@subsubsection compile_generate_cli Generating with command-line CMake
 
 To make a build directory, pass the source and build directories to the `cmake`
 command.  These can be relative or absolute paths.  The build directory is

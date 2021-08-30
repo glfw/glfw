@@ -426,13 +426,15 @@ void _glfwHideWindowNull(_GLFWwindow* window)
 
 void _glfwFocusWindowNull(_GLFWwindow* window)
 {
+    _GLFWwindow* previous;
+
     if (_glfw.null.focusedWindow == window)
         return;
 
     if (!window->null.visible)
         return;
 
-    _GLFWwindow* previous = _glfw.null.focusedWindow;
+    previous = _glfw.null.focusedWindow;
     _glfw.null.focusedWindow = window;
 
     if (previous)

@@ -120,9 +120,11 @@ GLFWbool _glfwGetGammaRampNull(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
 {
     if (!monitor->null.ramp.size)
     {
+        unsigned int i;
+
         _glfwAllocGammaArrays(&monitor->null.ramp, 256);
 
-        for (unsigned int i = 0;  i < monitor->null.ramp.size;  i++)
+        for (i = 0;  i < monitor->null.ramp.size;  i++)
         {
             const float gamma = 2.2f;
             float value;

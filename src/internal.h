@@ -77,13 +77,6 @@ typedef struct _GLFWjoystick    _GLFWjoystick;
 typedef struct _GLFWtls         _GLFWtls;
 typedef struct _GLFWmutex       _GLFWmutex;
 
-typedef void (* _GLFWmakecontextcurrentfun)(_GLFWwindow*);
-typedef void (* _GLFWswapbuffersfun)(_GLFWwindow*);
-typedef void (* _GLFWswapintervalfun)(int);
-typedef int (* _GLFWextensionsupportedfun)(const char*);
-typedef GLFWglproc (* _GLFWgetprocaddressfun)(const char*);
-typedef void (* _GLFWdestroycontextfun)(_GLFWwindow*);
-
 #define GL_VERSION 0x1f02
 #define GL_NONE 0
 #define GL_COLOR_BUFFER_BIT 0x00004000
@@ -513,12 +506,12 @@ struct _GLFWcontext
     PFNGLGETINTEGERVPROC GetIntegerv;
     PFNGLGETSTRINGPROC   GetString;
 
-    _GLFWmakecontextcurrentfun  makeCurrent;
-    _GLFWswapbuffersfun         swapBuffers;
-    _GLFWswapintervalfun        swapInterval;
-    _GLFWextensionsupportedfun  extensionSupported;
-    _GLFWgetprocaddressfun      getProcAddress;
-    _GLFWdestroycontextfun      destroy;
+    void (*makeCurrent)(_GLFWwindow*);
+    void (*swapBuffers)(_GLFWwindow*);
+    void (*swapInterval)(int);
+    int (*extensionSupported)(const char*);
+    GLFWglproc (*getProcAddress)(const char*);
+    void (*destroy)(_GLFWwindow*);
 
     struct {
         EGLConfig       config;

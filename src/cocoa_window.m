@@ -243,7 +243,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-    if (window->context.client != GLFW_NO_API)
+    if (window->context.source == GLFW_NATIVE_CONTEXT_API)
         [window->context.nsgl.object update];
 
     if (_glfw.ns.disabledCursorWindow == window)
@@ -278,7 +278,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)windowDidMove:(NSNotification *)notification
 {
-    if (window->context.client != GLFW_NO_API)
+    if (window->context.source == GLFW_NATIVE_CONTEXT_API)
         [window->context.nsgl.object update];
 
     if (_glfw.ns.disabledCursorWindow == window)
@@ -397,7 +397,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)updateLayer
 {
-    if (window->context.client != GLFW_NO_API)
+    if (window->context.source == GLFW_NATIVE_CONTEXT_API)
         [window->context.nsgl.object update];
 
     _glfwInputWindowDamage(window);
@@ -520,6 +520,18 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 {
     const NSRect contentRect = [window->ns.view frame];
     const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+    const float xscale = fbRect.size.width / contentRect.size.width;
+    const float yscale = fbRect.size.height / contentRect.size.height;
+
+    if (xscale != window->ns.xscale || yscale != window->ns.yscale)
+    {
+        if (window->ns.retina && window->ns.layer)
+            [window->ns.layer setContentsScale:[window->ns.object backingScaleFactor]];
+
+        window->ns.xscale = xscale;
+        window->ns.yscale = yscale;
+        _glfwInputWindowContentScale(window, xscale, yscale);
+    }
 
     if (fbRect.size.width != window->ns.fbWidth ||
         fbRect.size.height != window->ns.fbHeight)
@@ -527,19 +539,6 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         window->ns.fbWidth  = fbRect.size.width;
         window->ns.fbHeight = fbRect.size.height;
         _glfwInputFramebufferSize(window, fbRect.size.width, fbRect.size.height);
-    }
-
-    const float xscale = fbRect.size.width / contentRect.size.width;
-    const float yscale = fbRect.size.height / contentRect.size.height;
-
-    if (xscale != window->ns.xscale || yscale != window->ns.yscale)
-    {
-        window->ns.xscale = xscale;
-        window->ns.yscale = yscale;
-        _glfwInputWindowContentScale(window, xscale, yscale);
-
-        if (window->ns.retina && window->ns.layer)
-            [window->ns.layer setContentsScale:[window->ns.object backingScaleFactor]];
     }
 }
 
@@ -647,7 +646,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     const NSUInteger count = [urls count];
     if (count)
     {
-        char** paths = calloc(count, sizeof(char*));
+        char** paths = _glfw_calloc(count, sizeof(char*));
 
         for (NSUInteger i = 0;  i < count;  i++)
             paths[i] = _glfw_strdup([urls[i] fileSystemRepresentation]);
@@ -655,8 +654,8 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         _glfwInputDrop(window, (int) count, (const char**) paths);
 
         for (NSUInteger i = 0;  i < count;  i++)
-            free(paths[i]);
-        free(paths);
+            _glfw_free(paths[i]);
+        _glfw_free(paths);
     }
 
     return YES;
@@ -1537,7 +1536,7 @@ const char* _glfwPlatformGetScancodeName(int scancode)
     if (scancode < 0 || scancode > 0xff ||
         _glfw.ns.keycodes[scancode] == GLFW_KEY_UNKNOWN)
     {
-        _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode");
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode %i", scancode);
         return NULL;
     }
 
@@ -1748,7 +1747,7 @@ const char* _glfwPlatformGetClipboardString(void)
         return NULL;
     }
 
-    free(_glfw.ns.clipboardString);
+    _glfw_free(_glfw.ns.clipboardString);
     _glfw.ns.clipboardString = _glfw_strdup([object UTF8String]);
 
     return _glfw.ns.clipboardString;
@@ -1776,7 +1775,7 @@ EGLenum _glfwPlatformGetEGLPlatform(EGLint** attribs)
 
         if (type)
         {
-            *attribs = calloc(3, sizeof(EGLint));
+            *attribs = _glfw_calloc(3, sizeof(EGLint));
             (*attribs)[0] = EGL_PLATFORM_ANGLE_TYPE_ANGLE;
             (*attribs)[1] = type;
             (*attribs)[2] = EGL_NONE;

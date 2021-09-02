@@ -33,6 +33,7 @@ successfully initialized, and only from the main thread.
  - @ref glfwGetError
  - @ref glfwSetErrorCallback
  - @ref glfwInitHint
+ - @ref glfwInitAllocator
  - @ref glfwInit
  - @ref glfwTerminate
 
@@ -103,7 +104,6 @@ one of `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`,
 `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` and
 `GLFW_ANGLE_PLATFORM_TYPE_METAL`.
 
-@par
 The ANGLE platform type is specified via the `EGL_ANGLE_platform_angle`
 extension.  This extension is not used if this hint is
 `GLFW_ANGLE_PLATFORM_TYPE_NONE`, which is the default value.
@@ -124,14 +124,82 @@ a nib or manually by GLFW.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 This is ignored on other platforms.
 
 
+@subsubsection init_hints_x11 X11 specific init hints
+
+@anchor GLFW_X11_XCB_VULKAN_SURFACE_hint
+__GLFW_X11_XCB_VULKAN_SURFACE__ specifies whether to prefer the
+`VK_KHR_xcb_surface` extension for creating Vulkan surfaces, or whether to use
+the `VK_KHR_xlib_surface` extension.  Possible values are `GLFW_TRUE` and
+`GLFW_FALSE`.  This is ignored on other platforms.
+
+
 @subsubsection init_hints_values Supported and default values
 
-Initialization hint             | Default value                   | Supported values
-------------------------------- | ------------------------------- | ----------------
-@ref GLFW_JOYSTICK_HAT_BUTTONS  | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_ANGLE_PLATFORM_TYPE   | `GLFW_ANGLE_PLATFORM_TYPE_NONE` | `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGLES`, `GLFW_ANGLE_PLATFORM_TYPE_D3D9`, `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` or `GLFW_ANGLE_PLATFORM_TYPE_METAL`
-@ref GLFW_COCOA_CHDIR_RESOURCES | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_COCOA_MENUBAR         | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+Initialization hint              | Default value                   | Supported values
+-------------------------------- | ------------------------------- | ----------------
+@ref GLFW_JOYSTICK_HAT_BUTTONS   | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_ANGLE_PLATFORM_TYPE    | `GLFW_ANGLE_PLATFORM_TYPE_NONE` | `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGLES`, `GLFW_ANGLE_PLATFORM_TYPE_D3D9`, `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` or `GLFW_ANGLE_PLATFORM_TYPE_METAL`
+@ref GLFW_COCOA_CHDIR_RESOURCES  | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_COCOA_MENUBAR          | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_X11_XCB_VULKAN_SURFACE | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+
+
+@subsection init_allocator Custom heap memory allocator
+
+The heap memory allocator can be customized before initialization with @ref
+glfwInitAllocator.
+
+@code
+GLFWallocator allocator;
+allocator.allocate = my_malloc;
+allocator.reallocate = my_realloc;
+allocator.deallocate = my_free;
+allocator.user = NULL;
+
+glfwInitAllocator(&allocator);
+@endcode
+
+The allocator will be picked up at the beginning of initialization and will be
+used until GLFW has been fully terminated.  Any allocator set after
+initialization will be picked up only at the next initialization.
+
+The allocator will only be used for allocations that would have been made with
+the C standard library.  Memory allocations that must be made with platform
+specific APIs will still use those.
+
+The allocation function must have a signature matching @ref GLFWallocatefun.  It receives
+the desired size, in bytes, and the user pointer passed to @ref glfwInitAllocator and
+returns the address to the allocated memory block.
+
+@code
+void* my_malloc(size_t size, void* user)
+{
+    ...
+}
+@endcode
+
+The reallocation function must have a function signature matching @ref GLFWreallocatefun.
+It receives the memory block to be reallocated, the new desired size, in bytes, and the user
+pointer passed to @ref glfwInitAllocator and returns the address to the resized memory
+block.
+
+@code
+void* my_realloc(void* block, size_t size, void* user)
+{
+    ...
+}
+@endcode
+
+The deallocation function must have a function signature matching @ref GLFWdeallocatefun.
+It receives the memory block to be deallocated and the user pointer passed to @ref
+glfwInitAllocator.
+
+@code
+void my_free(void* block, void* user)
+{
+    ...
+}
+@endcode
 
 
 @subsection intro_init_terminate Terminating GLFW

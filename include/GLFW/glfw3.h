@@ -276,23 +276,24 @@ extern "C" {
 
 /*! @name GLFW version macros
  *  @{ */
-/*! @brief The major version number of the GLFW library.
+/*! @brief The major version number of the GLFW header.
  *
- *  This is incremented when the API is changed in non-compatible ways.
+ *  The major version number of the GLFW header.  This is incremented when the
+ *  API is changed in non-compatible ways.
  *  @ingroup init
  */
 #define GLFW_VERSION_MAJOR          3
-/*! @brief The minor version number of the GLFW library.
+/*! @brief The minor version number of the GLFW header.
  *
- *  This is incremented when features are added to the API but it remains
- *  backward-compatible.
+ *  The minor version number of the GLFW header.  This is incremented when
+ *  features are added to the API but it remains backward-compatible.
  *  @ingroup init
  */
 #define GLFW_VERSION_MINOR          4
-/*! @brief The revision number of the GLFW library.
+/*! @brief The revision number of the GLFW header.
  *
- *  This is incremented when a bug fix release is made that does not contain any
- *  API changes.
+ *  The revision number of the GLFW header.  This is incremented when a bug fix
+ *  release is made that does not contain any API changes.
  *  @ingroup init
  */
 #define GLFW_VERSION_REVISION       0
@@ -977,9 +978,10 @@ extern "C" {
  *  Monitor refresh rate [hint](@ref GLFW_REFRESH_RATE).
  */
 #define GLFW_REFRESH_RATE           0x0002100F
-/*! @brief Framebuffer double buffering hint.
+/*! @brief Framebuffer double buffering hint and attribute.
  *
- *  Framebuffer double buffering [hint](@ref GLFW_DOUBLEBUFFER).
+ *  Framebuffer double buffering [hint](@ref GLFW_DOUBLEBUFFER_hint) and
+ *  [attribute](@ref GLFW_DOUBLEBUFFER_attrib).
  */
 #define GLFW_DOUBLEBUFFER           0x00021010
 
@@ -1250,6 +1252,11 @@ extern "C" {
  *  macOS specific [init hint](@ref GLFW_COCOA_MENUBAR_hint).
  */
 #define GLFW_COCOA_MENUBAR          0x00051002
+/*! @brief X11 specific init hint.
+ *
+ *  X11 specific [init hint](@ref GLFW_X11_XCB_VULKAN_SURFACE_hint).
+ */
+#define GLFW_X11_XCB_VULKAN_SURFACE 0x00052001
 /*! @} */
 
 #define GLFW_DONT_CARE              -1
@@ -1335,6 +1342,131 @@ typedef struct GLFWusercontext GLFWusercontext;
  */
 typedef struct GLFWcursor GLFWcursor;
 
+/*! @brief The function pointer type for memory allocation callbacks.
+ *
+ *  This is the function pointer type for memory allocation callbacks.  A memory
+ *  allocation callback function has the following signature:
+ *  @code
+ *  void* function_name(size_t size, void* user)
+ *  @endcode
+ *
+ *  This function must return either a memory block at least `size` bytes long,
+ *  or `NULL` if allocation failed.  Note that not all parts of GLFW handle allocation
+ *  failures gracefully yet.
+ *
+ *  This function may be called during @ref glfwInit but before the library is
+ *  flagged as initialized, as well as during @ref glfwTerminate after the
+ *  library is no longer flagged as initialized.
+ *
+ *  Any memory allocated by this function will be deallocated during library
+ *  termination or earlier.
+ *
+ *  The size will always be greater than zero.  Allocations of size zero are filtered out
+ *  before reaching the custom allocator.
+ *
+ *  @param[in] size The minimum size, in bytes, of the memory block.
+ *  @param[in] user The user-defined pointer from the allocator.
+ *  @return The address of the newly allocated memory block, or `NULL` if an
+ *  error occurred.
+ *
+ *  @pointer_lifetime The returned memory block must be valid at least until it
+ *  is deallocated.
+ *
+ *  @reentrancy This function should not call any GLFW function.
+ *
+ *  @thread_safety This function may be called from any thread that calls GLFW functions.
+ *
+ *  @sa @ref init_allocator
+ *  @sa @ref GLFWallocator
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup init
+ */
+typedef void* (* GLFWallocatefun)(size_t size, void* user);
+
+/*! @brief The function pointer type for memory reallocation callbacks.
+ *
+ *  This is the function pointer type for memory reallocation callbacks.
+ *  A memory reallocation callback function has the following signature:
+ *  @code
+ *  void* function_name(void* block, size_t size, void* user)
+ *  @endcode
+ *
+ *  This function must return a memory block at least `size` bytes long, or
+ *  `NULL` if allocation failed.  Note that not all parts of GLFW handle allocation
+ *  failures gracefully yet.
+ *
+ *  This function may be called during @ref glfwInit but before the library is
+ *  flagged as initialized, as well as during @ref glfwTerminate after the
+ *  library is no longer flagged as initialized.
+ *
+ *  Any memory allocated by this function will be deallocated during library
+ *  termination or earlier.
+ *
+ *  The block address will never be `NULL` and the size will always be greater than zero.
+ *  Reallocations of a block to size zero are converted into deallocations.  Reallocations
+ *  of `NULL` to a non-zero size are converted into regular allocations.
+ *
+ *  @param[in] block The address of the memory block to reallocate.
+ *  @param[in] size The new minimum size, in bytes, of the memory block.
+ *  @param[in] user The user-defined pointer from the allocator.
+ *  @return The address of the newly allocated or resized memory block, or
+ *  `NULL` if an error occurred.
+ *
+ *  @pointer_lifetime The returned memory block must be valid at least until it
+ *  is deallocated.
+ *
+ *  @reentrancy This function should not call any GLFW function.
+ *
+ *  @thread_safety This function may be called from any thread that calls GLFW functions.
+ *
+ *  @sa @ref init_allocator
+ *  @sa @ref GLFWallocator
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup init
+ */
+typedef void* (* GLFWreallocatefun)(void* block, size_t size, void* user);
+
+/*! @brief The function pointer type for memory deallocation callbacks.
+ *
+ *  This is the function pointer type for memory deallocation callbacks.
+ *  A memory deallocation callback function has the following signature:
+ *  @code
+ *  void function_name(void* block, void* user)
+ *  @endcode
+ *
+ *  This function may deallocate the specified memory block.  This memory block
+ *  will have been allocated with the same allocator.
+ *
+ *  This function may be called during @ref glfwInit but before the library is
+ *  flagged as initialized, as well as during @ref glfwTerminate after the
+ *  library is no longer flagged as initialized.
+ *
+ *  The block address will never be `NULL`.  Deallocations of `NULL` are filtered out
+ *  before reaching the custom allocator.
+ *
+ *  @param[in] block The address of the memory block to deallocate.
+ *  @param[in] user The user-defined pointer from the allocator.
+ *
+ *  @pointer_lifetime The specified memory block will not be accessed by GLFW
+ *  after this function is called.
+ *
+ *  @reentrancy This function should not call any GLFW function.
+ *
+ *  @thread_safety This function may be called from any thread that calls GLFW functions.
+ *
+ *  @sa @ref init_allocator
+ *  @sa @ref GLFWallocator
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup init
+ */
+typedef void (* GLFWdeallocatefun)(void* block, void* user);
+
 /*! @brief The function pointer type for error callbacks.
  *
  *  This is the function pointer type for error callbacks.  An error callback
@@ -1357,7 +1489,7 @@ typedef struct GLFWcursor GLFWcursor;
  *
  *  @ingroup init
  */
-typedef void (* GLFWerrorfun)(int,const char*);
+typedef void (* GLFWerrorfun)(int error_code, const char* description);
 
 /*! @brief The function pointer type for window position callbacks.
  *
@@ -1380,7 +1512,7 @@ typedef void (* GLFWerrorfun)(int,const char*);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowposfun)(GLFWwindow*,int,int);
+typedef void (* GLFWwindowposfun)(GLFWwindow* window, int xpos, int ypos);
 
 /*! @brief The function pointer type for window size callbacks.
  *
@@ -1402,7 +1534,7 @@ typedef void (* GLFWwindowposfun)(GLFWwindow*,int,int);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowsizefun)(GLFWwindow*,int,int);
+typedef void (* GLFWwindowsizefun)(GLFWwindow* window, int width, int height);
 
 /*! @brief The function pointer type for window close callbacks.
  *
@@ -1422,7 +1554,7 @@ typedef void (* GLFWwindowsizefun)(GLFWwindow*,int,int);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowclosefun)(GLFWwindow*);
+typedef void (* GLFWwindowclosefun)(GLFWwindow* window);
 
 /*! @brief The function pointer type for window content refresh callbacks.
  *
@@ -1442,7 +1574,7 @@ typedef void (* GLFWwindowclosefun)(GLFWwindow*);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowrefreshfun)(GLFWwindow*);
+typedef void (* GLFWwindowrefreshfun)(GLFWwindow* window);
 
 /*! @brief The function pointer type for window focus callbacks.
  *
@@ -1463,7 +1595,7 @@ typedef void (* GLFWwindowrefreshfun)(GLFWwindow*);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowfocusfun)(GLFWwindow*,int);
+typedef void (* GLFWwindowfocusfun)(GLFWwindow* window, int focused);
 
 /*! @brief The function pointer type for window iconify callbacks.
  *
@@ -1484,7 +1616,7 @@ typedef void (* GLFWwindowfocusfun)(GLFWwindow*,int);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
+typedef void (* GLFWwindowiconifyfun)(GLFWwindow* window, int iconified);
 
 /*! @brief The function pointer type for window maximize callbacks.
  *
@@ -1505,7 +1637,7 @@ typedef void (* GLFWwindowiconifyfun)(GLFWwindow*,int);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowmaximizefun)(GLFWwindow*,int);
+typedef void (* GLFWwindowmaximizefun)(GLFWwindow* window, int maximized);
 
 /*! @brief The function pointer type for framebuffer size callbacks.
  *
@@ -1526,7 +1658,7 @@ typedef void (* GLFWwindowmaximizefun)(GLFWwindow*,int);
  *
  *  @ingroup window
  */
-typedef void (* GLFWframebuffersizefun)(GLFWwindow*,int,int);
+typedef void (* GLFWframebuffersizefun)(GLFWwindow* window, int width, int height);
 
 /*! @brief The function pointer type for window content scale callbacks.
  *
@@ -1547,7 +1679,7 @@ typedef void (* GLFWframebuffersizefun)(GLFWwindow*,int,int);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowcontentscalefun)(GLFWwindow*,float,float);
+typedef void (* GLFWwindowcontentscalefun)(GLFWwindow* window, float xscale, float yscale);
 
 /*! @brief The function pointer type for mouse button callbacks.
  *
@@ -1573,7 +1705,7 @@ typedef void (* GLFWwindowcontentscalefun)(GLFWwindow*,float,float);
  *
  *  @ingroup input
  */
-typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int,int);
+typedef void (* GLFWmousebuttonfun)(GLFWwindow* window, int button, int action, int mods);
 
 /*! @brief The function pointer type for cursor position callbacks.
  *
@@ -1596,7 +1728,7 @@ typedef void (* GLFWmousebuttonfun)(GLFWwindow*,int,int,int);
  *
  *  @ingroup input
  */
-typedef void (* GLFWcursorposfun)(GLFWwindow*,double,double);
+typedef void (* GLFWcursorposfun)(GLFWwindow* window, double xpos, double ypos);
 
 /*! @brief The function pointer type for cursor enter/leave callbacks.
  *
@@ -1617,7 +1749,7 @@ typedef void (* GLFWcursorposfun)(GLFWwindow*,double,double);
  *
  *  @ingroup input
  */
-typedef void (* GLFWcursorenterfun)(GLFWwindow*,int);
+typedef void (* GLFWcursorenterfun)(GLFWwindow* window, int entered);
 
 /*! @brief The function pointer type for scroll callbacks.
  *
@@ -1638,7 +1770,7 @@ typedef void (* GLFWcursorenterfun)(GLFWwindow*,int);
  *
  *  @ingroup input
  */
-typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
+typedef void (* GLFWscrollfun)(GLFWwindow* window, double xoffset, double yoffset);
 
 /*! @brief The function pointer type for keyboard key callbacks.
  *
@@ -1664,7 +1796,7 @@ typedef void (* GLFWscrollfun)(GLFWwindow*,double,double);
  *
  *  @ingroup input
  */
-typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int);
+typedef void (* GLFWkeyfun)(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 /*! @brief The function pointer type for Unicode character callbacks.
  *
@@ -1685,7 +1817,7 @@ typedef void (* GLFWkeyfun)(GLFWwindow*,int,int,int,int);
  *
  *  @ingroup input
  */
-typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
+typedef void (* GLFWcharfun)(GLFWwindow* window, unsigned int codepoint);
 
 /*! @brief The function pointer type for Unicode character with modifiers
  *  callbacks.
@@ -1712,7 +1844,7 @@ typedef void (* GLFWcharfun)(GLFWwindow*,unsigned int);
  *
  *  @ingroup input
  */
-typedef void (* GLFWcharmodsfun)(GLFWwindow*,unsigned int,int);
+typedef void (* GLFWcharmodsfun)(GLFWwindow* window, unsigned int codepoint, int mods);
 
 /*! @brief The function pointer type for path drop callbacks.
  *
@@ -1736,7 +1868,7 @@ typedef void (* GLFWcharmodsfun)(GLFWwindow*,unsigned int,int);
  *
  *  @ingroup input
  */
-typedef void (* GLFWdropfun)(GLFWwindow*,int,const char*[]);
+typedef void (* GLFWdropfun)(GLFWwindow* window, int path_count, const char* paths[]);
 
 /*! @brief The function pointer type for monitor configuration callbacks.
  *
@@ -1757,7 +1889,7 @@ typedef void (* GLFWdropfun)(GLFWwindow*,int,const char*[]);
  *
  *  @ingroup monitor
  */
-typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
+typedef void (* GLFWmonitorfun)(GLFWmonitor* monitor, int event);
 
 /*! @brief The function pointer type for joystick configuration callbacks.
  *
@@ -1778,7 +1910,7 @@ typedef void (* GLFWmonitorfun)(GLFWmonitor*,int);
  *
  *  @ingroup input
  */
-typedef void (* GLFWjoystickfun)(int,int);
+typedef void (* GLFWjoystickfun)(int jid, int event);
 
 /*! @brief Video mode type.
  *
@@ -1892,6 +2024,23 @@ typedef struct GLFWgamepadstate
     float axes[6];
 } GLFWgamepadstate;
 
+/*! @brief
+ *
+ *  @sa @ref init_allocator
+ *  @sa @ref glfwInitAllocator
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup init
+ */
+typedef struct GLFWallocator
+{
+    GLFWallocatefun allocate;
+    GLFWreallocatefun reallocate;
+    GLFWdeallocatefun deallocate;
+    void* user;
+} GLFWallocator;
+
 
 /*************************************************************************
  * GLFW API functions
@@ -1935,6 +2084,8 @@ typedef struct GLFWgamepadstate
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref intro_init
+ *  @sa @ref glfwInitHint
+ *  @sa @ref glfwInitAllocator
  *  @sa @ref glfwTerminate
  *
  *  @since Added in version 1.0.
@@ -2008,6 +2159,33 @@ GLFWAPI void glfwTerminate(void);
  *  @ingroup init
  */
 GLFWAPI void glfwInitHint(int hint, int value);
+
+/*! @brief Sets the init allocator to the desired value.
+ *
+ *  To use the default allocator, call this function with a `NULL` argument.
+ *
+ *  If you specify an allocator struct, every member must be a valid function
+ *  pointer.  If any member is `NULL`, this function emits @ref
+ *  GLFW_INVALID_VALUE and the init allocator is unchanged.
+ *
+ *  @param[in] allocator The allocator to use at the next initialization, or
+ *  `NULL` to use the default one.
+ *
+ *  @errors Possible errors include @ref GLFW_INVALID_VALUE.
+ *
+ *  @pointer_lifetime The specified allocator is copied before this function
+ *  returns.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref init_allocator
+ *  @sa @ref glfwInit
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup init
+ */
+GLFWAPI void glfwInitAllocator(const GLFWallocator* allocator);
 
 /*! @brief Retrieves the version of the GLFW library.
  *
@@ -2429,8 +2607,9 @@ GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun callback);
  *
  *  This function returns an array of all video modes supported by the specified
  *  monitor.  The returned array is sorted in ascending order, first by color
- *  bit depth (the sum of all channel depths) and then by resolution area (the
- *  product of width and height).
+ *  bit depth (the sum of all channel depths), then by resolution area (the
+ *  product of width and height), then resolution width and finally by refresh
+ *  rate.
  *
  *  @param[in] monitor The monitor to query.
  *  @param[out] count Where to store the number of video modes in the returned
@@ -6024,9 +6203,8 @@ GLFWAPI int glfwVulkanSupported(void);
  *  returned array, as it is an error to specify an extension more than once in
  *  the `VkInstanceCreateInfo` struct.
  *
- *  @remark @macos This function currently supports either the
- *  `VK_MVK_macos_surface` extension from MoltenVK or `VK_EXT_metal_surface`
- *  extension.
+ *  @remark @macos GLFW currently supports both the `VK_MVK_macos_surface` and
+ *  the newer `VK_EXT_metal_surface` extensions.
  *
  *  @pointer_lifetime The returned array is allocated and freed by GLFW.  You
  *  should not free it yourself.  It is guaranteed to be valid only until the
@@ -6109,7 +6287,7 @@ GLFWAPI GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance, const char* p
  *  GLFW_API_UNAVAILABLE and @ref GLFW_PLATFORM_ERROR.
  *
  *  @remark @macos This function currently always returns `GLFW_TRUE`, as the
- *  `VK_MVK_macos_surface` extension does not provide
+ *  `VK_MVK_macos_surface` and `VK_EXT_metal_surface` extensions do not provide
  *  a `vkGetPhysicalDevice*PresentationSupport` type function.
  *
  *  @thread_safety This function may be called from any thread.  For
@@ -6171,6 +6349,12 @@ GLFWAPI int glfwGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhys
  *
  *  @remark @macos This function creates and sets a `CAMetalLayer` instance for
  *  the window content view, which is required for MoltenVK to function.
+ *
+ *  @remark @x11 GLFW by default attempts to use the `VK_KHR_xcb_surface`
+ *  extension, if available.  You can make it prefer the `VK_KHR_xlib_surface`
+ *  extension by setting the
+ *  [GLFW_X11_XCB_VULKAN_SURFACE](@ref GLFW_X11_XCB_VULKAN_SURFACE_hint) init
+ *  hint.
  *
  *  @thread_safety This function may be called from any thread.  For
  *  synchronization details of Vulkan objects, see the Vulkan specification.

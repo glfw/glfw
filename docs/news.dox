@@ -53,6 +53,16 @@ requesting a specific rendering backend when using
 contexts.
 
 
+@subsubsection features_34_init_allocator Support for custom memory allocator
+
+GLFW now supports plugging a custom memory allocator at initialization with @ref
+glfwInitAllocator.  The allocator is a struct of type @ref GLFWallocator with
+function pointers corresponding to the standard library functions `malloc`,
+`realloc` and `free`.
+
+For more information see @ref init_allocator.
+
+
 @subsubsection features_34_win32_keymenu Support for keyboard access to Windows window menu
 
 GLFW now provides the
@@ -127,7 +137,18 @@ then GLFW will fail to initialize.
 @subsection symbols_34 New symbols in version 3.4
 
 @subsubsection functions_34 New functions in version 3.4
+
+ - @ref glfwInitAllocator
+
+
 @subsubsection types_34 New types in version 3.4
+
+ - @ref GLFWallocator
+ - @ref GLFWallocatefun
+ - @ref GLFWreallocatefun
+ - @ref GLFWdeallocatefun
+
+
 @subsubsection constants_34 New constants in version 3.4
 
  - @ref GLFW_POINTING_HAND_CURSOR
@@ -151,6 +172,7 @@ then GLFW will fail to initialize.
  - @ref GLFW_ANGLE_PLATFORM_TYPE_D3D11
  - @ref GLFW_ANGLE_PLATFORM_TYPE_VULKAN
  - @ref GLFW_ANGLE_PLATFORM_TYPE_METAL
+ - @ref GLFW_X11_XCB_VULKAN_SURFACE
 
 
 @section news_archive Release notes for earlier versions

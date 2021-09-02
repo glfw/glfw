@@ -513,7 +513,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 void _glfwPlatformSetClipboardString(const char* string)
 {
     char* copy = _glfw_strdup(string);
-    free(_glfw.null.clipboardString);
+    _glfw_free(_glfw.null.clipboardString);
     _glfw.null.clipboardString = copy;
 }
 
@@ -524,6 +524,12 @@ const char* _glfwPlatformGetClipboardString(void)
 
 const char* _glfwPlatformGetScancodeName(int scancode)
 {
+    if (scancode < GLFW_KEY_SPACE || scancode > GLFW_KEY_LAST)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode %i", scancode);
+        return NULL;
+    }
+
     switch (scancode)
     {
         case GLFW_KEY_APOSTROPHE:

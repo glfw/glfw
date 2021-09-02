@@ -813,11 +813,15 @@ static GLFWbool initExtensions(void)
                               XkbGroupStateMask, XkbGroupStateMask);
     }
 
+    if (_glfw.hints.init.x11.xcbVulkanSurface)
+    {
 #if defined(__CYGWIN__)
-    _glfw.x11.x11xcb.handle = _glfw_dlopen("libX11-xcb-1.so");
+        _glfw.x11.x11xcb.handle = _glfw_dlopen("libX11-xcb-1.so");
 #else
-    _glfw.x11.x11xcb.handle = _glfw_dlopen("libX11-xcb.so.1");
+        _glfw.x11.x11xcb.handle = _glfw_dlopen("libX11-xcb.so.1");
 #endif
+    }
+
     if (_glfw.x11.x11xcb.handle)
     {
         _glfw.x11.x11xcb.GetXCBConnection = (PFN_XGetXCBConnection)
@@ -1403,8 +1407,8 @@ void _glfwPlatformTerminate(void)
         _glfw.x11.hiddenCursorHandle = (Cursor) 0;
     }
 
-    free(_glfw.x11.primarySelectionString);
-    free(_glfw.x11.clipboardString);
+    _glfw_free(_glfw.x11.primarySelectionString);
+    _glfw_free(_glfw.x11.clipboardString);
 
     XUnregisterIMInstantiateCallback(_glfw.x11.display,
                                      NULL, NULL, NULL,
@@ -1480,10 +1484,8 @@ void _glfwPlatformTerminate(void)
 const char* _glfwPlatformGetVersionString(void)
 {
     return _GLFW_VERSION_NUMBER " X11 GLX EGL OSMesa"
-#if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
-        " clock_gettime"
-#else
-        " gettimeofday"
+#if defined(_POSIX_MONOTONIC_CLOCK)
+        " monotonic"
 #endif
 #if defined(__linux__)
         " evdev"

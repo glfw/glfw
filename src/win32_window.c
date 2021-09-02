@@ -31,7 +31,6 @@
 
 #include <limits.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <string.h>
 #include <windowsx.h>
 #include <shellapi.h>
@@ -884,8 +883,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             GetRawInputData(ri, RID_INPUT, NULL, &size, sizeof(RAWINPUTHEADER));
             if (size > (UINT) _glfw.win32.rawInputSize)
             {
-                free(_glfw.win32.rawInput);
-                _glfw.win32.rawInput = calloc(size, 1);
+                _glfw_free(_glfw.win32.rawInput);
+                _glfw.win32.rawInput = _glfw_calloc(size, 1);
                 _glfw.win32.rawInputSize = size;
             }
 
@@ -1185,7 +1184,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             int i;
 
             const int count = DragQueryFileW(drop, 0xffffffff, NULL, 0);
-            char** paths = calloc(count, sizeof(char*));
+            char** paths = _glfw_calloc(count, sizeof(char*));
 
             // Move the mouse to the position of the drop
             DragQueryPoint(drop, &pt);
@@ -1194,19 +1193,19 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             for (i = 0;  i < count;  i++)
             {
                 const UINT length = DragQueryFileW(drop, i, NULL, 0);
-                WCHAR* buffer = calloc((size_t) length + 1, sizeof(WCHAR));
+                WCHAR* buffer = _glfw_calloc((size_t) length + 1, sizeof(WCHAR));
 
                 DragQueryFileW(drop, i, buffer, length + 1);
                 paths[i] = _glfwCreateUTF8FromWideStringWin32(buffer);
 
-                free(buffer);
+                _glfw_free(buffer);
             }
 
             _glfwInputDrop(window, count, (const char**) paths);
 
             for (i = 0;  i < count;  i++)
-                free(paths[i]);
-            free(paths);
+                _glfw_free(paths[i]);
+            _glfw_free(paths);
 
             DragFinish(drop);
             return 0;
@@ -1269,7 +1268,7 @@ static int createNativeWindow(_GLFWwindow* window,
                                            GetModuleHandleW(NULL),
                                            (LPVOID) wndconfig);
 
-    free(wideTitle);
+    _glfw_free(wideTitle);
 
     if (!window->win32.handle)
     {
@@ -1469,7 +1468,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
         return;
 
     SetWindowTextW(window->win32.handle, wideTitle);
-    free(wideTitle);
+    _glfw_free(wideTitle);
 }
 
 void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
@@ -2108,7 +2107,7 @@ const char* _glfwPlatformGetScancodeName(int scancode)
     if (scancode < 0 || scancode > (KF_EXTENDED | 0xff) ||
         _glfw.win32.keycodes[scancode] == GLFW_KEY_UNKNOWN)
     {
-        _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode");
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode %i", scancode);
         return NULL;
     }
 
@@ -2270,7 +2269,7 @@ const char* _glfwPlatformGetClipboardString(void)
         return NULL;
     }
 
-    free(_glfw.win32.clipboardString);
+    _glfw_free(_glfw.win32.clipboardString);
     _glfw.win32.clipboardString = _glfwCreateUTF8FromWideStringWin32(buffer);
 
     GlobalUnlock(object);
@@ -2309,7 +2308,7 @@ EGLenum _glfwPlatformGetEGLPlatform(EGLint** attribs)
 
         if (type)
         {
-            *attribs = calloc(3, sizeof(EGLint));
+            *attribs = _glfw_calloc(3, sizeof(EGLint));
             (*attribs)[0] = EGL_PLATFORM_ANGLE_TYPE_ANGLE;
             (*attribs)[1] = type;
             (*attribs)[2] = EGL_NONE;

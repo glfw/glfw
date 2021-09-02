@@ -199,11 +199,11 @@ static GLFWbool supportsXInput(const GUID* guid)
     if (GetRawInputDeviceList(NULL, &count, sizeof(RAWINPUTDEVICELIST)) != 0)
         return GLFW_FALSE;
 
-    ridl = calloc(count, sizeof(RAWINPUTDEVICELIST));
+    ridl = _glfw_calloc(count, sizeof(RAWINPUTDEVICELIST));
 
     if (GetRawInputDeviceList(ridl, &count, sizeof(RAWINPUTDEVICELIST)) == (UINT) -1)
     {
-        free(ridl);
+        _glfw_free(ridl);
         return GLFW_FALSE;
     }
 
@@ -248,7 +248,7 @@ static GLFWbool supportsXInput(const GUID* guid)
         }
     }
 
-    free(ridl);
+    _glfw_free(ridl);
     return result;
 }
 
@@ -262,7 +262,7 @@ static void closeJoystick(_GLFWjoystick* js)
         IDirectInputDevice8_Release(js->win32.device);
     }
 
-    free(js->win32.objects);
+    _glfw_free(js->win32.objects);
 
     _glfwFreeJoystick(js);
     _glfwInputJoystick(js, GLFW_DISCONNECTED);
@@ -416,8 +416,8 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
 
     memset(&data, 0, sizeof(data));
     data.device = device;
-    data.objects = calloc(dc.dwAxes + (size_t) dc.dwButtons + dc.dwPOVs,
-                          sizeof(_GLFWjoyobjectWin32));
+    data.objects = _glfw_calloc(dc.dwAxes + (size_t) dc.dwButtons + dc.dwPOVs,
+                                sizeof(_GLFWjoyobjectWin32));
 
     if (FAILED(IDirectInputDevice8_EnumObjects(device,
                                                deviceObjectCallback,
@@ -428,7 +428,7 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
                         "Win32: Failed to enumerate device objects");
 
         IDirectInputDevice8_Release(device);
-        free(data.objects);
+        _glfw_free(data.objects);
         return DIENUM_CONTINUE;
     }
 
@@ -445,7 +445,7 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
                         "Win32: Failed to convert joystick name to UTF-8");
 
         IDirectInputDevice8_Release(device);
-        free(data.objects);
+        _glfw_free(data.objects);
         return DIENUM_STOP;
     }
 
@@ -473,7 +473,7 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
     if (!js)
     {
         IDirectInputDevice8_Release(device);
-        free(data.objects);
+        _glfw_free(data.objects);
         return DIENUM_STOP;
     }
 

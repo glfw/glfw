@@ -186,7 +186,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     if (!_glfwIsValidContextConfig(&ctxconfig))
         return NULL;
 
-    window = calloc(1, sizeof(_GLFWwindow));
+    window = _glfw_calloc(1, sizeof(_GLFWwindow));
     window->next = _glfw.windowListHead;
     _glfw.windowListHead = window;
 
@@ -205,6 +205,8 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->focusOnShow      = wndconfig.focusOnShow;
     window->mousePassthrough = wndconfig.mousePassthrough;
     window->cursorMode       = GLFW_CURSOR_NORMAL;
+
+    window->doublebuffer = fbconfig.doublebuffer;
 
     window->minwidth    = GLFW_DONT_CARE;
     window->minheight   = GLFW_DONT_CARE;
@@ -478,7 +480,7 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
         *prev = window->next;
     }
 
-    free(window);
+    _glfw_free(window);
 }
 
 GLFWAPI int glfwWindowShouldClose(GLFWwindow* handle)
@@ -841,6 +843,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->floating;
         case GLFW_AUTO_ICONIFY:
             return window->autoIconify;
+        case GLFW_DOUBLEBUFFER:
+            return window->doublebuffer;
         case GLFW_CLIENT_API:
             return window->context.client;
         case GLFW_CONTEXT_CREATION_API:

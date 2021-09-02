@@ -1299,18 +1299,25 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
         {
             case GLFW_ARROW_CURSOR:
                 name = "left_ptr";
+                break;
             case GLFW_IBEAM_CURSOR:
                 name = "xterm";
+                break;
             case GLFW_CROSSHAIR_CURSOR:
                 name = "crosshair";
+                break;
             case GLFW_POINTING_HAND_CURSOR:
                 name = "hand2";
+                break;
             case GLFW_RESIZE_EW_CURSOR:
                 name = "sb_h_double_arrow";
+                break;
             case GLFW_RESIZE_NS_CURSOR:
                 name = "sb_v_double_arrow";
+                break;
             case GLFW_RESIZE_ALL_CURSOR:
                 name = "fleur";
+                break;
             default:
                 _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
                                 "Wayland: Standard cursor shape unavailable");

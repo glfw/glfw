@@ -114,10 +114,10 @@ static void updateCursorMode(_GLFWwindow* window)
     else if (_glfw.ns.disabledCursorWindow == window)
     {
         _glfw.ns.disabledCursorWindow = NULL;
-        CGAssociateMouseAndMouseCursorPosition(true);
         _glfwPlatformSetCursorPos(window,
                                   _glfw.ns.restoreCursorPosX,
                                   _glfw.ns.restoreCursorPosY);
+        CGAssociateMouseAndMouseCursorPosition(true);
     }
 
     if (cursorInContentArea(window))

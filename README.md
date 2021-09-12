@@ -206,6 +206,8 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: The install name of the installed dylib was relative (#1504)
  - [Cocoa] Bugfix: The MoltenVK layer contents scale was updated only after
    related events were emitted
+ - [Cocoa] Bugfix: Moving the cursor programmatically would freeze it for
+   a fraction of a second (#1962)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)

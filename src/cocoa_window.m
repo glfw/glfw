@@ -117,7 +117,8 @@ static void updateCursorMode(_GLFWwindow* window)
         _glfwPlatformSetCursorPos(window,
                                   _glfw.ns.restoreCursorPosX,
                                   _glfw.ns.restoreCursorPosY);
-        CGAssociateMouseAndMouseCursorPosition(true);
+        // NOTE: The matching CGAssociateMouseAndMouseCursorPosition call is
+        //       made in _glfwPlatformSetCursorPos as part of a workaround
     }
 
     if (cursorInContentArea(window))
@@ -1522,6 +1523,11 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
         CGWarpMouseCursorPosition(CGPointMake(globalPoint.x,
                                               _glfwTransformYNS(globalPoint.y)));
     }
+
+    // HACK: Calling this right after setting the cursor position prevents macOS
+    //       from freezing the cursor for a fraction of a second afterwards
+    if (window->cursorMode != GLFW_CURSOR_DISABLED)
+        CGAssociateMouseAndMouseCursorPosition(true);
 
     } // autoreleasepool
 }

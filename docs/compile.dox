@@ -71,7 +71,7 @@ pkg install xorgproto
 On Cygwin the `xorgproto` package in the Devel section of the GUI installer will
 install the headers and other development related files for all of X11.
 
-Once you have the required depdendencies, move on to @ref compile_generate.
+Once you have the required dependencies, move on to @ref compile_generate.
 
 
 @subsubsection compile_deps_wayland Dependencies for Wayland on Unix-like systems
@@ -101,7 +101,7 @@ packages.
 pkg install wayland libxkbcommon wayland-protocols
 @endcode
 
-Once you have the required depdendencies, move on to @ref compile_generate.
+Once you have the required dependencies, move on to @ref compile_generate.
 
 
 @subsection compile_generate Generating build files with CMake

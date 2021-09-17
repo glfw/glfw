@@ -7,19 +7,19 @@ if (MATH_LIBRARY)
     link_libraries("${MATH_LIBRARY}")
 endif()
 
-if (MSVC)
+# Workaround for the MS CRT deprecating parts of the standard library
+if (MSVC OR CMAKE_C_SIMULATE_ID STREQUAL "MSVC")
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-set(GLAD_GL "${GLFW_SOURCE_DIR}/deps/glad/gl.h"
-            "${GLFW_SOURCE_DIR}/deps/glad_gl.c")
-set(GLAD_VULKAN "${GLFW_SOURCE_DIR}/deps/glad/vulkan.h"
-                "${GLFW_SOURCE_DIR}/deps/glad_vulkan.c")
+set(GLAD_GL "${GLFW_SOURCE_DIR}/deps/glad/gl.h")
+set(GLAD_VULKAN "${GLFW_SOURCE_DIR}/deps/glad/vulkan.h")
 set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"
            "${GLFW_SOURCE_DIR}/deps/getopt.c")
 set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
                 "${GLFW_SOURCE_DIR}/deps/tinycthread.c")
 
+add_executable(allocator allocator.c ${GLAD_GL})
 add_executable(clipboard clipboard.c ${GETOPT} ${GLAD_GL})
 add_executable(events events.c ${GETOPT} ${GLAD_GL})
 add_executable(msaa msaa.c ${GETOPT} ${GLAD_GL})
@@ -50,17 +50,21 @@ endif()
 
 set(GUI_ONLY_BINARIES empty gamma icon inputlag joysticks tearing threads
     timeout title triangle-vulkan window)
-set(CONSOLE_BINARIES clipboard events msaa glfwinfo iconify monitors reopen
-                     cursor)
+set(CONSOLE_BINARIES allocator clipboard events msaa glfwinfo iconify monitors
+    reopen cursor)
 
 set_target_properties(${GUI_ONLY_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
                       C_STANDARD 99
                       FOLDER "GLFW3/Tests")
 
 if (MSVC)
-    # Tell MSVC to use main instead of WinMain for Windows subsystem executables
+    # Tell MSVC to use main instead of WinMain
     set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES
                           LINK_FLAGS "/ENTRY:mainCRTStartup")
+elseif (CMAKE_C_SIMULATE_ID STREQUAL "MSVC")
+    # Tell Clang using MS CRT to use main instead of WinMain
+    set_target_properties(${GUI_ONLY_BINARIES} PROPERTIES
+                          LINK_FLAGS "-Wl,/entry:mainCRTStartup")
 endif()
 
 if (APPLE)

@@ -102,15 +102,15 @@ static void closeJoystick(_GLFWjoystick* js)
         return;
 
     for (i = 0;  i < CFArrayGetCount(js->ns.axes);  i++)
-        free((void*) CFArrayGetValueAtIndex(js->ns.axes, i));
+        _glfw_free((void*) CFArrayGetValueAtIndex(js->ns.axes, i));
     CFRelease(js->ns.axes);
 
     for (i = 0;  i < CFArrayGetCount(js->ns.buttons);  i++)
-        free((void*) CFArrayGetValueAtIndex(js->ns.buttons, i));
+        _glfw_free((void*) CFArrayGetValueAtIndex(js->ns.buttons, i));
     CFRelease(js->ns.buttons);
 
     for (i = 0;  i < CFArrayGetCount(js->ns.hats);  i++)
-        free((void*) CFArrayGetValueAtIndex(js->ns.hats, i));
+        _glfw_free((void*) CFArrayGetValueAtIndex(js->ns.hats, i));
     CFRelease(js->ns.hats);
 
     _glfwFreeJoystick(js);
@@ -251,7 +251,7 @@ static void matchCallback(void* context,
 
         if (target)
         {
-            _GLFWjoyelementNS* element = calloc(1, sizeof(_GLFWjoyelementNS));
+            _GLFWjoyelementNS* element = _glfw_calloc(1, sizeof(_GLFWjoyelementNS));
             element->native  = native;
             element->usage   = usage;
             element->index   = (int) CFArrayGetCount(target);

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1...3.17 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.4...3.20 FATAL_ERROR)
 
 project(GLFW VERSION 3.4.0 LANGUAGES C)
 
@@ -18,7 +18,7 @@ endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-if ("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
+if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     set(GLFW_STANDALONE TRUE)
 endif()
 
@@ -41,7 +41,20 @@ cmake_dependent_option(GLFW_USE_WAYLAND "Use Wayland for window creation" OFF
 cmake_dependent_option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON
                        "MSVC" OFF)
 
-if (BUILD_SHARED_LIBS AND UNIX)
+set(GLFW_LIBRARY_TYPE "${GLFW_LIBRARY_TYPE}" CACHE STRING
+    "Library type override for GLFW (SHARED, STATIC, OBJECT, or empty to follow BUILD_SHARED_LIBS)")
+
+if (GLFW_LIBRARY_TYPE)
+    if (GLFW_LIBRARY_TYPE STREQUAL "SHARED")
+        set(GLFW_BUILD_SHARED_LIBRARY TRUE)
+    else()
+        set(GLFW_BUILD_SHARED_LIBRARY FALSE)
+    endif()
+else()
+    set(GLFW_BUILD_SHARED_LIBRARY ${BUILD_SHARED_LIBS})
+endif()
+
+if (UNIX AND GLFW_BUILD_SHARED_LIBRARY)
     # On Unix-like systems, shared libraries can use the soname system.
     set(GLFW_LIB_NAME glfw)
 else()
@@ -49,7 +62,7 @@ else()
 endif()
 
 if (GLFW_VULKAN_STATIC)
-    if (BUILD_SHARED_LIBS)
+    if (GLFW_BUILD_SHARED_LIBRARY)
         # If you absolutely must do this, remove this line and add the Vulkan
         # loader static library via the CMAKE_SHARED_LINKER_FLAGS
         message(FATAL_ERROR "You are trying to link the Vulkan loader static library into the GLFW shared library")
@@ -67,24 +80,27 @@ if (GLFW_BUILD_DOCS)
 endif()
 
 #--------------------------------------------------------------------
-# Set compiler specific flags
+# Apply Microsoft C runtime library option
+# This is here because it also applies to tests and examples
 #--------------------------------------------------------------------
-if (MSVC)
-    if (NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
+if (MSVC AND NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
+    if (CMAKE_VERSION VERSION_LESS 3.15)
         foreach (flag CMAKE_C_FLAGS
                       CMAKE_C_FLAGS_DEBUG
                       CMAKE_C_FLAGS_RELEASE
                       CMAKE_C_FLAGS_MINSIZEREL
                       CMAKE_C_FLAGS_RELWITHDEBINFO)
 
-            if (${flag} MATCHES "/MD")
+            if (flag MATCHES "/MD")
                 string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
             endif()
-            if (${flag} MATCHES "/MDd")
+            if (flag MATCHES "/MDd")
                 string(REGEX REPLACE "/MDd" "/MTd" ${flag} "${${flag}}")
             endif()
 
         endforeach()
+    else()
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     endif()
 endif()
 
@@ -199,17 +215,14 @@ if (_GLFW_WAYLAND)
         wayland-egl>=0.2.7
         xkbcommon)
 
-    list(APPEND glfw_PKG_DEPS "wayland-client")
-
     list(APPEND glfw_INCLUDE_DIRS "${Wayland_INCLUDE_DIRS}")
-    list(APPEND glfw_LIBRARIES "${Wayland_LINK_LIBRARIES}")
 
     include(CheckIncludeFiles)
     include(CheckFunctionExists)
     check_include_files(xkbcommon/xkbcommon-compose.h HAVE_XKBCOMMON_COMPOSE_H)
     check_function_exists(memfd_create HAVE_MEMFD_CREATE)
 
-    if (NOT ("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux"))
+    if (NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
         find_package(EpollShim)
         if (EPOLLSHIM_FOUND)
             list(APPEND glfw_INCLUDE_DIRS "${EPOLLSHIM_INCLUDE_DIRS}")
@@ -243,11 +256,16 @@ endif()
 # Export GLFW library dependencies
 #--------------------------------------------------------------------
 foreach(arg ${glfw_PKG_DEPS})
-    set(GLFW_PKG_DEPS "${GLFW_PKG_DEPS} ${arg}")
+    string(APPEND deps " ${arg}")
 endforeach()
 foreach(arg ${glfw_PKG_LIBS})
-    set(GLFW_PKG_LIBS "${GLFW_PKG_LIBS} ${arg}")
+    string(APPEND libs " ${arg}")
 endforeach()
+
+set(GLFW_PKG_CONFIG_REQUIRES_PRIVATE "${deps}" CACHE INTERNAL
+    "GLFW pkg-config Requires.private")
+set(GLFW_PKG_CONFIG_LIBS_PRIVATE "${libs}" CACHE INTERNAL
+    "GLFW pkg-config Libs.private")
 
 #--------------------------------------------------------------------
 # Create generated files

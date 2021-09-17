@@ -34,6 +34,8 @@
 #include <errno.h>
 #include <math.h>
 
+#include "wayland-client-protocol.h"
+
 
 static void outputHandleGeometry(void* data,
                                  struct wl_output* output,
@@ -47,15 +49,13 @@ static void outputHandleGeometry(void* data,
                                  int32_t transform)
 {
     struct _GLFWmonitor *monitor = data;
-    char name[1024];
 
     monitor->wl.x = x;
     monitor->wl.y = y;
     monitor->widthMM = physicalWidth;
     monitor->heightMM = physicalHeight;
 
-    snprintf(name, sizeof(name), "%s %s", make, model);
-    monitor->name = _glfw_strdup(name);
+    snprintf(monitor->name, sizeof(monitor->name), "%s %s", make, model);
 }
 
 static void outputHandleMode(void* data,
@@ -77,7 +77,7 @@ static void outputHandleMode(void* data,
 
     monitor->modeCount++;
     monitor->modes =
-        realloc(monitor->modes, monitor->modeCount * sizeof(GLFWvidmode));
+        _glfw_realloc(monitor->modes, monitor->modeCount * sizeof(GLFWvidmode));
     monitor->modes[monitor->modeCount - 1] = mode;
 
     if (flags & WL_OUTPUT_MODE_CURRENT)
@@ -133,7 +133,7 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
     }
 
     // The actual name of this output will be set in the geometry handler.
-    monitor = _glfwAllocMonitor(NULL, 0, 0);
+    monitor = _glfwAllocMonitor("", 0, 0);
 
     output = wl_registry_bind(_glfw.wl.registry,
                               name,

@@ -46,7 +46,7 @@ int _glfwPlatformInit(void)
 
 void _glfwPlatformTerminate(void)
 {
-    free(_glfw.null.clipboardString);
+    _glfw_free(_glfw.null.clipboardString);
     _glfwTerminateOSMesa();
 }
 

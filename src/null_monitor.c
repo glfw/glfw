@@ -105,7 +105,7 @@ void _glfwPlatformGetMonitorWorkarea(_GLFWmonitor* monitor,
 
 GLFWvidmode* _glfwPlatformGetVideoModes(_GLFWmonitor* monitor, int* found)
 {
-    GLFWvidmode* mode = calloc(1, sizeof(GLFWvidmode));
+    GLFWvidmode* mode = _glfw_calloc(1, sizeof(GLFWvidmode));
     *mode = getVideoMode();
     *found = 1;
     return mode;

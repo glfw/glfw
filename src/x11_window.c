@@ -406,8 +406,8 @@ static char** parseUriList(char* text, int* count)
 
         (*count)++;
 
-        char* path = calloc(strlen(line) + 1, 1);
-        paths = realloc(paths, *count * sizeof(char*));
+        char* path = _glfw_calloc(strlen(line) + 1, 1);
+        paths = _glfw_realloc(paths, *count * sizeof(char*));
         paths[*count - 1] = path;
 
         while (*line)
@@ -493,7 +493,7 @@ static char* convertLatin1toUTF8(const char* source)
     for (sp = source;  *sp;  sp++)
         size += (*sp & 0x80) ? 2 : 1;
 
-    char* target = calloc(size, 1);
+    char* target = _glfw_calloc(size, 1);
     char* tp = target;
 
     for (sp = source;  *sp;  sp++)
@@ -924,12 +924,12 @@ static void handleSelectionClear(XEvent* event)
 {
     if (event->xselectionclear.selection == _glfw.x11.PRIMARY)
     {
-        free(_glfw.x11.primarySelectionString);
+        _glfw_free(_glfw.x11.primarySelectionString);
         _glfw.x11.primarySelectionString = NULL;
     }
     else
     {
-        free(_glfw.x11.clipboardString);
+        _glfw_free(_glfw.x11.clipboardString);
         _glfw.x11.clipboardString = NULL;
     }
 }
@@ -968,7 +968,7 @@ static const char* getSelectionString(Atom selection)
         return *selectionString;
     }
 
-    free(*selectionString);
+    _glfw_free(*selectionString);
     *selectionString = NULL;
 
     for (size_t i = 0;  i < targetCount;  i++)
@@ -1047,7 +1047,7 @@ static const char* getSelectionString(Atom selection)
                 if (itemCount)
                 {
                     size += itemCount;
-                    string = realloc(string, size);
+                    string = _glfw_realloc(string, size);
                     string[size - itemCount - 1] = '\0';
                     strcat(string, data);
                 }
@@ -1057,7 +1057,7 @@ static const char* getSelectionString(Atom selection)
                     if (targets[i] == XA_STRING)
                     {
                         *selectionString = convertLatin1toUTF8(string);
-                        free(string);
+                        _glfw_free(string);
                     }
                     else
                         *selectionString = string;
@@ -1293,7 +1293,7 @@ static void processEvent(XEvent *event)
 
                     if (status == XBufferOverflow)
                     {
-                        chars = calloc(count + 1, 1);
+                        chars = _glfw_calloc(count + 1, 1);
                         count = Xutf8LookupString(window->x11.ic,
                                                   &event->xkey,
                                                   chars, count,
@@ -1309,7 +1309,7 @@ static void processEvent(XEvent *event)
                     }
 
                     if (chars != buffer)
-                        free(chars);
+                        _glfw_free(chars);
                 }
             }
             else
@@ -1724,8 +1724,8 @@ static void processEvent(XEvent *event)
                     _glfwInputDrop(window, count, (const char**) paths);
 
                     for (i = 0;  i < count;  i++)
-                        free(paths[i]);
-                    free(paths);
+                        _glfw_free(paths[i]);
+                    _glfw_free(paths);
                 }
 
                 if (data)
@@ -2108,7 +2108,7 @@ void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
         for (i = 0;  i < count;  i++)
             longCount += 2 + images[i].width * images[i].height;
 
-        long* icon = calloc(longCount, sizeof(long));
+        long* icon = _glfw_calloc(longCount, sizeof(long));
         long* target = icon;
 
         for (i = 0;  i < count;  i++)
@@ -2132,7 +2132,7 @@ void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
                         (unsigned char*) icon,
                         longCount);
 
-        free(icon);
+        _glfw_free(icon);
     }
     else
     {
@@ -2671,14 +2671,14 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
                     break;
             }
 
-            if (i < count)
-                return;
-
-            XChangeProperty(_glfw.x11.display, window->x11.handle,
-                            _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
-                            PropModeAppend,
-                            (unsigned char*) &_glfw.x11.NET_WM_STATE_ABOVE,
-                            1);
+            if (i == count)
+            {
+                XChangeProperty(_glfw.x11.display, window->x11.handle,
+                                _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
+                                PropModeAppend,
+                                (unsigned char*) &_glfw.x11.NET_WM_STATE_ABOVE,
+                                1);
+            }
         }
         else if (states)
         {
@@ -2688,15 +2688,15 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
                     break;
             }
 
-            if (i == count)
-                return;
+            if (i < count)
+            {
+                states[i] = states[count - 1];
+                count--;
 
-            states[i] = states[count - 1];
-            count--;
-
-            XChangeProperty(_glfw.x11.display, window->x11.handle,
-                            _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
-                            PropModeReplace, (unsigned char*) states, count);
+                XChangeProperty(_glfw.x11.display, window->x11.handle,
+                                _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
+                                PropModeReplace, (unsigned char*) states, count);
+            }
         }
 
         if (states)
@@ -2891,7 +2891,7 @@ const char* _glfwPlatformGetScancodeName(int scancode)
     if (scancode < 0 || scancode > 0xff ||
         _glfw.x11.keycodes[scancode] == GLFW_KEY_UNKNOWN)
     {
-        _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode");
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode %i", scancode);
         return NULL;
     }
 
@@ -3045,7 +3045,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 void _glfwPlatformSetClipboardString(const char* string)
 {
     char* copy = _glfw_strdup(string);
-    free(_glfw.x11.clipboardString);
+    _glfw_free(_glfw.x11.clipboardString);
     _glfw.x11.clipboardString = copy;
 
     XSetSelectionOwner(_glfw.x11.display,
@@ -3086,7 +3086,7 @@ EGLenum _glfwPlatformGetEGLPlatform(EGLint** attribs)
 
         if (type)
         {
-            *attribs = calloc(5, sizeof(EGLint));
+            *attribs = _glfw_calloc(5, sizeof(EGLint));
             (*attribs)[0] = EGL_PLATFORM_ANGLE_TYPE_ANGLE;
             (*attribs)[1] = type;
             (*attribs)[2] = EGL_PLATFORM_ANGLE_NATIVE_PLATFORM_TYPE_ANGLE;
@@ -3286,7 +3286,7 @@ GLFWAPI void glfwSetX11SelectionString(const char* string)
 {
     _GLFW_REQUIRE_INIT();
 
-    free(_glfw.x11.primarySelectionString);
+    _glfw_free(_glfw.x11.primarySelectionString);
     _glfw.x11.primarySelectionString = _glfw_strdup(string);
 
     XSetSelectionOwner(_glfw.x11.display,

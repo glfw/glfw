@@ -40,6 +40,14 @@
 #include <sys/timerfd.h>
 #include <poll.h>
 
+#include "wayland-client-protocol.h"
+#include "wayland-xdg-shell-client-protocol.h"
+#include "wayland-xdg-decoration-client-protocol.h"
+#include "wayland-viewporter-client-protocol.h"
+#include "wayland-relative-pointer-unstable-v1-client-protocol.h"
+#include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
+#include "wayland-idle-inhibit-unstable-v1-client-protocol.h"
+
 
 static int createTmpfileCloexec(char* tmpname)
 {
@@ -104,12 +112,12 @@ static int createAnonymousFile(off_t size)
             return -1;
         }
 
-        name = calloc(strlen(path) + sizeof(template), 1);
+        name = _glfw_calloc(strlen(path) + sizeof(template), 1);
         strcpy(name, path);
         strcat(name, template);
 
         fd = createTmpfileCloexec(name);
-        free(name);
+        _glfw_free(name);
         if (fd < 0)
             return -1;
     }
@@ -374,8 +382,8 @@ static void surfaceHandleEnter(void *data,
     {
         ++window->wl.monitorsSize;
         window->wl.monitors =
-            realloc(window->wl.monitors,
-                    window->wl.monitorsSize * sizeof(_GLFWmonitor*));
+            _glfw_realloc(window->wl.monitors,
+                          window->wl.monitorsSize * sizeof(_GLFWmonitor*));
     }
 
     window->wl.monitors[window->wl.monitorsCount++] = monitor;
@@ -675,7 +683,7 @@ static void setCursorImage(_GLFWwindow* window,
         cursorWayland->yhot = image->hotspot_y;
     }
 
-    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.serial,
+    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial,
                           surface,
                           cursorWayland->xhot / scale,
                           cursorWayland->yhot / scale);
@@ -829,7 +837,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     window->wl.currentCursor = NULL;
 
-    window->wl.monitors = calloc(1, sizeof(_GLFWmonitor*));
+    window->wl.monitors = _glfw_calloc(1, sizeof(_GLFWmonitor*));
     window->wl.monitorsCount = 0;
     window->wl.monitorsSize = 1;
 
@@ -874,14 +882,14 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     if (window->wl.surface)
         wl_surface_destroy(window->wl.surface);
 
-    free(window->wl.title);
-    free(window->wl.monitors);
+    _glfw_free(window->wl.title);
+    _glfw_free(window->wl.monitors);
 }
 
 void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
 {
     if (window->wl.title)
-        free(window->wl.title);
+        _glfw_free(window->wl.title);
     window->wl.title = _glfw_strdup(title);
     if (window->wl.xdg.toplevel)
         xdg_toplevel_set_title(window->wl.xdg.toplevel, title);
@@ -1291,18 +1299,25 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
         {
             case GLFW_ARROW_CURSOR:
                 name = "left_ptr";
+                break;
             case GLFW_IBEAM_CURSOR:
                 name = "xterm";
+                break;
             case GLFW_CROSSHAIR_CURSOR:
                 name = "crosshair";
+                break;
             case GLFW_POINTING_HAND_CURSOR:
                 name = "hand2";
+                break;
             case GLFW_RESIZE_EW_CURSOR:
                 name = "sb_h_double_arrow";
+                break;
             case GLFW_RESIZE_NS_CURSOR:
                 name = "sb_v_double_arrow";
+                break;
             case GLFW_RESIZE_ALL_CURSOR:
                 name = "fleur";
+                break;
             default:
                 _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
                                 "Wayland: Standard cursor shape unavailable");
@@ -1440,7 +1455,7 @@ static void lockPointer(_GLFWwindow* window)
     window->wl.pointerLock.relativePointer = relativePointer;
     window->wl.pointerLock.lockedPointer = lockedPointer;
 
-    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.serial,
+    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial,
                           NULL, 0, 0);
 }
 
@@ -1504,7 +1519,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
     }
     else if (window->cursorMode == GLFW_CURSOR_HIDDEN)
     {
-        wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.serial, NULL, 0, 0);
+        wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial, NULL, 0, 0);
     }
 }
 
@@ -1600,11 +1615,11 @@ void _glfwPlatformSetClipboardString(const char* string)
 
     if (_glfw.wl.clipboardSendString)
     {
-        free(_glfw.wl.clipboardSendString);
+        _glfw_free(_glfw.wl.clipboardSendString);
         _glfw.wl.clipboardSendString = NULL;
     }
 
-    _glfw.wl.clipboardSendString = strdup(string);
+    _glfw.wl.clipboardSendString = _glfw_strdup(string);
     if (!_glfw.wl.clipboardSendString)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -1618,7 +1633,7 @@ void _glfwPlatformSetClipboardString(const char* string)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Impossible to create clipboard source");
-        free(_glfw.wl.clipboardSendString);
+        _glfw_free(_glfw.wl.clipboardSendString);
         return;
     }
     wl_data_source_add_listener(_glfw.wl.dataSource,
@@ -1634,7 +1649,7 @@ static GLFWbool growClipboardString(void)
 {
     char* clipboard = _glfw.wl.clipboardString;
 
-    clipboard = realloc(clipboard, _glfw.wl.clipboardSize * 2);
+    clipboard = _glfw_realloc(clipboard, _glfw.wl.clipboardSize * 2);
     if (!clipboard)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,

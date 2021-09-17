@@ -24,7 +24,7 @@
 //
 //========================================================================
 
-#include <wayland-client.h>
+#include <wayland-client-core.h>
 #include <xkbcommon/xkbcommon.h>
 #ifdef HAVE_XKBCOMMON_COMPOSE_H
 #include <xkbcommon/xkbcommon-compose.h>
@@ -54,12 +54,84 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #endif
 #include "xkb_unicode.h"
 
-#include "wayland-xdg-shell-client-protocol.h"
-#include "wayland-xdg-decoration-client-protocol.h"
-#include "wayland-viewporter-client-protocol.h"
-#include "wayland-relative-pointer-unstable-v1-client-protocol.h"
-#include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
-#include "wayland-idle-inhibit-unstable-v1-client-protocol.h"
+typedef int (* PFN_wl_display_flush)(struct wl_display *display);
+typedef void (* PFN_wl_display_cancel_read)(struct wl_display *display);
+typedef int (* PFN_wl_display_dispatch_pending)(struct wl_display *display);
+typedef int (* PFN_wl_display_read_events)(struct wl_display *display);
+typedef struct wl_display* (* PFN_wl_display_connect)(const char*);
+typedef void (* PFN_wl_display_disconnect)(struct wl_display*);
+typedef int (* PFN_wl_display_roundtrip)(struct wl_display*);
+typedef int (* PFN_wl_display_get_fd)(struct wl_display*);
+typedef int (* PFN_wl_display_prepare_read)(struct wl_display*);
+typedef void (* PFN_wl_proxy_marshal)(struct wl_proxy*,uint32_t,...);
+typedef int (* PFN_wl_proxy_add_listener)(struct wl_proxy*,void(**)(void),void*);
+typedef void (* PFN_wl_proxy_destroy)(struct wl_proxy*);
+typedef struct wl_proxy* (* PFN_wl_proxy_marshal_constructor)(struct wl_proxy*,uint32_t,const struct wl_interface*,...);
+typedef struct wl_proxy* (* PFN_wl_proxy_marshal_constructor_versioned)(struct wl_proxy*,uint32_t,const struct wl_interface*,uint32_t,...);
+typedef void* (* PFN_wl_proxy_get_user_data)(struct wl_proxy*);
+typedef void (* PFN_wl_proxy_set_user_data)(struct wl_proxy*,void*);
+typedef uint32_t (* PFN_wl_proxy_get_version)(struct wl_proxy*);
+typedef struct wl_proxy* (* PFN_wl_proxy_marshal_flags)(struct wl_proxy*,uint32_t,const struct wl_interface*,uint32_t,uint32_t,...);
+#define wl_display_flush _glfw.wl.client.display_flush
+#define wl_display_cancel_read _glfw.wl.client.display_cancel_read
+#define wl_display_dispatch_pending _glfw.wl.client.display_dispatch_pending
+#define wl_display_read_events _glfw.wl.client.display_read_events
+#define wl_display_connect _glfw.wl.client.display_connect
+#define wl_display_disconnect _glfw.wl.client.display_disconnect
+#define wl_display_roundtrip _glfw.wl.client.display_roundtrip
+#define wl_display_get_fd _glfw.wl.client.display_get_fd
+#define wl_display_prepare_read _glfw.wl.client.display_prepare_read
+#define wl_proxy_marshal _glfw.wl.client.proxy_marshal
+#define wl_proxy_add_listener _glfw.wl.client.proxy_add_listener
+#define wl_proxy_destroy _glfw.wl.client.proxy_destroy
+#define wl_proxy_marshal_constructor _glfw.wl.client.proxy_marshal_constructor
+#define wl_proxy_marshal_constructor_versioned _glfw.wl.client.proxy_marshal_constructor_versioned
+#define wl_proxy_get_user_data _glfw.wl.client.proxy_get_user_data
+#define wl_proxy_set_user_data _glfw.wl.client.proxy_set_user_data
+#define wl_proxy_get_version _glfw.wl.client.proxy_get_version
+#define wl_proxy_marshal_flags _glfw.wl.client.proxy_marshal_flags
+
+struct wl_shm;
+
+#define wl_display_interface _glfw_wl_display_interface
+#define wl_subcompositor_interface _glfw_wl_subcompositor_interface
+#define wl_compositor_interface _glfw_wl_compositor_interface
+#define wl_shm_interface _glfw_wl_shm_interface
+#define wl_data_device_manager_interface _glfw_wl_data_device_manager_interface
+#define wl_shell_interface _glfw_wl_shell_interface
+#define wl_buffer_interface _glfw_wl_buffer_interface
+#define wl_callback_interface _glfw_wl_callback_interface
+#define wl_data_device_interface _glfw_wl_data_device_interface
+#define wl_data_offer_interface _glfw_wl_data_offer_interface
+#define wl_data_source_interface _glfw_wl_data_source_interface
+#define wl_keyboard_interface _glfw_wl_keyboard_interface
+#define wl_output_interface _glfw_wl_output_interface
+#define wl_pointer_interface _glfw_wl_pointer_interface
+#define wl_region_interface _glfw_wl_region_interface
+#define wl_registry_interface _glfw_wl_registry_interface
+#define wl_seat_interface _glfw_wl_seat_interface
+#define wl_shell_surface_interface _glfw_wl_shell_surface_interface
+#define wl_shm_pool_interface _glfw_wl_shm_pool_interface
+#define wl_subsurface_interface _glfw_wl_subsurface_interface
+#define wl_surface_interface _glfw_wl_surface_interface
+#define wl_touch_interface _glfw_wl_touch_interface
+#define zwp_idle_inhibitor_v1_interface _glfw_zwp_idle_inhibitor_v1_interface
+#define zwp_idle_inhibit_manager_v1_interface _glfw_zwp_idle_inhibit_manager_v1_interface
+#define zwp_confined_pointer_v1_interface _glfw_zwp_confined_pointer_v1_interface
+#define zwp_locked_pointer_v1_interface _glfw_zwp_locked_pointer_v1_interface
+#define zwp_pointer_constraints_v1_interface _glfw_zwp_pointer_constraints_v1_interface
+#define zwp_relative_pointer_v1_interface _glfw_zwp_relative_pointer_v1_interface
+#define zwp_relative_pointer_manager_v1_interface _glfw_zwp_relative_pointer_manager_v1_interface
+#define wp_viewport_interface _glfw_wp_viewport_interface
+#define wp_viewporter_interface _glfw_wp_viewporter_interface
+#define xdg_toplevel_interface _glfw_xdg_toplevel_interface
+#define zxdg_toplevel_decoration_v1_interface _glfw_zxdg_toplevel_decoration_v1_interface
+#define zxdg_decoration_manager_v1_interface _glfw_zxdg_decoration_manager_v1_interface
+#define xdg_popup_interface _glfw_xdg_popup_interface
+#define xdg_positioner_interface _glfw_xdg_positioner_interface
+#define xdg_surface_interface _glfw_xdg_surface_interface
+#define xdg_toplevel_interface _glfw_xdg_toplevel_interface
+#define xdg_wm_base_interface _glfw_xdg_wm_base_interface
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)
@@ -245,6 +317,7 @@ typedef struct _GLFWlibraryWayland
     const char*                 cursorPreviousName;
     int                         cursorTimerfd;
     uint32_t                    serial;
+    uint32_t                    pointerEnterSerial;
 
     int32_t                     keyboardRepeatRate;
     int32_t                     keyboardRepeatDelay;
@@ -301,6 +374,28 @@ typedef struct _GLFWlibraryWayland
 
     _GLFWwindow*                pointerFocus;
     _GLFWwindow*                keyboardFocus;
+
+    struct {
+        void*                                       handle;
+        PFN_wl_display_flush                        display_flush;
+        PFN_wl_display_cancel_read                  display_cancel_read;
+        PFN_wl_display_dispatch_pending             display_dispatch_pending;
+        PFN_wl_display_read_events                  display_read_events;
+        PFN_wl_display_connect                      display_connect;
+        PFN_wl_display_disconnect                   display_disconnect;
+        PFN_wl_display_roundtrip                    display_roundtrip;
+        PFN_wl_display_get_fd                       display_get_fd;
+        PFN_wl_display_prepare_read                 display_prepare_read;
+        PFN_wl_proxy_marshal                        proxy_marshal;
+        PFN_wl_proxy_add_listener                   proxy_add_listener;
+        PFN_wl_proxy_destroy                        proxy_destroy;
+        PFN_wl_proxy_marshal_constructor            proxy_marshal_constructor;
+        PFN_wl_proxy_marshal_constructor_versioned  proxy_marshal_constructor_versioned;
+        PFN_wl_proxy_get_user_data                  proxy_get_user_data;
+        PFN_wl_proxy_set_user_data                  proxy_set_user_data;
+        PFN_wl_proxy_get_version                    proxy_get_version;
+        PFN_wl_proxy_marshal_flags                  proxy_marshal_flags;
+    } client;
 
     struct {
         void*                   handle;

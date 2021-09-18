@@ -642,6 +642,7 @@ GLFWbool _glfwPlatformInitJoysticks(void);
 void _glfwPlatformTerminateJoysticks(void);
 int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode);
 void _glfwPlatformUpdateGamepadGUID(char* guid);
+int _glfwPlatformSetJoystickRumble(_GLFWjoystick* js, float slowMotorIntensity, float fastMotorIntensity);
 
 uint64_t _glfwPlatformGetTimerValue(void);
 uint64_t _glfwPlatformGetTimerFrequency(void);

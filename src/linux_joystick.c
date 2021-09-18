@@ -122,6 +122,48 @@ static void pollAbsState(_GLFWjoystick* js)
 
 #define isBitSet(bit, arr) (arr[(bit) / 8] & (1 << ((bit) % 8)))
 
+static void initJoystickForceFeedback(_GLFWjoystickLinux *linjs)
+{
+    linjs->rumble = NULL;
+    struct ff_effect* effect = NULL;
+
+    char ffBits[(FF_CNT + 7) / 8] = {0};
+    if (ioctl(linjs->fd, EVIOCGBIT(EV_FF, sizeof(ffBits)), ffBits) < 0)
+    {
+        return;
+    }
+
+    if (isBitSet(FF_RUMBLE, ffBits))
+    {
+        effect = malloc(sizeof(struct ff_effect));
+        *effect = (struct ff_effect)
+        {
+            .type      = FF_RUMBLE,
+            .id        = -1,
+            .direction = 0,
+            .trigger   = {
+                .button   = 0,
+                .interval = 0
+            },
+            .replay = {
+                .length = 2000,  // xinput rumble lasts ~2 seconds
+                .delay  = 0
+            },
+            .u.rumble = {
+                .strong_magnitude = 0,
+                .weak_magnitude   = 0
+            }
+        };
+
+        if (ioctl(linjs->fd, EVIOCSFF, effect) < 0)
+        {
+            free(effect);
+        } else {
+            linjs->rumble = effect;
+        }
+    }
+}
+
 // Attempt to open the specified joystick device
 //
 static GLFWbool openJoystickDevice(const char* path)
@@ -135,7 +177,7 @@ static GLFWbool openJoystickDevice(const char* path)
     }
 
     _GLFWjoystickLinux linjs = {0};
-    linjs.fd = open(path, O_RDONLY | O_NONBLOCK);
+    linjs.fd = open(path, O_RDWR | O_NONBLOCK);
     if (linjs.fd == -1)
         return GLFW_FALSE;
 
@@ -222,6 +264,8 @@ static GLFWbool openJoystickDevice(const char* path)
         }
     }
 
+    initJoystickForceFeedback(&linjs);
+
     _GLFWjoystick* js =
         _glfwAllocJoystick(name, guid, axisCount, buttonCount, hatCount);
     if (!js)
@@ -246,6 +290,8 @@ static GLFWbool openJoystickDevice(const char* path)
 static void closeJoystick(_GLFWjoystick* js)
 {
     close(js->linjs.fd);
+    if (js->linjs.rumble)
+        free(js->linjs.rumble);
     _glfwFreeJoystick(js);
     _glfwInputJoystick(js, GLFW_DISCONNECTED);
 }
@@ -426,3 +472,31 @@ void _glfwPlatformUpdateGamepadGUID(char* guid)
 {
 }
 
+int _glfwPlatformSetJoystickRumble(_GLFWjoystick* js, float slowMotorIntensity, float fastMotorIntensity)
+{
+    _GLFWjoystickLinux *linjs = &js->linjs;
+
+    if (!js->linjs.rumble)
+        return GLFW_FALSE;
+
+    js->linjs.rumble->u.rumble = (struct ff_rumble_effect)
+    {
+        .strong_magnitude = 65535 * slowMotorIntensity,
+        .weak_magnitude   = 65535 * fastMotorIntensity
+    };
+
+    struct input_event play =
+    {
+        .type  = EV_FF,
+        .code  = linjs->rumble->id,
+        .value = 1
+    };
+
+    if (ioctl(linjs->fd, EVIOCSFF, linjs->rumble) < 0 ||
+        write(linjs->fd, (const void*) &play, sizeof(play)) < 0)
+    {
+        return GLFW_FALSE;
+    }
+
+    return GLFW_TRUE;
+}

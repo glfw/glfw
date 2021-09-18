@@ -58,6 +58,9 @@ static GLFWwindow* window;
 static int joysticks[GLFW_JOYSTICK_LAST + 1];
 static int joystick_count = 0;
 
+static float slowRumble[GLFW_JOYSTICK_LAST + 1];
+static float fastRumble[GLFW_JOYSTICK_LAST + 1];
+
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
@@ -175,7 +178,9 @@ int main(void)
     struct nk_context* nk;
     struct nk_font_atlas* atlas;
 
-    memset(joysticks, 0, sizeof(joysticks));
+    memset(joysticks,  0, sizeof(joysticks));
+    memset(slowRumble, 0, sizeof(slowRumble));
+    memset(fastRumble, 0, sizeof(fastRumble));
 
     glfwSetErrorCallback(error_callback);
 
@@ -326,6 +331,16 @@ int main(void)
 
                     nk_layout_row_dynamic(nk, 30, 8);
                     hat_widget(nk, hat);
+
+                    nk_layout_row_dynamic(nk, 30, 2);
+                    nk_label(nk, "Slow rumble motor intensity", NK_TEXT_LEFT);
+                    nk_label(nk, "Fast rumble motor intensity", NK_TEXT_LEFT);
+
+                    nk_layout_row_dynamic(nk, 30, 2);
+                    slowRumble[i] = nk_slide_float(nk, 0.0f, slowRumble[i], 1.0f, 0.05f);
+                    fastRumble[i] = nk_slide_float(nk, 0.0f, fastRumble[i], 1.0f, 0.05f);
+
+                    glfwSetJoystickRumble(joysticks[i], slowRumble[i], fastRumble[i]);
                 }
                 else
                     nk_label(nk, "Joystick has no gamepad mapping", NK_TEXT_LEFT);

@@ -25,7 +25,11 @@
 //========================================================================
 
 #include <linux/input.h>
+#ifdef __linux__
 #include <linux/limits.h>
+#else
+#include <limits.h>
+#endif
 #include <regex.h>
 
 #define _GLFW_PLATFORM_JOYSTICK_STATE         _GLFWjoystickLinux linjs

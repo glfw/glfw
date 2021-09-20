@@ -324,7 +324,7 @@ GLFWbool _glfwPlatformInitJoysticks(void)
 
     // Continue without device connection notifications if inotify fails
 
-    if (regcomp(&_glfw.linjs.regex, "^event[0-9]\\+$", 0) != 0)
+    if (regcomp(&_glfw.linjs.regex, "^event[0-9][0-9]*$", 0) != 0)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Linux: Failed to compile regex");
         return GLFW_FALSE;

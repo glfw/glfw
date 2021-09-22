@@ -362,8 +362,8 @@ should be using the character callback instead, on both GLFW 2 and 3.  This will
 give you the characters being input, as opposed to the keys being pressed.
 
 GLFW 3 has key tokens for all keys on a standard 105 key keyboard, so instead of
-having to remember whether to check for `'a'` or `'A'`, you now check for
-`GLFW_KEY_A`.
+having to remember whether to check for `a` or `A`, you now check for
+@ref GLFW_KEY_A.
 
 
 @subsection moving_joystick Joystick function changes

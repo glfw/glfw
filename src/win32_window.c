@@ -31,12 +31,9 @@
 
 #include <limits.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <string.h>
 #include <windowsx.h>
 #include <shellapi.h>
-
-#define _GLFW_KEY_INVALID -2
 
 // Returns the window style for the specified window
 //
@@ -379,12 +376,17 @@ static void updateWindowStyles(const _GLFWwindow* window)
 //
 static void updateFramebufferTransparency(const _GLFWwindow* window)
 {
-    BOOL enabled;
+    BOOL composition, opaque;
+    DWORD color;
 
     if (!IsWindowsVistaOrGreater())
         return;
 
-    if (SUCCEEDED(DwmIsCompositionEnabled(&enabled)) && enabled)
+    if (FAILED(DwmIsCompositionEnabled(&composition)) || !composition)
+       return;
+
+    if (IsWindows8OrGreater() ||
+        (SUCCEEDED(DwmGetColorizationColor(&color, &opaque)) && !opaque))
     {
         HRGN region = CreateRectRgn(0, 0, -1, -1);
         DWM_BLURBEHIND bb = {0};
@@ -392,37 +394,18 @@ static void updateFramebufferTransparency(const _GLFWwindow* window)
         bb.hRgnBlur = region;
         bb.fEnable = TRUE;
 
-        if (SUCCEEDED(DwmEnableBlurBehindWindow(window->win32.handle, &bb)))
-        {
-            // Decorated windows don't repaint the transparent background
-            // leaving a trail behind animations
-            // HACK: Making the window layered with a transparency color key
-            //       seems to fix this.  Normally, when specifying
-            //       a transparency color key to be used when composing the
-            //       layered window, all pixels painted by the window in this
-            //       color will be transparent.  That doesn't seem to be the
-            //       case anymore, at least when used with blur behind window
-            //       plus negative region.
-            LONG exStyle = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
-            exStyle |= WS_EX_LAYERED;
-            SetWindowLongW(window->win32.handle, GWL_EXSTYLE, exStyle);
-
-            // Using a color key not equal to black to fix the trailing
-            // issue.  When set to black, something is making the hit test
-            // not resize with the window frame.
-            SetLayeredWindowAttributes(window->win32.handle,
-                                       RGB(0, 193, 48), 255, LWA_COLORKEY);
-        }
-
+        DwmEnableBlurBehindWindow(window->win32.handle, &bb);
         DeleteObject(region);
     }
     else
     {
-        LONG exStyle = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
-        exStyle &= ~WS_EX_LAYERED;
-        SetWindowLongW(window->win32.handle, GWL_EXSTYLE, exStyle);
-        RedrawWindow(window->win32.handle, NULL, NULL,
-                     RDW_ERASE | RDW_INVALIDATE | RDW_FRAME);
+        // HACK: Disable framebuffer transparency on Windows 7 when the
+        //       colorization color is opaque, because otherwise the window
+        //       contents is blended additively with the previous frame instead
+        //       of replacing it
+        DWM_BLURBEHIND bb = {0};
+        bb.dwFlags = DWM_BB_ENABLE;
+        DwmEnableBlurBehindWindow(window->win32.handle, &bb);
     }
 }
 
@@ -448,77 +431,6 @@ static int getKeyMods(void)
     return mods;
 }
 
-// Retrieves and translates modifier keys
-//
-static int getAsyncKeyMods(void)
-{
-    int mods = 0;
-
-    if (GetAsyncKeyState(VK_SHIFT) & 0x8000)
-        mods |= GLFW_MOD_SHIFT;
-    if (GetAsyncKeyState(VK_CONTROL) & 0x8000)
-        mods |= GLFW_MOD_CONTROL;
-    if (GetAsyncKeyState(VK_MENU) & 0x8000)
-        mods |= GLFW_MOD_ALT;
-    if ((GetAsyncKeyState(VK_LWIN) | GetAsyncKeyState(VK_RWIN)) & 0x8000)
-        mods |= GLFW_MOD_SUPER;
-    if (GetAsyncKeyState(VK_CAPITAL) & 1)
-        mods |= GLFW_MOD_CAPS_LOCK;
-    if (GetAsyncKeyState(VK_NUMLOCK) & 1)
-        mods |= GLFW_MOD_NUM_LOCK;
-
-    return mods;
-}
-
-// Translates a Windows key to the corresponding GLFW key
-//
-static int translateKey(WPARAM wParam, LPARAM lParam)
-{
-    // The Ctrl keys require special handling
-    if (wParam == VK_CONTROL)
-    {
-        MSG next;
-        DWORD time;
-
-        // Right side keys have the extended key bit set
-        if (HIWORD(lParam) & KF_EXTENDED)
-            return GLFW_KEY_RIGHT_CONTROL;
-
-        // HACK: Alt Gr sends Left Ctrl and then Right Alt in close sequence
-        //       We only want the Right Alt message, so if the next message is
-        //       Right Alt we ignore this (synthetic) Left Ctrl message
-        time = GetMessageTime();
-
-        if (PeekMessageW(&next, NULL, 0, 0, PM_NOREMOVE))
-        {
-            if (next.message == WM_KEYDOWN ||
-                next.message == WM_SYSKEYDOWN ||
-                next.message == WM_KEYUP ||
-                next.message == WM_SYSKEYUP)
-            {
-                if (next.wParam == VK_MENU &&
-                    (HIWORD(next.lParam) & KF_EXTENDED) &&
-                    next.time == time)
-                {
-                    // Next message is Right Alt down so discard this
-                    return _GLFW_KEY_INVALID;
-                }
-            }
-        }
-
-        return GLFW_KEY_LEFT_CONTROL;
-    }
-
-    if (wParam == VK_PROCESSKEY)
-    {
-        // IME notifies that keys have been filtered by setting the virtual
-        // key-code to VK_PROCESSKEY
-        return _GLFW_KEY_INVALID;
-    }
-
-    return _glfw.win32.keycodes[HIWORD(lParam) & 0x1FF];
-}
-
 static void fitToMonitor(_GLFWwindow* window)
 {
     MONITORINFO mi = { sizeof(mi) };
@@ -541,11 +453,8 @@ static void acquireMonitor(_GLFWwindow* window)
 
         // HACK: When mouse trails are enabled the cursor becomes invisible when
         //       the OpenGL ICD switches to page flipping
-        if (IsWindowsXPOrGreater())
-        {
-            SystemParametersInfo(SPI_GETMOUSETRAILS, 0, &_glfw.win32.mouseTrailSize, 0);
-            SystemParametersInfo(SPI_SETMOUSETRAILS, 0, 0, 0);
-        }
+        SystemParametersInfo(SPI_GETMOUSETRAILS, 0, &_glfw.win32.mouseTrailSize, 0);
+        SystemParametersInfo(SPI_SETMOUSETRAILS, 0, 0, 0);
     }
 
     if (!window->monitor->window)
@@ -568,8 +477,7 @@ static void releaseMonitor(_GLFWwindow* window)
         SetThreadExecutionState(ES_CONTINUOUS);
 
         // HACK: Restore mouse trail length saved in acquireMonitor
-        if (IsWindowsXPOrGreater())
-            SystemParametersInfo(SPI_SETMOUSETRAILS, _glfw.win32.mouseTrailSize, 0, 0);
+        SystemParametersInfo(SPI_SETMOUSETRAILS, _glfw.win32.mouseTrailSize, 0, 0);
     }
 
     _glfwInputMonitorWindow(window->monitor, NULL);
@@ -592,7 +500,17 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             case WM_NCCREATE:
             {
                 if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
-                    EnableNonClientDpiScaling(hWnd);
+                {
+                    const CREATESTRUCTW* cs = (const CREATESTRUCTW*) lParam;
+                    const _GLFWwndconfig* wndconfig = cs->lpCreateParams;
+
+                    // On per-monitor DPI aware V1 systems, only enable
+                    // non-client scaling for windows that scale the client area
+                    // We need WM_GETDPISCALEDSIZE from V2 to keep the client
+                    // area static when the non-client area is scaled
+                    if (wndconfig && wndconfig->scaleToMonitor)
+                        EnableNonClientDpiScaling(hWnd);
+                }
 
                 break;
             }
@@ -603,6 +521,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             case WM_DEVICECHANGE:
             {
+                if (!_glfw.joysticksInitialized)
+                    break;
+
                 if (wParam == DBT_DEVICEARRIVAL)
                 {
                     DEV_BROADCAST_HDR* dbh = (DEV_BROADCAST_HDR*) lParam;
@@ -699,7 +620,12 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
                 // User trying to access application menu using ALT?
                 case SC_KEYMENU:
-                    return 0;
+                {
+                    if (!window->win32.keymenu)
+                        return 0;
+
+                    break;
+                }
             }
             break;
         }
@@ -718,11 +644,38 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_CHAR:
         case WM_SYSCHAR:
+        {
+            if (wParam >= 0xd800 && wParam <= 0xdbff)
+                window->win32.highSurrogate = (WCHAR) wParam;
+            else
+            {
+                unsigned int codepoint = 0;
+
+                if (wParam >= 0xdc00 && wParam <= 0xdfff)
+                {
+                    if (window->win32.highSurrogate)
+                    {
+                        codepoint += (window->win32.highSurrogate - 0xd800) << 10;
+                        codepoint += (WCHAR) wParam - 0xdc00;
+                        codepoint += 0x10000;
+                    }
+                }
+                else
+                    codepoint = (WCHAR) wParam;
+
+                window->win32.highSurrogate = 0;
+                _glfwInputChar(window, codepoint, getKeyMods(), uMsg != WM_SYSCHAR);
+            }
+
+            if (uMsg == WM_SYSCHAR && window->win32.keymenu)
+                break;
+
+            return 0;
+        }
+
         case WM_UNICHAR:
         {
-            const GLFWbool plain = (uMsg != WM_SYSCHAR);
-
-            if (uMsg == WM_UNICHAR && wParam == UNICODE_NOCHAR)
+            if (wParam == UNICODE_NOCHAR)
             {
                 // WM_UNICHAR is not sent by Windows, but is sent by some
                 // third-party input method engine
@@ -730,7 +683,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 return TRUE;
             }
 
-            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), plain);
+            _glfwInputChar(window, (unsigned int) wParam, getKeyMods(), GLFW_TRUE);
             return 0;
         }
 
@@ -739,13 +692,64 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         case WM_KEYUP:
         case WM_SYSKEYUP:
         {
-            const int key = translateKey(wParam, lParam);
-            const int scancode = (HIWORD(lParam) & 0x1ff);
+            int key, scancode;
             const int action = (HIWORD(lParam) & KF_UP) ? GLFW_RELEASE : GLFW_PRESS;
             const int mods = getKeyMods();
 
-            if (key == _GLFW_KEY_INVALID)
+            scancode = (HIWORD(lParam) & (KF_EXTENDED | 0xff));
+            if (!scancode)
+            {
+                // NOTE: Some synthetic key messages have a scancode of zero
+                // HACK: Map the virtual key back to a usable scancode
+                scancode = MapVirtualKeyW((UINT) wParam, MAPVK_VK_TO_VSC);
+            }
+
+            key = _glfw.win32.keycodes[scancode];
+
+            // The Ctrl keys require special handling
+            if (wParam == VK_CONTROL)
+            {
+                if (HIWORD(lParam) & KF_EXTENDED)
+                {
+                    // Right side keys have the extended key bit set
+                    key = GLFW_KEY_RIGHT_CONTROL;
+                }
+                else
+                {
+                    // NOTE: Alt Gr sends Left Ctrl followed by Right Alt
+                    // HACK: We only want one event for Alt Gr, so if we detect
+                    //       this sequence we discard this Left Ctrl message now
+                    //       and later report Right Alt normally
+                    MSG next;
+                    const DWORD time = GetMessageTime();
+
+                    if (PeekMessageW(&next, NULL, 0, 0, PM_NOREMOVE))
+                    {
+                        if (next.message == WM_KEYDOWN ||
+                            next.message == WM_SYSKEYDOWN ||
+                            next.message == WM_KEYUP ||
+                            next.message == WM_SYSKEYUP)
+                        {
+                            if (next.wParam == VK_MENU &&
+                                (HIWORD(next.lParam) & KF_EXTENDED) &&
+                                next.time == time)
+                            {
+                                // Next message is Right Alt down so discard this
+                                break;
+                            }
+                        }
+                    }
+
+                    // This is a regular Left Ctrl message
+                    key = GLFW_KEY_LEFT_CONTROL;
+                }
+            }
+            else if (wParam == VK_PROCESSKEY)
+            {
+                // IME notifies that keys have been filtered by setting the
+                // virtual key-code to VK_PROCESSKEY
                 break;
+            }
 
             if (action == GLFW_RELEASE && wParam == VK_SHIFT)
             {
@@ -879,8 +883,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             GetRawInputData(ri, RID_INPUT, NULL, &size, sizeof(RAWINPUTHEADER));
             if (size > (UINT) _glfw.win32.rawInputSize)
             {
-                free(_glfw.win32.rawInput);
-                _glfw.win32.rawInput = calloc(size, 1);
+                _glfw_free(_glfw.win32.rawInput);
+                _glfw.win32.rawInput = _glfw_calloc(size, 1);
                 _glfw.win32.rawInputSize = size;
             }
 
@@ -966,6 +970,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_SIZE:
         {
+            const int width = LOWORD(lParam);
+            const int height = HIWORD(lParam);
             const GLFWbool iconified = wParam == SIZE_MINIMIZED;
             const GLFWbool maximized = wParam == SIZE_MAXIMIZED ||
                                        (window->win32.maximized &&
@@ -980,8 +986,14 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (window->win32.maximized != maximized)
                 _glfwInputWindowMaximize(window, maximized);
 
-            _glfwInputFramebufferSize(window, LOWORD(lParam), HIWORD(lParam));
-            _glfwInputWindowSize(window, LOWORD(lParam), HIWORD(lParam));
+            if (width != window->win32.width || height != window->win32.height)
+            {
+                window->win32.width = width;
+                window->win32.height = height;
+
+                _glfwInputFramebufferSize(window, width, height);
+                _glfwInputWindowSize(window, width, height);
+            }
 
             if (window->monitor && window->win32.iconified != iconified)
             {
@@ -1095,6 +1107,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         }
 
         case WM_DWMCOMPOSITIONCHANGED:
+        case WM_DWMCOLORIZATIONCOLORCHANGED:
         {
             if (window->win32.transparent)
                 updateFramebufferTransparency(window);
@@ -1134,9 +1147,11 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             const float xscale = HIWORD(wParam) / (float) USER_DEFAULT_SCREEN_DPI;
             const float yscale = LOWORD(wParam) / (float) USER_DEFAULT_SCREEN_DPI;
 
-            // Only apply the suggested size if the OS is new enough to have
-            // sent a WM_GETDPISCALEDSIZE before this
-            if (_glfwIsWindows10CreatorsUpdateOrGreaterWin32())
+            // Resize windowed mode windows that either permit rescaling or that
+            // need it to compensate for non-client area scaling
+            if (!window->monitor &&
+                (window->win32.scaleToMonitor ||
+                 _glfwIsWindows10CreatorsUpdateOrGreaterWin32()))
             {
                 RECT* suggested = (RECT*) lParam;
                 SetWindowPos(window->win32.handle, HWND_TOP,
@@ -1169,7 +1184,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             int i;
 
             const int count = DragQueryFileW(drop, 0xffffffff, NULL, 0);
-            char** paths = calloc(count, sizeof(char*));
+            char** paths = _glfw_calloc(count, sizeof(char*));
 
             // Move the mouse to the position of the drop
             DragQueryPoint(drop, &pt);
@@ -1178,19 +1193,19 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             for (i = 0;  i < count;  i++)
             {
                 const UINT length = DragQueryFileW(drop, i, NULL, 0);
-                WCHAR* buffer = calloc((size_t) length + 1, sizeof(WCHAR));
+                WCHAR* buffer = _glfw_calloc((size_t) length + 1, sizeof(WCHAR));
 
                 DragQueryFileW(drop, i, buffer, length + 1);
                 paths[i] = _glfwCreateUTF8FromWideStringWin32(buffer);
 
-                free(buffer);
+                _glfw_free(buffer);
             }
 
             _glfwInputDrop(window, count, (const char**) paths);
 
             for (i = 0;  i < count;  i++)
-                free(paths[i]);
-            free(paths);
+                _glfw_free(paths[i]);
+            _glfw_free(paths);
 
             DragFinish(drop);
             return 0;
@@ -1251,9 +1266,9 @@ static int createNativeWindow(_GLFWwindow* window,
                                            NULL, // No parent window
                                            NULL, // No window menu
                                            GetModuleHandleW(NULL),
-                                           NULL);
+                                           (LPVOID) wndconfig);
 
-    free(wideTitle);
+    _glfw_free(wideTitle);
 
     if (!window->win32.handle)
     {
@@ -1275,6 +1290,7 @@ static int createNativeWindow(_GLFWwindow* window,
     }
 
     window->win32.scaleToMonitor = wndconfig->scaleToMonitor;
+    window->win32.keymenu = wndconfig->win32.keymenu;
 
     // Adjust window rect to account for DPI scaling of the window frame and
     // (if enabled) DPI scaling of the content area
@@ -1317,6 +1333,8 @@ static int createNativeWindow(_GLFWwindow* window,
         updateFramebufferTransparency(window);
         window->win32.transparent = GLFW_TRUE;
     }
+
+    _glfwPlatformGetWindowSize(window, &window->win32.width, &window->win32.height);
 
     return GLFW_TRUE;
 }
@@ -1450,7 +1468,7 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
         return;
 
     SetWindowTextW(window->win32.handle, wideTitle);
-    free(wideTitle);
+    _glfw_free(wideTitle);
 }
 
 void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
@@ -1819,7 +1837,8 @@ int _glfwPlatformWindowHovered(_GLFWwindow* window)
 
 int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
 {
-    BOOL enabled;
+    BOOL composition, opaque;
+    DWORD color;
 
     if (!window->win32.transparent)
         return GLFW_FALSE;
@@ -1827,7 +1846,20 @@ int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
     if (!IsWindowsVistaOrGreater())
         return GLFW_FALSE;
 
-    return SUCCEEDED(DwmIsCompositionEnabled(&enabled)) && enabled;
+    if (FAILED(DwmIsCompositionEnabled(&composition)) || !composition)
+        return GLFW_FALSE;
+
+    if (!IsWindows8OrGreater())
+    {
+        // HACK: Disable framebuffer transparency on Windows 7 when the
+        //       colorization color is opaque, because otherwise the window
+        //       contents is blended additively with the previous frame instead
+        //       of replacing it
+        if (FAILED(DwmGetColorizationColor(&color, &opaque)) || opaque)
+            return GLFW_FALSE;
+    }
+
+    return GLFW_TRUE;
 }
 
 void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
@@ -1847,6 +1879,36 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
                  SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
 }
 
+void _glfwPlatformSetWindowMousePassthrough(_GLFWwindow* window, GLFWbool enabled)
+{
+    COLORREF key = 0;
+    BYTE alpha = 0;
+    DWORD flags = 0;
+    DWORD exStyle = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
+
+    if (exStyle & WS_EX_LAYERED)
+        GetLayeredWindowAttributes(window->win32.handle, &key, &alpha, &flags);
+
+    if (enabled)
+        exStyle |= (WS_EX_TRANSPARENT | WS_EX_LAYERED);
+    else
+    {
+        exStyle &= ~WS_EX_TRANSPARENT;
+        // NOTE: Window opacity also needs the layered window style so do not
+        //       remove it if the window is alpha blended
+        if (exStyle & WS_EX_LAYERED)
+        {
+            if (!(flags & LWA_ALPHA))
+                exStyle &= ~WS_EX_LAYERED;
+        }
+    }
+
+    SetWindowLongW(window->win32.handle, GWL_EXSTYLE, exStyle);
+
+    if (enabled)
+        SetLayeredWindowAttributes(window->win32.handle, key, alpha, flags);
+}
+
 float _glfwPlatformGetWindowOpacity(_GLFWwindow* window)
 {
     BYTE alpha;
@@ -1864,19 +1926,22 @@ float _glfwPlatformGetWindowOpacity(_GLFWwindow* window)
 
 void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
 {
-    if (opacity < 1.f)
+    LONG exStyle = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
+    if (opacity < 1.f || (exStyle & WS_EX_TRANSPARENT))
     {
         const BYTE alpha = (BYTE) (255 * opacity);
-        DWORD style = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
-        style |= WS_EX_LAYERED;
-        SetWindowLongW(window->win32.handle, GWL_EXSTYLE, style);
+        exStyle |= WS_EX_LAYERED;
+        SetWindowLongW(window->win32.handle, GWL_EXSTYLE, exStyle);
         SetLayeredWindowAttributes(window->win32.handle, 0, alpha, LWA_ALPHA);
+    }
+    else if (exStyle & WS_EX_TRANSPARENT)
+    {
+        SetLayeredWindowAttributes(window->win32.handle, 0, 0, 0);
     }
     else
     {
-        DWORD style = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
-        style &= ~WS_EX_LAYERED;
-        SetWindowLongW(window->win32.handle, GWL_EXSTYLE, style);
+        exStyle &= ~WS_EX_LAYERED;
+        SetWindowLongW(window->win32.handle, GWL_EXSTYLE, exStyle);
     }
 }
 
@@ -1924,30 +1989,40 @@ void _glfwPlatformPollEvents(void)
         }
     }
 
+    // HACK: Release modifier keys that the system did not emit KEYUP for
+    // NOTE: Shift keys on Windows tend to "stick" when both are pressed as
+    //       no key up message is generated by the first key release
+    // NOTE: Windows key is not reported as released by the Win+V hotkey
+    //       Other Win hotkeys are handled implicitly by _glfwInputWindowFocus
+    //       because they change the input focus
+    // NOTE: The other half of this is in the WM_*KEY* handler in windowProc
     handle = GetActiveWindow();
     if (handle)
     {
-        // NOTE: Shift keys on Windows tend to "stick" when both are pressed as
-        //       no key up message is generated by the first key release
-        //       The other half of this is in the handling of WM_KEYUP
-        // HACK: Query actual key state and synthesize release events as needed
         window = GetPropW(handle, L"GLFW");
         if (window)
         {
-            const GLFWbool lshift = (GetAsyncKeyState(VK_LSHIFT) & 0x8000) != 0;
-            const GLFWbool rshift = (GetAsyncKeyState(VK_RSHIFT) & 0x8000) != 0;
+            int i;
+            const int keys[4][2] =
+            {
+                { VK_LSHIFT, GLFW_KEY_LEFT_SHIFT },
+                { VK_RSHIFT, GLFW_KEY_RIGHT_SHIFT },
+                { VK_LWIN, GLFW_KEY_LEFT_SUPER },
+                { VK_RWIN, GLFW_KEY_RIGHT_SUPER }
+            };
 
-            if (!lshift && window->keys[GLFW_KEY_LEFT_SHIFT] == GLFW_PRESS)
+            for (i = 0;  i < 4;  i++)
             {
-                const int mods = getAsyncKeyMods();
-                const int scancode = _glfw.win32.scancodes[GLFW_KEY_LEFT_SHIFT];
-                _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT, scancode, GLFW_RELEASE, mods);
-            }
-            else if (!rshift && window->keys[GLFW_KEY_RIGHT_SHIFT] == GLFW_PRESS)
-            {
-                const int mods = getAsyncKeyMods();
-                const int scancode = _glfw.win32.scancodes[GLFW_KEY_RIGHT_SHIFT];
-                _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT, scancode, GLFW_RELEASE, mods);
+                const int vk = keys[i][0];
+                const int key = keys[i][1];
+                const int scancode = _glfw.win32.scancodes[key];
+
+                if ((GetKeyState(vk) & 0x8000))
+                    continue;
+                if (window->keys[key] != GLFW_PRESS)
+                    continue;
+
+                _glfwInputKey(window, key, scancode, GLFW_RELEASE, getKeyMods());
             }
         }
     }
@@ -2029,6 +2104,13 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 
 const char* _glfwPlatformGetScancodeName(int scancode)
 {
+    if (scancode < 0 || scancode > (KF_EXTENDED | 0xff) ||
+        _glfw.win32.keycodes[scancode] == GLFW_KEY_UNKNOWN)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode %i", scancode);
+        return NULL;
+    }
+
     return _glfw.win32.keynames[_glfw.win32.keycodes[scancode]];
 }
 
@@ -2052,20 +2134,42 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
 {
     int id = 0;
 
-    if (shape == GLFW_ARROW_CURSOR)
-        id = OCR_NORMAL;
-    else if (shape == GLFW_IBEAM_CURSOR)
-        id = OCR_IBEAM;
-    else if (shape == GLFW_CROSSHAIR_CURSOR)
-        id = OCR_CROSS;
-    else if (shape == GLFW_HAND_CURSOR)
-        id = OCR_HAND;
-    else if (shape == GLFW_HRESIZE_CURSOR)
-        id = OCR_SIZEWE;
-    else if (shape == GLFW_VRESIZE_CURSOR)
-        id = OCR_SIZENS;
-    else
-        return GLFW_FALSE;
+    switch (shape)
+    {
+        case GLFW_ARROW_CURSOR:
+            id = OCR_NORMAL;
+            break;
+        case GLFW_IBEAM_CURSOR:
+            id = OCR_IBEAM;
+            break;
+        case GLFW_CROSSHAIR_CURSOR:
+            id = OCR_CROSS;
+            break;
+        case GLFW_POINTING_HAND_CURSOR:
+            id = OCR_HAND;
+            break;
+        case GLFW_RESIZE_EW_CURSOR:
+            id = OCR_SIZEWE;
+            break;
+        case GLFW_RESIZE_NS_CURSOR:
+            id = OCR_SIZENS;
+            break;
+        case GLFW_RESIZE_NWSE_CURSOR:
+            id = OCR_SIZENWSE;
+            break;
+        case GLFW_RESIZE_NESW_CURSOR:
+            id = OCR_SIZENESW;
+            break;
+        case GLFW_RESIZE_ALL_CURSOR:
+            id = OCR_SIZEALL;
+            break;
+        case GLFW_NOT_ALLOWED_CURSOR:
+            id = OCR_NO;
+            break;
+        default:
+            _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Unknown standard cursor");
+            return GLFW_FALSE;
+    }
 
     cursor->win32.handle = LoadImageW(NULL,
                                       MAKEINTRESOURCEW(id), IMAGE_CURSOR, 0, 0,
@@ -2165,13 +2269,64 @@ const char* _glfwPlatformGetClipboardString(void)
         return NULL;
     }
 
-    free(_glfw.win32.clipboardString);
+    _glfw_free(_glfw.win32.clipboardString);
     _glfw.win32.clipboardString = _glfwCreateUTF8FromWideStringWin32(buffer);
 
     GlobalUnlock(object);
     CloseClipboard();
 
     return _glfw.win32.clipboardString;
+}
+
+EGLenum _glfwPlatformGetEGLPlatform(EGLint** attribs)
+{
+    if (_glfw.egl.ANGLE_platform_angle)
+    {
+        int type = 0;
+
+        if (_glfw.egl.ANGLE_platform_angle_opengl)
+        {
+            if (_glfw.hints.init.angleType == GLFW_ANGLE_PLATFORM_TYPE_OPENGL)
+                type = EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE;
+            else if (_glfw.hints.init.angleType == GLFW_ANGLE_PLATFORM_TYPE_OPENGLES)
+                type = EGL_PLATFORM_ANGLE_TYPE_OPENGLES_ANGLE;
+        }
+
+        if (_glfw.egl.ANGLE_platform_angle_d3d)
+        {
+            if (_glfw.hints.init.angleType == GLFW_ANGLE_PLATFORM_TYPE_D3D9)
+                type = EGL_PLATFORM_ANGLE_TYPE_D3D9_ANGLE;
+            else if (_glfw.hints.init.angleType == GLFW_ANGLE_PLATFORM_TYPE_D3D11)
+                type = EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE;
+        }
+
+        if (_glfw.egl.ANGLE_platform_angle_vulkan)
+        {
+            if (_glfw.hints.init.angleType == GLFW_ANGLE_PLATFORM_TYPE_VULKAN)
+                type = EGL_PLATFORM_ANGLE_TYPE_VULKAN_ANGLE;
+        }
+
+        if (type)
+        {
+            *attribs = _glfw_calloc(3, sizeof(EGLint));
+            (*attribs)[0] = EGL_PLATFORM_ANGLE_TYPE_ANGLE;
+            (*attribs)[1] = type;
+            (*attribs)[2] = EGL_NONE;
+            return EGL_PLATFORM_ANGLE_ANGLE;
+        }
+    }
+
+    return 0;
+}
+
+EGLNativeDisplayType _glfwPlatformGetEGLNativeDisplay(void)
+{
+    return GetDC(_glfw.win32.helperWindowHandle);
+}
+
+EGLNativeWindowType _glfwPlatformGetEGLNativeWindow(_GLFWwindow* window)
+{
+    return window->win32.handle;
 }
 
 void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)

@@ -30,6 +30,7 @@
 //
 //========================================================================
 
+#define GLAD_GL_IMPLEMENTATION
 #include <glad/gl.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -69,7 +70,7 @@ static int swap_interval = 1;
 static int wait_events = GLFW_TRUE;
 static int animate_cursor = GLFW_FALSE;
 static int track_cursor = GLFW_FALSE;
-static GLFWcursor* standard_cursors[6];
+static GLFWcursor* standard_cursors[10];
 static GLFWcursor* tracking_cursor = NULL;
 
 static void error_callback(int error, const char* description)
@@ -271,28 +272,24 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             break;
 
         case GLFW_KEY_1:
-            glfwSetCursor(window, standard_cursors[0]);
-            break;
-
         case GLFW_KEY_2:
-            glfwSetCursor(window, standard_cursors[1]);
-            break;
-
         case GLFW_KEY_3:
-            glfwSetCursor(window, standard_cursors[2]);
-            break;
-
         case GLFW_KEY_4:
-            glfwSetCursor(window, standard_cursors[3]);
-            break;
-
         case GLFW_KEY_5:
-            glfwSetCursor(window, standard_cursors[4]);
-            break;
-
         case GLFW_KEY_6:
-            glfwSetCursor(window, standard_cursors[5]);
+        case GLFW_KEY_7:
+        case GLFW_KEY_8:
+        case GLFW_KEY_9:
+        {
+            int index = key - GLFW_KEY_1;
+            if (mods & GLFW_MOD_SHIFT)
+                index += 9;
+
+            if (index < sizeof(standard_cursors) / sizeof(standard_cursors[0]))
+                glfwSetCursor(window, standard_cursors[index]);
+
             break;
+        }
 
         case GLFW_KEY_F11:
         case GLFW_KEY_ENTER:
@@ -358,17 +355,16 @@ int main(void)
             GLFW_ARROW_CURSOR,
             GLFW_IBEAM_CURSOR,
             GLFW_CROSSHAIR_CURSOR,
-            GLFW_HAND_CURSOR,
-            GLFW_HRESIZE_CURSOR,
-            GLFW_VRESIZE_CURSOR
+            GLFW_POINTING_HAND_CURSOR,
+            GLFW_RESIZE_EW_CURSOR,
+            GLFW_RESIZE_NS_CURSOR,
+            GLFW_RESIZE_NWSE_CURSOR,
+            GLFW_RESIZE_NESW_CURSOR,
+            GLFW_RESIZE_ALL_CURSOR,
+            GLFW_NOT_ALLOWED_CURSOR
         };
 
         standard_cursors[i] = glfwCreateStandardCursor(shapes[i]);
-        if (!standard_cursors[i])
-        {
-            glfwTerminate();
-            exit(EXIT_FAILURE);
-        }
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);

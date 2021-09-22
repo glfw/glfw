@@ -1,26 +1,45 @@
-# External junk
-.DS_Store
+# The canonical out-of-tree build subdirectory
+build
+
+# Visual Studio clutter
 _ReSharper*
-*.opensdf
 *.sdf
 *.suo
 *.dir
 *.vcxproj*
 *.sln
-.vs/
+.vs
+CMakeSettings.json
 Win32
 x64
 Debug
 Release
 MinSizeRel
 RelWithDebInfo
-*.xcodeproj
+*.opensdf
 
-# CMake files
+# Xcode clutter
+GLFW.build
+GLFW.xcodeproj
+
+# macOS clutter
+.DS_Store
+
+# Makefile generator clutter
 Makefile
+
+# Ninja generator clutter
+build.ninja
+rules.ninja
+.ninja_deps
+.ninja_log
+
+# CMake clutter
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
+CMakeDoxyfile.in
+CMakeDoxygenDefaults.cmake
 cmake_install.cmake
 cmake_uninstall.cmake
 
@@ -33,10 +52,6 @@ src/glfw_config.h
 src/glfw3.pc
 src/glfw3Config.cmake
 src/glfw3ConfigVersion.cmake
-src/wayland-pointer-constraints-unstable-v1-client-protocol.h
-src/wayland-pointer-constraints-unstable-v1-protocol.c
-src/wayland-relative-pointer-unstable-v1-client-protocol.h
-src/wayland-relative-pointer-unstable-v1-protocol.c
 
 # Compiled binaries
 src/libglfw.so
@@ -62,6 +77,7 @@ examples/splitview
 examples/sharing
 examples/triangle-opengl
 examples/wave
+examples/windows
 tests/*.app
 tests/*.exe
 tests/clipboard
@@ -72,6 +88,7 @@ tests/gamma
 tests/glfwinfo
 tests/icon
 tests/iconify
+tests/inputlag
 tests/joysticks
 tests/monitors
 tests/msaa
@@ -81,5 +98,6 @@ tests/threads
 tests/timeout
 tests/title
 tests/triangle-vulkan
+tests/window
 tests/windows
 

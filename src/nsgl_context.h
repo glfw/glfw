@@ -24,6 +24,9 @@
 //
 //========================================================================
 
+// NOTE: Many Cocoa enum values have been renamed and we need to build across
+//       SDK versions where one is unavailable or the other deprecated
+//       We use the newer names in code and these macros to handle compatibility
 #if MAC_OS_X_VERSION_MAX_ALLOWED < 101400
  #define NSOpenGLContextParameterSwapInterval NSOpenGLCPSwapInterval
  #define NSOpenGLContextParameterSurfaceOpacity NSOpenGLCPSurfaceOpacity
@@ -41,10 +44,6 @@ typedef struct _GLFWcontextNSGL
 {
     id                pixelFormat;
     id                object;
-    CVDisplayLinkRef  displayLink;
-    atomic_int        swapInterval;
-    int               swapIntervalsPassed;
-    id                swapIntervalCond;
 
 } _GLFWcontextNSGL;
 
@@ -64,5 +63,4 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                 const _GLFWctxconfig* ctxconfig,
                                 const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContextNSGL(_GLFWwindow* window);
-void _glfwUpdateDisplayLinkDisplayNSGL(_GLFWwindow* window);
 

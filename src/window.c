@@ -186,7 +186,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     if (!_glfwIsValidContextConfig(&ctxconfig))
         return NULL;
 
-    window = calloc(1, sizeof(_GLFWwindow));
+    window = _glfw_calloc(1, sizeof(_GLFWwindow));
     window->next = _glfw.windowListHead;
     _glfw.windowListHead = window;
 
@@ -197,13 +197,16 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->videoMode.blueBits    = fbconfig.blueBits;
     window->videoMode.refreshRate = _glfw.hints.refreshRate;
 
-    window->monitor     = (_GLFWmonitor*) monitor;
-    window->resizable   = wndconfig.resizable;
-    window->decorated   = wndconfig.decorated;
-    window->autoIconify = wndconfig.autoIconify;
-    window->floating    = wndconfig.floating;
-    window->focusOnShow = wndconfig.focusOnShow;
-    window->cursorMode  = GLFW_CURSOR_NORMAL;
+    window->monitor          = (_GLFWmonitor*) monitor;
+    window->resizable        = wndconfig.resizable;
+    window->decorated        = wndconfig.decorated;
+    window->autoIconify      = wndconfig.autoIconify;
+    window->floating         = wndconfig.floating;
+    window->focusOnShow      = wndconfig.focusOnShow;
+    window->mousePassthrough = wndconfig.mousePassthrough;
+    window->cursorMode       = GLFW_CURSOR_NORMAL;
+
+    window->doublebuffer = fbconfig.doublebuffer;
 
     window->minwidth    = GLFW_DONT_CARE;
     window->minheight   = GLFW_DONT_CARE;
@@ -227,6 +230,9 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
             return NULL;
         }
     }
+
+    if (wndconfig.mousePassthrough)
+        _glfwPlatformSetWindowMousePassthrough(window, GLFW_TRUE);
 
     if (window->monitor)
     {
@@ -363,6 +369,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_COCOA_RETINA_FRAMEBUFFER:
             _glfw.hints.window.ns.retina = value ? GLFW_TRUE : GLFW_FALSE;
             return;
+        case GLFW_WIN32_KEYBOARD_MENU:
+            _glfw.hints.window.win32.keymenu = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
         case GLFW_COCOA_GRAPHICS_SWITCHING:
             _glfw.hints.context.nsgl.offline = value ? GLFW_TRUE : GLFW_FALSE;
             return;
@@ -374,6 +383,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             return;
         case GLFW_FOCUS_ON_SHOW:
             _glfw.hints.window.focusOnShow = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
+        case GLFW_MOUSE_PASSTHROUGH:
+            _glfw.hints.window.mousePassthrough = value ? GLFW_TRUE : GLFW_FALSE;
             return;
         case GLFW_CLIENT_API:
             _glfw.hints.context.client = value;
@@ -393,7 +405,7 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_OPENGL_FORWARD_COMPAT:
             _glfw.hints.context.forward = value ? GLFW_TRUE : GLFW_FALSE;
             return;
-        case GLFW_OPENGL_DEBUG_CONTEXT:
+        case GLFW_CONTEXT_DEBUG:
             _glfw.hints.context.debug = value ? GLFW_TRUE : GLFW_FALSE;
             return;
         case GLFW_CONTEXT_NO_ERROR:
@@ -468,7 +480,7 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
         *prev = window->next;
     }
 
-    free(window);
+    _glfw_free(window);
 }
 
 GLFWAPI int glfwWindowShouldClose(GLFWwindow* handle)
@@ -819,6 +831,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return _glfwPlatformWindowHovered(window);
         case GLFW_FOCUS_ON_SHOW:
             return window->focusOnShow;
+        case GLFW_MOUSE_PASSTHROUGH:
+            return window->mousePassthrough;
         case GLFW_TRANSPARENT_FRAMEBUFFER:
             return _glfwPlatformFramebufferTransparent(window);
         case GLFW_RESIZABLE:
@@ -829,6 +843,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->floating;
         case GLFW_AUTO_ICONIFY:
             return window->autoIconify;
+        case GLFW_DOUBLEBUFFER:
+            return window->doublebuffer;
         case GLFW_CLIENT_API:
             return window->context.client;
         case GLFW_CONTEXT_CREATION_API:
@@ -843,7 +859,7 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->context.robustness;
         case GLFW_OPENGL_FORWARD_COMPAT:
             return window->context.forward;
-        case GLFW_OPENGL_DEBUG_CONTEXT:
+        case GLFW_CONTEXT_DEBUG:
             return window->context.debug;
         case GLFW_OPENGL_PROFILE:
             return window->context.profile;
@@ -870,33 +886,29 @@ GLFWAPI void glfwSetWindowAttrib(GLFWwindow* handle, int attrib, int value)
         window->autoIconify = value;
     else if (attrib == GLFW_RESIZABLE)
     {
-        if (window->resizable == value)
-            return;
-
         window->resizable = value;
         if (!window->monitor)
             _glfwPlatformSetWindowResizable(window, value);
     }
     else if (attrib == GLFW_DECORATED)
     {
-        if (window->decorated == value)
-            return;
-
         window->decorated = value;
         if (!window->monitor)
             _glfwPlatformSetWindowDecorated(window, value);
     }
     else if (attrib == GLFW_FLOATING)
     {
-        if (window->floating == value)
-            return;
-
         window->floating = value;
         if (!window->monitor)
             _glfwPlatformSetWindowFloating(window, value);
     }
     else if (attrib == GLFW_FOCUS_ON_SHOW)
         window->focusOnShow = value;
+    else if (attrib == GLFW_MOUSE_PASSTHROUGH)
+    {
+        window->mousePassthrough = value;
+        _glfwPlatformSetWindowMousePassthrough(window, value);
+    }
     else
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute 0x%08X", attrib);
 }
@@ -1101,3 +1113,4 @@ GLFWAPI void glfwPostEmptyEvent(void)
     _GLFW_REQUIRE_INIT();
     _glfwPlatformPostEmptyEvent();
 }
+

@@ -28,12 +28,12 @@
 #include <dlfcn.h>
 
 #include <Carbon/Carbon.h>
-#include <CoreVideo/CVBase.h>
-#include <CoreVideo/CVDisplayLink.h>
 
 // NOTE: All of NSGL was deprecated in the 10.14 SDK
 //       This disables the pointless warnings for every symbol we use
+#ifndef GL_SILENCE_DEPRECATION
 #define GL_SILENCE_DEPRECATION
+#endif
 
 #if defined(__OBJC__)
 #import <Cocoa/Cocoa.h>
@@ -41,6 +41,9 @@
 typedef void* id;
 #endif
 
+// NOTE: Many Cocoa enum values have been renamed and we need to build across
+//       SDK versions where one is unavailable or the other deprecated
+//       We use the newer names in code and these macros to handle compatibility
 #if MAC_OS_X_VERSION_MAX_ALLOWED < 101200
  #define NSBitmapFormatAlphaNonpremultiplied NSAlphaNonpremultipliedBitmapFormat
  #define NSEventMaskAny NSAnyEventMask
@@ -60,6 +63,7 @@ typedef void* id;
 #endif
 
 typedef VkFlags VkMacOSSurfaceCreateFlagsMVK;
+typedef VkFlags VkMetalSurfaceCreateFlagsEXT;
 
 typedef struct VkMacOSSurfaceCreateInfoMVK
 {
@@ -69,20 +73,24 @@ typedef struct VkMacOSSurfaceCreateInfoMVK
     const void*                     pView;
 } VkMacOSSurfaceCreateInfoMVK;
 
+typedef struct VkMetalSurfaceCreateInfoEXT
+{
+    VkStructureType                 sType;
+    const void*                     pNext;
+    VkMetalSurfaceCreateFlagsEXT    flags;
+    const void*                     pLayer;
+} VkMetalSurfaceCreateInfoEXT;
+
 typedef VkResult (APIENTRY *PFN_vkCreateMacOSSurfaceMVK)(VkInstance,const VkMacOSSurfaceCreateInfoMVK*,const VkAllocationCallbacks*,VkSurfaceKHR*);
+typedef VkResult (APIENTRY *PFN_vkCreateMetalSurfaceEXT)(VkInstance,const VkMetalSurfaceCreateInfoEXT*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 
 #include "posix_thread.h"
 #include "cocoa_joystick.h"
 #include "nsgl_context.h"
-#include "egl_context.h"
-#include "osmesa_context.h"
 
 #define _glfw_dlopen(name) dlopen(name, RTLD_LAZY | RTLD_LOCAL)
 #define _glfw_dlclose(handle) dlclose(handle)
 #define _glfw_dlsym(handle, name) dlsym(handle, name)
-
-#define _GLFW_EGL_NATIVE_WINDOW  ((EGLNativeWindowType) window->ns.view)
-#define _GLFW_EGL_NATIVE_DISPLAY EGL_DEFAULT_DISPLAY
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowNS  ns
 #define _GLFW_PLATFORM_LIBRARY_WINDOW_STATE _GLFWlibraryNS ns
@@ -110,6 +118,7 @@ typedef struct _GLFWwindowNS
     id              layer;
 
     GLFWbool        maximized;
+    GLFWbool        occluded;
     GLFWbool        retina;
 
     // Cached window properties to filter out duplicate events
@@ -130,7 +139,6 @@ typedef struct _GLFWlibraryNS
 {
     CGEventSourceRef    eventSource;
     id                  delegate;
-    GLFWbool            finishedLaunching;
     GLFWbool            cursorHidden;
     TISInputSourceRef   inputSource;
     IOHIDManagerRef     hidManager;
@@ -167,6 +175,7 @@ typedef struct _GLFWmonitorNS
     CGDisplayModeRef    previousMode;
     uint32_t            unitNumber;
     id                  screen;
+    double              fallbackRefreshRate;
 
 } _GLFWmonitorNS;
 
@@ -194,4 +203,6 @@ void _glfwSetVideoModeNS(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoModeNS(_GLFWmonitor* monitor);
 
 float _glfwTransformYNS(float y);
+
+void* _glfwLoadLocalVulkanLoaderNS(void);
 

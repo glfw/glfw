@@ -28,6 +28,7 @@
 //
 //========================================================================
 
+#define GLAD_GL_IMPLEMENTATION
 #include <glad/gl.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -101,6 +102,7 @@ int main(int argc, char** argv)
     monitor = glfwGetPrimaryMonitor();
 
     glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
+    glfwWindowHint(GLFW_WIN32_KEYBOARD_MENU, GLFW_TRUE);
 
     window = glfwCreateWindow(800, 400, "Gamma Test", NULL, NULL);
     if (!window)

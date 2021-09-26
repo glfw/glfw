@@ -190,6 +190,9 @@ extern "C" {
  #else /*__APPLE__*/
 
   #include <GL/glcorearb.h>
+  #if defined(GLFW_INCLUDE_GLEXT)
+   #include <GL/glext.h>
+  #endif
 
  #endif /*__APPLE__*/
 

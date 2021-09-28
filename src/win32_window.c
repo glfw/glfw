@@ -35,6 +35,7 @@
 #include <string.h>
 #include <windowsx.h>
 #include <shellapi.h>
+#include <uxtheme.h>
 
 // Returns the window style for the specified window
 //
@@ -508,6 +509,8 @@ static void releaseMonitor(_GLFWwindow* window)
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                                    WPARAM wParam, LPARAM lParam)
 {
+    static RECT border_thickness;
+
     _GLFWwindow* window = GetPropW(hWnd, L"GLFW");
     if (!window)
     {
@@ -541,6 +544,48 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                     DEV_BROADCAST_HDR* dbh = (DEV_BROADCAST_HDR*) lParam;
                     if (dbh && dbh->dbch_devicetype == DBT_DEVTYP_DEVICEINTERFACE)
                         _glfwDetectJoystickDisconnectionWin32();
+                }
+
+                break;
+            }
+
+            case WM_CREATE:
+            {
+                if (_glfw.hints.window.titlebar)
+                    break;
+
+                //find border thickness
+                SetRectEmpty(&border_thickness);
+                if (GetWindowLongPtr(hWnd, GWL_STYLE) & WS_THICKFRAME)
+                {
+                    AdjustWindowRectEx(&border_thickness, GetWindowLongPtr(hWnd, GWL_STYLE) & ~WS_CAPTION, FALSE, NULL);
+                    border_thickness.left *= -1;
+                    border_thickness.top *= -1;
+                }
+                else// if (GetWindowLongPtr(hWnd, GWL_STYLE) & WS_BORDER)
+                {
+                    SetRect(&border_thickness, 4, 4, 4, 4);
+                }
+
+                MARGINS margins = { 0 };
+                DwmExtendFrameIntoClientArea(hWnd, &margins);
+                SetWindowPos(hWnd, NULL, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+
+                break;
+            }
+
+            case WM_ACTIVATE:
+            {
+                if (_glfw.hints.window.titlebar)
+                    break;
+
+                // Extend the frame into the client area.
+                MARGINS margins = { 0 };
+                auto hr = DwmExtendFrameIntoClientArea(hWnd, &margins);
+
+                if (!SUCCEEDED(hr))
+                {
+                    // Handle the error.
                 }
 
                 break;
@@ -951,6 +996,16 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             break;
         }
 
+        case  WM_NCCALCSIZE:
+        {
+            if (window->titlebar)
+                break;
+
+            if (lParam)
+                return 0;
+
+            break;
+        }
         case WM_SIZE:
         {
             const GLFWbool iconified = wParam == SIZE_MINIMIZED;
@@ -1181,6 +1236,61 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             DragFinish(drop);
             return 0;
+        }
+
+        case WM_ACTIVATE:
+        {
+            if (window->titlebar)
+                break;
+
+            // Extend the frame into the client area.
+            MARGINS margins = { 0 };
+            auto hr = DwmExtendFrameIntoClientArea(hWnd, &margins);
+
+            if (!SUCCEEDED(hr))
+            {
+                // Handle the error.
+            }
+
+            break;
+        }
+        case WM_NCHITTEST:
+        {
+            if (window->titlebar)
+                break;
+
+            POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+            ScreenToClient(hWnd, &pt);
+            RECT rc;
+            GetClientRect(hWnd, &rc);
+
+            int titlebarHittest = 0;
+            _glfwInputTitleBarHitTest(window, pt.x, pt.y, &titlebarHittest);
+
+            if (titlebarHittest)
+            {
+                return HTCAPTION;
+            }
+            else
+            {
+                enum { left = 1, top = 2, right = 4, bottom = 8 };
+                int hit = 0;
+                if (pt.x < border_thickness.left)               hit |= left;
+                if (pt.x > rc.right - border_thickness.right)   hit |= right;
+                if (pt.y < border_thickness.top)                hit |= top;
+                if (pt.y > rc.bottom - border_thickness.bottom) hit |= bottom;
+
+                if (hit & top && hit & left)        return HTTOPLEFT;
+                if (hit & top && hit & right)       return HTTOPRIGHT;
+                if (hit & bottom && hit & left)     return HTBOTTOMLEFT;
+                if (hit & bottom && hit & right)    return HTBOTTOMRIGHT;
+                if (hit & left)                     return HTLEFT;
+                if (hit & top)                      return HTTOP;
+                if (hit & right)                    return HTRIGHT;
+                if (hit & bottom)                   return HTBOTTOM;
+
+                return HTCLIENT;
+            }
         }
     }
 
@@ -1824,6 +1934,11 @@ void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
 }
 
 void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
+{
+    updateWindowStyles(window);
+}
+
+void _glfwPlatformSetWindowTitlebar(_GLFWwindow* window, GLFWbool enabled)
 {
     updateWindowStyles(window);
 }

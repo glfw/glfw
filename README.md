@@ -121,6 +121,7 @@ information on what to include when reporting a bug.
  - Bugfix: Buffers were swapped at creation on single-buffered windows (#1873)
  - Bugfix: Gamepad mapping updates could spam `GLFW_INVALID_VALUE` due to
    incompatible controllers sharing hardware ID (#1763)
+ - Bugfix: Native access functions for context handles did not check that the API matched
  - [Win32] Bugfix: `USE_MSVC_RUNTIME_LIBRARY_DLL` had no effect on CMake 3.15 or
    later (#1783,#1796)
  - [Win32] Bugfix: Compilation with LLVM for Windows failed (#1807,#1824,#1874)

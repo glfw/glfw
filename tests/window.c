@@ -56,11 +56,11 @@ int main(int argc, char** argv)
     int limit_aspect_ratio = false, aspect_numer = 1, aspect_denom = 1;
     int limit_min_size = false, min_width = 400, min_height = 400;
     int limit_max_size = false, max_width = 400, max_height = 400;
-    char width_buffer[10] = "", height_buffer[10] = "";
-    char xpos_buffer[10] = "", ypos_buffer[10] = "";
-    char numer_buffer[10] = "", denom_buffer[10] = "";
-    char min_width_buffer[10] = "", min_height_buffer[10] = "";
-    char max_width_buffer[10] = "", max_height_buffer[10] = "";
+    char width_buffer[12] = "", height_buffer[12] = "";
+    char xpos_buffer[12] = "", ypos_buffer[12] = "";
+    char numer_buffer[12] = "", denom_buffer[12] = "";
+    char min_width_buffer[12] = "", min_height_buffer[12] = "";
+    char max_width_buffer[12] = "", max_height_buffer[12] = "";
     int may_close = true;
 
     if (!glfwInit())

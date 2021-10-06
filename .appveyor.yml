@@ -9,7 +9,7 @@ branches:
 skip_tags: true
 environment:
     matrix:
-        - GENERATOR: MinGW Makefiles
+        - GENERATOR: MinGW Makefile
           BUILD_SHARED_LIBS: ON
           CFLAGS: -Werror
         - GENERATOR: MinGW Makefiles

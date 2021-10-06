@@ -954,14 +954,17 @@ int main(int argc, char** argv)
             uint32_t qfp_count;
             vkGetPhysicalDeviceQueueFamilyProperties(pd[i], &qfp_count, NULL);
 
-            printf("Vulkan device queue family presentation support:\n");
-            for (uint32_t j = 0;  j < qfp_count;  j++)
+            if (re)
             {
-                printf(" %u: ", j);
-                if (glfwGetPhysicalDevicePresentationSupport(instance, pd[i], j))
-                    printf("supported\n");
-                else
-                    printf("no\n");
+                printf("Vulkan device queue family presentation support:\n");
+                for (uint32_t j = 0;  j < qfp_count;  j++)
+                {
+                    printf(" %u: ", j);
+                    if (glfwGetPhysicalDevicePresentationSupport(instance, pd[i], j))
+                        printf("supported\n");
+                    else
+                        printf("no\n");
+                }
             }
 
             if (list_extensions)

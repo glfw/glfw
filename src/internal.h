@@ -419,6 +419,7 @@ struct _GLFWwindow
         GLFWframebuffersizefun    fbsize;
         GLFWwindowcontentscalefun scale;
         GLFWmousebuttonfun        mouseButton;
+        GLFWmousebuttonposfun     mouseButtonPos;
         GLFWcursorposfun          cursorPos;
         GLFWcursorenterfun        cursorEnter;
         GLFWscrollfun             scroll;

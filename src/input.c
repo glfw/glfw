@@ -336,7 +336,7 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
         window->mouseButtons[button] = (char) action;
 
     if (window->callbacks.mouseButton)
-        window->callbacks.mouseButton((GLFWwindow*) window, button, action, mods);
+        window->callbacks.mouseButton((GLFWwindow*) window, button, action, mods, window->virtualCursorPosX, window->virtualCursorPosY);
 }
 
 // Notifies shared code of a cursor motion event

@@ -1684,6 +1684,10 @@ typedef void (* GLFWwindowcontentscalefun)(GLFWwindow* window, float xscale, flo
  *  may add more actions.
  *  @param[in] mods Bit field describing which [modifier keys](@ref mods) were
  *  held down.
+ *  @param[in] xpos The x-coordinate of the cursor, relative to the left edge of
+ *  the content area.
+ *  @param[in] ypos The y-coordinate of the cursor, relative to the top edge of
+ *  the content area.
  *
  *  @sa @ref input_mouse_button
  *  @sa @ref glfwSetMouseButtonCallback
@@ -1693,7 +1697,7 @@ typedef void (* GLFWwindowcontentscalefun)(GLFWwindow* window, float xscale, flo
  *
  *  @ingroup input
  */
-typedef void (* GLFWmousebuttonfun)(GLFWwindow* window, int button, int action, int mods);
+typedef void (* GLFWmousebuttonfun)(GLFWwindow* window, int button, int action, int mods, double xpos, double ypos);
 
 /*! @brief The function pointer type for cursor position callbacks.
  *

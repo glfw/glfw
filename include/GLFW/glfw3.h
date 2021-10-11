@@ -2440,8 +2440,8 @@ GLFWAPI void glfwGetMonitorWorkarea(GLFWmonitor* monitor, int* xpos, int* ypos, 
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
- *  @remark @win32 calculates the returned physical size from the
- *  current resolution and system DPI instead of querying the monitor EDID data.
+ *  @remark @win32 On Windows 8 and earlier the physical size is calculated from
+ *  the current resolution and system DPI instead of querying the monitor EDID data.
  *
  *  @thread_safety This function must only be called from the main thread.
  *

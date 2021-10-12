@@ -5658,13 +5658,11 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);
  *  This function returns whether the Vulkan loader and any minimally functional
  *  ICD have been found.
  *
- *  The availability of a Vulkan loader and even an ICD does not by itself
- *  guarantee that surface creation or even instance creation is possible.
- *  For example, on Fermi systems Nvidia will install an ICD that provides no
- *  actual Vulkan support.  Call @ref glfwGetRequiredInstanceExtensions to check
- *  whether the extensions necessary for Vulkan surface creation are available
- *  and @ref glfwGetPhysicalDevicePresentationSupport to check whether a queue
- *  family of a physical device supports image presentation.
+ *  The availability of a Vulkan loader and even an ICD does not by itself guarantee that
+ *  surface creation or even instance creation is possible.  Call @ref
+ *  glfwGetRequiredInstanceExtensions to check whether the extensions necessary for Vulkan
+ *  surface creation are available and @ref glfwGetPhysicalDevicePresentationSupport to
+ *  check whether a queue family of a physical device supports image presentation.
  *
  *  @return `GLFW_TRUE` if Vulkan is minimally available, or `GLFW_FALSE`
  *  otherwise.

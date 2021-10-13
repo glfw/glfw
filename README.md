@@ -126,6 +126,11 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: Compilation with LLVM for Windows failed (#1807,#1824,#1874)
  - [Cocoa] Bugfix: The MoltenVK layer contents scale was updated only after
    related events were emitted
+ - [Cocoa] Bugfix: Moving the cursor programmatically would freeze it for
+   a fraction of a second (#1962)
+ - [X11] Bugfix: Changing `GLFW_FLOATING` could leak memory
+ - [Wayland] Bugfix: Some keys were not repeating in Wayland (#1908)
+ - [Wayland] Bugfix: Non-arrow cursors are offset from the hotspot (#1706,#1899)
  - [NSGL] Bugfix: Defining `GL_SILENCE_DEPRECATION` externally caused
    a duplicate definition warning (#1840)
  - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
@@ -168,6 +173,7 @@ skills.
  - Denis Bernard
  - Doug Binks
  - blanco
+ - Waris Boonyasiriwat
  - Kyle Brenneman
  - Rok Breulj
  - Kai Burjack
@@ -176,6 +182,7 @@ skills.
  - David Carlier
  - Arturo Castro
  - Chi-kwan Chan
+ - Joseph Chua
  - Ian Clarkson
  - Michał Cichoń
  - Lambert Clara
@@ -227,6 +234,7 @@ skills.
  - Arseny Kapoulkine
  - Cem Karan
  - Osman Keskin
+ - Koray Kilinc
  - Josh Kilmer
  - Byunghoon Kim
  - Cameron King
@@ -346,7 +354,6 @@ skills.
  - Torsten Walluhn
  - Patrick Walton
  - Xo Wang
- - Waris
  - Jay Weisskopf
  - Frank Wille
  - Richard A. Wilkes

@@ -271,6 +271,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Non-arrow cursors are offset from the hotspot (#1706,#1899)
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
+ - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
  - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
    macOS versions (#1442)

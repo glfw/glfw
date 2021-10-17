@@ -206,6 +206,7 @@ skills.
  - Fredrik Ehnbom
  - Robin Eklind
  - Siavash Eliasi
+ - TheExileFox
  - Felipe Ferreira
  - Michael Fogleman
  - Gerald Franz

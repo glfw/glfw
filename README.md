@@ -433,6 +433,7 @@ skills.
  - Denis Ovod
  - Ozzy
  - Andri Pálsson
+ - luz paz
  - Peoro
  - Braden Pellett
  - Christopher Pelloux

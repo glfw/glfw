@@ -409,10 +409,6 @@ void _glfwRequestWindowAttentionNull(_GLFWwindow* window)
 {
 }
 
-void _glfwUnhideWindowNull(_GLFWwindow* window)
-{
-}
-
 void _glfwHideWindowNull(_GLFWwindow* window)
 {
     if (_glfw.null.focusedWindow == window)

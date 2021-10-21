@@ -55,6 +55,7 @@ static _GLFWinitconfig _glfwInitHints =
     GLFW_TRUE,      // hat buttons
     GLFW_ANGLE_PLATFORM_TYPE_NONE, // ANGLE backend
     GLFW_ANY_PLATFORM, // preferred platform
+    NULL,           // vkGetInstanceProcAddr function
     {
         GLFW_TRUE,  // macOS menu bar
         GLFW_TRUE   // macOS bundle chdir
@@ -402,6 +403,11 @@ GLFWAPI void glfwInitAllocator(const GLFWallocator* allocator)
     }
     else
         memset(&_glfwInitAllocator, 0, sizeof(GLFWallocator));
+}
+
+GLFWAPI void glfwInitVulkanLoader(PFN_vkGetInstanceProcAddr loader)
+{
+    _glfwInitHints.vulkanLoader = loader;
 }
 
 GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev)

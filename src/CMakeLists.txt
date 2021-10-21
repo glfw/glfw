@@ -155,11 +155,6 @@ if (CMAKE_VERSION VERSION_LESS "3.16" AND APPLE)
                                 LANGUAGE C)
 endif()
 
-if (GLFW_VULKAN_STATIC)
-    target_compile_definitions(glfw PRIVATE _GLFW_VULKAN_STATIC)
-    list(APPEND glfw_PKG_DEPS "vulkan")
-endif()
-
 if (GLFW_BUILD_WIN32)
     list(APPEND glfw_PKG_LIBS "-lgdi32")
 endif()

@@ -128,6 +128,7 @@ video tutorials.
  - Jon Morton
  - Pierre Moulon
  - Martins Mozeiko
+ - Pascal Muetschard
  - Julian Møller
  - ndogxj
  - n3rdopolis

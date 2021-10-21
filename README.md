@@ -131,6 +131,7 @@ information on what to include when reporting a bug.
  - Added `glfwInitAllocator` for setting a custom memory allocator (#544,#1628,#1947)
  - Added `GLFWallocator` struct and `GLFWallocatefun`, `GLFWreallocatefun` and
    `GLFWdeallocatefun` types (#544,#1628,#1947)
+ - Added `glfwInitVulkanLoader` for using a non-default Vulkan loader (#1374,#1890)
  - Added `GLFW_RESIZE_NWSE_CURSOR`, `GLFW_RESIZE_NESW_CURSOR`,
    `GLFW_RESIZE_ALL_CURSOR` and `GLFW_NOT_ALLOWED_CURSOR` cursor shapes (#427)
  - Added `GLFW_RESIZE_EW_CURSOR` alias for `GLFW_HRESIZE_CURSOR` (#427)

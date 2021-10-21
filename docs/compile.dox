@@ -273,10 +273,6 @@ __GLFW_BUILD_DOCS__ determines whether the GLFW documentation is built along
 with the library.  This is enabled by default if
 [Doxygen](https://www.doxygen.nl/) is found by CMake during configuration.
 
-@anchor GLFW_VULKAN_STATIC
-__GLFW_VULKAN_STATIC__ determines whether to use the Vulkan loader linked
-directly with the application.  This is disabled by default.
-
 
 @subsection compile_options_win32 Win32 specific CMake options
 
@@ -382,10 +378,6 @@ attempts to detect the appropriate platform at initialization.
 
 If you are building GLFW as a shared library / dynamic library / DLL then you
 must also define @b _GLFW_BUILD_DLL.  Otherwise, you must not define it.
-
-If you are linking the Vulkan loader directly with your application then you
-must also define @b _GLFW_VULKAN_STATIC.  Otherwise, GLFW will attempt to use the
-external version.
 
 If you are using a custom name for the Vulkan, EGL, GLX, OSMesa, OpenGL, GLESv1
 or GLESv2 library, you can override the default names by defining those you need

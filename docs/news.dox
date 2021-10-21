@@ -142,6 +142,17 @@ GLFW_TRANSPARENT_FRAMEBUFFER on Windows 7 if DWM transparency is off
 
 @subsection removals_34 Removals in 3.4
 
+@subsubsection vulkan_static_34 GLFW_VULKAN_STATIC CMake option has been removed
+
+This option was used to compile GLFW directly linked with the Vulkan loader, instead of
+using dynamic loading to get hold of `vkGetInstanceProcAddr` at initialization.  This is
+now done by calling the @ref glfwInitVulkanLoader function before initialization.
+
+If you need backward compatibility, this macro can still be defined for GLFW 3.4 and will
+have no effect.  The call to @ref glfwInitVulkanLoader can be conditionally enabled in
+your code by checking the @ref GLFW_VERSION_MAJOR and @ref GLFW_VERSION_MINOR macros.
+
+
 @subsubsection osmesa_option_34 GLFW_USE_OSMESA CMake option has been removed
 
 This option was used to compile GLFW for the Null platform.  The Null platform is now
@@ -168,6 +179,7 @@ then GLFW will fail to initialize.
  - @ref glfwInitAllocator
  - @ref glfwGetPlatform
  - @ref glfwPlatformSupported
+ - @ref glfwInitVulkanLoader
 
 
 @subsubsection types_34 New types in version 3.4

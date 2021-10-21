@@ -323,14 +323,9 @@ typedef struct VkExtensionProperties
 
 typedef void (APIENTRY * PFN_vkVoidFunction)(void);
 
-#if defined(_GLFW_VULKAN_STATIC)
-  PFN_vkVoidFunction vkGetInstanceProcAddr(VkInstance,const char*);
-  VkResult vkEnumerateInstanceExtensionProperties(const char*,uint32_t*,VkExtensionProperties*);
-#else
-  typedef PFN_vkVoidFunction (APIENTRY * PFN_vkGetInstanceProcAddr)(VkInstance,const char*);
-  typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const char*,uint32_t*,VkExtensionProperties*);
-  #define vkGetInstanceProcAddr _glfw.vk.GetInstanceProcAddr
-#endif
+typedef PFN_vkVoidFunction (APIENTRY * PFN_vkGetInstanceProcAddr)(VkInstance,const char*);
+typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const char*,uint32_t*,VkExtensionProperties*);
+#define vkGetInstanceProcAddr _glfw.vk.GetInstanceProcAddr
 
 #include "platform.h"
 
@@ -382,6 +377,7 @@ struct _GLFWinitconfig
     GLFWbool      hatButtons;
     int           angleType;
     int           platformID;
+    PFN_vkGetInstanceProcAddr vulkanLoader;
     struct {
         GLFWbool  menubar;
         GLFWbool  chdir;
@@ -853,9 +849,7 @@ struct _GLFWlibrary
         GLFWbool        available;
         void*           handle;
         char*           extensions[2];
-#if !defined(_GLFW_VULKAN_STATIC)
         PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
-#endif
         GLFWbool        KHR_surface;
         GLFWbool        KHR_win32_surface;
         GLFWbool        MVK_macos_surface;

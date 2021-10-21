@@ -29,22 +29,28 @@ are also guides for the other areas of the GLFW API.
  - @ref input_guide
 
 
-@section vulkan_loader Linking against the Vulkan loader
+@section vulkan_loader Finding the Vulkan loader
 
-By default, GLFW will look for the Vulkan loader on demand at runtime via its
-standard name (`vulkan-1.dll` on Windows, `libvulkan.so.1` on Linux and other
-Unix-like systems and `libvulkan.1.dylib` on macOS).  This means that GLFW does
-not need to be linked against the loader.  However, it also means that if you
-are using the static library form of the Vulkan loader GLFW will either fail to
-find it or (worse) use the wrong one.
+GLFW itself does not ever need to be linked against the Vulkan loader.
 
-The @ref GLFW_VULKAN_STATIC CMake option makes GLFW call the Vulkan loader
-directly instead of dynamically loading it at runtime.  Not linking against the
-Vulkan loader will then be a compile-time error.
+By default, GLFW will load the Vulkan loader dynamically at runtime via its standard name:
+`vulkan-1.dll` on Windows, `libvulkan.so.1` on Linux and other Unix-like systems and
+`libvulkan.1.dylib` on macOS.
 
-@macos Because the Vulkan loader and ICD are not installed globally on macOS,
-you need to set up the application bundle according to the LunarG SDK
-documentation.  This is explained in more detail in the
+@macos GLFW will also look up and search the executable subdirectory of your application
+bundle.
+
+If your code is using a Vulkan loader with a different name or in a non-standard location
+you will need to direct GLFW to it.  Pass your version of `vkGetInstanceProcAddr` to @ref
+glfwInitVulkanLoader before initializing GLFW and it will use that function for all Vulkan
+entry point retrieval.  This prevents GLFW from dynamically loading the Vulkan loader.
+
+@code
+glfwInitVulkanLoader(vkGetInstanceProcAddr);
+@endcode
+
+@macos To make your application be redistributable you will need to set up the application
+bundle according to the LunarG SDK documentation.  This is explained in more detail in the
 [SDK documentation for macOS](https://vulkan.lunarg.com/doc/sdk/latest/mac/getting_started.html).
 
 
@@ -69,6 +75,7 @@ your own custom Vulkan header then do this before the GLFW header.
 Unless a Vulkan header is included, either by the GLFW header or above it, the following
 GLFW functions will not be declared, as depend on Vulkan types.
 
+ - @ref glfwInitVulkanLoader
  - @ref glfwGetInstanceProcAddress
  - @ref glfwGetPhysicalDevicePresentationSupport
  - @ref glfwCreateWindowSurface

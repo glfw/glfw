@@ -50,7 +50,7 @@ documentation.  This is explained in more detail in the
 
 @section vulkan_include Including the Vulkan header file
 
-To include the Vulkan header, define @ref GLFW_INCLUDE_VULKAN before including
+To have GLFW include the Vulkan header, define @ref GLFW_INCLUDE_VULKAN before including
 the GLFW header.
 
 @code
@@ -66,8 +66,12 @@ your own custom Vulkan header then do this before the GLFW header.
 #include <GLFW/glfw3.h>
 @endcode
 
-Unless a Vulkan header is included, either by the GLFW header or above it, any
-GLFW functions that take or return Vulkan types will not be declared.
+Unless a Vulkan header is included, either by the GLFW header or above it, the following
+GLFW functions will not be declared, as depend on Vulkan types.
+
+ - @ref glfwGetInstanceProcAddress
+ - @ref glfwGetPhysicalDevicePresentationSupport
+ - @ref glfwCreateWindowSurface
 
 The `VK_USE_PLATFORM_*_KHR` macros do not need to be defined for the Vulkan part
 of GLFW to work.  Define them only if you are using these extensions directly.

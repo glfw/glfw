@@ -329,7 +329,6 @@ typedef void (APIENTRY * PFN_vkVoidFunction)(void);
 #else
   typedef PFN_vkVoidFunction (APIENTRY * PFN_vkGetInstanceProcAddr)(VkInstance,const char*);
   typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const char*,uint32_t*,VkExtensionProperties*);
-  #define vkEnumerateInstanceExtensionProperties _glfw.vk.EnumerateInstanceExtensionProperties
   #define vkGetInstanceProcAddr _glfw.vk.GetInstanceProcAddr
 #endif
 
@@ -855,7 +854,6 @@ struct _GLFWlibrary
         void*           handle;
         char*           extensions[2];
 #if !defined(_GLFW_VULKAN_STATIC)
-        PFN_vkEnumerateInstanceExtensionProperties EnumerateInstanceExtensionProperties;
         PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
 #endif
         GLFWbool        KHR_surface;

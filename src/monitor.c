@@ -419,7 +419,7 @@ GLFWAPI void* glfwGetMonitorUserPointer(GLFWmonitor* handle)
 GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(_glfw.callbacks.monitor, cbfun);
+    _GLFW_SWAP(GLFWmonitorfun, _glfw.callbacks.monitor, cbfun);
     return cbfun;
 }
 

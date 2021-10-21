@@ -440,7 +440,7 @@ GLFWAPI int glfwGetError(const char** description)
 
 GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun)
 {
-    _GLFW_SWAP_POINTERS(_glfwErrorCallback, cbfun);
+    _GLFW_SWAP(GLFWerrorfun, _glfwErrorCallback, cbfun);
     return cbfun;
 }
 

@@ -868,7 +868,7 @@ GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* handle, GLFWkeyfun cbfun)
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.key, cbfun);
+    _GLFW_SWAP(GLFWkeyfun, window->callbacks.key, cbfun);
     return cbfun;
 }
 
@@ -878,7 +878,7 @@ GLFWAPI GLFWcharfun glfwSetCharCallback(GLFWwindow* handle, GLFWcharfun cbfun)
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.character, cbfun);
+    _GLFW_SWAP(GLFWcharfun, window->callbacks.character, cbfun);
     return cbfun;
 }
 
@@ -888,7 +888,7 @@ GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* handle, GLFWcharmods
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.charmods, cbfun);
+    _GLFW_SWAP(GLFWcharmodsfun, window->callbacks.charmods, cbfun);
     return cbfun;
 }
 
@@ -899,7 +899,7 @@ GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* handle,
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.mouseButton, cbfun);
+    _GLFW_SWAP(GLFWmousebuttonfun, window->callbacks.mouseButton, cbfun);
     return cbfun;
 }
 
@@ -910,7 +910,7 @@ GLFWAPI GLFWcursorposfun glfwSetCursorPosCallback(GLFWwindow* handle,
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.cursorPos, cbfun);
+    _GLFW_SWAP(GLFWcursorposfun, window->callbacks.cursorPos, cbfun);
     return cbfun;
 }
 
@@ -921,7 +921,7 @@ GLFWAPI GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow* handle,
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.cursorEnter, cbfun);
+    _GLFW_SWAP(GLFWcursorenterfun, window->callbacks.cursorEnter, cbfun);
     return cbfun;
 }
 
@@ -932,7 +932,7 @@ GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* handle,
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.scroll, cbfun);
+    _GLFW_SWAP(GLFWscrollfun, window->callbacks.scroll, cbfun);
     return cbfun;
 }
 
@@ -942,7 +942,7 @@ GLFWAPI GLFWdropfun glfwSetDropCallback(GLFWwindow* handle, GLFWdropfun cbfun)
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.drop, cbfun);
+    _GLFW_SWAP(GLFWdropfun, window->callbacks.drop, cbfun);
     return cbfun;
 }
 
@@ -1166,7 +1166,7 @@ GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun cbfun)
     if (!initJoysticks())
         return NULL;
 
-    _GLFW_SWAP_POINTERS(_glfw.callbacks.joystick, cbfun);
+    _GLFW_SWAP(GLFWjoystickfun, _glfw.callbacks.joystick, cbfun);
     return cbfun;
 }
 

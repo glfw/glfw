@@ -992,7 +992,7 @@ GLFWAPI GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow* handle,
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.pos, cbfun);
+    _GLFW_SWAP(GLFWwindowposfun, window->callbacks.pos, cbfun);
     return cbfun;
 }
 
@@ -1003,7 +1003,7 @@ GLFWAPI GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* handle,
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.size, cbfun);
+    _GLFW_SWAP(GLFWwindowsizefun, window->callbacks.size, cbfun);
     return cbfun;
 }
 
@@ -1014,7 +1014,7 @@ GLFWAPI GLFWwindowclosefun glfwSetWindowCloseCallback(GLFWwindow* handle,
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.close, cbfun);
+    _GLFW_SWAP(GLFWwindowclosefun, window->callbacks.close, cbfun);
     return cbfun;
 }
 
@@ -1025,7 +1025,7 @@ GLFWAPI GLFWwindowrefreshfun glfwSetWindowRefreshCallback(GLFWwindow* handle,
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.refresh, cbfun);
+    _GLFW_SWAP(GLFWwindowrefreshfun, window->callbacks.refresh, cbfun);
     return cbfun;
 }
 
@@ -1036,7 +1036,7 @@ GLFWAPI GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* handle,
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.focus, cbfun);
+    _GLFW_SWAP(GLFWwindowfocusfun, window->callbacks.focus, cbfun);
     return cbfun;
 }
 
@@ -1047,7 +1047,7 @@ GLFWAPI GLFWwindowiconifyfun glfwSetWindowIconifyCallback(GLFWwindow* handle,
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.iconify, cbfun);
+    _GLFW_SWAP(GLFWwindowiconifyfun, window->callbacks.iconify, cbfun);
     return cbfun;
 }
 
@@ -1058,7 +1058,7 @@ GLFWAPI GLFWwindowmaximizefun glfwSetWindowMaximizeCallback(GLFWwindow* handle,
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.maximize, cbfun);
+    _GLFW_SWAP(GLFWwindowmaximizefun, window->callbacks.maximize, cbfun);
     return cbfun;
 }
 
@@ -1069,7 +1069,7 @@ GLFWAPI GLFWframebuffersizefun glfwSetFramebufferSizeCallback(GLFWwindow* handle
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.fbsize, cbfun);
+    _GLFW_SWAP(GLFWframebuffersizefun, window->callbacks.fbsize, cbfun);
     return cbfun;
 }
 
@@ -1080,7 +1080,7 @@ GLFWAPI GLFWwindowcontentscalefun glfwSetWindowContentScaleCallback(GLFWwindow* 
     assert(window != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(window->callbacks.scale, cbfun);
+    _GLFW_SWAP(GLFWwindowcontentscalefun, window->callbacks.scale, cbfun);
     return cbfun;
 }
 

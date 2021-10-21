@@ -357,12 +357,12 @@ typedef void (APIENTRY * PFN_vkVoidFunction)(void);
     }
 
 // Swaps the provided pointers
-#define _GLFW_SWAP_POINTERS(x, y) \
-    {                             \
-        void* t;                  \
-        t = x;                    \
-        x = y;                    \
-        y = t;                    \
+#define _GLFW_SWAP(type, x, y) \
+    {                          \
+        type t;                \
+        t = x;                 \
+        x = y;                 \
+        y = t;                 \
     }
 
 // Per-thread error structure

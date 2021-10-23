@@ -680,7 +680,7 @@ GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* handle)
         return NULL;
     }
 
-    if (window->context.client != GLFW_NATIVE_CONTEXT_API)
+    if (window->context.source != GLFW_NATIVE_CONTEXT_API)
     {
         _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
         return NULL;
@@ -700,7 +700,7 @@ GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* handle)
         return None;
     }
 
-    if (window->context.client != GLFW_NATIVE_CONTEXT_API)
+    if (window->context.source != GLFW_NATIVE_CONTEXT_API)
     {
         _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
         return None;

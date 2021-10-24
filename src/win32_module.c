@@ -1,6 +1,7 @@
 //========================================================================
-// UTF-8 window title test
-// Copyright (c) Camilla Löwy <elmindreda@glfw.org>
+// GLFW 3.4 Win32 - www.glfw.org
+//------------------------------------------------------------------------
+// Copyright (c) 2021 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -22,52 +23,27 @@
 //    distribution.
 //
 //========================================================================
-//
-// This test sets a UTF-8 window title
-//
+// Please use C89 style variable declarations in this file because VS 2010
 //========================================================================
 
-#define GLAD_GL_IMPLEMENTATION
-#include <glad/gl.h>
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#include "internal.h"
 
-#include <stdio.h>
-#include <stdlib.h>
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
 
-static void error_callback(int error, const char* description)
+void* _glfwPlatformLoadModule(const char* path)
 {
-    fprintf(stderr, "Error: %s\n", description);
+    return LoadLibraryA(path);
 }
 
-int main(void)
+void _glfwPlatformFreeModule(void* module)
 {
-    GLFWwindow* window;
+    FreeLibrary((HMODULE) module);
+}
 
-    glfwSetErrorCallback(error_callback);
-
-    if (!glfwInit())
-        exit(EXIT_FAILURE);
-
-    window = glfwCreateWindow(400, 400, "English 日本語 русский язык 官話", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
-
-    glfwMakeContextCurrent(window);
-    gladLoadGL(glfwGetProcAddress);
-    glfwSwapInterval(1);
-
-    while (!glfwWindowShouldClose(window))
-    {
-        glClear(GL_COLOR_BUFFER_BIT);
-        glfwSwapBuffers(window);
-        glfwWaitEvents();
-    }
-
-    glfwTerminate();
-    exit(EXIT_SUCCESS);
+GLFWproc _glfwPlatformGetModuleSymbol(void* module, const char* name)
+{
+    return (GLFWproc) GetProcAddress((HMODULE) module, name);
 }
 

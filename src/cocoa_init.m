@@ -307,7 +307,7 @@ static void createKeyTables(void)
 
 // Retrieve Unicode data for the current keyboard layout
 //
-static GLFWbool updateUnicodeDataNS(void)
+static GLFWbool updateUnicodeData(void)
 {
     if (_glfw.ns.inputSource)
     {
@@ -377,7 +377,7 @@ static GLFWbool initializeTIS(void)
     _glfw.ns.tis.kPropertyUnicodeKeyLayoutData =
         *kPropertyUnicodeKeyLayoutData;
 
-    return updateUnicodeDataNS();
+    return updateUnicodeData();
 }
 
 @interface GLFWHelper : NSObject
@@ -387,7 +387,7 @@ static GLFWbool initializeTIS(void)
 
 - (void)selectedKeyboardInputSourceChanged:(NSObject* )object
 {
-    updateUnicodeDataNS();
+    updateUnicodeData();
 }
 
 - (void)doNothing:(id)object
@@ -421,7 +421,7 @@ static GLFWbool initializeTIS(void)
             [window->context.nsgl.object update];
     }
 
-    _glfwPollMonitorsNS();
+    _glfwPollMonitorsCocoa();
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notification
@@ -444,7 +444,7 @@ static GLFWbool initializeTIS(void)
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
-    _glfwPlatformPostEmptyEvent();
+    _glfwPostEmptyEventCocoa();
     [NSApp stop:nil];
 }
 
@@ -453,7 +453,7 @@ static GLFWbool initializeTIS(void)
     int i;
 
     for (i = 0;  i < _glfw.monitorCount;  i++)
-        _glfwRestoreVideoModeNS(_glfw.monitors[i]);
+        _glfwRestoreVideoModeCocoa(_glfw.monitors[i]);
 }
 
 @end // GLFWApplicationDelegate
@@ -463,7 +463,7 @@ static GLFWbool initializeTIS(void)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-void* _glfwLoadLocalVulkanLoaderNS(void)
+void* _glfwLoadLocalVulkanLoaderCocoa(void)
 {
     CFBundleRef bundle = CFBundleGetMainBundle();
     if (!bundle)
@@ -478,7 +478,7 @@ void* _glfwLoadLocalVulkanLoaderNS(void)
     void* handle = NULL;
 
     if (CFURLGetFileSystemRepresentation(url, true, (UInt8*) path, sizeof(path) - 1))
-        handle = _glfw_dlopen(path);
+        handle = _glfwPlatformLoadModule(path);
 
     CFRelease(url);
     return handle;
@@ -489,7 +489,89 @@ void* _glfwLoadLocalVulkanLoaderNS(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwPlatformInit(void)
+GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
+{
+    const _GLFWplatform cocoa =
+    {
+        GLFW_PLATFORM_COCOA,
+        _glfwInitCocoa,
+        _glfwTerminateCocoa,
+        _glfwGetCursorPosCocoa,
+        _glfwSetCursorPosCocoa,
+        _glfwSetCursorModeCocoa,
+        _glfwSetRawMouseMotionCocoa,
+        _glfwRawMouseMotionSupportedCocoa,
+        _glfwCreateCursorCocoa,
+        _glfwCreateStandardCursorCocoa,
+        _glfwDestroyCursorCocoa,
+        _glfwSetCursorCocoa,
+        _glfwGetScancodeNameCocoa,
+        _glfwGetKeyScancodeCocoa,
+        _glfwSetClipboardStringCocoa,
+        _glfwGetClipboardStringCocoa,
+        _glfwInitJoysticksCocoa,
+        _glfwTerminateJoysticksCocoa,
+        _glfwPollJoystickCocoa,
+        _glfwGetMappingNameCocoa,
+        _glfwUpdateGamepadGUIDCocoa,
+        _glfwFreeMonitorCocoa,
+        _glfwGetMonitorPosCocoa,
+        _glfwGetMonitorContentScaleCocoa,
+        _glfwGetMonitorWorkareaCocoa,
+        _glfwGetVideoModesCocoa,
+        _glfwGetVideoModeCocoa,
+        _glfwGetGammaRampCocoa,
+        _glfwSetGammaRampCocoa,
+        _glfwCreateWindowCocoa,
+        _glfwDestroyWindowCocoa,
+        _glfwSetWindowTitleCocoa,
+        _glfwSetWindowIconCocoa,
+        _glfwGetWindowPosCocoa,
+        _glfwSetWindowPosCocoa,
+        _glfwGetWindowSizeCocoa,
+        _glfwSetWindowSizeCocoa,
+        _glfwSetWindowSizeLimitsCocoa,
+        _glfwSetWindowAspectRatioCocoa,
+        _glfwGetFramebufferSizeCocoa,
+        _glfwGetWindowFrameSizeCocoa,
+        _glfwGetWindowContentScaleCocoa,
+        _glfwIconifyWindowCocoa,
+        _glfwRestoreWindowCocoa,
+        _glfwMaximizeWindowCocoa,
+        _glfwShowWindowCocoa,
+        _glfwHideWindowCocoa,
+        _glfwRequestWindowAttentionCocoa,
+        _glfwFocusWindowCocoa,
+        _glfwSetWindowMonitorCocoa,
+        _glfwWindowFocusedCocoa,
+        _glfwWindowIconifiedCocoa,
+        _glfwWindowVisibleCocoa,
+        _glfwWindowMaximizedCocoa,
+        _glfwWindowHoveredCocoa,
+        _glfwFramebufferTransparentCocoa,
+        _glfwGetWindowOpacityCocoa,
+        _glfwSetWindowResizableCocoa,
+        _glfwSetWindowDecoratedCocoa,
+        _glfwSetWindowFloatingCocoa,
+        _glfwSetWindowOpacityCocoa,
+        _glfwSetWindowMousePassthroughCocoa,
+        _glfwPollEventsCocoa,
+        _glfwWaitEventsCocoa,
+        _glfwWaitEventsTimeoutCocoa,
+        _glfwPostEmptyEventCocoa,
+        _glfwGetEGLPlatformCocoa,
+        _glfwGetEGLNativeDisplayCocoa,
+        _glfwGetEGLNativeWindowCocoa,
+        _glfwGetRequiredInstanceExtensionsCocoa,
+        _glfwGetPhysicalDevicePresentationSupportCocoa,
+        _glfwCreateWindowSurfaceCocoa,
+    };
+
+    *platform = cocoa;
+    return GLFW_TRUE;
+}
+
+int _glfwInitCocoa(void)
 {
     @autoreleasepool {
 
@@ -547,9 +629,7 @@ int _glfwPlatformInit(void)
     if (!initializeTIS())
         return GLFW_FALSE;
 
-    _glfwInitTimerNS();
-
-    _glfwPollMonitorsNS();
+    _glfwPollMonitorsCocoa();
 
     if (![[NSRunningApplication currentApplication] isFinishedLaunching])
         [NSApp run];
@@ -563,7 +643,7 @@ int _glfwPlatformInit(void)
     } // autoreleasepool
 }
 
-void _glfwPlatformTerminate(void)
+void _glfwTerminateCocoa(void)
 {
     @autoreleasepool {
 
@@ -602,19 +682,10 @@ void _glfwPlatformTerminate(void)
     if (_glfw.ns.keyUpMonitor)
         [NSEvent removeMonitor:_glfw.ns.keyUpMonitor];
 
-    free(_glfw.ns.clipboardString);
+    _glfw_free(_glfw.ns.clipboardString);
 
     _glfwTerminateNSGL();
 
     } // autoreleasepool
-}
-
-const char* _glfwPlatformGetVersionString(void)
-{
-    return _GLFW_VERSION_NUMBER " Cocoa NSGL EGL OSMesa"
-#if defined(_GLFW_BUILD_DLL)
-        " dynamic"
-#endif
-        ;
 }
 

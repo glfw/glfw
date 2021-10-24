@@ -102,15 +102,15 @@ static void closeJoystick(_GLFWjoystick* js)
         return;
 
     for (i = 0;  i < CFArrayGetCount(js->ns.axes);  i++)
-        free((void*) CFArrayGetValueAtIndex(js->ns.axes, i));
+        _glfw_free((void*) CFArrayGetValueAtIndex(js->ns.axes, i));
     CFRelease(js->ns.axes);
 
     for (i = 0;  i < CFArrayGetCount(js->ns.buttons);  i++)
-        free((void*) CFArrayGetValueAtIndex(js->ns.buttons, i));
+        _glfw_free((void*) CFArrayGetValueAtIndex(js->ns.buttons, i));
     CFRelease(js->ns.buttons);
 
     for (i = 0;  i < CFArrayGetCount(js->ns.hats);  i++)
-        free((void*) CFArrayGetValueAtIndex(js->ns.hats, i));
+        _glfw_free((void*) CFArrayGetValueAtIndex(js->ns.hats, i));
     CFRelease(js->ns.hats);
 
     _glfwFreeJoystick(js);
@@ -251,7 +251,7 @@ static void matchCallback(void* context,
 
         if (target)
         {
-            _GLFWjoyelementNS* element = calloc(1, sizeof(_GLFWjoyelementNS));
+            _GLFWjoyelementNS* element = _glfw_calloc(1, sizeof(_GLFWjoyelementNS));
             element->native  = native;
             element->usage   = usage;
             element->index   = (int) CFArrayGetCount(target);
@@ -307,7 +307,7 @@ static void removeCallback(void* context,
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWbool _glfwPlatformInitJoysticks(void)
+GLFWbool _glfwInitJoysticksCocoa(void)
 {
     CFMutableArrayRef matching;
     const long usages[] =
@@ -384,7 +384,7 @@ GLFWbool _glfwPlatformInitJoysticks(void)
     return GLFW_TRUE;
 }
 
-void _glfwPlatformTerminateJoysticks(void)
+void _glfwTerminateJoysticksCocoa(void)
 {
     int jid;
 
@@ -399,7 +399,7 @@ void _glfwPlatformTerminateJoysticks(void)
 }
 
 
-int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
+int _glfwPollJoystickCocoa(_GLFWjoystick* js, int mode)
 {
     if (mode & _GLFW_POLL_AXES)
     {
@@ -469,7 +469,12 @@ int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
     return js->present;
 }
 
-void _glfwPlatformUpdateGamepadGUID(char* guid)
+const char* _glfwGetMappingNameCocoa(void)
+{
+    return "Mac OS X";
+}
+
+void _glfwUpdateGamepadGUIDCocoa(char* guid)
 {
     if ((strncmp(guid + 4, "000000000000", 12) == 0) &&
         (strncmp(guid + 20, "000000000000", 12) == 0))

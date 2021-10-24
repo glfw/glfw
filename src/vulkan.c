@@ -52,15 +52,15 @@ GLFWbool _glfwInitVulkan(int mode)
 
 #if !defined(_GLFW_VULKAN_STATIC)
 #if defined(_GLFW_VULKAN_LIBRARY)
-    _glfw.vk.handle = _glfw_dlopen(_GLFW_VULKAN_LIBRARY);
+    _glfw.vk.handle = _glfwPlatformLoadModule(_GLFW_VULKAN_LIBRARY);
 #elif defined(_GLFW_WIN32)
-    _glfw.vk.handle = _glfw_dlopen("vulkan-1.dll");
+    _glfw.vk.handle = _glfwPlatformLoadModule("vulkan-1.dll");
 #elif defined(_GLFW_COCOA)
-    _glfw.vk.handle = _glfw_dlopen("libvulkan.1.dylib");
+    _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.1.dylib");
     if (!_glfw.vk.handle)
-        _glfw.vk.handle = _glfwLoadLocalVulkanLoaderNS();
+        _glfw.vk.handle = _glfwLoadLocalVulkanLoaderCocoa();
 #else
-    _glfw.vk.handle = _glfw_dlopen("libvulkan.so.1");
+    _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.so.1");
 #endif
     if (!_glfw.vk.handle)
     {
@@ -71,7 +71,7 @@ GLFWbool _glfwInitVulkan(int mode)
     }
 
     _glfw.vk.GetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)
-        _glfw_dlsym(_glfw.vk.handle, "vkGetInstanceProcAddr");
+        _glfwPlatformGetModuleSymbol(_glfw.vk.handle, "vkGetInstanceProcAddr");
     if (!_glfw.vk.GetInstanceProcAddr)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
@@ -108,7 +108,7 @@ GLFWbool _glfwInitVulkan(int mode)
         return GLFW_FALSE;
     }
 
-    ep = calloc(count, sizeof(VkExtensionProperties));
+    ep = _glfw_calloc(count, sizeof(VkExtensionProperties));
 
     err = vkEnumerateInstanceExtensionProperties(NULL, &count, ep);
     if (err)
@@ -117,7 +117,7 @@ GLFWbool _glfwInitVulkan(int mode)
                         "Vulkan: Failed to query instance extensions: %s",
                         _glfwGetVulkanResultString(err));
 
-        free(ep);
+        _glfw_free(ep);
         _glfwTerminateVulkan();
         return GLFW_FALSE;
     }
@@ -126,30 +126,25 @@ GLFWbool _glfwInitVulkan(int mode)
     {
         if (strcmp(ep[i].extensionName, "VK_KHR_surface") == 0)
             _glfw.vk.KHR_surface = GLFW_TRUE;
-#if defined(_GLFW_WIN32)
         else if (strcmp(ep[i].extensionName, "VK_KHR_win32_surface") == 0)
             _glfw.vk.KHR_win32_surface = GLFW_TRUE;
-#elif defined(_GLFW_COCOA)
         else if (strcmp(ep[i].extensionName, "VK_MVK_macos_surface") == 0)
             _glfw.vk.MVK_macos_surface = GLFW_TRUE;
         else if (strcmp(ep[i].extensionName, "VK_EXT_metal_surface") == 0)
             _glfw.vk.EXT_metal_surface = GLFW_TRUE;
-#elif defined(_GLFW_X11)
         else if (strcmp(ep[i].extensionName, "VK_KHR_xlib_surface") == 0)
             _glfw.vk.KHR_xlib_surface = GLFW_TRUE;
         else if (strcmp(ep[i].extensionName, "VK_KHR_xcb_surface") == 0)
             _glfw.vk.KHR_xcb_surface = GLFW_TRUE;
-#elif defined(_GLFW_WAYLAND)
         else if (strcmp(ep[i].extensionName, "VK_KHR_wayland_surface") == 0)
             _glfw.vk.KHR_wayland_surface = GLFW_TRUE;
-#endif
     }
 
-    free(ep);
+    _glfw_free(ep);
 
     _glfw.vk.available = GLFW_TRUE;
 
-    _glfwPlatformGetRequiredInstanceExtensions(_glfw.vk.extensions);
+    _glfw.platform.getRequiredInstanceExtensions(_glfw.vk.extensions);
 
     return GLFW_TRUE;
 }
@@ -158,7 +153,7 @@ void _glfwTerminateVulkan(void)
 {
 #if !defined(_GLFW_VULKAN_STATIC)
     if (_glfw.vk.handle)
-        _glfw_dlclose(_glfw.vk.handle);
+        _glfwPlatformFreeModule(_glfw.vk.handle);
 #endif
 }
 
@@ -266,7 +261,7 @@ GLFWAPI GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance,
     }
 #else
     if (!proc)
-        proc = (GLFWvkproc) _glfw_dlsym(_glfw.vk.handle, procname);
+        proc = (GLFWvkproc) _glfwPlatformGetModuleSymbol(_glfw.vk.handle, procname);
 #endif
 
     return proc;
@@ -291,9 +286,9 @@ GLFWAPI int glfwGetPhysicalDevicePresentationSupport(VkInstance instance,
         return GLFW_FALSE;
     }
 
-    return _glfwPlatformGetPhysicalDevicePresentationSupport(instance,
-                                                             device,
-                                                             queuefamily);
+    return _glfw.platform.getPhysicalDevicePresentationSupport(instance,
+                                                               device,
+                                                               queuefamily);
 }
 
 GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance,
@@ -327,6 +322,6 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance,
         return VK_ERROR_NATIVE_WINDOW_IN_USE_KHR;
     }
 
-    return _glfwPlatformCreateWindowSurface(instance, window, allocator, surface);
+    return _glfw.platform.createWindowSurface(instance, window, allocator, surface);
 }
 

@@ -462,7 +462,9 @@ int main(int argc, char** argv)
         switch (ch)
         {
             case PLATFORM:
-                if (strcasecmp(optarg, PLATFORM_NAME_WIN32) == 0)
+                if (strcasecmp(optarg, PLATFORM_NAME_ANY) == 0)
+                    platform = GLFW_ANY_PLATFORM;
+                else if (strcasecmp(optarg, PLATFORM_NAME_WIN32) == 0)
                     platform = GLFW_PLATFORM_WIN32;
                 else if (strcasecmp(optarg, PLATFORM_NAME_COCOA) == 0)
                     platform = GLFW_PLATFORM_COCOA;

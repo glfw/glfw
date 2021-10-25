@@ -73,31 +73,34 @@ GLFWbool _glfwSelectPlatform(int desiredID, _GLFWplatform* platform)
     if (desiredID == GLFW_PLATFORM_NULL)
         return _glfwConnectNull(desiredID, platform);
 
-    // If there is only one platform available for auto-selection, let it emit the error
-    // on failure as the platform-specific error description may be more helpful
-    if (desiredID == GLFW_ANY_PLATFORM && count == 1)
-        return supportedPlatforms[0].connect(supportedPlatforms[0].ID, platform);
-
-    for (i = 0;  i < count;  i++)
+    if (desiredID == GLFW_ANY_PLATFORM)
     {
-        if (desiredID == GLFW_ANY_PLATFORM || desiredID == supportedPlatforms[i].ID)
+        // If there is exactly one platform available for auto-selection, let it emit the
+        // error on failure as the platform-specific error description may be more helpful
+        if (count == 1)
+            return supportedPlatforms[0].connect(supportedPlatforms[0].ID, platform);
+
+        for (i = 0;  i < count;  i++)
         {
             if (supportedPlatforms[i].connect(desiredID, platform))
                 return GLFW_TRUE;
-            else if (desiredID == supportedPlatforms[i].ID)
-                return GLFW_FALSE;
         }
-    }
 
-    if (desiredID == GLFW_ANY_PLATFORM)
-    {
         if (count)
             _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "Failed to detect any supported platform");
         else
             _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "This binary only supports the Null platform");
     }
     else
+    {
+        for (i = 0;  i < count;  i++)
+        {
+            if (supportedPlatforms[i].ID == desiredID)
+                return supportedPlatforms[i].connect(desiredID, platform);
+        }
+
         _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "The requested platform is not supported");
+    }
 
     return GLFW_FALSE;
 }

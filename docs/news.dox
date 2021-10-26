@@ -76,6 +76,14 @@ function pointers corresponding to the standard library functions `malloc`,
 For more information see @ref init_allocator.
 
 
+@subsubsection features_34_position_hint Window hints for initial position
+
+GLFW now provides the @ref GLFW_POSITION_X and @ref GLFW_POSITION_Y window hints for
+specifying the initial position of the window.  This removes the need to create a hidden
+window, move it and then show it.  The default value of these hints is
+`GLFW_ANY_POSITION`, which selects the previous behavior.
+
+
 @subsubsection features_34_win32_keymenu Support for keyboard access to Windows window menu
 
 GLFW now provides the
@@ -243,6 +251,9 @@ then GLFW will fail to initialize.
  - @ref GLFW_ANGLE_PLATFORM_TYPE_METAL
  - @ref GLFW_X11_XCB_VULKAN_SURFACE
  - @ref GLFW_CURSOR_CAPTURED
+ - @ref GLFW_POSITION_X
+ - @ref GLFW_POSITION_Y
+ - @ref GLFW_ANY_POSITION
 
 
 @section news_archive Release notes for earlier versions

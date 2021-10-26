@@ -575,6 +575,14 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         height *= _glfw.x11.contentScaleY;
     }
 
+    int xpos = 0, ypos = 0;
+
+    if (wndconfig->xpos != GLFW_ANY_POSITION && wndconfig->ypos != GLFW_ANY_POSITION)
+    {
+        xpos = wndconfig->xpos;
+        ypos = wndconfig->ypos;
+    }
+
     // Create a colormap based on the visual used by the current context
     window->x11.colormap = XCreateColormap(_glfw.x11.display,
                                            _glfw.x11.root,
@@ -595,7 +603,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     window->x11.parent = _glfw.x11.root;
     window->x11.handle = XCreateWindow(_glfw.x11.display,
                                        _glfw.x11.root,
-                                       0, 0,   // Position
+                                       xpos, ypos,
                                        width, height,
                                        0,      // Border width
                                        depth,  // Color depth
@@ -712,6 +720,15 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
             hints->flags |= (PMinSize | PMaxSize);
             hints->min_width  = hints->max_width  = width;
             hints->min_height = hints->max_height = height;
+        }
+
+        // HACK: Explicitly setting PPosition to any value causes some WMs, notably
+        //       Compiz and Metacity, to honor the position of unmapped windows
+        if (wndconfig->xpos != GLFW_ANY_POSITION && wndconfig->ypos != GLFW_ANY_POSITION)
+        {
+            hints->flags |= PPosition;
+            hints->x = 0;
+            hints->y = 0;
         }
 
         hints->flags |= PWinGravity;

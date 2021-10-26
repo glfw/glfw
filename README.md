@@ -141,6 +141,9 @@ information on what to include when reporting a bug.
    through the window (#1236,#1568)
  - Added `GLFW_CURSOR_CAPTURED` cursor mode to confine the cursor to the window
    content area (#58)
+ - Added `GLFW_POSITION_X` and `GLFW_POSITION_Y` window hints for initial position
+   (#1603,#1747)
+ - Added `GLFW_ANY_POSITION` hint value for letting the window manager choose (#1603,#1747)
  - Added `GLFW_PLATFORM_UNAVAILABLE` error for platform detection failures (#1958)
  - Added `GLFW_FEATURE_UNAVAILABLE` error for platform limitations (#1692)
  - Added `GLFW_FEATURE_UNIMPLEMENTED` error for incomplete backends (#1692)

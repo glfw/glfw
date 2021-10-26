@@ -1316,17 +1316,27 @@ static int createNativeWindow(_GLFWwindow* window,
     }
     else
     {
-        xpos = CW_USEDEFAULT;
-        ypos = CW_USEDEFAULT;
+        RECT rect = { 0, 0, wndconfig->width, wndconfig->height };
 
         window->win32.maximized = wndconfig->maximized;
         if (wndconfig->maximized)
             style |= WS_MAXIMIZE;
 
-        getFullWindowSize(style, exStyle,
-                          wndconfig->width, wndconfig->height,
-                          &fullWidth, &fullHeight,
-                          USER_DEFAULT_SCREEN_DPI);
+        AdjustWindowRectEx(&rect, style, FALSE, exStyle);
+
+        if (wndconfig->xpos == GLFW_ANY_POSITION && wndconfig->ypos == GLFW_ANY_POSITION)
+        {
+            xpos = CW_USEDEFAULT;
+            ypos = CW_USEDEFAULT;
+        }
+        else
+        {
+            xpos = wndconfig->xpos + rect.left;
+            ypos = wndconfig->ypos + rect.top;
+        }
+
+        fullWidth = rect.right - rect.left;
+        fullHeight = rect.bottom - rect.top;
     }
 
     wideTitle = _glfwCreateWideStringFromUTF8Win32(wndconfig->title);

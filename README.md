@@ -221,7 +221,7 @@ information on what to include when reporting a bug.
    could leak memory
  - [Cocoa] Bugfix: Objective-C files were compiled as C with CMake 3.19 (#1787)
  - [Cocoa] Bugfix: Duplicate video modes were not filtered out (#1830)
- - [Cocoa] Bugfix: Menubar was not clickable on macOS 10.15+ until it lost and
+ - [Cocoa] Bugfix: Menu bar was not clickable on macOS 10.15+ until it lost and
    regained focus (#1648,#1802)
  - [Cocoa] Bugfix: Monitor name query could segfault on macOS 11 (#1809,#1833)
  - [Cocoa] Bugfix: The install name of the installed dylib was relative (#1504)
@@ -229,7 +229,7 @@ information on what to include when reporting a bug.
    related events were emitted
  - [Cocoa] Bugfix: Moving the cursor programmatically would freeze it for
    a fraction of a second (#1962)
- - [Cocoa] Bugfix: `kIOMasterPortDefault` was depreacted in macOS 12.0 (#1980)
+ - [Cocoa] Bugfix: `kIOMasterPortDefault` was deprecated in macOS 12.0 (#1980)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -252,7 +252,7 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: XKB path used keysyms instead of physical locations for
    non-printable keys (#1598)
  - [X11] Bugfix: Function keys were mapped to `GLFW_KEY_UNKNOWN` for some layout
-   combinaitons (#1598)
+   combinations (#1598)
  - [X11] Bugfix: Keys pressed simultaneously with others were not always
    reported (#1112,#1415,#1472,#1616)
  - [X11] Bugfix: Some window attributes were not applied on leaving fullscreen
@@ -266,7 +266,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Retrieving partial framebuffer size would segfault
  - [Wayland] Bugfix: Scrolling offsets were inverted compared to other platforms
    (#1463)
- - [Wayland] Bugfix: Client-Side Decorations were destroyed in the wrong worder
+ - [Wayland] Bugfix: Client-Side Decorations were destroyed in the wrong order
    (#1798)
  - [Wayland] Bugfix: Monitors physical size could report zero (#1784,#1792)
  - [Wayland] Bugfix: Some keys were not repeating in Wayland (#1908)

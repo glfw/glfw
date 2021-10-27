@@ -34,6 +34,7 @@ video tutorials.
  - Michał Cichoń
  - Lambert Clara
  - Anna Clarke
+ - Josh Codd
  - Yaron Cohen-Tal
  - Omar Cornut
  - Andrew Corrigan

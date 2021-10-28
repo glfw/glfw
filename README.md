@@ -123,26 +123,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
- - Updated gamepad mappings from upstream
- - Bugfix: Buffers were swapped at creation on single-buffered windows (#1873)
- - Bugfix: Gamepad mapping updates could spam `GLFW_INVALID_VALUE` due to
-   incompatible controllers sharing hardware ID (#1763)
- - Bugfix: Native access functions for context handles did not check that the API matched
- - [Win32] Bugfix: `USE_MSVC_RUNTIME_LIBRARY_DLL` had no effect on CMake 3.15 or
-   later (#1783,#1796)
- - [Win32] Bugfix: Compilation with LLVM for Windows failed (#1807,#1824,#1874)
- - [Cocoa] Bugfix: The MoltenVK layer contents scale was updated only after
-   related events were emitted
- - [Cocoa] Bugfix: Moving the cursor programmatically would freeze it for
-   a fraction of a second (#1962)
- - [Cocoa] Bugfix: `kIOMasterPortDefault` was deprecated in macOS 12.0 (#1980)
- - [X11] Bugfix: Changing `GLFW_FLOATING` could leak memory
- - [Wayland] Bugfix: Some keys were not repeating in Wayland (#1908)
- - [Wayland] Bugfix: Non-arrow cursors are offset from the hotspot (#1706,#1899)
- - [Wayland] Bugfix: The `O_CLOEXEC` flag was not defined on FreeBSD
- - [NSGL] Bugfix: Defining `GL_SILENCE_DEPRECATION` externally caused
-   a duplicate definition warning (#1840)
- - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
+There is nothing here yet.
 
 
 ## Contact

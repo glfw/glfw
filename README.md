@@ -156,6 +156,7 @@ information on what to include when reporting a bug.
  - Made joystick subsystem initialize at first use (#1284,#1646)
  - Made `GLFW_DOUBLEBUFFER` a read-only window attribute
  - Updated the minimum required CMake version to 3.1
+ - Updated gamepad mappings from upstream
  - Disabled tests and examples by default when built as a CMake subdirectory
  - Renamed `GLFW_USE_WAYLAND` CMake option to `GLFW_BUILD_WAYLAND` (#1958)
  - Removed `GLFW_USE_OSMESA` CMake option enabling the Null platform (#1958)
@@ -271,6 +272,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Monitors physical size could report zero (#1784,#1792)
  - [Wayland] Bugfix: Some keys were not repeating in Wayland (#1908)
  - [Wayland] Bugfix: Non-arrow cursors are offset from the hotspot (#1706,#1899)
+ - [Wayland] Bugfix: The `O_CLOEXEC` flag was not defined on FreeBSD
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)

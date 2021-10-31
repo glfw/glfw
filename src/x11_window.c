@@ -2123,8 +2123,8 @@ void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
         for (i = 0;  i < count;  i++)
             longCount += 2 + images[i].width * images[i].height;
 
-        long* icon = calloc(longCount, sizeof(long));
-        long* target = icon;
+        unsigned long* icon = calloc(longCount, sizeof(unsigned long));
+        unsigned long* target = icon;
 
         for (i = 0;  i < count;  i++)
         {
@@ -2133,13 +2133,20 @@ void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
 
             for (j = 0;  j < images[i].width * images[i].height;  j++)
             {
-                *target++ = (images[i].pixels[j * 4 + 0] << 16) |
-                            (images[i].pixels[j * 4 + 1] <<  8) |
-                            (images[i].pixels[j * 4 + 2] <<  0) |
-                            (images[i].pixels[j * 4 + 3] << 24);
+                *target++ = (((unsigned long)images[i].pixels[j * 4 + 0]) << 16) |
+                            (((unsigned long)images[i].pixels[j * 4 + 1]) <<  8) |
+                            (((unsigned long)images[i].pixels[j * 4 + 2]) <<  0) |
+                            (((unsigned long)images[i].pixels[j * 4 + 3]) << 24);
             }
         }
 
+        // Important: Despite XChangeProperty docs indicating that `icon` (unsigned char*) would be
+        // in the format of the icon image, e.g. 32-bit below, the function actually casts the ptr
+        // (unsigned char*) internally to (long*) and then if long is defined as 64-bits, as on IL64
+        // platforms, extracts only 32 bits from the long leaving the other 32 unused. That is, on a
+        // 64-bit platform XChangeProperty expects 64-bit integers representing 32-bit pixels.
+        //
+        // See https://github.com/glfw/glfw/pull/1986#issuecomment-962445299
         XChangeProperty(_glfw.x11.display, window->x11.handle,
                         _glfw.x11.NET_WM_ICON,
                         XA_CARDINAL, 32,

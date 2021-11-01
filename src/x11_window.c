@@ -2115,10 +2115,10 @@ void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* imag
 
             for (int j = 0;  j < images[i].width * images[i].height;  j++)
             {
-                *target++ = (((long)images[i].pixels[j * 4 + 0]) << 16) |
-                            (((long)images[i].pixels[j * 4 + 1]) <<  8) |
-                            (((long)images[i].pixels[j * 4 + 2]) <<  0) |
-                            (((long)images[i].pixels[j * 4 + 3]) << 24);
+                *target++ = (((unsigned int)images[i].pixels[j * 4 + 0]) << 16) |
+                            (((unsigned int)images[i].pixels[j * 4 + 1]) <<  8) |
+                            (((unsigned int)images[i].pixels[j * 4 + 2]) <<  0) |
+                            (((unsigned int)images[i].pixels[j * 4 + 3]) << 24);
             }
         }
 

@@ -259,6 +259,8 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: Some window attributes were not applied on leaving fullscreen
    (#1863)
  - [X11] Bugfix: Changing `GLFW_FLOATING` could leak memory
+ - [X11] Bugfix: Icon pixel format conversion worked only by accident, relying on
+   undefined behavior (#1986)
  - [Wayland] Added dynamic loading of all Wayland libraries
  - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)

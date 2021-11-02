@@ -126,6 +126,8 @@ information on what to include when reporting a bug.
  - Bugfix: Joysticks connected before init did not get gamepad mappings (#1996)
  - [Cocoa] Bugfix: A dependency on an external constant caused crashes on macOS
    11 and earlier (#1985,#1994)
+ - [X11] Bugfix: Icon pixel format conversion worked only by accident, relying on
+   undefined behavior (#1986)
 
 
 ## Contact

@@ -68,6 +68,8 @@ video tutorials.
  - Kovid Goyal
  - Eloi Marín Gratacós
  - Stefan Gustavson
+ - Andrew Gutekanst
+ - Stephen Gutekanst
  - Jonathan Hale
  - hdf89shfdfs
  - Sylvain Hellegouarch

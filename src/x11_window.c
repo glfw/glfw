@@ -2100,13 +2100,13 @@ void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* imag
 {
     if (count)
     {
-        int longCount = 0;
+        int elements = 0;
 
         for (int i = 0;  i < count;  i++)
-            longCount += 2 + images[i].width * images[i].height;
+            elements += 2 + images[i].width * images[i].height;
 
-        long* icon = _glfw_calloc(longCount, sizeof(long));
-        long* target = icon;
+        uint32_t* icon = _glfw_calloc(elements, sizeof(uint32_t));
+        uint32_t* target = icon;
 
         for (int i = 0;  i < count;  i++)
         {
@@ -2115,10 +2115,10 @@ void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* imag
 
             for (int j = 0;  j < images[i].width * images[i].height;  j++)
             {
-                *target++ = (((unsigned int)images[i].pixels[j * 4 + 0]) << 16) |
-                            (((unsigned int)images[i].pixels[j * 4 + 1]) <<  8) |
-                            (((unsigned int)images[i].pixels[j * 4 + 2]) <<  0) |
-                            (((unsigned int)images[i].pixels[j * 4 + 3]) << 24);
+                *target++ = (((uint32_t)images[i].pixels[j * 4 + 0]) << 16) |
+                            (((uint32_t)images[i].pixels[j * 4 + 1]) <<  8) |
+                            (((uint32_t)images[i].pixels[j * 4 + 2]) <<  0) |
+                            (((uint32_t)images[i].pixels[j * 4 + 3]) << 24);
             }
         }
 
@@ -2127,7 +2127,7 @@ void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* imag
                         XA_CARDINAL, 32,
                         PropModeReplace,
                         (unsigned char*) icon,
-                        longCount);
+                        elements);
 
         _glfw_free(icon);
     }

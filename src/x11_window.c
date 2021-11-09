@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_X11)
+
 #include <X11/cursorfont.h>
 #include <X11/Xmd.h>
 
@@ -86,7 +88,7 @@ static GLFWbool waitForAnyEvent(double* timeout)
         { _glfw.x11.emptyEventPipe[0], POLLIN }
     };
 
-#if defined(__linux__)
+#if defined(_GLFW_LINUX_JOYSTICK)
     if (_glfw.joysticksInitialized)
         fds[count++] = (struct pollfd) { _glfw.linjs.inotify, POLLIN };
 #endif
@@ -2781,7 +2783,7 @@ void _glfwPollEventsX11(void)
 {
     drainEmptyEvents();
 
-#if defined(__linux__)
+#if defined(_GLFW_LINUX_JOYSTICK)
     if (_glfw.joysticksInitialized)
         _glfwDetectJoystickConnectionLinux();
 #endif
@@ -3348,4 +3350,6 @@ GLFWAPI const char* glfwGetX11SelectionString(void)
 
     return getSelectionString(_glfw.x11.PRIMARY);
 }
+
+#endif // _GLFW_X11
 

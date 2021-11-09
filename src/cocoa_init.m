@@ -27,6 +27,9 @@
 //========================================================================
 
 #include "internal.h"
+
+#if defined(_GLFW_COCOA)
+
 #include <sys/param.h> // For MAXPATHLEN
 
 // Needed for _NSGetProgname
@@ -689,4 +692,6 @@ void _glfwTerminateCocoa(void)
 
     } // autoreleasepool
 }
+
+#endif // _GLFW_COCOA
 

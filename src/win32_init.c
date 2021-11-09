@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_WIN32)
+
 #include <stdlib.h>
 
 static const GUID _glfw_GUID_DEVINTERFACE_HID =
@@ -724,4 +726,6 @@ void _glfwTerminateWin32(void)
 
     freeLibraries();
 }
+
+#endif // _GLFW_WIN32
 

@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_WIN32)
+
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
@@ -2509,4 +2511,6 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
 
     return window->win32.handle;
 }
+
+#endif // _GLFW_WIN32
 

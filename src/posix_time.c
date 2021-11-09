@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(GLFW_BUILD_POSIX_TIMER)
+
 #include <unistd.h>
 #include <sys/time.h>
 
@@ -60,4 +62,6 @@ uint64_t _glfwPlatformGetTimerFrequency(void)
 {
     return _glfw.timer.posix.frequency;
 }
+
+#endif // GLFW_BUILD_POSIX_TIMER
 

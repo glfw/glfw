@@ -243,6 +243,7 @@ video tutorials.
  - Torsten Walluhn
  - Patrick Walton
  - Xo Wang
+ - Andre Weissflog
  - Jay Weisskopf
  - Frank Wille
  - Andy Williams

@@ -36,16 +36,15 @@
 #include <assert.h>
 
 
-// The global variables below comprise all mutable global data in GLFW
-//
-// Any other global variable is a bug
+// NOTE: The global variables below comprise all mutable global data in GLFW
+//       Any other mutable global variable is a bug
 
-// Global state shared between compilation units of GLFW
+// This contains all mutable state shared between compilation units of GLFW
 //
 _GLFWlibrary _glfw = { GLFW_FALSE };
 
 // These are outside of _glfw so they can be used before initialization and
-// after termination
+// after termination without special handling when _glfw is cleared to zero
 //
 static _GLFWerror _glfwMainThreadError;
 static GLFWerrorfun _glfwErrorCallback;

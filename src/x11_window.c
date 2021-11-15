@@ -2100,13 +2100,13 @@ void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* imag
 {
     if (count)
     {
-        int elements = 0;
+        int longCount = 0;
 
         for (int i = 0;  i < count;  i++)
-            elements += 2 + images[i].width * images[i].height;
+            longCount += 2 + images[i].width * images[i].height;
 
-        uint32_t* icon = _glfw_calloc(elements, sizeof(uint32_t));
-        uint32_t* target = icon;
+        unsigned long* icon = _glfw_calloc(longCount, sizeof(unsigned long));
+        unsigned long* target = icon;
 
         for (int i = 0;  i < count;  i++)
         {
@@ -2115,19 +2115,26 @@ void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* imag
 
             for (int j = 0;  j < images[i].width * images[i].height;  j++)
             {
-                *target++ = (((uint32_t)images[i].pixels[j * 4 + 0]) << 16) |
-                            (((uint32_t)images[i].pixels[j * 4 + 1]) <<  8) |
-                            (((uint32_t)images[i].pixels[j * 4 + 2]) <<  0) |
-                            (((uint32_t)images[i].pixels[j * 4 + 3]) << 24);
+                *target++ = (((unsigned long)images[i].pixels[j * 4 + 0]) << 16) |
+                            (((unsigned long)images[i].pixels[j * 4 + 1]) <<  8) |
+                            (((unsigned long)images[i].pixels[j * 4 + 2]) <<  0) |
+                            (((unsigned long)images[i].pixels[j * 4 + 3]) << 24);
             }
         }
 
+        // Important: Despite XChangeProperty docs indicating that `icon` (unsigned char*) would be
+        // in the format of the icon image, e.g. 32-bit below, the function actually casts the ptr
+        // (unsigned char*) internally to (long*) and then if long is defined as 64-bits, as on IL64
+        // platforms, extracts only 32 bits from the long leaving the other 32 unused. That is, on a
+        // 64-bit platform XChangeProperty expects 64-bit integers representing 32-bit pixels.
+        //
+        // See https://github.com/glfw/glfw/pull/1986#issuecomment-962445299
         XChangeProperty(_glfw.x11.display, window->x11.handle,
                         _glfw.x11.NET_WM_ICON,
                         XA_CARDINAL, 32,
                         PropModeReplace,
                         (unsigned char*) icon,
-                        elements);
+                        longCount);
 
         _glfw_free(icon);
     }

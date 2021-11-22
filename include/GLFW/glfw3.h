@@ -5764,7 +5764,7 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state);
  *  @param[in] window Deprecated.  Any valid window or `NULL`.
  *  @param[in] string A UTF-8 encoded string.
  *
- *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, GLFW_FORMAT_UNAVAILABLE and @ref
  *  GLFW_PLATFORM_ERROR.
  *
  *  @pointer_lifetime The specified string is copied before this function

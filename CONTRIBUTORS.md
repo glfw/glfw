@@ -53,6 +53,7 @@ video tutorials.
  - Ralph Eastwood
  - Fredrik Ehnbom
  - Robin Eklind
+ - Jan Ekström
  - Siavash Eliasi
  - Ahmad Fatoum
  - Felipe Ferreira

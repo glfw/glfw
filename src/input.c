@@ -401,6 +401,7 @@ void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value)
 //
 void _glfwInitGamepadMappings(void)
 {
+    int jid;
     size_t i;
     const size_t count = sizeof(_glfwDefaultMappings) / sizeof(char*);
     _glfw.mappings = calloc(count, sizeof(_GLFWmapping));
@@ -409,6 +410,13 @@ void _glfwInitGamepadMappings(void)
     {
         if (parseMapping(&_glfw.mappings[_glfw.mappingCount], _glfwDefaultMappings[i]))
             _glfw.mappingCount++;
+    }
+
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    {
+        _GLFWjoystick* js = _glfw.joysticks + jid;
+        if (js->present)
+            js->mapping = findValidMapping(js);
     }
 }
 

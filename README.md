@@ -123,6 +123,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - Bugfix: Joysticks connected before init did not get gamepad mappings (#1996)
  - [Cocoa] Bugfix: A dependency on an external constant caused crashes on macOS
    11 and earlier (#1985,#1994)
 

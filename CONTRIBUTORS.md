@@ -209,6 +209,7 @@ video tutorials.
  - Richard A. Wilkes
  - Tatsuya Yatagawa
  - Ryogo Yoshimura
+ - Rácz Zalán
  - Lukas Zanner
  - Andrey Zholos
  - Aihui Zhu

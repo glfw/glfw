@@ -123,7 +123,8 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
-There is nothing here yet.
+ - [Cocoa] Bugfix: A dependency on an external constant caused crashes on macOS
+   11 and earlier (#1985,#1994)
 
 
 ## Contact

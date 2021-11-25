@@ -39,6 +39,11 @@ you have used GLFW 2 in the past, there is a [transition
 guide](https://www.glfw.org/docs/latest/moving.html) for moving to the GLFW
 3 API.
 
+GLFW exists because of the contributions of [many people](CONTRIBUTORS.md)
+around the world, whether by reporting bugs, providing community support, adding
+features, reviewing or testing code, debugging, proofreading docs, suggesting
+features or fixing bugs.
+
 
 ## Compiling GLFW
 
@@ -116,6 +121,17 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - Added `GLFW_PLATFORM` init hint for runtime platform selection (#1958)
+ - Added `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`,
+   `GLFW_PLATFORM_WAYLAND`, `GLFW_PLATFORM_X11` and `GLFW_PLATFORM_NULL` symbols to
+   specify the desired platform (#1958)
+ - Added `glfwGetPlatform` function to query what platform was selected (#1655,#1958)
+ - Added `glfwPlatformSupported` function to query if a platform is supported
+   (#1655,#1958)
+ - Added `glfwInitAllocator` for setting a custom memory allocator (#544,#1628,#1947)
+ - Added `GLFWallocator` struct and `GLFWallocatefun`, `GLFWreallocatefun` and
+   `GLFWdeallocatefun` types (#544,#1628,#1947)
+ - Added `glfwInitVulkanLoader` for using a non-default Vulkan loader (#1374,#1890)
  - Added `GLFW_RESIZE_NWSE_CURSOR`, `GLFW_RESIZE_NESW_CURSOR`,
    `GLFW_RESIZE_ALL_CURSOR` and `GLFW_NOT_ALLOWED_CURSOR` cursor shapes (#427)
  - Added `GLFW_RESIZE_EW_CURSOR` alias for `GLFW_HRESIZE_CURSOR` (#427)
@@ -123,16 +139,28 @@ information on what to include when reporting a bug.
  - Added `GLFW_POINTING_HAND_CURSOR` alias for `GLFW_HAND_CURSOR` (#427)
  - Added `GLFW_MOUSE_PASSTHROUGH` window hint for letting mouse input pass
    through the window (#1236,#1568)
+ - Added `GLFW_PLATFORM_UNAVAILABLE` error for platform detection failures (#1958)
  - Added `GLFW_FEATURE_UNAVAILABLE` error for platform limitations (#1692)
  - Added `GLFW_FEATURE_UNIMPLEMENTED` error for incomplete backends (#1692)
  - Added `GLFW_ANGLE_PLATFORM_TYPE` init hint and `GLFW_ANGLE_PLATFORM_TYPE_*`
    values to select ANGLE backend (#1380)
  - Added `GLFW_X11_XCB_VULKAN_SURFACE` init hint for selecting X11 Vulkan
    surface extension (#1793)
+ - Added `GLFW_BUILD_WIN32` CMake option for enabling Win32 support (#1958)
+ - Added `GLFW_BUILD_COCOA` CMake option for enabling Cocoa support (#1958)
+ - Added `GLFW_BUILD_X11` CMake option for enabling X11 support (#1958)
+ - Added `GLFW_LIBRARY_TYPE` CMake variable for overriding the library type
+   (#279,#1307,#1497,#1574,#1928)
+ - Added `GLFW_PKG_CONFIG_REQUIRES_PRIVATE` and `GLFW_PKG_CONFIG_LIBS_PRIVATE` CMake
+   variables exposing pkg-config dependencies (#1307)
  - Made joystick subsystem initialize at first use (#1284,#1646)
  - Made `GLFW_DOUBLEBUFFER` a read-only window attribute
  - Updated the minimum required CMake version to 3.1
+ - Updated gamepad mappings from upstream
  - Disabled tests and examples by default when built as a CMake subdirectory
+ - Renamed `GLFW_USE_WAYLAND` CMake option to `GLFW_BUILD_WAYLAND` (#1958)
+ - Removed `GLFW_USE_OSMESA` CMake option enabling the Null platform (#1958)
+ - Removed CMake generated configuration header
  - Bugfix: The CMake config-file package used an absolute path and was not
    relocatable (#1470)
  - Bugfix: Video modes with a duplicate screen area were discarded (#1555,#1556)
@@ -143,6 +171,7 @@ information on what to include when reporting a bug.
  - Bugfix: Buffers were swapped at creation on single-buffered windows (#1873)
  - Bugfix: Gamepad mapping updates could spam `GLFW_INVALID_VALUE` due to
    incompatible controllers sharing hardware ID (#1763)
+ - Bugfix: Native access functions for context handles did not check that the API matched
  - [Win32] Added the `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access
            to the window menu
  - [Win32] Added a version info resource to the GLFW DLL
@@ -172,6 +201,7 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: `USE_MSVC_RUNTIME_LIBRARY_DLL` had no effect on CMake 3.15 or
    later (#1783,#1796)
  - [Win32] Bugfix: Compilation with LLVM for Windows failed (#1807,#1824,#1874)
+ - [Win32] Bugfix: The foreground lock timeout was overridden, ignoring the user
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)
@@ -192,12 +222,15 @@ information on what to include when reporting a bug.
    could leak memory
  - [Cocoa] Bugfix: Objective-C files were compiled as C with CMake 3.19 (#1787)
  - [Cocoa] Bugfix: Duplicate video modes were not filtered out (#1830)
- - [Cocoa] Bugfix: Menubar was not clickable on macOS 10.15+ until it lost and
+ - [Cocoa] Bugfix: Menu bar was not clickable on macOS 10.15+ until it lost and
    regained focus (#1648,#1802)
  - [Cocoa] Bugfix: Monitor name query could segfault on macOS 11 (#1809,#1833)
  - [Cocoa] Bugfix: The install name of the installed dylib was relative (#1504)
  - [Cocoa] Bugfix: The MoltenVK layer contents scale was updated only after
    related events were emitted
+ - [Cocoa] Bugfix: Moving the cursor programmatically would freeze it for
+   a fraction of a second (#1962)
+ - [Cocoa] Bugfix: `kIOMasterPortDefault` was deprecated in macOS 12.0 (#1980)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -220,11 +253,13 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: XKB path used keysyms instead of physical locations for
    non-printable keys (#1598)
  - [X11] Bugfix: Function keys were mapped to `GLFW_KEY_UNKNOWN` for some layout
-   combinaitons (#1598)
+   combinations (#1598)
  - [X11] Bugfix: Keys pressed simultaneously with others were not always
    reported (#1112,#1415,#1472,#1616)
  - [X11] Bugfix: Some window attributes were not applied on leaving fullscreen
    (#1863)
+ - [X11] Bugfix: Changing `GLFW_FLOATING` could leak memory
+ - [Wayland] Added dynamic loading of all Wayland libraries
  - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
@@ -232,14 +267,21 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Retrieving partial framebuffer size would segfault
  - [Wayland] Bugfix: Scrolling offsets were inverted compared to other platforms
    (#1463)
- - [Wayland] Bugfix: Client-Side Decorations were destroyed in the wrong worder
+ - [Wayland] Bugfix: Client-Side Decorations were destroyed in the wrong order
    (#1798)
  - [Wayland] Bugfix: Monitors physical size could report zero (#1784,#1792)
+ - [Wayland] Bugfix: Some keys were not repeating in Wayland (#1908)
+ - [Wayland] Bugfix: Non-arrow cursors are offset from the hotspot (#1706,#1899)
+ - [Wayland] Bugfix: The `O_CLOEXEC` flag was not defined on FreeBSD
+ - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
+ - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
  - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
    macOS versions (#1442)
  - [NSGL] Bugfix: Workaround for swap interval on 10.14 broke on 10.12 (#1483)
+ - [NSGL] Bugfix: Defining `GL_SILENCE_DEPRECATION` externally caused
+   a duplicate definition warning (#1840)
  - [EGL] Added platform selection via the `EGL_EXT_platform_base` extension
    (#442)
  - [EGL] Added ANGLE backend selection via `EGL_ANGLE_platform_angle` extension
@@ -262,222 +304,4 @@ request, please file it in the
 
 Finally, if you're interested in helping out with the development of GLFW or
 porting it to your favorite platform, join us on the forum, GitHub or IRC.
-
-
-## Acknowledgements
-
-GLFW exists because people around the world donated their time and lent their
-skills.
-
- - Bobyshev Alexander
- - Laurent Aphecetche
- - Matt Arsenault
- - ashishgamedev
- - David Avedissian
- - Keith Bauer
- - John Bartholomew
- - Coşku Baş
- - Niklas Behrens
- - Andrew Belt
- - Nevyn Bengtsson
- - Niklas Bergström
- - Denis Bernard
- - Doug Binks
- - blanco
- - Kyle Brenneman
- - Rok Breulj
- - Kai Burjack
- - Martin Capitanio
- - Nicolas Caramelli
- - David Carlier
- - Arturo Castro
- - Chi-kwan Chan
- - Ian Clarkson
- - Michał Cichoń
- - Lambert Clara
- - Anna Clarke
- - Yaron Cohen-Tal
- - Omar Cornut
- - Andrew Corrigan
- - Bailey Cosier
- - Noel Cower
- - CuriouserThing
- - Jason Daly
- - Jarrod Davis
- - Olivier Delannoy
- - Paul R. Deppe
- - Michael Dickens
- - Роман Донченко
- - Mario Dorn
- - Wolfgang Draxinger
- - Jonathan Dummer
- - Ralph Eastwood
- - Fredrik Ehnbom
- - Robin Eklind
- - Siavash Eliasi
- - Felipe Ferreira
- - Michael Fogleman
- - Gerald Franz
- - Mário Freitas
- - GeO4d
- - Marcus Geelnard
- - Charles Giessen
- - Ryan C. Gordon
- - Stephen Gowen
- - Kovid Goyal
- - Eloi Marín Gratacós
- - Stefan Gustavson
- - Jonathan Hale
- - hdf89shfdfs
- - Sylvain Hellegouarch
- - Matthew Henry
- - heromyth
- - Lucas Hinderberger
- - Paul Holden
- - Warren Hu
- - Charles Huber
- - IntellectualKitty
- - Aaron Jacobs
- - Erik S. V. Jansson
- - Toni Jovanoski
- - Arseny Kapoulkine
- - Cem Karan
- - Osman Keskin
- - Josh Kilmer
- - Byunghoon Kim
- - Cameron King
- - Peter Knut
- - Christoph Kubisch
- - Yuri Kunde Schlesner
- - Rokas Kupstys
- - Konstantin Käfer
- - Eric Larson
- - Francis Lecavalier
- - Jong Won Lee
- - Robin Leffmann
- - Glenn Lewis
- - Shane Liesegang
- - Anders Lindqvist
- - Leon Linhart
- - Marco Lizza
- - Eyal Lotem
- - Aaron Loucks
- - Luflosi
- - lukect
- - Tristam MacDonald
- - Hans Mackowiak
- - Дмитри Малышев
- - Zbigniew Mandziejewicz
- - Adam Marcus
- - Célestin Marot
- - Kyle McDonald
- - David V. McKay
- - David Medlock
- - Bryce Mehring
- - Jonathan Mercier
- - Marcel Metz
- - Liam Middlebrook
- - Ave Milia
- - Jonathan Miller
- - Kenneth Miller
- - Bruce Mitchener
- - Jack Moffitt
- - Jeff Molofee
- - Alexander Monakov
- - Pierre Morel
- - Jon Morton
- - Pierre Moulon
- - Martins Mozeiko
- - Julian Møller
- - ndogxj
- - Kristian Nielsen
- - Kamil Nowakowski
- - onox
- - Denis Ovod
- - Ozzy
- - Andri Pálsson
- - Peoro
- - Braden Pellett
- - Christopher Pelloux
- - Arturo J. Pérez
- - Vladimir Perminov
- - Anthony Pesch
- - Orson Peters
- - Emmanuel Gil Peyrot
- - Cyril Pichard
- - Keith Pitt
- - Stanislav Podgorskiy
- - Konstantin Podsvirov
- - Nathan Poirier
- - Alexandre Pretyman
- - Pablo Prietz
- - przemekmirek
- - pthom
- - Guillaume Racicot
- - Philip Rideout
- - Eddie Ringle
- - Max Risuhin
- - Jorge Rodriguez
- - Luca Rood
- - Ed Ropple
- - Aleksey Rybalkin
- - Mikko Rytkönen
- - Riku Salminen
- - Brandon Schaefer
- - Sebastian Schuberth
- - Christian Sdunek
- - Matt Sealey
- - Steve Sexton
- - Arkady Shapkin
- - Ali Sherief
- - Yoshiki Shibukawa
- - Dmitri Shuralyov
- - Daniel Skorupski
- - Bradley Smith
- - Cliff Smolinsky
- - Patrick Snape
- - Erlend Sogge Heggen
- - Julian Squires
- - Johannes Stein
- - Pontus Stenetorp
- - Michael Stocker
- - Justin Stoecker
- - Elviss Strazdins
- - Paul Sultana
- - Nathan Sweet
- - TTK-Bandit
- - Jared Tiala
- - Sergey Tikhomirov
- - Arthur Tombs
- - Ioannis Tsakpinis
- - Samuli Tuomola
- - Matthew Turner
- - urraka
- - Elias Vanderstuyft
- - Stef Velzel
- - Jari Vetoniemi
- - Ricardo Vieira
- - Nicholas Vitovitch
- - Simon Voordouw
- - Corentin Wallez
- - Torsten Walluhn
- - Patrick Walton
- - Xo Wang
- - Waris
- - Jay Weisskopf
- - Frank Wille
- - Andy Williams
- - Joel Winarske
- - Richard A. Wilkes
- - Tatsuya Yatagawa
- - Ryogo Yoshimura
- - Lukas Zanner
- - Andrey Zholos
- - Aihui Zhu
- - Santi Zupancic
- - Jonas Ådahl
- - Lasse Öörni
- - Leonard König
- - All the unmentioned and anonymous contributors in the GLFW community, for bug
-   reports, patches, feedback, testing and encouragement
 

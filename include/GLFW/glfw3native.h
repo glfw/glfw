@@ -132,6 +132,8 @@ extern "C" {
  *  of the specified monitor, or `NULL` if an [error](@ref error_handling)
  *  occurred.
  *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
@@ -147,6 +149,8 @@ GLFWAPI const char* glfwGetWin32Adapter(GLFWmonitor* monitor);
  *  `\\.\DISPLAY1\Monitor0`) of the specified monitor, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
@@ -160,6 +164,8 @@ GLFWAPI const char* glfwGetWin32Monitor(GLFWmonitor* monitor);
  *
  *  @return The `HWND` of the specified window, or `NULL` if an
  *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
  *  @remark The `HDC` associated with the window can be queried with the
  *  [GetDC](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdc)
@@ -185,6 +191,9 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* window);
  *  @return The `HGLRC` of the specified window, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
+ *  @errors Possible errors include @ref GLFW_NO_WINDOW_CONTEXT and @ref
+ *  GLFW_NOT_INITIALIZED.
+ *
  *  @remark The `HDC` associated with the window can be queried with the
  *  [GetDC](https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getdc)
  *  function.
@@ -209,6 +218,8 @@ GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* window);
  *  @return The `CGDirectDisplayID` of the specified monitor, or
  *  `kCGNullDirectDisplay` if an [error](@ref error_handling) occurred.
  *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
@@ -222,6 +233,8 @@ GLFWAPI CGDirectDisplayID glfwGetCocoaMonitor(GLFWmonitor* monitor);
  *
  *  @return The `NSWindow` of the specified window, or `nil` if an
  *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
@@ -253,6 +266,9 @@ GLFWAPI id glfwGetMetalLayer(GLFWwindow* window);
  *  @return The `NSOpenGLContext` of the specified window, or `nil` if an
  *  [error](@ref error_handling) occurred.
  *
+ *  @errors Possible errors include @ref GLFW_NO_WINDOW_CONTEXT and @ref
+ *  GLFW_NOT_INITIALIZED.
+ *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
@@ -269,6 +285,8 @@ GLFWAPI id glfwGetNSGLContext(GLFWwindow* window);
  *  @return The `Display` used by GLFW, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
@@ -282,6 +300,8 @@ GLFWAPI Display* glfwGetX11Display(void);
  *
  *  @return The `RRCrtc` of the specified monitor, or `None` if an
  *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
@@ -297,6 +317,8 @@ GLFWAPI RRCrtc glfwGetX11Adapter(GLFWmonitor* monitor);
  *  @return The `RROutput` of the specified monitor, or `None` if an
  *  [error](@ref error_handling) occurred.
  *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
@@ -310,6 +332,8 @@ GLFWAPI RROutput glfwGetX11Monitor(GLFWmonitor* monitor);
  *
  *  @return The `Window` of the specified window, or `None` if an
  *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
@@ -377,6 +401,9 @@ GLFWAPI const char* glfwGetX11SelectionString(void);
  *  @return The `GLXContext` of the specified window, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
+ *  @errors Possible errors include @ref GLFW_NO_WINDOW_CONTEXT and @ref
+ *  GLFW_NOT_INITIALIZED.
+ *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
@@ -390,6 +417,9 @@ GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* window);
  *
  *  @return The `GLXWindow` of the specified window, or `None` if an
  *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NO_WINDOW_CONTEXT and @ref
+ *  GLFW_NOT_INITIALIZED.
  *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
@@ -407,6 +437,8 @@ GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* window);
  *  @return The `struct wl_display*` used by GLFW, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
@@ -421,6 +453,8 @@ GLFWAPI struct wl_display* glfwGetWaylandDisplay(void);
  *  @return The `struct wl_output*` of the specified monitor, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
@@ -434,6 +468,8 @@ GLFWAPI struct wl_output* glfwGetWaylandMonitor(GLFWmonitor* monitor);
  *
  *  @return The main `struct wl_surface*` of the specified window, or `NULL` if
  *  an [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
@@ -451,6 +487,8 @@ GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* window);
  *  @return The `EGLDisplay` used by GLFW, or `EGL_NO_DISPLAY` if an
  *  [error](@ref error_handling) occurred.
  *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
@@ -465,6 +503,9 @@ GLFWAPI EGLDisplay glfwGetEGLDisplay(void);
  *  @return The `EGLContext` of the specified window, or `EGL_NO_CONTEXT` if an
  *  [error](@ref error_handling) occurred.
  *
+ *  @errors Possible errors include @ref GLFW_NO_WINDOW_CONTEXT and @ref
+ *  GLFW_NOT_INITIALIZED.
+ *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
@@ -478,6 +519,9 @@ GLFWAPI EGLContext glfwGetEGLContext(GLFWwindow* window);
  *
  *  @return The `EGLSurface` of the specified window, or `EGL_NO_SURFACE` if an
  *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NO_WINDOW_CONTEXT and @ref
+ *  GLFW_NOT_INITIALIZED.
  *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
@@ -502,6 +546,9 @@ GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* window);
  *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if an
  *  [error](@ref error_handling) occurred.
  *
+ *  @errors Possible errors include @ref GLFW_NO_WINDOW_CONTEXT and @ref
+ *  GLFW_NOT_INITIALIZED.
+ *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
@@ -523,6 +570,9 @@ GLFWAPI int glfwGetOSMesaColorBuffer(GLFWwindow* window, int* width, int* height
  *  @return `GLFW_TRUE` if successful, or `GLFW_FALSE` if an
  *  [error](@ref error_handling) occurred.
  *
+ *  @errors Possible errors include @ref GLFW_NO_WINDOW_CONTEXT and @ref
+ *  GLFW_NOT_INITIALIZED.
+ *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *
@@ -536,6 +586,9 @@ GLFWAPI int glfwGetOSMesaDepthBuffer(GLFWwindow* window, int* width, int* height
  *
  *  @return The `OSMesaContext` of the specified window, or `NULL` if an
  *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NO_WINDOW_CONTEXT and @ref
+ *  GLFW_NOT_INITIALIZED.
  *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.

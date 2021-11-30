@@ -2115,20 +2115,19 @@ void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* imag
 
             for (int j = 0;  j < images[i].width * images[i].height;  j++)
             {
-                *target++ = (((unsigned long)images[i].pixels[j * 4 + 0]) << 16) |
-                            (((unsigned long)images[i].pixels[j * 4 + 1]) <<  8) |
-                            (((unsigned long)images[i].pixels[j * 4 + 2]) <<  0) |
-                            (((unsigned long)images[i].pixels[j * 4 + 3]) << 24);
+                *target++ = (((unsigned long) images[i].pixels[j * 4 + 0]) << 16) |
+                            (((unsigned long) images[i].pixels[j * 4 + 1]) <<  8) |
+                            (((unsigned long) images[i].pixels[j * 4 + 2]) <<  0) |
+                            (((unsigned long) images[i].pixels[j * 4 + 3]) << 24);
             }
         }
 
-        // Important: Despite XChangeProperty docs indicating that `icon` (unsigned char*) would be
-        // in the format of the icon image, e.g. 32-bit below, the function actually casts the ptr
-        // (unsigned char*) internally to (long*) and then if long is defined as 64-bits, as on IL64
-        // platforms, extracts only 32 bits from the long leaving the other 32 unused. That is, on a
-        // 64-bit platform XChangeProperty expects 64-bit integers representing 32-bit pixels.
-        //
-        // See https://github.com/glfw/glfw/pull/1986#issuecomment-962445299
+        // NOTE: XChangeProperty expects 32-bit values like the image data above to be
+        //       placed in the 32 least significant bits of individual longs.  This is
+        //       true even if long is 64-bit and a WM protocol calls for "packed" data.
+        //       This is because of a historical mistake that then became part of the Xlib
+        //       ABI.  Xlib will pack these values into a regular array of 32-bit values
+        //       before sending it over the wire.
         XChangeProperty(_glfw.x11.display, window->x11.handle,
                         _glfw.x11.NET_WM_ICON,
                         XA_CARDINAL, 32,

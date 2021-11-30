@@ -1645,8 +1645,7 @@ void _glfwGetWindowFrameSizeWin32(_GLFWwindow* window,
         *bottom = rect.bottom - height;
 }
 
-void _glfwGetWindowContentScaleWin32(_GLFWwindow* window,
-                                             float* xscale, float* yscale)
+void _glfwGetWindowContentScaleWin32(_GLFWwindow* window, float* xscale, float* yscale)
 {
     const HANDLE handle = MonitorFromWindow(window->win32.handle,
                                             MONITOR_DEFAULTTONEAREST);

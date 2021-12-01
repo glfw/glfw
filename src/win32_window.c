@@ -1304,8 +1304,12 @@ static int createNativeWindow(_GLFWwindow* window,
         {
             float xscale, yscale;
             _glfwGetWindowContentScaleWin32(window, &xscale, &yscale);
-            rect.right = (int) (rect.right * xscale);
-            rect.bottom = (int) (rect.bottom * yscale);
+
+            if (xscale > 0.f && yscale > 0.f)
+            {
+                rect.right = (int) (rect.right * xscale);
+                rect.bottom = (int) (rect.bottom * yscale);
+            }
         }
 
         ClientToScreen(window->win32.handle, (POINT*) &rect.left);

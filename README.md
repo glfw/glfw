@@ -123,14 +123,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
- - Bugfix: Joysticks connected before init did not get gamepad mappings (#1996)
- - [Win32] Bugfix: Content scale queries could fail silently (#1615)
- - [Win32] Bugfix: Content scales could have garbage values if monitor was recently
-   disconnected (#1615)
- - [Cocoa] Bugfix: A dependency on an external constant caused crashes on macOS
-   11 and earlier (#1985,#1994)
- - [X11] Bugfix: Icon pixel format conversion worked only by accident, relying on
-   undefined behavior (#1986)
+There is nothing here yet.
 
 
 ## Contact

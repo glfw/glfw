@@ -177,6 +177,7 @@ typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGIPROC)(GLenum,GLuint);
 #define EGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR 0x2098
 #define EGL_PLATFORM_X11_EXT 0x31d5
 #define EGL_PLATFORM_WAYLAND_EXT 0x31d8
+#define EGL_PRESENT_OPAQUE_EXT 0x31df
 #define EGL_PLATFORM_ANGLE_ANGLE 0x3202
 #define EGL_PLATFORM_ANGLE_TYPE_ANGLE 0x3203
 #define EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE 0x320d
@@ -803,6 +804,7 @@ struct _GLFWlibrary
         GLFWbool        EXT_platform_base;
         GLFWbool        EXT_platform_x11;
         GLFWbool        EXT_platform_wayland;
+        GLFWbool        EXT_present_opaque;
         GLFWbool        ANGLE_platform_angle;
         GLFWbool        ANGLE_platform_angle_opengl;
         GLFWbool        ANGLE_platform_angle_d3d;

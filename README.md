@@ -123,7 +123,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
-There is nothing here yet.
+ - [Wayland] Bugfix: Key repeat could lead to a race condition (#1710)
 
 
 ## Contact

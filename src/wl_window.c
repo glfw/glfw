@@ -751,10 +751,7 @@ static void handleEvents(int timeout)
         if (fds[1].revents & POLLIN)
         {
             read_ret = read(_glfw.wl.timerfd, &repeats, sizeof(repeats));
-            if (read_ret != 8)
-                return;
-
-            if (_glfw.wl.keyboardFocus)
+            if (read_ret == 8 && _glfw.wl.keyboardFocus)
             {
                 for (uint64_t i = 0; i < repeats; ++i)
                 {
@@ -770,10 +767,8 @@ static void handleEvents(int timeout)
         if (fds[2].revents & POLLIN)
         {
             read_ret = read(_glfw.wl.cursorTimerfd, &repeats, sizeof(repeats));
-            if (read_ret != 8)
-                return;
-
-            incrementCursorImage(_glfw.wl.pointerFocus);
+            if (read_ret == 8)
+                incrementCursorImage(_glfw.wl.pointerFocus);
         }
     }
     else

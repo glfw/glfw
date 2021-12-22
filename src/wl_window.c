@@ -537,7 +537,6 @@ static void xdgToplevelHandleConfigure(void* data,
     }
     if (fullscreen && activated)
         window->wl.wasFullscreen = GLFW_TRUE;
-    _glfwInputWindowFocus(window, activated);
 }
 
 static void xdgToplevelHandleClose(void* data,

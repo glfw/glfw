@@ -279,6 +279,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Non-arrow cursors are offset from the hotspot (#1706,#1899)
  - [Wayland] Bugfix: The `O_CLOEXEC` flag was not defined on FreeBSD
  - [Wayland] Bugfix: Key repeat could lead to a race condition (#1710)
+ - [Wayland] Bugfix: Activating a window would emit two input focus events
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)

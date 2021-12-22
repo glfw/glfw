@@ -259,6 +259,8 @@ GLFWbool _glfwInitGLX(void)
         _GLFW_GLX_LIBRARY,
 #elif defined(__CYGWIN__)
         "libGL-1.so",
+#elif defined(__OpenBSD__)
+        "libGL.so",
 #else
         "libGL.so.1",
         "libGL.so",

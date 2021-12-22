@@ -124,6 +124,7 @@ information on what to include when reporting a bug.
 ## Changelog
 
  - [Wayland] Bugfix: Key repeat could lead to a race condition (#1710)
+ - [Wayland] Bugfix: Activating a window would emit two input focus events
 
 
 ## Contact

@@ -503,6 +503,9 @@ static void keyboardHandleLeave(void* data,
     _glfw.wl.serial = serial;
     _glfw.wl.keyboardFocus = NULL;
     _glfwInputWindowFocus(window, GLFW_FALSE);
+
+    struct itimerspec timer = {};
+    timerfd_settime(_glfw.wl.timerfd, 0, &timer, NULL);
 }
 
 static int toGLFWKeyCode(uint32_t key)

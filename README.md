@@ -125,6 +125,7 @@ information on what to include when reporting a bug.
 
  - [Wayland] Bugfix: Key repeat could lead to a race condition (#1710)
  - [Wayland] Bugfix: Activating a window would emit two input focus events
+ - [Wayland] Bugfix: Disable key repeat mechanism when window loses input focus
 
 
 ## Contact

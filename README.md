@@ -123,6 +123,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - [X11] Bugfix: Dynamic loading on OpenBSD failed due to soname differences
  - [Wayland] Bugfix: Key repeat could lead to a race condition (#1710)
  - [Wayland] Bugfix: Activating a window would emit two input focus events
  - [Wayland] Bugfix: Disable key repeat mechanism when window loses input focus

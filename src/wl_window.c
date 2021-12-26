@@ -865,16 +865,13 @@ static void handleEvents(int timeout)
 
             if (read(_glfw.wl.timerfd, &repeats, sizeof(repeats)) == 8)
             {
-                if (_glfw.wl.keyboardFocus)
+                for (uint64_t i = 0; i < repeats; i++)
                 {
-                    for (uint64_t i = 0; i < repeats; i++)
-                    {
-                        _glfwInputKey(_glfw.wl.keyboardFocus,
-                                      _glfw.wl.keyboardLastKey,
-                                      _glfw.wl.keyboardLastScancode,
-                                      GLFW_REPEAT,
-                                      _glfw.wl.xkb.modifiers);
-                    }
+                    _glfwInputKey(_glfw.wl.keyboardFocus,
+                                  _glfw.wl.keyboardLastKey,
+                                  _glfw.wl.keyboardLastScancode,
+                                  GLFW_REPEAT,
+                                  _glfw.wl.xkb.modifiers);
                 }
             }
         }

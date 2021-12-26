@@ -824,22 +824,19 @@ static void incrementCursorImage(_GLFWwindow* window)
 
 static void handleEvents(int timeout)
 {
-    struct wl_display* display = _glfw.wl.display;
-    struct pollfd fds[] = {
-        { wl_display_get_fd(display), POLLIN },
+    struct pollfd fds[] =
+    {
+        { wl_display_get_fd(_glfw.wl.display), POLLIN },
         { _glfw.wl.timerfd, POLLIN },
         { _glfw.wl.cursorTimerfd, POLLIN },
     };
-    ssize_t read_ret;
-    uint64_t repeats, i;
 
-    while (wl_display_prepare_read(display) != 0)
-        wl_display_dispatch_pending(display);
+    while (wl_display_prepare_read(_glfw.wl.display) != 0)
+        wl_display_dispatch_pending(_glfw.wl.display);
 
-    // If an error different from EAGAIN happens, we have likely been
-    // disconnected from the Wayland session, try to handle that the best we
-    // can.
-    if (wl_display_flush(display) < 0 && errno != EAGAIN)
+    // If an error other than EAGAIN happens, we have likely been disconnected
+    // from the Wayland session; try to handle that the best we can.
+    if (wl_display_flush(_glfw.wl.display) < 0 && errno != EAGAIN)
     {
         _GLFWwindow* window = _glfw.windowListHead;
         while (window)
@@ -847,7 +844,8 @@ static void handleEvents(int timeout)
             _glfwInputWindowCloseRequest(window);
             window = window->next;
         }
-        wl_display_cancel_read(display);
+
+        wl_display_cancel_read(_glfw.wl.display);
         return;
     }
 
@@ -855,41 +853,42 @@ static void handleEvents(int timeout)
     {
         if (fds[0].revents & POLLIN)
         {
-            wl_display_read_events(display);
-            wl_display_dispatch_pending(display);
+            wl_display_read_events(_glfw.wl.display);
+            wl_display_dispatch_pending(_glfw.wl.display);
         }
         else
-        {
-            wl_display_cancel_read(display);
-        }
+            wl_display_cancel_read(_glfw.wl.display);
 
         if (fds[1].revents & POLLIN)
         {
-            read_ret = read(_glfw.wl.timerfd, &repeats, sizeof(repeats));
-            if (read_ret == 8 && _glfw.wl.keyboardFocus)
+            uint64_t repeats;
+
+            if (read(_glfw.wl.timerfd, &repeats, sizeof(repeats)) == 8)
             {
-                for (i = 0; i < repeats; ++i)
+                if (_glfw.wl.keyboardFocus)
                 {
-                    _glfwInputKey(_glfw.wl.keyboardFocus,
-                                  _glfw.wl.keyboardLastKey,
-                                  _glfw.wl.keyboardLastScancode,
-                                  GLFW_REPEAT,
-                                  _glfw.wl.xkb.modifiers);
+                    for (uint64_t i = 0; i < repeats; i++)
+                    {
+                        _glfwInputKey(_glfw.wl.keyboardFocus,
+                                      _glfw.wl.keyboardLastKey,
+                                      _glfw.wl.keyboardLastScancode,
+                                      GLFW_REPEAT,
+                                      _glfw.wl.xkb.modifiers);
+                    }
                 }
             }
         }
 
         if (fds[2].revents & POLLIN)
         {
-            read_ret = read(_glfw.wl.cursorTimerfd, &repeats, sizeof(repeats));
-            if (read_ret == 8)
+            uint64_t repeats;
+
+            if (read(_glfw.wl.cursorTimerfd, &repeats, sizeof(repeats)) == 8)
                 incrementCursorImage(_glfw.wl.pointerFocus);
         }
     }
     else
-    {
-        wl_display_cancel_read(display);
-    }
+        wl_display_cancel_read(_glfw.wl.display);
 }
 
 // Translates a GLFW standard cursor to a theme cursor name

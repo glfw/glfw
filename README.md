@@ -128,6 +128,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Activating a window would emit two input focus events
  - [Wayland] Bugfix: Disable key repeat mechanism when window loses input focus
  - [Wayland] Bugfix: Window hiding and showing did not work (#1492,#1731)
+ - [Wayland] Bugfix: A key being repeated was not released when window lost focus
 
 
 ## Contact

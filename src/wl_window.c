@@ -638,6 +638,7 @@ static GLFWbool createSurface(_GLFWwindow* window,
     window->wl.width = wndconfig->width;
     window->wl.height = wndconfig->height;
     window->wl.scale = 1;
+    window->wl.title = _glfw_strdup(wndconfig->title);
 
     window->wl.transparent = fbconfig->transparent;
     if (!window->wl.transparent)
@@ -804,9 +805,6 @@ int _glfwCreateWindowWayland(_GLFWwindow* window,
                 return GLFW_FALSE;
         }
     }
-
-    if (wndconfig->title)
-        window->wl.title = _glfw_strdup(wndconfig->title);
 
     window->wl.currentCursor = NULL;
 

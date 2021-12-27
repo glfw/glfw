@@ -806,8 +806,6 @@ int _glfwCreateWindowWayland(_GLFWwindow* window,
         }
     }
 
-    window->wl.currentCursor = NULL;
-
     window->wl.monitors = _glfw_calloc(1, sizeof(_GLFWmonitor*));
     window->wl.monitorsCount = 0;
     window->wl.monitorsSize = 1;

@@ -432,35 +432,6 @@ static void setIdleInhibitor(_GLFWwindow* window, GLFWbool enable)
     }
 }
 
-static GLFWbool createSurface(_GLFWwindow* window,
-                              const _GLFWwndconfig* wndconfig)
-{
-    window->wl.surface = wl_compositor_create_surface(_glfw.wl.compositor);
-    if (!window->wl.surface)
-        return GLFW_FALSE;
-
-    wl_surface_add_listener(window->wl.surface,
-                            &surfaceListener,
-                            window);
-
-    wl_surface_set_user_data(window->wl.surface, window);
-
-    window->wl.native = wl_egl_window_create(window->wl.surface,
-                                             wndconfig->width,
-                                             wndconfig->height);
-    if (!window->wl.native)
-        return GLFW_FALSE;
-
-    window->wl.width = wndconfig->width;
-    window->wl.height = wndconfig->height;
-    window->wl.scale = 1;
-
-    if (!window->wl.transparent)
-        setOpaqueRegion(window);
-
-    return GLFW_TRUE;
-}
-
 static void setFullscreen(_GLFWwindow* window, _GLFWmonitor* monitor,
                           int refreshRate)
 {
@@ -640,6 +611,35 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
 
     wl_surface_commit(window->wl.surface);
     wl_display_roundtrip(_glfw.wl.display);
+
+    return GLFW_TRUE;
+}
+
+static GLFWbool createSurface(_GLFWwindow* window,
+                              const _GLFWwndconfig* wndconfig)
+{
+    window->wl.surface = wl_compositor_create_surface(_glfw.wl.compositor);
+    if (!window->wl.surface)
+        return GLFW_FALSE;
+
+    wl_surface_add_listener(window->wl.surface,
+                            &surfaceListener,
+                            window);
+
+    wl_surface_set_user_data(window->wl.surface, window);
+
+    window->wl.native = wl_egl_window_create(window->wl.surface,
+                                             wndconfig->width,
+                                             wndconfig->height);
+    if (!window->wl.native)
+        return GLFW_FALSE;
+
+    window->wl.width = wndconfig->width;
+    window->wl.height = wndconfig->height;
+    window->wl.scale = 1;
+
+    if (!window->wl.transparent)
+        setOpaqueRegion(window);
 
     return GLFW_TRUE;
 }

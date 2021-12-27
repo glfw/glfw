@@ -3764,6 +3764,11 @@ GLFWAPI void glfwMaximizeWindow(GLFWwindow* window);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
+ *  @remark @wayland Because Wayland wants every frame of the desktop to be
+ *  complete, this function does not immediately make the window visible.
+ *  Instead it will become visible the next time the window framebuffer is
+ *  updated after this call.
+ *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_hide

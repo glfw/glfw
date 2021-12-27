@@ -616,7 +616,8 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
 }
 
 static GLFWbool createSurface(_GLFWwindow* window,
-                              const _GLFWwndconfig* wndconfig)
+                              const _GLFWwndconfig* wndconfig,
+                              const _GLFWfbconfig* fbconfig)
 {
     window->wl.surface = wl_compositor_create_surface(_glfw.wl.compositor);
     if (!window->wl.surface)
@@ -638,6 +639,7 @@ static GLFWbool createSurface(_GLFWwindow* window,
     window->wl.height = wndconfig->height;
     window->wl.scale = 1;
 
+    window->wl.transparent = fbconfig->transparent;
     if (!window->wl.transparent)
         setOpaqueRegion(window);
 
@@ -781,9 +783,7 @@ int _glfwCreateWindowWayland(_GLFWwindow* window,
                              const _GLFWctxconfig* ctxconfig,
                              const _GLFWfbconfig* fbconfig)
 {
-    window->wl.transparent = fbconfig->transparent;
-
-    if (!createSurface(window, wndconfig))
+    if (!createSurface(window, wndconfig, fbconfig))
         return GLFW_FALSE;
 
     if (ctxconfig->client != GLFW_NO_API)

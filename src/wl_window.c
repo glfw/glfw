@@ -944,10 +944,6 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         }
     }
 
-    window->wl.monitors = calloc(1, sizeof(_GLFWmonitor*));
-    window->wl.monitorsCount = 0;
-    window->wl.monitorsSize = 1;
-
     return GLFW_TRUE;
 }
 

@@ -1006,6 +1006,7 @@ void _glfwShowWindowWayland(_GLFWwindow* window)
             createXdgSurface(window);
 
         window->wl.visible = GLFW_TRUE;
+        _glfwInputWindowDamage(window);
     }
 }
 

@@ -1180,6 +1180,7 @@ void _glfwPlatformShowWindow(_GLFWwindow* window)
             createShellSurface(window);
 
         window->wl.visible = GLFW_TRUE;
+        _glfwInputWindowDamage(window);
     }
 }
 

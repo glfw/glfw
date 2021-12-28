@@ -644,7 +644,7 @@ static GLFWbool createSurface(_GLFWwindow* window,
     if (!window->wl.transparent)
         setOpaqueRegion(window);
 
-    if (wndconfig->visible)
+    if (window->monitor || wndconfig->visible)
     {
         if (!createXdgSurface(window))
             return GLFW_FALSE;

@@ -130,6 +130,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Window hiding and showing did not work (#1492,#1731)
  - [Wayland] Bugfix: A key being repeated was not released when window lost focus
  - [Wayland] Bugfix: Showing a hidden window did not emit a window refresh event
+ - [Wayland] Bugfix: Full screen window creation did not ignore `GLFW_VISIBLE`
 
 
 ## Contact

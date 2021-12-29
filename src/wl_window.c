@@ -1354,8 +1354,57 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 
 const char* _glfwPlatformGetScancodeName(int scancode)
 {
-    // TODO
-    return NULL;
+    if (scancode < 0 || scancode > 255 ||
+        _glfw.wl.keycodes[scancode] == GLFW_KEY_UNKNOWN)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE,
+                        "Wayland: Invalid scancode %i",
+                        scancode);
+        return NULL;
+    }
+
+    const int key = _glfw.wl.keycodes[scancode];
+    const xkb_keycode_t keycode = scancode + 8;
+    const xkb_layout_index_t layout =
+        xkb_state_key_get_layout(_glfw.wl.xkb.state, keycode);
+    if (layout == XKB_LAYOUT_INVALID)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to retrieve layout for key name");
+        return NULL;
+    }
+
+    const xkb_keysym_t* keysyms = NULL;
+    xkb_keymap_key_get_syms_by_level(_glfw.wl.xkb.keymap,
+                                     keycode,
+                                     layout,
+                                     0,
+                                     &keysyms);
+    if (keysyms == NULL)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to retrieve keysym for key name");
+        return NULL;
+    }
+
+    const long codepoint = _glfwKeySym2Unicode(keysyms[0]);
+    if (codepoint == -1)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to retrieve codepoint for key name");
+        return NULL;
+    }
+
+    const size_t count = _glfwEncodeUTF8(_glfw.wl.keynames[key], (unsigned int) codepoint);
+    if (count == 0)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to encode codepoint for key name");
+        return NULL;
+    }
+
+    _glfw.wl.keynames[key][count] = '\0';
+    return _glfw.wl.keynames[key];
 }
 
 int _glfwPlatformGetKeyScancode(int key)

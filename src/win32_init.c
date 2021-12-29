@@ -487,13 +487,13 @@ void _glfwUpdateKeyNamesWin32(void)
 
         length = ToUnicode(vk, scancode, state,
                            chars, sizeof(chars) / sizeof(WCHAR),
-                           0);
+                           1 << 2);
 
         if (length == -1)
         {
             length = ToUnicode(vk, scancode, state,
                                chars, sizeof(chars) / sizeof(WCHAR),
-                               0);
+                               1 << 2);
         }
 
         if (length < 1)

@@ -537,7 +537,6 @@ static void xdgToplevelHandleConfigure(void* data,
     }
     if (fullscreen && activated)
         window->wl.wasFullscreen = GLFW_TRUE;
-    _glfwInputWindowFocus(window, activated);
 }
 
 static void xdgToplevelHandleClose(void* data,
@@ -813,20 +812,6 @@ int _glfwCreateWindowWayland(_GLFWwindow* window,
     if (wndconfig->title)
         window->wl.title = _glfw_strdup(wndconfig->title);
 
-    if (wndconfig->visible)
-    {
-        if (!createXdgSurface(window))
-            return GLFW_FALSE;
-
-        window->wl.visible = GLFW_TRUE;
-    }
-    else
-    {
-        window->wl.xdg.surface = NULL;
-        window->wl.xdg.toplevel = NULL;
-        window->wl.visible = GLFW_FALSE;
-    }
-
     window->wl.currentCursor = NULL;
 
     window->wl.monitors = _glfw_calloc(1, sizeof(_GLFWmonitor*));
@@ -1019,21 +1004,23 @@ void _glfwShowWindowWayland(_GLFWwindow* window)
 {
     if (!window->wl.visible)
     {
-        createXdgSurface(window);
+        // NOTE: The XDG surface and role are created here so command-line applications
+        //       with off-screen windows do not appear in for example the Unity dock
+        if (!window->wl.xdg.toplevel)
+            createXdgSurface(window);
+
         window->wl.visible = GLFW_TRUE;
     }
 }
 
 void _glfwHideWindowWayland(_GLFWwindow* window)
 {
-    if (window->wl.xdg.toplevel)
+    if (window->wl.visible)
     {
-        xdg_toplevel_destroy(window->wl.xdg.toplevel);
-        xdg_surface_destroy(window->wl.xdg.surface);
-        window->wl.xdg.toplevel = NULL;
-        window->wl.xdg.surface = NULL;
+        window->wl.visible = GLFW_FALSE;
+        wl_surface_attach(window->wl.surface, NULL, 0, 0);
+        wl_surface_commit(window->wl.surface);
     }
-    window->wl.visible = GLFW_FALSE;
 }
 
 void _glfwRequestWindowAttentionWayland(_GLFWwindow* window)

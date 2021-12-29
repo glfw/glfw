@@ -231,6 +231,15 @@ static void swapBuffersEGL(_GLFWwindow* window)
         return;
     }
 
+#if defined(_GLFW_WAYLAND)
+    if (_glfw.platform.platformID == GLFW_PLATFORM_WAYLAND)
+    {
+        // NOTE: Swapping buffers on a hidden window on Wayland makes it visible
+        if (!window->wl.visible)
+            return;
+    }
+#endif
+
     eglSwapBuffers(_glfw.egl.display, window->context.egl.surface);
 }
 
@@ -316,6 +325,8 @@ GLFWbool _glfwInitEGL(void)
         "libEGL.dylib",
 #elif defined(__CYGWIN__)
         "libEGL-1.so",
+#elif defined(__OpenBSD__)
+        "libEGL.so",
 #else
         "libEGL.so.1",
 #endif
@@ -691,6 +702,8 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
             "libGLES_CM.dll",
 #elif defined(_GLFW_COCOA)
             "libGLESv1_CM.dylib",
+#elif defined(__OpenBSD__)
+            "libGLESv1_CM.so",
 #else
             "libGLESv1_CM.so.1",
             "libGLES_CM.so.1",
@@ -708,6 +721,8 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
             "libGLESv2.dylib",
 #elif defined(__CYGWIN__)
             "libGLESv2-2.so",
+#elif defined(__OpenBSD__)
+            "libGLESv2.so",
 #else
             "libGLESv2.so.2",
 #endif
@@ -719,6 +734,8 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
             _GLFW_OPENGL_LIBRARY,
 #elif defined(_GLFW_WIN32)
 #elif defined(_GLFW_COCOA)
+#elif defined(__OpenBSD__)
+            "libGL.so",
 #else
             "libGL.so.1",
 #endif

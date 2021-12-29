@@ -264,6 +264,7 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: Changing `GLFW_FLOATING` could leak memory
  - [X11] Bugfix: Icon pixel format conversion worked only by accident, relying on
    undefined behavior (#1986)
+ - [X11] Bugfix: Dynamic loading on OpenBSD failed due to soname differences
  - [Wayland] Added dynamic loading of all Wayland libraries
  - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
@@ -279,6 +280,9 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Non-arrow cursors are offset from the hotspot (#1706,#1899)
  - [Wayland] Bugfix: The `O_CLOEXEC` flag was not defined on FreeBSD
  - [Wayland] Bugfix: Key repeat could lead to a race condition (#1710)
+ - [Wayland] Bugfix: Activating a window would emit two input focus events
+ - [Wayland] Bugfix: Disable key repeat mechanism when window loses input focus
+ - [Wayland] Bugfix: Window hiding and showing did not work (#1492,#1731)
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)

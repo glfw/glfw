@@ -266,6 +266,7 @@ information on what to include when reporting a bug.
    undefined behavior (#1986)
  - [X11] Bugfix: Dynamic loading on OpenBSD failed due to soname differences
  - [Wayland] Added dynamic loading of all Wayland libraries
+ - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled

@@ -1074,7 +1074,8 @@ GLFWAPI const unsigned char* glfwGetJoystickHats(int jid, int* count)
     if (!_glfw.platform.pollJoystick(js, _GLFW_POLL_BUTTONS))
         return NULL;
 
-    return *count = js->hats;
+    *count = js->hatCount;
+    return js->hats;
 }
 
 GLFWAPI const char* glfwGetJoystickName(int jid)

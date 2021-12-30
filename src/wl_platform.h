@@ -26,9 +26,7 @@
 
 #include <wayland-client-core.h>
 #include <xkbcommon/xkbcommon.h>
-#ifdef HAVE_XKBCOMMON_COMPOSE_H
 #include <xkbcommon/xkbcommon-compose.h>
-#endif
 
 typedef VkFlags VkWaylandSurfaceCreateFlagsKHR;
 
@@ -184,7 +182,6 @@ typedef xkb_layout_index_t (* PFN_xkb_state_key_get_layout)(struct xkb_state*,xk
 #define xkb_state_serialize_mods _glfw.wl.xkb.state_serialize_mods
 #define xkb_state_key_get_layout _glfw.wl.xkb.state_key_get_layout
 
-#ifdef HAVE_XKBCOMMON_COMPOSE_H
 typedef struct xkb_compose_table* (* PFN_xkb_compose_table_new_from_locale)(struct xkb_context*, const char*, enum xkb_compose_compile_flags);
 typedef void (* PFN_xkb_compose_table_unref)(struct xkb_compose_table*);
 typedef struct xkb_compose_state* (* PFN_xkb_compose_state_new)(struct xkb_compose_table*, enum xkb_compose_state_flags);
@@ -199,7 +196,6 @@ typedef xkb_keysym_t (* PFN_xkb_compose_state_get_one_sym)(struct xkb_compose_st
 #define xkb_compose_state_feed _glfw.wl.xkb.compose_state_feed
 #define xkb_compose_state_get_status _glfw.wl.xkb.compose_state_get_status
 #define xkb_compose_state_get_one_sym _glfw.wl.xkb.compose_state_get_one_sym
-#endif
 
 #define _GLFW_DECORATION_WIDTH 4
 #define _GLFW_DECORATION_TOP 24
@@ -323,9 +319,7 @@ typedef struct _GLFWlibraryWayland
         struct xkb_keymap*      keymap;
         struct xkb_state*       state;
 
-#ifdef HAVE_XKBCOMMON_COMPOSE_H
         struct xkb_compose_state* composeState;
-#endif
 
         xkb_mod_mask_t          controlMask;
         xkb_mod_mask_t          altMask;
@@ -349,7 +343,6 @@ typedef struct _GLFWlibraryWayland
         PFN_xkb_state_serialize_mods state_serialize_mods;
         PFN_xkb_state_key_get_layout state_key_get_layout;
 
-#ifdef HAVE_XKBCOMMON_COMPOSE_H
         PFN_xkb_compose_table_new_from_locale compose_table_new_from_locale;
         PFN_xkb_compose_table_unref compose_table_unref;
         PFN_xkb_compose_state_new compose_state_new;
@@ -357,7 +350,6 @@ typedef struct _GLFWlibraryWayland
         PFN_xkb_compose_state_feed compose_state_feed;
         PFN_xkb_compose_state_get_status compose_state_get_status;
         PFN_xkb_compose_state_get_one_sym compose_state_get_one_sym;
-#endif
     } xkb;
 
     _GLFWwindow*                pointerFocus;

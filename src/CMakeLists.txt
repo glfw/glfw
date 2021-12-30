@@ -65,10 +65,6 @@ endif()
 if (GLFW_BUILD_WAYLAND)
     include(CheckIncludeFiles)
     include(CheckFunctionExists)
-    check_include_files(xkbcommon/xkbcommon-compose.h HAVE_XKBCOMMON_COMPOSE_H)
-    if (HAVE_XKBCOMMON_COMPOSE_H)
-        target_compile_definitions(glfw PRIVATE HAVE_XKBCOMMON_COMPOSE_H)
-    endif()
     check_function_exists(memfd_create HAVE_MEMFD_CREATE)
     if (HAVE_MEMFD_CREATE)
         target_compile_definitions(glfw PRIVATE HAVE_MEMFD_CREATE)
@@ -173,7 +169,7 @@ if (GLFW_BUILD_WAYLAND)
         wayland-client>=0.2.7
         wayland-cursor>=0.2.7
         wayland-egl>=0.2.7
-        xkbcommon)
+        xkbcommon>=0.5.0)
 
     target_include_directories(glfw PRIVATE ${Wayland_INCLUDE_DIRS})
 

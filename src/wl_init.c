@@ -193,12 +193,12 @@ static void pointerHandleMotion(void* data,
         return;
     x = wl_fixed_to_double(sx);
     y = wl_fixed_to_double(sy);
+    window->wl.cursorPosX = x;
+    window->wl.cursorPosY = y;
 
     switch (window->wl.decorations.focus)
     {
         case mainWindow:
-            window->wl.cursorPosX = x;
-            window->wl.cursorPosY = y;
             _glfwInputCursorPos(window, x, y);
             _glfw.wl.cursorPreviousName = NULL;
             return;
@@ -298,6 +298,7 @@ static void pointerHandleButton(void* data,
             else
                 wl_shell_surface_resize(window->wl.shellSurface, _glfw.wl.seat,
                                         serial, edges);
+            return;
         }
     }
     else if (button == BTN_RIGHT)

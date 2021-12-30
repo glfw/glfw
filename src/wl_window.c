@@ -1226,15 +1226,15 @@ const char* _glfwGetScancodeNameWayland(int scancode)
         return NULL;
     }
 
-    const long codepoint = _glfwKeySym2Unicode(keysyms[0]);
-    if (codepoint == -1)
+    const uint32_t codepoint = _glfwKeySym2Unicode(keysyms[0]);
+    if (codepoint == GLFW_INVALID_CODEPOINT)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Failed to retrieve codepoint for key name");
         return NULL;
     }
 
-    const size_t count = _glfwEncodeUTF8(_glfw.wl.keynames[key], (unsigned int) codepoint);
+    const size_t count = _glfwEncodeUTF8(_glfw.wl.keynames[key],  codepoint);
     if (count == 0)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,

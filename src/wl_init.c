@@ -544,8 +544,7 @@ static xkb_keysym_t composeSymbol(xkb_keysym_t sym)
 
 static GLFWbool inputChar(_GLFWwindow* window, uint32_t key)
 {
-    uint32_t code, numSyms;
-    long cp;
+    uint32_t code, numSyms, codepoint;
     const xkb_keysym_t *syms;
     xkb_keysym_t sym;
 
@@ -559,12 +558,12 @@ static GLFWbool inputChar(_GLFWwindow* window, uint32_t key)
 #else
         sym = syms[0];
 #endif
-        cp = _glfwKeySym2Unicode(sym);
-        if (cp != -1)
+        codepoint = _glfwKeySym2Unicode(sym);
+        if (codepoint != GLFW_INVALID_CODEPOINT)
         {
             const int mods = _glfw.wl.xkb.modifiers;
             const int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
-            _glfwInputChar(window, cp, mods, plain);
+            _glfwInputChar(window, codepoint, mods, plain);
         }
     }
 

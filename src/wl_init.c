@@ -507,10 +507,10 @@ static void keyboardHandleLeave(void* data,
     _glfwInputWindowFocus(window, GLFW_FALSE);
 }
 
-static int toGLFWKeyCode(uint32_t key)
+static int translateKey(uint32_t scancode)
 {
-    if (key < sizeof(_glfw.wl.keycodes) / sizeof(_glfw.wl.keycodes[0]))
-        return _glfw.wl.keycodes[key];
+    if (scancode < sizeof(_glfw.wl.keycodes) / sizeof(_glfw.wl.keycodes[0]))
+        return _glfw.wl.keycodes[scancode];
 
     return GLFW_KEY_UNKNOWN;
 }
@@ -566,7 +566,7 @@ static void keyboardHandleKey(void* data,
     if (!window)
         return;
 
-    const int key = toGLFWKeyCode(scancode);
+    const int key = translateKey(scancode);
     const int action =
         state == WL_KEYBOARD_KEY_STATE_PRESSED ? GLFW_PRESS : GLFW_RELEASE;
 

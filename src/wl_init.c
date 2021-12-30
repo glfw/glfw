@@ -559,42 +559,40 @@ static void keyboardHandleKey(void* data,
                               struct wl_keyboard* keyboard,
                               uint32_t serial,
                               uint32_t time,
-                              uint32_t key,
+                              uint32_t scancode,
                               uint32_t state)
 {
-    int keyCode;
-    int action;
     _GLFWwindow* window = _glfw.wl.keyboardFocus;
-    GLFWbool shouldRepeat;
-    struct itimerspec timer = {};
-
     if (!window)
         return;
 
-    keyCode = toGLFWKeyCode(key);
-    action = state == WL_KEYBOARD_KEY_STATE_PRESSED
-            ? GLFW_PRESS : GLFW_RELEASE;
+    const int key = toGLFWKeyCode(scancode);
+    const int action =
+        state == WL_KEYBOARD_KEY_STATE_PRESSED ? GLFW_PRESS : GLFW_RELEASE;
 
     _glfw.wl.serial = serial;
-    _glfwInputKey(window, keyCode, key, action,
-                  _glfw.wl.xkb.modifiers);
+    _glfwInputKey(window, key, scancode, action, _glfw.wl.xkb.modifiers);
+
+    struct itimerspec timer = {};
 
     if (action == GLFW_PRESS)
     {
-        shouldRepeat = inputChar(window, key);
+        const GLFWbool shouldRepeat = inputChar(window, scancode);
 
         if (shouldRepeat && _glfw.wl.keyboardRepeatRate > 0)
         {
-            _glfw.wl.keyboardLastKey = keyCode;
-            _glfw.wl.keyboardLastScancode = key;
+            _glfw.wl.keyboardLastKey = key;
+            _glfw.wl.keyboardLastScancode = scancode;
             if (_glfw.wl.keyboardRepeatRate > 1)
                 timer.it_interval.tv_nsec = 1000000000 / _glfw.wl.keyboardRepeatRate;
             else
                 timer.it_interval.tv_sec = 1;
+
             timer.it_value.tv_sec = _glfw.wl.keyboardRepeatDelay / 1000;
             timer.it_value.tv_nsec = (_glfw.wl.keyboardRepeatDelay % 1000) * 1000000;
         }
     }
+
     timerfd_settime(_glfw.wl.timerfd, 0, &timer, NULL);
 }
 

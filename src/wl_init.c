@@ -600,9 +600,6 @@ static void keyboardHandleModifiers(void* data,
                                     uint32_t modsLocked,
                                     uint32_t group)
 {
-    xkb_mod_mask_t mask;
-    unsigned int modifiers = 0;
-
     _glfw.wl.serial = serial;
 
     if (!_glfw.wl.xkb.keymap)
@@ -616,24 +613,29 @@ static void keyboardHandleModifiers(void* data,
                           0,
                           group);
 
-    mask = xkb_state_serialize_mods(_glfw.wl.xkb.state,
-                                    XKB_STATE_MODS_DEPRESSED |
-                                    XKB_STATE_LAYOUT_DEPRESSED |
-                                    XKB_STATE_MODS_LATCHED |
-                                    XKB_STATE_LAYOUT_LATCHED);
+    const xkb_mod_mask_t mask =
+        xkb_state_serialize_mods(_glfw.wl.xkb.state,
+                                 XKB_STATE_MODS_DEPRESSED |
+                                 XKB_STATE_LAYOUT_DEPRESSED |
+                                 XKB_STATE_MODS_LATCHED |
+                                 XKB_STATE_LAYOUT_LATCHED);
+
+    unsigned int mods = 0;
+
     if (mask & _glfw.wl.xkb.controlMask)
-        modifiers |= GLFW_MOD_CONTROL;
+        mods |= GLFW_MOD_CONTROL;
     if (mask & _glfw.wl.xkb.altMask)
-        modifiers |= GLFW_MOD_ALT;
+        mods |= GLFW_MOD_ALT;
     if (mask & _glfw.wl.xkb.shiftMask)
-        modifiers |= GLFW_MOD_SHIFT;
+        mods |= GLFW_MOD_SHIFT;
     if (mask & _glfw.wl.xkb.superMask)
-        modifiers |= GLFW_MOD_SUPER;
+        mods |= GLFW_MOD_SUPER;
     if (mask & _glfw.wl.xkb.capsLockMask)
-        modifiers |= GLFW_MOD_CAPS_LOCK;
+        mods |= GLFW_MOD_CAPS_LOCK;
     if (mask & _glfw.wl.xkb.numLockMask)
-        modifiers |= GLFW_MOD_NUM_LOCK;
-    _glfw.wl.xkb.modifiers = modifiers;
+        mods |= GLFW_MOD_NUM_LOCK;
+
+    _glfw.wl.xkb.modifiers = mods;
 }
 
 #ifdef WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION

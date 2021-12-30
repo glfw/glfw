@@ -535,7 +535,7 @@ static xkb_keysym_t composeSymbol(xkb_keysym_t sym)
     }
 }
 
-static GLFWbool inputChar(_GLFWwindow* window, uint32_t scancode)
+GLFWbool _glfwInputTextWayland(_GLFWwindow* window, uint32_t scancode)
 {
     const xkb_keysym_t* keysyms;
     const xkb_keycode_t keycode = scancode + 8;
@@ -577,7 +577,7 @@ static void keyboardHandleKey(void* data,
 
     if (action == GLFW_PRESS)
     {
-        const GLFWbool shouldRepeat = inputChar(window, scancode);
+        const GLFWbool shouldRepeat = _glfwInputTextWayland(window, scancode);
 
         if (shouldRepeat && _glfw.wl.keyboardRepeatRate > 0)
         {

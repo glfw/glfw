@@ -767,6 +767,8 @@ static void handleEvents(int timeout)
                                   _glfw.wl.keyboardLastScancode,
                                   GLFW_PRESS,
                                   _glfw.wl.xkb.modifiers);
+                    _glfwInputTextWayland(_glfw.wl.keyboardFocus,
+                                          _glfw.wl.keyboardLastScancode);
                 }
             }
         }

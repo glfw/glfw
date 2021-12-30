@@ -542,23 +542,19 @@ static xkb_keysym_t composeSymbol(xkb_keysym_t sym)
 }
 #endif
 
-static GLFWbool inputChar(_GLFWwindow* window, uint32_t key)
+static GLFWbool inputChar(_GLFWwindow* window, uint32_t scancode)
 {
-    uint32_t code, numSyms, codepoint;
-    const xkb_keysym_t *syms;
-    xkb_keysym_t sym;
+    const xkb_keysym_t* keysyms;
+    const xkb_keycode_t keycode = scancode + 8;
 
-    code = key + 8;
-    numSyms = xkb_state_key_get_syms(_glfw.wl.xkb.state, code, &syms);
-
-    if (numSyms == 1)
+    if (xkb_state_key_get_syms(_glfw.wl.xkb.state, keycode, &keysyms) == 1)
     {
 #ifdef HAVE_XKBCOMMON_COMPOSE_H
-        sym = composeSymbol(syms[0]);
+        const xkb_keysym_t keysym = composeSymbol(keysyms[0]);
 #else
-        sym = syms[0];
+        const xkb_keysym_t keysym = keysyms[0];
 #endif
-        codepoint = _glfwKeySym2Unicode(sym);
+        const uint32_t codepoint = _glfwKeySym2Unicode(keysym);
         if (codepoint != GLFW_INVALID_CODEPOINT)
         {
             const int mods = _glfw.wl.xkb.modifiers;
@@ -567,7 +563,7 @@ static GLFWbool inputChar(_GLFWwindow* window, uint32_t key)
         }
     }
 
-    return xkb_keymap_key_repeats(_glfw.wl.xkb.keymap, code);
+    return xkb_keymap_key_repeats(_glfw.wl.xkb.keymap, keycode);
 }
 
 static void keyboardHandleKey(void* data,

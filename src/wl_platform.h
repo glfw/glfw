@@ -350,4 +350,5 @@ typedef struct _GLFWcursorWayland
 
 
 void _glfwAddOutputWayland(uint32_t name, uint32_t version);
+GLFWbool _glfwInputTextWayland(_GLFWwindow* window, uint32_t scancode);
 

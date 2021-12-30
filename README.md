@@ -133,6 +133,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Showing a hidden window did not emit a window refresh event
  - [Wayland] Bugfix: Full screen window creation did not ignore `GLFW_VISIBLE`
  - [Wayland] Bugfix: Some keys were reported as wrong key or `GLFW_KEY_UNKNOWN`
+ - [Wayland] Bugfix: Text input did not repeat along with key repeat
 
 
 ## Contact

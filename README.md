@@ -286,6 +286,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: A key being repeated was not released when window lost focus
  - [Wayland] Bugfix: Showing a hidden window did not emit a window refresh event
  - [Wayland] Bugfix: Full screen window creation did not ignore `GLFW_VISIBLE`
+ - [Wayland] Bugfix: Some keys were reported as wrong key or `GLFW_KEY_UNKNOWN`
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)

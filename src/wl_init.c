@@ -972,7 +972,7 @@ static void createKeyTables(void)
     _glfw.wl.keycodes[KEY_RIGHTALT]   = GLFW_KEY_RIGHT_ALT;
     _glfw.wl.keycodes[KEY_LEFTMETA]   = GLFW_KEY_LEFT_SUPER;
     _glfw.wl.keycodes[KEY_RIGHTMETA]  = GLFW_KEY_RIGHT_SUPER;
-    _glfw.wl.keycodes[KEY_MENU]       = GLFW_KEY_MENU;
+    _glfw.wl.keycodes[KEY_COMPOSE]    = GLFW_KEY_MENU;
     _glfw.wl.keycodes[KEY_NUMLOCK]    = GLFW_KEY_NUM_LOCK;
     _glfw.wl.keycodes[KEY_CAPSLOCK]   = GLFW_KEY_CAPS_LOCK;
     _glfw.wl.keycodes[KEY_PRINT]      = GLFW_KEY_PRINT_SCREEN;
@@ -1015,7 +1015,7 @@ static void createKeyTables(void)
     _glfw.wl.keycodes[KEY_F23]        = GLFW_KEY_F23;
     _glfw.wl.keycodes[KEY_F24]        = GLFW_KEY_F24;
     _glfw.wl.keycodes[KEY_KPSLASH]    = GLFW_KEY_KP_DIVIDE;
-    _glfw.wl.keycodes[KEY_KPDOT]      = GLFW_KEY_KP_MULTIPLY;
+    _glfw.wl.keycodes[KEY_KPASTERISK] = GLFW_KEY_KP_MULTIPLY;
     _glfw.wl.keycodes[KEY_KPMINUS]    = GLFW_KEY_KP_SUBTRACT;
     _glfw.wl.keycodes[KEY_KPPLUS]     = GLFW_KEY_KP_ADD;
     _glfw.wl.keycodes[KEY_KP0]        = GLFW_KEY_KP_0;
@@ -1028,9 +1028,10 @@ static void createKeyTables(void)
     _glfw.wl.keycodes[KEY_KP7]        = GLFW_KEY_KP_7;
     _glfw.wl.keycodes[KEY_KP8]        = GLFW_KEY_KP_8;
     _glfw.wl.keycodes[KEY_KP9]        = GLFW_KEY_KP_9;
-    _glfw.wl.keycodes[KEY_KPCOMMA]    = GLFW_KEY_KP_DECIMAL;
+    _glfw.wl.keycodes[KEY_KPDOT]      = GLFW_KEY_KP_DECIMAL;
     _glfw.wl.keycodes[KEY_KPEQUAL]    = GLFW_KEY_KP_EQUAL;
     _glfw.wl.keycodes[KEY_KPENTER]    = GLFW_KEY_KP_ENTER;
+    _glfw.wl.keycodes[KEY_102ND]      = GLFW_KEY_WORLD_2;
 
     for (int scancode = 0;  scancode < 256;  scancode++)
     {

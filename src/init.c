@@ -114,29 +114,29 @@ static void terminate(void)
 // Encode a Unicode code point to a UTF-8 stream
 // Based on cutef8 by Jeff Bezanson (Public Domain)
 //
-size_t _glfwEncodeUTF8(char* s, unsigned int ch)
+size_t _glfwEncodeUTF8(char* s, uint32_t codepoint)
 {
     size_t count = 0;
 
-    if (ch < 0x80)
-        s[count++] = (char) ch;
-    else if (ch < 0x800)
+    if (codepoint < 0x80)
+        s[count++] = (char) codepoint;
+    else if (codepoint < 0x800)
     {
-        s[count++] = (ch >> 6) | 0xc0;
-        s[count++] = (ch & 0x3f) | 0x80;
+        s[count++] = (codepoint >> 6) | 0xc0;
+        s[count++] = (codepoint & 0x3f) | 0x80;
     }
-    else if (ch < 0x10000)
+    else if (codepoint < 0x10000)
     {
-        s[count++] = (ch >> 12) | 0xe0;
-        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
-        s[count++] = (ch & 0x3f) | 0x80;
+        s[count++] = (codepoint >> 12) | 0xe0;
+        s[count++] = ((codepoint >> 6) & 0x3f) | 0x80;
+        s[count++] = (codepoint & 0x3f) | 0x80;
     }
-    else if (ch < 0x110000)
+    else if (codepoint < 0x110000)
     {
-        s[count++] = (ch >> 18) | 0xf0;
-        s[count++] = ((ch >> 12) & 0x3f) | 0x80;
-        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
-        s[count++] = (ch & 0x3f) | 0x80;
+        s[count++] = (codepoint >> 18) | 0xf0;
+        s[count++] = ((codepoint >> 12) & 0x3f) | 0x80;
+        s[count++] = ((codepoint >> 6) & 0x3f) | 0x80;
+        s[count++] = (codepoint & 0x3f) | 0x80;
     }
 
     return count;

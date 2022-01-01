@@ -104,9 +104,8 @@ integration by libwayland-egl, and keyboard handling by
 from wayland-protocols to provide additional features if the compositor
 supports them.
 
-GLFW uses xkbcommon 0.5.0 to provide compose key support.  When it has been
-built against an older xkbcommon, the compose key will be disabled even if it
-has been configured in the compositor.
+GLFW uses xkbcommon 0.5.0 to provide key and text input support.  Earlier
+versions are not supported.
 
 GLFW uses the [xdg-shell
 protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/stable/xdg-shell/xdg-shell.xml)

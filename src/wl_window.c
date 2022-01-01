@@ -404,27 +404,25 @@ static void resizeWindow(_GLFWwindow* window)
 
 static void checkScaleChange(_GLFWwindow* window)
 {
-    int scale = 1;
-    int i;
-    int monitorScale;
-
     // Check if we will be able to set the buffer scale or not.
     if (_glfw.wl.compositorVersion < 3)
         return;
 
     // Get the scale factor from the highest scale monitor.
-    for (i = 0; i < window->wl.monitorsCount; ++i)
+    int maxScale = 1;
+
+    for (int i = 0; i < window->wl.monitorsCount; i++)
     {
-        monitorScale = window->wl.monitors[i]->wl.scale;
-        if (scale < monitorScale)
-            scale = monitorScale;
+        const int scale = window->wl.monitors[i]->wl.scale;
+        if (maxScale < scale)
+            maxScale = scale;
     }
 
     // Only change the framebuffer size if the scale changed.
-    if (scale != window->wl.scale)
+    if (window->wl.scale != maxScale)
     {
-        window->wl.scale = scale;
-        wl_surface_set_buffer_scale(window->wl.surface, scale);
+        window->wl.scale = maxScale;
+        wl_surface_set_buffer_scale(window->wl.surface, maxScale);
         resizeWindow(window);
     }
 }

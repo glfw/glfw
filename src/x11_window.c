@@ -41,6 +41,10 @@
 #include <errno.h>
 #include <assert.h>
 
+#if defined(__linux__)
+#include <poll.h>
+#endif
+
 // Action for EWMH client messages
 #define _NET_WM_STATE_REMOVE        0
 #define _NET_WM_STATE_ADD           1
@@ -63,31 +67,47 @@
 //
 static GLFWbool waitForEvent(double* timeout)
 {
-    fd_set fds;
     const int fd = ConnectionNumber(_glfw.x11.display);
-    int count = fd + 1;
 
+    int count;
 #if defined(__linux__)
-    if (_glfw.linjs.inotify > fd)
-        count = _glfw.linjs.inotify + 1;
+    struct pollfd pfd[2];
+#else
+    fd_set fds;
+    count = fd + 1;
 #endif
+
     for (;;)
     {
+#if defined(__linux__)
+        pfd[0].fd = fd;
+        pfd[0].events = POLLIN;
+        if (_glfw.linjs.inotify > 0)
+        {
+            count = 2;
+            pfd[1].fd = _glfw.linjs.inotify;
+            pfd[1].events = POLLIN;
+        }
+        else
+            count = 1;
+#else
         FD_ZERO(&fds);
         FD_SET(fd, &fds);
-#if defined(__linux__)
-        if (_glfw.linjs.inotify > 0)
-            FD_SET(_glfw.linjs.inotify, &fds);
 #endif
 
         if (timeout)
         {
             const long seconds = (long) *timeout;
             const long microseconds = (long) ((*timeout - seconds) * 1e6);
-            struct timeval tv = { seconds, microseconds };
             const uint64_t base = _glfwPlatformGetTimerValue();
 
+#if defined(__linux__)
+            int timeout_ms = (seconds * 1000) + (microseconds / 1000);
+            const int result = poll(pfd, count, timeout_ms);
+#else
+            struct timeval tv = { seconds, microseconds };
             const int result = select(count, &fds, NULL, NULL, &tv);
+#endif
             const int error = errno;
 
             *timeout -= (_glfwPlatformGetTimerValue() - base) /
@@ -98,7 +118,11 @@ static GLFWbool waitForEvent(double* timeout)
             if ((result == -1 && error == EINTR) || *timeout <= 0.0)
                 return GLFW_FALSE;
         }
+#if defined(__linux__)
+        else if (poll(pfd, count, 0) != -1 || errno != EINTR)
+#else
         else if (select(count, &fds, NULL, NULL, NULL) != -1 || errno != EINTR)
+#endif
             return GLFW_TRUE;
     }
 }

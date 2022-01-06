@@ -304,6 +304,7 @@ information on what to include when reporting a bug.
  - [EGL] Added ANGLE backend selection via `EGL_ANGLE_platform_angle` extension
    (#1380)
  - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
+ - [GLX] Bugfix: Context creation failed if GLX 1.4 was not exported by GLX library
 
 
 ## Contact

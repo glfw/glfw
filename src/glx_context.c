@@ -435,7 +435,7 @@ void _glfwTerminateGLX(void)
     }
 }
 
-#define setAttrib(a, v) \
+#define SET_ATTRIB(a, v) \
 { \
     assert(((size_t) index + 1) < sizeof(attribs) / sizeof(attribs[0])); \
     attribs[index++] = a; \
@@ -523,13 +523,13 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
             {
                 if (ctxconfig->robustness == GLFW_NO_RESET_NOTIFICATION)
                 {
-                    setAttrib(GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
-                              GLX_NO_RESET_NOTIFICATION_ARB);
+                    SET_ATTRIB(GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
+                               GLX_NO_RESET_NOTIFICATION_ARB);
                 }
                 else if (ctxconfig->robustness == GLFW_LOSE_CONTEXT_ON_RESET)
                 {
-                    setAttrib(GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
-                              GLX_LOSE_CONTEXT_ON_RESET_ARB);
+                    SET_ATTRIB(GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
+                               GLX_LOSE_CONTEXT_ON_RESET_ARB);
                 }
 
                 flags |= GLX_CONTEXT_ROBUST_ACCESS_BIT_ARB;
@@ -542,13 +542,13 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
             {
                 if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_NONE)
                 {
-                    setAttrib(GLX_CONTEXT_RELEASE_BEHAVIOR_ARB,
-                              GLX_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB);
+                    SET_ATTRIB(GLX_CONTEXT_RELEASE_BEHAVIOR_ARB,
+                               GLX_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB);
                 }
                 else if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_FLUSH)
                 {
-                    setAttrib(GLX_CONTEXT_RELEASE_BEHAVIOR_ARB,
-                              GLX_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB);
+                    SET_ATTRIB(GLX_CONTEXT_RELEASE_BEHAVIOR_ARB,
+                               GLX_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB);
                 }
             }
         }
@@ -556,7 +556,7 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
         if (ctxconfig->noerror)
         {
             if (_glfw.glx.ARB_create_context_no_error)
-                setAttrib(GLX_CONTEXT_OPENGL_NO_ERROR_ARB, GLFW_TRUE);
+                SET_ATTRIB(GLX_CONTEXT_OPENGL_NO_ERROR_ARB, GLFW_TRUE);
         }
 
         // NOTE: Only request an explicitly versioned context when necessary, as
@@ -564,17 +564,17 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
         //       highest version supported by the driver
         if (ctxconfig->major != 1 || ctxconfig->minor != 0)
         {
-            setAttrib(GLX_CONTEXT_MAJOR_VERSION_ARB, ctxconfig->major);
-            setAttrib(GLX_CONTEXT_MINOR_VERSION_ARB, ctxconfig->minor);
+            SET_ATTRIB(GLX_CONTEXT_MAJOR_VERSION_ARB, ctxconfig->major);
+            SET_ATTRIB(GLX_CONTEXT_MINOR_VERSION_ARB, ctxconfig->minor);
         }
 
         if (mask)
-            setAttrib(GLX_CONTEXT_PROFILE_MASK_ARB, mask);
+            SET_ATTRIB(GLX_CONTEXT_PROFILE_MASK_ARB, mask);
 
         if (flags)
-            setAttrib(GLX_CONTEXT_FLAGS_ARB, flags);
+            SET_ATTRIB(GLX_CONTEXT_FLAGS_ARB, flags);
 
-        setAttrib(None, None);
+        SET_ATTRIB(None, None);
 
         window->context.glx.handle =
             _glfw.glx.CreateContextAttribsARB(_glfw.x11.display,
@@ -631,7 +631,7 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
-#undef setAttrib
+#undef SET_ATTRIB
 
 // Returns the Visual and depth of the chosen GLXFBConfig
 //

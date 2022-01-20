@@ -10,6 +10,7 @@ video tutorials.
  - Matt Arsenault
  - ashishgamedev
  - David Avedissian
+ - Luca Bacci
  - Keith Bauer
  - John Bartholomew
  - Coşku Baş

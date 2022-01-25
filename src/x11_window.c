@@ -57,6 +57,16 @@
 #define _GLFW_XDND_VERSION 5
 
 
+static inline void drainPipe(int fd)
+{
+    static char buf[256];
+    ssize_t len;
+    do
+    {
+        len = read(fd, buf, sizeof(buf));
+    } while (len > 0 || (len < 0 && errno == EINTR));
+}
+
 // Wait for data to arrive using select
 // This avoids blocking other threads via the per-display Xlib lock that also
 // covers GLX functions
@@ -65,16 +75,19 @@ static GLFWbool waitForEvent(double* timeout)
 {
     fd_set fds;
     const int fd = ConnectionNumber(_glfw.x11.display);
-    int count = fd + 1;
+    const int pipe = _glfw.x11.eventLoopData.pipe[0];
+    int max = fd > pipe ? fd : pipe;
 
 #if defined(__linux__)
-    if (_glfw.linjs.inotify > fd)
-        count = _glfw.linjs.inotify + 1;
+    if (_glfw.linjs.inotify > max)
+        max = _glfw.linjs.inotify;
 #endif
+
     for (;;)
     {
         FD_ZERO(&fds);
         FD_SET(fd, &fds);
+        FD_SET(pipe, &fds);
 #if defined(__linux__)
         if (_glfw.linjs.inotify > 0)
             FD_SET(_glfw.linjs.inotify, &fds);
@@ -87,8 +100,11 @@ static GLFWbool waitForEvent(double* timeout)
             struct timeval tv = { seconds, microseconds };
             const uint64_t base = _glfwPlatformGetTimerValue();
 
-            const int result = select(count, &fds, NULL, NULL, &tv);
+            const int result = select(max + 1, &fds, NULL, NULL, &tv);
             const int error = errno;
+
+            if (FD_ISSET(pipe, &fds))
+                drainPipe(pipe);
 
             *timeout -= (_glfwPlatformGetTimerValue() - base) /
                 (double) _glfwPlatformGetTimerFrequency();
@@ -98,8 +114,17 @@ static GLFWbool waitForEvent(double* timeout)
             if ((result == -1 && error == EINTR) || *timeout <= 0.0)
                 return GLFW_FALSE;
         }
-        else if (select(count, &fds, NULL, NULL, NULL) != -1 || errno != EINTR)
-            return GLFW_TRUE;
+        else
+        {
+          const int result = select(max + 1, &fds, NULL, NULL, NULL);
+          const int error = errno;
+
+          if (FD_ISSET(pipe, &fds))
+              drainPipe(pipe);
+
+          if (result != -1 || error != EINTR)
+              return GLFW_TRUE;
+        }
     }
 }
 
@@ -2805,6 +2830,12 @@ void _glfwPostEmptyEventX11(void)
 
     XSendEvent(_glfw.x11.display, _glfw.x11.helperWindowHandle, False, 0, &event);
     XFlush(_glfw.x11.display);
+
+    int result;
+    do
+    {
+        result = write(_glfw.x11.eventLoopData.pipe[1], "x", 1);
+    } while (result < 0 && errno == EINTR);
 }
 
 void _glfwGetCursorPosX11(_GLFWwindow* window, double* xpos, double* ypos)

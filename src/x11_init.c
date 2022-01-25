@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <locale.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 
 // Translate the X11 KeySyms for a key to a GLFW key code
@@ -1053,6 +1054,35 @@ static int errorHandler(Display *display, XErrorEvent* event)
     return 0;
 }
 
+static inline GLFWbool selfPipe(int fds[2])
+{
+    if (pipe(fds) != 0)
+        return GLFW_FALSE;
+
+    int i;
+    for (i = 0; i < 2; i++)
+    {
+        int flags = fcntl(fds[i], F_GETFD);
+        if (flags == -1)
+            break;
+        if (fcntl(fds[i], F_SETFD, flags | FD_CLOEXEC) == -1)
+            break;
+        flags = fcntl(fds[i], F_GETFL);
+        if (flags == -1)
+            break;
+        if (fcntl(fds[i], F_SETFL, flags | O_NONBLOCK) == -1)
+            break;
+    }
+
+    if (i == 2)
+        return GLFW_TRUE;
+
+    close(fds[0]);
+    close(fds[1]);
+
+    return GLFW_FALSE;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -1509,6 +1539,13 @@ int _glfwInitX11(void)
     }
 
     _glfwPollMonitorsX11();
+
+    if (!selfPipe(_glfw.x11.eventLoopData.pipe))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "X11: failed to create pipe");
+        return GLFW_FALSE;
+    }
+
     return GLFW_TRUE;
 }
 
@@ -1592,6 +1629,18 @@ void _glfwTerminateX11(void)
     {
         _glfwPlatformFreeModule(_glfw.x11.xi.handle);
         _glfw.x11.xi.handle = NULL;
+    }
+
+    if (_glfw.x11.eventLoopData.pipe[0] > 0)
+    {
+        close(_glfw.x11.eventLoopData.pipe[0]);
+        _glfw.x11.eventLoopData.pipe[0] = -1;
+    }
+
+    if (_glfw.x11.eventLoopData.pipe[1] > 0)
+    {
+        close(_glfw.x11.eventLoopData.pipe[1]);
+        _glfw.x11.eventLoopData.pipe[1] = -1;
     }
 
     // NOTE: These need to be unloaded after XCloseDisplay, as they register

@@ -871,6 +871,10 @@ typedef struct _GLFWlibraryX11
         PFN_XShapeQueryVersion QueryVersion;
         PFN_XShapeCombineMask ShapeCombineMask;
     } xshape;
+
+    struct {
+        int pipe[2];
+    } eventLoopData;
 } _GLFWlibraryX11;
 
 // X11-specific per-monitor data

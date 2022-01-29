@@ -358,6 +358,7 @@ information on what to include when reporting a bug.
  - [Wayland] Disabled alpha channel for opaque windows on systems lacking
    `EGL_EXT_present_opaque` (#1895)
  - [Wayland] Removed support for `wl_shell` (#1443)
+ - [Wayland] Prefer Wayland over X11 if both are available (#2035)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: Repeated keys could be reported with `NULL` window (#1704)
  - [Wayland] Bugfix: Retrieving partial framebuffer size would segfault

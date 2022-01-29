@@ -50,11 +50,11 @@ static const struct
 #if defined(_GLFW_COCOA)
     { GLFW_PLATFORM_COCOA, _glfwConnectCocoa },
 #endif
-#if defined(_GLFW_X11)
-    { GLFW_PLATFORM_X11, _glfwConnectX11 },
-#endif
 #if defined(_GLFW_WAYLAND)
     { GLFW_PLATFORM_WAYLAND, _glfwConnectWayland },
+#endif
+#if defined(_GLFW_X11)
+    { GLFW_PLATFORM_X11, _glfwConnectX11 },
 #endif
 };
 

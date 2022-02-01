@@ -32,7 +32,7 @@
 #include <X11/cursorfont.h>
 #include <X11/Xmd.h>
 
-#include <sys/select.h>
+#include <poll.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -57,37 +57,31 @@
 #define _GLFW_XDND_VERSION 5
 
 
-// Wait for data to arrive using select
+// Wait for event data to arrive on any relevant file descriptor
 // This avoids blocking other threads via the per-display Xlib lock that also
 // covers GLX functions
 //
 static GLFWbool waitForEvent(double* timeout)
 {
-    fd_set fds;
-    const int fd = ConnectionNumber(_glfw.x11.display);
-    int count = fd + 1;
-
-#if defined(__linux__)
-    if (_glfw.linjs.inotify > fd)
-        count = _glfw.linjs.inotify + 1;
-#endif
     for (;;)
     {
-        FD_ZERO(&fds);
-        FD_SET(fd, &fds);
+        nfds_t count = 1;
+        struct pollfd fds[2] =
+        {
+            { ConnectionNumber(_glfw.x11.display), POLLIN }
+        };
+
 #if defined(__linux__)
-        if (_glfw.linjs.inotify > 0)
-            FD_SET(_glfw.linjs.inotify, &fds);
+        if (_glfw.joysticksInitialized)
+            fds[count++] = (struct pollfd) { _glfw.linjs.inotify, POLLIN };
 #endif
 
         if (timeout)
         {
-            const long seconds = (long) *timeout;
-            const long microseconds = (long) ((*timeout - seconds) * 1e6);
-            struct timeval tv = { seconds, microseconds };
+            const int milliseconds = (int) (*timeout * 1e3);
             const uint64_t base = _glfwPlatformGetTimerValue();
 
-            const int result = select(count, &fds, NULL, NULL, &tv);
+            const int result = poll(fds, count, milliseconds);
             const int error = errno;
 
             *timeout -= (_glfwPlatformGetTimerValue() - base) /
@@ -98,7 +92,7 @@ static GLFWbool waitForEvent(double* timeout)
             if ((result == -1 && error == EINTR) || *timeout <= 0.0)
                 return GLFW_FALSE;
         }
-        else if (select(count, &fds, NULL, NULL, NULL) != -1 || errno != EINTR)
+        else if (poll(fds, count, -1) != -1 || errno != EINTR)
             return GLFW_TRUE;
     }
 }

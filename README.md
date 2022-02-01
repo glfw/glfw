@@ -125,6 +125,8 @@ information on what to include when reporting a bug.
 
  - [Cocoa] Bugfix: `kUTTypeURL` was deprecated in macOS 12.0 (#2003)
  - [X11] Bugfix: Dynamic loading on OpenBSD failed due to soname differences
+ - [X11] Bugfix: Waiting for events would fail if file descriptor was too large
+   (#2024)
  - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Bugfix: Key repeat could lead to a race condition (#1710)
  - [Wayland] Bugfix: Activating a window would emit two input focus events

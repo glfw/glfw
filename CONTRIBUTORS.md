@@ -81,6 +81,7 @@ video tutorials.
  - Paul Holden
  - Warren Hu
  - Charles Huber
+ - illustris
  - InKryption
  - IntellectualKitty
  - Aaron Jacobs

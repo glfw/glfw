@@ -866,3 +866,16 @@ GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* handle)
     return window->context.egl.surface;
 }
 
+GLFWAPI EGLConfig glfwGetEGLConfig(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN(EGL_NO_SURFACE);
+
+    if (window->context.source != GLFW_EGL_CONTEXT_API)
+    {
+        _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
+        return EGL_NO_SURFACE;
+    }
+
+    return window->context.egl.config;
+}

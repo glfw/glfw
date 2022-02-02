@@ -45,45 +45,52 @@ GLFWbool _glfwInitVulkan(int mode)
 {
     VkResult err;
     VkExtensionProperties* ep;
+    PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties;
     uint32_t i, count;
 
     if (_glfw.vk.available)
         return GLFW_TRUE;
 
-#if !defined(_GLFW_VULKAN_STATIC)
+    if (_glfw.hints.init.vulkanLoader)
+        _glfw.vk.GetInstanceProcAddr = _glfw.hints.init.vulkanLoader;
+    else
+    {
 #if defined(_GLFW_VULKAN_LIBRARY)
-    _glfw.vk.handle = _glfwPlatformLoadModule(_GLFW_VULKAN_LIBRARY);
+        _glfw.vk.handle = _glfwPlatformLoadModule(_GLFW_VULKAN_LIBRARY);
 #elif defined(_GLFW_WIN32)
-    _glfw.vk.handle = _glfwPlatformLoadModule("vulkan-1.dll");
+        _glfw.vk.handle = _glfwPlatformLoadModule("vulkan-1.dll");
 #elif defined(_GLFW_COCOA)
-    _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.1.dylib");
-    if (!_glfw.vk.handle)
-        _glfw.vk.handle = _glfwLoadLocalVulkanLoaderCocoa();
+        _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.1.dylib");
+        if (!_glfw.vk.handle)
+            _glfw.vk.handle = _glfwLoadLocalVulkanLoaderCocoa();
+#elif defined(__OpenBSD__)
+        _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.so");
 #else
-    _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.so.1");
+        _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.so.1");
 #endif
-    if (!_glfw.vk.handle)
-    {
-        if (mode == _GLFW_REQUIRE_LOADER)
-            _glfwInputError(GLFW_API_UNAVAILABLE, "Vulkan: Loader not found");
+        if (!_glfw.vk.handle)
+        {
+            if (mode == _GLFW_REQUIRE_LOADER)
+                _glfwInputError(GLFW_API_UNAVAILABLE, "Vulkan: Loader not found");
 
-        return GLFW_FALSE;
+            return GLFW_FALSE;
+        }
+
+        _glfw.vk.GetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)
+            _glfwPlatformGetModuleSymbol(_glfw.vk.handle, "vkGetInstanceProcAddr");
+        if (!_glfw.vk.GetInstanceProcAddr)
+        {
+            _glfwInputError(GLFW_API_UNAVAILABLE,
+                            "Vulkan: Loader does not export vkGetInstanceProcAddr");
+
+            _glfwTerminateVulkan();
+            return GLFW_FALSE;
+        }
     }
 
-    _glfw.vk.GetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)
-        _glfwPlatformGetModuleSymbol(_glfw.vk.handle, "vkGetInstanceProcAddr");
-    if (!_glfw.vk.GetInstanceProcAddr)
-    {
-        _glfwInputError(GLFW_API_UNAVAILABLE,
-                        "Vulkan: Loader does not export vkGetInstanceProcAddr");
-
-        _glfwTerminateVulkan();
-        return GLFW_FALSE;
-    }
-
-    _glfw.vk.EnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties)
+    vkEnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties)
         vkGetInstanceProcAddr(NULL, "vkEnumerateInstanceExtensionProperties");
-    if (!_glfw.vk.EnumerateInstanceExtensionProperties)
+    if (!vkEnumerateInstanceExtensionProperties)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
                         "Vulkan: Failed to retrieve vkEnumerateInstanceExtensionProperties");
@@ -91,7 +98,6 @@ GLFWbool _glfwInitVulkan(int mode)
         _glfwTerminateVulkan();
         return GLFW_FALSE;
     }
-#endif // _GLFW_VULKAN_STATIC
 
     err = vkEnumerateInstanceExtensionProperties(NULL, &count, NULL);
     if (err)
@@ -151,10 +157,8 @@ GLFWbool _glfwInitVulkan(int mode)
 
 void _glfwTerminateVulkan(void)
 {
-#if !defined(_GLFW_VULKAN_STATIC)
     if (_glfw.vk.handle)
         _glfwPlatformFreeModule(_glfw.vk.handle);
-#endif
 }
 
 const char* _glfwGetVulkanResultString(VkResult result)
@@ -252,17 +256,16 @@ GLFWAPI GLFWvkproc glfwGetInstanceProcAddress(VkInstance instance,
     if (!_glfwInitVulkan(_GLFW_REQUIRE_LOADER))
         return NULL;
 
+    // NOTE: Vulkan 1.0 and 1.1 vkGetInstanceProcAddr cannot return itself
+    if (strcmp(procname, "vkGetInstanceProcAddr") == 0)
+        return (GLFWvkproc) vkGetInstanceProcAddr;
+
     proc = (GLFWvkproc) vkGetInstanceProcAddr(instance, procname);
-#if defined(_GLFW_VULKAN_STATIC)
     if (!proc)
     {
-        if (strcmp(procname, "vkGetInstanceProcAddr") == 0)
-            return (GLFWvkproc) vkGetInstanceProcAddr;
+        if (_glfw.vk.handle)
+            proc = (GLFWvkproc) _glfwPlatformGetModuleSymbol(_glfw.vk.handle, procname);
     }
-#else
-    if (!proc)
-        proc = (GLFWvkproc) _glfwPlatformGetModuleSymbol(_glfw.vk.handle, procname);
-#endif
 
     return proc;
 }

@@ -121,7 +121,7 @@ int main(int argc, char** argv)
         nk_glfw3_new_frame();
         if (nk_begin(nk, "main", area, 0))
         {
-            nk_layout_row_dynamic(nk, 30, 4);
+            nk_layout_row_dynamic(nk, 30, 5);
 
             if (nk_button_label(nk, "Toggle Fullscreen"))
             {
@@ -149,6 +149,16 @@ int main(int argc, char** argv)
                 glfwIconifyWindow(window);
             if (nk_button_label(nk, "Restore"))
                 glfwRestoreWindow(window);
+            if (nk_button_label(nk, "Hide (briefly)"))
+            {
+                glfwHideWindow(window);
+
+                const double time = glfwGetTime() + 3.0;
+                while (glfwGetTime() < time)
+                    glfwWaitEventsTimeout(1.0);
+
+                glfwShowWindow(window);
+            }
 
             nk_layout_row_dynamic(nk, 30, 1);
 

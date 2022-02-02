@@ -35,6 +35,7 @@ successfully initialized, and only from the main thread.
  - @ref glfwSetErrorCallback
  - @ref glfwInitHint
  - @ref glfwInitAllocator
+ - @ref glfwInitVulkanLoader
  - @ref glfwInit
  - @ref glfwTerminate
 

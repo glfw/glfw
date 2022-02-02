@@ -363,9 +363,7 @@ GLFWbool _glfwInitJoysticksLinux(void)
 
 void _glfwTerminateJoysticksLinux(void)
 {
-    int jid;
-
-    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    for (int jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         _GLFWjoystick* js = _glfw.joysticks + jid;
         if (js->present)

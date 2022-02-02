@@ -177,6 +177,7 @@ typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGIPROC)(GLenum,GLuint);
 #define EGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR 0x2098
 #define EGL_PLATFORM_X11_EXT 0x31d5
 #define EGL_PLATFORM_WAYLAND_EXT 0x31d8
+#define EGL_PRESENT_OPAQUE_EXT 0x31df
 #define EGL_PLATFORM_ANGLE_ANGLE 0x3202
 #define EGL_PLATFORM_ANGLE_TYPE_ANGLE 0x3203
 #define EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE 0x320d
@@ -323,15 +324,9 @@ typedef struct VkExtensionProperties
 
 typedef void (APIENTRY * PFN_vkVoidFunction)(void);
 
-#if defined(_GLFW_VULKAN_STATIC)
-  PFN_vkVoidFunction vkGetInstanceProcAddr(VkInstance,const char*);
-  VkResult vkEnumerateInstanceExtensionProperties(const char*,uint32_t*,VkExtensionProperties*);
-#else
-  typedef PFN_vkVoidFunction (APIENTRY * PFN_vkGetInstanceProcAddr)(VkInstance,const char*);
-  typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const char*,uint32_t*,VkExtensionProperties*);
-  #define vkEnumerateInstanceExtensionProperties _glfw.vk.EnumerateInstanceExtensionProperties
-  #define vkGetInstanceProcAddr _glfw.vk.GetInstanceProcAddr
-#endif
+typedef PFN_vkVoidFunction (APIENTRY * PFN_vkGetInstanceProcAddr)(VkInstance,const char*);
+typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const char*,uint32_t*,VkExtensionProperties*);
+#define vkGetInstanceProcAddr _glfw.vk.GetInstanceProcAddr
 
 #include "platform.h"
 
@@ -357,12 +352,12 @@ typedef void (APIENTRY * PFN_vkVoidFunction)(void);
     }
 
 // Swaps the provided pointers
-#define _GLFW_SWAP_POINTERS(x, y) \
-    {                             \
-        void* t;                  \
-        t = x;                    \
-        x = y;                    \
-        y = t;                    \
+#define _GLFW_SWAP(type, x, y) \
+    {                          \
+        type t;                \
+        t = x;                 \
+        x = y;                 \
+        y = t;                 \
     }
 
 // Per-thread error structure
@@ -383,6 +378,7 @@ struct _GLFWinitconfig
     GLFWbool      hatButtons;
     int           angleType;
     int           platformID;
+    PFN_vkGetInstanceProcAddr vulkanLoader;
     struct {
         GLFWbool  menubar;
         GLFWbool  chdir;
@@ -808,6 +804,7 @@ struct _GLFWlibrary
         GLFWbool        EXT_platform_base;
         GLFWbool        EXT_platform_x11;
         GLFWbool        EXT_platform_wayland;
+        GLFWbool        EXT_present_opaque;
         GLFWbool        ANGLE_platform_angle;
         GLFWbool        ANGLE_platform_angle_opengl;
         GLFWbool        ANGLE_platform_angle_d3d;
@@ -854,10 +851,7 @@ struct _GLFWlibrary
         GLFWbool        available;
         void*           handle;
         char*           extensions[2];
-#if !defined(_GLFW_VULKAN_STATIC)
-        PFN_vkEnumerateInstanceExtensionProperties EnumerateInstanceExtensionProperties;
         PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
-#endif
         GLFWbool        KHR_surface;
         GLFWbool        KHR_win32_surface;
         GLFWbool        MVK_macos_surface;
@@ -925,7 +919,7 @@ void _glfwInputWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor);
 void _glfwInputKey(_GLFWwindow* window,
                    int key, int scancode, int action, int mods);
 void _glfwInputChar(_GLFWwindow* window,
-                    unsigned int codepoint, int mods, GLFWbool plain);
+                    uint32_t codepoint, int mods, GLFWbool plain);
 void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset);
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods);
 void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos);
@@ -1000,6 +994,8 @@ GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
 GLFWbool _glfwInitVulkan(int mode);
 void _glfwTerminateVulkan(void);
 const char* _glfwGetVulkanResultString(VkResult result);
+
+size_t _glfwEncodeUTF8(char* s, uint32_t codepoint);
 
 char* _glfw_strdup(const char* source);
 float _glfw_fminf(float a, float b);

@@ -429,44 +429,13 @@ static char** parseUriList(char* text, int* count)
     return paths;
 }
 
-// Encode a Unicode code point to a UTF-8 stream
-// Based on cutef8 by Jeff Bezanson (Public Domain)
-//
-static size_t encodeUTF8(char* s, unsigned int ch)
-{
-    size_t count = 0;
-
-    if (ch < 0x80)
-        s[count++] = (char) ch;
-    else if (ch < 0x800)
-    {
-        s[count++] = (ch >> 6) | 0xc0;
-        s[count++] = (ch & 0x3f) | 0x80;
-    }
-    else if (ch < 0x10000)
-    {
-        s[count++] = (ch >> 12) | 0xe0;
-        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
-        s[count++] = (ch & 0x3f) | 0x80;
-    }
-    else if (ch < 0x110000)
-    {
-        s[count++] = (ch >> 18) | 0xf0;
-        s[count++] = ((ch >> 12) & 0x3f) | 0x80;
-        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
-        s[count++] = (ch & 0x3f) | 0x80;
-    }
-
-    return count;
-}
-
 // Decode a Unicode code point from a UTF-8 stream
 // Based on cutef8 by Jeff Bezanson (Public Domain)
 //
-static unsigned int decodeUTF8(const char** s)
+static uint32_t decodeUTF8(const char** s)
 {
-    unsigned int ch = 0, count = 0;
-    static const unsigned int offsets[] =
+    uint32_t codepoint = 0, count = 0;
+    static const uint32_t offsets[] =
     {
         0x00000000u, 0x00003080u, 0x000e2080u,
         0x03c82080u, 0xfa082080u, 0x82082080u
@@ -474,13 +443,13 @@ static unsigned int decodeUTF8(const char** s)
 
     do
     {
-        ch = (ch << 6) + (unsigned char) **s;
+        codepoint = (codepoint << 6) + (unsigned char) **s;
         (*s)++;
         count++;
     } while ((**s & 0xc0) == 0x80);
 
     assert(count <= 6);
-    return ch - offsets[count - 1];
+    return codepoint - offsets[count - 1];
 }
 
 // Convert the specified Latin-1 string to UTF-8
@@ -497,7 +466,7 @@ static char* convertLatin1toUTF8(const char* source)
     char* tp = target;
 
     for (sp = source;  *sp;  sp++)
-        tp += encodeUTF8(tp, *sp);
+        tp += _glfwEncodeUTF8(tp, *sp);
 
     return target;
 }
@@ -788,7 +757,6 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 //
 static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
 {
-    int i;
     char* selectionString = NULL;
     const Atom formats[] = { _glfw.x11.UTF8_STRING, XA_STRING };
     const int formatCount = sizeof(formats) / sizeof(formats[0]);
@@ -831,14 +799,13 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
         // Multiple conversions were requested
 
         Atom* targets;
-        unsigned long i, count;
+        const unsigned long count =
+            _glfwGetWindowPropertyX11(request->requestor,
+                                      request->property,
+                                      _glfw.x11.ATOM_PAIR,
+                                      (unsigned char**) &targets);
 
-        count = _glfwGetWindowPropertyX11(request->requestor,
-                                          request->property,
-                                          _glfw.x11.ATOM_PAIR,
-                                          (unsigned char**) &targets);
-
-        for (i = 0;  i < count;  i += 2)
+        for (unsigned long i = 0;  i < count;  i += 2)
         {
             int j;
 
@@ -896,7 +863,7 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
 
     // Conversion to a data target was requested
 
-    for (i = 0;  i < formatCount;  i++)
+    for (int i = 0;  i < formatCount;  i++)
     {
         if (request->target == formats[i])
         {
@@ -1319,9 +1286,9 @@ static void processEvent(XEvent *event)
 
                 _glfwInputKey(window, key, keycode, GLFW_PRESS, mods);
 
-                const long character = _glfwKeySym2Unicode(keysym);
-                if (character != -1)
-                    _glfwInputChar(window, character, mods, plain);
+                const uint32_t codepoint = _glfwKeySym2Unicode(keysym);
+                if (codepoint != GLFW_INVALID_CODEPOINT)
+                    _glfwInputChar(window, codepoint, mods, plain);
             }
 
             return;
@@ -1588,7 +1555,7 @@ static void processEvent(XEvent *event)
             else if (event->xclient.message_type == _glfw.x11.XdndEnter)
             {
                 // A drag operation has entered the window
-                unsigned long i, count;
+                unsigned long count;
                 Atom* formats = NULL;
                 const GLFWbool list = event->xclient.data.l[1] & 1;
 
@@ -1612,7 +1579,7 @@ static void processEvent(XEvent *event)
                     formats = (Atom*) event->xclient.data.l + 2;
                 }
 
-                for (i = 0;  i < count;  i++)
+                for (unsigned int i = 0;  i < count;  i++)
                 {
                     if (formats[i] == _glfw.x11.text_uri_list)
                     {
@@ -1718,12 +1685,12 @@ static void processEvent(XEvent *event)
 
                 if (result)
                 {
-                    int i, count;
+                    int count;
                     char** paths = parseUriList(data, &count);
 
                     _glfwInputDrop(window, count, (const char**) paths);
 
-                    for (i = 0;  i < count;  i++)
+                    for (int i = 0;  i < count;  i++)
                         _glfw_free(paths[i]);
                     _glfw_free(paths);
                 }
@@ -2102,28 +2069,34 @@ void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* imag
 {
     if (count)
     {
-        int i, j, longCount = 0;
+        int longCount = 0;
 
-        for (i = 0;  i < count;  i++)
+        for (int i = 0;  i < count;  i++)
             longCount += 2 + images[i].width * images[i].height;
 
-        long* icon = _glfw_calloc(longCount, sizeof(long));
-        long* target = icon;
+        unsigned long* icon = _glfw_calloc(longCount, sizeof(unsigned long));
+        unsigned long* target = icon;
 
-        for (i = 0;  i < count;  i++)
+        for (int i = 0;  i < count;  i++)
         {
             *target++ = images[i].width;
             *target++ = images[i].height;
 
-            for (j = 0;  j < images[i].width * images[i].height;  j++)
+            for (int j = 0;  j < images[i].width * images[i].height;  j++)
             {
-                *target++ = (images[i].pixels[j * 4 + 0] << 16) |
-                            (images[i].pixels[j * 4 + 1] <<  8) |
-                            (images[i].pixels[j * 4 + 2] <<  0) |
-                            (images[i].pixels[j * 4 + 3] << 24);
+                *target++ = (((unsigned long) images[i].pixels[j * 4 + 0]) << 16) |
+                            (((unsigned long) images[i].pixels[j * 4 + 1]) <<  8) |
+                            (((unsigned long) images[i].pixels[j * 4 + 2]) <<  0) |
+                            (((unsigned long) images[i].pixels[j * 4 + 3]) << 24);
             }
         }
 
+        // NOTE: XChangeProperty expects 32-bit values like the image data above to be
+        //       placed in the 32 least significant bits of individual longs.  This is
+        //       true even if long is 64-bit and a WM protocol calls for "packed" data.
+        //       This is because of a historical mistake that then became part of the Xlib
+        //       ABI.  Xlib will pack these values into a regular array of 32-bit values
+        //       before sending it over the wire.
         XChangeProperty(_glfw.x11.display, window->x11.handle,
                         _glfw.x11.NET_WM_ICON,
                         XA_CARDINAL, 32,
@@ -2537,7 +2510,6 @@ int _glfwWindowVisibleX11(_GLFWwindow* window)
 int _glfwWindowMaximizedX11(_GLFWwindow* window)
 {
     Atom* states;
-    unsigned long i;
     GLFWbool maximized = GLFW_FALSE;
 
     if (!_glfw.x11.NET_WM_STATE ||
@@ -2553,7 +2525,7 @@ int _glfwWindowMaximizedX11(_GLFWwindow* window)
                                   XA_ATOM,
                                   (unsigned char**) &states);
 
-    for (i = 0;  i < count;  i++)
+    for (unsigned long i = 0;  i < count;  i++)
     {
         if (states[i] == _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT ||
             states[i] == _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ)
@@ -2651,18 +2623,19 @@ void _glfwSetWindowFloatingX11(_GLFWwindow* window, GLFWbool enabled)
     else
     {
         Atom* states = NULL;
-        unsigned long i, count;
-
-        count = _glfwGetWindowPropertyX11(window->x11.handle,
-                                          _glfw.x11.NET_WM_STATE,
-                                          XA_ATOM,
-                                          (unsigned char**) &states);
+        const unsigned long count =
+            _glfwGetWindowPropertyX11(window->x11.handle,
+                                      _glfw.x11.NET_WM_STATE,
+                                      XA_ATOM,
+                                      (unsigned char**) &states);
 
         // NOTE: We don't check for failure as this property may not exist yet
         //       and that's fine (and we'll create it implicitly with append)
 
         if (enabled)
         {
+            unsigned long i;
+
             for (i = 0;  i < count;  i++)
             {
                 if (states[i] == _glfw.x11.NET_WM_STATE_ABOVE)
@@ -2680,20 +2653,16 @@ void _glfwSetWindowFloatingX11(_GLFWwindow* window, GLFWbool enabled)
         }
         else if (states)
         {
-            for (i = 0;  i < count;  i++)
+            for (unsigned long i = 0;  i < count;  i++)
             {
                 if (states[i] == _glfw.x11.NET_WM_STATE_ABOVE)
+                {
+                    states[i] = states[count - 1];
+                    XChangeProperty(_glfw.x11.display, window->x11.handle,
+                                    _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
+                                    PropModeReplace, (unsigned char*) states, count - 1);
                     break;
-            }
-
-            if (i < count)
-            {
-                states[i] = states[count - 1];
-                count--;
-
-                XChangeProperty(_glfw.x11.display, window->x11.handle,
-                                _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
-                                PropModeReplace, (unsigned char*) states, count);
+                }
             }
         }
 
@@ -2899,11 +2868,11 @@ const char* _glfwGetScancodeNameX11(int scancode)
     if (keysym == NoSymbol)
         return NULL;
 
-    const long ch = _glfwKeySym2Unicode(keysym);
-    if (ch == -1)
+    const uint32_t codepoint = _glfwKeySym2Unicode(keysym);
+    if (codepoint == GLFW_INVALID_CODEPOINT)
         return NULL;
 
-    const size_t count = encodeUTF8(_glfw.x11.keynames[key], (unsigned int) ch);
+    const size_t count = _glfwEncodeUTF8(_glfw.x11.keynames[key], codepoint);
     if (count == 0)
         return NULL;
 

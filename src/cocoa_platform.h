@@ -70,6 +70,10 @@ typedef void* id;
  #define NSWindowStyleMaskTitled NSTitledWindowMask
 #endif
 
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 101300
+ #define NSPasteboardTypeURL NSURLPboardType
+#endif
+
 typedef VkFlags VkMacOSSurfaceCreateFlagsMVK;
 typedef VkFlags VkMetalSurfaceCreateFlagsEXT;
 

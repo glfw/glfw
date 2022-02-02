@@ -179,6 +179,7 @@ video tutorials.
  - Ali Sherief
  - Yoshiki Shibukawa
  - Dmitri Shuralyov
+ - Daniel Sieger
  - Daniel Skorupski
  - Bradley Smith
  - Cliff Smolinsky

@@ -70,6 +70,12 @@ enabling keyboard access to the window menu via the Alt+Space and
 Alt-and-then-Space shortcuts.  This may be useful for more GUI-oriented
 applications.
 
+@subsubsection features_34_egl_getconfig Query EGLConfig
+
+GLFW now provides the [glfwGetEGLConfig](@ref glfwGetEGLConfig)
+function that returns the EGLConfig that was chosen to create the
+given window handle.
+
 
 @subsection caveats Caveats for version 3.4
 
@@ -180,6 +186,7 @@ then GLFW will fail to initialize.
  - @ref glfwGetPlatform
  - @ref glfwPlatformSupported
  - @ref glfwInitVulkanLoader
+ - @ref glfwGetEGLConfig
 
 
 @subsubsection types_34 New types in version 3.4

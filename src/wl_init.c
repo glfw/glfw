@@ -26,6 +26,8 @@
 // It is fine to use C99 in this file because it will not be built with VS
 //========================================================================
 
+#define _GNU_SOURCE
+
 #include "internal.h"
 
 #include <assert.h>
@@ -35,6 +37,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/timerfd.h>
 #include <unistd.h>
@@ -60,6 +63,57 @@
 static inline int min(int n1, int n2)
 {
     return n1 < n2 ? n1 : n2;
+}
+
+// Splits and translates a text/uri-list into separate file paths
+// NOTE: This function destroys the provided string
+//
+static char** parseUriList(char* text, int* count)
+{
+    const char* prefix = "file://";
+    char** paths = NULL;
+    char* line;
+
+    *count = 0;
+
+    while ((line = strtok(text, "\r\n")))
+    {
+        text = NULL;
+
+        if (line[0] == '#')
+            continue;
+
+        if (strncmp(line, prefix, strlen(prefix)) == 0)
+        {
+            line += strlen(prefix);
+            // TODO: Validate hostname
+            while (*line != '/')
+                line++;
+        }
+
+        (*count)++;
+
+        char* path = _glfw_calloc(strlen(line) + 1, 1);
+        paths = _glfw_realloc(paths, *count * sizeof(char*));
+        paths[*count - 1] = path;
+
+        while (*line)
+        {
+            if (line[0] == '%' && line[1] && line[2])
+            {
+                const char digits[3] = { line[1], line[2], '\0' };
+                *path = strtol(digits, NULL, 16);
+                line += 2;
+            }
+            else
+                *path = *line;
+
+            path++;
+            line++;
+        }
+    }
+
+    return paths;
 }
 
 static _GLFWwindow* findWindowFromDecorationSurface(struct wl_surface* surface,
@@ -719,10 +773,6 @@ static void dataDeviceHandleDataOffer(void* data,
                                       struct wl_data_device* dataDevice,
                                       struct wl_data_offer* id)
 {
-    if (_glfw.wl.dataOffer)
-        wl_data_offer_destroy(_glfw.wl.dataOffer);
-
-    _glfw.wl.dataOffer = id;
     wl_data_offer_add_listener(_glfw.wl.dataOffer, &dataOfferListener, NULL);
 }
 
@@ -734,11 +784,25 @@ static void dataDeviceHandleEnter(void* data,
                                   wl_fixed_t y,
                                   struct wl_data_offer *id)
 {
+    // Happens in the case we just destroyed the surface.
+    if (!surface)
+        return;
+
+    if (_glfw.wl.dragDataOffer)
+        wl_data_offer_destroy(_glfw.wl.dragDataOffer);
+
+    _glfw.wl.dragFocus = wl_surface_get_user_data(surface);
+    _glfw.wl.dragSerial = serial;
+    _glfw.wl.dragDataOffer = id;
+
+    // Accept with MIME text/uri-list
+    wl_data_offer_accept(_glfw.wl.dragDataOffer, serial, "text/uri-list");
 }
 
 static void dataDeviceHandleLeave(void* data,
                                   struct wl_data_device* dataDevice)
 {
+    _glfw.wl.dragFocus = 0;
 }
 
 static void dataDeviceHandleMotion(void* data,
@@ -752,12 +816,91 @@ static void dataDeviceHandleMotion(void* data,
 static void dataDeviceHandleDrop(void* data,
                                  struct wl_data_device* dataDevice)
 {
+    int ret;
+    int fds[2];
+    size_t len = 0;
+    size_t size = 2048;
+    char* buffer = 0;
+
+    if(_glfw.wl.dragDataOffer)
+    {
+        ret = pipe2(fds, O_CLOEXEC);
+        if (ret < 0)
+        {
+            // TODO: also report errno maybe?
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Wayland: Impossible to create drag and drop pipe fds");
+            return;
+        }
+
+        wl_data_offer_receive(_glfw.wl.dragDataOffer, "text/uri-list", fds[1]);
+        close(fds[1]);
+
+        wl_display_flush(_glfw.wl.display);
+
+        while(1)
+        {
+            // Grow if necessary
+            if(len + 4096 > size)
+            {
+                size *= 2;
+                buffer = _glfw_realloc(buffer, size);
+                if(!buffer)
+                {
+                    close(fds[0]);
+                    return;
+                }
+            }
+
+            // Then read from the fd to the buffer, handling all known errors.
+            ret = read(fds[0], buffer + len, 4096);
+            if (ret == 0)
+                break;
+            if (ret == -1 && errno == EINTR)
+                continue;
+            if (ret == -1)
+            {
+                // TODO: also report errno maybe.
+                _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "Wayland: Impossible to read from drag and drop fd");
+                free(buffer);
+                close(fds[0]);
+                return;
+            }
+            len += ret;
+        }
+        close(fds[0]);
+        if (len + 1 > size)
+        {
+            size += 1;
+            buffer = _glfw_realloc(buffer, size);
+            if(!buffer)
+            {
+                return;
+            }
+        }
+
+        // Parse data
+        int count;
+        char** paths = parseUriList(buffer, &count);
+
+        _glfwInputDrop(_glfw.wl.dragFocus, count, (const char**) paths);
+
+        for (int i = 0;  i < count;  i++)
+            _glfw_free(paths[i]);
+        _glfw_free(paths);
+        _glfw_free(buffer);
+    }
 }
 
 static void dataDeviceHandleSelection(void* data,
                                       struct wl_data_device* dataDevice,
                                       struct wl_data_offer* id)
 {
+    if (_glfw.wl.dataOffer)
+        wl_data_offer_destroy(_glfw.wl.dataOffer);
+
+    _glfw.wl.dataOffer = id;
 }
 
 static const struct wl_data_device_listener dataDeviceListener = {
@@ -1433,6 +1576,8 @@ void _glfwTerminateWayland(void)
         wl_data_device_destroy(_glfw.wl.dataDevice);
     if (_glfw.wl.dataOffer)
         wl_data_offer_destroy(_glfw.wl.dataOffer);
+    if(_glfw.wl.dragDataOffer)
+        wl_data_offer_destroy(_glfw.wl.dragDataOffer);
     if (_glfw.wl.dataDeviceManager)
         wl_data_device_manager_destroy(_glfw.wl.dataDeviceManager);
     if (_glfw.wl.pointer)

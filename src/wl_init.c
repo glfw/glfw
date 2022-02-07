@@ -773,7 +773,7 @@ static void dataDeviceHandleDataOffer(void* data,
                                       struct wl_data_device* dataDevice,
                                       struct wl_data_offer* id)
 {
-    wl_data_offer_add_listener(_glfw.wl.dataOffer, &dataOfferListener, NULL);
+    wl_data_offer_add_listener(id, &dataOfferListener, NULL);
 }
 
 static void dataDeviceHandleEnter(void* data,

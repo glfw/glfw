@@ -1461,9 +1461,7 @@ void _glfwTerminateWayland(void)
     if (_glfw.wl.cursorTimerfd >= 0)
         close(_glfw.wl.cursorTimerfd);
 
-    if (_glfw.wl.clipboardString)
-        _glfw_free(_glfw.wl.clipboardString);
-    if (_glfw.wl.clipboardSendString)
-        _glfw_free(_glfw.wl.clipboardSendString);
+    _glfw_free(_glfw.wl.clipboardString);
+    _glfw_free(_glfw.wl.clipboardSendString);
 }
 

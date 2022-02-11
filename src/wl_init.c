@@ -1294,10 +1294,8 @@ void _glfwPlatformTerminate(void)
     if (_glfw.wl.cursorTimerfd >= 0)
         close(_glfw.wl.cursorTimerfd);
 
-    if (_glfw.wl.clipboardString)
-        free(_glfw.wl.clipboardString);
-    if (_glfw.wl.clipboardSendString)
-        free(_glfw.wl.clipboardSendString);
+    free(_glfw.wl.clipboardString);
+    free(_glfw.wl.clipboardSendString);
 }
 
 const char* _glfwPlatformGetVersionString(void)

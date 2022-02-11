@@ -1372,7 +1372,7 @@ int _glfwInitWayland(void)
         _glfw.wl.clipboardString = _glfw_calloc(_glfw.wl.clipboardSize, 1);
         if (!_glfw.wl.clipboardString)
         {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
+            _glfwInputError(GLFW_OUT_OF_MEMORY,
                             "Wayland: Unable to allocate clipboard memory");
             return GLFW_FALSE;
         }

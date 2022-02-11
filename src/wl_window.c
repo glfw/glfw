@@ -1675,7 +1675,7 @@ static GLFWbool growClipboardString(void)
     clipboard = _glfw_realloc(clipboard, _glfw.wl.clipboardSize * 2);
     if (!clipboard)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
                         "Wayland: Impossible to grow clipboard string");
         return GLFW_FALSE;
     }

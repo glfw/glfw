@@ -266,7 +266,6 @@ if (_GLFW_WAYLAND)
 
     include(CheckIncludeFiles)
     include(CheckFunctionExists)
-    check_include_files(xkbcommon/xkbcommon-compose.h HAVE_XKBCOMMON_COMPOSE_H)
     check_function_exists(memfd_create HAVE_MEMFD_CREATE)
 
     if (NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")

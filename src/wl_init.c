@@ -374,12 +374,8 @@ static void keyboardHandleKeymap(void* data,
 {
     struct xkb_keymap* keymap;
     struct xkb_state* state;
-
-#ifdef HAVE_XKBCOMMON_COMPOSE_H
     struct xkb_compose_table* composeTable;
     struct xkb_compose_state* composeState;
-#endif
-
     char* mapStr;
     const char* locale;
 
@@ -427,7 +423,6 @@ static void keyboardHandleKeymap(void* data,
     if (!locale)
         locale = "C";
 
-#ifdef HAVE_XKBCOMMON_COMPOSE_H
     composeTable =
         xkb_compose_table_new_from_locale(_glfw.wl.xkb.context, locale,
                                           XKB_COMPOSE_COMPILE_NO_FLAGS);
@@ -447,7 +442,6 @@ static void keyboardHandleKeymap(void* data,
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Failed to create XKB compose table");
     }
-#endif
 
     xkb_keymap_unref(_glfw.wl.xkb.keymap);
     xkb_state_unref(_glfw.wl.xkb.state);
@@ -517,7 +511,6 @@ static int toGLFWKeyCode(uint32_t key)
     return GLFW_KEY_UNKNOWN;
 }
 
-#ifdef HAVE_XKBCOMMON_COMPOSE_H
 static xkb_keysym_t composeSymbol(xkb_keysym_t sym)
 {
     if (sym == XKB_KEY_NoSymbol || !_glfw.wl.xkb.composeState)
@@ -537,7 +530,6 @@ static xkb_keysym_t composeSymbol(xkb_keysym_t sym)
             return sym;
     }
 }
-#endif
 
 static GLFWbool inputChar(_GLFWwindow* window, uint32_t scancode)
 {
@@ -546,11 +538,7 @@ static GLFWbool inputChar(_GLFWwindow* window, uint32_t scancode)
 
     if (xkb_state_key_get_syms(_glfw.wl.xkb.state, keycode, &keysyms) == 1)
     {
-#ifdef HAVE_XKBCOMMON_COMPOSE_H
         const xkb_keysym_t keysym = composeSymbol(keysyms[0]);
-#else
-        const xkb_keysym_t keysym = keysyms[0];
-#endif
         const uint32_t codepoint = _glfwKeySym2Unicode(keysym);
         if (codepoint != GLFW_INVALID_CODEPOINT)
         {
@@ -1120,7 +1108,6 @@ int _glfwPlatformInit(void)
     _glfw.wl.xkb.state_key_get_layout = (PFN_xkb_state_key_get_layout)
         _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_key_get_layout");
 
-#ifdef HAVE_XKBCOMMON_COMPOSE_H
     _glfw.wl.xkb.compose_table_new_from_locale = (PFN_xkb_compose_table_new_from_locale)
         _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_table_new_from_locale");
     _glfw.wl.xkb.compose_table_unref = (PFN_xkb_compose_table_unref)
@@ -1135,7 +1122,6 @@ int _glfwPlatformInit(void)
         _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_get_status");
     _glfw.wl.xkb.compose_state_get_one_sym = (PFN_xkb_compose_state_get_one_sym)
         _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_state_get_one_sym");
-#endif
 
     _glfw.wl.display = wl_display_connect(NULL);
     if (!_glfw.wl.display)
@@ -1234,10 +1220,8 @@ void _glfwPlatformTerminate(void)
         _glfw.wl.egl.handle = NULL;
     }
 
-#ifdef HAVE_XKBCOMMON_COMPOSE_H
     if (_glfw.wl.xkb.composeState)
         xkb_compose_state_unref(_glfw.wl.xkb.composeState);
-#endif
     if (_glfw.wl.xkb.keymap)
         xkb_keymap_unref(_glfw.wl.xkb.keymap);
     if (_glfw.wl.xkb.state)

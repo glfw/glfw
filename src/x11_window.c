@@ -429,44 +429,13 @@ static char** parseUriList(char* text, int* count)
     return paths;
 }
 
-// Encode a Unicode code point to a UTF-8 stream
-// Based on cutef8 by Jeff Bezanson (Public Domain)
-//
-static size_t encodeUTF8(char* s, unsigned int ch)
-{
-    size_t count = 0;
-
-    if (ch < 0x80)
-        s[count++] = (char) ch;
-    else if (ch < 0x800)
-    {
-        s[count++] = (ch >> 6) | 0xc0;
-        s[count++] = (ch & 0x3f) | 0x80;
-    }
-    else if (ch < 0x10000)
-    {
-        s[count++] = (ch >> 12) | 0xe0;
-        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
-        s[count++] = (ch & 0x3f) | 0x80;
-    }
-    else if (ch < 0x110000)
-    {
-        s[count++] = (ch >> 18) | 0xf0;
-        s[count++] = ((ch >> 12) & 0x3f) | 0x80;
-        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
-        s[count++] = (ch & 0x3f) | 0x80;
-    }
-
-    return count;
-}
-
 // Decode a Unicode code point from a UTF-8 stream
 // Based on cutef8 by Jeff Bezanson (Public Domain)
 //
-static unsigned int decodeUTF8(const char** s)
+static uint32_t decodeUTF8(const char** s)
 {
-    unsigned int ch = 0, count = 0;
-    static const unsigned int offsets[] =
+    uint32_t codepoint = 0, count = 0;
+    static const uint32_t offsets[] =
     {
         0x00000000u, 0x00003080u, 0x000e2080u,
         0x03c82080u, 0xfa082080u, 0x82082080u
@@ -474,13 +443,13 @@ static unsigned int decodeUTF8(const char** s)
 
     do
     {
-        ch = (ch << 6) + (unsigned char) **s;
+        codepoint = (codepoint << 6) + (unsigned char) **s;
         (*s)++;
         count++;
     } while ((**s & 0xc0) == 0x80);
 
     assert(count <= 6);
-    return ch - offsets[count - 1];
+    return codepoint - offsets[count - 1];
 }
 
 // Convert the specified Latin-1 string to UTF-8
@@ -497,7 +466,7 @@ static char* convertLatin1toUTF8(const char* source)
     char* tp = target;
 
     for (sp = source;  *sp;  sp++)
-        tp += encodeUTF8(tp, *sp);
+        tp += _glfwEncodeUTF8(tp, *sp);
 
     return target;
 }
@@ -1317,9 +1286,9 @@ static void processEvent(XEvent *event)
 
                 _glfwInputKey(window, key, keycode, GLFW_PRESS, mods);
 
-                const long character = _glfwKeySym2Unicode(keysym);
-                if (character != -1)
-                    _glfwInputChar(window, character, mods, plain);
+                const uint32_t codepoint = _glfwKeySym2Unicode(keysym);
+                if (codepoint != GLFW_INVALID_CODEPOINT)
+                    _glfwInputChar(window, codepoint, mods, plain);
             }
 
             return;
@@ -2105,8 +2074,8 @@ void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* imag
         for (int i = 0;  i < count;  i++)
             longCount += 2 + images[i].width * images[i].height;
 
-        long* icon = _glfw_calloc(longCount, sizeof(long));
-        long* target = icon;
+        unsigned long* icon = _glfw_calloc(longCount, sizeof(unsigned long));
+        unsigned long* target = icon;
 
         for (int i = 0;  i < count;  i++)
         {
@@ -2115,13 +2084,19 @@ void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* imag
 
             for (int j = 0;  j < images[i].width * images[i].height;  j++)
             {
-                *target++ = (images[i].pixels[j * 4 + 0] << 16) |
-                            (images[i].pixels[j * 4 + 1] <<  8) |
-                            (images[i].pixels[j * 4 + 2] <<  0) |
-                            (images[i].pixels[j * 4 + 3] << 24);
+                *target++ = (((unsigned long) images[i].pixels[j * 4 + 0]) << 16) |
+                            (((unsigned long) images[i].pixels[j * 4 + 1]) <<  8) |
+                            (((unsigned long) images[i].pixels[j * 4 + 2]) <<  0) |
+                            (((unsigned long) images[i].pixels[j * 4 + 3]) << 24);
             }
         }
 
+        // NOTE: XChangeProperty expects 32-bit values like the image data above to be
+        //       placed in the 32 least significant bits of individual longs.  This is
+        //       true even if long is 64-bit and a WM protocol calls for "packed" data.
+        //       This is because of a historical mistake that then became part of the Xlib
+        //       ABI.  Xlib will pack these values into a regular array of 32-bit values
+        //       before sending it over the wire.
         XChangeProperty(_glfw.x11.display, window->x11.handle,
                         _glfw.x11.NET_WM_ICON,
                         XA_CARDINAL, 32,
@@ -2893,11 +2868,11 @@ const char* _glfwGetScancodeNameX11(int scancode)
     if (keysym == NoSymbol)
         return NULL;
 
-    const long ch = _glfwKeySym2Unicode(keysym);
-    if (ch == -1)
+    const uint32_t codepoint = _glfwKeySym2Unicode(keysym);
+    if (codepoint == GLFW_INVALID_CODEPOINT)
         return NULL;
 
-    const size_t count = encodeUTF8(_glfw.x11.keynames[key], (unsigned int) ch);
+    const size_t count = _glfwEncodeUTF8(_glfw.x11.keynames[key], codepoint);
     if (count == 0)
         return NULL;
 

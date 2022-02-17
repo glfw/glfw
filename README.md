@@ -202,6 +202,9 @@ information on what to include when reporting a bug.
    later (#1783,#1796)
  - [Win32] Bugfix: Compilation with LLVM for Windows failed (#1807,#1824,#1874)
  - [Win32] Bugfix: The foreground lock timeout was overridden, ignoring the user
+ - [Win32] Bugfix: Content scale queries could fail silently (#1615)
+ - [Win32] Bugfix: Content scales could have garbage values if monitor was recently
+   disconnected (#1615)
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)
@@ -231,6 +234,7 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: Moving the cursor programmatically would freeze it for
    a fraction of a second (#1962)
  - [Cocoa] Bugfix: `kIOMasterPortDefault` was deprecated in macOS 12.0 (#1980)
+ - [Cocoa] Bugfix: `kUTTypeURL` was deprecated in macOS 12.0 (#2003)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -259,7 +263,11 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: Some window attributes were not applied on leaving fullscreen
    (#1863)
  - [X11] Bugfix: Changing `GLFW_FLOATING` could leak memory
+ - [X11] Bugfix: Icon pixel format conversion worked only by accident, relying on
+   undefined behavior (#1986)
+ - [X11] Bugfix: Dynamic loading on OpenBSD failed due to soname differences
  - [Wayland] Added dynamic loading of all Wayland libraries
+ - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
@@ -273,6 +281,15 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Some keys were not repeating in Wayland (#1908)
  - [Wayland] Bugfix: Non-arrow cursors are offset from the hotspot (#1706,#1899)
  - [Wayland] Bugfix: The `O_CLOEXEC` flag was not defined on FreeBSD
+ - [Wayland] Bugfix: Key repeat could lead to a race condition (#1710)
+ - [Wayland] Bugfix: Activating a window would emit two input focus events
+ - [Wayland] Bugfix: Disable key repeat mechanism when window loses input focus
+ - [Wayland] Bugfix: Window hiding and showing did not work (#1492,#1731)
+ - [Wayland] Bugfix: A key being repeated was not released when window lost focus
+ - [Wayland] Bugfix: Showing a hidden window did not emit a window refresh event
+ - [Wayland] Bugfix: Full screen window creation did not ignore `GLFW_VISIBLE`
+ - [Wayland] Bugfix: Some keys were reported as wrong key or `GLFW_KEY_UNKNOWN`
+ - [Wayland] Bugfix: Text input did not repeat along with key repeat
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)

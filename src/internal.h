@@ -177,6 +177,7 @@ typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGIPROC)(GLenum,GLuint);
 #define EGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR 0x2098
 #define EGL_PLATFORM_X11_EXT 0x31d5
 #define EGL_PLATFORM_WAYLAND_EXT 0x31d8
+#define EGL_PRESENT_OPAQUE_EXT 0x31df
 #define EGL_PLATFORM_ANGLE_ANGLE 0x3202
 #define EGL_PLATFORM_ANGLE_TYPE_ANGLE 0x3203
 #define EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE 0x320d
@@ -803,6 +804,7 @@ struct _GLFWlibrary
         GLFWbool        EXT_platform_base;
         GLFWbool        EXT_platform_x11;
         GLFWbool        EXT_platform_wayland;
+        GLFWbool        EXT_present_opaque;
         GLFWbool        ANGLE_platform_angle;
         GLFWbool        ANGLE_platform_angle_opengl;
         GLFWbool        ANGLE_platform_angle_d3d;
@@ -917,7 +919,7 @@ void _glfwInputWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor);
 void _glfwInputKey(_GLFWwindow* window,
                    int key, int scancode, int action, int mods);
 void _glfwInputChar(_GLFWwindow* window,
-                    unsigned int codepoint, int mods, GLFWbool plain);
+                    uint32_t codepoint, int mods, GLFWbool plain);
 void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset);
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods);
 void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos);
@@ -992,6 +994,8 @@ GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
 GLFWbool _glfwInitVulkan(int mode);
 void _glfwTerminateVulkan(void);
 const char* _glfwGetVulkanResultString(VkResult result);
+
+size_t _glfwEncodeUTF8(char* s, uint32_t codepoint);
 
 char* _glfw_strdup(const char* source);
 float _glfw_fminf(float a, float b);

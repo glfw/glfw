@@ -63,6 +63,8 @@ GLFWbool _glfwInitVulkan(int mode)
         _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.1.dylib");
         if (!_glfw.vk.handle)
             _glfw.vk.handle = _glfwLoadLocalVulkanLoaderCocoa();
+#elif defined(__OpenBSD__)
+        _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.so");
 #else
         _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.so.1");
 #endif

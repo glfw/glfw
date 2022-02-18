@@ -35,6 +35,8 @@
 #include <stdio.h>
 #include <locale.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
 
 
 // Translate the X11 KeySyms for a key to a GLFW key code
@@ -1042,6 +1044,37 @@ static Window createHelperWindow(void)
                          CWEventMask, &wa);
 }
 
+// Create the pipe for empty events without assumuing the OS has pipe2(2)
+//
+static GLFWbool createEmptyEventPipe(void)
+{
+    if (pipe(_glfw.x11.emptyEventPipe) != 0)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "X11: Failed to create empty event pipe: %s",
+                        strerror(errno));
+        return GLFW_FALSE;
+    }
+
+    for (int i = 0; i < 2; i++)
+    {
+        const int sf = fcntl(_glfw.x11.emptyEventPipe[i], F_GETFL, 0);
+        const int df = fcntl(_glfw.x11.emptyEventPipe[i], F_GETFD, 0);
+
+        if (sf == -1 || df == -1 ||
+            fcntl(_glfw.x11.emptyEventPipe[i], F_SETFL, sf | O_NONBLOCK) == -1 ||
+            fcntl(_glfw.x11.emptyEventPipe[i], F_SETFD, df | FD_CLOEXEC) == -1)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Failed to set flags for empty event pipe: %s",
+                            strerror(errno));
+            return GLFW_FALSE;
+        }
+    }
+
+    return GLFW_TRUE;
+}
+
 // X error handler
 //
 static int errorHandler(Display *display, XErrorEvent* event)
@@ -1491,6 +1524,9 @@ int _glfwInitX11(void)
 
     getSystemContentScale(&_glfw.x11.contentScaleX, &_glfw.x11.contentScaleY);
 
+    if (!createEmptyEventPipe())
+        return GLFW_FALSE;
+
     if (!initExtensions())
         return GLFW_FALSE;
 
@@ -1603,6 +1639,12 @@ void _glfwTerminateX11(void)
     {
         _glfwPlatformFreeModule(_glfw.x11.xlib.handle);
         _glfw.x11.xlib.handle = NULL;
+    }
+
+    if (_glfw.x11.emptyEventPipe[0] || _glfw.x11.emptyEventPipe[1])
+    {
+        close(_glfw.x11.emptyEventPipe[0]);
+        close(_glfw.x11.emptyEventPipe[1]);
     }
 }
 

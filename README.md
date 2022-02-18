@@ -272,6 +272,8 @@ information on what to include when reporting a bug.
    (#2024)
  - [X11] Bugfix: Joystick events could lead to busy-waiting (#1872)
  - [X11] Bugfix: `glfwWaitEvents*` did not continue for joystick events
+ - [X11] Bugfix: `glfwPostEmptyEvent` could be ignored due to race condition
+   (#379,#1281,#1285,#2033)
  - [Wayland] Added dynamic loading of all Wayland libraries
  - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Removed support for `wl_shell` (#1443)

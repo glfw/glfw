@@ -114,8 +114,12 @@ static GLFWbool waitForX11Event(double* timeout)
 //
 static GLFWbool waitForAnyEvent(double* timeout)
 {
-    nfds_t count = 1;
-    struct pollfd fds[2] = { { ConnectionNumber(_glfw.x11.display), POLLIN } };
+    nfds_t count = 2;
+    struct pollfd fds[3] =
+    {
+        { ConnectionNumber(_glfw.x11.display), POLLIN },
+        { _glfw.x11.emptyEventPipe[0], POLLIN }
+    };
 
 #if defined(__linux__)
     if (_glfw.joysticksInitialized)
@@ -135,6 +139,32 @@ static GLFWbool waitForAnyEvent(double* timeout)
     }
 
     return GLFW_TRUE;
+}
+
+// Writes a byte to the empty event pipe
+//
+static void writeEmptyEvent(void)
+{
+    for (;;)
+    {
+        const char byte = 0;
+        const int result = write(_glfw.x11.emptyEventPipe[1], &byte, 1);
+        if (result == 1 || (result == -1 && errno != EINTR))
+            break;
+    }
+}
+
+// Drains available data from the empty event pipe
+//
+static void drainEmptyEvents(void)
+{
+    for (;;)
+    {
+        char dummy[64];
+        const int result = read(_glfw.x11.emptyEventPipe[0], dummy, sizeof(dummy));
+        if (result == -1 && errno != EINTR)
+            break;
+    }
 }
 
 // Waits until a VisibilityNotify event arrives for the specified window or the
@@ -2778,6 +2808,8 @@ GLFWbool _glfwRawMouseMotionSupportedX11(void)
 
 void _glfwPollEventsX11(void)
 {
+    drainEmptyEvents();
+
 #if defined(__linux__)
     if (_glfw.joysticksInitialized)
         _glfwDetectJoystickConnectionLinux();
@@ -2823,13 +2855,7 @@ void _glfwWaitEventsTimeoutX11(double timeout)
 
 void _glfwPostEmptyEventX11(void)
 {
-    XEvent event = { ClientMessage };
-    event.xclient.window = _glfw.x11.helperWindowHandle;
-    event.xclient.format = 32; // Data is 32-bit longs
-    event.xclient.message_type = _glfw.x11.NULL_;
-
-    XSendEvent(_glfw.x11.display, _glfw.x11.helperWindowHandle, False, 0, &event);
-    XFlush(_glfw.x11.display);
+    writeEmptyEvent();
 }
 
 void _glfwGetCursorPosX11(_GLFWwindow* window, double* xpos, double* ypos)

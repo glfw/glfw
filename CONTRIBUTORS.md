@@ -180,12 +180,14 @@ video tutorials.
  - Ali Sherief
  - Yoshiki Shibukawa
  - Dmitri Shuralyov
+ - Joao da Silva
  - Daniel Sieger
  - Daniel Skorupski
  - Bradley Smith
  - Cliff Smolinsky
  - Patrick Snape
  - Erlend Sogge Heggen
+ - Olivier Sohn
  - Julian Squires
  - Johannes Stein
  - Pontus Stenetorp

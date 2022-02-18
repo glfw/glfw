@@ -128,6 +128,7 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: Waiting for events would fail if file descriptor was too large
    (#2024)
  - [X11] Bugfix: Joystick events could lead to busy-waiting (#1872)
+ - [X11] Bugfix: `glfwWaitEvents*` did not continue for joystick events
  - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Bugfix: Key repeat could lead to a race condition (#1710)
  - [Wayland] Bugfix: Activating a window would emit two input focus events

@@ -98,7 +98,14 @@ static GLFWbool waitForData(struct pollfd* fds, nfds_t count, double* timeout)
 static GLFWbool waitForX11Event(double* timeout)
 {
     struct pollfd fd = { ConnectionNumber(_glfw.x11.display), POLLIN };
-    return waitForData(&fd, 1, timeout);
+
+    while (!XPending(_glfw.x11.display))
+    {
+        if (!waitForData(&fd, 1, timeout))
+            return GLFW_FALSE;
+    }
+
+    return GLFW_TRUE;
 }
 
 // Wait for event data to arrive on any event file descriptor
@@ -115,7 +122,19 @@ static GLFWbool waitForAnyEvent(double* timeout)
         fds[count++] = (struct pollfd) { _glfw.linjs.inotify, POLLIN };
 #endif
 
-    return waitForData(fds, count, timeout);
+    while (!XPending(_glfw.x11.display))
+    {
+        if (!waitForData(fds, count, timeout))
+            return GLFW_FALSE;
+
+        for (int i = 1; i < count; i++)
+        {
+            if (fds[i].revents & POLLIN)
+                return GLFW_TRUE;
+        }
+    }
+
+    return GLFW_TRUE;
 }
 
 // Waits until a VisibilityNotify event arrives for the specified window or the
@@ -2797,20 +2816,13 @@ void _glfwPlatformPollEvents(void)
 
 void _glfwPlatformWaitEvents(void)
 {
-    while (!XPending(_glfw.x11.display))
-        waitForAnyEvent(NULL);
-
+    waitForAnyEvent(NULL);
     _glfwPlatformPollEvents();
 }
 
 void _glfwPlatformWaitEventsTimeout(double timeout)
 {
-    while (!XPending(_glfw.x11.display))
-    {
-        if (!waitForAnyEvent(&timeout))
-            break;
-    }
-
+    waitForAnyEvent(&timeout);
     _glfwPlatformPollEvents();
 }
 

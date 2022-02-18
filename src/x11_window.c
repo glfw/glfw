@@ -2782,8 +2782,6 @@ GLFWbool _glfwPlatformRawMouseMotionSupported(void)
 
 void _glfwPlatformPollEvents(void)
 {
-    _GLFWwindow* window;
-
 #if defined(__linux__)
     _glfwDetectJoystickConnectionLinux();
 #endif
@@ -2796,7 +2794,7 @@ void _glfwPlatformPollEvents(void)
         processEvent(&event);
     }
 
-    window = _glfw.x11.disabledCursorWindow;
+    _GLFWwindow* window = _glfw.x11.disabledCursorWindow;
     if (window)
     {
         int width, height;

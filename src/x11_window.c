@@ -82,18 +82,26 @@ static GLFWbool waitForEvent(double* timeout)
             const uint64_t base = _glfwPlatformGetTimerValue();
 
             const int result = poll(fds, count, milliseconds);
-            const int error = errno;
+            const int error = errno; // clock_gettime may overwrite our error
 
             *timeout -= (_glfwPlatformGetTimerValue() - base) /
                 (double) _glfwPlatformGetTimerFrequency();
 
             if (result > 0)
                 return GLFW_TRUE;
-            if ((result == -1 && error == EINTR) || *timeout <= 0.0)
+            else if (result == -1 && error != EINTR && error != EAGAIN)
+                return GLFW_FALSE;
+            else if (*timeout <= 0.0)
                 return GLFW_FALSE;
         }
-        else if (poll(fds, count, -1) != -1 || errno != EINTR)
-            return GLFW_TRUE;
+        else
+        {
+            const int result = poll(fds, count, -1);
+            if (result > 0)
+                return GLFW_TRUE;
+            else if (result == -1 && errno != EINTR && errno != EAGAIN)
+                return GLFW_FALSE;
+        }
     }
 }
 

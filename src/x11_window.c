@@ -56,26 +56,12 @@
 
 #define _GLFW_XDND_VERSION 5
 
-
-// Wait for event data to arrive on any relevant file descriptor
-// This avoids blocking other threads via the per-display Xlib lock that also
-// covers GLX functions
+// Wait for data to arrive on any of the specified file descriptors
 //
-static GLFWbool waitForEvent(double* timeout)
+static GLFWbool waitForData(struct pollfd* fds, nfds_t count, double* timeout)
 {
     for (;;)
     {
-        nfds_t count = 1;
-        struct pollfd fds[2] =
-        {
-            { ConnectionNumber(_glfw.x11.display), POLLIN }
-        };
-
-#if defined(__linux__)
-        if (_glfw.linjs.inotify > 0)
-            fds[count++] = (struct pollfd) { _glfw.linjs.inotify, POLLIN };
-#endif
-
         if (timeout)
         {
             const int milliseconds = (int) (*timeout * 1e3);
@@ -105,6 +91,33 @@ static GLFWbool waitForEvent(double* timeout)
     }
 }
 
+// Wait for event data to arrive on the X11 display socket
+// This avoids blocking other threads via the per-display Xlib lock that also
+// covers GLX functions
+//
+static GLFWbool waitForX11Event(double* timeout)
+{
+    struct pollfd fd = { ConnectionNumber(_glfw.x11.display), POLLIN };
+    return waitForData(&fd, 1, timeout);
+}
+
+// Wait for event data to arrive on any event file descriptor
+// This avoids blocking other threads via the per-display Xlib lock that also
+// covers GLX functions
+//
+static GLFWbool waitForAnyEvent(double* timeout)
+{
+    nfds_t count = 1;
+    struct pollfd fds[2] = { { ConnectionNumber(_glfw.x11.display), POLLIN } };
+
+#if defined(__linux__)
+    if (_glfw.linjs.inotify > 0)
+        fds[count++] = (struct pollfd) { _glfw.linjs.inotify, POLLIN };
+#endif
+
+    return waitForData(fds, count, timeout);
+}
+
 // Waits until a VisibilityNotify event arrives for the specified window or the
 // timeout period elapses (ICCCM section 4.2.2)
 //
@@ -118,7 +131,7 @@ static GLFWbool waitForVisibilityNotify(_GLFWwindow* window)
                                    VisibilityNotify,
                                    &dummy))
     {
-        if (!waitForEvent(&timeout))
+        if (!waitForX11Event(&timeout))
             return GLFW_FALSE;
     }
 
@@ -973,7 +986,7 @@ static const char* getSelectionString(Atom selection)
                                        SelectionNotify,
                                        &notification))
         {
-            waitForEvent(NULL);
+            waitForX11Event(NULL);
         }
 
         if (notification.xselection.property == None)
@@ -1009,7 +1022,7 @@ static const char* getSelectionString(Atom selection)
                                       isSelPropNewValueNotify,
                                       (XPointer) &notification))
                 {
-                    waitForEvent(NULL);
+                    waitForX11Event(NULL);
                 }
 
                 XFree(data);
@@ -1940,7 +1953,7 @@ void _glfwPushSelectionToManagerX11(void)
             }
         }
 
-        waitForEvent(NULL);
+        waitForX11Event(NULL);
     }
 }
 
@@ -2258,7 +2271,7 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
                               isFrameExtentsEvent,
                               (XPointer) window))
         {
-            if (!waitForEvent(&timeout))
+            if (!waitForX11Event(&timeout))
             {
                 _glfwInputError(GLFW_PLATFORM_ERROR,
                                 "X11: The window manager has a broken _NET_REQUEST_FRAME_EXTENTS implementation; please report this issue");
@@ -2785,7 +2798,7 @@ void _glfwPlatformPollEvents(void)
 void _glfwPlatformWaitEvents(void)
 {
     while (!XPending(_glfw.x11.display))
-        waitForEvent(NULL);
+        waitForAnyEvent(NULL);
 
     _glfwPlatformPollEvents();
 }
@@ -2794,7 +2807,7 @@ void _glfwPlatformWaitEventsTimeout(double timeout)
 {
     while (!XPending(_glfw.x11.display))
     {
-        if (!waitForEvent(&timeout))
+        if (!waitForAnyEvent(&timeout))
             break;
     }
 

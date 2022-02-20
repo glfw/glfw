@@ -148,6 +148,7 @@ int main(void)
     for (i = 0;  i < count;  i++)
         thrd_join(threads[i].id, &result);
 
+    glfwTerminate();
     exit(EXIT_SUCCESS);
 }
 

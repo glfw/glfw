@@ -62,6 +62,11 @@ if (GLFW_BUILD_X11 OR GLFW_BUILD_WAYLAND)
     endif()
 endif()
 
+if (GLFW_BUILD_OS4)
+    target_compile_definitions(glfw PRIVATE _GLFW_OS4)
+    target_sources(glfw PRIVATE os4_init.c os4_window.c os4_monitor.c os4_context.c os4_joystick.c)
+endif()
+
 if (GLFW_BUILD_WAYLAND)
     include(CheckIncludeFiles)
     include(CheckFunctionExists)
@@ -157,6 +162,11 @@ endif()
 
 if (GLFW_BUILD_WIN32)
     list(APPEND glfw_PKG_LIBS "-lgdi32")
+endif()
+
+if (GLFW_BUILD_OS4)
+    target_compile_options(glfw PRIVATE "-DGL4ES" "-gstabs")
+    target_link_libraries(glfw PRIVATE "-lGL4ES")
 endif()
 
 if (GLFW_BUILD_COCOA)

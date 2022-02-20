@@ -37,9 +37,10 @@ endif()
 
 cmake_dependent_option(GLFW_BUILD_WIN32 "Build support for Win32" ON "WIN32" OFF)
 cmake_dependent_option(GLFW_BUILD_COCOA "Build support for Cocoa" ON "APPLE" OFF)
-cmake_dependent_option(GLFW_BUILD_X11 "Build support for X11" ON "UNIX;NOT APPLE" OFF)
+cmake_dependent_option(GLFW_BUILD_X11 "Build support for X11" ON "UNIX;NOT APPLE;NOT AMIGAOS4" OFF)
 cmake_dependent_option(GLFW_BUILD_WAYLAND "Build support for Wayland"
     "${GLFW_USE_WAYLAND}" "UNIX;NOT APPLE" OFF)
+cmake_dependent_option(GLFW_BUILD_OS4 "Build support for AmigaOS4" ON "AMIGAOS4" OFF)
 
 cmake_dependent_option(GLFW_USE_HYBRID_HPG "Force use of high-performance GPU on hybrid systems" OFF
                        "WIN32" OFF)
@@ -82,6 +83,9 @@ if (GLFW_BUILD_WAYLAND)
 endif()
 if (GLFW_BUILD_X11)
     message(STATUS "Including X11 support")
+endif()
+if (GLFW_BUILD_OS4)
+    message(STATUS "Including AmigaOS4 support")
 endif()
 
 #--------------------------------------------------------------------

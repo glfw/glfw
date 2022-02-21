@@ -221,6 +221,8 @@ void _glfwDestroyWindowOS4(_GLFWwindow* window)
         window->os4.appIcon = NULL;
     }
 
+    IIntuition->CloseWindow(window->os4.handle);
+
     if (window->os4.gadget) {
         IIntuition->DisposeObject((Object *)window->os4.gadget);
         window->os4.gadget = NULL;
@@ -230,8 +232,6 @@ void _glfwDestroyWindowOS4(_GLFWwindow* window)
         IIntuition->DisposeObject((Object *)window->os4.image);
         window->os4.image = NULL;
     }
-
-    IIntuition->CloseWindow(window->os4.handle);
 
     if (window->monitor)
         releaseMonitor(window);

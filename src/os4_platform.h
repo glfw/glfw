@@ -258,6 +258,16 @@ void _glfwPollMonitorsOS4(void);
 /************************************************************************************/
 /********************************* AmigaOS4 METHODS *********************************/
 /************************************************************************************/
+#define DEBUG
+
+#ifndef DEBUG
+# define dprintf(format, args...)
+# define kprintf(format, args...)
+#else /* DEBUG */
+# define dprintf(format, args...) IExec->DebugPrintF("[%s] " format, __PRETTY_FUNCTION__ , ## args)
+//# define dprintf(format, args...)((struct ExecIFace *)((*(struct ExecBase **)4)->MainInterface))->DebugPrintF("[%s] " format, __PRETTY_FUNCTION__ , ## args)
+# define kprintf(format, args...)((struct ExecIFace *)((*(struct ExecBase **)4)->MainInterface))->DebugPrintF(format, ## args)
+#endif /* DEBUG */
 
 BOOL OS4_LockPubScreen();
 void OS4_UnlockPubScreen();

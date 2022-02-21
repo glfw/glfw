@@ -50,11 +50,21 @@ static void OS4_SetWindowLimits(_GLFWwindow * window, struct Window * syswin);
 static void OS4_CreateIconifyGadget(_GLFWwindow * window);
 static struct DiskObject *OS4_GetDiskObject();
 static void OS4_HandleAppIcon(struct AppMessage * msg);
+static ULONG OS4_BackFill(const struct Hook *hook, struct RastPort *rastport, struct BackFillMessage *message);
+
+
 
 static UWORD fallbackPointerData[2 * 16] = { 0 };
 
 static struct BitMap fallbackPointerBitMap = { 2, 16, 0, 2, 0,
     { (PLANEPTR)fallbackPointerData, (PLANEPTR)(fallbackPointerData + 16) } };
+
+static struct Hook OS4_BackFillHook = {
+    {0, 0},       /* h_MinNode */
+    (void *)OS4_BackFill, /* h_Entry */
+    0,            /* h_SubEntry */
+    0             /* h_Data */
+};
 
 static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
 {
@@ -129,6 +139,8 @@ static int createNativeWindow(_GLFWwindow* window,
     window->os4.windowType = windowType;
     uint32_t windowFlags = OS4_GetWindowFlags(window, FALSE);
 
+    OS4_BackFillHook.h_Data = IGraphics; // Smuggle interface ptr for the hook
+
     window->os4.handle = IIntuition->OpenWindowTags(NULL,
             WA_Left,              window->os4.xpos,
             WA_Top,               window->os4.ypos,
@@ -149,18 +161,14 @@ static int createNativeWindow(_GLFWwindow* window,
                                   IDCMP_INTUITICKS |
                                   IDCMP_GADGETUP |
                                   IDCMP_CHANGEWINDOW,
-            WA_DepthGadget,       TRUE,
-            WA_DragBar,           TRUE,
-            WA_CloseGadget,       TRUE,
-            WA_Activate,          TRUE,
-            WA_ReportMouse,       TRUE,
             WA_Hidden,            !wndconfig->visible,
             WA_UserPort,          _glfw.os4.userPort,
-            WA_BackFill,          LAYERS_NOBACKFILL, // Don't want default backfill
+            WA_BackFill,          &OS4_BackFillHook,
             TAG_DONE);
 
     /* If we have a valid handle return GLFW_TRUE */
     if (window->os4.handle) {
+        window->os4.title = wndconfig->title;
 
         _glfwGetWindowPosOS4(window, &window->os4.xpos, &window->os4.ypos);
         _glfwGetWindowSizeOS4(window, &window->os4.width, &window->os4.height);        
@@ -171,6 +179,11 @@ static int createNativeWindow(_GLFWwindow* window,
             OS4_CreateIconifyGadget(window);
         }
         window->os4.appWin = IWorkbench->AddAppWindow(0, (ULONG)window, window->os4.handle, _glfw.os4.appMsgPort, TAG_DONE);
+        
+        if (wndconfig->autoIconify) {
+            OS4_IconifyWindow(window);
+        }
+
         return GLFW_TRUE;
     }
     else
@@ -684,7 +697,7 @@ void _glfwPollEventsOS4(void)
                 break;
 
             default:
-                //dprintf("Unknown event received class %d, code %d\n", msg.Class, msg.Code);
+                dprintf("Unknown event received class %d, code %d\n", msg.Class, msg.Code);
                 break;
         }
     }
@@ -700,7 +713,7 @@ void _glfwPollEventsOS4(void)
                 OS4_HandleAppIcon(amsg);
                 break;
             default:
-                printf("Unknown AppMsg %d %p\n", amsg->am_Type, (APTR)amsg->am_UserData);
+                dprintf("Unknown AppMsg %d %p\n", amsg->am_Type, (APTR)amsg->am_UserData);
                 break;
         }
 
@@ -814,7 +827,7 @@ const char* _glfwGetClipboardStringOS4(void)
             if (_glfw.os4.clipboardString) {
                 strlcpy(_glfw.os4.clipboardString, from, size);
             } else {
-                printf("Failed to allocate memory\n");
+                dprintf("Failed to allocate memory\n");
             }
         } else {
             _glfw.os4.clipboardString = strdup("");
@@ -878,7 +891,7 @@ OS4_FindWindow(struct Window * syswin)
         glfwWin = glfwWin->next;
     }
 
-    //dprintf("No window found\n");
+    dprintf("No window found\n");
 
     return NULL;
 }
@@ -917,7 +930,7 @@ OS4_CopyImageData(const GLFWimage *surface)
     const size_t bytesPerRow = surface->width * sizeof(uint32_t);
     uint32_t* buffer = malloc(bytesPerRow * surface->height);
 
-    //dprintf("Copying cursor data %d*%d from surface %p to buffer %p\n", surface->w, surface->h, surface, buffer);
+    dprintf("Copying cursor data %d*%d from surface %p to buffer %p\n", surface->width, surface->height, surface, buffer);
 
     if (buffer) {
         uint8_t* source = surface->pixels;
@@ -930,7 +943,7 @@ OS4_CopyImageData(const GLFWimage *surface)
             source += 4;
         }
     } else {
-        //dprintf("Failed to allocate memory\n");
+        dprintf("Failed to allocate memory\n");
     }
 
     return buffer;
@@ -1028,7 +1041,7 @@ OS4_SetWindowLimits(_GLFWwindow * window, struct Window * syswin)
     const int maxW = window->maxwidth;
     const int maxH = window->maxheight;
 
-    printf("Window min size %d*%d, max size %d*%d\n", minW, minH, maxW, maxH);
+    dprintf("Window min size %d*%d, max size %d*%d\n", minW, minH, maxW, maxH);
 
     const int borderWidth = syswin->BorderLeft + syswin->BorderRight;
     const int borderHeight = syswin->BorderTop + syswin->BorderBottom;
@@ -1040,7 +1053,7 @@ OS4_SetWindowLimits(_GLFWwindow * window, struct Window * syswin)
         maxH ? (maxH + borderHeight) : -1);
 
     if (!ret) {
-        printf("Setting window limits failed\n");
+        dprintf("Setting window limits failed\n");
     }
 }
 
@@ -1071,16 +1084,16 @@ OS4_CreateIconifyGadget(_GLFWwindow * window)
 
                 IIntuition->AddGadget(syswin, window->os4.gadget, -1);
             } else {
-                printf("Failed to create button class\n");
+                dprintf("Failed to create button class\n");
             }
         } else {
-           printf("Failed to create image class\n");
+           dprintf("Failed to create image class\n");
         }
 
         IIntuition->FreeScreenDrawInfo(_glfw.os4.publicScreen, di);
 
     } else {
-        printf("Failed to get screen draw info\n");
+        dprintf("Failed to get screen draw info\n");
     }
 }
 
@@ -1098,7 +1111,7 @@ OS4_GetDiskObject()
     if (!diskObject) {
         CONST_STRPTR fallbackIconName = "ENVARC:Sys/def_window";
 
-        printf("Falling back to '%s'\n", fallbackIconName);
+        dprintf("Falling back to '%s'\n", fallbackIconName);
         diskObject = IIcon->GetDiskObjectNew(fallbackIconName);
     }
 
@@ -1109,7 +1122,7 @@ void
 OS4_IconifyWindow(_GLFWwindow *window)
 {
     if (window->os4.iconified) {
-        printf("Window '%s' is already iconified\n", window->os4.title);
+        dprintf("Window '%s' is already iconified\n", window->os4.title);
     } else {
         struct DiskObject *diskObject = OS4_GetDiskObject();
 
@@ -1127,9 +1140,9 @@ OS4_IconifyWindow(_GLFWwindow *window)
                 TAG_DONE);
 
             if (!window->os4.appIcon) {
-                printf("Failed to add AppIcon\n");
+                dprintf("Failed to add AppIcon\n");
             } else {
-                printf("Iconifying '%s'\n", window->os4.title);
+                dprintf("Iconifying '%s'\n", window->os4.title);
 
                 IIntuition->HideWindow(window->os4.handle);
                 window->os4.iconified = TRUE;
@@ -1138,7 +1151,7 @@ OS4_IconifyWindow(_GLFWwindow *window)
 
             IIcon->FreeDiskObject(diskObject);
         } else {
-            printf("Failed to load icon\n");
+            dprintf("Failed to load icon\n");
         }
     }
 }
@@ -1147,7 +1160,7 @@ void
 OS4_UniconifyWindow(_GLFWwindow* window)
 {
     if (window->os4.iconified) {
-        printf("Restoring '%s'\n", window->os4.title);
+        dprintf("Restoring '%s'\n", window->os4.title);
 
         if (window->os4.appIcon) {
             IWorkbench->RemoveAppIcon(window->os4.appIcon);
@@ -1166,7 +1179,22 @@ static void
 OS4_HandleAppIcon(struct AppMessage * msg)
 {
     _GLFWwindow *window = (_GLFWwindow *)msg->am_UserData;
-    printf("Window ptr = %p\n", window);
+    dprintf("Window ptr = %p\n", window);
 
     OS4_UniconifyWindow(window);
+}
+
+static ULONG
+OS4_BackFill(const struct Hook *hook, struct RastPort *rastport, struct BackFillMessage *message)
+{
+    struct Rectangle *rect = &message->Bounds;
+    struct GraphicsIFace *igfx = hook->h_Data;
+
+    struct RastPort bfRastport;
+
+    igfx->InitRastPort(&bfRastport);
+    bfRastport.BitMap = rastport->BitMap;
+    igfx->RectFillColor(&bfRastport, rect->MinX, rect->MinY, rect->MaxX, rect->MaxY, 0xFF000000);
+
+    return 0;
 }

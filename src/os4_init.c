@@ -54,12 +54,26 @@ struct AIN_IFace *IAIN = NULL;
 struct Device *TimerBase = NULL;
 struct TimerIFace *ITimer = NULL;
 
+struct TextClipIFace *ITextClip = NULL;
+struct Library *TextClipBase = NULL;
+
+struct IconIFace *IIcon = NULL;
+struct Library *IconBase = NULL;
+
+struct WorkbenchIFace *IWorkbench = NULL;
+struct Library *WorkbenchBase = NULL;
+
 #ifndef GL4ES
 struct Library *OGLES2Base = NULL;
 struct OGLES2IFace *IOGLES2 = NULL;
 #else
 extern struct OGLES2IFace *IOGLES2;
 #endif
+
+#define MIN_LIB_VERSION 51
+
+static void OS4_FindApplicationName();
+
 //************************************************************************
 //****                  OS4 internal functions                        ****
 //************************************************************************
@@ -132,36 +146,50 @@ static struct Library *openLib(const char *libName, unsigned int minVers, struct
 static int loadLibraries(void)
 {
     // graphics.library
-    DOSBase = openLib("dos.library", 52, (struct Interface **)&IDOS);
+    DOSBase = openLib("dos.library", MIN_LIB_VERSION, (struct Interface **)&IDOS);
     if (!DOSBase)
     {
         return 0;
     }
 
     // graphics.library
-    GfxBase = openLib("graphics.library", 52, (struct Interface **)&IGraphics);
+    GfxBase = openLib("graphics.library", 54, (struct Interface **)&IGraphics);
     if (!GfxBase)
     {
         return 0;
     }
 
     // intuition.library
-    IntuitionBase = openLib("intuition.library", 52, (struct Interface **)&IIntuition);
+    IntuitionBase = openLib("intuition.library", MIN_LIB_VERSION, (struct Interface **)&IIntuition);
     if (!IntuitionBase)
     {
         return 0;
     }
 
     // keymap.library
-    KeymapBase = openLib("keymap.library", 52, (struct Interface **)&IKeymap);
+    KeymapBase = openLib("keymap.library", MIN_LIB_VERSION, (struct Interface **)&IKeymap);
     if (!KeymapBase)
     {
         return 0;
     }
 
     // Utility.library
-    UtilityBase = openLib("utility.library", 52, (struct Interface **)&IUtility);
+    UtilityBase = openLib("utility.library", MIN_LIB_VERSION, (struct Interface **)&IUtility);
     if (!UtilityBase)
+    {
+        return 0;
+    }
+
+    // Workbench.library
+    WorkbenchBase = openLib("workbench.library", MIN_LIB_VERSION, (struct Interface **)&IWorkbench);
+    if (!WorkbenchBase)
+    {
+        return 0;
+    }
+
+    // icon.library
+    IconBase = openLib("icon.library", MIN_LIB_VERSION, (struct Interface **)&IIcon);
+    if (!IconBase)
     {
         return 0;
     }
@@ -174,8 +202,16 @@ static int loadLibraries(void)
     }
 #endif
 
-    AIN_Base = openLib("AmigaInput.library", 51, (struct Interface **)&IAIN);
+    // AmigaInput
+    AIN_Base = openLib("AmigaInput.library", MIN_LIB_VERSION, (struct Interface **)&IAIN);
     if (!AIN_Base)
+    {
+        return 0;
+    }
+
+    // TextClip
+    TextClipBase  = openLib("textclip.library", MIN_LIB_VERSION, (struct Interface **)&ITextClip);
+    if (!TextClipBase)
     {
         return 0;
     }
@@ -186,6 +222,14 @@ static int loadLibraries(void)
 static void closeLibraries(void)
 {
     printf("close libraries\n");
+    if (ITextClip) {
+        IExec->DropInterface((struct Interface *)ITextClip);
+    }
+    if (TextClipBase)
+    {
+        IExec->CloseLibrary(TextClipBase);
+    }
+
     if (IAIN)
     {
         IExec->DropInterface((struct Interface *)IAIN);
@@ -205,6 +249,30 @@ static void closeLibraries(void)
         IExec->CloseLibrary(OGLES2Base);
     }
 #endif
+
+    // Close workbench.library
+    if (IWorkbench)
+    {
+        IExec->DropInterface((struct Interface *)IWorkbench);
+        IWorkbench = NULL;
+    }
+    if (WorkbenchBase)
+    {
+        IExec->CloseLibrary((struct Library *)WorkbenchBase);
+        WorkbenchBase = NULL;
+    }
+
+    // Close icon.library
+    if (IIcon)
+    {
+        IExec->DropInterface((struct Interface *)IIcon);
+        IIcon = NULL;
+    }
+    if (IconBase)
+    {
+        IExec->CloseLibrary((struct Library *)IconBase);
+        IconBase = NULL;
+    }
 
     // Close graphics.library
     if (IGraphics)
@@ -372,7 +440,7 @@ static void createKeyTables(void)
     */
     _glfw.os4.keycodes[RAWKEY_ENTER] = GLFW_KEY_KP_ENTER; //
 
-    for (int scancode = 0; scancode < 256; scancode++)
+    for (int scancode = 0; scancode < 512; scancode++)
     {
         if (_glfw.os4.keycodes[scancode] > 0)
             _glfw.os4.scancodes[_glfw.os4.keycodes[scancode]] = scancode;
@@ -476,11 +544,17 @@ int _glfwInitOS4(void)
         return GLFW_FALSE;
     }
 
+    OS4_LockPubScreen();
+    
+    OS4_FindApplicationName();
+
     return GLFW_TRUE;
 }
 
 void _glfwTerminateOS4(void)
 {
+    OS4_UnlockPubScreen();
+
     if (_glfw.os4.appMsgPort) {
         struct Message *msg;
 
@@ -499,7 +573,39 @@ void _glfwTerminateOS4(void)
         IExec->FreeSysObject(ASOT_PORT, _glfw.os4.userPort);
     }
 
-    free(_glfw.os4.clipboardString);
-    //_glfwTerminateOSMesa();
+    if (_glfw.os4.clipboardString) {
+        _glfw_free(_glfw.os4.clipboardString);
+        _glfw.os4.clipboardString = NULL;
+    }
     closeLibraries();
+}
+
+/************************************************************************************/
+/********************************* AmigaOS4 METHODS *********************************/
+/************************************************************************************/
+
+static void
+OS4_FindApplicationName()
+{
+    size_t size;
+    char pathBuffer[MAXPATHLEN];
+
+    if (IDOS->GetCliProgramName(pathBuffer, MAXPATHLEN - 1)) {
+        printf("GetCliProgramName: '%s'\n", pathBuffer);
+    } else {
+        printf("Failed to get CLI program name, checking task node\n");
+
+        struct Task* me = IExec->FindTask(NULL);
+        snprintf(pathBuffer, MAXPATHLEN, "%s", ((struct Node *)me)->ln_Name);
+    }
+
+    size = strlen(pathBuffer) + 1;
+
+    _glfw.os4.appName = malloc(size);
+
+    if (_glfw.os4.appName) {
+        snprintf(_glfw.os4.appName, size, pathBuffer);
+    }
+
+    printf("Application name: '%s'\n", _glfw.os4.appName);
 }

@@ -27,7 +27,6 @@
 
 #pragma once
 
-// Include files
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include <proto/intuition.h>
@@ -35,20 +34,29 @@
 #include <proto/timer.h>
 #include <proto/keymap.h>
 #include <proto/utility.h>
+#include <proto/icon.h>
+#include <proto/wb.h>
 #include <proto/requester.h>
+#include <proto/textclip.h>
 
 #include <exec/exec.h>
 #include <dos/dos.h>
 #include <dos/dostags.h>
 #include <dos/dosextens.h>
+
 #include <intuition/intuition.h>
+#include <intuition/imageclass.h>
+#include <intuition/gadgetclass.h>
+
 #include <graphics/displayinfo.h>
 #include <graphics/rastport.h>
+
 #include <devices/timer.h>
 #include <devices/keymap.h>
 #include <devices/input.h>
 #include <devices/inputevent.h>
 #include <devices/gameport.h>
+
 #include <classes/requester.h>
 
 #include <amigainput/amigainput.h>
@@ -70,6 +78,8 @@
 
 #define GLFW_OS4_CURSOR_STATE          _GLFWcursorOS4 os4;
 #define GLFW_OS4_LIBRARY_CONTEXT_STATE
+
+#define GID_ICONIFY 123
 
 struct MyIntuiMessage
 {
@@ -115,6 +125,12 @@ typedef struct _GLFWwindowOS4
     float            opacity;
     int              windowType; // NORMAL - GL - GLES
 
+    struct AppIcon  *appIcon;
+    struct AppWindow *appWin;
+
+    struct Gadget   *gadget;
+    struct Image    *image;
+
 } _GLFWwindowOS4;
 
 typedef struct _GLFWcontextGL {
@@ -141,16 +157,20 @@ typedef struct _GLFWcursorX11
 //
 typedef struct _GLFWlibraryOS4
 {
+    STRPTR           appName;
+
     int              xcursor;
     int              ycursor;
 
     char             keynames[GLFW_KEY_LAST + 1][17];
-    short int        keycodes[256];
+    short int        keycodes[512];
     short int        scancodes[GLFW_KEY_LAST + 1];
 
     char            *clipboardString;
     struct MsgPort  *appMsgPort;
     struct MsgPort  *userPort;
+
+    struct Screen   *publicScreen;
 
     _GLFWwindow     *focusedWindow;
 } _GLFWlibraryOS4;
@@ -234,3 +254,12 @@ VkResult _glfwCreateWindowSurfaceOS4(VkInstance instance, _GLFWwindow* window, c
 
 void _glfwPollMonitorsOS4(void);
 
+
+/************************************************************************************/
+/********************************* AmigaOS4 METHODS *********************************/
+/************************************************************************************/
+
+BOOL OS4_LockPubScreen();
+void OS4_UnlockPubScreen();
+void OS4_IconifyWindow(_GLFWwindow *window);
+void OS4_UniconifyWindow(_GLFWwindow* window);

@@ -164,3 +164,28 @@ void _glfwSetGammaRampOS4(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
     memcpy(monitor->os4.ramp.blue,  ramp->blue,  sizeof(short) * ramp->size);
 }
 
+/**********************************************************************************************/
+/******************************************** PRIVATE METHODS *********************************/
+/**********************************************************************************************/
+
+BOOL
+OS4_LockPubScreen()
+{
+    _glfw.os4.publicScreen = IIntuition->LockPubScreen(NULL);
+
+    if (_glfw.os4.publicScreen) {
+        return TRUE;
+    } else {
+        printf("Failed to lock Workbench screen\n");
+        return FALSE;
+    }
+}
+
+void
+OS4_UnlockPubScreen()
+{
+    if (_glfw.os4.publicScreen) {
+        IIntuition->UnlockPubScreen(NULL, _glfw.os4.publicScreen);
+        _glfw.os4.publicScreen = NULL;
+    }
+}

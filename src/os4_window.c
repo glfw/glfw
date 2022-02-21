@@ -40,11 +40,16 @@
 
 static void OS4_CopyIdcmpMessage(struct IntuiMessage * src, struct MyIntuiMessage * dst);
 static _GLFWwindow *OS4_FindWindow(struct Window * syswin);
-static uint32_t*OS4_CopyImageData(const GLFWimage *surface);
+static uint32_t *OS4_CopyImageData(const GLFWimage *surface);
 static int OS4_GetButtonState(uint16_t code);
 static int OS4_GetButton(uint16_t code);
 static char OS4_TranslateUnicode(uint16_t code, uint32_t qualifier);
 static int OS4_TranslateState(int state);
+static uint32_t OS4_GetWindowFlags(_GLFWwindow* window, BOOL fullscreen);
+static void OS4_SetWindowLimits(_GLFWwindow * window, struct Window * syswin);
+static void OS4_CreateIconifyGadget(_GLFWwindow * window);
+static struct DiskObject *OS4_GetDiskObject();
+static void OS4_HandleAppIcon(struct AppMessage * msg);
 
 static UWORD fallbackPointerData[2 * 16] = { 0 };
 
@@ -99,8 +104,10 @@ static int createNativeWindow(_GLFWwindow* window,
                               const _GLFWfbconfig* fbconfig,
                               int windowType)
 {
-    if (window->monitor)
+    if (window->monitor) {
+        printf("fitToMonitor\n");
         fitToMonitor(window);
+    }
     else
     {
         window->os4.xpos = 17;
@@ -120,6 +127,7 @@ static int createNativeWindow(_GLFWwindow* window,
     window->os4.opacity = 1.f;
 
     window->os4.windowType = windowType;
+    uint32_t windowFlags = OS4_GetWindowFlags(window, FALSE);
 
     window->os4.handle = IIntuition->OpenWindowTags(NULL,
             WA_Left,              window->os4.xpos,
@@ -127,24 +135,24 @@ static int createNativeWindow(_GLFWwindow* window,
             WA_InnerWidth,        wndconfig->width,
             WA_InnerHeight,       wndconfig->height,
             WA_Title,             wndconfig->title,
+            WA_ScreenTitle,       wndconfig->title,
+            WA_Flags,             windowFlags,
             WA_IDCMP,             IDCMP_CLOSEWINDOW |
-                                    IDCMP_MOUSEMOVE |
-                                    IDCMP_MOUSEBUTTONS |
-                                    IDCMP_EXTENDEDMOUSE |
-                                    IDCMP_RAWKEY |
-                                    IDCMP_NEWSIZE |
-                                    IDCMP_DELTAMOVE |
-                                    IDCMP_ACTIVEWINDOW |
-                                    IDCMP_INACTIVEWINDOW |
-                                    IDCMP_INTUITICKS |
-                                    IDCMP_GADGETUP |
-                                    IDCMP_CHANGEWINDOW,
-            WA_SmartRefresh,      TRUE,
+                                  IDCMP_MOUSEMOVE |
+                                  IDCMP_MOUSEBUTTONS |
+                                  IDCMP_EXTENDEDMOUSE |
+                                  IDCMP_RAWKEY |
+                                  IDCMP_NEWSIZE |
+                                  IDCMP_DELTAMOVE |
+                                  IDCMP_ACTIVEWINDOW |
+                                  IDCMP_INACTIVEWINDOW |
+                                  IDCMP_INTUITICKS |
+                                  IDCMP_GADGETUP |
+                                  IDCMP_CHANGEWINDOW,
             WA_DepthGadget,       TRUE,
             WA_DragBar,           TRUE,
             WA_CloseGadget,       TRUE,
             WA_Activate,          TRUE,
-            WA_RMBTrap,           TRUE,
             WA_ReportMouse,       TRUE,
             WA_Hidden,            !wndconfig->visible,
             WA_UserPort,          _glfw.os4.userPort,
@@ -153,8 +161,16 @@ static int createNativeWindow(_GLFWwindow* window,
 
     /* If we have a valid handle return GLFW_TRUE */
     if (window->os4.handle) {
+
+        _glfwGetWindowPosOS4(window, &window->os4.xpos, &window->os4.ypos);
+        _glfwGetWindowSizeOS4(window, &window->os4.width, &window->os4.height);        
         window->os4.lastCursorPosX = window->os4.xpos;
         window->os4.lastCursorPosY = window->os4.ypos;
+
+        if (wndconfig->decorated && wndconfig->width > 99 && wndconfig->height) {
+            OS4_CreateIconifyGadget(window);
+        }
+        window->os4.appWin = IWorkbench->AddAppWindow(0, (ULONG)window, window->os4.handle, _glfw.os4.appMsgPort, TAG_DONE);
         return GLFW_TRUE;
     }
     else
@@ -192,14 +208,30 @@ int _glfwCreateWindowOS4(_GLFWwindow* window,
 
 void _glfwDestroyWindowOS4(_GLFWwindow* window)
 {
-    printf("destroying context\n");
     if (window->context.destroy)
         window->context.destroy(window);
-    printf("destroyed\n");
-   
-    printf("closing window\n");
+
+    if (window->os4.appWin) {
+        IWorkbench->RemoveAppWindow(window->os4.appWin);
+        window->os4.appWin = NULL;
+    }
+
+    if (window->os4.appIcon) {
+        IWorkbench->RemoveAppIcon(window->os4.appIcon);
+        window->os4.appIcon = NULL;
+    }
+
+    if (window->os4.gadget) {
+        IIntuition->DisposeObject((Object *)window->os4.gadget);
+        window->os4.gadget = NULL;
+    }
+
+    if (window->os4.image) {
+        IIntuition->DisposeObject((Object *)window->os4.image);
+        window->os4.image = NULL;
+    }
+
     IIntuition->CloseWindow(window->os4.handle);
-    printf("closed\n\n");
 
     if (window->monitor)
         releaseMonitor(window);
@@ -525,7 +557,6 @@ void _glfwFocusWindowOS4(_GLFWwindow* window)
 
 int _glfwWindowFocusedOS4(_GLFWwindow* window)
 {
-    printf("Focused window: 0x%x\n", window);
     return _glfw.os4.focusedWindow == window;
 }
 
@@ -558,7 +589,7 @@ void _glfwPollEventsOS4(void)
 
             case IDCMP_RAWKEY:
                 uint8_t rawkey = msg.Code & 0x7F;
-                printf("RAWKEY = 0x%x\n", rawkey);
+                //printf("RAWKEY = 0x%x\n", rawkey);
                 int key = _glfw.os4.keycodes[rawkey];
                 int mods = OS4_TranslateState(msg.Qualifier);
                 const int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
@@ -591,40 +622,56 @@ void _glfwPollEventsOS4(void)
                 break;
 
             case IDCMP_EXTENDEDMOUSE:
-                //OS4_HandleMouseWheel(_this, &msg);
+                struct IntuiWheelData *data = (struct IntuiWheelData *)msg.Gadget;
+                if (data->WheelY < 0) {
+                    _glfwInputScroll(window, 0.0, 1.0);
+                }
+                else if (data->WheelY > 0) {
+                    _glfwInputScroll(window, 0.0, -1.0);
+                }
+                if (data->WheelX < 0) {
+                    _glfwInputScroll(window, 1.0, 0.0);
+                } else if (data->WheelX > 0) {
+                    _glfwInputScroll(window, -1.0, 0.0);
+                }
                 break;
 
             case IDCMP_NEWSIZE:
+                printf("w: %d - h: %d\n", msg.Width, msg.Height);
+                //_glfwInputWindowSize(window, msg.Width, msg.Height);
                 //OS4_HandleResize(_this, &msg);
                 break;
 
             case IDCMP_CHANGEWINDOW:
                 if (window != NULL) {
-                    printf("window %x x=%d y=%d\n", window, imsg->IDCMPWindow->LeftEdge, imsg->IDCMPWindow->TopEdge);
                     window->os4.xpos = imsg->IDCMPWindow->LeftEdge;
                     window->os4.ypos = imsg->IDCMPWindow->TopEdge;
                 }
-                else
-                    printf("CHANGE: no window found\n");
 
                 //OS4_HandleMove(_this, &msg);
                 //OS4_HandleResize(_this, &msg);
                 break;
 
             case IDCMP_ACTIVEWINDOW:
+                //if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                //    disableCursor(window);
+
+                _glfwInputWindowFocus(window, GLFW_TRUE);
                 //OS4_HandleActivation(_this, &msg, SDL_TRUE);
                 break;
 
             case IDCMP_INACTIVEWINDOW:
                 //OS4_HandleActivation(_this, &msg, SDL_FALSE);
+                //if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                //    enableCursor(window);                
+
+                _glfwInputWindowFocus(window, GLFW_FALSE);
                 break;
 
             case IDCMP_CLOSEWINDOW:
                 if (window != NULL) {
-                    _glfwInputWindowCloseRequest(_glfw.os4.focusedWindow);
+                    _glfwInputWindowCloseRequest(window);
                 }
-                else
-                    printf("CLOSE: no window found\n");
 
                 break;
 
@@ -633,13 +680,31 @@ void _glfwPollEventsOS4(void)
                 break;
 
             case IDCMP_GADGETUP:
-                //OS4_HandleGadget(_this, &msg);
+                OS4_IconifyWindow(window);
                 break;
 
             default:
                 //dprintf("Unknown event received class %d, code %d\n", msg.Class, msg.Code);
                 break;
         }
+    }
+
+    struct AppMessage *amsg;
+
+    while ((amsg = (struct AppMessage *)IExec->GetMsg(_glfw.os4.appMsgPort))) {
+        switch (amsg->am_Type) {
+            case AMTYPE_APPWINDOW:
+                //OS4_HandleAppWindow(msg);
+                break;
+            case AMTYPE_APPICON:
+                OS4_HandleAppIcon(amsg);
+                break;
+            default:
+                printf("Unknown AppMsg %d %p\n", amsg->am_Type, (APTR)amsg->am_UserData);
+                break;
+        }
+
+        IExec->ReplyMsg((struct Message *) amsg);
     }
 }
 
@@ -730,10 +795,34 @@ void _glfwSetClipboardStringOS4(const char* string)
     char* copy = _glfw_strdup(string);
     _glfw_free(_glfw.os4.clipboardString);
     _glfw.os4.clipboardString = copy;
+
+    ITextClip->WriteClipVector(string, strlen(string));
 }
 
 const char* _glfwGetClipboardStringOS4(void)
 {
+    STRPTR from;
+    ULONG size;
+
+    LONG result = ITextClip->ReadClipVector(&from, &size);
+
+    if (result) {
+
+        if (size) {
+            _glfw.os4.clipboardString = _glfw_calloc( ++size, 1 );
+
+            if (_glfw.os4.clipboardString) {
+                strlcpy(_glfw.os4.clipboardString, from, size);
+            } else {
+                printf("Failed to allocate memory\n");
+            }
+        } else {
+            _glfw.os4.clipboardString = strdup("");
+        }
+
+        ITextClip->DisposeClipVector(from);
+    }
+
     return _glfw.os4.clipboardString;
 }
 
@@ -745,126 +834,6 @@ const char* _glfwGetScancodeNameOS4(int scancode)
         return NULL;
     }
     return _glfw.os4.keynames[_glfw.os4.keycodes[scancode]];
-    /*
-
-    switch (scancode)
-    {
-        case GLFW_KEY_APOSTROPHE:
-            return "'";
-        case GLFW_KEY_COMMA:
-            return ",";
-        case GLFW_KEY_MINUS:
-        case GLFW_KEY_KP_SUBTRACT:
-            return "-";
-        case GLFW_KEY_PERIOD:
-        case GLFW_KEY_KP_DECIMAL:
-            return ".";
-        case GLFW_KEY_SLASH:
-        case GLFW_KEY_KP_DIVIDE:
-            return "/";
-        case GLFW_KEY_SEMICOLON:
-            return ";";
-        case GLFW_KEY_EQUAL:
-        case GLFW_KEY_KP_EQUAL:
-            return "=";
-        case GLFW_KEY_LEFT_BRACKET:
-            return "[";
-        case GLFW_KEY_RIGHT_BRACKET:
-            return "]";
-        case GLFW_KEY_KP_MULTIPLY:
-            return "*";
-        case GLFW_KEY_KP_ADD:
-            return "+";
-        case GLFW_KEY_BACKSLASH:
-        case GLFW_KEY_WORLD_1:
-        case GLFW_KEY_WORLD_2:
-            return "\\";
-        case GLFW_KEY_0:
-        case GLFW_KEY_KP_0:
-            return "0";
-        case GLFW_KEY_1:
-        case GLFW_KEY_KP_1:
-            return "1";
-        case GLFW_KEY_2:
-        case GLFW_KEY_KP_2:
-            return "2";
-        case GLFW_KEY_3:
-        case GLFW_KEY_KP_3:
-            return "3";
-        case GLFW_KEY_4:
-        case GLFW_KEY_KP_4:
-            return "4";
-        case GLFW_KEY_5:
-        case GLFW_KEY_KP_5:
-            return "5";
-        case GLFW_KEY_6:
-        case GLFW_KEY_KP_6:
-            return "6";
-        case GLFW_KEY_7:
-        case GLFW_KEY_KP_7:
-            return "7";
-        case GLFW_KEY_8:
-        case GLFW_KEY_KP_8:
-            return "8";
-        case GLFW_KEY_9:
-        case GLFW_KEY_KP_9:
-            return "9";
-        case GLFW_KEY_A:
-            return "a";
-        case GLFW_KEY_B:
-            return "b";
-        case GLFW_KEY_C:
-            return "c";
-        case GLFW_KEY_D:
-            return "d";
-        case GLFW_KEY_E:
-            return "e";
-        case GLFW_KEY_F:
-            return "f";
-        case GLFW_KEY_G:
-            return "g";
-        case GLFW_KEY_H:
-            return "h";
-        case GLFW_KEY_I:
-            return "i";
-        case GLFW_KEY_J:
-            return "j";
-        case GLFW_KEY_K:
-            return "k";
-        case GLFW_KEY_L:
-            return "l";
-        case GLFW_KEY_M:
-            return "m";
-        case GLFW_KEY_N:
-            return "n";
-        case GLFW_KEY_O:
-            return "o";
-        case GLFW_KEY_P:
-            return "p";
-        case GLFW_KEY_Q:
-            return "q";
-        case GLFW_KEY_R:
-            return "r";
-        case GLFW_KEY_S:
-            return "s";
-        case GLFW_KEY_T:
-            return "t";
-        case GLFW_KEY_U:
-            return "u";
-        case GLFW_KEY_V:
-            return "v";
-        case GLFW_KEY_W:
-            return "w";
-        case GLFW_KEY_X:
-            return "x";
-        case GLFW_KEY_Y:
-            return "y";
-        case GLFW_KEY_Z:
-            return "z";
-    }
-
-    return NULL;
-    */
 }
 
 int _glfwGetKeyScancodeOS4(int key)
@@ -892,8 +861,10 @@ VkResult _glfwCreateWindowSurfaceOS4(VkInstance instance,
     return VK_ERROR_EXTENSION_NOT_PRESENT;
 }
 
+/**********************************************************************************************/
+/******************************************** PRIVATE METHODS *********************************/
+/**********************************************************************************************/
 
-/* PRIVATE METHODS */
 static _GLFWwindow *
 OS4_FindWindow(struct Window * syswin)
 {
@@ -1023,4 +994,179 @@ static int OS4_TranslateState(int state)
         mods |= GLFW_MOD_CAPS_LOCK;
 
     return mods;
+}
+
+static uint32_t
+OS4_GetWindowFlags(_GLFWwindow* window, BOOL fullscreen)
+{
+    uint32_t windowFlags = WFLG_REPORTMOUSE | WFLG_RMBTRAP | WFLG_SMART_REFRESH | WFLG_NOCAREREFRESH;
+
+    if (fullscreen) {
+        windowFlags |= WFLG_BORDERLESS | WFLG_BACKDROP;
+    } else {
+        windowFlags |= WFLG_NEWLOOKMENUS;
+
+        if (!window->decorated) {
+            windowFlags |= WFLG_BORDERLESS;
+        } else {
+            windowFlags |= WFLG_DRAGBAR | WFLG_DEPTHGADGET | WFLG_CLOSEGADGET;
+
+            if (window->resizable) {
+                windowFlags |= WFLG_SIZEGADGET | WFLG_SIZEBBOTTOM;
+            }
+        }
+    }
+
+    return windowFlags;
+}
+
+static void
+OS4_SetWindowLimits(_GLFWwindow * window, struct Window * syswin)
+{
+    const int minW = window->minwidth ? max(MIN_WINDOW_SIZE, window->minwidth) : MIN_WINDOW_SIZE;
+    const int minH = window->minheight ? max(MIN_WINDOW_SIZE, window->minheight) : MIN_WINDOW_SIZE;
+    const int maxW = window->maxwidth;
+    const int maxH = window->maxheight;
+
+    printf("Window min size %d*%d, max size %d*%d\n", minW, minH, maxW, maxH);
+
+    const int borderWidth = syswin->BorderLeft + syswin->BorderRight;
+    const int borderHeight = syswin->BorderTop + syswin->BorderBottom;
+
+    BOOL ret = IIntuition->WindowLimits(syswin,
+        minW + borderWidth,
+        minH + borderHeight,
+        maxW ? (maxW + borderWidth) : -1,
+        maxH ? (maxH + borderHeight) : -1);
+
+    if (!ret) {
+        printf("Setting window limits failed\n");
+    }
+}
+
+static void
+OS4_CreateIconifyGadget(_GLFWwindow * window)
+{
+    struct DrawInfo *di = IIntuition->GetScreenDrawInfo(_glfw.os4.publicScreen);
+
+    if (di) {
+        window->os4.image = (struct Image *)IIntuition->NewObject(NULL, SYSICLASS,
+            SYSIA_Which, ICONIFYIMAGE,
+            SYSIA_DrawInfo, di,
+            TAG_DONE);
+
+        if (window->os4.image) {
+
+            window->os4.gadget = (struct Gadget *)IIntuition->NewObject(NULL, BUTTONGCLASS,
+                GA_Image, window->os4.image,
+                GA_ID, GID_ICONIFY,
+                GA_TopBorder, TRUE,
+                GA_RelRight, TRUE,
+                GA_Titlebar, TRUE,
+                GA_RelVerify, TRUE,
+                TAG_DONE);
+
+            if (window->os4.gadget) {
+                struct Window *syswin = window->os4.handle;
+
+                IIntuition->AddGadget(syswin, window->os4.gadget, -1);
+            } else {
+                printf("Failed to create button class\n");
+            }
+        } else {
+           printf("Failed to create image class\n");
+        }
+
+        IIntuition->FreeScreenDrawInfo(_glfw.os4.publicScreen, di);
+
+    } else {
+        printf("Failed to get screen draw info\n");
+    }
+}
+
+static struct DiskObject*
+OS4_GetDiskObject()
+{
+    struct DiskObject *diskObject = NULL;
+
+    if (_glfw.os4.appName) {
+        BPTR oldDir = IDOS->SetCurrentDir(IDOS->GetProgramDir());
+        diskObject = IIcon->GetDiskObject(_glfw.os4.appName);
+        IDOS->SetCurrentDir(oldDir);
+    }
+
+    if (!diskObject) {
+        CONST_STRPTR fallbackIconName = "ENVARC:Sys/def_window";
+
+        printf("Falling back to '%s'\n", fallbackIconName);
+        diskObject = IIcon->GetDiskObjectNew(fallbackIconName);
+    }
+
+    return diskObject;
+}
+
+void
+OS4_IconifyWindow(_GLFWwindow *window)
+{
+    if (window->os4.iconified) {
+        printf("Window '%s' is already iconified\n", window->os4.title);
+    } else {
+        struct DiskObject *diskObject = OS4_GetDiskObject();
+
+        if (diskObject) {
+            diskObject->do_CurrentX = NO_ICON_POSITION;
+            diskObject->do_CurrentY = NO_ICON_POSITION;
+
+            window->os4.appIcon = IWorkbench->AddAppIcon(
+                0,
+                (ULONG)window,
+                _glfw.os4.appName,
+                _glfw.os4.appMsgPort,
+                0,
+                diskObject,
+                TAG_DONE);
+
+            if (!window->os4.appIcon) {
+                printf("Failed to add AppIcon\n");
+            } else {
+                printf("Iconifying '%s'\n", window->os4.title);
+
+                IIntuition->HideWindow(window->os4.handle);
+                window->os4.iconified = TRUE;
+                //SDL_SendWindowEvent(window, SDL_WINDOWEVENT_MINIMIZED, 0, 0);
+            }
+
+            IIcon->FreeDiskObject(diskObject);
+        } else {
+            printf("Failed to load icon\n");
+        }
+    }
+}
+
+void
+OS4_UniconifyWindow(_GLFWwindow* window)
+{
+    if (window->os4.iconified) {
+        printf("Restoring '%s'\n", window->os4.title);
+
+        if (window->os4.appIcon) {
+            IWorkbench->RemoveAppIcon(window->os4.appIcon);
+            window->os4.appIcon == NULL;
+        }
+        IIntuition->SetWindowAttrs(window->os4.handle,
+            WA_Hidden, FALSE,
+            TAG_DONE);
+
+        window->os4.iconified = FALSE;
+        //SDL_SendWindowEvent(window, SDL_WINDOWEVENT_RESTORED, 0, 0);
+    }
+}
+
+static void
+OS4_HandleAppIcon(struct AppMessage * msg)
+{
+    _GLFWwindow *window = (_GLFWwindow *)msg->am_UserData;
+    printf("Window ptr = %p\n", window);
+
+    OS4_UniconifyWindow(window);
 }

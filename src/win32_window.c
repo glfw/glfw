@@ -1015,7 +1015,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case  WM_NCCALCSIZE:
         {
-            if (window->titlebar)
+            if (_glfw.hints.window.titlebar)
                 break;
 
             if (lParam)
@@ -1268,7 +1268,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_ACTIVATE:
         {
-            if (window->titlebar)
+            if (_glfw.hints.window.titlebar)
                 break;
 
             // Extend the frame into the client area.
@@ -1284,7 +1284,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         }
         case WM_NCHITTEST:
         {
-            if (window->titlebar)
+            if (_glfw.hints.window.titlebar)
                 break;
 
             POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };

@@ -527,7 +527,6 @@ struct _GLFWwindow
     // Window settings and state
     GLFWbool            resizable;
     GLFWbool            decorated;
-    GLFWbool            titlebar;
     GLFWbool            autoIconify;
     GLFWbool            floating;
     GLFWbool            focusOnShow;

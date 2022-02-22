@@ -24,10 +24,10 @@
 //
 //========================================================================
 
-#define _GLFW_PLATFORM_JOYSTICK_STATE         _GLFWjoystickWin32 win32
-#define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE struct { int dummyLibraryJoystick; }
+#define GLFW_WIN32_JOYSTICK_STATE         _GLFWjoystickWin32 win32;
+#define GLFW_WIN32_LIBRARY_JOYSTICK_STATE
 
-#define _GLFW_PLATFORM_MAPPING_NAME "Windows"
+#define GLFW_BUILD_WIN32_MAPPINGS
 
 // Joystick element (axis, button or slider)
 //
@@ -48,9 +48,6 @@ typedef struct _GLFWjoystickWin32
     GUID                    guid;
 } _GLFWjoystickWin32;
 
-
-void _glfwInitJoysticksWin32(void);
-void _glfwTerminateJoysticksWin32(void);
 void _glfwDetectJoystickConnectionWin32(void);
 void _glfwDetectJoystickDisconnectionWin32(void);
 

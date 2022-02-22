@@ -46,13 +46,15 @@ static int OS4_GetButton(uint16_t code);
 static char OS4_TranslateUnicode(uint16_t code, uint32_t qualifier);
 static int OS4_TranslateState(int state);
 static uint32_t OS4_GetWindowFlags(_GLFWwindow* window, BOOL fullscreen);
-static void OS4_SetWindowLimits(_GLFWwindow * window, struct Window * syswin);
+static void OS4_SetWindowLimits(_GLFWwindow * window);
 static void OS4_CreateIconifyGadget(_GLFWwindow * window);
 static struct DiskObject *OS4_GetDiskObject();
 static void OS4_HandleAppIcon(struct AppMessage * msg);
 static ULONG OS4_BackFill(const struct Hook *hook, struct RastPort *rastport, struct BackFillMessage *message);
 
-
+#ifndef MAX
+#define MAX(a, b)    ((a) > (b) ? (a) : (b))
+#endif
 
 static UWORD fallbackPointerData[2 * 16] = { 0 };
 
@@ -83,6 +85,8 @@ static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
         *height = window->minheight;
     else if (window->maxheight != GLFW_DONT_CARE && *height > window->maxheight)
         *height = window->maxheight;
+
+    OS4_SetWindowLimits(window);
 }
 
 static void fitToMonitor(_GLFWwindow* window)
@@ -148,6 +152,8 @@ static int createNativeWindow(_GLFWwindow* window,
             WA_InnerHeight,       wndconfig->height,
             WA_Title,             wndconfig->title,
             WA_ScreenTitle,       wndconfig->title,
+            WA_MaxWidth,          _glfw.os4.publicScreen->Width,
+            WA_MaxHeight,         _glfw.os4.publicScreen->Height,
             WA_Flags,             windowFlags,
             WA_IDCMP,             IDCMP_CLOSEWINDOW |
                                   IDCMP_MOUSEMOVE |
@@ -650,8 +656,7 @@ void _glfwPollEventsOS4(void)
                 break;
 
             case IDCMP_NEWSIZE:
-                printf("w: %d - h: %d\n", msg.Width, msg.Height);
-                //_glfwInputWindowSize(window, msg.Width, msg.Height);
+                _glfwInputWindowSize(window, msg.Width, msg.Height);
                 //OS4_HandleResize(_this, &msg);
                 break;
 
@@ -660,6 +665,8 @@ void _glfwPollEventsOS4(void)
                     window->os4.xpos = imsg->IDCMPWindow->LeftEdge;
                     window->os4.ypos = imsg->IDCMPWindow->TopEdge;
                 }
+                //dprintf("w: %d - h: %d - x =%d - y = %d\n", msg.Width, msg.Height, window->os4.xpos, window->os4.ypos);
+                _glfwInputWindowPos(window, window->os4.xpos, window->os4.ypos);
 
                 //OS4_HandleMove(_this, &msg);
                 //OS4_HandleResize(_this, &msg);
@@ -1034,12 +1041,13 @@ OS4_GetWindowFlags(_GLFWwindow* window, BOOL fullscreen)
 }
 
 static void
-OS4_SetWindowLimits(_GLFWwindow * window, struct Window * syswin)
+OS4_SetWindowLimits(_GLFWwindow * window)
 {
-    const int minW = window->minwidth ? max(MIN_WINDOW_SIZE, window->minwidth) : MIN_WINDOW_SIZE;
-    const int minH = window->minheight ? max(MIN_WINDOW_SIZE, window->minheight) : MIN_WINDOW_SIZE;
-    const int maxW = window->maxwidth;
-    const int maxH = window->maxheight;
+    struct Window * syswin = window->os4.handle;
+    const int minW = window->minwidth ? MAX(MIN_WINDOW_SIZE, window->minwidth) : MIN_WINDOW_SIZE;
+    const int minH = window->minheight ? MAX(MIN_WINDOW_SIZE, window->minheight) : MIN_WINDOW_SIZE;
+    const int maxW = window->maxwidth != GLFW_DONT_CARE ? window->maxwidth : GLFW_DONT_CARE;
+    const int maxH = window->maxheight != GLFW_DONT_CARE ? window->maxheight : GLFW_DONT_CARE;
 
     dprintf("Window min size %d*%d, max size %d*%d\n", minW, minH, maxW, maxH);
 
@@ -1049,8 +1057,8 @@ OS4_SetWindowLimits(_GLFWwindow * window, struct Window * syswin)
     BOOL ret = IIntuition->WindowLimits(syswin,
         minW + borderWidth,
         minH + borderHeight,
-        maxW ? (maxW + borderWidth) : -1,
-        maxH ? (maxH + borderHeight) : -1);
+        maxW != GLFW_DONT_CARE ? (maxW + borderWidth) : GLFW_DONT_CARE,
+        maxH != GLFW_DONT_CARE ? (maxH + borderHeight) : GLFW_DONT_CARE);
 
     if (!ret) {
         dprintf("Setting window limits failed\n");

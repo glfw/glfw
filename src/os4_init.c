@@ -534,7 +534,6 @@ int _glfwInitOS4(void)
 {
     loadLibraries();
     createKeyTables();
-    _glfwPollMonitorsOS4();
 
     if (!(_glfw.os4.userPort = IExec->AllocSysObjectTags(ASOT_PORT, TAG_DONE))) {
         return GLFW_FALSE;
@@ -545,6 +544,7 @@ int _glfwInitOS4(void)
     }
 
     OS4_LockPubScreen();
+    _glfwPollMonitorsOS4();
     
     OS4_FindApplicationName();
 

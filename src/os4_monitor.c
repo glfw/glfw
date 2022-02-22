@@ -37,18 +37,74 @@
 //
 static GLFWvidmode getVideoMode(void)
 {
-    struct Screen* currentScreen = IIntuition->LockPubScreen(NULL);
-    
+    APTR handle;
+    struct DimensionInfo diminfo;
+    struct DisplayInfo dispinfo;
     GLFWvidmode mode;
-    mode.width = currentScreen->Width;
-    mode.height = currentScreen->Height;
-    // TODO - Change this
+    ULONG modeid;
+
+    IIntuition->GetScreenAttrs(_glfw.os4.publicScreen, SA_DisplayID, &modeid, TAG_DONE);
+
+    handle = IGraphics->FindDisplayInfo(modeid);
+    if (!handle) {
+        goto out;
+    }
+
+    if (!IGraphics->GetDisplayInfoData(handle, (UBYTE *)&diminfo, sizeof(diminfo), DTAG_DIMS, 0)) {
+        dprintf("Failed to get dim info\n");
+        goto out;
+    }
+
+    if (!IGraphics->GetDisplayInfoData(handle, (UBYTE *)&dispinfo, sizeof(dispinfo), DTAG_DISP, 0)) {
+        dprintf("Failed to get disp info\n");
+        goto out;
+    }
+
+    mode.width = diminfo.Nominal.MaxX - diminfo.Nominal.MinX + 1;
+    mode.height = diminfo.Nominal.MaxY - diminfo.Nominal.MinY + 1;
+    mode.refreshRate = 60; // grab DTAG_MNTR?
+    if (dispinfo.PropertyFlags & DIPF_IS_RTG) {
+        dprintf("RTG mode %d: w=%d, h=%d, bits=%d\n", modeid, mode.width, mode.height, diminfo.MaxDepth);
+
+        switch (diminfo.MaxDepth) {
+        case 32:
+            mode.redBits = 8;
+            mode.greenBits = 8;
+            mode.blueBits = 8;
+            break;
+        case 24:
+            mode.redBits = 8;
+            mode.greenBits = 8;
+            mode.blueBits = 8;
+            break;
+        case 16:
+            mode.redBits = 5;
+            mode.greenBits = 6;
+            mode.blueBits = 5;
+            break;
+        case 15:
+            mode.redBits = 5;
+            mode.greenBits = 5;
+            mode.blueBits = 5;
+            break;
+        default:
+            // TODO - What we have to use for 8?
+            mode.redBits = 8;
+            mode.greenBits = 8;
+            mode.blueBits = 8;
+            break;
+        }
+
+        return mode;
+    }
+
+out:
+    // TODO - Change this fallback
+    mode.refreshRate = 60;
     mode.redBits = 8;
     mode.greenBits = 8;
     mode.blueBits = 8;
-    mode.refreshRate = 60;
-    
-    IIntuition->UnlockPubScreen(NULL, currentScreen);
+
     return mode;
 }
 
@@ -176,7 +232,7 @@ OS4_LockPubScreen()
     if (_glfw.os4.publicScreen) {
         return TRUE;
     } else {
-        printf("Failed to lock Workbench screen\n");
+        dprintf("Failed to lock Workbench screen\n");
         return FALSE;
     }
 }

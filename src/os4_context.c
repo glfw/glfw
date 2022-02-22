@@ -122,15 +122,26 @@ GLFWbool _glfwCreateContextGL(_GLFWwindow* window,
 {
     ULONG errCode;
 
+    dprintf("redBits=%d\n", fbconfig->redBits);
+    dprintf("greenBits=%d\n", fbconfig->greenBits);
+    dprintf("blueBits=%d\n", fbconfig->blueBits);
+    dprintf("alphaBits=%d\n", fbconfig->alphaBits);
+    dprintf("depthBits=%d\n", fbconfig->depthBits);
+    dprintf("stencilBits=%d\n", fbconfig->stencilBits);
+    dprintf("accumRedBits=%d\n", fbconfig->accumRedBits);
+    dprintf("accumGreenBits=%d\n", fbconfig->accumGreenBits);
+    dprintf("accumBlueBits=%d\n", fbconfig->accumBlueBits);
+    dprintf("accumAlphaBits=%d\n", fbconfig->accumAlphaBits);
+    dprintf("auxBuffers=%d\n", fbconfig->auxBuffers);
+
     struct TagItem contextparams[] =
     {
-            {OGLES2_CCT_WINDOW,(ULONG)window->os4.handle},
-/*
-            {OGLES2_CCT_DEPTH,_this->gl_config.depth_size},
-            {OGLES2_CCT_STENCIL,_this->gl_config.stencil_size},
-*/                
-            {OGLES2_CCT_VSYNC,0},
-            {TAG_DONE,0}
+            {OGLES2_CCT_WINDOW, (ULONG)window->os4.handle},
+            {OGLES2_CCT_DEPTH, fbconfig->depthBits},
+            {OGLES2_CCT_STENCIL, fbconfig->stencilBits},
+            {OGLES2_CCT_VSYNC, 0},
+            {OGLES2_CCT_RESIZE_VIEWPORT, TRUE},
+            {TAG_DONE, 0}
     };
 
     window->context.gl.glContext = (void *)aglCreateContext2(&errCode, contextparams);

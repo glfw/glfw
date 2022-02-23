@@ -234,6 +234,7 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: Moving the cursor programmatically would freeze it for
    a fraction of a second (#1962)
  - [Cocoa] Bugfix: `kIOMasterPortDefault` was deprecated in macOS 12.0 (#1980)
+ - [Cocoa] Bugfix: `kUTTypeURL` was deprecated in macOS 12.0 (#2003)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -266,6 +267,7 @@ information on what to include when reporting a bug.
    undefined behavior (#1986)
  - [X11] Bugfix: Dynamic loading on OpenBSD failed due to soname differences
  - [Wayland] Added dynamic loading of all Wayland libraries
+ - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
@@ -283,6 +285,11 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Activating a window would emit two input focus events
  - [Wayland] Bugfix: Disable key repeat mechanism when window loses input focus
  - [Wayland] Bugfix: Window hiding and showing did not work (#1492,#1731)
+ - [Wayland] Bugfix: A key being repeated was not released when window lost focus
+ - [Wayland] Bugfix: Showing a hidden window did not emit a window refresh event
+ - [Wayland] Bugfix: Full screen window creation did not ignore `GLFW_VISIBLE`
+ - [Wayland] Bugfix: Some keys were reported as wrong key or `GLFW_KEY_UNKNOWN`
+ - [Wayland] Bugfix: Text input did not repeat along with key repeat
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)

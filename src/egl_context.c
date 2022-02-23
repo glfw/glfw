@@ -325,7 +325,7 @@ GLFWbool _glfwInitEGL(void)
         "libEGL.dylib",
 #elif defined(__CYGWIN__)
         "libEGL-1.so",
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
         "libEGL.so",
 #else
         "libEGL.so.1",
@@ -702,7 +702,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
             "libGLES_CM.dll",
 #elif defined(_GLFW_COCOA)
             "libGLESv1_CM.dylib",
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
             "libGLESv1_CM.so",
 #else
             "libGLESv1_CM.so.1",
@@ -721,7 +721,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
             "libGLESv2.dylib",
 #elif defined(__CYGWIN__)
             "libGLESv2-2.so",
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
             "libGLESv2.so",
 #else
             "libGLESv2.so.2",
@@ -734,7 +734,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
             _GLFW_OPENGL_LIBRARY,
 #elif defined(_GLFW_WIN32)
 #elif defined(_GLFW_COCOA)
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
             "libGL.so",
 #else
             "libGL.so.1",

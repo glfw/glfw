@@ -274,6 +274,7 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: `glfwWaitEvents*` did not continue for joystick events
  - [X11] Bugfix: `glfwPostEmptyEvent` could be ignored due to race condition
    (#379,#1281,#1285,#2033)
+ - [X11] Bugfix: Dynamic loading on NetBSD failed due to soname differences
  - [Wayland] Added dynamic loading of all Wayland libraries
  - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Removed support for `wl_shell` (#1443)

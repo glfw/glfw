@@ -603,7 +603,7 @@ static void detectEWMH(void)
 //
 static GLFWbool initExtensions(void)
 {
-#if defined(__OpenBSD__)
+#if defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.vidmode.handle = _glfwPlatformLoadModule("libXxf86vm.so");
 #else
     _glfw.x11.vidmode.handle = _glfwPlatformLoadModule("libXxf86vm.so.1");
@@ -627,7 +627,7 @@ static GLFWbool initExtensions(void)
 
 #if defined(__CYGWIN__)
     _glfw.x11.xi.handle = _glfwPlatformLoadModule("libXi-6.so");
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.xi.handle = _glfwPlatformLoadModule("libXi.so");
 #else
     _glfw.x11.xi.handle = _glfwPlatformLoadModule("libXi.so.6");
@@ -659,7 +659,7 @@ static GLFWbool initExtensions(void)
 
 #if defined(__CYGWIN__)
     _glfw.x11.randr.handle = _glfwPlatformLoadModule("libXrandr-2.so");
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.randr.handle = _glfwPlatformLoadModule("libXrandr.so");
 #else
     _glfw.x11.randr.handle = _glfwPlatformLoadModule("libXrandr.so.2");
@@ -753,7 +753,7 @@ static GLFWbool initExtensions(void)
 
 #if defined(__CYGWIN__)
     _glfw.x11.xcursor.handle = _glfwPlatformLoadModule("libXcursor-1.so");
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.xcursor.handle = _glfwPlatformLoadModule("libXcursor.so");
 #else
     _glfw.x11.xcursor.handle = _glfwPlatformLoadModule("libXcursor.so.1");
@@ -776,7 +776,7 @@ static GLFWbool initExtensions(void)
 
 #if defined(__CYGWIN__)
     _glfw.x11.xinerama.handle = _glfwPlatformLoadModule("libXinerama-1.so");
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.xinerama.handle = _glfwPlatformLoadModule("libXinerama.so");
 #else
     _glfw.x11.xinerama.handle = _glfwPlatformLoadModule("libXinerama.so.1");
@@ -831,7 +831,7 @@ static GLFWbool initExtensions(void)
     {
 #if defined(__CYGWIN__)
         _glfw.x11.x11xcb.handle = _glfwPlatformLoadModule("libX11-xcb-1.so");
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
         _glfw.x11.x11xcb.handle = _glfwPlatformLoadModule("libX11-xcb.so");
 #else
         _glfw.x11.x11xcb.handle = _glfwPlatformLoadModule("libX11-xcb.so.1");
@@ -846,7 +846,7 @@ static GLFWbool initExtensions(void)
 
 #if defined(__CYGWIN__)
     _glfw.x11.xrender.handle = _glfwPlatformLoadModule("libXrender-1.so");
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.xrender.handle = _glfwPlatformLoadModule("libXrender.so");
 #else
     _glfw.x11.xrender.handle = _glfwPlatformLoadModule("libXrender.so.1");
@@ -875,7 +875,7 @@ static GLFWbool initExtensions(void)
 
 #if defined(__CYGWIN__)
     _glfw.x11.xshape.handle = _glfwPlatformLoadModule("libXext-6.so");
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.xshape.handle = _glfwPlatformLoadModule("libXext.so");
 #else
     _glfw.x11.xshape.handle = _glfwPlatformLoadModule("libXext.so.6");
@@ -1254,7 +1254,7 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
 
 #if defined(__CYGWIN__)
     void* module = _glfwPlatformLoadModule("libX11-6.so");
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
     void* module = _glfwPlatformLoadModule("libX11.so");
 #else
     void* module = _glfwPlatformLoadModule("libX11.so.6");

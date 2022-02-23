@@ -183,6 +183,7 @@ video tutorials.
  - Ali Sherief
  - Yoshiki Shibukawa
  - Dmitri Shuralyov
+ - Daniel Sieger
  - Daniel Skorupski
  - Anthony Smith
  - Bradley Smith

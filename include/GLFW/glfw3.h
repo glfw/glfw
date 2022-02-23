@@ -3765,6 +3765,11 @@ GLFWAPI void glfwMaximizeWindow(GLFWwindow* window);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
+ *  @remark @wayland Because Wayland wants every frame of the desktop to be
+ *  complete, this function does not immediately make the window visible.
+ *  Instead it will become visible the next time the window framebuffer is
+ *  updated after this call.
+ *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_hide
@@ -6190,9 +6195,6 @@ GLFWAPI int glfwVulkanSupported(void);
  *  returned array, as it is an error to specify an extension more than once in
  *  the `VkInstanceCreateInfo` struct.
  *
- *  @remark @macos GLFW currently supports both the `VK_MVK_macos_surface` and
- *  the newer `VK_EXT_metal_surface` extensions.
- *
  *  @pointer_lifetime The returned array is allocated and freed by GLFW.  You
  *  should not free it yourself.  It is guaranteed to be valid only until the
  *  library is terminated.
@@ -6331,17 +6333,20 @@ GLFWAPI int glfwGetPhysicalDevicePresentationSupport(VkInstance instance, VkPhys
  *  @ref glfwVulkanSupported and @ref glfwGetRequiredInstanceExtensions should
  *  eliminate almost all occurrences of these errors.
  *
- *  @remark @macos This function currently only supports the
- *  `VK_MVK_macos_surface` extension from MoltenVK.
+ *  @remark @macos GLFW prefers the `VK_EXT_metal_surface` extension, with the
+ *  `VK_MVK_macos_surface` extension as a fallback.  The name of the selected
+ *  extension, if any, is included in the array returned by @ref
+ *  glfwGetRequiredInstanceExtensions.
  *
  *  @remark @macos This function creates and sets a `CAMetalLayer` instance for
  *  the window content view, which is required for MoltenVK to function.
  *
- *  @remark @x11 GLFW by default attempts to use the `VK_KHR_xcb_surface`
- *  extension, if available.  You can make it prefer the `VK_KHR_xlib_surface`
- *  extension by setting the
+ *  @remark @x11 By default GLFW prefers the `VK_KHR_xcb_surface` extension,
+ *  with the `VK_KHR_xlib_surface` extension as a fallback.  You can make
+ *  `VK_KHR_xlib_surface` the preferred extension by setting the
  *  [GLFW_X11_XCB_VULKAN_SURFACE](@ref GLFW_X11_XCB_VULKAN_SURFACE_hint) init
- *  hint.
+ *  hint.  The name of the selected extension, if any, is included in the array
+ *  returned by @ref glfwGetRequiredInstanceExtensions.
  *
  *  @thread_safety This function may be called from any thread.  For
  *  synchronization details of Vulkan objects, see the Vulkan specification.

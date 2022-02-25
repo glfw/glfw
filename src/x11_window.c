@@ -27,12 +27,18 @@
 // It is fine to use C99 in this file because it will not be built with VS
 //========================================================================
 
+#if defined(__linux__)
+ #define _GNU_SOURCE
+#endif
+
 #include "internal.h"
 
 #include <X11/cursorfont.h>
 #include <X11/Xmd.h>
 
 #include <poll.h>
+#include <signal.h>
+#include <time.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -64,10 +70,22 @@ static GLFWbool waitForData(struct pollfd* fds, nfds_t count, double* timeout)
     {
         if (timeout)
         {
-            const int milliseconds = (int) (*timeout * 1e3);
             const uint64_t base = _glfwPlatformGetTimerValue();
 
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__CYGWIN__)
+            const time_t seconds = (time_t) *timeout;
+            const long nanoseconds = (long) ((*timeout - seconds) * 1e9);
+            const struct timespec ts = { seconds, nanoseconds };
+            const int result = ppoll(fds, count, &ts, NULL);
+#elif defined(__NetBSD__)
+            const time_t seconds = (time_t) *timeout;
+            const long nanoseconds = (long) ((*timeout - seconds) * 1e9);
+            const struct timespec ts = { seconds, nanoseconds };
+            const int result = pollts(fds, count, &ts, NULL);
+#else
+            const int milliseconds = (int) (*timeout * 1e3);
             const int result = poll(fds, count, milliseconds);
+#endif
             const int error = errno; // clock_gettime may overwrite our error
 
             *timeout -= (_glfwPlatformGetTimerValue() - base) /

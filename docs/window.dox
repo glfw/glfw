@@ -447,7 +447,7 @@ The no error mode for OpenGL and OpenGL ES is described in detail by the
 extension.
 
 
-@subsubsection window_hints_win32 Windows specific window hints
+@subsubsection window_hints_win32 Win32 specific hints
 
 @anchor GLFW_WIN32_KEYBOARD_MENU_hint
 __GLFW_WIN32_KEYBOARD_MENU__ specifies whether to allow access to the window
@@ -455,7 +455,7 @@ menu via the Alt+Space and Alt-and-then-Space keyboard shortcuts.  This is
 ignored on other platforms.
 
 
-@subsubsection window_hints_osx macOS specific window hints
+@subsubsection window_hints_osx macOS specific hints
 
 @anchor GLFW_COCOA_RETINA_FRAMEBUFFER_hint
 __GLFW_COCOA_RETINA_FRAMEBUFFER__ specifies whether to use full resolution

@@ -10,8 +10,8 @@ build applications that use GLFW, see @ref build_guide.
 
 @section compile_cmake Using CMake
 
-@note GLFW behaves like most other libraries that use CMake so this guide mostly
-describes the basic configure/generate/compile sequence.  If you are already
+GLFW behaves like most other libraries that use CMake so this guide mostly
+describes the standard configure, generate and compile sequence.  If you are already
 familiar with this from other projects, you may want to focus on the @ref
 compile_deps and @ref compile_options sections for GLFW-specific information.
 
@@ -40,7 +40,7 @@ all necessary dependencies for compiling GLFW, but on Unix-like systems like
 Linux and FreeBSD you will need a few extra packages.
 
 
-@subsubsection compile_deps_x11 Dependencies for X11 on Unix-like systems
+@subsubsection compile_deps_x11 Dependencies for X11
 
 To compile GLFW for X11, you need to have the X11 development packages
 installed.  They are not needed to build or run programs that use GLFW.
@@ -71,37 +71,42 @@ pkg install xorgproto
 On Cygwin the `xorgproto` package in the Devel section of the GUI installer will
 install the headers and other development related files for all of X11.
 
-Once you have the required depdendencies, move on to @ref compile_generate.
+Once you have the required dependencies, move on to @ref compile_generate.
 
 
-@subsubsection compile_deps_wayland Dependencies for Wayland on Unix-like systems
+@subsubsection compile_deps_wayland Dependencies for Wayland and X11
 
-To compile GLFW for Wayland, you need to have the Wayland and xkbcommon
-development packages installed.  They are not needed to build or run programs
-that use GLFW.
+To compile GLFW for both Wayland and X11, you need to have the X11, Wayland and xkbcommon
+development packages installed.  They are not needed to build or run programs that use
+GLFW.  You will also need to set the @ref GLFW_BUILD_WAYLAND CMake option in the next
+step when generating build files.
 
-On Debian and derivates like Ubuntu and Linux Mint you will need the
-`libwayland-dev`, `libxkbcommon-dev` and `wayland-protocols` packages.
+On Debian and derivates like Ubuntu and Linux Mint you will need the `libwayland-dev`,
+`libxkbcommon-dev` and `wayland-protocols` packages and the `xorg-dev` meta-package.
+These will pull in all other dependencies.
 
 @code{.sh}
-sudo apt install libwayland-dev libxkbcommon-dev wayland-protocols
+sudo apt install libwayland-dev libxkbcommon-dev wayland-protocols xorg-dev
 @endcode
 
 On Fedora and derivatives like Red Hat you will need the `wayland-devel`,
-`libxkbcommon-devel` and `wayland-protocols-devel` packages.
+`libxkbcommon-devel`, `wayland-protocols-devel`, `libXcursor-devel`, `libXi-devel`,
+`libXinerama-devel` and `libXrandr-devel` packages.  These will pull in all other
+dependencies.
 
 @code{.sh}
-sudo dnf install wayland-devel libxkbcommon-devel wayland-protocols-devel
+sudo dnf install wayland-devel libxkbcommon-devel wayland-protocols-devel libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel
 @endcode
 
-On FreeBSD you will need the `wayland`, `libxkbcommon` and `wayland-protocols`
-packages.
+On FreeBSD you will need the `wayland`, `libxkbcommon` and `wayland-protocols` packages.
+The X11 headers are installed along the end-user X11 packages, so if you have an X server
+running you should have the headers as well.  If not, install the `xorgproto` package.
 
 @code{.sh}
-pkg install wayland libxkbcommon wayland-protocols
+pkg install wayland libxkbcommon wayland-protocols xorgproto
 @endcode
 
-Once you have the required depdendencies, move on to @ref compile_generate.
+Once you have the required dependencies, move on to @ref compile_generate.
 
 
 @subsection compile_generate Generating build files with CMake
@@ -126,7 +131,7 @@ A common pattern when building a single configuration is to have a build
 directory named `build` in the root of the source tree.
 
 
-@subsubsection compile_generate_gui Generating files with the CMake GUI
+@subsubsection compile_generate_gui Generating with the CMake GUI
 
 Start the CMake GUI and set the paths to the source and build directories
 described above.  Then press _Configure_ and _Generate_.
@@ -135,15 +140,15 @@ If you wish change any CMake variables in the list, press _Configure_ and then
 _Generate_ to have the new values take effect.  The variable list will be
 populated after the first configure step.
 
-By default GLFW will use X11 on Linux and other Unix-like systems other
-than macOS.  To use Wayland instead, set the `GLFW_USE_WAYLAND` option in the
-GLFW section of the variable list, then apply the new value as described above.
+By default GLFW will use X11 on Linux and other Unix-like systems other than macOS.  To
+include support for Wayland as well, set the @ref GLFW_BUILD_WAYLAND option in the GLFW
+section of the variable list, then apply the new value as described above.
 
 Once you have generated the project files or makefiles for your chosen
 development environment, move on to @ref compile_compile.
 
 
-@subsubsection compile_generate_cli Generating files with the CMake command-line tool
+@subsubsection compile_generate_cli Generating with command-line CMake
 
 To make a build directory, pass the source and build directories to the `cmake`
 command.  These can be relative or absolute paths.  The build directory is
@@ -170,10 +175,11 @@ cmake -S path/to/glfw -B path/to/build -G Xcode
 @endcode
 
 By default GLFW will use X11 on Linux and other Unix-like systems other
-than macOS.  To use Wayland instead, set the `GLFW_USE_WAYLAND` CMake option.
+than macOS.  To also include support for Wayland, set the @ref GLFW_BUILD_WAYLAND CMake
+option.
 
 @code{.sh}
-cmake -S path/to/glfw -B path/to/build -D GLFW_USE_WAYLAND=1
+cmake -S path/to/glfw -B path/to/build -D GLFW_BUILD_WAYLAND=1
 @endcode
 
 Once you have generated the project files or makefiles for your chosen
@@ -267,12 +273,13 @@ __GLFW_BUILD_DOCS__ determines whether the GLFW documentation is built along
 with the library.  This is enabled by default if
 [Doxygen](https://www.doxygen.nl/) is found by CMake during configuration.
 
-@anchor GLFW_VULKAN_STATIC
-__GLFW_VULKAN_STATIC__ determines whether to use the Vulkan loader linked
-directly with the application.  This is disabled by default.
 
+@subsection compile_options_win32 Win32 specific CMake options
 
-@subsection compile_options_win32 Windows specific CMake options
+@anchor GLFW_BUILD_WIN32
+__GLFW_BUILD_WIN32__ determines whether to include support for Win32 when compiling the
+library.  This option is only available when compiling for Windows.  This is enabled by
+default.
 
 @anchor USE_MSVC_RUNTIME_LIBRARY_DLL
 __USE_MSVC_RUNTIME_LIBRARY_DLL__ determines whether to use the DLL version or the
@@ -292,12 +299,25 @@ will not work if GLFW is built as a DLL.  This is disabled by default, letting
 the operating system and driver decide.
 
 
-@subsection compile_options_wayland Wayland specific CMake options
+@subsection compile_options_macos macOS specific CMake options
 
-@anchor GLFW_USE_WAYLAND
-__GLFW_USE_WAYLAND__ determines whether to compile the library for Wayland.
-This option is only available on Linux and other Unix-like systems other than
-macOS.  This is disabled by default.
+@anchor GLFW_BUILD_COCOA
+__GLFW_BUILD_COCOA__ determines whether to include support for Cocoa when compiling the
+library.  This option is only available when compiling for macOS.  This is enabled by
+default.
+
+
+@subsection compile_options_unix Unix-like system specific CMake options
+
+@anchor GLFW_BUILD_WAYLAND
+__GLFW_BUILD_WAYLAND__ determines whether to include support for Wayland when compiling
+the library.  This option is only available when compiling for Linux and other Unix-like
+systems other than macOS.  This is disabled by default.
+
+@anchor GLFW_BUILD_X11
+__GLFW_BUILD_X11__ determines whether to include support for X11 when compiling the
+library.  This option is only available when compiling for Linux and other Unix-like
+systems other than macOS.  This is enabled by default.
 
 
 @section compile_mingw_cross Cross-compilation with CMake and MinGW
@@ -335,33 +355,29 @@ For more details see the
 
 @section compile_manual Compiling GLFW manually
 
-If you wish to compile GLFW without its CMake build environment then you will
-have to do at least some of the platform detection yourself.  GLFW needs
-a configuration macro to be defined in order to know what window system it is
-being compiled for and also has optional, platform-specific ones for various
-features.
+If you wish to compile GLFW without its CMake build environment then you will have to do
+at least some of the platform detection yourself.  There are preprocessor macros for
+enabling support for the platforms (window systems) available.  There are also optional,
+platform-specific macros for various features.
 
-When building with CMake, the `glfw_config.h` configuration header is generated
-based on the current platform and CMake options.  The GLFW CMake environment
-defines @b GLFW_USE_CONFIG_H, which causes this header to be included by
-`internal.h`.  Without this macro, GLFW will expect the necessary configuration
-macros to be defined on the command-line.
+When building, GLFW will expect the necessary configuration macros to be defined
+on the command-line.  The GLFW CMake files set these as private compile
+definitions on the GLFW target but if you compile the GLFW sources manually you
+will need to define them yourself.
 
-The window creation API is used to create windows, handle input, monitors, gamma
-ramps and clipboard.  The options are:
+The window system is used to create windows, handle input, monitors, gamma ramps and
+clipboard.  The options are:
 
  - @b _GLFW_COCOA to use the Cocoa frameworks
  - @b _GLFW_WIN32 to use the Win32 API
  - @b _GLFW_X11 to use the X Window System
- - @b _GLFW_WAYLAND to use the Wayland API (experimental and incomplete)
- - @b _GLFW_OSMESA to use the OSMesa API (headless and non-interactive)
+ - @b _GLFW_WAYLAND to use the Wayland API (incomplete)
+
+The @b _GLFW_WAYLAND and @b _GLFW_X11 macros may be combined and produces a library that
+attempts to detect the appropriate platform at initialization.
 
 If you are building GLFW as a shared library / dynamic library / DLL then you
 must also define @b _GLFW_BUILD_DLL.  Otherwise, you must not define it.
-
-If you are linking the Vulkan loader directly with your application then you
-must also define @b _GLFW_VULKAN_STATIC.  Otherwise, GLFW will attempt to use the
-external version.
 
 If you are using a custom name for the Vulkan, EGL, GLX, OSMesa, OpenGL, GLESv1
 or GLESv2 library, you can override the default names by defining those you need

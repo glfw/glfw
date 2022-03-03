@@ -737,6 +737,7 @@ static GLFWbool flushDisplay(void)
 
 static void handleEvents(double* timeout)
 {
+    GLFWbool event = GLFW_FALSE;
     struct pollfd fds[] =
     {
         { wl_display_get_fd(_glfw.wl.display), POLLIN },
@@ -744,31 +745,38 @@ static void handleEvents(double* timeout)
         { _glfw.wl.cursorTimerfd, POLLIN },
     };
 
-    while (wl_display_prepare_read(_glfw.wl.display) != 0)
-        wl_display_dispatch_pending(_glfw.wl.display);
-
-    // If an error other than EAGAIN happens, we have likely been disconnected
-    // from the Wayland session; try to handle that the best we can.
-    if (!flushDisplay())
+    while (!event)
     {
-        wl_display_cancel_read(_glfw.wl.display);
+        while (wl_display_prepare_read(_glfw.wl.display) != 0)
+            wl_display_dispatch_pending(_glfw.wl.display);
 
-        _GLFWwindow* window = _glfw.windowListHead;
-        while (window)
+        // If an error other than EAGAIN happens, we have likely been disconnected
+        // from the Wayland session; try to handle that the best we can.
+        if (!flushDisplay())
         {
-            _glfwInputWindowCloseRequest(window);
-            window = window->next;
+            wl_display_cancel_read(_glfw.wl.display);
+
+            _GLFWwindow* window = _glfw.windowListHead;
+            while (window)
+            {
+                _glfwInputWindowCloseRequest(window);
+                window = window->next;
+            }
+
+            return;
         }
 
-        return;
-    }
+        if (!_glfwPollPOSIX(fds, 3, timeout))
+        {
+            wl_display_cancel_read(_glfw.wl.display);
+            return;
+        }
 
-    if (_glfwPollPOSIX(fds, 3, timeout))
-    {
         if (fds[0].revents & POLLIN)
         {
             wl_display_read_events(_glfw.wl.display);
-            wl_display_dispatch_pending(_glfw.wl.display);
+            if (wl_display_dispatch_pending(_glfw.wl.display) > 0)
+                event = GLFW_TRUE;
         }
         else
             wl_display_cancel_read(_glfw.wl.display);
@@ -789,6 +797,8 @@ static void handleEvents(double* timeout)
                     _glfwInputTextWayland(_glfw.wl.keyboardFocus,
                                           _glfw.wl.keyboardLastScancode);
                 }
+
+                event = GLFW_TRUE;
             }
         }
 
@@ -797,11 +807,12 @@ static void handleEvents(double* timeout)
             uint64_t repeats;
 
             if (read(_glfw.wl.cursorTimerfd, &repeats, sizeof(repeats)) == 8)
+            {
                 incrementCursorImage(_glfw.wl.pointerFocus);
+                event = GLFW_TRUE;
+            }
         }
     }
-    else
-        wl_display_cancel_read(_glfw.wl.display);
 }
 
 //////////////////////////////////////////////////////////////////////////

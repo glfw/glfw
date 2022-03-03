@@ -751,6 +751,8 @@ static void handleEvents(int timeout)
     // from the Wayland session; try to handle that the best we can.
     if (!flushDisplay())
     {
+        wl_display_cancel_read(_glfw.wl.display);
+
         _GLFWwindow* window = _glfw.windowListHead;
         while (window)
         {
@@ -758,7 +760,6 @@ static void handleEvents(int timeout)
             window = window->next;
         }
 
-        wl_display_cancel_read(_glfw.wl.display);
         return;
     }
 

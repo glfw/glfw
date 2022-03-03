@@ -1185,6 +1185,7 @@ void _glfwWaitEventsTimeoutWayland(double timeout)
 void _glfwPostEmptyEventWayland(void)
 {
     wl_display_sync(_glfw.wl.display);
+    flushDisplay();
 }
 
 void _glfwGetCursorPosWayland(_GLFWwindow* window, double* xpos, double* ypos)

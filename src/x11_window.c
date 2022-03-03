@@ -27,18 +27,12 @@
 // It is fine to use C99 in this file because it will not be built with VS
 //========================================================================
 
-#if defined(__linux__)
- #define _GNU_SOURCE
-#endif
-
 #include "internal.h"
 
 #include <X11/cursorfont.h>
 #include <X11/Xmd.h>
 
 #include <poll.h>
-#include <signal.h>
-#include <time.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -62,53 +56,6 @@
 
 #define _GLFW_XDND_VERSION 5
 
-// Wait for data to arrive on any of the specified file descriptors
-//
-static GLFWbool waitForData(struct pollfd* fds, nfds_t count, double* timeout)
-{
-    for (;;)
-    {
-        if (timeout)
-        {
-            const uint64_t base = _glfwPlatformGetTimerValue();
-
-#if defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__CYGWIN__)
-            const time_t seconds = (time_t) *timeout;
-            const long nanoseconds = (long) ((*timeout - seconds) * 1e9);
-            const struct timespec ts = { seconds, nanoseconds };
-            const int result = ppoll(fds, count, &ts, NULL);
-#elif defined(__NetBSD__)
-            const time_t seconds = (time_t) *timeout;
-            const long nanoseconds = (long) ((*timeout - seconds) * 1e9);
-            const struct timespec ts = { seconds, nanoseconds };
-            const int result = pollts(fds, count, &ts, NULL);
-#else
-            const int milliseconds = (int) (*timeout * 1e3);
-            const int result = poll(fds, count, milliseconds);
-#endif
-            const int error = errno; // clock_gettime may overwrite our error
-
-            *timeout -= (_glfwPlatformGetTimerValue() - base) /
-                (double) _glfwPlatformGetTimerFrequency();
-
-            if (result > 0)
-                return GLFW_TRUE;
-            else if (result == -1 && error != EINTR && error != EAGAIN)
-                return GLFW_FALSE;
-            else if (*timeout <= 0.0)
-                return GLFW_FALSE;
-        }
-        else
-        {
-            const int result = poll(fds, count, -1);
-            if (result > 0)
-                return GLFW_TRUE;
-            else if (result == -1 && errno != EINTR && errno != EAGAIN)
-                return GLFW_FALSE;
-        }
-    }
-}
-
 // Wait for event data to arrive on the X11 display socket
 // This avoids blocking other threads via the per-display Xlib lock that also
 // covers GLX functions
@@ -119,7 +66,7 @@ static GLFWbool waitForX11Event(double* timeout)
 
     while (!XPending(_glfw.x11.display))
     {
-        if (!waitForData(&fd, 1, timeout))
+        if (!_glfwPollPOSIX(&fd, 1, timeout))
             return GLFW_FALSE;
     }
 
@@ -146,7 +93,7 @@ static GLFWbool waitForAnyEvent(double* timeout)
 
     while (!XPending(_glfw.x11.display))
     {
-        if (!waitForData(fds, count, timeout))
+        if (!_glfwPollPOSIX(fds, count, timeout))
             return GLFW_FALSE;
 
         for (int i = 1; i < count; i++)

@@ -735,7 +735,7 @@ static GLFWbool flushDisplay(void)
     return GLFW_TRUE;
 }
 
-static void handleEvents(int timeout)
+static void handleEvents(double* timeout)
 {
     struct pollfd fds[] =
     {
@@ -763,7 +763,7 @@ static void handleEvents(int timeout)
         return;
     }
 
-    if (poll(fds, 3, timeout) > 0)
+    if (_glfwPollPOSIX(fds, 3, timeout))
     {
         if (fds[0].revents & POLLIN)
         {
@@ -1168,17 +1168,18 @@ GLFWbool _glfwRawMouseMotionSupportedWayland(void)
 
 void _glfwPollEventsWayland(void)
 {
-    handleEvents(0);
+    double timeout = 0.0;
+    handleEvents(&timeout);
 }
 
 void _glfwWaitEventsWayland(void)
 {
-    handleEvents(-1);
+    handleEvents(NULL);
 }
 
 void _glfwWaitEventsTimeoutWayland(double timeout)
 {
-    handleEvents((int) (timeout * 1e3));
+    handleEvents(&timeout);
 }
 
 void _glfwPostEmptyEventWayland(void)
@@ -1729,7 +1730,7 @@ const char* _glfwGetClipboardStringWayland(void)
     close(fds[1]);
 
     // XXX: this is a huge hack, this function shouldn’t be synchronous!
-    handleEvents(-1);
+    handleEvents(NULL);
 
     while (1)
     {

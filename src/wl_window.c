@@ -831,6 +831,25 @@ static void incrementCursorImage(_GLFWwindow* window)
     }
 }
 
+static GLFWbool flushDisplay(void)
+{
+    while (wl_display_flush(_glfw.wl.display) == -1)
+    {
+        if (errno != EAGAIN)
+            return GLFW_FALSE;
+
+        struct pollfd fd = { wl_display_get_fd(_glfw.wl.display), POLLOUT };
+
+        while (poll(&fd, 1, -1) == -1)
+        {
+            if (errno != EINTR && errno != EAGAIN)
+                return GLFW_FALSE;
+        }
+    }
+
+    return GLFW_TRUE;
+}
+
 static void handleEvents(int timeout)
 {
     struct pollfd fds[] =
@@ -845,7 +864,7 @@ static void handleEvents(int timeout)
 
     // If an error other than EAGAIN happens, we have likely been disconnected
     // from the Wayland session; try to handle that the best we can.
-    if (wl_display_flush(_glfw.wl.display) < 0 && errno != EAGAIN)
+    if (!flushDisplay())
     {
         _GLFWwindow* window = _glfw.windowListHead;
         while (window)

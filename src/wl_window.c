@@ -1393,6 +1393,7 @@ void _glfwPlatformWaitEventsTimeout(double timeout)
 void _glfwPlatformPostEmptyEvent(void)
 {
     wl_display_sync(_glfw.wl.display);
+    flushDisplay();
 }
 
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)

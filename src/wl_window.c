@@ -1732,7 +1732,7 @@ const char* _glfwGetClipboardStringWayland(void)
     // XXX: this is a huge hack, this function shouldn’t be synchronous!
     handleEvents(NULL);
 
-    while (1)
+    for (;;)
     {
         // Grow the clipboard if we need to paste something bigger, there is no
         // shrink operation yet.

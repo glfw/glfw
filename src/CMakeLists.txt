@@ -75,8 +75,12 @@ if (GLFW_BUILD_WAYLAND)
 
     include(FindPkgConfig)
     pkg_check_modules(WAYLAND_PROTOCOLS REQUIRED wayland-protocols>=1.15)
-    pkg_get_variable(WAYLAND_PROTOCOLS_BASE wayland-protocols pkgdatadir)
-    pkg_get_variable(WAYLAND_CLIENT_PKGDATADIR wayland-client pkgdatadir)
+    if (NOT WAYLAND_PROTOCOLS_BASE)
+        pkg_get_variable(WAYLAND_PROTOCOLS_BASE wayland-protocols pkgdatadir)
+    endif()
+    if (NOT WAYLAND_CLIENT_PKGDATADIR)
+        pkg_get_variable(WAYLAND_CLIENT_PKGDATADIR wayland-client pkgdatadir)
+    endif()
 
     macro(wayland_generate protocol_file output_file)
         add_custom_command(OUTPUT "${output_file}.h"

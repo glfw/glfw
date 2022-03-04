@@ -43,6 +43,7 @@ typedef VkResult (APIENTRY *PFN_vkCreateWaylandSurfaceKHR)(VkInstance,const VkWa
 typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR)(VkPhysicalDevice,uint32_t,struct wl_display*);
 
 #include "xkb_unicode.h"
+#include "posix_poll.h"
 
 typedef int (* PFN_wl_display_flush)(struct wl_display *display);
 typedef void (* PFN_wl_display_cancel_read)(struct wl_display *display);

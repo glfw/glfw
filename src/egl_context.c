@@ -325,7 +325,7 @@ GLFWbool _glfwInitEGL(void)
         "libEGL.dylib",
 #elif defined(__CYGWIN__)
         "libEGL-1.so",
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
         "libEGL.so",
 #else
         "libEGL.so.1",
@@ -506,7 +506,7 @@ void _glfwTerminateEGL(void)
     }
 }
 
-#define setAttrib(a, v) \
+#define SET_ATTRIB(a, v) \
 { \
     assert(((size_t) index + 1) < sizeof(attribs) / sizeof(attribs[0])); \
     attribs[index++] = a; \
@@ -584,13 +584,13 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         {
             if (ctxconfig->robustness == GLFW_NO_RESET_NOTIFICATION)
             {
-                setAttrib(EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY_KHR,
-                          EGL_NO_RESET_NOTIFICATION_KHR);
+                SET_ATTRIB(EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY_KHR,
+                           EGL_NO_RESET_NOTIFICATION_KHR);
             }
             else if (ctxconfig->robustness == GLFW_LOSE_CONTEXT_ON_RESET)
             {
-                setAttrib(EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY_KHR,
-                          EGL_LOSE_CONTEXT_ON_RESET_KHR);
+                SET_ATTRIB(EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY_KHR,
+                           EGL_LOSE_CONTEXT_ON_RESET_KHR);
             }
 
             flags |= EGL_CONTEXT_OPENGL_ROBUST_ACCESS_BIT_KHR;
@@ -599,42 +599,42 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         if (ctxconfig->noerror)
         {
             if (_glfw.egl.KHR_create_context_no_error)
-                setAttrib(EGL_CONTEXT_OPENGL_NO_ERROR_KHR, GLFW_TRUE);
+                SET_ATTRIB(EGL_CONTEXT_OPENGL_NO_ERROR_KHR, GLFW_TRUE);
         }
 
         if (ctxconfig->major != 1 || ctxconfig->minor != 0)
         {
-            setAttrib(EGL_CONTEXT_MAJOR_VERSION_KHR, ctxconfig->major);
-            setAttrib(EGL_CONTEXT_MINOR_VERSION_KHR, ctxconfig->minor);
+            SET_ATTRIB(EGL_CONTEXT_MAJOR_VERSION_KHR, ctxconfig->major);
+            SET_ATTRIB(EGL_CONTEXT_MINOR_VERSION_KHR, ctxconfig->minor);
         }
 
         if (mask)
-            setAttrib(EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR, mask);
+            SET_ATTRIB(EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR, mask);
 
         if (flags)
-            setAttrib(EGL_CONTEXT_FLAGS_KHR, flags);
+            SET_ATTRIB(EGL_CONTEXT_FLAGS_KHR, flags);
     }
     else
     {
         if (ctxconfig->client == GLFW_OPENGL_ES_API)
-            setAttrib(EGL_CONTEXT_CLIENT_VERSION, ctxconfig->major);
+            SET_ATTRIB(EGL_CONTEXT_CLIENT_VERSION, ctxconfig->major);
     }
 
     if (_glfw.egl.KHR_context_flush_control)
     {
         if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_NONE)
         {
-            setAttrib(EGL_CONTEXT_RELEASE_BEHAVIOR_KHR,
-                      EGL_CONTEXT_RELEASE_BEHAVIOR_NONE_KHR);
+            SET_ATTRIB(EGL_CONTEXT_RELEASE_BEHAVIOR_KHR,
+                       EGL_CONTEXT_RELEASE_BEHAVIOR_NONE_KHR);
         }
         else if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_FLUSH)
         {
-            setAttrib(EGL_CONTEXT_RELEASE_BEHAVIOR_KHR,
-                      EGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR);
+            SET_ATTRIB(EGL_CONTEXT_RELEASE_BEHAVIOR_KHR,
+                       EGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR);
         }
     }
 
-    setAttrib(EGL_NONE, EGL_NONE);
+    SET_ATTRIB(EGL_NONE, EGL_NONE);
 
     window->context.egl.handle = eglCreateContext(_glfw.egl.display,
                                                   config, share, attribs);
@@ -653,16 +653,16 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
     if (fbconfig->sRGB)
     {
         if (_glfw.egl.KHR_gl_colorspace)
-            setAttrib(EGL_GL_COLORSPACE_KHR, EGL_GL_COLORSPACE_SRGB_KHR);
+            SET_ATTRIB(EGL_GL_COLORSPACE_KHR, EGL_GL_COLORSPACE_SRGB_KHR);
     }
 
     if (!fbconfig->doublebuffer)
-        setAttrib(EGL_RENDER_BUFFER, EGL_SINGLE_BUFFER);
+        SET_ATTRIB(EGL_RENDER_BUFFER, EGL_SINGLE_BUFFER);
 
     if (_glfw.egl.EXT_present_opaque)
-        setAttrib(EGL_PRESENT_OPAQUE_EXT, !fbconfig->transparent);
+        SET_ATTRIB(EGL_PRESENT_OPAQUE_EXT, !fbconfig->transparent);
 
-    setAttrib(EGL_NONE, EGL_NONE);
+    SET_ATTRIB(EGL_NONE, EGL_NONE);
 
     native = _glfw.platform.getEGLNativeWindow(window);
     // HACK: ANGLE does not implement eglCreatePlatformWindowSurfaceEXT
@@ -702,7 +702,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
             "libGLES_CM.dll",
 #elif defined(_GLFW_COCOA)
             "libGLESv1_CM.dylib",
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
             "libGLESv1_CM.so",
 #else
             "libGLESv1_CM.so.1",
@@ -721,7 +721,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
             "libGLESv2.dylib",
 #elif defined(__CYGWIN__)
             "libGLESv2-2.so",
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
             "libGLESv2.so",
 #else
             "libGLESv2.so.2",
@@ -734,7 +734,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
             _GLFW_OPENGL_LIBRARY,
 #elif defined(_GLFW_WIN32)
 #elif defined(_GLFW_COCOA)
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
             "libGL.so",
 #else
             "libGL.so.1",
@@ -782,7 +782,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
-#undef setAttrib
+#undef SET_ATTRIB
 
 // Returns the Visual and depth of the chosen EGLConfig
 //

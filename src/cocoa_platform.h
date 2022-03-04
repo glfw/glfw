@@ -42,8 +42,10 @@ typedef void* id;
 #endif
 
 // NOTE: Many Cocoa enum values have been renamed and we need to build across
-//       SDK versions where one is unavailable or the other deprecated
-//       We use the newer names in code and these macros to handle compatibility
+//       SDK versions where one is unavailable or deprecated.
+//       We use the newer names in code and replace them with the older names if
+//       the base SDK does not provide the newer names.
+
 #if MAC_OS_X_VERSION_MAX_ALLOWED < 101200
  #define NSBitmapFormatAlphaNonpremultiplied NSAlphaNonpremultipliedBitmapFormat
  #define NSEventMaskAny NSAnyEventMask
@@ -60,6 +62,15 @@ typedef void* id;
  #define NSWindowStyleMaskMiniaturizable NSMiniaturizableWindowMask
  #define NSWindowStyleMaskResizable NSResizableWindowMask
  #define NSWindowStyleMaskTitled NSTitledWindowMask
+#endif
+
+// NOTE: Many Cocoa dynamically linked constants have been renamed and we need
+//       to build across SDK versions where one is unavailable or deprecated.
+//       We use the newer names in code and replace them with the older names if
+//       the deployment target is older than the newer names.
+
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 101300
+ #define NSPasteboardTypeURL NSURLPboardType
 #endif
 
 typedef VkFlags VkMacOSSurfaceCreateFlagsMVK;
@@ -135,7 +146,6 @@ typedef struct _GLFWwindowNS
     // since the last cursor motion event was processed
     // This is kept to counteract Cocoa doing the same internally
     double          cursorWarpDeltaX, cursorWarpDeltaY;
-
 } _GLFWwindowNS;
 
 // Cocoa-specific global data
@@ -170,7 +180,6 @@ typedef struct _GLFWlibraryNS
         PFN_LMGetKbdType GetKbdType;
         CFStringRef     kPropertyUnicodeKeyLayoutData;
     } tis;
-
 } _GLFWlibraryNS;
 
 // Cocoa-specific per-monitor data
@@ -182,7 +191,6 @@ typedef struct _GLFWmonitorNS
     uint32_t            unitNumber;
     id                  screen;
     double              fallbackRefreshRate;
-
 } _GLFWmonitorNS;
 
 // Cocoa-specific per-cursor data
@@ -190,7 +198,6 @@ typedef struct _GLFWmonitorNS
 typedef struct _GLFWcursorNS
 {
     id              object;
-
 } _GLFWcursorNS;
 
 // Cocoa-specific global timer data
@@ -198,7 +205,6 @@ typedef struct _GLFWcursorNS
 typedef struct _GLFWtimerNS
 {
     uint64_t        frequency;
-
 } _GLFWtimerNS;
 
 

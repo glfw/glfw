@@ -39,6 +39,11 @@ you have used GLFW 2 in the past, there is a [transition
 guide](https://www.glfw.org/docs/latest/moving.html) for moving to the GLFW
 3 API.
 
+GLFW exists because of the contributions of [many people](CONTRIBUTORS.md)
+around the world, whether by reporting bugs, providing community support, adding
+features, reviewing or testing code, debugging, proofreading docs, suggesting
+features or fixing bugs.
+
 
 ## Compiling GLFW
 
@@ -118,22 +123,18 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
- - Bugfix: Buffers were swapped at creation on single-buffered windows (#1873)
- - Bugfix: Gamepad mapping updates could spam `GLFW_INVALID_VALUE` due to
-   incompatible controllers sharing hardware ID (#1763)
- - [Win32] Bugfix: `USE_MSVC_RUNTIME_LIBRARY_DLL` had no effect on CMake 3.15 or
-   later (#1783,#1796)
- - [Win32] Bugfix: Compilation with LLVM for Windows failed (#1807,#1824,#1874)
- - [Cocoa] Bugfix: The MoltenVK layer contents scale was updated only after
-   related events were emitted
- - [Cocoa] Bugfix: Moving the cursor programmatically would freeze it for
-   a fraction of a second (#1962)
- - [X11] Bugfix: Changing `GLFW_FLOATING` could leak memory
- - [Wayland] Bugfix: Some keys were not repeating in Wayland (#1908)
- - [Wayland] Bugfix: Non-arrow cursors are offset from the hotspot (#1706,#1899)
- - [NSGL] Bugfix: Defining `GL_SILENCE_DEPRECATION` externally caused
-   a duplicate definition warning (#1840)
- - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
+ - [Cocoa] Bugfix: `kUTTypeURL` was deprecated in macOS 12.0 (#2003)
+ - [X11] Bugfix: Dynamic loading on OpenBSD failed due to soname differences
+ - [Wayland] Added support for key names via xkbcommon
+ - [Wayland] Bugfix: Key repeat could lead to a race condition (#1710)
+ - [Wayland] Bugfix: Activating a window would emit two input focus events
+ - [Wayland] Bugfix: Disable key repeat mechanism when window loses input focus
+ - [Wayland] Bugfix: Window hiding and showing did not work (#1492,#1731)
+ - [Wayland] Bugfix: A key being repeated was not released when window lost focus
+ - [Wayland] Bugfix: Showing a hidden window did not emit a window refresh event
+ - [Wayland] Bugfix: Full screen window creation did not ignore `GLFW_VISIBLE`
+ - [Wayland] Bugfix: Some keys were reported as wrong key or `GLFW_KEY_UNKNOWN`
+ - [Wayland] Bugfix: Text input did not repeat along with key repeat
 
 
 ## Contact
@@ -151,221 +152,4 @@ request, please file it in the
 
 Finally, if you're interested in helping out with the development of GLFW or
 porting it to your favorite platform, join us on the forum, GitHub or IRC.
-
-
-## Acknowledgements
-
-GLFW exists because people around the world donated their time and lent their
-skills.
-
- - Bobyshev Alexander
- - Laurent Aphecetche
- - Matt Arsenault
- - ashishgamedev
- - David Avedissian
- - Keith Bauer
- - John Bartholomew
- - Coşku Baş
- - Niklas Behrens
- - Andrew Belt
- - Nevyn Bengtsson
- - Niklas Bergström
- - Denis Bernard
- - Doug Binks
- - blanco
- - Waris Boonyasiriwat
- - Kyle Brenneman
- - Rok Breulj
- - Kai Burjack
- - Martin Capitanio
- - Nicolas Caramelli
- - David Carlier
- - Arturo Castro
- - Chi-kwan Chan
- - Joseph Chua
- - Ian Clarkson
- - Michał Cichoń
- - Lambert Clara
- - Anna Clarke
- - Yaron Cohen-Tal
- - Omar Cornut
- - Andrew Corrigan
- - Bailey Cosier
- - Noel Cower
- - CuriouserThing
- - Jason Daly
- - Jarrod Davis
- - Olivier Delannoy
- - Paul R. Deppe
- - Michael Dickens
- - Роман Донченко
- - Mario Dorn
- - Wolfgang Draxinger
- - Jonathan Dummer
- - Ralph Eastwood
- - Fredrik Ehnbom
- - Robin Eklind
- - Siavash Eliasi
- - Felipe Ferreira
- - Michael Fogleman
- - Gerald Franz
- - Mário Freitas
- - GeO4d
- - Marcus Geelnard
- - Charles Giessen
- - Ryan C. Gordon
- - Stephen Gowen
- - Kovid Goyal
- - Eloi Marín Gratacós
- - Stefan Gustavson
- - Jonathan Hale
- - hdf89shfdfs
- - Sylvain Hellegouarch
- - Matthew Henry
- - heromyth
- - Lucas Hinderberger
- - Paul Holden
- - Warren Hu
- - Charles Huber
- - IntellectualKitty
- - Aaron Jacobs
- - Erik S. V. Jansson
- - Toni Jovanoski
- - Arseny Kapoulkine
- - Cem Karan
- - Osman Keskin
- - Koray Kilinc
- - Josh Kilmer
- - Byunghoon Kim
- - Cameron King
- - Peter Knut
- - Christoph Kubisch
- - Yuri Kunde Schlesner
- - Rokas Kupstys
- - Konstantin Käfer
- - Eric Larson
- - Francis Lecavalier
- - Jong Won Lee
- - Robin Leffmann
- - Glenn Lewis
- - Shane Liesegang
- - Anders Lindqvist
- - Leon Linhart
- - Marco Lizza
- - Eyal Lotem
- - Aaron Loucks
- - Luflosi
- - lukect
- - Tristam MacDonald
- - Hans Mackowiak
- - Дмитри Малышев
- - Zbigniew Mandziejewicz
- - Adam Marcus
- - Célestin Marot
- - Kyle McDonald
- - David V. McKay
- - David Medlock
- - Bryce Mehring
- - Jonathan Mercier
- - Marcel Metz
- - Liam Middlebrook
- - Ave Milia
- - Jonathan Miller
- - Kenneth Miller
- - Bruce Mitchener
- - Jack Moffitt
- - Jeff Molofee
- - Alexander Monakov
- - Pierre Morel
- - Jon Morton
- - Pierre Moulon
- - Martins Mozeiko
- - Julian Møller
- - ndogxj
- - Kristian Nielsen
- - Kamil Nowakowski
- - onox
- - Denis Ovod
- - Ozzy
- - Andri Pálsson
- - Peoro
- - Braden Pellett
- - Christopher Pelloux
- - Arturo J. Pérez
- - Vladimir Perminov
- - Anthony Pesch
- - Orson Peters
- - Emmanuel Gil Peyrot
- - Cyril Pichard
- - Keith Pitt
- - Stanislav Podgorskiy
- - Konstantin Podsvirov
- - Nathan Poirier
- - Alexandre Pretyman
- - Pablo Prietz
- - przemekmirek
- - pthom
- - Guillaume Racicot
- - Philip Rideout
- - Eddie Ringle
- - Max Risuhin
- - Jorge Rodriguez
- - Luca Rood
- - Ed Ropple
- - Aleksey Rybalkin
- - Mikko Rytkönen
- - Riku Salminen
- - Brandon Schaefer
- - Sebastian Schuberth
- - Christian Sdunek
- - Matt Sealey
- - Steve Sexton
- - Arkady Shapkin
- - Ali Sherief
- - Yoshiki Shibukawa
- - Dmitri Shuralyov
- - Daniel Skorupski
- - Bradley Smith
- - Cliff Smolinsky
- - Patrick Snape
- - Erlend Sogge Heggen
- - Julian Squires
- - Johannes Stein
- - Pontus Stenetorp
- - Michael Stocker
- - Justin Stoecker
- - Elviss Strazdins
- - Paul Sultana
- - Nathan Sweet
- - TTK-Bandit
- - Sergey Tikhomirov
- - Arthur Tombs
- - Ioannis Tsakpinis
- - Samuli Tuomola
- - Matthew Turner
- - urraka
- - Elias Vanderstuyft
- - Stef Velzel
- - Jari Vetoniemi
- - Ricardo Vieira
- - Nicholas Vitovitch
- - Simon Voordouw
- - Corentin Wallez
- - Torsten Walluhn
- - Patrick Walton
- - Xo Wang
- - Jay Weisskopf
- - Frank Wille
- - Richard A. Wilkes
- - Tatsuya Yatagawa
- - Ryogo Yoshimura
- - Lukas Zanner
- - Andrey Zholos
- - Aihui Zhu
- - Santi Zupancic
- - Jonas Ådahl
- - Lasse Öörni
- - Leonard König
- - All the unmentioned and anonymous contributors in the GLFW community, for bug
-   reports, patches, feedback, testing and encouragement
 

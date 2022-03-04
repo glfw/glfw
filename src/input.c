@@ -278,7 +278,7 @@ void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int m
 // Notifies shared code of a Unicode codepoint input event
 // The 'plain' parameter determines whether to emit a regular character event
 //
-void _glfwInputChar(_GLFWwindow* window, unsigned int codepoint, int mods, GLFWbool plain)
+void _glfwInputChar(_GLFWwindow* window, uint32_t codepoint, int mods, GLFWbool plain)
 {
     if (codepoint < 32 || (codepoint > 126 && codepoint < 160))
         return;
@@ -401,6 +401,7 @@ void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value)
 //
 void _glfwInitGamepadMappings(void)
 {
+    int jid;
     size_t i;
     const size_t count = sizeof(_glfwDefaultMappings) / sizeof(char*);
     _glfw.mappings = calloc(count, sizeof(_GLFWmapping));
@@ -409,6 +410,13 @@ void _glfwInitGamepadMappings(void)
     {
         if (parseMapping(&_glfw.mappings[_glfw.mappingCount], _glfwDefaultMappings[i]))
             _glfw.mappingCount++;
+    }
+
+    for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
+    {
+        _GLFWjoystick* js = _glfw.joysticks + jid;
+        if (js->present)
+            js->mapping = findValidMapping(js);
     }
 }
 

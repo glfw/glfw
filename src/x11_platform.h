@@ -208,7 +208,6 @@ typedef struct _GLFWwindowX11
     // The time of the last KeyPress event per keycode, for discarding
     // duplicate key events generated for some keys by ibus
     Time            keyPressTimes[256];
-
 } _GLFWwindowX11;
 
 // X11-specific global data
@@ -414,7 +413,6 @@ typedef struct _GLFWlibraryX11
         PFN_XRenderQueryVersion QueryVersion;
         PFN_XRenderFindVisualFormat FindVisualFormat;
     } xrender;
-
 } _GLFWlibraryX11;
 
 // X11-specific per-monitor data
@@ -428,7 +426,6 @@ typedef struct _GLFWmonitorX11
     // Index of corresponding Xinerama screen,
     // for EWMH full screen window placement
     int             index;
-
 } _GLFWmonitorX11;
 
 // X11-specific per-cursor data
@@ -436,7 +433,6 @@ typedef struct _GLFWmonitorX11
 typedef struct _GLFWcursorX11
 {
     Cursor handle;
-
 } _GLFWcursorX11;
 
 

@@ -26,9 +26,7 @@
 // It is fine to use C99 in this file because it will not be built with VS
 //========================================================================
 
-#if defined(__linux__)
- #define _GNU_SOURCE
-#endif
+#define _GNU_SOURCE
 
 #include "internal.h"
 

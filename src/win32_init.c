@@ -458,6 +458,11 @@ void _glfwUpdateKeyNamesWin32(void)
 {
     int key;
     BYTE state[256] = {0};
+    UINT flags = 0;
+
+    // Avoid modifying the global key state if supported
+    if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+        flags = (1 << 2);
 
     memset(_glfw.win32.keynames, 0, sizeof(_glfw.win32.keynames));
 
@@ -487,13 +492,13 @@ void _glfwUpdateKeyNamesWin32(void)
 
         length = ToUnicode(vk, scancode, state,
                            chars, sizeof(chars) / sizeof(WCHAR),
-                           0);
+                           flags);
 
         if (length == -1)
         {
             length = ToUnicode(vk, scancode, state,
                                chars, sizeof(chars) / sizeof(WCHAR),
-                               0);
+                               flags);
         }
 
         if (length < 1)

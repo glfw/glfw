@@ -1309,9 +1309,6 @@ static int createNativeWindow(_GLFWwindow* window,
             }
         }
 
-        ClientToScreen(window->win32.handle, (POINT*) &rect.left);
-        ClientToScreen(window->win32.handle, (POINT*) &rect.right);
-
         if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
         {
             AdjustWindowRectExForDpi(&rect, style, FALSE, exStyle,
@@ -1321,6 +1318,10 @@ static int createNativeWindow(_GLFWwindow* window,
             AdjustWindowRectEx(&rect, style, FALSE, exStyle);
 
         GetWindowPlacement(window->win32.handle, &wp);
+        OffsetRect(&rect,
+                   wp.rcNormalPosition.left - rect.left,
+                   wp.rcNormalPosition.top - rect.top);
+
         wp.rcNormalPosition = rect;
         wp.showCmd = SW_HIDE;
         SetWindowPlacement(window->win32.handle, &wp);

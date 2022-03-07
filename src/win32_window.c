@@ -1285,18 +1285,22 @@ static int createNativeWindow(_GLFWwindow* window,
 
     window->win32.scaleToMonitor = wndconfig->scaleToMonitor;
 
-    // Adjust window rect to account for DPI scaling of the window frame and
-    // (if enabled) DPI scaling of the content area
-    // This cannot be done until we know what monitor the window was placed on
     if (!window->monitor)
     {
         RECT rect = { 0, 0, wndconfig->width, wndconfig->height };
         WINDOWPLACEMENT wp = { sizeof(wp) };
+        const HMONITOR mh = MonitorFromWindow(window->win32.handle,
+                                              MONITOR_DEFAULTTONEAREST);
+
+        // Adjust window rect to account for DPI scaling of the window frame and
+        // (if enabled) DPI scaling of the content area
+        // This cannot be done until we know what monitor the window was placed on
+        // Only update the restored window rect as the window may be maximized
 
         if (wndconfig->scaleToMonitor)
         {
             float xscale, yscale;
-            _glfwPlatformGetWindowContentScale(window, &xscale, &yscale);
+            _glfwGetMonitorContentScaleWin32(mh, &xscale, &yscale);
 
             if (xscale > 0.f && yscale > 0.f)
             {
@@ -1316,11 +1320,26 @@ static int createNativeWindow(_GLFWwindow* window,
         else
             AdjustWindowRectEx(&rect, style, FALSE, exStyle);
 
-        // Only update the restored window rect as the window may be maximized
         GetWindowPlacement(window->win32.handle, &wp);
         wp.rcNormalPosition = rect;
         wp.showCmd = SW_HIDE;
         SetWindowPlacement(window->win32.handle, &wp);
+
+        // Adjust rect of maximized undecorated window, because by default Windows will
+        // make such a window cover the whole monitor instead of its workarea
+
+        if (wndconfig->maximized && !wndconfig->decorated)
+        {
+            MONITORINFO mi = { sizeof(mi) };
+            GetMonitorInfo(mh, &mi);
+
+            SetWindowPos(window->win32.handle, HWND_TOP,
+                         mi.rcWork.left,
+                         mi.rcWork.top,
+                         mi.rcWork.right - mi.rcWork.left,
+                         mi.rcWork.bottom - mi.rcWork.top,
+                         SWP_NOACTIVATE | SWP_NOZORDER);
+        }
     }
 
     DragAcceptFiles(window->win32.handle, TRUE);

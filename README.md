@@ -123,6 +123,8 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - [Win32] Bugfix: A window created maximized and undecorated would cover the whole
+   monitor (#1806)
  - [Cocoa] Bugfix: `kUTTypeURL` was deprecated in macOS 12.0 (#2003)
  - [X11] Bugfix: Dynamic loading on OpenBSD failed due to soname differences
  - [X11] Bugfix: Waiting for events would fail if file descriptor was too large

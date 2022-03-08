@@ -435,7 +435,7 @@ static int getKeyMods(void)
 static void fitToMonitor(_GLFWwindow* window)
 {
     MONITORINFO mi = { sizeof(mi) };
-    GetMonitorInfo(window->monitor->win32.handle, &mi);
+    GetMonitorInfoW(window->monitor->win32.handle, &mi);
     SetWindowPos(window->win32.handle, HWND_TOPMOST,
                  mi.rcMonitor.left,
                  mi.rcMonitor.top,
@@ -456,8 +456,8 @@ static void acquireMonitor(_GLFWwindow* window)
         //       the OpenGL ICD switches to page flipping
         if (IsWindowsXPOrGreater())
         {
-            SystemParametersInfo(SPI_GETMOUSETRAILS, 0, &_glfw.win32.mouseTrailSize, 0);
-            SystemParametersInfo(SPI_SETMOUSETRAILS, 0, 0, 0);
+            SystemParametersInfoW(SPI_GETMOUSETRAILS, 0, &_glfw.win32.mouseTrailSize, 0);
+            SystemParametersInfoW(SPI_SETMOUSETRAILS, 0, 0, 0);
         }
     }
 
@@ -482,7 +482,7 @@ static void releaseMonitor(_GLFWwindow* window)
 
         // HACK: Restore mouse trail length saved in acquireMonitor
         if (IsWindowsXPOrGreater())
-            SystemParametersInfo(SPI_SETMOUSETRAILS, _glfw.win32.mouseTrailSize, 0, 0);
+            SystemParametersInfoW(SPI_SETMOUSETRAILS, _glfw.win32.mouseTrailSize, 0, 0);
     }
 
     _glfwInputMonitorWindow(window->monitor, NULL);
@@ -497,8 +497,8 @@ static void maximizeWindowManually(_GLFWwindow* window)
     DWORD style;
     MONITORINFO mi = { sizeof(mi) };
 
-    GetMonitorInfo(MonitorFromWindow(window->win32.handle,
-                                     MONITOR_DEFAULTTONEAREST), &mi);
+    GetMonitorInfoW(MonitorFromWindow(window->win32.handle,
+                                      MONITOR_DEFAULTTONEAREST), &mi);
 
     rect = mi.rcWork;
 
@@ -1120,7 +1120,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
                 ZeroMemory(&mi, sizeof(mi));
                 mi.cbSize = sizeof(mi);
-                GetMonitorInfo(mh, &mi);
+                GetMonitorInfoW(mh, &mi);
 
                 mmi->ptMaxPosition.x = mi.rcWork.left - mi.rcMonitor.left;
                 mmi->ptMaxPosition.y = mi.rcWork.top - mi.rcMonitor.top;
@@ -1385,7 +1385,7 @@ static int createNativeWindow(_GLFWwindow* window,
         if (wndconfig->maximized && !wndconfig->decorated)
         {
             MONITORINFO mi = { sizeof(mi) };
-            GetMonitorInfo(mh, &mi);
+            GetMonitorInfoW(mh, &mi);
 
             SetWindowPos(window->win32.handle, HWND_TOP,
                          mi.rcWork.left,
@@ -1564,8 +1564,8 @@ void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
         smallIcon = (HICON) GetClassLongPtrW(window->win32.handle, GCLP_HICONSM);
     }
 
-    SendMessage(window->win32.handle, WM_SETICON, ICON_BIG, (LPARAM) bigIcon);
-    SendMessage(window->win32.handle, WM_SETICON, ICON_SMALL, (LPARAM) smallIcon);
+    SendMessageW(window->win32.handle, WM_SETICON, ICON_BIG, (LPARAM) bigIcon);
+    SendMessageW(window->win32.handle, WM_SETICON, ICON_SMALL, (LPARAM) smallIcon);
 
     if (window->win32.bigIcon)
         DestroyIcon(window->win32.bigIcon);
@@ -1835,7 +1835,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
 
         acquireMonitor(window);
 
-        GetMonitorInfo(window->monitor->win32.handle, &mi);
+        GetMonitorInfoW(window->monitor->win32.handle, &mi);
         SetWindowPos(window->win32.handle, HWND_TOPMOST,
                      mi.rcMonitor.left,
                      mi.rcMonitor.top,
@@ -2099,7 +2099,7 @@ void _glfwPlatformWaitEventsTimeout(double timeout)
 
 void _glfwPlatformPostEmptyEvent(void)
 {
-    PostMessage(_glfw.win32.helperWindowHandle, WM_NULL, 0, 0);
+    PostMessageW(_glfw.win32.helperWindowHandle, WM_NULL, 0, 0);
 }
 
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
@@ -2343,7 +2343,7 @@ VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
 
     memset(&sci, 0, sizeof(sci));
     sci.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-    sci.hinstance = GetModuleHandle(NULL);
+    sci.hinstance = GetModuleHandleW(NULL);
     sci.hwnd = window->win32.handle;
 
     err = vkCreateWin32SurfaceKHR(instance, &sci, allocator, surface);

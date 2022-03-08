@@ -381,7 +381,7 @@ void _glfwGetMonitorWorkareaWin32(_GLFWmonitor* monitor,
                                   int* width, int* height)
 {
     MONITORINFO mi = { sizeof(mi) };
-    GetMonitorInfo(monitor->win32.handle, &mi);
+    GetMonitorInfoW(monitor->win32.handle, &mi);
 
     if (xpos)
         *xpos = mi.rcWork.left;

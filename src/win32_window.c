@@ -489,6 +489,59 @@ static void releaseMonitor(_GLFWwindow* window)
     _glfwRestoreVideoModeWin32(window->monitor);
 }
 
+// Manually maximize the window, for when SW_MAXIMIZE cannot be used
+//
+static void maximizeWindowManually(_GLFWwindow* window)
+{
+    RECT rect;
+    DWORD style;
+    MONITORINFO mi = { sizeof(mi) };
+
+    GetMonitorInfo(MonitorFromWindow(window->win32.handle,
+                                     MONITOR_DEFAULTTONEAREST), &mi);
+
+    rect = mi.rcWork;
+
+    if (window->maxwidth != GLFW_DONT_CARE && window->maxheight != GLFW_DONT_CARE)
+    {
+        if (rect.right - rect.left > window->maxwidth)
+            rect.right = rect.left + window->maxwidth;
+        if (rect.bottom - rect.top > window->maxheight)
+            rect.bottom = rect.top + window->maxheight;
+    }
+
+    style = GetWindowLongW(window->win32.handle, GWL_STYLE);
+    style |= WS_MAXIMIZE;
+    SetWindowLongW(window->win32.handle, GWL_STYLE, style);
+
+    if (window->decorated)
+    {
+        const DWORD exStyle = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
+
+        if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+        {
+            const UINT dpi = GetDpiForWindow(window->win32.handle);
+            AdjustWindowRectExForDpi(&rect, style, FALSE, exStyle, dpi);
+            OffsetRect(&rect, 0, GetSystemMetricsForDpi(SM_CYCAPTION, dpi));
+        }
+        else
+        {
+            AdjustWindowRectEx(&rect, style, FALSE, exStyle);
+            OffsetRect(&rect, 0, GetSystemMetrics(SM_CYCAPTION));
+        }
+
+        if (rect.bottom > mi.rcWork.bottom)
+            rect.bottom = mi.rcWork.bottom;
+    }
+
+    SetWindowPos(window->win32.handle, HWND_TOP,
+                 rect.left,
+                 rect.top,
+                 rect.right - rect.left,
+                 rect.bottom - rect.top,
+                 SWP_NOACTIVATE | SWP_NOZORDER | SWP_FRAMECHANGED);
+}
+
 // Window callback function (handles window messages)
 //
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
@@ -1692,7 +1745,10 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 
 void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 {
-    ShowWindow(window->win32.handle, SW_MAXIMIZE);
+    if (IsWindowVisible(window->win32.handle))
+        ShowWindow(window->win32.handle, SW_MAXIMIZE);
+    else
+        maximizeWindowManually(window);
 }
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)

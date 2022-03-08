@@ -211,6 +211,7 @@ information on what to include when reporting a bug.
    monitor (#1806)
  - [Win32] Bugfix: The default restored window position was lost when creating a maximized
    window
+ - [Win32] Bugfix: `glfwMaximizeWindow` would make a hidden window visible
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)

@@ -176,9 +176,11 @@ typedef enum
     _glfwIsWindowsVersionOrGreaterWin32(HIBYTE(_WIN32_WINNT_WINBLUE), \
                                         LOBYTE(_WIN32_WINNT_WINBLUE), 0)
 
-#define _glfwIsWindows10AnniversaryUpdateOrGreaterWin32() \
+// Windows 10 Anniversary Update
+#define _glfwIsWindows10Version1607OrGreaterWin32() \
     _glfwIsWindows10BuildOrGreaterWin32(14393)
-#define _glfwIsWindows10CreatorsUpdateOrGreaterWin32() \
+// Windows 10 Creators Update
+#define _glfwIsWindows10Version1703OrGreaterWin32() \
     _glfwIsWindows10BuildOrGreaterWin32(15063)
 
 // HACK: Define macros that some xinput.h variants don't

@@ -194,7 +194,7 @@ static void getFullWindowSize(DWORD style, DWORD exStyle,
 {
     RECT rect = { 0, 0, contentWidth, contentHeight };
 
-    if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+    if (_glfwIsWindows10Version1607OrGreaterWin32())
         AdjustWindowRectExForDpi(&rect, style, FALSE, exStyle, dpi);
     else
         AdjustWindowRectEx(&rect, style, FALSE, exStyle);
@@ -211,7 +211,7 @@ static void applyAspectRatio(_GLFWwindow* window, int edge, RECT* area)
     UINT dpi = USER_DEFAULT_SCREEN_DPI;
     const float ratio = (float) window->numer / (float) window->denom;
 
-    if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+    if (_glfwIsWindows10Version1607OrGreaterWin32())
         dpi = GetDpiForWindow(window->win32.handle);
 
     getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
@@ -354,7 +354,7 @@ static void updateWindowStyles(const _GLFWwindow* window)
 
     GetClientRect(window->win32.handle, &rect);
 
-    if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+    if (_glfwIsWindows10Version1607OrGreaterWin32())
     {
         AdjustWindowRectExForDpi(&rect, style, FALSE,
                                  getWindowExStyle(window),
@@ -513,7 +513,7 @@ static void maximizeWindowManually(_GLFWwindow* window)
     {
         const DWORD exStyle = GetWindowLongW(window->win32.handle, GWL_EXSTYLE);
 
-        if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+        if (_glfwIsWindows10Version1607OrGreaterWin32())
         {
             const UINT dpi = GetDpiForWindow(window->win32.handle);
             AdjustWindowRectExForDpi(&rect, style, FALSE, exStyle, dpi);
@@ -552,7 +552,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
         {
             case WM_NCCREATE:
             {
-                if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+                if (_glfwIsWindows10Version1607OrGreaterWin32())
                 {
                     const CREATESTRUCTW* cs = (const CREATESTRUCTW*) lParam;
                     const _GLFWwndconfig* wndconfig = cs->lpCreateParams;
@@ -1098,7 +1098,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (window->monitor)
                 break;
 
-            if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+            if (_glfwIsWindows10Version1607OrGreaterWin32())
                 dpi = GetDpiForWindow(window->win32.handle);
 
             getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
@@ -1173,7 +1173,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 break;
 
             // Adjust the window size to keep the content area size constant
-            if (_glfwIsWindows10CreatorsUpdateOrGreaterWin32())
+            if (_glfwIsWindows10Version1703OrGreaterWin32())
             {
                 RECT source = {0}, target = {0};
                 SIZE* size = (SIZE*) lParam;
@@ -1204,7 +1204,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             // need it to compensate for non-client area scaling
             if (!window->monitor &&
                 (window->win32.scaleToMonitor ||
-                 _glfwIsWindows10CreatorsUpdateOrGreaterWin32()))
+                 _glfwIsWindows10Version1703OrGreaterWin32()))
             {
                 RECT* suggested = (RECT*) lParam;
                 SetWindowPos(window->win32.handle, HWND_TOP,
@@ -1369,7 +1369,7 @@ static int createNativeWindow(_GLFWwindow* window,
             }
         }
 
-        if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+        if (_glfwIsWindows10Version1607OrGreaterWin32())
         {
             AdjustWindowRectExForDpi(&rect, style, FALSE, exStyle,
                                      GetDpiForWindow(window->win32.handle));
@@ -1592,7 +1592,7 @@ void _glfwSetWindowPosWin32(_GLFWwindow* window, int xpos, int ypos)
 {
     RECT rect = { xpos, ypos, xpos, ypos };
 
-    if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+    if (_glfwIsWindows10Version1607OrGreaterWin32())
     {
         AdjustWindowRectExForDpi(&rect, getWindowStyle(window),
                                  FALSE, getWindowExStyle(window),
@@ -1633,7 +1633,7 @@ void _glfwSetWindowSizeWin32(_GLFWwindow* window, int width, int height)
     {
         RECT rect = { 0, 0, width, height };
 
-        if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+        if (_glfwIsWindows10Version1607OrGreaterWin32())
         {
             AdjustWindowRectExForDpi(&rect, getWindowStyle(window),
                                      FALSE, getWindowExStyle(window),
@@ -1700,7 +1700,7 @@ void _glfwGetWindowFrameSizeWin32(_GLFWwindow* window,
     _glfwGetWindowSizeWin32(window, &width, &height);
     SetRect(&rect, 0, 0, width, height);
 
-    if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+    if (_glfwIsWindows10Version1607OrGreaterWin32())
     {
         AdjustWindowRectExForDpi(&rect, getWindowStyle(window),
                                  FALSE, getWindowExStyle(window),
@@ -1789,7 +1789,7 @@ void _glfwSetWindowMonitorWin32(_GLFWwindow* window,
         {
             RECT rect = { xpos, ypos, xpos + width, ypos + height };
 
-            if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+            if (_glfwIsWindows10Version1607OrGreaterWin32())
             {
                 AdjustWindowRectExForDpi(&rect, getWindowStyle(window),
                                          FALSE, getWindowExStyle(window),
@@ -1860,7 +1860,7 @@ void _glfwSetWindowMonitorWin32(_GLFWwindow* window,
         else
             after = HWND_NOTOPMOST;
 
-        if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+        if (_glfwIsWindows10Version1607OrGreaterWin32())
         {
             AdjustWindowRectExForDpi(&rect, getWindowStyle(window),
                                      FALSE, getWindowExStyle(window),

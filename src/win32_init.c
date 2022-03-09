@@ -463,7 +463,7 @@ void _glfwUpdateKeyNamesWin32(void)
     UINT flags = 0;
 
     // Avoid modifying the global key state if supported
-    if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
+    if (_glfwIsWindows10Version1607OrGreaterWin32())
         flags = (1 << 2);
 
     memset(_glfw.win32.keynames, 0, sizeof(_glfw.win32.keynames));
@@ -633,7 +633,7 @@ int _glfwInitWin32(void)
     createKeyTables();
     _glfwUpdateKeyNamesWin32();
 
-    if (_glfwIsWindows10CreatorsUpdateOrGreaterWin32())
+    if (_glfwIsWindows10Version1703OrGreaterWin32())
         SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
     else if (IsWindows8Point1OrGreater())
         SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);

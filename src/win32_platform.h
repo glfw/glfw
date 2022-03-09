@@ -162,7 +162,9 @@ typedef enum
 #define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 ((HANDLE) -4)
 #endif /*DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2*/
 
-// HACK: Define versionhelpers.h functions manually as MinGW lacks the header
+// Replacement for versionhelpers.h macros, as we cannot rely on the
+// application having a correct embedded manifest
+//
 #define IsWindowsXPOrGreater()                                 \
     _glfwIsWindowsVersionOrGreaterWin32(HIBYTE(_WIN32_WINNT_WINXP),   \
                                         LOBYTE(_WIN32_WINNT_WINXP), 0)

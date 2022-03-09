@@ -97,8 +97,7 @@ static const GLFWimage* chooseImage(int count, const GLFWimage* images,
 
 // Creates an RGBA icon or cursor
 //
-static HICON createIcon(const GLFWimage* image,
-                        int xhot, int yhot, GLFWbool icon)
+static HICON createIcon(const GLFWimage* image, int xhot, int yhot, GLFWbool icon)
 {
     int i;
     HDC dc;
@@ -539,8 +538,7 @@ static void maximizeWindowManually(_GLFWwindow* window)
 
 // Window callback function (handles window messages)
 //
-static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
-                                   WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     _GLFWwindow* window = GetPropW(hWnd, L"GLFW");
     if (!window)
@@ -1538,8 +1536,7 @@ void _glfwSetWindowTitleWin32(_GLFWwindow* window, const char* title)
     _glfw_free(wideTitle);
 }
 
-void _glfwSetWindowIconWin32(_GLFWwindow* window,
-                             int count, const GLFWimage* images)
+void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* images)
 {
     HICON bigIcon = NULL, smallIcon = NULL;
 
@@ -1652,8 +1649,8 @@ void _glfwSetWindowSizeWin32(_GLFWwindow* window, int width, int height)
 }
 
 void _glfwSetWindowSizeLimitsWin32(_GLFWwindow* window,
-                                           int minwidth, int minheight,
-                                           int maxwidth, int maxheight)
+                                   int minwidth, int minheight,
+                                   int maxwidth, int maxheight)
 {
     RECT area;
 
@@ -1691,8 +1688,8 @@ void _glfwGetFramebufferSizeWin32(_GLFWwindow* window, int* width, int* height)
 }
 
 void _glfwGetWindowFrameSizeWin32(_GLFWwindow* window,
-                                          int* left, int* top,
-                                          int* right, int* bottom)
+                                  int* left, int* top,
+                                  int* right, int* bottom)
 {
     RECT rect;
     int width, height;
@@ -2189,8 +2186,8 @@ int _glfwGetKeyScancodeWin32(int key)
 }
 
 int _glfwCreateCursorWin32(_GLFWcursor* cursor,
-                                   const GLFWimage* image,
-                                   int xhot, int yhot)
+                           const GLFWimage* image,
+                           int xhot, int yhot)
 {
     cursor->win32.handle = (HCURSOR) createIcon(image, xhot, yhot, GLFW_FALSE);
     if (!cursor->win32.handle)

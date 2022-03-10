@@ -154,6 +154,7 @@ endif()
 
 if (GLFW_BUILD_WIN32)
     list(APPEND glfw_PKG_LIBS "-lgdi32")
+    list(APPEND glfw_LIBRARIES "imm32")
 endif()
 
 if (GLFW_BUILD_COCOA)

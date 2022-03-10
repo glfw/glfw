@@ -183,6 +183,7 @@ video tutorials.
  - Joao da Silva
  - Daniel Sieger
  - Daniel Skorupski
+ - Slemmie
  - Bradley Smith
  - Cliff Smolinsky
  - Patrick Snape

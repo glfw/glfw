@@ -137,6 +137,7 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: `glfwPostEmptyEvent` could be ignored due to race condition
    (#379,#1281,#1285,#2033)
  - [X11] Bugfix: Dynamic loading on NetBSD failed due to soname differences
+ - [X11] Bugfix: Left shift of int constant relied on undefined behavior (#1951)
  - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Bugfix: Key repeat could lead to a race condition (#1710)
  - [Wayland] Bugfix: Activating a window would emit two input focus events

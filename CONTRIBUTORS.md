@@ -188,6 +188,7 @@ video tutorials.
  - Joao da Silva
  - Daniel Sieger
  - Daniel Skorupski
+ - Slemmie
  - Anthony Smith
  - Bradley Smith
  - Cliff Smolinsky

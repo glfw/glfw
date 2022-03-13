@@ -205,8 +205,6 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: Content scale queries could fail silently (#1615)
  - [Win32] Bugfix: Content scales could have garbage values if monitor was recently
    disconnected (#1615)
- - [Win32] Bugfix: Key name update modified global key state on Windows 10 1607
-   and later (#2018)
  - [Win32] Bugfix: A window created maximized and undecorated would cover the whole
    monitor (#1806)
  - [Win32] Bugfix: The default restored window position was lost when creating a maximized

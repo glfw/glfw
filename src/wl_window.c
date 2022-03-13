@@ -39,7 +39,8 @@
 #include <sys/mman.h>
 #include <sys/timerfd.h>
 #include <poll.h>
-
+#include <signal.h>
+#include <time.h>
 
 static void shellSurfaceHandlePing(void* data,
                                    struct wl_shell_surface* shellSurface,
@@ -246,6 +247,53 @@ static struct wl_buffer* createShmBuffer(const GLFWimage* image)
     wl_shm_pool_destroy(pool);
 
     return buffer;
+}
+
+// Wait for data to arrive on any of the specified file descriptors
+//
+static GLFWbool waitForData(struct pollfd* fds, nfds_t count, double* timeout)
+{
+    for (;;)
+    {
+        if (timeout)
+        {
+            const uint64_t base = _glfwPlatformGetTimerValue();
+
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__CYGWIN__)
+            const time_t seconds = (time_t) *timeout;
+            const long nanoseconds = (long) ((*timeout - seconds) * 1e9);
+            const struct timespec ts = { seconds, nanoseconds };
+            const int result = ppoll(fds, count, &ts, NULL);
+#elif defined(__NetBSD__)
+            const time_t seconds = (time_t) *timeout;
+            const long nanoseconds = (long) ((*timeout - seconds) * 1e9);
+            const struct timespec ts = { seconds, nanoseconds };
+            const int result = pollts(fds, count, &ts, NULL);
+#else
+            const int milliseconds = (int) (*timeout * 1e3);
+            const int result = poll(fds, count, milliseconds);
+#endif
+            const int error = errno; // clock_gettime may overwrite our error
+
+            *timeout -= (_glfwPlatformGetTimerValue() - base) /
+                (double) _glfwPlatformGetTimerFrequency();
+
+            if (result > 0)
+                return GLFW_TRUE;
+            else if (result == -1 && error != EINTR && error != EAGAIN)
+                return GLFW_FALSE;
+            else if (*timeout <= 0.0)
+                return GLFW_FALSE;
+        }
+        else
+        {
+            const int result = poll(fds, count, -1);
+            if (result > 0)
+                return GLFW_TRUE;
+            else if (result == -1 && errno != EINTR && errno != EAGAIN)
+                return GLFW_FALSE;
+        }
+    }
 }
 
 static void createDecoration(_GLFWdecorationWayland* decoration,
@@ -850,7 +898,7 @@ static GLFWbool flushDisplay(void)
     return GLFW_TRUE;
 }
 
-static void handleEvents(int timeout)
+static void handleEvents(double* timeout)
 {
     struct pollfd fds[] =
     {
@@ -878,7 +926,7 @@ static void handleEvents(int timeout)
         return;
     }
 
-    if (poll(fds, 3, timeout) > 0)
+    if (waitForData(fds, 3, timeout) > 0)
     {
         if (fds[0].revents & POLLIN)
         {
@@ -1328,17 +1376,18 @@ GLFWbool _glfwPlatformRawMouseMotionSupported(void)
 
 void _glfwPlatformPollEvents(void)
 {
-    handleEvents(0);
+    double timeout = 0.0;
+    handleEvents(&timeout);
 }
 
 void _glfwPlatformWaitEvents(void)
 {
-    handleEvents(-1);
+    handleEvents(NULL);
 }
 
 void _glfwPlatformWaitEventsTimeout(double timeout)
 {
-    handleEvents((int) (timeout * 1e3));
+    handleEvents(&timeout);
 }
 
 void _glfwPlatformPostEmptyEvent(void)
@@ -1815,7 +1864,7 @@ const char* _glfwPlatformGetClipboardString(void)
     close(fds[1]);
 
     // XXX: this is a huge hack, this function shouldn’t be synchronous!
-    handleEvents(-1);
+    handleEvents(NULL);
 
     while (1)
     {

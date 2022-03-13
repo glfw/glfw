@@ -29,6 +29,7 @@ video tutorials.
  - David Carlier
  - Arturo Castro
  - Chi-kwan Chan
+ - TheChocolateOre
  - Joseph Chua
  - Ian Clarkson
  - Michał Cichoń

@@ -57,11 +57,6 @@
 #include "wayland-idle-inhibit-unstable-v1-client-protocol-code.h"
 
 
-static inline int min(int n1, int n2)
-{
-    return n1 < n2 ? n1 : n2;
-}
-
 static _GLFWwindow* findWindowFromDecorationSurface(struct wl_surface* surface,
                                                     int* which)
 {
@@ -788,7 +783,7 @@ static void registryHandleGlobal(void* data,
 {
     if (strcmp(interface, "wl_compositor") == 0)
     {
-        _glfw.wl.compositorVersion = min(3, version);
+        _glfw.wl.compositorVersion = _glfw_min(3, version);
         _glfw.wl.compositor =
             wl_registry_bind(registry, name, &wl_compositor_interface,
                              _glfw.wl.compositorVersion);
@@ -811,7 +806,7 @@ static void registryHandleGlobal(void* data,
     {
         if (!_glfw.wl.seat)
         {
-            _glfw.wl.seatVersion = min(4, version);
+            _glfw.wl.seatVersion = _glfw_min(4, version);
             _glfw.wl.seat =
                 wl_registry_bind(registry, name, &wl_seat_interface,
                                  _glfw.wl.seatVersion);

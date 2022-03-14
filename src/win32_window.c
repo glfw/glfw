@@ -498,10 +498,8 @@ static void maximizeWindowManually(_GLFWwindow* window)
 
     if (window->maxwidth != GLFW_DONT_CARE && window->maxheight != GLFW_DONT_CARE)
     {
-        if (rect.right - rect.left > window->maxwidth)
-            rect.right = rect.left + window->maxwidth;
-        if (rect.bottom - rect.top > window->maxheight)
-            rect.bottom = rect.top + window->maxheight;
+        rect.right = _glfw_min(rect.right, rect.left + window->maxwidth);
+        rect.bottom = _glfw_min(rect.bottom, rect.top + window->maxheight);
     }
 
     style = GetWindowLongW(window->win32.handle, GWL_STYLE);
@@ -524,8 +522,7 @@ static void maximizeWindowManually(_GLFWwindow* window)
             OffsetRect(&rect, 0, GetSystemMetrics(SM_CYCAPTION));
         }
 
-        if (rect.bottom > mi.rcWork.bottom)
-            rect.bottom = mi.rcWork.bottom;
+        rect.bottom = _glfw_min(rect.bottom, mi.rcWork.bottom);
     }
 
     SetWindowPos(window->win32.handle, HWND_TOP,

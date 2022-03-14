@@ -353,11 +353,7 @@ static void checkScaleChange(_GLFWwindow* window)
     int maxScale = 1;
 
     for (int i = 0; i < window->wl.monitorsCount; i++)
-    {
-        const int scale = window->wl.monitors[i]->wl.scale;
-        if (maxScale < scale)
-            maxScale = scale;
-    }
+        maxScale = _glfw_max(window->wl.monitors[i]->wl.scale, maxScale);
 
     // Only change the framebuffer size if the scale changed.
     if (window->wl.scale != maxScale)

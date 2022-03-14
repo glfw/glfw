@@ -150,6 +150,16 @@ char* _glfw_strdup(const char* source)
     return result;
 }
 
+int _glfw_min(int a, int b)
+{
+    return a < b ? a : b;
+}
+
+int _glfw_max(int a, int b)
+{
+    return a > b ? a : b;
+}
+
 float _glfw_fminf(float a, float b)
 {
     if (a != a)

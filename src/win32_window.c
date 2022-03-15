@@ -752,6 +752,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (scancode == 0x54)
                 scancode = 0x137;
 
+            // HACK: Ctrl+Pause has a different scancode than just Pause
+            if (scancode == 0x146)
+                scancode = 0x45;
+
             key = _glfw.win32.keycodes[scancode];
 
             // The Ctrl keys require special handling

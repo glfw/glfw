@@ -111,12 +111,28 @@ extern "C" {
  /* NSGL is declared by Cocoa.h */
 #endif
 #if defined(GLFW_EXPOSE_NATIVE_GLX)
+ /* This is a workaround for the fact that glfw3.h defines GLAPIENTRY because by
+  * default it also acts as an OpenGL header
+  * However, glx.h will include gl.h, which will define it unconditionally
+  */
+ #if defined(GLFW_GLAPIENTRY_DEFINED)
+  #undef GLAPIENTRY
+  #undef GLFW_GLAPIENTRY_DEFINED
+ #endif
  #include <GL/glx.h>
 #endif
 #if defined(GLFW_EXPOSE_NATIVE_EGL)
  #include <EGL/egl.h>
 #endif
 #if defined(GLFW_EXPOSE_NATIVE_OSMESA)
+ /* This is a workaround for the fact that glfw3.h defines GLAPIENTRY because by
+  * default it also acts as an OpenGL header
+  * However, osmesa.h will include gl.h, which will define it unconditionally
+  */
+ #if defined(GLFW_GLAPIENTRY_DEFINED)
+  #undef GLAPIENTRY
+  #undef GLFW_GLAPIENTRY_DEFINED
+ #endif
  #include <GL/osmesa.h>
 #endif
 

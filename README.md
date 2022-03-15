@@ -123,7 +123,8 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
-There is nothing here yet.
+ - [Win32] Bugfix: `Alt+PrtSc` would emit `GLFW_KEY_UNKNOWN` and a different
+   scancode than `PrtSc` (#1993)
 
 
 ## Contact

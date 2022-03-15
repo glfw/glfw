@@ -748,6 +748,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 scancode = MapVirtualKeyW((UINT) wParam, MAPVK_VK_TO_VSC);
             }
 
+            // HACK: Alt+PrtSc has a different scancode than just PrtSc
+            if (scancode == 0x54)
+                scancode = 0x137;
+
             key = _glfw.win32.keycodes[scancode];
 
             // The Ctrl keys require special handling

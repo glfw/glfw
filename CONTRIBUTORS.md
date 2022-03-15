@@ -69,6 +69,7 @@ video tutorials.
  - Ryan C. Gordon
  - Stephen Gowen
  - Kovid Goyal
+ - Kevin Grandemange
  - Eloi Marín Gratacós
  - Stefan Gustavson
  - Andrew Gutekanst

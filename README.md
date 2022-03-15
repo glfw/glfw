@@ -210,6 +210,8 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: The default restored window position was lost when creating a maximized
    window
  - [Win32] Bugfix: `glfwMaximizeWindow` would make a hidden window visible
+ - [Win32] Bugfix: `Alt+PrtSc` would emit `GLFW_KEY_UNKNOWN` and a different
+   scancode than `PrtSc` (#1993)
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)

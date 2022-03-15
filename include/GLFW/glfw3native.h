@@ -82,9 +82,10 @@ extern "C" {
  *************************************************************************/
 
 #if defined(GLFW_EXPOSE_NATIVE_WIN32) || defined(GLFW_EXPOSE_NATIVE_WGL)
- // This is a workaround for the fact that glfw3.h needs to export APIENTRY (for
- // example to allow applications to correctly declare a GL_KHR_debug callback)
- // but windows.h assumes no one will define APIENTRY before it does
+ /* This is a workaround for the fact that glfw3.h needs to export APIENTRY (for
+  * example to allow applications to correctly declare a GL_KHR_debug callback)
+  * but windows.h assumes no one will define APIENTRY before it does
+  */
  #if defined(GLFW_APIENTRY_DEFINED)
   #undef APIENTRY
   #undef GLFW_APIENTRY_DEFINED

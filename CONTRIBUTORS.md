@@ -90,6 +90,7 @@ video tutorials.
  - IntellectualKitty
  - Aaron Jacobs
  - Erik S. V. Jansson
+ - jjYBdx4IL
  - Toni Jovanoski
  - Arseny Kapoulkine
  - Cem Karan
@@ -210,6 +211,7 @@ video tutorials.
  - Jared Tiala
  - Sergey Tikhomirov
  - Arthur Tombs
+ - TronicLabs
  - Ioannis Tsakpinis
  - Samuli Tuomola
  - Matthew Turner

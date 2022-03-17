@@ -71,6 +71,16 @@ BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
 //
 static GLFWbool loadLibraries(void)
 {
+    if (!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+                                GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                            (const WCHAR*) &_glfw,
+                            (HMODULE*) &_glfw.win32.instance))
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to retrieve own module handle");
+        return GLFW_FALSE;
+    }
+
     _glfw.win32.user32.instance = _glfwPlatformLoadModule("user32.dll");
     if (!_glfw.win32.user32.instance)
     {
@@ -334,7 +344,7 @@ static GLFWbool createHelperWindow(void)
                         WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
                         0, 0, 1, 1,
                         NULL, NULL,
-                        GetModuleHandleW(NULL),
+                        _glfw.win32.instance,
                         NULL);
 
     if (!_glfw.win32.helperWindowHandle)

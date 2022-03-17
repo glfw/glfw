@@ -128,6 +128,7 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: `GLFW_KEY_PAUSE` scancode from `glfwGetKeyScancode` did not
    match event scancode (#1993)
  - [Win32] Bugfix: Instance-local operations used executable instance (#469,#1296,#1395)
+ - [Cocoa] Bugfix: A connected Apple AirPlay would emit a useless error (#1791)
 
 
 ## Contact

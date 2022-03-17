@@ -88,6 +88,7 @@ video tutorials.
  - InKryption
  - IntellectualKitty
  - Aaron Jacobs
+ - JannikGM
  - Erik S. V. Jansson
  - jjYBdx4IL
  - Toni Jovanoski

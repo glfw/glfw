@@ -144,10 +144,12 @@ endif()
 
 if (GLFW_BUILD_COCOA)
     target_link_libraries(glfw PRIVATE "-framework Cocoa"
+                                       "-framework Carbon"
                                        "-framework IOKit"
                                        "-framework QuartzCore")
 
     list(APPEND glfw_PKG_LIBS "-framework Cocoa"
+                              "-framework Carbon"
                               "-framework IOKit"
                               "-framework QuartzCore")
 endif()

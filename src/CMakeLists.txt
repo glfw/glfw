@@ -150,11 +150,12 @@ endif()
 
 if (GLFW_BUILD_COCOA)
     target_link_libraries(glfw PRIVATE "-framework Cocoa"
+                                       "-framework Carbon"
                                        "-framework IOKit"
                                        "-framework CoreFoundation")
 
     set(glfw_PKG_DEPS "")
-    set(glfw_PKG_LIBS "-framework Cocoa -framework IOKit -framework CoreFoundation")
+    set(glfw_PKG_LIBS "-framework Cocoa -framework Carbon -framework IOKit -framework CoreFoundation")
 endif()
 
 if (GLFW_BUILD_WAYLAND)

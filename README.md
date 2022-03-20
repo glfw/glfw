@@ -123,8 +123,21 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - [Win32] Bugfix: A window created maximized and undecorated would cover the whole
+   monitor (#1806)
+ - [Win32] Bugfix: The default restored window position was lost when creating a maximized
+   window
+ - [Win32] Bugfix: `glfwMaximizeWindow` would make a hidden window visible
  - [Cocoa] Bugfix: `kUTTypeURL` was deprecated in macOS 12.0 (#2003)
  - [X11] Bugfix: Dynamic loading on OpenBSD failed due to soname differences
+ - [X11] Bugfix: Waiting for events would fail if file descriptor was too large
+   (#2024)
+ - [X11] Bugfix: Joystick events could lead to busy-waiting (#1872)
+ - [X11] Bugfix: `glfwWaitEvents*` did not continue for joystick events
+ - [X11] Bugfix: `glfwPostEmptyEvent` could be ignored due to race condition
+   (#379,#1281,#1285,#2033)
+ - [X11] Bugfix: Dynamic loading on NetBSD failed due to soname differences
+ - [X11] Bugfix: Left shift of int constant relied on undefined behavior (#1951)
  - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Bugfix: Key repeat could lead to a race condition (#1710)
  - [Wayland] Bugfix: Activating a window would emit two input focus events
@@ -135,6 +148,8 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Full screen window creation did not ignore `GLFW_VISIBLE`
  - [Wayland] Bugfix: Some keys were reported as wrong key or `GLFW_KEY_UNKNOWN`
  - [Wayland] Bugfix: Text input did not repeat along with key repeat
+ - [Wayland] Bugfix: `glfwPostEmptyEvent` sometimes had no effect (#1520,#1521)
+ - [GLX] Bugfix: Context creation failed if GLX 1.4 was not exported by GLX library
 
 
 ## Contact

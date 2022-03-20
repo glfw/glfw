@@ -39,7 +39,8 @@
 #include <sys/mman.h>
 #include <sys/timerfd.h>
 #include <poll.h>
-
+#include <signal.h>
+#include <time.h>
 
 static void shellSurfaceHandlePing(void* data,
                                    struct wl_shell_surface* shellSurface,
@@ -248,6 +249,53 @@ static struct wl_buffer* createShmBuffer(const GLFWimage* image)
     return buffer;
 }
 
+// Wait for data to arrive on any of the specified file descriptors
+//
+static GLFWbool waitForData(struct pollfd* fds, nfds_t count, double* timeout)
+{
+    for (;;)
+    {
+        if (timeout)
+        {
+            const uint64_t base = _glfwPlatformGetTimerValue();
+
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__CYGWIN__)
+            const time_t seconds = (time_t) *timeout;
+            const long nanoseconds = (long) ((*timeout - seconds) * 1e9);
+            const struct timespec ts = { seconds, nanoseconds };
+            const int result = ppoll(fds, count, &ts, NULL);
+#elif defined(__NetBSD__)
+            const time_t seconds = (time_t) *timeout;
+            const long nanoseconds = (long) ((*timeout - seconds) * 1e9);
+            const struct timespec ts = { seconds, nanoseconds };
+            const int result = pollts(fds, count, &ts, NULL);
+#else
+            const int milliseconds = (int) (*timeout * 1e3);
+            const int result = poll(fds, count, milliseconds);
+#endif
+            const int error = errno; // clock_gettime may overwrite our error
+
+            *timeout -= (_glfwPlatformGetTimerValue() - base) /
+                (double) _glfwPlatformGetTimerFrequency();
+
+            if (result > 0)
+                return GLFW_TRUE;
+            else if (result == -1 && error != EINTR && error != EAGAIN)
+                return GLFW_FALSE;
+            else if (*timeout <= 0.0)
+                return GLFW_FALSE;
+        }
+        else
+        {
+            const int result = poll(fds, count, -1);
+            if (result > 0)
+                return GLFW_TRUE;
+            else if (result == -1 && errno != EINTR && errno != EAGAIN)
+                return GLFW_FALSE;
+        }
+    }
+}
+
 static void createDecoration(_GLFWdecorationWayland* decoration,
                              struct wl_surface* parent,
                              struct wl_buffer* buffer, GLFWbool opaque,
@@ -404,27 +452,25 @@ static void resizeWindow(_GLFWwindow* window)
 
 static void checkScaleChange(_GLFWwindow* window)
 {
-    int scale = 1;
-    int i;
-    int monitorScale;
-
     // Check if we will be able to set the buffer scale or not.
     if (_glfw.wl.compositorVersion < 3)
         return;
 
     // Get the scale factor from the highest scale monitor.
-    for (i = 0; i < window->wl.monitorsCount; ++i)
+    int maxScale = 1;
+
+    for (int i = 0; i < window->wl.monitorsCount; i++)
     {
-        monitorScale = window->wl.monitors[i]->wl.scale;
-        if (scale < monitorScale)
-            scale = monitorScale;
+        const int scale = window->wl.monitors[i]->wl.scale;
+        if (maxScale < scale)
+            maxScale = scale;
     }
 
     // Only change the framebuffer size if the scale changed.
-    if (scale != window->wl.scale)
+    if (window->wl.scale != maxScale)
     {
-        window->wl.scale = scale;
-        wl_surface_set_buffer_scale(window->wl.surface, scale);
+        window->wl.scale = maxScale;
+        wl_surface_set_buffer_scale(window->wl.surface, maxScale);
         resizeWindow(window);
     }
 }
@@ -833,8 +879,28 @@ static void incrementCursorImage(_GLFWwindow* window)
     }
 }
 
-static void handleEvents(int timeout)
+static GLFWbool flushDisplay(void)
 {
+    while (wl_display_flush(_glfw.wl.display) == -1)
+    {
+        if (errno != EAGAIN)
+            return GLFW_FALSE;
+
+        struct pollfd fd = { wl_display_get_fd(_glfw.wl.display), POLLOUT };
+
+        while (poll(&fd, 1, -1) == -1)
+        {
+            if (errno != EINTR && errno != EAGAIN)
+                return GLFW_FALSE;
+        }
+    }
+
+    return GLFW_TRUE;
+}
+
+static void handleEvents(double* timeout)
+{
+    GLFWbool event = GLFW_FALSE;
     struct pollfd fds[] =
     {
         { wl_display_get_fd(_glfw.wl.display), POLLIN },
@@ -842,30 +908,38 @@ static void handleEvents(int timeout)
         { _glfw.wl.cursorTimerfd, POLLIN },
     };
 
-    while (wl_display_prepare_read(_glfw.wl.display) != 0)
-        wl_display_dispatch_pending(_glfw.wl.display);
-
-    // If an error other than EAGAIN happens, we have likely been disconnected
-    // from the Wayland session; try to handle that the best we can.
-    if (wl_display_flush(_glfw.wl.display) < 0 && errno != EAGAIN)
+    while (!event)
     {
-        _GLFWwindow* window = _glfw.windowListHead;
-        while (window)
+        while (wl_display_prepare_read(_glfw.wl.display) != 0)
+            wl_display_dispatch_pending(_glfw.wl.display);
+
+        // If an error other than EAGAIN happens, we have likely been disconnected
+        // from the Wayland session; try to handle that the best we can.
+        if (!flushDisplay())
         {
-            _glfwInputWindowCloseRequest(window);
-            window = window->next;
+            wl_display_cancel_read(_glfw.wl.display);
+
+            _GLFWwindow* window = _glfw.windowListHead;
+            while (window)
+            {
+                _glfwInputWindowCloseRequest(window);
+                window = window->next;
+            }
+
+            return;
         }
 
-        wl_display_cancel_read(_glfw.wl.display);
-        return;
-    }
+        if (!waitForData(fds, 3, timeout))
+        {
+            wl_display_cancel_read(_glfw.wl.display);
+            return;
+        }
 
-    if (poll(fds, 3, timeout) > 0)
-    {
         if (fds[0].revents & POLLIN)
         {
             wl_display_read_events(_glfw.wl.display);
-            wl_display_dispatch_pending(_glfw.wl.display);
+            if (wl_display_dispatch_pending(_glfw.wl.display) > 0)
+                event = GLFW_TRUE;
         }
         else
             wl_display_cancel_read(_glfw.wl.display);
@@ -886,6 +960,8 @@ static void handleEvents(int timeout)
                     _glfwInputTextWayland(_glfw.wl.keyboardFocus,
                                           _glfw.wl.keyboardLastScancode);
                 }
+
+                event = GLFW_TRUE;
             }
         }
 
@@ -894,11 +970,12 @@ static void handleEvents(int timeout)
             uint64_t repeats;
 
             if (read(_glfw.wl.cursorTimerfd, &repeats, sizeof(repeats)) == 8)
+            {
                 incrementCursorImage(_glfw.wl.pointerFocus);
+                event = GLFW_TRUE;
+            }
         }
     }
-    else
-        wl_display_cancel_read(_glfw.wl.display);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1288,22 +1365,24 @@ GLFWbool _glfwPlatformRawMouseMotionSupported(void)
 
 void _glfwPlatformPollEvents(void)
 {
-    handleEvents(0);
+    double timeout = 0.0;
+    handleEvents(&timeout);
 }
 
 void _glfwPlatformWaitEvents(void)
 {
-    handleEvents(-1);
+    handleEvents(NULL);
 }
 
 void _glfwPlatformWaitEventsTimeout(double timeout)
 {
-    handleEvents((int) (timeout * 1e3));
+    handleEvents(&timeout);
 }
 
 void _glfwPlatformPostEmptyEvent(void)
 {
     wl_display_sync(_glfw.wl.display);
+    flushDisplay();
 }
 
 void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
@@ -1793,7 +1872,7 @@ static GLFWbool growClipboardString(void)
     clipboard = realloc(clipboard, _glfw.wl.clipboardSize * 2);
     if (!clipboard)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
                         "Wayland: Impossible to grow clipboard string");
         return GLFW_FALSE;
     }
@@ -1828,9 +1907,9 @@ const char* _glfwPlatformGetClipboardString(void)
     close(fds[1]);
 
     // XXX: this is a huge hack, this function shouldn’t be synchronous!
-    handleEvents(-1);
+    handleEvents(NULL);
 
-    while (1)
+    for (;;)
     {
         // Grow the clipboard if we need to paste something bigger, there is no
         // shrink operation yet.

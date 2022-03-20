@@ -821,7 +821,7 @@ The second value is always the human-readable name of the gamepad.
 All subsequent values are in the form `<field>:<value>` and describe the layout
 of the mapping.  These fields may not all be present and may occur in any order.
 
-The button fields are `a`, `b`, `c`, `d`, `back`, `start`, `guide`, `dpup`,
+The button fields are `a`, `b`, `x`, `y`, `back`, `start`, `guide`, `dpup`,
 `dpright`, `dpdown`, `dpleft`, `leftshoulder`, `rightshoulder`, `leftstick` and
 `rightstick`.
 

@@ -36,6 +36,9 @@
 #include <limits.h>
 #include <stdio.h>
 #include <locale.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
 
 
 // Translate the X11 KeySyms for a key to a GLFW key code
@@ -568,7 +571,7 @@ static void detectEWMH(void)
 //
 static GLFWbool initExtensions(void)
 {
-#if defined(__OpenBSD__)
+#if defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.vidmode.handle = _glfw_dlopen("libXxf86vm.so");
 #else
     _glfw.x11.vidmode.handle = _glfw_dlopen("libXxf86vm.so.1");
@@ -592,7 +595,7 @@ static GLFWbool initExtensions(void)
 
 #if defined(__CYGWIN__)
     _glfw.x11.xi.handle = _glfw_dlopen("libXi-6.so");
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.xi.handle = _glfw_dlopen("libXi.so");
 #else
     _glfw.x11.xi.handle = _glfw_dlopen("libXi.so.6");
@@ -624,7 +627,7 @@ static GLFWbool initExtensions(void)
 
 #if defined(__CYGWIN__)
     _glfw.x11.randr.handle = _glfw_dlopen("libXrandr-2.so");
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.randr.handle = _glfw_dlopen("libXrandr.so");
 #else
     _glfw.x11.randr.handle = _glfw_dlopen("libXrandr.so.2");
@@ -718,7 +721,7 @@ static GLFWbool initExtensions(void)
 
 #if defined(__CYGWIN__)
     _glfw.x11.xcursor.handle = _glfw_dlopen("libXcursor-1.so");
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.xcursor.handle = _glfw_dlopen("libXcursor.so");
 #else
     _glfw.x11.xcursor.handle = _glfw_dlopen("libXcursor.so.1");
@@ -741,7 +744,7 @@ static GLFWbool initExtensions(void)
 
 #if defined(__CYGWIN__)
     _glfw.x11.xinerama.handle = _glfw_dlopen("libXinerama-1.so");
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.xinerama.handle = _glfw_dlopen("libXinerama.so");
 #else
     _glfw.x11.xinerama.handle = _glfw_dlopen("libXinerama.so.1");
@@ -794,7 +797,7 @@ static GLFWbool initExtensions(void)
 
 #if defined(__CYGWIN__)
     _glfw.x11.x11xcb.handle = _glfw_dlopen("libX11-xcb-1.so");
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.x11xcb.handle = _glfw_dlopen("libX11-xcb.so");
 #else
     _glfw.x11.x11xcb.handle = _glfw_dlopen("libX11-xcb.so.1");
@@ -807,7 +810,7 @@ static GLFWbool initExtensions(void)
 
 #if defined(__CYGWIN__)
     _glfw.x11.xrender.handle = _glfw_dlopen("libXrender-1.so");
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.xrender.handle = _glfw_dlopen("libXrender.so");
 #else
     _glfw.x11.xrender.handle = _glfw_dlopen("libXrender.so.1");
@@ -974,6 +977,37 @@ static Window createHelperWindow(void)
                          CWEventMask, &wa);
 }
 
+// Create the pipe for empty events without assumuing the OS has pipe2(2)
+//
+static GLFWbool createEmptyEventPipe(void)
+{
+    if (pipe(_glfw.x11.emptyEventPipe) != 0)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "X11: Failed to create empty event pipe: %s",
+                        strerror(errno));
+        return GLFW_FALSE;
+    }
+
+    for (int i = 0; i < 2; i++)
+    {
+        const int sf = fcntl(_glfw.x11.emptyEventPipe[i], F_GETFL, 0);
+        const int df = fcntl(_glfw.x11.emptyEventPipe[i], F_GETFD, 0);
+
+        if (sf == -1 || df == -1 ||
+            fcntl(_glfw.x11.emptyEventPipe[i], F_SETFL, sf | O_NONBLOCK) == -1 ||
+            fcntl(_glfw.x11.emptyEventPipe[i], F_SETFD, df | FD_CLOEXEC) == -1)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Failed to set flags for empty event pipe: %s",
+                            strerror(errno));
+            return GLFW_FALSE;
+        }
+    }
+
+    return GLFW_TRUE;
+}
+
 // X error handler
 //
 static int errorHandler(Display *display, XErrorEvent* event)
@@ -1095,6 +1129,9 @@ int _glfwPlatformInit(void)
 
     getSystemContentScale(&_glfw.x11.contentScaleX, &_glfw.x11.contentScaleY);
 
+    if (!createEmptyEventPipe())
+        return GLFW_FALSE;
+
     if (!initExtensions())
         return GLFW_FALSE;
 
@@ -1212,6 +1249,12 @@ void _glfwPlatformTerminate(void)
 #if defined(__linux__)
     _glfwTerminateJoysticksLinux();
 #endif
+
+    if (_glfw.x11.emptyEventPipe[0] || _glfw.x11.emptyEventPipe[1])
+    {
+        close(_glfw.x11.emptyEventPipe[0]);
+        close(_glfw.x11.emptyEventPipe[1]);
+    }
 }
 
 const char* _glfwPlatformGetVersionString(void)

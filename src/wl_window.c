@@ -1664,20 +1664,18 @@ void _glfwSetClipboardStringWayland(const char* string)
         _glfw.wl.dataSource = NULL;
     }
 
-    if (_glfw.wl.clipboardSendString)
+    char* copy = _glfw_strdup(string);
+    if (!copy)
     {
-        _glfw_free(_glfw.wl.clipboardSendString);
-        _glfw.wl.clipboardSendString = NULL;
-    }
-
-    _glfw.wl.clipboardSendString = _glfw_strdup(string);
-    if (!_glfw.wl.clipboardSendString)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Impossible to allocate clipboard string");
+        _glfwInputError(GLFW_OUT_OF_MEMORY,
+                        "Wayland: Failed to allocate clipboard string");
         return;
     }
-    _glfw.wl.clipboardSendSize = strlen(string);
+
+    _glfw_free(_glfw.wl.clipboardSendString);
+    _glfw.wl.clipboardSendString = copy;
+
+    _glfw.wl.clipboardSendSize = strlen(_glfw.wl.clipboardSendString);
     _glfw.wl.dataSource =
         wl_data_device_manager_create_data_source(_glfw.wl.dataDeviceManager);
     if (!_glfw.wl.dataSource)

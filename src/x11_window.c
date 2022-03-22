@@ -164,7 +164,7 @@ static void writeEmptyEvent(void)
     for (;;)
     {
         const char byte = 0;
-        const int result = write(_glfw.x11.emptyEventPipe[1], &byte, 1);
+        const ssize_t result = write(_glfw.x11.emptyEventPipe[1], &byte, 1);
         if (result == 1 || (result == -1 && errno != EINTR))
             break;
     }
@@ -177,7 +177,7 @@ static void drainEmptyEvents(void)
     for (;;)
     {
         char dummy[64];
-        const int result = read(_glfw.x11.emptyEventPipe[0], dummy, sizeof(dummy));
+        const ssize_t result = read(_glfw.x11.emptyEventPipe[0], dummy, sizeof(dummy));
         if (result == -1 && errno != EINTR)
             break;
     }

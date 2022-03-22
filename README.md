@@ -312,6 +312,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: `glfwPostEmptyEvent` sometimes had no effect (#1520,#1521)
  - [Wayland] Bugfix: `glfwSetClipboardString` would fail if set to result of
    `glfwGetClipboardString`
+ - [Wayland] Bugfix: Data source creation error would cause double free at termination
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)

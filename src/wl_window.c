@@ -1683,6 +1683,7 @@ void _glfwSetClipboardStringWayland(const char* string)
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Impossible to create clipboard source");
         _glfw_free(_glfw.wl.clipboardSendString);
+        _glfw.wl.clipboardSendString = NULL;
         return;
     }
     wl_data_source_add_listener(_glfw.wl.dataSource,

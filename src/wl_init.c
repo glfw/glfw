@@ -47,6 +47,7 @@
 #include "wayland-relative-pointer-unstable-v1-client-protocol.h"
 #include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
 #include "wayland-idle-inhibit-unstable-v1-client-protocol.h"
+#include "wayland-wlr-layer-shell-unstable-v1-client-protocol.h"
 
 #include "wayland-client-protocol-code.h"
 #include "wayland-xdg-shell-client-protocol-code.h"
@@ -55,6 +56,7 @@
 #include "wayland-relative-pointer-unstable-v1-client-protocol-code.h"
 #include "wayland-pointer-constraints-unstable-v1-client-protocol-code.h"
 #include "wayland-idle-inhibit-unstable-v1-client-protocol-code.h"
+#include "wayland-wlr-layer-shell-unstable-v1-client-protocol-code.h"
 
 
 static _GLFWwindow* findWindowFromDecorationSurface(struct wl_surface* surface,
@@ -861,6 +863,13 @@ static void registryHandleGlobal(void* data,
                              &zwp_idle_inhibit_manager_v1_interface,
                              1);
     }
+    else if (strcmp(interface, "zwlr_layer_shell_v1") == 0)
+    {
+        _glfw.wl.layerShell =
+            wl_registry_bind(registry, name,
+                             &zwlr_layer_shell_v1_interface,
+                             1);
+    }
 }
 
 static void registryHandleGlobalRemove(void *data,
@@ -1443,6 +1452,8 @@ void _glfwTerminateWayland(void)
         zwp_pointer_constraints_v1_destroy(_glfw.wl.pointerConstraints);
     if (_glfw.wl.idleInhibitManager)
         zwp_idle_inhibit_manager_v1_destroy(_glfw.wl.idleInhibitManager);
+    if (_glfw.wl.layerShell)
+        zwlr_layer_shell_v1_destroy(_glfw.wl.layerShell);
     if (_glfw.wl.registry)
         wl_registry_destroy(_glfw.wl.registry);
     if (_glfw.wl.display)

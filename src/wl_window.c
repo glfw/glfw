@@ -1726,7 +1726,7 @@ static void dataSourceHandleSend(void* data,
                                  int fd)
 {
     const char* string = _glfw.wl.clipboardSendString;
-    size_t len = _glfw.wl.clipboardSendSize;
+    size_t len = strlen(string);
     int ret;
 
     if (_glfw.wl.dataSource != dataSource)
@@ -1809,7 +1809,6 @@ void _glfwPlatformSetClipboardString(const char* string)
     free(_glfw.wl.clipboardSendString);
     _glfw.wl.clipboardSendString = copy;
 
-    _glfw.wl.clipboardSendSize = strlen(_glfw.wl.clipboardSendString);
     _glfw.wl.dataSource =
         wl_data_device_manager_create_data_source(_glfw.wl.dataDeviceManager);
     if (!_glfw.wl.dataSource)

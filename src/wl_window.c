@@ -149,7 +149,7 @@ static struct wl_buffer* createShmBuffer(const GLFWimage* image)
     if (fd < 0)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Creating a buffer file for %d B failed: %s",
+                        "Wayland: Failed to create buffer file of size %d: %s",
                         length, strerror(errno));
         return NULL;
     }
@@ -158,7 +158,7 @@ static struct wl_buffer* createShmBuffer(const GLFWimage* image)
     if (data == MAP_FAILED)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: mmap failed: %s", strerror(errno));
+                        "Wayland: Failed to map file: %s", strerror(errno));
         close(fd);
         return NULL;
     }
@@ -418,7 +418,7 @@ static void setIdleInhibitor(_GLFWwindow* window, GLFWbool enable)
                 _glfw.wl.idleInhibitManager, window->wl.surface);
         if (!window->wl.idleInhibitor)
             _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Wayland: Idle inhibitor creation failed");
+                            "Wayland: Failed to create idle inhibitor");
     }
     else if (!enable && window->wl.idleInhibitor)
     {
@@ -556,7 +556,7 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
     if (!window->wl.xdg.surface)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: xdg-surface creation failed");
+                        "Wayland: Failed to create xdg-surface for window");
         return GLFW_FALSE;
     }
 
@@ -568,7 +568,7 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
     if (!window->wl.xdg.toplevel)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: xdg-toplevel creation failed");
+                        "Wayland: Failed to create xdg-toplevel for window");
         return GLFW_FALSE;
     }
 
@@ -1378,7 +1378,7 @@ int _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape)
         cursor->wl.cursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, name);
         if (!cursor->wl.cursor)
         {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
+            _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
                             "Wayland: Failed to create standard cursor \"%s\"",
                             name);
             return GLFW_FALSE;
@@ -1681,7 +1681,7 @@ void _glfwSetClipboardStringWayland(const char* string)
     if (!_glfw.wl.dataSource)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Impossible to create clipboard source");
+                        "Wayland: Failed to create clipboard data source");
         _glfw_free(_glfw.wl.clipboardSendString);
         _glfw.wl.clipboardSendString = NULL;
         return;
@@ -1703,7 +1703,7 @@ static GLFWbool growClipboardString(void)
     if (!clipboard)
     {
         _glfwInputError(GLFW_OUT_OF_MEMORY,
-                        "Wayland: Impossible to grow clipboard string");
+                        "Wayland: Failed to grow clipboard string");
         return GLFW_FALSE;
     }
     _glfw.wl.clipboardString = clipboard;
@@ -1720,7 +1720,7 @@ const char* _glfwGetClipboardStringWayland(void)
     if (!_glfw.wl.dataOffer)
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
-                        "No clipboard data has been sent yet");
+                        "Wayland: No clipboard data available");
         return NULL;
     }
 
@@ -1729,7 +1729,7 @@ const char* _glfwGetClipboardStringWayland(void)
     {
         // TODO: also report errno maybe?
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Impossible to create clipboard pipe fds");
+                        "Wayland: Failed to create clipboard pipe fds");
         return NULL;
     }
 
@@ -1762,7 +1762,7 @@ const char* _glfwGetClipboardStringWayland(void)
         {
             // TODO: also report errno maybe.
             _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Wayland: Impossible to read from clipboard fd");
+                            "Wayland: Failed to read from clipboard fd");
             close(fds[0]);
             return NULL;
         }

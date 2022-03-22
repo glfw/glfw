@@ -160,8 +160,8 @@ static void setCursor(_GLFWwindow* window, const char* name)
     cursor = wl_cursor_theme_get_cursor(theme, name);
     if (!cursor)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Standard cursor not found");
+        _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
+                        "Wayland: Standard cursor shape unavailable");
         return;
     }
     // TODO: handle animated cursors too.
@@ -1116,7 +1116,7 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         if (platformID == GLFW_PLATFORM_WAYLAND)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Wayland: Failed to open libwayland-client");
+                            "Wayland: Failed to load libwayland-client");
         }
 
         return GLFW_FALSE;
@@ -1221,7 +1221,7 @@ int _glfwInitWayland(void)
     if (!_glfw.wl.cursor.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Failed to open libwayland-cursor");
+                        "Wayland: Failed to load libwayland-cursor");
         return GLFW_FALSE;
     }
 
@@ -1238,7 +1238,7 @@ int _glfwInitWayland(void)
     if (!_glfw.wl.egl.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Failed to open libwayland-egl");
+                        "Wayland: Failed to load libwayland-egl");
         return GLFW_FALSE;
     }
 
@@ -1253,7 +1253,7 @@ int _glfwInitWayland(void)
     if (!_glfw.wl.xkb.handle)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Failed to open libxkbcommon");
+                        "Wayland: Failed to load libxkbcommon");
         return GLFW_FALSE;
     }
 
@@ -1345,7 +1345,7 @@ int _glfwInitWayland(void)
         if (!_glfw.wl.cursorTheme)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Wayland: Unable to load default cursor theme");
+                            "Wayland: Failed to load default cursor theme");
             return GLFW_FALSE;
         }
         // If this happens to be NULL, we just fallback to the scale=1 version.
@@ -1368,7 +1368,7 @@ int _glfwInitWayland(void)
         if (!_glfw.wl.clipboardString)
         {
             _glfwInputError(GLFW_OUT_OF_MEMORY,
-                            "Wayland: Unable to allocate clipboard memory");
+                            "Wayland: Failed to allocate clipboard memory");
             return GLFW_FALSE;
         }
     }

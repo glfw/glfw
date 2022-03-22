@@ -131,6 +131,7 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: A connected Apple AirPlay would emit a useless error (#1791)
  - [Wayland] Bugfix: `glfwSetClipboardString` would fail if set to result of
    `glfwGetClipboardString`
+ - [Wayland] Bugfix: Data source creation error would cause double free at termination
 
 
 ## Contact

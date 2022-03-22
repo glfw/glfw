@@ -1725,7 +1725,7 @@ static void dataSourceHandleSend(void* data,
                                  const char* mimeType,
                                  int fd)
 {
-    const char* string = _glfw.wl.clipboardSendString;
+    char* string = _glfw.wl.clipboardSendString;
     size_t len = strlen(string);
     int ret;
 
@@ -1765,6 +1765,7 @@ static void dataSourceHandleSend(void* data,
             return;
         }
         len -= ret;
+        string += ret;
     }
     close(fd);
 }

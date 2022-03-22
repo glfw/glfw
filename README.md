@@ -132,6 +132,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: `glfwSetClipboardString` would fail if set to result of
    `glfwGetClipboardString`
  - [Wayland] Bugfix: Data source creation error would cause double free at termination
+ - [Wayland] Bugfix: Partial writes of clipboard string would cause beginning to repeat
 
 
 ## Contact

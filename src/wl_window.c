@@ -471,9 +471,9 @@ static void checkScaleChange(_GLFWwindow* window)
     }
 }
 
-static void surfaceHandleEnter(void *data,
-                               struct wl_surface *surface,
-                               struct wl_output *output)
+static void surfaceHandleEnter(void* data,
+                               struct wl_surface* surface,
+                               struct wl_output* output)
 {
     _GLFWwindow* window = data;
     _GLFWmonitor* monitor = wl_output_get_user_data(output);
@@ -491,9 +491,9 @@ static void surfaceHandleEnter(void *data,
     checkScaleChange(window);
 }
 
-static void surfaceHandleLeave(void *data,
-                               struct wl_surface *surface,
-                               struct wl_output *output)
+static void surfaceHandleLeave(void* data,
+                               struct wl_surface* surface,
+                               struct wl_output* output)
 {
     _GLFWwindow* window = data;
     _GLFWmonitor* monitor = wl_output_get_user_data(output);
@@ -1371,7 +1371,7 @@ void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
 {
 }
 
-void _glfwPlatformSetRawMouseMotion(_GLFWwindow *window, GLFWbool enabled)
+void _glfwPlatformSetRawMouseMotion(_GLFWwindow* window, GLFWbool enabled)
 {
     // This is handled in relativePointerHandleRelativeMotion
 }

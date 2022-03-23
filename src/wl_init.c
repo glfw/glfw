@@ -91,7 +91,7 @@ static _GLFWwindow* findWindowFromDecorationSurface(struct wl_surface* surface,
     return window;
 }
 
-static void pointerHandleEnter(void* data,
+static void pointerHandleEnter(void* userData,
                                struct wl_pointer* pointer,
                                uint32_t serial,
                                struct wl_surface* surface,
@@ -122,7 +122,7 @@ static void pointerHandleEnter(void* data,
     _glfwInputCursorEnter(window, GLFW_TRUE);
 }
 
-static void pointerHandleLeave(void* data,
+static void pointerHandleLeave(void* userData,
                                struct wl_pointer* pointer,
                                uint32_t serial,
                                struct wl_surface* surface)
@@ -185,7 +185,7 @@ static void setCursor(_GLFWwindow* window, const char* name)
     _glfw.wl.cursorPreviousName = name;
 }
 
-static void pointerHandleMotion(void* data,
+static void pointerHandleMotion(void* userData,
                                 struct wl_pointer* pointer,
                                 uint32_t time,
                                 wl_fixed_t sx,
@@ -244,7 +244,7 @@ static void pointerHandleMotion(void* data,
         setCursor(window, cursorName);
 }
 
-static void pointerHandleButton(void* data,
+static void pointerHandleButton(void* userData,
                                 struct wl_pointer* pointer,
                                 uint32_t serial,
                                 uint32_t time,
@@ -329,7 +329,7 @@ static void pointerHandleButton(void* data,
                          _glfw.wl.xkb.modifiers);
 }
 
-static void pointerHandleAxis(void* data,
+static void pointerHandleAxis(void* userData,
                               struct wl_pointer* pointer,
                               uint32_t time,
                               uint32_t axis,
@@ -364,7 +364,7 @@ static const struct wl_pointer_listener pointerListener = {
     pointerHandleAxis,
 };
 
-static void keyboardHandleKeymap(void* data,
+static void keyboardHandleKeymap(void* userData,
                                  struct wl_keyboard* keyboard,
                                  uint32_t format,
                                  int fd,
@@ -461,7 +461,7 @@ static void keyboardHandleKeymap(void* data,
         1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod2");
 }
 
-static void keyboardHandleEnter(void* data,
+static void keyboardHandleEnter(void* userData,
                                 struct wl_keyboard* keyboard,
                                 uint32_t serial,
                                 struct wl_surface* surface,
@@ -484,7 +484,7 @@ static void keyboardHandleEnter(void* data,
     _glfwInputWindowFocus(window, GLFW_TRUE);
 }
 
-static void keyboardHandleLeave(void* data,
+static void keyboardHandleLeave(void* userData,
                                 struct wl_keyboard* keyboard,
                                 uint32_t serial,
                                 struct wl_surface* surface)
@@ -550,7 +550,7 @@ GLFWbool _glfwInputTextWayland(_GLFWwindow* window, uint32_t scancode)
     return xkb_keymap_key_repeats(_glfw.wl.xkb.keymap, keycode);
 }
 
-static void keyboardHandleKey(void* data,
+static void keyboardHandleKey(void* userData,
                               struct wl_keyboard* keyboard,
                               uint32_t serial,
                               uint32_t time,
@@ -591,7 +591,7 @@ static void keyboardHandleKey(void* data,
     timerfd_settime(_glfw.wl.timerfd, 0, &timer, NULL);
 }
 
-static void keyboardHandleModifiers(void* data,
+static void keyboardHandleModifiers(void* userData,
                                     struct wl_keyboard* keyboard,
                                     uint32_t serial,
                                     uint32_t modsDepressed,
@@ -638,7 +638,7 @@ static void keyboardHandleModifiers(void* data,
 }
 
 #ifdef WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION
-static void keyboardHandleRepeatInfo(void* data,
+static void keyboardHandleRepeatInfo(void* userData,
                                      struct wl_keyboard* keyboard,
                                      int32_t rate,
                                      int32_t delay)
@@ -662,7 +662,7 @@ static const struct wl_keyboard_listener keyboardListener = {
 #endif
 };
 
-static void seatHandleCapabilities(void* data,
+static void seatHandleCapabilities(void* userData,
                                    struct wl_seat* seat,
                                    enum wl_seat_capability caps)
 {
@@ -689,7 +689,7 @@ static void seatHandleCapabilities(void* data,
     }
 }
 
-static void seatHandleName(void* data,
+static void seatHandleName(void* userData,
                            struct wl_seat* seat,
                            const char* name)
 {
@@ -700,7 +700,7 @@ static const struct wl_seat_listener seatListener = {
     seatHandleName,
 };
 
-static void dataOfferHandleOffer(void* data,
+static void dataOfferHandleOffer(void* userData,
                                  struct wl_data_offer* offer,
                                  const char* mimeType)
 {
@@ -710,7 +710,7 @@ static const struct wl_data_offer_listener dataOfferListener = {
     dataOfferHandleOffer,
 };
 
-static void dataDeviceHandleDataOffer(void* data,
+static void dataDeviceHandleDataOffer(void* userData,
                                       struct wl_data_device* device,
                                       struct wl_data_offer* offer)
 {
@@ -721,7 +721,7 @@ static void dataDeviceHandleDataOffer(void* data,
     wl_data_offer_add_listener(_glfw.wl.dataOffer, &dataOfferListener, NULL);
 }
 
-static void dataDeviceHandleEnter(void* data,
+static void dataDeviceHandleEnter(void* userData,
                                   struct wl_data_device* device,
                                   uint32_t serial,
                                   struct wl_surface* surface,
@@ -731,12 +731,12 @@ static void dataDeviceHandleEnter(void* data,
 {
 }
 
-static void dataDeviceHandleLeave(void* data,
+static void dataDeviceHandleLeave(void* userData,
                                   struct wl_data_device* device)
 {
 }
 
-static void dataDeviceHandleMotion(void* data,
+static void dataDeviceHandleMotion(void* userData,
                                    struct wl_data_device* device,
                                    uint32_t time,
                                    wl_fixed_t x,
@@ -744,12 +744,12 @@ static void dataDeviceHandleMotion(void* data,
 {
 }
 
-static void dataDeviceHandleDrop(void* data,
+static void dataDeviceHandleDrop(void* userData,
                                  struct wl_data_device* device)
 {
 }
 
-static void dataDeviceHandleSelection(void* data,
+static void dataDeviceHandleSelection(void* userData,
                                       struct wl_data_device* device,
                                       struct wl_data_offer* offer)
 {
@@ -764,7 +764,7 @@ static const struct wl_data_device_listener dataDeviceListener = {
     dataDeviceHandleSelection,
 };
 
-static void wmBaseHandlePing(void* data,
+static void wmBaseHandlePing(void* userData,
                              struct xdg_wm_base* wmBase,
                              uint32_t serial)
 {
@@ -775,7 +775,7 @@ static const struct xdg_wm_base_listener wmBaseListener = {
     wmBaseHandlePing
 };
 
-static void registryHandleGlobal(void* data,
+static void registryHandleGlobal(void* userData,
                                  struct wl_registry* registry,
                                  uint32_t name,
                                  const char* interface,
@@ -863,7 +863,7 @@ static void registryHandleGlobal(void* data,
     }
 }
 
-static void registryHandleGlobalRemove(void* data,
+static void registryHandleGlobalRemove(void* userData,
                                        struct wl_registry* registry,
                                        uint32_t name)
 {

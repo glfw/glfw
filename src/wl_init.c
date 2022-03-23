@@ -704,6 +704,16 @@ static void dataOfferHandleOffer(void* userData,
                                  struct wl_data_offer* offer,
                                  const char* mimeType)
 {
+    for (unsigned int i = 0; i < _glfw.wl.offerCount; i++)
+    {
+        if (_glfw.wl.offers[i].offer == offer)
+        {
+            if (strcmp(mimeType, "text/plain;charset=utf-8") == 0)
+                _glfw.wl.offers[i].text_plain_utf8 = GLFW_TRUE;
+
+            break;
+        }
+    }
 }
 
 static const struct wl_data_offer_listener dataOfferListener = {
@@ -714,11 +724,19 @@ static void dataDeviceHandleDataOffer(void* userData,
                                       struct wl_data_device* device,
                                       struct wl_data_offer* offer)
 {
-    if (_glfw.wl.dataOffer)
-        wl_data_offer_destroy(_glfw.wl.dataOffer);
+    _GLFWofferWayland* offers =
+        _glfw_realloc(_glfw.wl.offers, _glfw.wl.offerCount + 1);
+    if (!offers)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
+        return;
+    }
 
-    _glfw.wl.dataOffer = offer;
-    wl_data_offer_add_listener(_glfw.wl.dataOffer, &dataOfferListener, NULL);
+    _glfw.wl.offers = offers;
+    _glfw.wl.offerCount++;
+
+    _glfw.wl.offers[_glfw.wl.offerCount - 1] = (_GLFWofferWayland) { offer };
+    wl_data_offer_add_listener(offer, &dataOfferListener, NULL);
 }
 
 static void dataDeviceHandleEnter(void* userData,
@@ -729,6 +747,19 @@ static void dataDeviceHandleEnter(void* userData,
                                   wl_fixed_t y,
                                   struct wl_data_offer* offer)
 {
+    for (unsigned int i = 0; i < _glfw.wl.offerCount; i++)
+    {
+        if (_glfw.wl.offers[i].offer == offer)
+        {
+            _glfw.wl.offers[i] = _glfw.wl.offers[_glfw.wl.offerCount - 1];
+            _glfw.wl.offerCount--;
+
+            // We don't yet handle drag and drop
+            wl_data_offer_accept(offer, serial, NULL);
+            wl_data_offer_destroy(offer);
+            break;
+        }
+    }
 }
 
 static void dataDeviceHandleLeave(void* userData,
@@ -753,6 +784,26 @@ static void dataDeviceHandleSelection(void* userData,
                                       struct wl_data_device* device,
                                       struct wl_data_offer* offer)
 {
+    if (_glfw.wl.selectionOffer)
+    {
+        wl_data_offer_destroy(_glfw.wl.selectionOffer);
+        _glfw.wl.selectionOffer = NULL;
+    }
+
+    for (unsigned int i = 0; i < _glfw.wl.offerCount; i++)
+    {
+        if (_glfw.wl.offers[i].offer == offer)
+        {
+            if (_glfw.wl.offers[i].text_plain_utf8)
+                _glfw.wl.selectionOffer = offer;
+            else
+                wl_data_offer_destroy(offer);
+
+            _glfw.wl.offers[i] = _glfw.wl.offers[_glfw.wl.offerCount - 1];
+            _glfw.wl.offerCount--;
+            break;
+        }
+    }
 }
 
 static const struct wl_data_device_listener dataDeviceListener = {
@@ -1409,6 +1460,11 @@ void _glfwTerminateWayland(void)
         _glfw.wl.cursor.handle = NULL;
     }
 
+    for (unsigned int i = 0; i < _glfw.wl.offerCount; i++)
+        wl_data_offer_destroy(_glfw.wl.offers[i].offer);
+
+    _glfw_free(_glfw.wl.offers);
+
     if (_glfw.wl.cursorSurface)
         wl_surface_destroy(_glfw.wl.cursorSurface);
     if (_glfw.wl.subcompositor)
@@ -1423,12 +1479,12 @@ void _glfwTerminateWayland(void)
         zxdg_decoration_manager_v1_destroy(_glfw.wl.decorationManager);
     if (_glfw.wl.wmBase)
         xdg_wm_base_destroy(_glfw.wl.wmBase);
-    if (_glfw.wl.dataSource)
-        wl_data_source_destroy(_glfw.wl.dataSource);
+    if (_glfw.wl.selectionOffer)
+        wl_data_offer_destroy(_glfw.wl.selectionOffer);
+    if (_glfw.wl.selectionSource)
+        wl_data_source_destroy(_glfw.wl.selectionSource);
     if (_glfw.wl.dataDevice)
         wl_data_device_destroy(_glfw.wl.dataDevice);
-    if (_glfw.wl.dataOffer)
-        wl_data_offer_destroy(_glfw.wl.dataOffer);
     if (_glfw.wl.dataDeviceManager)
         wl_data_device_manager_destroy(_glfw.wl.dataDeviceManager);
     if (_glfw.wl.pointer)

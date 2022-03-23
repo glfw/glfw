@@ -1578,7 +1578,7 @@ static void dataSourceHandleTarget(void* userData,
                                    struct wl_data_source* source,
                                    const char* mimeType)
 {
-    if (_glfw.wl.dataSource != source)
+    if (_glfw.wl.selectionSource != source)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Unknown clipboard data source");
@@ -1595,7 +1595,7 @@ static void dataSourceHandleSend(void* userData,
     size_t len = strlen(string);
     int ret;
 
-    if (_glfw.wl.dataSource != source)
+    if (_glfw.wl.selectionSource != source)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Unknown clipboard data source");
@@ -1643,14 +1643,14 @@ static void dataSourceHandleCancelled(void* userData,
 {
     wl_data_source_destroy(source);
 
-    if (_glfw.wl.dataSource != source)
+    if (_glfw.wl.selectionSource != source)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Unknown clipboard data source");
         return;
     }
 
-    _glfw.wl.dataSource = NULL;
+    _glfw.wl.selectionSource = NULL;
 }
 
 static const struct wl_data_source_listener dataSourceListener = {
@@ -1661,10 +1661,10 @@ static const struct wl_data_source_listener dataSourceListener = {
 
 void _glfwSetClipboardStringWayland(const char* string)
 {
-    if (_glfw.wl.dataSource)
+    if (_glfw.wl.selectionSource)
     {
-        wl_data_source_destroy(_glfw.wl.dataSource);
-        _glfw.wl.dataSource = NULL;
+        wl_data_source_destroy(_glfw.wl.selectionSource);
+        _glfw.wl.selectionSource = NULL;
     }
 
     char* copy = _glfw_strdup(string);
@@ -1678,9 +1678,9 @@ void _glfwSetClipboardStringWayland(const char* string)
     _glfw_free(_glfw.wl.clipboardSendString);
     _glfw.wl.clipboardSendString = copy;
 
-    _glfw.wl.dataSource =
+    _glfw.wl.selectionSource =
         wl_data_device_manager_create_data_source(_glfw.wl.dataDeviceManager);
-    if (!_glfw.wl.dataSource)
+    if (!_glfw.wl.selectionSource)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Failed to create clipboard data source");
@@ -1688,12 +1688,12 @@ void _glfwSetClipboardStringWayland(const char* string)
         _glfw.wl.clipboardSendString = NULL;
         return;
     }
-    wl_data_source_add_listener(_glfw.wl.dataSource,
+    wl_data_source_add_listener(_glfw.wl.selectionSource,
                                 &dataSourceListener,
                                 NULL);
-    wl_data_source_offer(_glfw.wl.dataSource, "text/plain;charset=utf-8");
+    wl_data_source_offer(_glfw.wl.selectionSource, "text/plain;charset=utf-8");
     wl_data_device_set_selection(_glfw.wl.dataDevice,
-                                 _glfw.wl.dataSource,
+                                 _glfw.wl.selectionSource,
                                  _glfw.wl.serial);
 }
 
@@ -1719,14 +1719,14 @@ const char* _glfwGetClipboardStringWayland(void)
     int ret;
     size_t len = 0;
 
-    if (!_glfw.wl.dataOffer)
+    if (!_glfw.wl.selectionOffer)
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "Wayland: No clipboard data available");
         return NULL;
     }
 
-    if (_glfw.wl.dataSource)
+    if (_glfw.wl.selectionSource)
         return _glfw.wl.clipboardSendString;
 
     ret = pipe2(fds, O_CLOEXEC);
@@ -1738,7 +1738,7 @@ const char* _glfwGetClipboardStringWayland(void)
         return NULL;
     }
 
-    wl_data_offer_receive(_glfw.wl.dataOffer, "text/plain;charset=utf-8", fds[1]);
+    wl_data_offer_receive(_glfw.wl.selectionOffer, "text/plain;charset=utf-8", fds[1]);
 
     flushDisplay();
     close(fds[1]);

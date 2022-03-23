@@ -219,6 +219,12 @@ typedef struct _GLFWdecorationWayland
     struct wp_viewport*         viewport;
 } _GLFWdecorationWayland;
 
+typedef struct _GLFWofferWayland
+{
+    struct wl_data_offer*       offer;
+    GLFWbool                    text_plain_utf8;
+} _GLFWofferWayland;
+
 // Wayland-specific per-window data
 //
 typedef struct _GLFWwindowWayland
@@ -281,14 +287,18 @@ typedef struct _GLFWlibraryWayland
     struct wl_keyboard*         keyboard;
     struct wl_data_device_manager*          dataDeviceManager;
     struct wl_data_device*      dataDevice;
-    struct wl_data_offer*       dataOffer;
-    struct wl_data_source*      dataSource;
     struct xdg_wm_base*         wmBase;
     struct zxdg_decoration_manager_v1*      decorationManager;
     struct wp_viewporter*       viewporter;
     struct zwp_relative_pointer_manager_v1* relativePointerManager;
     struct zwp_pointer_constraints_v1*      pointerConstraints;
     struct zwp_idle_inhibit_manager_v1*     idleInhibitManager;
+
+    _GLFWofferWayland*          offers;
+    unsigned int                offerCount;
+
+    struct wl_data_offer*       selectionOffer;
+    struct wl_data_source*      selectionSource;
 
     int                         compositorVersion;
     int                         seatVersion;

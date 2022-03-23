@@ -133,6 +133,7 @@ information on what to include when reporting a bug.
    `glfwGetClipboardString`
  - [Wayland] Bugfix: Data source creation error would cause double free at termination
  - [Wayland] Bugfix: Partial writes of clipboard string would cause beginning to repeat
+ - [Wayland] Bugfix: Some errors would cause clipboard string transfer to hang
 
 
 ## Contact

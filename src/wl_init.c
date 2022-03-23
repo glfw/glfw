@@ -697,7 +697,7 @@ static const struct wl_seat_listener seatListener = {
 };
 
 static void dataOfferHandleOffer(void* data,
-                                 struct wl_data_offer* dataOffer,
+                                 struct wl_data_offer* offer,
                                  const char* mimeType)
 {
 }
@@ -707,33 +707,33 @@ static const struct wl_data_offer_listener dataOfferListener = {
 };
 
 static void dataDeviceHandleDataOffer(void* data,
-                                      struct wl_data_device* dataDevice,
-                                      struct wl_data_offer* id)
+                                      struct wl_data_device* device,
+                                      struct wl_data_offer* offer)
 {
     if (_glfw.wl.dataOffer)
         wl_data_offer_destroy(_glfw.wl.dataOffer);
 
-    _glfw.wl.dataOffer = id;
+    _glfw.wl.dataOffer = offer;
     wl_data_offer_add_listener(_glfw.wl.dataOffer, &dataOfferListener, NULL);
 }
 
 static void dataDeviceHandleEnter(void* data,
-                                  struct wl_data_device* dataDevice,
+                                  struct wl_data_device* device,
                                   uint32_t serial,
                                   struct wl_surface *surface,
                                   wl_fixed_t x,
                                   wl_fixed_t y,
-                                  struct wl_data_offer *id)
+                                  struct wl_data_offer *offer)
 {
 }
 
 static void dataDeviceHandleLeave(void* data,
-                                  struct wl_data_device* dataDevice)
+                                  struct wl_data_device* device)
 {
 }
 
 static void dataDeviceHandleMotion(void* data,
-                                   struct wl_data_device* dataDevice,
+                                   struct wl_data_device* device,
                                    uint32_t time,
                                    wl_fixed_t x,
                                    wl_fixed_t y)
@@ -741,13 +741,13 @@ static void dataDeviceHandleMotion(void* data,
 }
 
 static void dataDeviceHandleDrop(void* data,
-                                 struct wl_data_device* dataDevice)
+                                 struct wl_data_device* device)
 {
 }
 
 static void dataDeviceHandleSelection(void* data,
-                                      struct wl_data_device* dataDevice,
-                                      struct wl_data_offer* id)
+                                      struct wl_data_device* device,
+                                      struct wl_data_offer* offer)
 {
 }
 

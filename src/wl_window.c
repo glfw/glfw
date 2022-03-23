@@ -1575,10 +1575,10 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
 }
 
 static void dataSourceHandleTarget(void* data,
-                                   struct wl_data_source* dataSource,
+                                   struct wl_data_source* source,
                                    const char* mimeType)
 {
-    if (_glfw.wl.dataSource != dataSource)
+    if (_glfw.wl.dataSource != source)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Unknown clipboard data source");
@@ -1587,7 +1587,7 @@ static void dataSourceHandleTarget(void* data,
 }
 
 static void dataSourceHandleSend(void* data,
-                                 struct wl_data_source* dataSource,
+                                 struct wl_data_source* source,
                                  const char* mimeType,
                                  int fd)
 {
@@ -1595,7 +1595,7 @@ static void dataSourceHandleSend(void* data,
     size_t len = strlen(string);
     int ret;
 
-    if (_glfw.wl.dataSource != dataSource)
+    if (_glfw.wl.dataSource != source)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Unknown clipboard data source");
@@ -1637,11 +1637,11 @@ static void dataSourceHandleSend(void* data,
 }
 
 static void dataSourceHandleCancelled(void* data,
-                                      struct wl_data_source* dataSource)
+                                      struct wl_data_source* source)
 {
-    wl_data_source_destroy(dataSource);
+    wl_data_source_destroy(source);
 
-    if (_glfw.wl.dataSource != dataSource)
+    if (_glfw.wl.dataSource != source)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Unknown clipboard data source");

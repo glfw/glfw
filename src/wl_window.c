@@ -1599,6 +1599,7 @@ static void dataSourceHandleSend(void* userData,
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Unknown clipboard data source");
+        close(fd);
         return;
     }
 
@@ -1606,6 +1607,7 @@ static void dataSourceHandleSend(void* userData,
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Copy requested from an invalid string");
+        close(fd);
         return;
     }
 

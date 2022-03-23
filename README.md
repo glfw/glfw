@@ -314,6 +314,7 @@ information on what to include when reporting a bug.
    `glfwGetClipboardString`
  - [Wayland] Bugfix: Data source creation error would cause double free at termination
  - [Wayland] Bugfix: Partial writes of clipboard string would cause beginning to repeat
+ - [Wayland] Bugfix: Some errors would cause clipboard string transfer to hang
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)

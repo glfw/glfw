@@ -724,10 +724,10 @@ static void dataDeviceHandleDataOffer(void* data,
 static void dataDeviceHandleEnter(void* data,
                                   struct wl_data_device* device,
                                   uint32_t serial,
-                                  struct wl_surface *surface,
+                                  struct wl_surface* surface,
                                   wl_fixed_t x,
                                   wl_fixed_t y,
-                                  struct wl_data_offer *offer)
+                                  struct wl_data_offer* offer)
 {
 }
 
@@ -863,8 +863,8 @@ static void registryHandleGlobal(void* data,
     }
 }
 
-static void registryHandleGlobalRemove(void *data,
-                                       struct wl_registry *registry,
+static void registryHandleGlobalRemove(void* data,
+                                       struct wl_registry* registry,
                                        uint32_t name)
 {
     _GLFWmonitor* monitor;
@@ -1155,9 +1155,9 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
 
 int _glfwInitWayland(void)
 {
-    const char *cursorTheme;
-    const char *cursorSizeStr;
-    char *cursorSizeEnd;
+    const char* cursorTheme;
+    const char* cursorSizeStr;
+    char* cursorSizeEnd;
     long cursorSizeLong;
     int cursorSize;
 

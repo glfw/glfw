@@ -48,7 +48,7 @@ static void outputHandleGeometry(void* data,
                                  const char* model,
                                  int32_t transform)
 {
-    struct _GLFWmonitor *monitor = data;
+    struct _GLFWmonitor* monitor = data;
 
     monitor->wl.x = x;
     monitor->wl.y = y;
@@ -65,7 +65,7 @@ static void outputHandleMode(void* data,
                              int32_t height,
                              int32_t refresh)
 {
-    struct _GLFWmonitor *monitor = data;
+    struct _GLFWmonitor* monitor = data;
     GLFWvidmode mode;
 
     mode.width = width;
@@ -86,7 +86,7 @@ static void outputHandleMode(void* data,
 
 static void outputHandleDone(void* data, struct wl_output* output)
 {
-    struct _GLFWmonitor *monitor = data;
+    struct _GLFWmonitor* monitor = data;
 
     if (monitor->widthMM <= 0 || monitor->heightMM <= 0)
     {
@@ -103,7 +103,7 @@ static void outputHandleScale(void* data,
                               struct wl_output* output,
                               int32_t factor)
 {
-    struct _GLFWmonitor *monitor = data;
+    struct _GLFWmonitor* monitor = data;
 
     monitor->wl.scale = factor;
 }
@@ -122,8 +122,8 @@ static const struct wl_output_listener outputListener = {
 
 void _glfwAddOutputWayland(uint32_t name, uint32_t version)
 {
-    _GLFWmonitor *monitor;
-    struct wl_output *output;
+    _GLFWmonitor* monitor;
+    struct wl_output* output;
 
     if (version < 2)
     {

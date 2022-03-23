@@ -45,10 +45,10 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #include "xkb_unicode.h"
 #include "posix_poll.h"
 
-typedef int (* PFN_wl_display_flush)(struct wl_display *display);
-typedef void (* PFN_wl_display_cancel_read)(struct wl_display *display);
-typedef int (* PFN_wl_display_dispatch_pending)(struct wl_display *display);
-typedef int (* PFN_wl_display_read_events)(struct wl_display *display);
+typedef int (* PFN_wl_display_flush)(struct wl_display* display);
+typedef void (* PFN_wl_display_cancel_read)(struct wl_display* display);
+typedef int (* PFN_wl_display_dispatch_pending)(struct wl_display* display);
+typedef int (* PFN_wl_display_read_events)(struct wl_display* display);
 typedef struct wl_display* (* PFN_wl_display_connect)(const char*);
 typedef void (* PFN_wl_display_disconnect)(struct wl_display*);
 typedef int (* PFN_wl_display_roundtrip)(struct wl_display*);
@@ -457,7 +457,7 @@ float _glfwGetWindowOpacityWayland(_GLFWwindow* window);
 void _glfwSetWindowOpacityWayland(_GLFWwindow* window, float opacity);
 void _glfwSetWindowMousePassthroughWayland(_GLFWwindow* window, GLFWbool enabled);
 
-void _glfwSetRawMouseMotionWayland(_GLFWwindow *window, GLFWbool enabled);
+void _glfwSetRawMouseMotionWayland(_GLFWwindow* window, GLFWbool enabled);
 GLFWbool _glfwRawMouseMotionSupportedWayland(void);
 
 void _glfwPollEventsWayland(void);

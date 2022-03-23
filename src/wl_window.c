@@ -379,11 +379,11 @@ static void destroyDecorations(_GLFWwindow* window)
     destroyDecoration(&window->wl.decorations.bottom);
 }
 
-static void xdgDecorationHandleConfigure(void* data,
+static void xdgDecorationHandleConfigure(void* userData,
                                          struct zxdg_toplevel_decoration_v1* decoration,
                                          uint32_t mode)
 {
-    _GLFWwindow* window = data;
+    _GLFWwindow* window = userData;
 
     window->wl.decorations.serverSide = (mode == ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
 
@@ -471,11 +471,11 @@ static void checkScaleChange(_GLFWwindow* window)
     }
 }
 
-static void surfaceHandleEnter(void* data,
+static void surfaceHandleEnter(void* userData,
                                struct wl_surface* surface,
                                struct wl_output* output)
 {
-    _GLFWwindow* window = data;
+    _GLFWwindow* window = userData;
     _GLFWmonitor* monitor = wl_output_get_user_data(output);
 
     if (window->wl.monitorsCount + 1 > window->wl.monitorsSize)
@@ -491,11 +491,11 @@ static void surfaceHandleEnter(void* data,
     checkScaleChange(window);
 }
 
-static void surfaceHandleLeave(void* data,
+static void surfaceHandleLeave(void* userData,
                                struct wl_surface* surface,
                                struct wl_output* output)
 {
-    _GLFWwindow* window = data;
+    _GLFWwindow* window = userData;
     _GLFWmonitor* monitor = wl_output_get_user_data(output);
     GLFWbool found;
     int i;
@@ -604,13 +604,13 @@ static GLFWbool createShellSurface(_GLFWwindow* window)
     return GLFW_TRUE;
 }
 
-static void xdgToplevelHandleConfigure(void* data,
+static void xdgToplevelHandleConfigure(void* userData,
                                        struct xdg_toplevel* toplevel,
                                        int32_t width,
                                        int32_t height,
                                        struct wl_array* states)
 {
-    _GLFWwindow* window = data;
+    _GLFWwindow* window = userData;
     float aspectRatio;
     float targetRatio;
     uint32_t* state;
@@ -668,10 +668,10 @@ static void xdgToplevelHandleConfigure(void* data,
         window->wl.wasFullscreen = GLFW_TRUE;
 }
 
-static void xdgToplevelHandleClose(void* data,
+static void xdgToplevelHandleClose(void* userData,
                                    struct xdg_toplevel* toplevel)
 {
-    _GLFWwindow* window = data;
+    _GLFWwindow* window = userData;
     _glfwInputWindowCloseRequest(window);
 }
 
@@ -680,7 +680,7 @@ static const struct xdg_toplevel_listener xdgToplevelListener = {
     xdgToplevelHandleClose
 };
 
-static void xdgSurfaceHandleConfigure(void* data,
+static void xdgSurfaceHandleConfigure(void* userData,
                                       struct xdg_surface* surface,
                                       uint32_t serial)
 {
@@ -1541,7 +1541,7 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
         wl_buffer_destroy(cursor->wl.buffer);
 }
 
-static void relativePointerHandleRelativeMotion(void* data,
+static void relativePointerHandleRelativeMotion(void* userData,
                                                 struct zwp_relative_pointer_v1* pointer,
                                                 uint32_t timeHi,
                                                 uint32_t timeLo,
@@ -1550,7 +1550,7 @@ static void relativePointerHandleRelativeMotion(void* data,
                                                 wl_fixed_t dxUnaccel,
                                                 wl_fixed_t dyUnaccel)
 {
-    _GLFWwindow* window = data;
+    _GLFWwindow* window = userData;
     double xpos = window->virtualCursorPosX;
     double ypos = window->virtualCursorPosY;
 
@@ -1575,7 +1575,7 @@ static const struct zwp_relative_pointer_v1_listener relativePointerListener = {
     relativePointerHandleRelativeMotion
 };
 
-static void lockedPointerHandleLocked(void* data,
+static void lockedPointerHandleLocked(void* userData,
                                       struct zwp_locked_pointer_v1* lockedPointer)
 {
 }
@@ -1596,7 +1596,7 @@ static void unlockPointer(_GLFWwindow* window)
 
 static void lockPointer(_GLFWwindow* window);
 
-static void lockedPointerHandleUnlocked(void* data,
+static void lockedPointerHandleUnlocked(void* userData,
                                         struct zwp_locked_pointer_v1* lockedPointer)
 {
 }
@@ -1708,7 +1708,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
     }
 }
 
-static void dataSourceHandleTarget(void* data,
+static void dataSourceHandleTarget(void* userData,
                                    struct wl_data_source* source,
                                    const char* mimeType)
 {
@@ -1720,7 +1720,7 @@ static void dataSourceHandleTarget(void* data,
     }
 }
 
-static void dataSourceHandleSend(void* data,
+static void dataSourceHandleSend(void* userData,
                                  struct wl_data_source* source,
                                  const char* mimeType,
                                  int fd)
@@ -1770,7 +1770,7 @@ static void dataSourceHandleSend(void* data,
     close(fd);
 }
 
-static void dataSourceHandleCancelled(void* data,
+static void dataSourceHandleCancelled(void* userData,
                                       struct wl_data_source* source)
 {
     wl_data_source_destroy(source);

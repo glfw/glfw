@@ -35,7 +35,7 @@
 #include <math.h>
 
 
-static void outputHandleGeometry(void* data,
+static void outputHandleGeometry(void* userData,
                                  struct wl_output* output,
                                  int32_t x,
                                  int32_t y,
@@ -46,7 +46,7 @@ static void outputHandleGeometry(void* data,
                                  const char* model,
                                  int32_t transform)
 {
-    struct _GLFWmonitor* monitor = data;
+    struct _GLFWmonitor* monitor = userData;
 
     monitor->wl.x = x;
     monitor->wl.y = y;
@@ -56,14 +56,14 @@ static void outputHandleGeometry(void* data,
     snprintf(monitor->name, sizeof(monitor->name), "%s %s", make, model);
 }
 
-static void outputHandleMode(void* data,
+static void outputHandleMode(void* userData,
                              struct wl_output* output,
                              uint32_t flags,
                              int32_t width,
                              int32_t height,
                              int32_t refresh)
 {
-    struct _GLFWmonitor* monitor = data;
+    struct _GLFWmonitor* monitor = userData;
     GLFWvidmode mode;
 
     mode.width = width;
@@ -82,9 +82,9 @@ static void outputHandleMode(void* data,
         monitor->wl.currentMode = monitor->modeCount - 1;
 }
 
-static void outputHandleDone(void* data, struct wl_output* output)
+static void outputHandleDone(void* userData, struct wl_output* output)
 {
-    struct _GLFWmonitor* monitor = data;
+    struct _GLFWmonitor* monitor = userData;
 
     if (monitor->widthMM <= 0 || monitor->heightMM <= 0)
     {
@@ -97,11 +97,11 @@ static void outputHandleDone(void* data, struct wl_output* output)
     _glfwInputMonitor(monitor, GLFW_CONNECTED, _GLFW_INSERT_LAST);
 }
 
-static void outputHandleScale(void* data,
+static void outputHandleScale(void* userData,
                               struct wl_output* output,
                               int32_t factor)
 {
-    struct _GLFWmonitor* monitor = data;
+    struct _GLFWmonitor* monitor = userData;
 
     monitor->wl.scale = factor;
 }

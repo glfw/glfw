@@ -1726,6 +1726,9 @@ const char* _glfwGetClipboardStringWayland(void)
         return NULL;
     }
 
+    if (_glfw.wl.dataSource)
+        return _glfw.wl.clipboardSendString;
+
     ret = pipe2(fds, O_CLOEXEC);
     if (ret < 0)
     {
@@ -1736,10 +1739,9 @@ const char* _glfwGetClipboardStringWayland(void)
     }
 
     wl_data_offer_receive(_glfw.wl.dataOffer, "text/plain;charset=utf-8", fds[1]);
-    close(fds[1]);
 
-    // XXX: this is a huge hack, this function shouldn’t be synchronous!
-    handleEvents(NULL);
+    flushDisplay();
+    close(fds[1]);
 
     for (;;)
     {

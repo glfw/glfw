@@ -1626,9 +1626,9 @@ static void dataSourceHandleSend(void* userData,
             continue;
         if (ret == -1)
         {
-            // TODO: also report errno maybe.
             _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Wayland: Error while writing the clipboard");
+                            "Wayland: Error while writing the clipboard: %s",
+                            strerror(errno));
             close(fd);
             return;
         }
@@ -1718,9 +1718,9 @@ const char* _glfwGetClipboardStringWayland(void)
 
     if (pipe2(fds, O_CLOEXEC) == -1)
     {
-        // TODO: also report errno maybe?
         _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Failed to create clipboard pipe fds");
+                        "Wayland: Failed to create clipboard pipe: %s",
+                        strerror(errno));
         return NULL;
     }
 
@@ -1761,9 +1761,9 @@ const char* _glfwGetClipboardStringWayland(void)
             if (errno == EINTR)
                 continue;
 
-            // TODO: also report errno maybe.
             _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Wayland: Failed to read from clipboard fd");
+                            "Wayland: Failed to read from clipboard pipe: %s",
+                            strerror(errno));
             close(fds[0]);
             return NULL;
         }

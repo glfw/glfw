@@ -1591,10 +1591,10 @@ static void dataSourceHandleSend(void* userData,
                                  const char* mimeType,
                                  int fd)
 {
-    if (_glfw.wl.selectionSource != source)
+    // Ignore it if this is an outdated or invalid request
+    if (_glfw.wl.selectionSource != source ||
+        strcmp(mimeType, "text/plain;charset=utf-8") != 0)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Unknown clipboard data source");
         close(fd);
         return;
     }
@@ -1604,14 +1604,6 @@ static void dataSourceHandleSend(void* userData,
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Copy requested from an invalid string");
-        close(fd);
-        return;
-    }
-
-    if (strcmp(mimeType, "text/plain;charset=utf-8") != 0)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Wrong MIME type asked from clipboard");
         close(fd);
         return;
     }
@@ -1645,11 +1637,7 @@ static void dataSourceHandleCancelled(void* userData,
     wl_data_source_destroy(source);
 
     if (_glfw.wl.selectionSource != source)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Unknown clipboard data source");
         return;
-    }
 
     _glfw.wl.selectionSource = NULL;
 }

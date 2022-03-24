@@ -1838,10 +1838,6 @@ void _glfwPlatformSetClipboardString(const char* string)
 
 const char* _glfwPlatformGetClipboardString(void)
 {
-    int fds[2];
-    int ret;
-    size_t len = 0;
-
     if (!_glfw.wl.selectionOffer)
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
@@ -1852,8 +1848,9 @@ const char* _glfwPlatformGetClipboardString(void)
     if (_glfw.wl.selectionSource)
         return _glfw.wl.clipboardString;
 
-    ret = pipe2(fds, O_CLOEXEC);
-    if (ret < 0)
+    int fds[2];
+
+    if (pipe2(fds, O_CLOEXEC) == -1)
     {
         // TODO: also report errno maybe?
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -1866,11 +1863,14 @@ const char* _glfwPlatformGetClipboardString(void)
     flushDisplay();
     close(fds[1]);
 
+    size_t length = 0;
+
     for (;;)
     {
         // Grow the clipboard if we need to paste something bigger, there is no
         // shrink operation yet.
-        const size_t requiredSize = len + 4096 + 1;
+        const size_t readSize = 4096;
+        const size_t requiredSize = length + readSize + 1;
         if (requiredSize > _glfw.wl.clipboardSize)
         {
             char* string = realloc(_glfw.wl.clipboardString, requiredSize);
@@ -1887,23 +1887,27 @@ const char* _glfwPlatformGetClipboardString(void)
         }
 
         // Then read from the fd to the clipboard, handling all known errors.
-        ret = read(fds[0], _glfw.wl.clipboardString + len, 4096);
-        if (ret == 0)
+        const ssize_t result = read(fds[0], _glfw.wl.clipboardString + length, readSize);
+        if (result == 0)
             break;
-        if (ret == -1 && errno == EINTR)
-            continue;
-        if (ret == -1)
+        else if (result == -1)
         {
+            if (errno == EINTR)
+                continue;
+
             // TODO: also report errno maybe.
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Wayland: Failed to read from clipboard fd");
             close(fds[0]);
             return NULL;
         }
-        len += ret;
+
+        length += result;
     }
+
     close(fds[0]);
-    _glfw.wl.clipboardString[len] = '\0';
+
+    _glfw.wl.clipboardString[length] = '\0';
     return _glfw.wl.clipboardString;
 }
 

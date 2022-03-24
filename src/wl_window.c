@@ -1600,14 +1600,6 @@ static void dataSourceHandleSend(void* userData,
     }
 
     char* string = _glfw.wl.clipboardString;
-    if (!string)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Copy requested from an invalid string");
-        close(fd);
-        return;
-    }
-
     size_t length = strlen(string);
 
     while (length > 0)

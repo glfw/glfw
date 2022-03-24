@@ -1591,7 +1591,7 @@ static void dataSourceHandleSend(void* userData,
                                  const char* mimeType,
                                  int fd)
 {
-    char* string = _glfw.wl.clipboardSendString;
+    char* string = _glfw.wl.clipboardString;
     size_t len = strlen(string);
     int ret;
 
@@ -1667,16 +1667,23 @@ void _glfwSetClipboardStringWayland(const char* string)
         _glfw.wl.selectionSource = NULL;
     }
 
-    char* copy = _glfw_strdup(string);
-    if (!copy)
+    const size_t requiredSize = strlen(string) + 1;
+    if (requiredSize > _glfw.wl.clipboardSize)
     {
-        _glfwInputError(GLFW_OUT_OF_MEMORY,
-                        "Wayland: Failed to allocate clipboard string");
-        return;
+        _glfw_free(_glfw.wl.clipboardString);
+        _glfw.wl.clipboardString = _glfw_calloc(requiredSize, 1);
+        if (!_glfw.wl.clipboardString)
+        {
+            _glfwInputError(GLFW_OUT_OF_MEMORY,
+                            "Wayland: Failed to allocate clipboard string");
+            return;
+        }
+
+        _glfw.wl.clipboardSize = requiredSize;
     }
 
-    _glfw_free(_glfw.wl.clipboardSendString);
-    _glfw.wl.clipboardSendString = copy;
+    // The argument may be a substring of the clipboard string
+    memmove(_glfw.wl.clipboardString, string, requiredSize);
 
     _glfw.wl.selectionSource =
         wl_data_device_manager_create_data_source(_glfw.wl.dataDeviceManager);
@@ -1684,8 +1691,6 @@ void _glfwSetClipboardStringWayland(const char* string)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Failed to create clipboard data source");
-        _glfw_free(_glfw.wl.clipboardSendString);
-        _glfw.wl.clipboardSendString = NULL;
         return;
     }
     wl_data_source_add_listener(_glfw.wl.selectionSource,
@@ -1695,22 +1700,6 @@ void _glfwSetClipboardStringWayland(const char* string)
     wl_data_device_set_selection(_glfw.wl.dataDevice,
                                  _glfw.wl.selectionSource,
                                  _glfw.wl.serial);
-}
-
-static GLFWbool growClipboardString(void)
-{
-    char* clipboard = _glfw.wl.clipboardString;
-
-    clipboard = _glfw_realloc(clipboard, _glfw.wl.clipboardSize * 2);
-    if (!clipboard)
-    {
-        _glfwInputError(GLFW_OUT_OF_MEMORY,
-                        "Wayland: Failed to grow clipboard string");
-        return GLFW_FALSE;
-    }
-    _glfw.wl.clipboardString = clipboard;
-    _glfw.wl.clipboardSize = _glfw.wl.clipboardSize * 2;
-    return GLFW_TRUE;
 }
 
 const char* _glfwGetClipboardStringWayland(void)
@@ -1727,7 +1716,7 @@ const char* _glfwGetClipboardStringWayland(void)
     }
 
     if (_glfw.wl.selectionSource)
-        return _glfw.wl.clipboardSendString;
+        return _glfw.wl.clipboardString;
 
     ret = pipe2(fds, O_CLOEXEC);
     if (ret < 0)
@@ -1747,13 +1736,20 @@ const char* _glfwGetClipboardStringWayland(void)
     {
         // Grow the clipboard if we need to paste something bigger, there is no
         // shrink operation yet.
-        if (len + 4096 > _glfw.wl.clipboardSize)
+        const size_t requiredSize = len + 4096 + 1;
+        if (requiredSize > _glfw.wl.clipboardSize)
         {
-            if (!growClipboardString())
+            char* string = _glfw_realloc(_glfw.wl.clipboardString, requiredSize);
+            if (!string)
             {
+                _glfwInputError(GLFW_OUT_OF_MEMORY,
+                                "Wayland: Failed to grow clipboard string");
                 close(fds[0]);
                 return NULL;
             }
+
+            _glfw.wl.clipboardString = string;
+            _glfw.wl.clipboardSize = requiredSize;
         }
 
         // Then read from the fd to the clipboard, handling all known errors.
@@ -1773,11 +1769,6 @@ const char* _glfwGetClipboardStringWayland(void)
         len += ret;
     }
     close(fds[0]);
-    if (len + 1 > _glfw.wl.clipboardSize)
-    {
-        if (!growClipboardString())
-            return NULL;
-    }
     _glfw.wl.clipboardString[len] = '\0';
     return _glfw.wl.clipboardString;
 }

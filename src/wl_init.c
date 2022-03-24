@@ -1241,15 +1241,6 @@ int _glfwPlatformInit(void)
             wl_data_device_manager_get_data_device(_glfw.wl.dataDeviceManager,
                                                    _glfw.wl.seat);
         wl_data_device_add_listener(_glfw.wl.dataDevice, &dataDeviceListener, NULL);
-
-        _glfw.wl.clipboardSize = 4096;
-        _glfw.wl.clipboardString = calloc(_glfw.wl.clipboardSize, 1);
-        if (!_glfw.wl.clipboardString)
-        {
-            _glfwInputError(GLFW_OUT_OF_MEMORY,
-                            "Wayland: Failed to allocate clipboard memory");
-            return GLFW_FALSE;
-        }
     }
 
     return GLFW_TRUE;
@@ -1346,7 +1337,6 @@ void _glfwPlatformTerminate(void)
         close(_glfw.wl.cursorTimerfd);
 
     free(_glfw.wl.clipboardString);
-    free(_glfw.wl.clipboardSendString);
 }
 
 const char* _glfwPlatformGetVersionString(void)

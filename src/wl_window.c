@@ -1591,10 +1591,6 @@ static void dataSourceHandleSend(void* userData,
                                  const char* mimeType,
                                  int fd)
 {
-    char* string = _glfw.wl.clipboardString;
-    size_t len = strlen(string);
-    int ret;
-
     if (_glfw.wl.selectionSource != source)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -1603,6 +1599,7 @@ static void dataSourceHandleSend(void* userData,
         return;
     }
 
+    char* string = _glfw.wl.clipboardString;
     if (!string)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -1619,22 +1616,26 @@ static void dataSourceHandleSend(void* userData,
         return;
     }
 
-    while (len > 0)
+    size_t length = strlen(string);
+
+    while (length > 0)
     {
-        ret = write(fd, string, len);
-        if (ret == -1 && errno == EINTR)
-            continue;
-        if (ret == -1)
+        const ssize_t result = write(fd, string, length);
+        if (result == -1)
         {
+            if (errno == EINTR)
+                continue;
+
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Wayland: Error while writing the clipboard: %s",
                             strerror(errno));
-            close(fd);
-            return;
+            break;
         }
-        len -= ret;
-        string += ret;
+
+        length -= result;
+        string += result;
     }
+
     close(fd);
 }
 

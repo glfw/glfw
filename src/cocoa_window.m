@@ -105,20 +105,20 @@ static void updateCursorMode(_GLFWwindow* window)
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         _glfw.ns.disabledCursorWindow = window;
-        _glfwPlatformGetCursorPos(window,
-                                  &_glfw.ns.restoreCursorPosX,
-                                  &_glfw.ns.restoreCursorPosY);
+        _glfwGetCursorPosCocoa(window,
+                               &_glfw.ns.restoreCursorPosX,
+                               &_glfw.ns.restoreCursorPosY);
         _glfwCenterCursorInContentArea(window);
         CGAssociateMouseAndMouseCursorPosition(false);
     }
     else if (_glfw.ns.disabledCursorWindow == window)
     {
         _glfw.ns.disabledCursorWindow = NULL;
-        _glfwPlatformSetCursorPos(window,
-                                  _glfw.ns.restoreCursorPosX,
-                                  _glfw.ns.restoreCursorPosY);
+        _glfwSetCursorPosCocoa(window,
+                               _glfw.ns.restoreCursorPosX,
+                               _glfw.ns.restoreCursorPosY);
         // NOTE: The matching CGAssociateMouseAndMouseCursorPosition call is
-        //       made in _glfwPlatformSetCursorPos as part of a workaround
+        //       made in _glfwSetCursorPosCocoa as part of a workaround
     }
 
     if (cursorInContentArea(window))
@@ -129,10 +129,10 @@ static void updateCursorMode(_GLFWwindow* window)
 //
 static void acquireMonitor(_GLFWwindow* window)
 {
-    _glfwSetVideoModeNS(window->monitor, &window->videoMode);
+    _glfwSetVideoModeCocoa(window->monitor, &window->videoMode);
     const CGRect bounds = CGDisplayBounds(window->monitor->ns.displayID);
     const NSRect frame = NSMakeRect(bounds.origin.x,
-                                    _glfwTransformYNS(bounds.origin.y + bounds.size.height - 1),
+                                    _glfwTransformYCocoa(bounds.origin.y + bounds.size.height - 1),
                                     bounds.size.width,
                                     bounds.size.height);
 
@@ -149,7 +149,7 @@ static void releaseMonitor(_GLFWwindow* window)
         return;
 
     _glfwInputMonitorWindow(window->monitor, NULL);
-    _glfwRestoreVideoModeNS(window->monitor);
+    _glfwRestoreVideoModeCocoa(window->monitor);
 }
 
 // Translates macOS key modifiers into GLFW ones
@@ -286,7 +286,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         _glfwCenterCursorInContentArea(window);
 
     int x, y;
-    _glfwPlatformGetWindowPos(window, &x, &y);
+    _glfwGetWindowPosCocoa(window, &x, &y);
     _glfwInputWindowPos(window, x, y);
 }
 
@@ -318,7 +318,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 - (void)windowDidResignKey:(NSNotification *)notification
 {
     if (window->monitor && window->autoIconify)
-        _glfwPlatformIconifyWindow(window);
+        _glfwIconifyWindowCocoa(window);
 
     _glfwInputWindowFocus(window, GLFW_FALSE);
 }
@@ -361,9 +361,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         markedText = [[NSMutableAttributedString alloc] init];
 
         [self updateTrackingAreas];
-        // NOTE: kUTTypeURL corresponds to NSPasteboardTypeURL but is available
-        //       on 10.7 without having been deprecated yet
-        [self registerForDraggedTypes:@[(__bridge NSString*) kUTTypeURL]];
+        [self registerForDraggedTypes:@[NSPasteboardTypeURL]];
     }
 
     return self;
@@ -803,8 +801,8 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         GLFWvidmode mode;
         int xpos, ypos;
 
-        _glfwPlatformGetVideoMode(window->monitor, &mode);
-        _glfwPlatformGetMonitorPos(window->monitor, &xpos, &ypos);
+        _glfwGetVideoModeCocoa(window->monitor, &mode);
+        _glfwGetMonitorPosCocoa(window->monitor, &xpos, &ypos);
 
         contentRect = NSMakeRect(xpos, ypos, mode.width, mode.height);
     }
@@ -872,8 +870,8 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         [window->ns.object setTabbingMode:NSWindowTabbingModeDisallowed];
 #endif
 
-    _glfwPlatformGetWindowSize(window, &window->ns.width, &window->ns.height);
-    _glfwPlatformGetFramebufferSize(window, &window->ns.fbWidth, &window->ns.fbHeight);
+    _glfwGetWindowSizeCocoa(window, &window->ns.width, &window->ns.height);
+    _glfwGetFramebufferSizeCocoa(window, &window->ns.fbWidth, &window->ns.fbHeight);
 
     return GLFW_TRUE;
 }
@@ -885,7 +883,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 
 // Transforms a y-coordinate between the CG display and NS screen spaces
 //
-float _glfwTransformYNS(float y)
+float _glfwTransformYCocoa(float y)
 {
     return CGDisplayBounds(CGMainDisplayID()).size.height - y - 1;
 }
@@ -895,10 +893,10 @@ float _glfwTransformYNS(float y)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwPlatformCreateWindow(_GLFWwindow* window,
-                              const _GLFWwndconfig* wndconfig,
-                              const _GLFWctxconfig* ctxconfig,
-                              const _GLFWfbconfig* fbconfig)
+int _glfwCreateWindowCocoa(_GLFWwindow* window,
+                           const _GLFWwndconfig* wndconfig,
+                           const _GLFWctxconfig* ctxconfig,
+                           const _GLFWfbconfig* fbconfig)
 {
     @autoreleasepool {
 
@@ -937,8 +935,8 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
 
     if (window->monitor)
     {
-        _glfwPlatformShowWindow(window);
-        _glfwPlatformFocusWindow(window);
+        _glfwShowWindowCocoa(window);
+        _glfwFocusWindowCocoa(window);
         acquireMonitor(window);
     }
 
@@ -947,7 +945,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
     } // autoreleasepool
 }
 
-void _glfwPlatformDestroyWindow(_GLFWwindow* window)
+void _glfwDestroyWindowCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
 
@@ -973,12 +971,12 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     window->ns.object = nil;
 
     // HACK: Allow Cocoa to catch up before returning
-    _glfwPlatformPollEvents();
+    _glfwPollEventsCocoa();
 
     } // autoreleasepool
 }
 
-void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
+void _glfwSetWindowTitleCocoa(_GLFWwindow* window, const char* title)
 {
     @autoreleasepool {
     NSString* string = @(title);
@@ -989,14 +987,14 @@ void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title)
     } // autoreleasepool
 }
 
-void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
-                                int count, const GLFWimage* images)
+void _glfwSetWindowIconCocoa(_GLFWwindow* window,
+                             int count, const GLFWimage* images)
 {
     _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
                     "Cocoa: Regular windows do not have icons on macOS");
 }
 
-void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
+void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos)
 {
     @autoreleasepool {
 
@@ -1006,24 +1004,24 @@ void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos)
     if (xpos)
         *xpos = contentRect.origin.x;
     if (ypos)
-        *ypos = _glfwTransformYNS(contentRect.origin.y + contentRect.size.height - 1);
+        *ypos = _glfwTransformYCocoa(contentRect.origin.y + contentRect.size.height - 1);
 
     } // autoreleasepool
 }
 
-void _glfwPlatformSetWindowPos(_GLFWwindow* window, int x, int y)
+void _glfwSetWindowPosCocoa(_GLFWwindow* window, int x, int y)
 {
     @autoreleasepool {
 
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect dummyRect = NSMakeRect(x, _glfwTransformYNS(y + contentRect.size.height - 1), 0, 0);
+    const NSRect dummyRect = NSMakeRect(x, _glfwTransformYCocoa(y + contentRect.size.height - 1), 0, 0);
     const NSRect frameRect = [window->ns.object frameRectForContentRect:dummyRect];
     [window->ns.object setFrameOrigin:frameRect.origin];
 
     } // autoreleasepool
 }
 
-void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
+void _glfwGetWindowSizeCocoa(_GLFWwindow* window, int* width, int* height)
 {
     @autoreleasepool {
 
@@ -1037,7 +1035,7 @@ void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height)
     } // autoreleasepool
 }
 
-void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
+void _glfwSetWindowSizeCocoa(_GLFWwindow* window, int width, int height)
 {
     @autoreleasepool {
 
@@ -1059,9 +1057,9 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
     } // autoreleasepool
 }
 
-void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
-                                      int minwidth, int minheight,
-                                      int maxwidth, int maxheight)
+void _glfwSetWindowSizeLimitsCocoa(_GLFWwindow* window,
+                                   int minwidth, int minheight,
+                                   int maxwidth, int maxheight)
 {
     @autoreleasepool {
 
@@ -1078,7 +1076,7 @@ void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
     } // autoreleasepool
 }
 
-void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom)
+void _glfwSetWindowAspectRatioCocoa(_GLFWwindow* window, int numer, int denom)
 {
     @autoreleasepool {
     if (numer == GLFW_DONT_CARE || denom == GLFW_DONT_CARE)
@@ -1088,7 +1086,7 @@ void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom
     } // autoreleasepool
 }
 
-void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height)
+void _glfwGetFramebufferSizeCocoa(_GLFWwindow* window, int* width, int* height)
 {
     @autoreleasepool {
 
@@ -1103,9 +1101,9 @@ void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* heigh
     } // autoreleasepool
 }
 
-void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
-                                     int* left, int* top,
-                                     int* right, int* bottom)
+void _glfwGetWindowFrameSizeCocoa(_GLFWwindow* window,
+                                  int* left, int* top,
+                                  int* right, int* bottom)
 {
     @autoreleasepool {
 
@@ -1126,8 +1124,8 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
     } // autoreleasepool
 }
 
-void _glfwPlatformGetWindowContentScale(_GLFWwindow* window,
-                                        float* xscale, float* yscale)
+void _glfwGetWindowContentScaleCocoa(_GLFWwindow* window,
+                                     float* xscale, float* yscale)
 {
     @autoreleasepool {
 
@@ -1142,14 +1140,14 @@ void _glfwPlatformGetWindowContentScale(_GLFWwindow* window,
     } // autoreleasepool
 }
 
-void _glfwPlatformIconifyWindow(_GLFWwindow* window)
+void _glfwIconifyWindowCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     [window->ns.object miniaturize:nil];
     } // autoreleasepool
 }
 
-void _glfwPlatformRestoreWindow(_GLFWwindow* window)
+void _glfwRestoreWindowCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     if ([window->ns.object isMiniaturized])
@@ -1159,7 +1157,7 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
     } // autoreleasepool
 }
 
-void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
+void _glfwMaximizeWindowCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     if (![window->ns.object isZoomed])
@@ -1167,28 +1165,28 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
     } // autoreleasepool
 }
 
-void _glfwPlatformShowWindow(_GLFWwindow* window)
+void _glfwShowWindowCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     [window->ns.object orderFront:nil];
     } // autoreleasepool
 }
 
-void _glfwPlatformHideWindow(_GLFWwindow* window)
+void _glfwHideWindowCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     [window->ns.object orderOut:nil];
     } // autoreleasepool
 }
 
-void _glfwPlatformRequestWindowAttention(_GLFWwindow* window)
+void _glfwRequestWindowAttentionCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     [NSApp requestUserAttention:NSInformationalRequest];
     } // autoreleasepool
 }
 
-void _glfwPlatformFocusWindow(_GLFWwindow* window)
+void _glfwFocusWindowCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     // Make us the active application
@@ -1200,11 +1198,11 @@ void _glfwPlatformFocusWindow(_GLFWwindow* window)
     } // autoreleasepool
 }
 
-void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
-                                   _GLFWmonitor* monitor,
-                                   int xpos, int ypos,
-                                   int width, int height,
-                                   int refreshRate)
+void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
+                                _GLFWmonitor* monitor,
+                                int xpos, int ypos,
+                                int width, int height,
+                                int refreshRate)
 {
     @autoreleasepool {
 
@@ -1218,7 +1216,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
         else
         {
             const NSRect contentRect =
-                NSMakeRect(xpos, _glfwTransformYNS(ypos + height - 1), width, height);
+                NSMakeRect(xpos, _glfwTransformYCocoa(ypos + height - 1), width, height);
             const NSRect frameRect =
                 [window->ns.object frameRectForContentRect:contentRect
                                                  styleMask:getStyleMask(window)];
@@ -1236,7 +1234,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
 
     // HACK: Allow the state cached in Cocoa to catch up to reality
     // TODO: Solve this in a less terrible way
-    _glfwPlatformPollEvents();
+    _glfwPollEventsCocoa();
 
     const NSUInteger styleMask = getStyleMask(window);
     [window->ns.object setStyleMask:styleMask];
@@ -1252,7 +1250,7 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
     }
     else
     {
-        NSRect contentRect = NSMakeRect(xpos, _glfwTransformYNS(ypos + height - 1),
+        NSRect contentRect = NSMakeRect(xpos, _glfwTransformYCocoa(ypos + height - 1),
                                         width, height);
         NSRect frameRect = [window->ns.object frameRectForContentRect:contentRect
                                                             styleMask:styleMask];
@@ -1293,35 +1291,35 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
     } // autoreleasepool
 }
 
-int _glfwPlatformWindowFocused(_GLFWwindow* window)
+int _glfwWindowFocusedCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     return [window->ns.object isKeyWindow];
     } // autoreleasepool
 }
 
-int _glfwPlatformWindowIconified(_GLFWwindow* window)
+int _glfwWindowIconifiedCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     return [window->ns.object isMiniaturized];
     } // autoreleasepool
 }
 
-int _glfwPlatformWindowVisible(_GLFWwindow* window)
+int _glfwWindowVisibleCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     return [window->ns.object isVisible];
     } // autoreleasepool
 }
 
-int _glfwPlatformWindowMaximized(_GLFWwindow* window)
+int _glfwWindowMaximizedCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     return [window->ns.object isZoomed];
     } // autoreleasepool
 }
 
-int _glfwPlatformWindowHovered(_GLFWwindow* window)
+int _glfwWindowHoveredCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
 
@@ -1339,21 +1337,21 @@ int _glfwPlatformWindowHovered(_GLFWwindow* window)
     } // autoreleasepool
 }
 
-int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
+int _glfwFramebufferTransparentCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     return ![window->ns.object isOpaque] && ![window->ns.view isOpaque];
     } // autoreleasepool
 }
 
-void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
+void _glfwSetWindowResizableCocoa(_GLFWwindow* window, GLFWbool enabled)
 {
     @autoreleasepool {
     [window->ns.object setStyleMask:getStyleMask(window)];
     } // autoreleasepool
 }
 
-void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
+void _glfwSetWindowDecoratedCocoa(_GLFWwindow* window, GLFWbool enabled)
 {
     @autoreleasepool {
     [window->ns.object setStyleMask:getStyleMask(window)];
@@ -1361,7 +1359,7 @@ void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
     } // autoreleasepool
 }
 
-void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
+void _glfwSetWindowFloatingCocoa(_GLFWwindow* window, GLFWbool enabled)
 {
     @autoreleasepool {
     if (enabled)
@@ -1371,39 +1369,39 @@ void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)
     } // autoreleasepool
 }
 
-void _glfwPlatformSetWindowMousePassthrough(_GLFWwindow* window, GLFWbool enabled)
+void _glfwSetWindowMousePassthroughCocoa(_GLFWwindow* window, GLFWbool enabled)
 {
     @autoreleasepool {
     [window->ns.object setIgnoresMouseEvents:enabled];
     }
 }
 
-float _glfwPlatformGetWindowOpacity(_GLFWwindow* window)
+float _glfwGetWindowOpacityCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     return (float) [window->ns.object alphaValue];
     } // autoreleasepool
 }
 
-void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity)
+void _glfwSetWindowOpacityCocoa(_GLFWwindow* window, float opacity)
 {
     @autoreleasepool {
     [window->ns.object setAlphaValue:opacity];
     } // autoreleasepool
 }
 
-void _glfwPlatformSetRawMouseMotion(_GLFWwindow *window, GLFWbool enabled)
+void _glfwSetRawMouseMotionCocoa(_GLFWwindow *window, GLFWbool enabled)
 {
     _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
                     "Cocoa: Raw mouse motion not yet implemented");
 }
 
-GLFWbool _glfwPlatformRawMouseMotionSupported(void)
+GLFWbool _glfwRawMouseMotionSupportedCocoa(void)
 {
     return GLFW_FALSE;
 }
 
-void _glfwPlatformPollEvents(void)
+void _glfwPollEventsCocoa(void)
 {
     @autoreleasepool {
 
@@ -1422,7 +1420,7 @@ void _glfwPlatformPollEvents(void)
     } // autoreleasepool
 }
 
-void _glfwPlatformWaitEvents(void)
+void _glfwWaitEventsCocoa(void)
 {
     @autoreleasepool {
 
@@ -1435,12 +1433,12 @@ void _glfwPlatformWaitEvents(void)
                                           dequeue:YES];
     [NSApp sendEvent:event];
 
-    _glfwPlatformPollEvents();
+    _glfwPollEventsCocoa();
 
     } // autoreleasepool
 }
 
-void _glfwPlatformWaitEventsTimeout(double timeout)
+void _glfwWaitEventsTimeoutCocoa(double timeout)
 {
     @autoreleasepool {
 
@@ -1452,12 +1450,12 @@ void _glfwPlatformWaitEventsTimeout(double timeout)
     if (event)
         [NSApp sendEvent:event];
 
-    _glfwPlatformPollEvents();
+    _glfwPollEventsCocoa();
 
     } // autoreleasepool
 }
 
-void _glfwPlatformPostEmptyEvent(void)
+void _glfwPostEmptyEventCocoa(void)
 {
     @autoreleasepool {
 
@@ -1475,7 +1473,7 @@ void _glfwPlatformPostEmptyEvent(void)
     } // autoreleasepool
 }
 
-void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
+void _glfwGetCursorPosCocoa(_GLFWwindow* window, double* xpos, double* ypos)
 {
     @autoreleasepool {
 
@@ -1491,7 +1489,7 @@ void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
     } // autoreleasepool
 }
 
-void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
+void _glfwSetCursorPosCocoa(_GLFWwindow* window, double x, double y)
 {
     @autoreleasepool {
 
@@ -1516,7 +1514,7 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
         const NSPoint globalPoint = globalRect.origin;
 
         CGWarpMouseCursorPosition(CGPointMake(globalPoint.x,
-                                              _glfwTransformYNS(globalPoint.y)));
+                                              _glfwTransformYCocoa(globalPoint.y)));
     }
 
     // HACK: Calling this right after setting the cursor position prevents macOS
@@ -1527,15 +1525,15 @@ void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
     } // autoreleasepool
 }
 
-void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
+void _glfwSetCursorModeCocoa(_GLFWwindow* window, int mode)
 {
     @autoreleasepool {
-    if (_glfwPlatformWindowFocused(window))
+    if (_glfwWindowFocusedCocoa(window))
         updateCursorMode(window);
     } // autoreleasepool
 }
 
-const char* _glfwPlatformGetScancodeName(int scancode)
+const char* _glfwGetScancodeNameCocoa(int scancode)
 {
     @autoreleasepool {
 
@@ -1584,14 +1582,14 @@ const char* _glfwPlatformGetScancodeName(int scancode)
     } // autoreleasepool
 }
 
-int _glfwPlatformGetKeyScancode(int key)
+int _glfwGetKeyScancodeCocoa(int key)
 {
     return _glfw.ns.scancodes[key];
 }
 
-int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
-                              const GLFWimage* image,
-                              int xhot, int yhot)
+int _glfwCreateCursorCocoa(_GLFWcursor* cursor,
+                           const GLFWimage* image,
+                           int xhot, int yhot)
 {
     @autoreleasepool {
 
@@ -1633,7 +1631,7 @@ int _glfwPlatformCreateCursor(_GLFWcursor* cursor,
     } // autoreleasepool
 }
 
-int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
+int _glfwCreateStandardCursorCocoa(_GLFWcursor* cursor, int shape)
 {
     @autoreleasepool {
 
@@ -1707,7 +1705,7 @@ int _glfwPlatformCreateStandardCursor(_GLFWcursor* cursor, int shape)
     } // autoreleasepool
 }
 
-void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
+void _glfwDestroyCursorCocoa(_GLFWcursor* cursor)
 {
     @autoreleasepool {
     if (cursor->ns.object)
@@ -1715,7 +1713,7 @@ void _glfwPlatformDestroyCursor(_GLFWcursor* cursor)
     } // autoreleasepool
 }
 
-void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
+void _glfwSetCursorCocoa(_GLFWwindow* window, _GLFWcursor* cursor)
 {
     @autoreleasepool {
     if (cursorInContentArea(window))
@@ -1723,7 +1721,7 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
     } // autoreleasepool
 }
 
-void _glfwPlatformSetClipboardString(const char* string)
+void _glfwSetClipboardStringCocoa(const char* string)
 {
     @autoreleasepool {
     NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
@@ -1732,7 +1730,7 @@ void _glfwPlatformSetClipboardString(const char* string)
     } // autoreleasepool
 }
 
-const char* _glfwPlatformGetClipboardString(void)
+const char* _glfwGetClipboardStringCocoa(void)
 {
     @autoreleasepool {
 
@@ -1761,7 +1759,7 @@ const char* _glfwPlatformGetClipboardString(void)
     } // autoreleasepool
 }
 
-EGLenum _glfwPlatformGetEGLPlatform(EGLint** attribs)
+EGLenum _glfwGetEGLPlatformCocoa(EGLint** attribs)
 {
     if (_glfw.egl.ANGLE_platform_angle)
     {
@@ -1792,17 +1790,17 @@ EGLenum _glfwPlatformGetEGLPlatform(EGLint** attribs)
     return 0;
 }
 
-EGLNativeDisplayType _glfwPlatformGetEGLNativeDisplay(void)
+EGLNativeDisplayType _glfwGetEGLNativeDisplayCocoa(void)
 {
     return EGL_DEFAULT_DISPLAY;
 }
 
-EGLNativeWindowType _glfwPlatformGetEGLNativeWindow(_GLFWwindow* window)
+EGLNativeWindowType _glfwGetEGLNativeWindowCocoa(_GLFWwindow* window)
 {
     return window->ns.layer;
 }
 
-void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)
+void _glfwGetRequiredInstanceExtensionsCocoa(char** extensions)
 {
     if (_glfw.vk.KHR_surface && _glfw.vk.EXT_metal_surface)
     {
@@ -1816,17 +1814,17 @@ void _glfwPlatformGetRequiredInstanceExtensions(char** extensions)
     }
 }
 
-int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
-                                                      VkPhysicalDevice device,
-                                                      uint32_t queuefamily)
+int _glfwGetPhysicalDevicePresentationSupportCocoa(VkInstance instance,
+                                                   VkPhysicalDevice device,
+                                                   uint32_t queuefamily)
 {
     return GLFW_TRUE;
 }
 
-VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
-                                          _GLFWwindow* window,
-                                          const VkAllocationCallbacks* allocator,
-                                          VkSurfaceKHR* surface)
+VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
+                                       _GLFWwindow* window,
+                                       const VkAllocationCallbacks* allocator,
+                                       VkSurfaceKHR* surface)
 {
     @autoreleasepool {
 
@@ -1923,6 +1921,14 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(nil);
+
+    if (_glfw.platform.platformID != GLFW_PLATFORM_COCOA)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
+                        "Cocoa: Platform not initialized");
+        return NULL;
+    }
+
     return window->ns.object;
 }
 

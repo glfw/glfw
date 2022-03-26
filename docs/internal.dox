@@ -61,12 +61,21 @@ application-provided callbacks.  It is also prohibited from modifying the
 platform-independent part of the internal structs.  Instead, it calls the event
 interface when events interesting to GLFW are received.
 
-The platform interface mirrors those parts of the public interface that needs to
-perform platform-specific operations on some or all platforms.  The are also
-named the same except that the glfw function prefix is replaced by
-_glfwPlatform.
+The platform interface mostly mirrors those parts of the public interface that needs to
+perform platform-specific operations on some or all platforms.
 
-Examples: `_glfwPlatformCreateWindow`
+The window system bits of the platform API is called through the `_GLFWplatform` struct of
+function pointers, to allow runtime selection of platform.  This includes the window and
+context creation, input and event processing, monitor and Vulkan surface creation parts of
+GLFW.  This is located in the global `_glfw` struct.
+
+Examples: `_glfw.platform.createWindow`
+
+The timer, threading and module loading bits of the platform API are plain functions with
+a `_glfwPlatform` prefix, as these things are independent of what window system is being
+used.
+
+Examples: `_glfwPlatformGetTimerValue`
 
 The platform interface also defines structs that contain platform-specific
 global and per-object state.  Their names mirror those of the internal
@@ -104,8 +113,7 @@ Examples: `isValidElementForJoystick`
 @section internals_config Configuration macros
 
 GLFW uses a number of configuration macros to select at compile time which
-interfaces and code paths to use.  They are defined in the glfw_config.h header file,
-which is generated from the `glfw_config.h.in` file by CMake.
+interfaces and code paths to use.  They are defined in the GLFW CMake target.
 
 Configuration macros the same style as tokens in the public interface, except
 with a leading underscore.

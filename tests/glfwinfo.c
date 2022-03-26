@@ -64,10 +64,24 @@
 #define ANGLE_TYPE_VULKAN   "vk"
 #define ANGLE_TYPE_METAL    "mtl"
 
+#define PLATFORM_NAME_ANY   "any"
+#define PLATFORM_NAME_WIN32 "win32"
+#define PLATFORM_NAME_COCOA "cooca"
+#define PLATFORM_NAME_WL    "wayland"
+#define PLATFORM_NAME_X11   "x11"
+#define PLATFORM_NAME_NULL  "null"
+
 static void usage(void)
 {
     printf("Usage: glfwinfo [OPTION]...\n");
     printf("Options:\n");
+    printf("      --platform=PLATFORM   the platform to use ("
+                                        PLATFORM_NAME_ANY " or "
+                                        PLATFORM_NAME_WIN32 " or "
+                                        PLATFORM_NAME_COCOA " or "
+                                        PLATFORM_NAME_X11 " or "
+                                        PLATFORM_NAME_WL " or "
+                                        PLATFORM_NAME_NULL ")\n");
     printf("  -a, --client-api=API      the client API to use ("
                                         API_NAME_OPENGL " or "
                                         API_NAME_OPENGL_ES ")\n");
@@ -124,6 +138,22 @@ static void usage(void)
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
+}
+
+static const char* get_platform_name(int platform)
+{
+    if (platform == GLFW_PLATFORM_WIN32)
+        return "Win32";
+    else if (platform == GLFW_PLATFORM_COCOA)
+        return "Cocoa";
+    else if (platform == GLFW_PLATFORM_WAYLAND)
+        return "Wayland";
+    else if (platform == GLFW_PLATFORM_X11)
+        return "X11";
+    else if (platform == GLFW_PLATFORM_NULL)
+        return "Null";
+
+    return "unknown";
 }
 
 static const char* get_device_type_name(VkPhysicalDeviceType type)
@@ -325,12 +355,34 @@ static void print_version(void)
     printf("GLFW library version string: \"%s\"\n", glfwGetVersionString());
 }
 
+static void print_platform(void)
+{
+    const int platforms[] =
+    {
+        GLFW_PLATFORM_WIN32,
+        GLFW_PLATFORM_COCOA,
+        GLFW_PLATFORM_WAYLAND,
+        GLFW_PLATFORM_X11,
+        GLFW_PLATFORM_NULL
+    };
+
+    printf("GLFW platform: %s\n", get_platform_name(glfwGetPlatform()));
+    printf("GLFW supported platforms:\n");
+
+    for (size_t i = 0;  i < sizeof(platforms) / sizeof(platforms[0]);  i++)
+    {
+        if (glfwPlatformSupported(platforms[i]))
+            printf(" %s\n", get_platform_name(platforms[i]));
+    }
+}
+
 int main(int argc, char** argv)
 {
     int ch;
     bool list_extensions = false, list_layers = false;
 
     // These duplicate the defaults for each hint
+    int platform = GLFW_ANY_PLATFORM;
     int client_api = GLFW_OPENGL_API;
     int context_major = 1;
     int context_minor = 0;
@@ -360,7 +412,7 @@ int main(int argc, char** argv)
     bool cocoa_graphics_switching = false;
     bool disable_xcb_surface = false;
 
-    enum { CLIENT, CONTEXT, BEHAVIOR, DEBUG_CONTEXT, FORWARD, HELP,
+    enum { PLATFORM, CLIENT, CONTEXT, BEHAVIOR, DEBUG_CONTEXT, FORWARD, HELP,
            EXTENSIONS, LAYERS,
            MAJOR, MINOR, PROFILE, ROBUSTNESS, VERSION,
            REDBITS, GREENBITS, BLUEBITS, ALPHABITS, DEPTHBITS, STENCILBITS,
@@ -369,6 +421,7 @@ int main(int argc, char** argv)
            ANGLE_TYPE, GRAPHICS_SWITCHING, XCB_SURFACE };
     const struct option options[] =
     {
+        { "platform",           1, NULL, PLATFORM },
         { "behavior",           1, NULL, BEHAVIOR },
         { "client-api",         1, NULL, CLIENT },
         { "context-api",        1, NULL, CONTEXT },
@@ -408,6 +461,25 @@ int main(int argc, char** argv)
     {
         switch (ch)
         {
+            case PLATFORM:
+                if (strcasecmp(optarg, PLATFORM_NAME_ANY) == 0)
+                    platform = GLFW_ANY_PLATFORM;
+                else if (strcasecmp(optarg, PLATFORM_NAME_WIN32) == 0)
+                    platform = GLFW_PLATFORM_WIN32;
+                else if (strcasecmp(optarg, PLATFORM_NAME_COCOA) == 0)
+                    platform = GLFW_PLATFORM_COCOA;
+                else if (strcasecmp(optarg, PLATFORM_NAME_WL) == 0)
+                    platform = GLFW_PLATFORM_WAYLAND;
+                else if (strcasecmp(optarg, PLATFORM_NAME_X11) == 0)
+                    platform = GLFW_PLATFORM_X11;
+                else if (strcasecmp(optarg, PLATFORM_NAME_NULL) == 0)
+                    platform = GLFW_PLATFORM_NULL;
+                else
+                {
+                    usage();
+                    exit(EXIT_FAILURE);
+                }
+                break;
             case 'a':
             case CLIENT:
                 if (strcasecmp(optarg, API_NAME_OPENGL) == 0)
@@ -623,6 +695,8 @@ int main(int argc, char** argv)
 
     glfwSetErrorCallback(error_callback);
 
+    glfwInitHint(GLFW_PLATFORM, platform);
+
     glfwInitHint(GLFW_COCOA_MENUBAR, false);
 
     glfwInitHint(GLFW_ANGLE_PLATFORM_TYPE, angle_type);
@@ -632,6 +706,7 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
 
     print_version();
+    print_platform();
 
     glfwWindowHint(GLFW_VISIBLE, false);
 
@@ -954,14 +1029,17 @@ int main(int argc, char** argv)
             uint32_t qfp_count;
             vkGetPhysicalDeviceQueueFamilyProperties(pd[i], &qfp_count, NULL);
 
-            printf("Vulkan device queue family presentation support:\n");
-            for (uint32_t j = 0;  j < qfp_count;  j++)
+            if (re)
             {
-                printf(" %u: ", j);
-                if (glfwGetPhysicalDevicePresentationSupport(instance, pd[i], j))
-                    printf("supported\n");
-                else
-                    printf("no\n");
+                printf("Vulkan device queue family presentation support:\n");
+                for (uint32_t j = 0;  j < qfp_count;  j++)
+                {
+                    printf(" %u: ", j);
+                    if (glfwGetPhysicalDevicePresentationSupport(instance, pd[i], j))
+                        printf("supported\n");
+                    else
+                        printf("no\n");
+                }
             }
 
             if (list_extensions)

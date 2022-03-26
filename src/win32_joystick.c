@@ -561,7 +561,7 @@ void _glfwDetectJoystickDisconnectionWin32(void)
     {
         _GLFWjoystick* js = _glfw.joysticks + jid;
         if (js->present)
-            _glfwPlatformPollJoystick(js, _GLFW_POLL_PRESENCE);
+            _glfwPollJoystickWin32(js, _GLFW_POLL_PRESENCE);
     }
 }
 
@@ -570,11 +570,11 @@ void _glfwDetectJoystickDisconnectionWin32(void)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWbool _glfwPlatformInitJoysticks(void)
+GLFWbool _glfwInitJoysticksWin32(void)
 {
     if (_glfw.win32.dinput8.instance)
     {
-        if (FAILED(DirectInput8Create(GetModuleHandle(NULL),
+        if (FAILED(DirectInput8Create(_glfw.win32.instance,
                                       DIRECTINPUT_VERSION,
                                       &IID_IDirectInput8W,
                                       (void**) &_glfw.win32.dinput8.api,
@@ -590,7 +590,7 @@ GLFWbool _glfwPlatformInitJoysticks(void)
     return GLFW_TRUE;
 }
 
-void _glfwPlatformTerminateJoysticks(void)
+void _glfwTerminateJoysticksWin32(void)
 {
     int jid;
 
@@ -601,7 +601,7 @@ void _glfwPlatformTerminateJoysticks(void)
         IDirectInput8_Release(_glfw.win32.dinput8.api);
 }
 
-int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
+int _glfwPollJoystickWin32(_GLFWjoystick* js, int mode)
 {
     if (js->win32.device)
     {
@@ -740,7 +740,12 @@ int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
     return GLFW_TRUE;
 }
 
-void _glfwPlatformUpdateGamepadGUID(char* guid)
+const char* _glfwGetMappingNameWin32(void)
+{
+    return "Windows";
+}
+
+void _glfwUpdateGamepadGUIDWin32(char* guid)
 {
     if (strcmp(guid + 20, "504944564944") == 0)
     {

@@ -533,59 +533,26 @@ static void maximizeWindowManually(_GLFWwindow* window)
                  SWP_NOACTIVATE | SWP_NOZORDER | SWP_FRAMECHANGED);
 }
 
-// Window callback function (handles window messages)
+// Window procedure for user-created windows
 //
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     _GLFWwindow* window = GetPropW(hWnd, L"GLFW");
     if (!window)
     {
-        // This is the message handling for the hidden helper window
-        // and for a regular window during its initial creation
-
-        switch (uMsg)
+        if (uMsg == WM_NCCREATE)
         {
-            case WM_NCCREATE:
+            if (_glfwIsWindows10Version1607OrGreaterWin32())
             {
-                if (_glfwIsWindows10Version1607OrGreaterWin32())
-                {
-                    const CREATESTRUCTW* cs = (const CREATESTRUCTW*) lParam;
-                    const _GLFWwndconfig* wndconfig = cs->lpCreateParams;
+                const CREATESTRUCTW* cs = (const CREATESTRUCTW*) lParam;
+                const _GLFWwndconfig* wndconfig = cs->lpCreateParams;
 
-                    // On per-monitor DPI aware V1 systems, only enable
-                    // non-client scaling for windows that scale the client area
-                    // We need WM_GETDPISCALEDSIZE from V2 to keep the client
-                    // area static when the non-client area is scaled
-                    if (wndconfig && wndconfig->scaleToMonitor)
-                        EnableNonClientDpiScaling(hWnd);
-                }
-
-                break;
-            }
-
-            case WM_DISPLAYCHANGE:
-                _glfwPollMonitorsWin32();
-                break;
-
-            case WM_DEVICECHANGE:
-            {
-                if (!_glfw.joysticksInitialized)
-                    break;
-
-                if (wParam == DBT_DEVICEARRIVAL)
-                {
-                    DEV_BROADCAST_HDR* dbh = (DEV_BROADCAST_HDR*) lParam;
-                    if (dbh && dbh->dbch_devicetype == DBT_DEVTYP_DEVICEINTERFACE)
-                        _glfwDetectJoystickConnectionWin32();
-                }
-                else if (wParam == DBT_DEVICEREMOVECOMPLETE)
-                {
-                    DEV_BROADCAST_HDR* dbh = (DEV_BROADCAST_HDR*) lParam;
-                    if (dbh && dbh->dbch_devicetype == DBT_DEVTYP_DEVICEINTERFACE)
-                        _glfwDetectJoystickDisconnectionWin32();
-                }
-
-                break;
+                // On per-monitor DPI aware V1 systems, only enable
+                // non-client scaling for windows that scale the client area
+                // We need WM_GETDPISCALEDSIZE from V2 to keep the client
+                // area static when the non-client area is scaled
+                if (wndconfig && wndconfig->scaleToMonitor)
+                    EnableNonClientDpiScaling(hWnd);
             }
         }
 

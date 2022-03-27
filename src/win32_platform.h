@@ -447,6 +447,7 @@ typedef struct _GLFWlibraryWin32
     char*               clipboardString;
     short int           keycodes[512];
     short int           scancodes[GLFW_KEY_LAST + 1];
+    short int           vkkeycodes[256];
     char                keynames[GLFW_KEY_LAST + 1][5];
     // Where to place the cursor when re-enabled
     double              restoreCursorPosX, restoreCursorPosY;

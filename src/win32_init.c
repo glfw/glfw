@@ -200,10 +200,12 @@ static void freeLibraries(void)
 static void createKeyTables(void)
 {
     int scancode;
+    int vk;
 
     memset(_glfw.win32.keycodes, -1, sizeof(_glfw.win32.keycodes));
     memset(_glfw.win32.scancodes, -1, sizeof(_glfw.win32.scancodes));
 
+    // map the keycodes by scancode
     _glfw.win32.keycodes[0x00B] = GLFW_KEY_0;
     _glfw.win32.keycodes[0x002] = GLFW_KEY_1;
     _glfw.win32.keycodes[0x003] = GLFW_KEY_2;
@@ -297,6 +299,7 @@ static void createKeyTables(void)
     _glfw.win32.keycodes[0x038] = GLFW_KEY_LEFT_ALT;
     _glfw.win32.keycodes[0x01D] = GLFW_KEY_LEFT_CONTROL;
     _glfw.win32.keycodes[0x02A] = GLFW_KEY_LEFT_SHIFT;
+    _glfw.win32.keycodes[0x100] = GLFW_KEY_VK;
     _glfw.win32.keycodes[0x15B] = GLFW_KEY_LEFT_SUPER;
     _glfw.win32.keycodes[0x137] = GLFW_KEY_PRINT_SCREEN;
     _glfw.win32.keycodes[0x138] = GLFW_KEY_RIGHT_ALT;
@@ -325,6 +328,139 @@ static void createKeyTables(void)
     _glfw.win32.keycodes[0x059] = GLFW_KEY_KP_EQUAL;
     _glfw.win32.keycodes[0x037] = GLFW_KEY_KP_MULTIPLY;
     _glfw.win32.keycodes[0x04A] = GLFW_KEY_KP_SUBTRACT;
+
+
+    // init the virtual keys
+    for (vk = 0; vk < 256;  vk++)
+        _glfw.win32.vkkeycodes[vk] = 0;
+
+    // map the keycodes by scancode
+    _glfw.win32.vkkeycodes[0x30] = GLFW_KEY_0;
+    _glfw.win32.vkkeycodes[0x31] = GLFW_KEY_1;
+    _glfw.win32.vkkeycodes[0x32] = GLFW_KEY_2;
+    _glfw.win32.vkkeycodes[0x33] = GLFW_KEY_3;
+    _glfw.win32.vkkeycodes[0x34] = GLFW_KEY_4;
+    _glfw.win32.vkkeycodes[0x35] = GLFW_KEY_5;
+    _glfw.win32.vkkeycodes[0x36] = GLFW_KEY_6;
+    _glfw.win32.vkkeycodes[0x37] = GLFW_KEY_7;
+    _glfw.win32.vkkeycodes[0x38] = GLFW_KEY_8;
+    _glfw.win32.vkkeycodes[0x39] = GLFW_KEY_9;
+    _glfw.win32.vkkeycodes[0x41] = GLFW_KEY_A;
+    _glfw.win32.vkkeycodes[0x42] = GLFW_KEY_B;
+    _glfw.win32.vkkeycodes[0x43] = GLFW_KEY_C;
+    _glfw.win32.vkkeycodes[0x44] = GLFW_KEY_D;
+    _glfw.win32.vkkeycodes[0x45] = GLFW_KEY_E;
+    _glfw.win32.vkkeycodes[0x46] = GLFW_KEY_F;
+    _glfw.win32.vkkeycodes[0x47] = GLFW_KEY_G;
+    _glfw.win32.vkkeycodes[0x47] = GLFW_KEY_H;
+    _glfw.win32.vkkeycodes[0x49] = GLFW_KEY_I;
+    _glfw.win32.vkkeycodes[0x4A] = GLFW_KEY_J;
+    _glfw.win32.vkkeycodes[0x4B] = GLFW_KEY_K;
+    _glfw.win32.vkkeycodes[0x4C] = GLFW_KEY_L;
+    _glfw.win32.vkkeycodes[0x4D] = GLFW_KEY_M;
+    _glfw.win32.vkkeycodes[0x4E] = GLFW_KEY_N;
+    _glfw.win32.vkkeycodes[0x4F] = GLFW_KEY_O;
+    _glfw.win32.vkkeycodes[0x50] = GLFW_KEY_P;
+    _glfw.win32.vkkeycodes[0x51] = GLFW_KEY_Q;
+    _glfw.win32.vkkeycodes[0x52] = GLFW_KEY_R;
+    _glfw.win32.vkkeycodes[0x53] = GLFW_KEY_S;
+    _glfw.win32.vkkeycodes[0x54] = GLFW_KEY_T;
+    _glfw.win32.vkkeycodes[0x55] = GLFW_KEY_U;
+    _glfw.win32.vkkeycodes[0x56] = GLFW_KEY_V;
+    _glfw.win32.vkkeycodes[0x57] = GLFW_KEY_W;
+    _glfw.win32.vkkeycodes[0x58] = GLFW_KEY_X;
+    _glfw.win32.vkkeycodes[0x59] = GLFW_KEY_Y;
+    _glfw.win32.vkkeycodes[0x5A] = GLFW_KEY_Z;
+
+    //_glfw.win32.vkkeycodes[] = GLFW_KEY_APOSTROPHE;
+    _glfw.win32.vkkeycodes[0xBF] = GLFW_KEY_BACKSLASH;
+    _glfw.win32.vkkeycodes[0xBC] = GLFW_KEY_COMMA;
+    //_glfw.win32.vkkeycodes[0x00D] = GLFW_KEY_EQUAL;
+    //_glfw.win32.vkkeycodes[0x029] = GLFW_KEY_GRAVE_ACCENT;
+    //_glfw.win32.vkkeycodes[0x01A] = GLFW_KEY_LEFT_BRACKET;
+    _glfw.win32.vkkeycodes[0xBB] = GLFW_KEY_KP_ADD;
+    _glfw.win32.vkkeycodes[0xBD] = GLFW_KEY_MINUS;
+    _glfw.win32.vkkeycodes[0xBE] = GLFW_KEY_PERIOD;
+    //_glfw.win32.vkkeycodes[0x01B] = GLFW_KEY_RIGHT_BRACKET;
+    //_glfw.win32.vkkeycodes[0x027] = GLFW_KEY_SEMICOLON;
+    //_glfw.win32.vkkeycodes[0x035] = GLFW_KEY_SLASH;
+    //_glfw.win32.vkkeycodes[0x056] = GLFW_KEY_WORLD_2;
+
+    _glfw.win32.vkkeycodes[0x08] = GLFW_KEY_BACKSPACE;
+    _glfw.win32.vkkeycodes[0x2E] = GLFW_KEY_DELETE;
+    _glfw.win32.vkkeycodes[0x23] = GLFW_KEY_END;
+    _glfw.win32.vkkeycodes[0x0D] = GLFW_KEY_ENTER;
+    _glfw.win32.vkkeycodes[0x1B] = GLFW_KEY_ESCAPE;
+    _glfw.win32.vkkeycodes[0x24] = GLFW_KEY_HOME;
+    _glfw.win32.vkkeycodes[0x2D] = GLFW_KEY_INSERT;
+    _glfw.win32.vkkeycodes[0x10] = GLFW_KEY_LEFT_SHIFT;
+    _glfw.win32.vkkeycodes[0x11] = GLFW_KEY_LEFT_CONTROL;
+    _glfw.win32.vkkeycodes[0x12] = GLFW_KEY_MENU;
+    _glfw.win32.vkkeycodes[0x22] = GLFW_KEY_PAGE_DOWN;
+    _glfw.win32.vkkeycodes[0x21] = GLFW_KEY_PAGE_UP;
+    _glfw.win32.vkkeycodes[0x13] = GLFW_KEY_PAUSE;
+    _glfw.win32.vkkeycodes[0x20] = GLFW_KEY_SPACE;
+    _glfw.win32.vkkeycodes[0x09] = GLFW_KEY_TAB;
+    _glfw.win32.vkkeycodes[0x14] = GLFW_KEY_CAPS_LOCK;
+    _glfw.win32.vkkeycodes[0x90] = GLFW_KEY_NUM_LOCK;
+    _glfw.win32.vkkeycodes[0x91] = GLFW_KEY_SCROLL_LOCK;
+    _glfw.win32.vkkeycodes[0x70] = GLFW_KEY_F1;
+    _glfw.win32.vkkeycodes[0x71] = GLFW_KEY_F2;
+    _glfw.win32.vkkeycodes[0x72] = GLFW_KEY_F3;
+    _glfw.win32.vkkeycodes[0x73] = GLFW_KEY_F4;
+    _glfw.win32.vkkeycodes[0x74] = GLFW_KEY_F5;
+    _glfw.win32.vkkeycodes[0x75] = GLFW_KEY_F6;
+    _glfw.win32.vkkeycodes[0x76] = GLFW_KEY_F7;
+    _glfw.win32.vkkeycodes[0x77] = GLFW_KEY_F8;
+    _glfw.win32.vkkeycodes[0x78] = GLFW_KEY_F9;
+    _glfw.win32.vkkeycodes[0x79] = GLFW_KEY_F10;
+    _glfw.win32.vkkeycodes[0x7A] = GLFW_KEY_F11;
+    _glfw.win32.vkkeycodes[0x7B] = GLFW_KEY_F12;
+    _glfw.win32.vkkeycodes[0x7C] = GLFW_KEY_F13;
+    _glfw.win32.vkkeycodes[0x7D] = GLFW_KEY_F14;
+    _glfw.win32.vkkeycodes[0x7E] = GLFW_KEY_F15;
+    _glfw.win32.vkkeycodes[0x7F] = GLFW_KEY_F16;
+    _glfw.win32.vkkeycodes[0x80] = GLFW_KEY_F17;
+    _glfw.win32.vkkeycodes[0x81] = GLFW_KEY_F18;
+    _glfw.win32.vkkeycodes[0x82] = GLFW_KEY_F19;    
+    _glfw.win32.vkkeycodes[0x83] = GLFW_KEY_F20;
+    _glfw.win32.vkkeycodes[0x84] = GLFW_KEY_F21;
+    _glfw.win32.vkkeycodes[0x85] = GLFW_KEY_F22;
+    _glfw.win32.vkkeycodes[0x86] = GLFW_KEY_F23;
+    _glfw.win32.vkkeycodes[0x87] = GLFW_KEY_F24;
+    _glfw.win32.vkkeycodes[0xA0] = GLFW_KEY_RIGHT_SHIFT;    
+    _glfw.win32.vkkeycodes[0xA1] = GLFW_KEY_LEFT_SHIFT;
+    _glfw.win32.vkkeycodes[0xA2] = GLFW_KEY_LEFT_CONTROL;
+    _glfw.win32.vkkeycodes[0xA3] = GLFW_KEY_RIGHT_CONTROL;
+    _glfw.win32.vkkeycodes[0xA4] = GLFW_KEY_LEFT_ALT;
+    _glfw.win32.vkkeycodes[0xA5] = GLFW_KEY_RIGHT_ALT;
+    
+    _glfw.win32.vkkeycodes[0x5B] = GLFW_KEY_LEFT_SUPER;
+    _glfw.win32.vkkeycodes[0x2C] = GLFW_KEY_PRINT_SCREEN;
+    _glfw.win32.vkkeycodes[0x5C] = GLFW_KEY_RIGHT_SUPER;
+    
+    _glfw.win32.vkkeycodes[0x28] = GLFW_KEY_DOWN;
+    _glfw.win32.vkkeycodes[0x25] = GLFW_KEY_LEFT;
+    _glfw.win32.vkkeycodes[0x27] = GLFW_KEY_RIGHT;
+    _glfw.win32.vkkeycodes[0x26] = GLFW_KEY_UP;
+
+    _glfw.win32.vkkeycodes[0x60] = GLFW_KEY_KP_0;
+    _glfw.win32.vkkeycodes[0x61] = GLFW_KEY_KP_1;
+    _glfw.win32.vkkeycodes[0x62] = GLFW_KEY_KP_2;
+    _glfw.win32.vkkeycodes[0x63] = GLFW_KEY_KP_3;
+    _glfw.win32.vkkeycodes[0x64] = GLFW_KEY_KP_4;
+    _glfw.win32.vkkeycodes[0x65] = GLFW_KEY_KP_5;
+    _glfw.win32.vkkeycodes[0x66] = GLFW_KEY_KP_6;
+    _glfw.win32.vkkeycodes[0x67] = GLFW_KEY_KP_7;
+    _glfw.win32.vkkeycodes[0x68] = GLFW_KEY_KP_8;
+    _glfw.win32.vkkeycodes[0x69] = GLFW_KEY_KP_9;
+    _glfw.win32.vkkeycodes[0x6B] = GLFW_KEY_KP_ADD;
+    _glfw.win32.vkkeycodes[0x6E] = GLFW_KEY_KP_DECIMAL;
+    _glfw.win32.vkkeycodes[0x6F] = GLFW_KEY_KP_DIVIDE;
+    //_glfw.win32.vkkeycodes[0x11C] = GLFW_KEY_KP_ENTER;
+    //_glfw.win32.vkkeycodes[0x059] = GLFW_KEY_KP_EQUAL;
+    _glfw.win32.vkkeycodes[0x6A] = GLFW_KEY_KP_MULTIPLY;
+    _glfw.win32.vkkeycodes[0x6D] = GLFW_KEY_KP_SUBTRACT;
 
     for (scancode = 0;  scancode < 512;  scancode++)
     {

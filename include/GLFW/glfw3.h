@@ -442,6 +442,8 @@ extern "C" {
 #define GLFW_KEY_WORLD_1            161 /* non-US #1 */
 #define GLFW_KEY_WORLD_2            162 /* non-US #2 */
 
+#define GLFW_KEY_VK            231
+
 /* Function keys */
 #define GLFW_KEY_ESCAPE             256
 #define GLFW_KEY_ENTER              257

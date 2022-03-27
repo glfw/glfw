@@ -37,6 +37,8 @@
 #include <windowsx.h>
 #include <shellapi.h>
 
+#include <stdio.h>
+
 // Returns the window style for the specified window
 //
 static DWORD getWindowStyle(const _GLFWwindow* window)
@@ -688,6 +690,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
         case WM_UNICHAR:
         {
+            printf("char event: (lParam=%d, wParam=%d)\n", lParam, wParam);
+
             if (wParam == UNICODE_NOCHAR)
             {
                 // WM_UNICHAR is not sent by Windows, but is sent by some
@@ -709,27 +713,41 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             const int action = (HIWORD(lParam) & KF_UP) ? GLFW_RELEASE : GLFW_PRESS;
             const int mods = getKeyMods();
 
+            //printf("key event1: (lParam=%d, wParam=%d)\n", lParam, wParam);
+
             scancode = (HIWORD(lParam) & (KF_EXTENDED | 0xff));
+            //printf("key event2: (lParam=%d, wParam=%d, sc=%d)\n", lParam, wParam, scancode);
             if (!scancode)
             {
                 // NOTE: Some synthetic key messages have a scancode of zero
                 // HACK: Map the virtual key back to a usable scancode
                 scancode = MapVirtualKeyW((UINT) wParam, MAPVK_VK_TO_VSC);
+                //printf("key event3: (lParam=%d, wParam=%d, sc=%d)\n", lParam, wParam, scancode);
             }
+            //printf("key event4: (lParam=%d, wParam=%d, sc=%d)\n", lParam, wParam, scancode);
 
             // HACK: Alt+PrtSc has a different scancode than just PrtSc
-            if (scancode == 0x54)
+            if (scancode == 0x54) {
                 scancode = 0x137;
+                //printf("key event5: (lParam=%d, wParam=%d, sc=%d)\n", lParam, wParam, scancode);
+            }
 
             // HACK: Ctrl+Pause has a different scancode than just Pause
-            if (scancode == 0x146)
+            if (scancode == 0x146) {
                 scancode = 0x45;
+                //printf("key event6: (lParam=%d, wParam=%d, sc=%d)\n", lParam, wParam, scancode);
+            }
 
             // HACK: CJK IME sets the extended bit for right Shift
             if (scancode == 0x136)
                 scancode = 0x36;
 
             key = _glfw.win32.keycodes[scancode];
+            if(key == GLFW_KEY_VK) {
+                key = _glfw.win32.vkkeycodes[wParam];
+            }
+
+            //printf("key event7: (lParam=%d, wParam=%d, key=%d, sc=%d)\n", lParam, wParam, key, scancode);
 
             // The Ctrl keys require special handling
             if (wParam == VK_CONTROL)
@@ -790,8 +808,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                 _glfwInputKey(window, key, scancode, GLFW_PRESS, mods);
                 _glfwInputKey(window, key, scancode, GLFW_RELEASE, mods);
             }
-            else
+            else {
+                //printf("_glfwInputKey event: (lParam=%d, wParam=%d, key=%d)\n", lParam, wParam, key);
                 _glfwInputKey(window, key, scancode, action, mods);
+            }
 
             break;
         }

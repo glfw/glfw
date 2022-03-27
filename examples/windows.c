@@ -37,6 +37,8 @@ int main(int argc, char** argv)
     const char* description;
     GLFWwindow* windows[4];
 
+    printf("testing windows example: %s", "test");
+
     if (!glfwInit())
     {
         glfwGetError(&description);

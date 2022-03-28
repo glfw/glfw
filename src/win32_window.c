@@ -690,7 +690,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
         case WM_UNICHAR:
         {
-            printf("char event: (lParam=%d, wParam=%d)\n", lParam, wParam);
+            //printf("char event: (lParam=%d, wParam=%d)\n", lParam, wParam);
 
             if (wParam == UNICODE_NOCHAR)
             {

@@ -506,3 +506,6 @@ void _glfwSetGammaRampWayland(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 void _glfwAddOutputWayland(uint32_t name, uint32_t version);
 GLFWbool _glfwInputTextWayland(_GLFWwindow* window, uint32_t scancode);
 
+void _glfwAddSeatListenerWayland(struct wl_seat* seat);
+void _glfwAddDataDeviceListenerWayland(struct wl_data_device* device);
+

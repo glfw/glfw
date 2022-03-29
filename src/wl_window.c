@@ -975,6 +975,70 @@ static void handleEvents(double* timeout)
     }
 }
 
+// Reads the specified data offer as the specified MIME type
+//
+static char* readDataOfferAsString(struct wl_data_offer* offer, const char* mimeType)
+{
+    int fds[2];
+
+    if (pipe2(fds, O_CLOEXEC) == -1)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to create pipe for data offer: %s",
+                        strerror(errno));
+        return NULL;
+    }
+
+    wl_data_offer_receive(offer, mimeType, fds[1]);
+    flushDisplay();
+    close(fds[1]);
+
+    char* string = NULL;
+    size_t size = 0;
+    size_t length = 0;
+
+    for (;;)
+    {
+        const size_t readSize = 4096;
+        const size_t requiredSize = length + readSize + 1;
+        if (requiredSize > size)
+        {
+            char* longer = realloc(string, requiredSize);
+            if (!longer)
+            {
+                _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
+                close(fds[0]);
+                return NULL;
+            }
+
+            string = longer;
+            size = requiredSize;
+        }
+
+        const ssize_t result = read(fds[0], string + length, readSize);
+        if (result == 0)
+            break;
+        else if (result == -1)
+        {
+            if (errno == EINTR)
+                continue;
+
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Wayland: Failed to read from data offer pipe: %s",
+                            strerror(errno));
+            close(fds[0]);
+            return NULL;
+        }
+
+        length += result;
+    }
+
+    close(fds[0]);
+
+    string[length] = '\0';
+    return string;
+}
+
 static _GLFWwindow* findWindowFromDecorationSurface(struct wl_surface* surface,
                                                     int* which)
 {
@@ -2562,23 +2626,15 @@ void _glfwPlatformSetClipboardString(const char* string)
         _glfw.wl.selectionSource = NULL;
     }
 
-    const size_t requiredSize = strlen(string) + 1;
-    if (requiredSize > _glfw.wl.clipboardSize)
+    char* copy = _glfw_strdup(string);
+    if (!copy)
     {
-        free(_glfw.wl.clipboardString);
-        _glfw.wl.clipboardString = calloc(requiredSize, 1);
-        if (!_glfw.wl.clipboardString)
-        {
-            _glfwInputError(GLFW_OUT_OF_MEMORY,
-                            "Wayland: Failed to allocate clipboard string");
-            return;
-        }
-
-        _glfw.wl.clipboardSize = requiredSize;
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
+        return;
     }
 
-    // The argument may be a substring of the clipboard string
-    memmove(_glfw.wl.clipboardString, string, requiredSize);
+    free(_glfw.wl.clipboardString);
+    _glfw.wl.clipboardString = copy;
 
     _glfw.wl.selectionSource =
         wl_data_device_manager_create_data_source(_glfw.wl.dataDeviceManager);
@@ -2609,66 +2665,9 @@ const char* _glfwPlatformGetClipboardString(void)
     if (_glfw.wl.selectionSource)
         return _glfw.wl.clipboardString;
 
-    int fds[2];
-
-    if (pipe2(fds, O_CLOEXEC) == -1)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Failed to create clipboard pipe: %s",
-                        strerror(errno));
-        return NULL;
-    }
-
-    wl_data_offer_receive(_glfw.wl.selectionOffer, "text/plain;charset=utf-8", fds[1]);
-
-    flushDisplay();
-    close(fds[1]);
-
-    size_t length = 0;
-
-    for (;;)
-    {
-        // Grow the clipboard if we need to paste something bigger, there is no
-        // shrink operation yet.
-        const size_t readSize = 4096;
-        const size_t requiredSize = length + readSize + 1;
-        if (requiredSize > _glfw.wl.clipboardSize)
-        {
-            char* string = realloc(_glfw.wl.clipboardString, requiredSize);
-            if (!string)
-            {
-                _glfwInputError(GLFW_OUT_OF_MEMORY,
-                                "Wayland: Failed to grow clipboard string");
-                close(fds[0]);
-                return NULL;
-            }
-
-            _glfw.wl.clipboardString = string;
-            _glfw.wl.clipboardSize = requiredSize;
-        }
-
-        // Then read from the fd to the clipboard, handling all known errors.
-        const ssize_t result = read(fds[0], _glfw.wl.clipboardString + length, readSize);
-        if (result == 0)
-            break;
-        else if (result == -1)
-        {
-            if (errno == EINTR)
-                continue;
-
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Wayland: Failed to read from clipboard pipe: %s",
-                            strerror(errno));
-            close(fds[0]);
-            return NULL;
-        }
-
-        length += result;
-    }
-
-    close(fds[0]);
-
-    _glfw.wl.clipboardString[length] = '\0';
+    free(_glfw.wl.clipboardString);
+    _glfw.wl.clipboardString =
+        readDataOfferAsString(_glfw.wl.selectionOffer, "text/plain;charset=utf-8");
     return _glfw.wl.clipboardString;
 }
 

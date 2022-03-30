@@ -165,6 +165,7 @@ typedef Status (* PFN_XSendEvent)(Display*,Window,Bool,long,XEvent*);
 typedef int (* PFN_XSetClassHint)(Display*,Window,XClassHint*);
 typedef XErrorHandler (* PFN_XSetErrorHandler)(XErrorHandler);
 typedef void (* PFN_XSetICFocus)(XIC);
+typedef char* (* PFN_XSetICValues)(XIC,...);
 typedef char* (* PFN_XSetIMValues)(XIM,...);
 typedef int (* PFN_XSetInputFocus)(Display*,Window,int,Time);
 typedef char* (* PFN_XSetLocaleModifiers)(const char*);
@@ -180,6 +181,7 @@ typedef int (* PFN_XUndefineCursor)(Display*,Window);
 typedef int (* PFN_XUngrabPointer)(Display*,Time);
 typedef int (* PFN_XUnmapWindow)(Display*,Window);
 typedef void (* PFN_XUnsetICFocus)(XIC);
+typedef XVaNestedList (* PFN_XVaCreateNestedList)(int,...);
 typedef VisualID (* PFN_XVisualIDFromVisual)(Visual*);
 typedef int (* PFN_XWarpPointer)(Display*,Window,Window,int,int,unsigned int,unsigned int,int,int);
 typedef void (* PFN_XkbFreeKeyboard)(XkbDescPtr,unsigned int,Bool);
@@ -191,6 +193,7 @@ typedef KeySym (* PFN_XkbKeycodeToKeysym)(Display*,KeyCode,int,int);
 typedef Bool (* PFN_XkbQueryExtension)(Display*,int*,int*,int*,int*,int*);
 typedef Bool (* PFN_XkbSelectEventDetails)(Display*,unsigned int,unsigned int,unsigned long,unsigned long);
 typedef Bool (* PFN_XkbSetDetectableAutoRepeat)(Display*,Bool,Bool*);
+typedef char* (* PFN_XmbResetIC)(XIC);
 typedef void (* PFN_XrmDestroyDatabase)(XrmDatabase);
 typedef Bool (* PFN_XrmGetResource)(XrmDatabase,const char*,const char*,char**,XrmValue*);
 typedef XrmDatabase (* PFN_XrmGetStringDatabase)(const char*);
@@ -265,6 +268,7 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XSetClassHint _glfw.x11.xlib.SetClassHint
 #define XSetErrorHandler _glfw.x11.xlib.SetErrorHandler
 #define XSetICFocus _glfw.x11.xlib.SetICFocus
+#define XSetICValues _glfw.x11.xlib.SetICValues
 #define XSetIMValues _glfw.x11.xlib.SetIMValues
 #define XSetInputFocus _glfw.x11.xlib.SetInputFocus
 #define XSetLocaleModifiers _glfw.x11.xlib.SetLocaleModifiers
@@ -280,6 +284,7 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XUngrabPointer _glfw.x11.xlib.UngrabPointer
 #define XUnmapWindow _glfw.x11.xlib.UnmapWindow
 #define XUnsetICFocus _glfw.x11.xlib.UnsetICFocus
+#define XVaCreateNestedList _glfw.x11.xlib.VaCreateNestedList
 #define XVisualIDFromVisual _glfw.x11.xlib.VisualIDFromVisual
 #define XWarpPointer _glfw.x11.xlib.WarpPointer
 #define XkbFreeKeyboard _glfw.x11.xkb.FreeKeyboard
@@ -291,6 +296,7 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XkbQueryExtension _glfw.x11.xkb.QueryExtension
 #define XkbSelectEventDetails _glfw.x11.xkb.SelectEventDetails
 #define XkbSetDetectableAutoRepeat _glfw.x11.xkb.SetDetectableAutoRepeat
+#define XmbResetIC _glfw.x11.xlib.mbResetIC
 #define XrmDestroyDatabase _glfw.x11.xrm.DestroyDatabase
 #define XrmGetResource _glfw.x11.xrm.GetResource
 #define XrmGetStringDatabase _glfw.x11.xrm.GetStringDatabase
@@ -721,6 +727,7 @@ typedef struct _GLFWlibraryX11
         PFN_XSetClassHint SetClassHint;
         PFN_XSetErrorHandler SetErrorHandler;
         PFN_XSetICFocus SetICFocus;
+        PFN_XSetICValues SetICValues;
         PFN_XSetIMValues SetIMValues;
         PFN_XSetInputFocus SetInputFocus;
         PFN_XSetLocaleModifiers SetLocaleModifiers;
@@ -736,9 +743,11 @@ typedef struct _GLFWlibraryX11
         PFN_XUngrabPointer UngrabPointer;
         PFN_XUnmapWindow UnmapWindow;
         PFN_XUnsetICFocus UnsetICFocus;
+        PFN_XVaCreateNestedList VaCreateNestedList;
         PFN_XVisualIDFromVisual VisualIDFromVisual;
         PFN_XWarpPointer WarpPointer;
         PFN_XUnregisterIMInstantiateCallback UnregisterIMInstantiateCallback;
+        PFN_XmbResetIC mbResetIC;
         PFN_Xutf8LookupString utf8LookupString;
         PFN_Xutf8SetWMProperties utf8SetWMProperties;
     } xlib;

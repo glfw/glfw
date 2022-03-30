@@ -20,6 +20,7 @@ jobs:
               run: |
                   sudo apt update
                   sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
+                  rustup default nightly
 
             - name: Configure static library
               run: cmake -S . -B build-static

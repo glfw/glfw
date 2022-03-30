@@ -2364,6 +2364,22 @@ GLFWAPI const char* glfwGetVersionString(void);
  */
 GLFWAPI int glfwGetError(const char** description);
 
+/*! @brief Returns the initialization state.
+*   This function returns whether the library has been initialized or not.
+*   @return `GLFW_TRUE` if initialized, or `GLFW_FALSE` otherwise.
+*
+*   @errors None.
+*   
+*   @remark This function may be called before @ref glfwInit.
+*
+*   @thread_safety This function may be called from any thread.
+*   
+*   @since Added in version 3.3.6
+*   
+*   @ingroup init
+*/
+GLFWAPI int glfwIsInitialized(void);
+
 /*! @brief Sets the error callback.
  *
  *  This function sets the error callback, which is called with an error code
@@ -2408,6 +2424,7 @@ GLFWAPI int glfwGetError(const char** description);
  *
  *  @ingroup init
  */
+
 GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun callback);
 
 /*! @brief Returns the currently selected platform.

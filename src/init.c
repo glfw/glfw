@@ -484,6 +484,11 @@ GLFWAPI int glfwGetError(const char** description)
     return code;
 }
 
+GLFWAPI int glfwIsInitialized(void)
+{
+    return _glfw.initialized;
+}
+
 GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun)
 {
     _GLFW_SWAP(GLFWerrorfun, _glfwErrorCallback, cbfun);

@@ -106,7 +106,8 @@ static void outputHandleScale(void* userData,
     monitor->wl.scale = factor;
 }
 
-static const struct wl_output_listener outputListener = {
+static const struct wl_output_listener outputListener =
+{
     outputHandleGeometry,
     outputHandleMode,
     outputHandleDone,

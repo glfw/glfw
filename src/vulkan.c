@@ -162,7 +162,7 @@ void _glfwTerminateVulkan(void)
 }
 
 const char* _glfwGetVulkanResultString(VkResult result)
-{
+{   
     switch (result)
     {
         case VK_SUCCESS:
@@ -177,6 +177,18 @@ const char* _glfwGetVulkanResultString(VkResult result)
             return "An event is unsignaled";
         case VK_INCOMPLETE:
             return "A return array was too small for the result";
+        case VK_SUBOPTIMAL_KHR:
+            return "A swapchain no longer matches the surface properties exactly, but can still be used to present to the surface successfully";
+        case VK_THREAD_IDLE_KHR:
+            return "A deferred operation is not complete but there is currently no work for this thread to do at the time of this call";
+        case VK_THREAD_DONE_KHR:
+            return "A deferred operation is not complete but there is no work remaining to assign to additional threads";
+        case VK_OPERATION_DEFERRED_KHR:
+            return "A deferred operation was requested and at least some of the work was deferred";
+        case VK_OPERATION_NOT_DEFERRED_KHR:
+            return "A deferred operation was requested and no work was deferred";
+        case VK_PIPELINE_COMPILE_REQUIRED:
+            return "A requested pipeline creation would have required compilation, but the application requested compilation to not be performed";
         case VK_ERROR_OUT_OF_HOST_MEMORY:
             return "A host memory allocation has failed";
         case VK_ERROR_OUT_OF_DEVICE_MEMORY:
@@ -194,25 +206,35 @@ const char* _glfwGetVulkanResultString(VkResult result)
         case VK_ERROR_FEATURE_NOT_PRESENT:
             return "A requested feature is not supported";
         case VK_ERROR_INCOMPATIBLE_DRIVER:
-            return "The requested version of Vulkan is not supported by the driver or is otherwise incompatible";
+            return "The requested version of Vulkan is not supported by the driver or is otherwise incompatible for implementation-specific reasons";
         case VK_ERROR_TOO_MANY_OBJECTS:
             return "Too many objects of the type have already been created";
         case VK_ERROR_FORMAT_NOT_SUPPORTED:
             return "A requested format is not supported on this device";
+        case VK_ERROR_FRAGMENTED_POOL:
+            return "A pool allocation has failed due to fragmentation of the pool's memory";
         case VK_ERROR_SURFACE_LOST_KHR:
             return "A surface is no longer available";
-        case VK_SUBOPTIMAL_KHR:
-            return "A swapchain no longer matches the surface properties exactly, but can still be used";
-        case VK_ERROR_OUT_OF_DATE_KHR:
-            return "A surface has changed in such a way that it is no longer compatible with the swapchain";
-        case VK_ERROR_INCOMPATIBLE_DISPLAY_KHR:
-            return "The display used by a swapchain does not use the same presentable image layout";
         case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
             return "The requested window is already connected to a VkSurfaceKHR, or to some other non-Vulkan API";
-        case VK_ERROR_VALIDATION_FAILED_EXT:
-            return "A validation layer found an error";
+        case VK_ERROR_OUT_OF_DATE_KHR:
+            return "A surface has changed in such a way that it is no longer compatible with the swapchain, and further presentation requests using the swapchain will fail";
+        case VK_ERROR_INCOMPATIBLE_DISPLAY_KHR:
+            return "The display used by a swapchain does not use the same presentable image layout, or is incompatible in a way that prevents sharing an image";
+        case VK_ERROR_INVALID_SHADER_NV:
+            return "One or more shaders failed to compile or link";
+        case VK_ERROR_OUT_OF_POOL_MEMORY_KHR:
+            return "A pool memory allocation has failed";
+        case VK_ERROR_INVALID_EXTERNAL_HANDLE_KHR:
+            return "A synchronization primitive returned an invalid external handle";
+        case VK_ERROR_FRAGMENTATION_EXT:
+            return "A descriptor pool creation has failed due to fragmentation";
+        case VK_ERROR_INVALID_DEVICE_ADDRESS_EXT:
+            return "A buffer creation failed because the requested address is not available";
+        case VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT:
+            return "A swapchain created with the full screen exclusive mode cannot be used to create another full screen exclusive swapchain";
         default:
-            return "ERROR: UNKNOWN VULKAN ERROR";
+            return "Unknown error";
     }
 }
 
@@ -225,6 +247,10 @@ GLFWAPI int glfwVulkanSupported(void)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
     return _glfwInitVulkan(_GLFW_FIND_LOADER);
+}
+
+GLFWAPI const char* glfwGetVulkanResultString(VkResult result){
+    return _glfwGetVulkanResultString(result);
 }
 
 GLFWAPI const char** glfwGetRequiredInstanceExtensions(uint32_t* count)

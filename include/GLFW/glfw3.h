@@ -6212,6 +6212,23 @@ GLFWAPI const char** glfwGetRequiredInstanceExtensions(uint32_t* count);
 
 #if defined(VK_VERSION_1_0)
 
+/*! @brief Returns the result as a string.
+ *
+ *  This function returns a string describing the specified error code.
+ *
+ *  @param[in] error The error code.
+ *  @return A static string describing the error.
+ *
+ *  @errors none
+ *
+ *  @thread_safety This function may be called from any thread.
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup vulkan
+ */
+GLFWAPI const char* glfwGetVulkanResultString(VkResult result);
+
 /*! @brief Returns the address of the specified Vulkan instance function.
  *
  *  This function returns the address of the specified Vulkan core or extension

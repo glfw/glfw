@@ -1,8 +1,7 @@
 //========================================================================
 // GLFW 3.4 POSIX - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2017 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2021 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -24,26 +23,29 @@
 //    distribution.
 //
 //========================================================================
+// It is fine to use C99 in this file because it will not be built with VS
+//========================================================================
 
-#include <pthread.h>
+#include "internal.h"
 
-#define GLFW_POSIX_TLS_STATE    _GLFWtlsPOSIX   posix;
-#define GLFW_POSIX_MUTEX_STATE  _GLFWmutexPOSIX posix;
+#include <dlfcn.h>
 
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW platform API                      //////
+//////////////////////////////////////////////////////////////////////////
 
-// POSIX-specific thread local storage data
-//
-typedef struct _GLFWtlsPOSIX
+void* _glfwPlatformLoadModule(const char* path)
 {
-    GLFWbool        allocated;
-    pthread_key_t   key;
-} _GLFWtlsPOSIX;
+    return dlopen(path, RTLD_LAZY | RTLD_LOCAL);
+}
 
-// POSIX-specific mutex data
-//
-typedef struct _GLFWmutexPOSIX
+void _glfwPlatformFreeModule(void* module)
 {
-    GLFWbool        allocated;
-    pthread_mutex_t handle;
-} _GLFWmutexPOSIX;
+    dlclose(module);
+}
+
+GLFWproc _glfwPlatformGetModuleSymbol(void* module, const char* name)
+{
+    return dlsym(module, name);
+}
 

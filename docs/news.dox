@@ -9,6 +9,7 @@
 
 @subsection features_34 New features in version 3.4
 
+
 @subsubsection context_user_34 Multiple window contexts
 
 GLFW now provides the ability to create multiple OpenGL and OpenGL ES
@@ -17,6 +18,15 @@ can be created using @ref glfwCreateUserContext,
 destroyed using @ref glfwDestroyUserContext, and managed with
 @ref glfwMakeUserContextCurrent and @ref glfwGetCurrentUserContext.
 For more information see the [user context](@ref context_user) documentation.
+
+
+@subsubsection runtime_platform_34 Runtime platform selection
+
+GLFW now supports being compiled for multiple backends and selecting between
+them at runtime with the @ref GLFW_PLATFORM init hint.  After initialization the
+selected platform can be queried with @ref glfwGetPlatform.  You can check if
+support for a given platform is compiled in with @ref glfwPlatformSupported.
+
 
 @subsubsection standard_cursors_34 More standard cursors
 
@@ -72,7 +82,23 @@ Alt-and-then-Space shortcuts.  This may be useful for more GUI-oriented
 applications.
 
 
-@subsection caveats_34 Caveats for version 3.4
+@subsection caveats Caveats for version 3.4
+
+@subsubsection native_34 Multiple sets of native access functions
+
+Because GLFW now supports runtime selection of platform (window system), a library binary
+may export native access functions for multiple platforms.  Starting with version 3.4 you
+must not assume that GLFW is running on a platform just because it exports native access
+functions for it.  After initialization you can query the selected platform with @ref
+glfwGetPlatform.
+
+
+@subsubsection version_string_34 Version string format has been changed
+
+Because GLFW now supports runtime selection of platform (window system), the version
+string returned by @ref glfwGetVersionString has been expanded.  It now contains the names
+of all APIs for all the platforms that the library binary supports.
+
 
 @subsubsection joysticks_34 Joystick support is initialized on demand
 
@@ -123,9 +149,38 @@ GLFW_TRANSPARENT_FRAMEBUFFER on Windows 7 if DWM transparency is off
 (the Transparency setting under Personalization > Window Color).
 
 
+@subsubsection emptyevents_34 Empty events on X11 no longer roundtrip to server
+
+Events posted with @ref glfwPostEmptyEvent now use a separate unnamed pipe
+instead of sending an X11 client event to the helper window.
+
+
 @subsection deprecations_34 Deprecations in version 3.4
 
 @subsection removals_34 Removals in 3.4
+
+@subsubsection vulkan_static_34 GLFW_VULKAN_STATIC CMake option has been removed
+
+This option was used to compile GLFW directly linked with the Vulkan loader, instead of
+using dynamic loading to get hold of `vkGetInstanceProcAddr` at initialization.  This is
+now done by calling the @ref glfwInitVulkanLoader function before initialization.
+
+If you need backward compatibility, this macro can still be defined for GLFW 3.4 and will
+have no effect.  The call to @ref glfwInitVulkanLoader can be conditionally enabled in
+your code by checking the @ref GLFW_VERSION_MAJOR and @ref GLFW_VERSION_MINOR macros.
+
+
+@subsubsection osmesa_option_34 GLFW_USE_OSMESA CMake option has been removed
+
+This option was used to compile GLFW for the Null platform.  The Null platform is now
+always supported.  To produce a library binary that only supports this platform, the way
+this CMake option used to do, you will instead need to disable the default platform for
+the target OS.  This means setting the @ref GLFW_BUILD_WIN32, @ref GLFW_BUILD_COCOA or
+@ref GLFW_BUILD_X11 CMake option to false.
+
+You can set all of them to false and the ones that don't apply for the target OS will be
+ignored.
+
 
 @subsubsection wl_shell_34 Support for the wl_shell protocol has been removed
 
@@ -139,6 +194,9 @@ then GLFW will fail to initialize.
 @subsubsection functions_34 New functions in version 3.4
 
  - @ref glfwInitAllocator
+ - @ref glfwGetPlatform
+ - @ref glfwPlatformSupported
+ - @ref glfwInitVulkanLoader
 
 
 @subsubsection types_34 New types in version 3.4
@@ -151,6 +209,14 @@ then GLFW will fail to initialize.
 
 @subsubsection constants_34 New constants in version 3.4
 
+ - @ref GLFW_PLATFORM
+ - @ref GLFW_ANY_PLATFORM
+ - @ref GLFW_PLATFORM_WIN32
+ - @ref GLFW_PLATFORM_COCOA
+ - @ref GLFW_PLATFORM_WAYLAND
+ - @ref GLFW_PLATFORM_X11
+ - @ref GLFW_PLATFORM_NULL
+ - @ref GLFW_PLATFORM_UNAVAILABLE
  - @ref GLFW_POINTING_HAND_CURSOR
  - @ref GLFW_RESIZE_EW_CURSOR
  - @ref GLFW_RESIZE_NS_CURSOR

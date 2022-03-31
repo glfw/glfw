@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 POSIX - www.glfw.org
+// GLFW 3.4 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2017 Camilla Löwy <elmindreda@glfw.org>
@@ -25,25 +25,24 @@
 //
 //========================================================================
 
-#include <pthread.h>
+#include <windows.h>
 
-#define GLFW_POSIX_TLS_STATE    _GLFWtlsPOSIX   posix;
-#define GLFW_POSIX_MUTEX_STATE  _GLFWmutexPOSIX posix;
+#define GLFW_WIN32_TLS_STATE            _GLFWtlsWin32     win32;
+#define GLFW_WIN32_MUTEX_STATE          _GLFWmutexWin32   win32;
 
-
-// POSIX-specific thread local storage data
+// Win32-specific thread local storage data
 //
-typedef struct _GLFWtlsPOSIX
+typedef struct _GLFWtlsWin32
 {
-    GLFWbool        allocated;
-    pthread_key_t   key;
-} _GLFWtlsPOSIX;
+    GLFWbool            allocated;
+    DWORD               index;
+} _GLFWtlsWin32;
 
-// POSIX-specific mutex data
+// Win32-specific mutex data
 //
-typedef struct _GLFWmutexPOSIX
+typedef struct _GLFWmutexWin32
 {
-    GLFWbool        allocated;
-    pthread_mutex_t handle;
-} _GLFWmutexPOSIX;
+    GLFWbool            allocated;
+    CRITICAL_SECTION    section;
+} _GLFWmutexWin32;
 

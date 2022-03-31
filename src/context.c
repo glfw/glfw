@@ -777,8 +777,7 @@ GLFWAPI GLFWusercontext* glfwCreateUserContext(GLFWwindow* handle)
         return NULL;
     }
 
-
-    context = _glfwPlatformCreateUserContext(window);
+    context = _glfw.platform.createUserContext(window);
 
     return (GLFWusercontext*)context;
 }

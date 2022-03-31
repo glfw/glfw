@@ -147,3 +147,5 @@ VkResult _glfwCreateWindowSurfaceNull(VkInstance instance, _GLFWwindow* window, 
 
 void _glfwPollMonitorsNull(void);
 
+_GLFWusercontext* _glfwCreateUserContextNull(_GLFWwindow* window);
+

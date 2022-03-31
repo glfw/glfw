@@ -62,7 +62,8 @@ static void wmBaseHandlePing(void* userData,
     xdg_wm_base_pong(wmBase, serial);
 }
 
-static const struct xdg_wm_base_listener wmBaseListener = {
+static const struct xdg_wm_base_listener wmBaseListener =
+{
     wmBaseHandlePing
 };
 
@@ -172,7 +173,8 @@ static void registryHandleGlobalRemove(void* userData,
 }
 
 
-static const struct wl_registry_listener registryListener = {
+static const struct wl_registry_listener registryListener =
+{
     registryHandleGlobal,
     registryHandleGlobalRemove
 };

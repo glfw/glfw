@@ -285,7 +285,8 @@ static void xdgDecorationHandleConfigure(void* userData,
         createDecorations(window);
 }
 
-static const struct zxdg_toplevel_decoration_v1_listener xdgDecorationListener = {
+static const struct zxdg_toplevel_decoration_v1_listener xdgDecorationListener =
+{
     xdgDecorationHandleConfigure,
 };
 
@@ -513,7 +514,8 @@ static void xdgToplevelHandleClose(void* userData,
     _glfwInputWindowCloseRequest(window);
 }
 
-static const struct xdg_toplevel_listener xdgToplevelListener = {
+static const struct xdg_toplevel_listener xdgToplevelListener =
+{
     xdgToplevelHandleConfigure,
     xdgToplevelHandleClose
 };
@@ -1175,7 +1177,8 @@ static void pointerHandleAxis(void* userData,
     _glfwInputScroll(window, x, y);
 }
 
-static const struct wl_pointer_listener pointerListener = {
+static const struct wl_pointer_listener pointerListener =
+{
     pointerHandleEnter,
     pointerHandleLeave,
     pointerHandleMotion,
@@ -1470,7 +1473,8 @@ static void keyboardHandleRepeatInfo(void* userData,
 }
 #endif
 
-static const struct wl_keyboard_listener keyboardListener = {
+static const struct wl_keyboard_listener keyboardListener =
+{
     keyboardHandleKeymap,
     keyboardHandleEnter,
     keyboardHandleLeave,
@@ -1514,7 +1518,8 @@ static void seatHandleName(void* userData,
 {
 }
 
-static const struct wl_seat_listener seatListener = {
+static const struct wl_seat_listener seatListener =
+{
     seatHandleCapabilities,
     seatHandleName,
 };
@@ -1535,7 +1540,8 @@ static void dataOfferHandleOffer(void* userData,
     }
 }
 
-static const struct wl_data_offer_listener dataOfferListener = {
+static const struct wl_data_offer_listener dataOfferListener =
+{
     dataOfferHandleOffer
 };
 
@@ -1625,7 +1631,8 @@ static void dataDeviceHandleSelection(void* userData,
     }
 }
 
-const struct wl_data_device_listener dataDeviceListener = {
+const struct wl_data_device_listener dataDeviceListener =
+{
     dataDeviceHandleDataOffer,
     dataDeviceHandleEnter,
     dataDeviceHandleLeave,
@@ -2271,7 +2278,8 @@ static void relativePointerHandleRelativeMotion(void* userData,
     _glfwInputCursorPos(window, xpos, ypos);
 }
 
-static const struct zwp_relative_pointer_v1_listener relativePointerListener = {
+static const struct zwp_relative_pointer_v1_listener relativePointerListener =
+{
     relativePointerHandleRelativeMotion
 };
 
@@ -2301,7 +2309,8 @@ static void lockedPointerHandleUnlocked(void* userData,
 {
 }
 
-static const struct zwp_locked_pointer_v1_listener lockedPointerListener = {
+static const struct zwp_locked_pointer_v1_listener lockedPointerListener =
+{
     lockedPointerHandleLocked,
     lockedPointerHandleUnlocked
 };
@@ -2468,7 +2477,8 @@ static void dataSourceHandleCancelled(void* userData,
     _glfw.wl.selectionSource = NULL;
 }
 
-static const struct wl_data_source_listener dataSourceListener = {
+static const struct wl_data_source_listener dataSourceListener =
+{
     dataSourceHandleTarget,
     dataSourceHandleSend,
     dataSourceHandleCancelled,

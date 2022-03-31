@@ -1707,6 +1707,8 @@ static void dataOfferHandleOffer(void* userData,
         {
             if (strcmp(mimeType, "text/plain;charset=utf-8") == 0)
                 _glfw.wl.offers[i].text_plain_utf8 = GLFW_TRUE;
+            else if (strcmp(mimeType, "text/uri-list") == 0)
+                _glfw.wl.offers[i].text_uri_list = GLFW_TRUE;
 
             break;
         }
@@ -1745,24 +1747,53 @@ static void dataDeviceHandleEnter(void* userData,
                                   wl_fixed_t y,
                                   struct wl_data_offer* offer)
 {
+    if (_glfw.wl.dragOffer)
+    {
+        wl_data_offer_destroy(_glfw.wl.dragOffer);
+        _glfw.wl.dragOffer = NULL;
+        _glfw.wl.dragFocus = NULL;
+    }
+
     for (unsigned int i = 0; i < _glfw.wl.offerCount; i++)
     {
         if (_glfw.wl.offers[i].offer == offer)
         {
+            _GLFWwindow* window = NULL;
+
+            if (surface)
+                window = wl_surface_get_user_data(surface);
+
+            if (window && _glfw.wl.offers[i].text_uri_list)
+            {
+                _glfw.wl.dragOffer = offer;
+                _glfw.wl.dragFocus = window;
+                _glfw.wl.dragSerial = serial;
+            }
+
             _glfw.wl.offers[i] = _glfw.wl.offers[_glfw.wl.offerCount - 1];
             _glfw.wl.offerCount--;
-
-            // We don't yet handle drag and drop
-            wl_data_offer_accept(offer, serial, NULL);
-            wl_data_offer_destroy(offer);
             break;
         }
+    }
+
+    if (_glfw.wl.dragOffer)
+        wl_data_offer_accept(offer, serial, "text/uri-list");
+    else
+    {
+        wl_data_offer_accept(offer, serial, NULL);
+        wl_data_offer_destroy(offer);
     }
 }
 
 static void dataDeviceHandleLeave(void* userData,
                                   struct wl_data_device* device)
 {
+    if (_glfw.wl.dragOffer)
+    {
+        wl_data_offer_destroy(_glfw.wl.dragOffer);
+        _glfw.wl.dragOffer = NULL;
+        _glfw.wl.dragFocus = NULL;
+    }
 }
 
 static void dataDeviceHandleMotion(void* userData,
@@ -1776,6 +1807,24 @@ static void dataDeviceHandleMotion(void* userData,
 static void dataDeviceHandleDrop(void* userData,
                                  struct wl_data_device* device)
 {
+    if (!_glfw.wl.dragOffer)
+        return;
+
+    char* string = readDataOfferAsString(_glfw.wl.dragOffer, "text/uri-list");
+    if (string)
+    {
+        int count;
+        char** paths = _glfwParseUriList(string, &count);
+        if (paths)
+            _glfwInputDrop(_glfw.wl.dragFocus, count, (const char**) paths);
+
+        for (int i = 0; i < count; i++)
+            free(paths[i]);
+
+        free(paths);
+    }
+
+    free(string);
 }
 
 static void dataDeviceHandleSelection(void* userData,

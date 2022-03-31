@@ -129,6 +129,7 @@ information on what to include when reporting a bug.
    match event scancode (#1993)
  - [Win32] Bugfix: Instance-local operations used executable instance (#469,#1296,#1395)
  - [Cocoa] Bugfix: A connected Apple AirPlay would emit a useless error (#1791)
+ - [Wayland] Added support for file path drop events (#2040)
  - [Wayland] Bugfix: `glfwSetClipboardString` would fail if set to result of
    `glfwGetClipboardString`
  - [Wayland] Bugfix: Data source creation error would cause double free at termination

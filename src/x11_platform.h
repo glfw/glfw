@@ -470,6 +470,7 @@ typedef struct _GLFWcontextGLX
 {
     GLXContext      handle;
     GLXWindow       window;
+    GLXFBConfig     fbconfig;
 } _GLFWcontextGLX;
 
 // GLX-specific global data
@@ -1009,4 +1010,4 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
                               Visual** visual, int* depth);
 
 _GLFWusercontext* _glfwCreateUserContextX11(_GLFWwindow* window);
-_GLFWusercontext* _glfwCreateUserContextWGL(_GLFWwindow* window);
+_GLFWusercontext* _glfwCreateUserContextGLX(_GLFWwindow* window);

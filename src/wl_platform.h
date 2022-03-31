@@ -498,3 +498,4 @@ void _glfwSetGammaRampWayland(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 void _glfwAddOutputWayland(uint32_t name, uint32_t version);
 GLFWbool _glfwInputTextWayland(_GLFWwindow* window, uint32_t scancode);
 
+_GLFWusercontext* _glfwCreateUserContextWayland(_GLFWwindow* window);

@@ -1860,7 +1860,7 @@ VkResult _glfwCreateWindowSurfaceWayland(VkInstance instance,
     return err;
 }
 
-_GLFWusercontext* _glfwPlatformCreateUserContext(_GLFWwindow* window)
+_GLFWusercontext* _glfwCreateUserContextWayland(_GLFWwindow* window)
 {
     if (window->context.egl.handle)
     {

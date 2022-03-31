@@ -223,6 +223,7 @@ typedef struct _GLFWofferWayland
 {
     struct wl_data_offer*       offer;
     GLFWbool                    text_plain_utf8;
+    GLFWbool                    text_uri_list;
 } _GLFWofferWayland;
 
 // Wayland-specific per-window data
@@ -299,6 +300,10 @@ typedef struct _GLFWlibraryWayland
 
     struct wl_data_offer*       selectionOffer;
     struct wl_data_source*      selectionSource;
+
+    struct wl_data_offer*       dragOffer;
+    _GLFWwindow*                dragFocus;
+    uint32_t                    dragSerial;
 
     int                         compositorVersion;
     int                         seatVersion;

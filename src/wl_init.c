@@ -714,6 +714,8 @@ void _glfwTerminateWayland(void)
         xdg_wm_base_destroy(_glfw.wl.wmBase);
     if (_glfw.wl.selectionOffer)
         wl_data_offer_destroy(_glfw.wl.selectionOffer);
+    if (_glfw.wl.dragOffer)
+        wl_data_offer_destroy(_glfw.wl.dragOffer);
     if (_glfw.wl.selectionSource)
         wl_data_source_destroy(_glfw.wl.selectionSource);
     if (_glfw.wl.dataDevice)

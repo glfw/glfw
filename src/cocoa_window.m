@@ -1928,7 +1928,7 @@ _GLFWusercontext* _glfwCreateUserContextCocoa(_GLFWwindow* window)
         return _glfwCreateUserContextOSMesa(window);
     }
 
-    return GLFW_FALSE;
+    return NULL;
 }
 
 

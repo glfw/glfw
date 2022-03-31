@@ -1871,7 +1871,7 @@ _GLFWusercontext* _glfwPlatformCreateUserContext(_GLFWwindow* window)
         return _glfwCreateUserContextOSMesa(window);
     }
 
-    return GLFW_FALSE;
+    return NULL;
 }
 
 //////////////////////////////////////////////////////////////////////////

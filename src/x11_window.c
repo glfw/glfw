@@ -3262,7 +3262,7 @@ _GLFWusercontext* _glfwCreateUserContextX11(_GLFWwindow* window)
         return _glfwCreateUserContextOSMesa(window);
     }
 
-    return GLFW_FALSE;
+    return NULL;
 }
 
 

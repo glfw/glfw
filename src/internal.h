@@ -187,6 +187,11 @@ typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGIPROC)(GLenum,GLuint);
 #define EGL_PLATFORM_ANGLE_TYPE_VULKAN_ANGLE 0x3450
 #define EGL_PLATFORM_ANGLE_TYPE_METAL_ANGLE 0x3489
 #define EGL_PLATFORM_ANGLE_NATIVE_PLATFORM_TYPE_ANGLE 0x348f
+#define EGL_CONTEXT_PRIORITY_LEVEL_IMG 0x3100
+#define EGL_CONTEXT_PRIORITY_HIGH_IMG 0x3101
+#define EGL_CONTEXT_PRIORITY_MEDIUM_IMG 0x3102
+#define EGL_CONTEXT_PRIORITY_LOW_IMG 0x3103
+#define EGL_CONTEXT_PRIORITY_REALTIME_NV 0x3357
 
 typedef int EGLint;
 typedef unsigned int EGLBoolean;
@@ -441,6 +446,7 @@ struct _GLFWctxconfig
     int           profile;
     int           robustness;
     int           release;
+    int           priority;
     _GLFWwindow*  share;
     struct {
         GLFWbool  offline;
@@ -810,6 +816,7 @@ struct _GLFWlibrary
         GLFWbool        ANGLE_platform_angle_d3d;
         GLFWbool        ANGLE_platform_angle_vulkan;
         GLFWbool        ANGLE_platform_angle_metal;
+        GLFWbool        IMG_context_priority;
 
         void*           handle;
 

@@ -205,6 +205,16 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: Content scale queries could fail silently (#1615)
  - [Win32] Bugfix: Content scales could have garbage values if monitor was recently
    disconnected (#1615)
+ - [Win32] Bugfix: A window created maximized and undecorated would cover the whole
+   monitor (#1806)
+ - [Win32] Bugfix: The default restored window position was lost when creating a maximized
+   window
+ - [Win32] Bugfix: `glfwMaximizeWindow` would make a hidden window visible
+ - [Win32] Bugfix: `Alt+PrtSc` would emit `GLFW_KEY_UNKNOWN` and a different
+   scancode than `PrtSc` (#1993)
+ - [Win32] Bugfix: `GLFW_KEY_PAUSE` scancode from `glfwGetKeyScancode` did not
+   match event scancode (#1993)
+ - [Win32] Bugfix: Instance-local operations used executable instance (#469,#1296,#1395)
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)
@@ -235,6 +245,7 @@ information on what to include when reporting a bug.
    a fraction of a second (#1962)
  - [Cocoa] Bugfix: `kIOMasterPortDefault` was deprecated in macOS 12.0 (#1980)
  - [Cocoa] Bugfix: `kUTTypeURL` was deprecated in macOS 12.0 (#2003)
+ - [Cocoa] Bugfix: A connected Apple AirPlay would emit a useless error (#1791)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -266,6 +277,14 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: Icon pixel format conversion worked only by accident, relying on
    undefined behavior (#1986)
  - [X11] Bugfix: Dynamic loading on OpenBSD failed due to soname differences
+ - [X11] Bugfix: Waiting for events would fail if file descriptor was too large
+   (#2024)
+ - [X11] Bugfix: Joystick events could lead to busy-waiting (#1872)
+ - [X11] Bugfix: `glfwWaitEvents*` did not continue for joystick events
+ - [X11] Bugfix: `glfwPostEmptyEvent` could be ignored due to race condition
+   (#379,#1281,#1285,#2033)
+ - [X11] Bugfix: Dynamic loading on NetBSD failed due to soname differences
+ - [X11] Bugfix: Left shift of int constant relied on undefined behavior (#1951)
  - [Wayland] Added dynamic loading of all Wayland libraries
  - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Removed support for `wl_shell` (#1443)
@@ -290,6 +309,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Full screen window creation did not ignore `GLFW_VISIBLE`
  - [Wayland] Bugfix: Some keys were reported as wrong key or `GLFW_KEY_UNKNOWN`
  - [Wayland] Bugfix: Text input did not repeat along with key repeat
+ - [Wayland] Bugfix: `glfwPostEmptyEvent` sometimes had no effect (#1520,#1521)
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)
@@ -305,6 +325,7 @@ information on what to include when reporting a bug.
    (#1380)
  - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
  - [EGL] Made it possible to query the `EGLConfig` that was chosen to create a given window via `glfwGetEGLConfig`
+ - [GLX] Bugfix: Context creation failed if GLX 1.4 was not exported by GLX library
 
 
 ## Contact

@@ -574,7 +574,7 @@ GLFWbool _glfwInitJoysticksWin32(void)
 {
     if (_glfw.win32.dinput8.instance)
     {
-        if (FAILED(DirectInput8Create(GetModuleHandle(NULL),
+        if (FAILED(DirectInput8Create(_glfw.win32.instance,
                                       DIRECTINPUT_VERSION,
                                       &IID_IDirectInput8W,
                                       (void**) &_glfw.win32.dinput8.api,

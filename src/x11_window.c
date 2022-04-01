@@ -32,7 +32,7 @@
 #include <X11/cursorfont.h>
 #include <X11/Xmd.h>
 
-#include <sys/select.h>
+#include <poll.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -56,50 +56,79 @@
 
 #define _GLFW_XDND_VERSION 5
 
-
-// Wait for data to arrive using select
+// Wait for event data to arrive on the X11 display socket
 // This avoids blocking other threads via the per-display Xlib lock that also
 // covers GLX functions
 //
-static GLFWbool waitForEvent(double* timeout)
+static GLFWbool waitForX11Event(double* timeout)
 {
-    fd_set fds;
-    const int fd = ConnectionNumber(_glfw.x11.display);
-    int count = fd + 1;
+    struct pollfd fd = { ConnectionNumber(_glfw.x11.display), POLLIN };
+
+    while (!XPending(_glfw.x11.display))
+    {
+        if (!_glfwPollPOSIX(&fd, 1, timeout))
+            return GLFW_FALSE;
+    }
+
+    return GLFW_TRUE;
+}
+
+// Wait for event data to arrive on any event file descriptor
+// This avoids blocking other threads via the per-display Xlib lock that also
+// covers GLX functions
+//
+static GLFWbool waitForAnyEvent(double* timeout)
+{
+    nfds_t count = 2;
+    struct pollfd fds[3] =
+    {
+        { ConnectionNumber(_glfw.x11.display), POLLIN },
+        { _glfw.x11.emptyEventPipe[0], POLLIN }
+    };
 
 #if defined(__linux__)
-    if (_glfw.linjs.inotify > fd)
-        count = _glfw.linjs.inotify + 1;
+    if (_glfw.joysticksInitialized)
+        fds[count++] = (struct pollfd) { _glfw.linjs.inotify, POLLIN };
 #endif
+
+    while (!XPending(_glfw.x11.display))
+    {
+        if (!_glfwPollPOSIX(fds, count, timeout))
+            return GLFW_FALSE;
+
+        for (int i = 1; i < count; i++)
+        {
+            if (fds[i].revents & POLLIN)
+                return GLFW_TRUE;
+        }
+    }
+
+    return GLFW_TRUE;
+}
+
+// Writes a byte to the empty event pipe
+//
+static void writeEmptyEvent(void)
+{
     for (;;)
     {
-        FD_ZERO(&fds);
-        FD_SET(fd, &fds);
-#if defined(__linux__)
-        if (_glfw.linjs.inotify > 0)
-            FD_SET(_glfw.linjs.inotify, &fds);
-#endif
+        const char byte = 0;
+        const int result = write(_glfw.x11.emptyEventPipe[1], &byte, 1);
+        if (result == 1 || (result == -1 && errno != EINTR))
+            break;
+    }
+}
 
-        if (timeout)
-        {
-            const long seconds = (long) *timeout;
-            const long microseconds = (long) ((*timeout - seconds) * 1e6);
-            struct timeval tv = { seconds, microseconds };
-            const uint64_t base = _glfwPlatformGetTimerValue();
-
-            const int result = select(count, &fds, NULL, NULL, &tv);
-            const int error = errno;
-
-            *timeout -= (_glfwPlatformGetTimerValue() - base) /
-                (double) _glfwPlatformGetTimerFrequency();
-
-            if (result > 0)
-                return GLFW_TRUE;
-            if ((result == -1 && error == EINTR) || *timeout <= 0.0)
-                return GLFW_FALSE;
-        }
-        else if (select(count, &fds, NULL, NULL, NULL) != -1 || errno != EINTR)
-            return GLFW_TRUE;
+// Drains available data from the empty event pipe
+//
+static void drainEmptyEvents(void)
+{
+    for (;;)
+    {
+        char dummy[64];
+        const int result = read(_glfw.x11.emptyEventPipe[0], dummy, sizeof(dummy));
+        if (result == -1 && errno != EINTR)
+            break;
     }
 }
 
@@ -116,7 +145,7 @@ static GLFWbool waitForVisibilityNotify(_GLFWwindow* window)
                                    VisibilityNotify,
                                    &dummy))
     {
-        if (!waitForEvent(&timeout))
+        if (!waitForX11Event(&timeout))
             return GLFW_FALSE;
     }
 
@@ -958,7 +987,7 @@ static const char* getSelectionString(Atom selection)
                                        SelectionNotify,
                                        &notification))
         {
-            waitForEvent(NULL);
+            waitForX11Event(NULL);
         }
 
         if (notification.xselection.property == None)
@@ -994,7 +1023,7 @@ static const char* getSelectionString(Atom selection)
                                       isSelPropNewValueNotify,
                                       (XPointer) &notification))
                 {
-                    waitForEvent(NULL);
+                    waitForX11Event(NULL);
                 }
 
                 XFree(data);
@@ -1238,7 +1267,7 @@ static void processEvent(XEvent *event)
                 //       (the server never sends a timestamp of zero)
                 // NOTE: Timestamp difference is compared to handle wrap-around
                 Time diff = event->xkey.time - window->x11.keyPressTimes[keycode];
-                if (diff == event->xkey.time || (diff > 0 && diff < (1 << 31)))
+                if (diff == event->xkey.time || (diff > 0 && diff < ((Time)1 << 31)))
                 {
                     if (keycode)
                         _glfwInputKey(window, key, keycode, GLFW_PRESS, mods);
@@ -1896,7 +1925,7 @@ void _glfwPushSelectionToManagerX11(void)
             }
         }
 
-        waitForEvent(NULL);
+        waitForX11Event(NULL);
     }
 }
 
@@ -2238,7 +2267,7 @@ void _glfwGetWindowFrameSizeX11(_GLFWwindow* window,
                               isFrameExtentsEvent,
                               (XPointer) window))
         {
-            if (!waitForEvent(&timeout))
+            if (!waitForX11Event(&timeout))
             {
                 _glfwInputError(GLFW_PLATFORM_ERROR,
                                 "X11: The window manager has a broken _NET_REQUEST_FRAME_EXTENTS implementation; please report this issue");
@@ -2744,7 +2773,7 @@ GLFWbool _glfwRawMouseMotionSupportedX11(void)
 
 void _glfwPollEventsX11(void)
 {
-    _GLFWwindow* window;
+    drainEmptyEvents();
 
 #if defined(__linux__)
     if (_glfw.joysticksInitialized)
@@ -2759,7 +2788,7 @@ void _glfwPollEventsX11(void)
         processEvent(&event);
     }
 
-    window = _glfw.x11.disabledCursorWindow;
+    _GLFWwindow* window = _glfw.x11.disabledCursorWindow;
     if (window)
     {
         int width, height;
@@ -2779,32 +2808,19 @@ void _glfwPollEventsX11(void)
 
 void _glfwWaitEventsX11(void)
 {
-    while (!XPending(_glfw.x11.display))
-        waitForEvent(NULL);
-
+    waitForAnyEvent(NULL);
     _glfwPollEventsX11();
 }
 
 void _glfwWaitEventsTimeoutX11(double timeout)
 {
-    while (!XPending(_glfw.x11.display))
-    {
-        if (!waitForEvent(&timeout))
-            break;
-    }
-
+    waitForAnyEvent(&timeout);
     _glfwPollEventsX11();
 }
 
 void _glfwPostEmptyEventX11(void)
 {
-    XEvent event = { ClientMessage };
-    event.xclient.window = _glfw.x11.helperWindowHandle;
-    event.xclient.format = 32; // Data is 32-bit longs
-    event.xclient.message_type = _glfw.x11.NULL_;
-
-    XSendEvent(_glfw.x11.display, _glfw.x11.helperWindowHandle, False, 0, &event);
-    XFlush(_glfw.x11.display);
+    writeEmptyEvent();
 }
 
 void _glfwGetCursorPosX11(_GLFWwindow* window, double* xpos, double* ypos)

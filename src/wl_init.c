@@ -57,11 +57,6 @@
 #include "wayland-idle-inhibit-unstable-v1-client-protocol-code.h"
 
 
-static inline int min(int n1, int n2)
-{
-    return n1 < n2 ? n1 : n2;
-}
-
 static _GLFWwindow* findWindowFromDecorationSurface(struct wl_surface* surface,
                                                     int* which)
 {
@@ -788,7 +783,7 @@ static void registryHandleGlobal(void* data,
 {
     if (strcmp(interface, "wl_compositor") == 0)
     {
-        _glfw.wl.compositorVersion = min(3, version);
+        _glfw.wl.compositorVersion = _glfw_min(3, version);
         _glfw.wl.compositor =
             wl_registry_bind(registry, name, &wl_compositor_interface,
                              _glfw.wl.compositorVersion);
@@ -811,7 +806,7 @@ static void registryHandleGlobal(void* data,
     {
         if (!_glfw.wl.seat)
         {
-            _glfw.wl.seatVersion = min(4, version);
+            _glfw.wl.seatVersion = _glfw_min(4, version);
             _glfw.wl.seat =
                 wl_registry_bind(registry, name, &wl_seat_interface,
                                  _glfw.wl.seatVersion);
@@ -1367,14 +1362,15 @@ int _glfwInitWayland(void)
             wl_data_device_manager_get_data_device(_glfw.wl.dataDeviceManager,
                                                    _glfw.wl.seat);
         wl_data_device_add_listener(_glfw.wl.dataDevice, &dataDeviceListener, NULL);
-        _glfw.wl.clipboardString = _glfw_calloc(4096, 1);
+
+        _glfw.wl.clipboardSize = 4096;
+        _glfw.wl.clipboardString = _glfw_calloc(_glfw.wl.clipboardSize, 1);
         if (!_glfw.wl.clipboardString)
         {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
+            _glfwInputError(GLFW_OUT_OF_MEMORY,
                             "Wayland: Unable to allocate clipboard memory");
             return GLFW_FALSE;
         }
-        _glfw.wl.clipboardSize = 4096;
     }
 
     return GLFW_TRUE;
@@ -1460,9 +1456,7 @@ void _glfwTerminateWayland(void)
     if (_glfw.wl.cursorTimerfd >= 0)
         close(_glfw.wl.cursorTimerfd);
 
-    if (_glfw.wl.clipboardString)
-        _glfw_free(_glfw.wl.clipboardString);
-    if (_glfw.wl.clipboardSendString)
-        _glfw_free(_glfw.wl.clipboardSendString);
+    _glfw_free(_glfw.wl.clipboardString);
+    _glfw_free(_glfw.wl.clipboardSendString);
 }
 

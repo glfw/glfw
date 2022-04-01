@@ -60,6 +60,7 @@ if (GLFW_BUILD_X11 OR GLFW_BUILD_WAYLAND)
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         target_sources(glfw PRIVATE linux_joystick.h linux_joystick.c)
     endif()
+    target_sources(glfw PRIVATE posix_poll.h posix_poll.c)
 endif()
 
 if (GLFW_BUILD_WAYLAND)

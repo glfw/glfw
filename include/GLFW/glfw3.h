@@ -3258,7 +3258,8 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *  count is zero.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
- *  GLFW_PLATFORM_ERROR and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
+ *  GLFW_INVALID_VALUE, @ref GLFW_PLATFORM_ERROR and @ref
+ *  GLFW_FEATURE_UNAVAILABLE (see remarks).
  *
  *  @pointer_lifetime The specified image data is copied before this function
  *  returns.
@@ -4892,8 +4893,8 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
  *  @return The handle of the created cursor, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
- *  GLFW_PLATFORM_ERROR.
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_INVALID_VALUE and @ref GLFW_PLATFORM_ERROR.
  *
  *  @pointer_lifetime The specified image data is copied before this function
  *  returns.

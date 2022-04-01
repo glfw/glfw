@@ -39,15 +39,15 @@ static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
         *height = (int) (*width / ratio);
     }
 
-    if (window->minwidth != GLFW_DONT_CARE && *width < window->minwidth)
-        *width = window->minwidth;
-    else if (window->maxwidth != GLFW_DONT_CARE && *width > window->maxwidth)
-        *width = window->maxwidth;
+    if (window->minwidth != GLFW_DONT_CARE)
+        *width = _glfw_max(*width, window->minwidth);
+    else if (window->maxwidth != GLFW_DONT_CARE)
+        *width = _glfw_min(*width, window->maxwidth);
 
-    if (window->minheight != GLFW_DONT_CARE && *height < window->minheight)
-        *height = window->minheight;
-    else if (window->maxheight != GLFW_DONT_CARE && *height > window->maxheight)
-        *height = window->maxheight;
+    if (window->minheight != GLFW_DONT_CARE)
+        *height = _glfw_min(*height, window->minheight);
+    else if (window->maxheight != GLFW_DONT_CARE)
+        *height = _glfw_max(*height, window->maxheight);
 }
 
 static void fitToMonitor(_GLFWwindow* window)

@@ -162,7 +162,9 @@ typedef enum
 #define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 ((HANDLE) -4)
 #endif /*DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2*/
 
-// HACK: Define versionhelpers.h functions manually as MinGW lacks the header
+// Replacement for versionhelpers.h macros, as we cannot rely on the
+// application having a correct embedded manifest
+//
 #define IsWindowsVistaOrGreater()                                     \
     _glfwIsWindowsVersionOrGreaterWin32(HIBYTE(_WIN32_WINNT_VISTA),   \
                                         LOBYTE(_WIN32_WINNT_VISTA), 0)
@@ -176,9 +178,11 @@ typedef enum
     _glfwIsWindowsVersionOrGreaterWin32(HIBYTE(_WIN32_WINNT_WINBLUE), \
                                         LOBYTE(_WIN32_WINNT_WINBLUE), 0)
 
-#define _glfwIsWindows10AnniversaryUpdateOrGreaterWin32() \
+// Windows 10 Anniversary Update
+#define _glfwIsWindows10Version1607OrGreaterWin32() \
     _glfwIsWindows10BuildOrGreaterWin32(14393)
-#define _glfwIsWindows10CreatorsUpdateOrGreaterWin32() \
+// Windows 10 Creators Update
+#define _glfwIsWindows10Version1703OrGreaterWin32() \
     _glfwIsWindows10BuildOrGreaterWin32(15063)
 
 // HACK: Define macros that some xinput.h variants don't
@@ -283,12 +287,14 @@ typedef BOOL (WINAPI * PFN_EnableNonClientDpiScaling)(HWND);
 typedef BOOL (WINAPI * PFN_SetProcessDpiAwarenessContext)(HANDLE);
 typedef UINT (WINAPI * PFN_GetDpiForWindow)(HWND);
 typedef BOOL (WINAPI * PFN_AdjustWindowRectExForDpi)(LPRECT,DWORD,BOOL,DWORD,UINT);
+typedef int (WINAPI * PFN_GetSystemMetricsForDpi)(int,UINT);
 #define SetProcessDPIAware _glfw.win32.user32.SetProcessDPIAware_
 #define ChangeWindowMessageFilterEx _glfw.win32.user32.ChangeWindowMessageFilterEx_
 #define EnableNonClientDpiScaling _glfw.win32.user32.EnableNonClientDpiScaling_
 #define SetProcessDpiAwarenessContext _glfw.win32.user32.SetProcessDpiAwarenessContext_
 #define GetDpiForWindow _glfw.win32.user32.GetDpiForWindow_
 #define AdjustWindowRectExForDpi _glfw.win32.user32.AdjustWindowRectExForDpi_
+#define GetSystemMetricsForDpi _glfw.win32.user32.GetSystemMetricsForDpi_
 
 // dwmapi.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_DwmIsCompositionEnabled)(BOOL*);
@@ -436,6 +442,7 @@ typedef struct _GLFWwindowWin32
 //
 typedef struct _GLFWlibraryWin32
 {
+    HINSTANCE           instance;
     HWND                helperWindowHandle;
     HDEVNOTIFY          deviceNotificationHandle;
     int                 acquiredMonitorCount;
@@ -471,6 +478,7 @@ typedef struct _GLFWlibraryWin32
         PFN_SetProcessDpiAwarenessContext SetProcessDpiAwarenessContext_;
         PFN_GetDpiForWindow             GetDpiForWindow_;
         PFN_AdjustWindowRectExForDpi    AdjustWindowRectExForDpi_;
+        PFN_GetSystemMetricsForDpi      GetSystemMetricsForDpi_;
     } user32;
 
     struct {

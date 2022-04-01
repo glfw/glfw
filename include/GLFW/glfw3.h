@@ -539,7 +539,7 @@ enum GLFWkey{
  *
  *  @ingroup input
  *  @{ */
-enum GLFWkey_modifier{
+enum GLFWmodkey{
 /*! @brief If this bit is set one or more Shift keys were held down.
  *
  *  If this bit is set one or more Shift keys were held down.
@@ -583,7 +583,7 @@ enum GLFWkey_modifier{
  *
  *  @ingroup input
  *  @{ */
-enum GLFWmouse_button{
+enum GLFWmousebutton{
     GLFW_MOUSE_BUTTON_1         = 0,
     GLFW_MOUSE_BUTTON_2         = 1,
     GLFW_MOUSE_BUTTON_3         = 2,
@@ -636,7 +636,7 @@ enum GLFWjoystick{
  *
  *  @ingroup input
  *  @{ */
-enum GLFWgamepad_button{
+enum GLFWgamepadbutton{
     GLFW_GAMEPAD_BUTTON_A             = 0,
     GLFW_GAMEPAD_BUTTON_B             = 1,
     GLFW_GAMEPAD_BUTTON_X             = 2,
@@ -669,7 +669,7 @@ enum GLFWgamepad_button{
  *
  *  @ingroup input
  *  @{ */
-enum GLFWgamepad_axis{
+enum GLFWgamepadaxis{
     GLFW_GAMEPAD_AXIS_LEFT_X        = 0,
     GLFW_GAMEPAD_AXIS_LEFT_Y        = 1,
     GLFW_GAMEPAD_AXIS_RIGHT_X       = 2,
@@ -679,20 +679,21 @@ enum GLFWgamepad_axis{
     GLFW_GAMEPAD_AXIS_LAST          = GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER
 };
 
-/*! @ errors Error codes
+/*! @defgroup errors Error codes
  *  @brief Error codes.
  *
  *  See [error handling](@ref error_handling) for how these are used.
  *
  *  @ingroup init
  *  @{ */
+enum GLFWerror{
 /*! @brief No error has occurred.
  *
  *  No error has occurred.
  *
  *  @analysis Yay.
  */
-#define GLFW_NO_ERROR               0
+    GLFW_NO_ERROR               = 0x00000000,
 /*! @brief GLFW has not been initialized.
  *
  *  This occurs if a GLFW function was called that must not be called unless the
@@ -701,7 +702,7 @@ enum GLFWgamepad_axis{
  *  @analysis Application programmer error.  Initialize GLFW before calling any
  *  function that requires initialization.
  */
-#define GLFW_NOT_INITIALIZED        0x00010001
+    GLFW_NOT_INITIALIZED        = 0x00010001,
 /*! @brief No context is current for this thread.
  *
  *  This occurs if a GLFW function was called that needs and operates on the
@@ -711,7 +712,7 @@ enum GLFWgamepad_axis{
  *  @analysis Application programmer error.  Ensure a context is current before
  *  calling functions that require a current context.
  */
-#define GLFW_NO_CURRENT_CONTEXT     0x00010002
+    GLFW_NO_CURRENT_CONTEXT     = 0x00010002,
 /*! @brief One of the arguments to the function was an invalid enum value.
  *
  *  One of the arguments to the function was an invalid enum value, for example
@@ -719,7 +720,7 @@ enum GLFWgamepad_axis{
  *
  *  @analysis Application programmer error.  Fix the offending call.
  */
-#define GLFW_INVALID_ENUM           0x00010003
+    GLFW_INVALID_ENUM           = 0x00010003,
 /*! @brief One of the arguments to the function was an invalid value.
  *
  *  One of the arguments to the function was an invalid value, for example
@@ -730,7 +731,7 @@ enum GLFWgamepad_axis{
  *
  *  @analysis Application programmer error.  Fix the offending call.
  */
-#define GLFW_INVALID_VALUE          0x00010004
+    GLFW_INVALID_VALUE          = 0x00010004,
 /*! @brief A memory allocation failed.
  *
  *  A memory allocation failed.
@@ -738,7 +739,7 @@ enum GLFWgamepad_axis{
  *  @analysis A bug in GLFW or the underlying operating system.  Report the bug
  *  to our [issue tracker](https://github.com/glfw/glfw/issues).
  */
-#define GLFW_OUT_OF_MEMORY          0x00010005
+    GLFW_OUT_OF_MEMORY          = 0x00010005,
 /*! @brief GLFW could not find support for the requested API on the system.
  *
  *  GLFW could not find support for the requested API on the system.
@@ -754,7 +755,7 @@ enum GLFWgamepad_axis{
  *  EGL, OpenGL and OpenGL ES libraries do not interface with the Nvidia binary
  *  driver.  Older graphics drivers do not support Vulkan.
  */
-#define GLFW_API_UNAVAILABLE        0x00010006
+    GLFW_API_UNAVAILABLE        = 0x00010006,
 /*! @brief The requested OpenGL or OpenGL ES version is not available.
  *
  *  The requested OpenGL or OpenGL ES version (including any requested context
@@ -771,7 +772,7 @@ enum GLFWgamepad_axis{
  *  not @ref GLFW_INVALID_VALUE, because GLFW cannot know what future versions
  *  will exist.
  */
-#define GLFW_VERSION_UNAVAILABLE    0x00010007
+    GLFW_VERSION_UNAVAILABLE    = 0x00010007,
 /*! @brief A platform-specific error occurred that does not match any of the
  *  more specific categories.
  *
@@ -782,7 +783,7 @@ enum GLFWgamepad_axis{
  *  system or its drivers, or a lack of required resources.  Report the issue to
  *  our [issue tracker](https://github.com/glfw/glfw/issues).
  */
-#define GLFW_PLATFORM_ERROR         0x00010008
+    GLFW_PLATFORM_ERROR         = 0x00010008,
 /*! @brief The requested format is not supported or available.
  *
  *  If emitted during window creation, the requested pixel format is not
@@ -801,7 +802,7 @@ enum GLFWgamepad_axis{
  *  If emitted when querying the clipboard, ignore the error or report it to
  *  the user, as appropriate.
  */
-#define GLFW_FORMAT_UNAVAILABLE     0x00010009
+    GLFW_FORMAT_UNAVAILABLE     = 0x00010009,
 /*! @brief The specified window does not have an OpenGL or OpenGL ES context.
  *
  *  A window that does not have an OpenGL or OpenGL ES context was passed to
@@ -809,7 +810,7 @@ enum GLFWgamepad_axis{
  *
  *  @analysis Application programmer error.  Fix the offending call.
  */
-#define GLFW_NO_WINDOW_CONTEXT      0x0001000A
+    GLFW_NO_WINDOW_CONTEXT      = 0x0001000A,
 /*! @brief The specified cursor shape is not available.
  *
  *  The specified standard cursor shape is not available, either because the
@@ -820,7 +821,7 @@ enum GLFWgamepad_axis{
  *  [standard cursor shape](@ref shapes) or create a
  *  [custom cursor](@ref cursor_custom).
  */
-#define GLFW_CURSOR_UNAVAILABLE     0x0001000B
+    GLFW_CURSOR_UNAVAILABLE     = 0x0001000B,
 /*! @brief The requested feature is not provided by the platform.
  *
  *  The requested feature is not provided by the platform, so GLFW is unable to
@@ -834,7 +835,7 @@ enum GLFWgamepad_axis{
  *  A function call that emits this error has no effect other than the error and
  *  updating any existing out parameters.
  */
-#define GLFW_FEATURE_UNAVAILABLE    0x0001000C
+    GLFW_FEATURE_UNAVAILABLE    = 0x0001000C,
 /*! @brief The requested feature is not implemented for the platform.
  *
  *  The requested feature has not yet been implemented in GLFW for this platform.
@@ -847,7 +848,7 @@ enum GLFWgamepad_axis{
  *  A function call that emits this error has no effect other than the error and
  *  updating any existing out parameters.
  */
-#define GLFW_FEATURE_UNIMPLEMENTED  0x0001000D
+    GLFW_FEATURE_UNIMPLEMENTED  = 0x0001000D,
 /*! @brief Platform unavailable or no matching platform was found.
  *
  *  If emitted during initialization, no matching platform was found.  If @ref
@@ -869,306 +870,381 @@ enum GLFWgamepad_axis{
  *  support for that platform was not compiled in.  Call @ref glfwPlatformSupported to
  *  check whether a specific platform is supported by a library binary.
  */
-#define GLFW_PLATFORM_UNAVAILABLE   0x0001000E
+    GLFW_PLATFORM_UNAVAILABLE   = 0x0001000E,
+};
 /*! @} */
 
 /*! @addtogroup window
  *  @{ */
+enum GLFWwindowhint{
 /*! @brief Input focus window hint and attribute
  *
  *  Input focus [window hint](@ref GLFW_FOCUSED_hint) or
  *  [window attribute](@ref GLFW_FOCUSED_attrib).
  */
-#define GLFW_FOCUSED                0x00020001
+    GLFW_FOCUSED                    = 0x00020001,
 /*! @brief Window iconification window attribute
  *
  *  Window iconification [window attribute](@ref GLFW_ICONIFIED_attrib).
  */
-#define GLFW_ICONIFIED              0x00020002
+    GLFW_ICONIFIED                  = 0x00020002,
 /*! @brief Window resize-ability window hint and attribute
  *
  *  Window resize-ability [window hint](@ref GLFW_RESIZABLE_hint) and
  *  [window attribute](@ref GLFW_RESIZABLE_attrib).
  */
-#define GLFW_RESIZABLE              0x00020003
+    GLFW_RESIZABLE                  = 0x00020003,
 /*! @brief Window visibility window hint and attribute
  *
  *  Window visibility [window hint](@ref GLFW_VISIBLE_hint) and
  *  [window attribute](@ref GLFW_VISIBLE_attrib).
  */
-#define GLFW_VISIBLE                0x00020004
+    GLFW_VISIBLE                    = 0x00020004,
 /*! @brief Window decoration window hint and attribute
  *
  *  Window decoration [window hint](@ref GLFW_DECORATED_hint) and
  *  [window attribute](@ref GLFW_DECORATED_attrib).
  */
-#define GLFW_DECORATED              0x00020005
+    GLFW_DECORATED                  = 0x00020005,
 /*! @brief Window auto-iconification window hint and attribute
  *
  *  Window auto-iconification [window hint](@ref GLFW_AUTO_ICONIFY_hint) and
  *  [window attribute](@ref GLFW_AUTO_ICONIFY_attrib).
  */
-#define GLFW_AUTO_ICONIFY           0x00020006
+    GLFW_AUTO_ICONIFY               = 0x00020006,
 /*! @brief Window decoration window hint and attribute
  *
  *  Window decoration [window hint](@ref GLFW_FLOATING_hint) and
  *  [window attribute](@ref GLFW_FLOATING_attrib).
  */
-#define GLFW_FLOATING               0x00020007
+    GLFW_FLOATING                   = 0x00020007,
 /*! @brief Window maximization window hint and attribute
  *
  *  Window maximization [window hint](@ref GLFW_MAXIMIZED_hint) and
  *  [window attribute](@ref GLFW_MAXIMIZED_attrib).
  */
-#define GLFW_MAXIMIZED              0x00020008
+    GLFW_MAXIMIZED                  = 0x00020008,
 /*! @brief Cursor centering window hint
  *
  *  Cursor centering [window hint](@ref GLFW_CENTER_CURSOR_hint).
  */
-#define GLFW_CENTER_CURSOR          0x00020009
+    GLFW_CENTER_CURSOR              = 0x00020009,
 /*! @brief Window framebuffer transparency hint and attribute
  *
  *  Window framebuffer transparency
  *  [window hint](@ref GLFW_TRANSPARENT_FRAMEBUFFER_hint) and
  *  [window attribute](@ref GLFW_TRANSPARENT_FRAMEBUFFER_attrib).
  */
-#define GLFW_TRANSPARENT_FRAMEBUFFER 0x0002000A
+    GLFW_TRANSPARENT_FRAMEBUFFER    =  0x0002000A,
 /*! @brief Mouse cursor hover window attribute.
  *
  *  Mouse cursor hover [window attribute](@ref GLFW_HOVERED_attrib).
  */
-#define GLFW_HOVERED                0x0002000B
+    GLFW_HOVERED                    = 0x0002000B,
 /*! @brief Input focus on calling show window hint and attribute
  *
  *  Input focus [window hint](@ref GLFW_FOCUS_ON_SHOW_hint) or
  *  [window attribute](@ref GLFW_FOCUS_ON_SHOW_attrib).
  */
-#define GLFW_FOCUS_ON_SHOW          0x0002000C
+    GLFW_FOCUS_ON_SHOW              = 0x0002000C,
 
 /*! @brief Mouse input transparency window hint and attribute
  *
  *  Mouse input transparency [window hint](@ref GLFW_MOUSE_PASSTHROUGH_hint) or
  *  [window attribute](@ref GLFW_MOUSE_PASSTHROUGH_attrib).
  */
-#define GLFW_MOUSE_PASSTHROUGH      0x0002000D
+    GLFW_MOUSE_PASSTHROUGH          = 0x0002000D,
 
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_RED_BITS).
  */
-#define GLFW_RED_BITS               0x00021001
+    GLFW_RED_BITS                   = 0x00021001,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_GREEN_BITS).
  */
-#define GLFW_GREEN_BITS             0x00021002
+    GLFW_GREEN_BITS                 = 0x00021002,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_BLUE_BITS).
  */
-#define GLFW_BLUE_BITS              0x00021003
+    GLFW_BLUE_BITS                  = 0x00021003,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_ALPHA_BITS).
  */
-#define GLFW_ALPHA_BITS             0x00021004
+    GLFW_ALPHA_BITS                 = 0x00021004,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_DEPTH_BITS).
  */
-#define GLFW_DEPTH_BITS             0x00021005
+    GLFW_DEPTH_BITS                 = 0x00021005,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_STENCIL_BITS).
  */
-#define GLFW_STENCIL_BITS           0x00021006
+    GLFW_STENCIL_BITS               = 0x00021006,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_ACCUM_RED_BITS).
  */
-#define GLFW_ACCUM_RED_BITS         0x00021007
+    GLFW_ACCUM_RED_BITS             = 0x00021007,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_ACCUM_GREEN_BITS).
  */
-#define GLFW_ACCUM_GREEN_BITS       0x00021008
+    GLFW_ACCUM_GREEN_BITS           = 0x00021008,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_ACCUM_BLUE_BITS).
  */
-#define GLFW_ACCUM_BLUE_BITS        0x00021009
+    GLFW_ACCUM_BLUE_BITS            = 0x00021009,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_ACCUM_ALPHA_BITS).
  */
-#define GLFW_ACCUM_ALPHA_BITS       0x0002100A
+    GLFW_ACCUM_ALPHA_BITS           = 0x0002100A,
 /*! @brief Framebuffer auxiliary buffer hint.
  *
  *  Framebuffer auxiliary buffer [hint](@ref GLFW_AUX_BUFFERS).
  */
-#define GLFW_AUX_BUFFERS            0x0002100B
+    GLFW_AUX_BUFFERS                = 0x0002100B,
 /*! @brief OpenGL stereoscopic rendering hint.
  *
  *  OpenGL stereoscopic rendering [hint](@ref GLFW_STEREO).
  */
-#define GLFW_STEREO                 0x0002100C
+    GLFW_STEREO                     = 0x0002100C,
 /*! @brief Framebuffer MSAA samples hint.
  *
  *  Framebuffer MSAA samples [hint](@ref GLFW_SAMPLES).
  */
-#define GLFW_SAMPLES                0x0002100D
+    GLFW_SAMPLES                    = 0x0002100D,
 /*! @brief Framebuffer sRGB hint.
  *
  *  Framebuffer sRGB [hint](@ref GLFW_SRGB_CAPABLE).
  */
-#define GLFW_SRGB_CAPABLE           0x0002100E
+    GLFW_SRGB_CAPABLE               = 0x0002100E,
 /*! @brief Monitor refresh rate hint.
  *
  *  Monitor refresh rate [hint](@ref GLFW_REFRESH_RATE).
  */
-#define GLFW_REFRESH_RATE           0x0002100F
+    GLFW_REFRESH_RATE               = 0x0002100F,
 /*! @brief Framebuffer double buffering hint and attribute.
  *
  *  Framebuffer double buffering [hint](@ref GLFW_DOUBLEBUFFER_hint) and
  *  [attribute](@ref GLFW_DOUBLEBUFFER_attrib).
  */
-#define GLFW_DOUBLEBUFFER           0x00021010
+    GLFW_DOUBLEBUFFER               = 0x00021010,
 
 /*! @brief Context client API hint and attribute.
  *
  *  Context client API [hint](@ref GLFW_CLIENT_API_hint) and
  *  [attribute](@ref GLFW_CLIENT_API_attrib).
  */
-#define GLFW_CLIENT_API             0x00022001
+    GLFW_CLIENT_API                 = 0x00022001,
 /*! @brief Context client API major version hint and attribute.
  *
  *  Context client API major version [hint](@ref GLFW_CONTEXT_VERSION_MAJOR_hint)
  *  and [attribute](@ref GLFW_CONTEXT_VERSION_MAJOR_attrib).
  */
-#define GLFW_CONTEXT_VERSION_MAJOR  0x00022002
+    GLFW_CONTEXT_VERSION_MAJOR      = 0x00022002,
 /*! @brief Context client API minor version hint and attribute.
  *
  *  Context client API minor version [hint](@ref GLFW_CONTEXT_VERSION_MINOR_hint)
  *  and [attribute](@ref GLFW_CONTEXT_VERSION_MINOR_attrib).
  */
-#define GLFW_CONTEXT_VERSION_MINOR  0x00022003
+    GLFW_CONTEXT_VERSION_MINOR      = 0x00022003,
 /*! @brief Context client API revision number attribute.
  *
  *  Context client API revision number
  *  [attribute](@ref GLFW_CONTEXT_REVISION_attrib).
  */
-#define GLFW_CONTEXT_REVISION       0x00022004
+    GLFW_CONTEXT_REVISION           = 0x00022004,
 /*! @brief Context robustness hint and attribute.
  *
  *  Context client API revision number [hint](@ref GLFW_CONTEXT_ROBUSTNESS_hint)
  *  and [attribute](@ref GLFW_CONTEXT_ROBUSTNESS_attrib).
  */
-#define GLFW_CONTEXT_ROBUSTNESS     0x00022005
+    GLFW_CONTEXT_ROBUSTNESS         = 0x00022005,
 /*! @brief OpenGL forward-compatibility hint and attribute.
  *
  *  OpenGL forward-compatibility [hint](@ref GLFW_OPENGL_FORWARD_COMPAT_hint)
  *  and [attribute](@ref GLFW_OPENGL_FORWARD_COMPAT_attrib).
  */
-#define GLFW_OPENGL_FORWARD_COMPAT  0x00022006
+    GLFW_OPENGL_FORWARD_COMPAT      = 0x00022006,
 /*! @brief Debug mode context hint and attribute.
  *
  *  Debug mode context [hint](@ref GLFW_CONTEXT_DEBUG_hint) and
  *  [attribute](@ref GLFW_CONTEXT_DEBUG_attrib).
  */
-#define GLFW_CONTEXT_DEBUG          0x00022007
+    GLFW_CONTEXT_DEBUG              = 0x00022007,
 /*! @brief Legacy name for compatibility.
  *
  *  This is an alias for compatibility with earlier versions.
  */
-#define GLFW_OPENGL_DEBUG_CONTEXT   GLFW_CONTEXT_DEBUG
+    GLFW_OPENGL_DEBUG_CONTEXT       = GLFW_CONTEXT_DEBUG,
 /*! @brief OpenGL profile hint and attribute.
  *
  *  OpenGL profile [hint](@ref GLFW_OPENGL_PROFILE_hint) and
  *  [attribute](@ref GLFW_OPENGL_PROFILE_attrib).
  */
-#define GLFW_OPENGL_PROFILE         0x00022008
+    GLFW_OPENGL_PROFILE             = 0x00022008,
 /*! @brief Context flush-on-release hint and attribute.
  *
  *  Context flush-on-release [hint](@ref GLFW_CONTEXT_RELEASE_BEHAVIOR_hint) and
  *  [attribute](@ref GLFW_CONTEXT_RELEASE_BEHAVIOR_attrib).
  */
-#define GLFW_CONTEXT_RELEASE_BEHAVIOR 0x00022009
+    GLFW_CONTEXT_RELEASE_BEHAVIOR   = 0x00022009,
 /*! @brief Context error suppression hint and attribute.
  *
  *  Context error suppression [hint](@ref GLFW_CONTEXT_NO_ERROR_hint) and
  *  [attribute](@ref GLFW_CONTEXT_NO_ERROR_attrib).
  */
-#define GLFW_CONTEXT_NO_ERROR       0x0002200A
+    GLFW_CONTEXT_NO_ERROR           = 0x0002200A,
 /*! @brief Context creation API hint and attribute.
  *
  *  Context creation API [hint](@ref GLFW_CONTEXT_CREATION_API_hint) and
  *  [attribute](@ref GLFW_CONTEXT_CREATION_API_attrib).
  */
-#define GLFW_CONTEXT_CREATION_API   0x0002200B
+    GLFW_CONTEXT_CREATION_API       = 0x0002200B,
 /*! @brief Window content area scaling window
  *  [window hint](@ref GLFW_SCALE_TO_MONITOR).
  */
-#define GLFW_SCALE_TO_MONITOR       0x0002200C
+    GLFW_SCALE_TO_MONITOR           = 0x0002200C,
 /*! @brief macOS specific
  *  [window hint](@ref GLFW_COCOA_RETINA_FRAMEBUFFER_hint).
  */
-#define GLFW_COCOA_RETINA_FRAMEBUFFER 0x00023001
+    GLFW_COCOA_RETINA_FRAMEBUFFER   = 0x00023001,
 /*! @brief macOS specific
  *  [window hint](@ref GLFW_COCOA_FRAME_NAME_hint).
  */
-#define GLFW_COCOA_FRAME_NAME         0x00023002
+    GLFW_COCOA_FRAME_NAME           = 0x00023002,
 /*! @brief macOS specific
  *  [window hint](@ref GLFW_COCOA_GRAPHICS_SWITCHING_hint).
  */
-#define GLFW_COCOA_GRAPHICS_SWITCHING 0x00023003
+    GLFW_COCOA_GRAPHICS_SWITCHING   = 0x00023003,
 /*! @brief X11 specific
  *  [window hint](@ref GLFW_X11_CLASS_NAME_hint).
  */
-#define GLFW_X11_CLASS_NAME         0x00024001
+    GLFW_X11_CLASS_NAME             = 0x00024001,
 /*! @brief X11 specific
  *  [window hint](@ref GLFW_X11_CLASS_NAME_hint).
  */
-#define GLFW_X11_INSTANCE_NAME      0x00024002
-#define GLFW_WIN32_KEYBOARD_MENU    0x00025001
+    GLFW_X11_INSTANCE_NAME          = 0x00024002,
+    GLFW_WIN32_KEYBOARD_MENU        = 0x00025001
+};
 /*! @} */
 
-#define GLFW_NO_API                          0
-#define GLFW_OPENGL_API             0x00030001
-#define GLFW_OPENGL_ES_API          0x00030002
+enum GLFWapihint{
+    GLFW_NO_API         = 0,
+    GLFW_OPENGL_API     = 0x00030001,
+    GLFW_OPENGL_ES_API  = 0x00030002
+};
 
-#define GLFW_NO_ROBUSTNESS                   0
-#define GLFW_NO_RESET_NOTIFICATION  0x00031001
-#define GLFW_LOSE_CONTEXT_ON_RESET  0x00031002
+enum GLFWresethint{
+    GLFW_NO_ROBUSTNESS          = 0,
+    GLFW_NO_RESET_NOTIFICATION  = 0x00031001,
+    GLFW_LOSE_CONTEXT_ON_RESET  = 0x00031002
+};
 
-#define GLFW_OPENGL_ANY_PROFILE              0
-#define GLFW_OPENGL_CORE_PROFILE    0x00032001
-#define GLFW_OPENGL_COMPAT_PROFILE  0x00032002
+enum GLFWopenglprofilehint{
+    GLFW_OPENGL_ANY_PROFILE     = 0,
+    GLFW_OPENGL_CORE_PROFILE    = 0x00032001,
+    GLFW_OPENGL_COMPAT_PROFILE  = 0x00032002
+};
 
-#define GLFW_CURSOR                 0x00033001
-#define GLFW_STICKY_KEYS            0x00033002
-#define GLFW_STICKY_MOUSE_BUTTONS   0x00033003
-#define GLFW_LOCK_KEY_MODS          0x00033004
-#define GLFW_RAW_MOUSE_MOTION       0x00033005
+enum GLFWinputhint{
+    GLFW_CURSOR                 = 0x00033001,
+    GLFW_STICKY_KEYS            = 0x00033002,
+    GLFW_STICKY_MOUSE_BUTTONS   = 0x00033003,
+    GLFW_LOCK_KEY_MODS          = 0x00033004,
+    GLFW_RAW_MOUSE_MOTION       = 0x00033005
+};
 
-#define GLFW_CURSOR_NORMAL          0x00034001
-#define GLFW_CURSOR_HIDDEN          0x00034002
-#define GLFW_CURSOR_DISABLED        0x00034003
+enum GLFWcursorhint{
+    GLFW_CURSOR_NORMAL          = 0x00034001,
+    GLFW_CURSOR_HIDDEN          = 0x00034002,
+    GLFW_CURSOR_DISABLED        = 0x00034003
+};
 
-#define GLFW_ANY_RELEASE_BEHAVIOR            0
-#define GLFW_RELEASE_BEHAVIOR_FLUSH 0x00035001
-#define GLFW_RELEASE_BEHAVIOR_NONE  0x00035002
+enum GLFWreleasebehaviourhint{
+    GLFW_ANY_RELEASE_BEHAVIOR   = 0,
+    GLFW_RELEASE_BEHAVIOR_FLUSH = 0x00035001,
+    GLFW_RELEASE_BEHAVIOR_NONE  = 0x00035002
+};
 
-#define GLFW_NATIVE_CONTEXT_API     0x00036001
-#define GLFW_EGL_CONTEXT_API        0x00036002
-#define GLFW_OSMESA_CONTEXT_API     0x00036003
+enum GLFWcontextapihint{
+    GLFW_NATIVE_CONTEXT_API = 0x00036001,
+    GLFW_EGL_CONTEXT_API    = 0x00036002,
+    GLFW_OSMESA_CONTEXT_API = 0x00036003
+};
 
-#define GLFW_ANGLE_PLATFORM_TYPE_NONE    0x00037001
-#define GLFW_ANGLE_PLATFORM_TYPE_OPENGL  0x00037002
-#define GLFW_ANGLE_PLATFORM_TYPE_OPENGLES 0x00037003
-#define GLFW_ANGLE_PLATFORM_TYPE_D3D9    0x00037004
-#define GLFW_ANGLE_PLATFORM_TYPE_D3D11   0x00037005
-#define GLFW_ANGLE_PLATFORM_TYPE_VULKAN  0x00037007
-#define GLFW_ANGLE_PLATFORM_TYPE_METAL   0x00037008
+enum GLFWangleplatformtypehint{
+    GLFW_ANGLE_PLATFORM_TYPE_NONE       = 0x00037001,
+    GLFW_ANGLE_PLATFORM_TYPE_OPENGL     = 0x00037002,
+    GLFW_ANGLE_PLATFORM_TYPE_OPENGLES   = 0x00037003,
+    GLFW_ANGLE_PLATFORM_TYPE_D3D9       = 0x00037004,
+    GLFW_ANGLE_PLATFORM_TYPE_D3D11      = 0x00037005,
+    GLFW_ANGLE_PLATFORM_TYPE_VULKAN     = 0x00037007,
+    GLFW_ANGLE_PLATFORM_TYPE_METAL      = 0x00037008
+};
+
+/*! @addtogroup init
+ *  @{ */
+enum GLFWinithint{
+/*! @brief Joystick hat buttons init hint.
+ *
+ *  Joystick hat buttons [init hint](@ref GLFW_JOYSTICK_HAT_BUTTONS).
+ */
+    GLFW_JOYSTICK_HAT_BUTTONS   = 0x00050001,
+/*! @brief ANGLE rendering backend init hint.
+ *
+ *  ANGLE rendering backend [init hint](@ref GLFW_ANGLE_PLATFORM_TYPE_hint).
+ */
+    GLFW_ANGLE_PLATFORM_TYPE    = 0x00050002,
+/*! @brief Platform selection init hint.
+ *
+ *  Platform selection [init hint](@ref GLFW_PLATFORM).
+ */
+    GLFW_PLATFORM               = 0x00050003,
+/*! @brief macOS specific init hint.
+ *
+ *  macOS specific [init hint](@ref GLFW_COCOA_CHDIR_RESOURCES_hint).
+ */
+    GLFW_COCOA_CHDIR_RESOURCES  = 0x00051001,
+/*! @brief macOS specific init hint.
+ *
+ *  macOS specific [init hint](@ref GLFW_COCOA_MENUBAR_hint).
+ */
+    GLFW_COCOA_MENUBAR          = 0x00051002,
+/*! @brief X11 specific init hint.
+ *
+ *  X11 specific [init hint](@ref GLFW_X11_XCB_VULKAN_SURFACE_hint).
+ */
+    GLFW_X11_XCB_VULKAN_SURFACE = 0x00052001
+};
+/*! @} */
+
+/*! @addtogroup init
+ *  @{ */
+/*! @brief Hint value that enables automatic platform selection.
+ *
+ *  Hint value for @ref GLFW_PLATFORM that enables automatic platform selection.
+ */
+enum GLFWplatformhint{
+    GLFW_ANY_PLATFORM           = 0x00060000,
+    GLFW_PLATFORM_WIN32         = 0x00060001,
+    GLFW_PLATFORM_COCOA         = 0x00060002,
+    GLFW_PLATFORM_WAYLAND       = 0x00060003,
+    GLFW_PLATFORM_X11           = 0x00060004,
+    GLFW_PLATFORM_NULL          = 0x00060005
+};
+/*! @} */
+
+enum GLFWmischint{
+    GLFW_DONT_CARE              = -1
+};
 
 /*! @defgroup shapes Standard cursor shapes
  *  @brief Standard system cursor shapes.
@@ -1178,39 +1254,39 @@ enum GLFWgamepad_axis{
  *
  *  @ingroup input
  *  @{ */
-
+enum GLFWcursorshape{
 /*! @brief The regular arrow cursor shape.
  *
  *  The regular arrow cursor shape.
  */
-#define GLFW_ARROW_CURSOR           0x00036001
+    GLFW_ARROW_CURSOR           = 0x00036001,
 /*! @brief The text input I-beam cursor shape.
  *
  *  The text input I-beam cursor shape.
  */
-#define GLFW_IBEAM_CURSOR           0x00036002
+    GLFW_IBEAM_CURSOR           = 0x00036002,
 /*! @brief The crosshair cursor shape.
  *
  *  The crosshair cursor shape.
  */
-#define GLFW_CROSSHAIR_CURSOR       0x00036003
+    GLFW_CROSSHAIR_CURSOR       = 0x00036003,
 /*! @brief The pointing hand cursor shape.
  *
  *  The pointing hand cursor shape.
  */
-#define GLFW_POINTING_HAND_CURSOR   0x00036004
+    GLFW_POINTING_HAND_CURSOR   = 0x00036004,
 /*! @brief The horizontal resize/move arrow shape.
  *
  *  The horizontal resize/move arrow shape.  This is usually a horizontal
  *  double-headed arrow.
  */
-#define GLFW_RESIZE_EW_CURSOR       0x00036005
+    GLFW_RESIZE_EW_CURSOR       = 0x00036005,
 /*! @brief The vertical resize/move arrow shape.
  *
  *  The vertical resize/move shape.  This is usually a vertical double-headed
  *  arrow.
  */
-#define GLFW_RESIZE_NS_CURSOR       0x00036006
+    GLFW_RESIZE_NS_CURSOR       = 0x00036006,
 /*! @brief The top-left to bottom-right diagonal resize/move arrow shape.
  *
  *  The top-left to bottom-right diagonal resize/move shape.  This is usually
@@ -1225,7 +1301,7 @@ enum GLFWgamepad_axis{
  *  @note @wayland This shape is provided by a newer standard not supported by
  *  all cursor themes.
  */
-#define GLFW_RESIZE_NWSE_CURSOR     0x00036007
+    GLFW_RESIZE_NWSE_CURSOR     = 0x00036007,
 /*! @brief The top-right to bottom-left diagonal resize/move arrow shape.
  *
  *  The top-right to bottom-left diagonal resize/move shape.  This is usually
@@ -1240,13 +1316,13 @@ enum GLFWgamepad_axis{
  *  @note @wayland This shape is provided by a newer standard not supported by
  *  all cursor themes.
  */
-#define GLFW_RESIZE_NESW_CURSOR     0x00036008
+    GLFW_RESIZE_NESW_CURSOR     = 0x00036008,
 /*! @brief The omni-directional resize/move cursor shape.
  *
  *  The omni-directional resize cursor/move shape.  This is usually either
  *  a combined horizontal and vertical double-headed arrow or a grabbing hand.
  */
-#define GLFW_RESIZE_ALL_CURSOR      0x00036009
+    GLFW_RESIZE_ALL_CURSOR      = 0x00036009,
 /*! @brief The operation-not-allowed shape.
  *
  *  The operation-not-allowed shape.  This is usually a circle with a diagonal
@@ -1258,77 +1334,29 @@ enum GLFWgamepad_axis{
  *  @note @wayland This shape is provided by a newer standard not supported by
  *  all cursor themes.
  */
-#define GLFW_NOT_ALLOWED_CURSOR     0x0003600A
+    GLFW_NOT_ALLOWED_CURSOR     = 0x0003600A,
 /*! @brief Legacy name for compatibility.
  *
  *  This is an alias for compatibility with earlier versions.
  */
-#define GLFW_HRESIZE_CURSOR         GLFW_RESIZE_EW_CURSOR
+    GLFW_HRESIZE_CURSOR         = GLFW_RESIZE_EW_CURSOR,
 /*! @brief Legacy name for compatibility.
  *
  *  This is an alias for compatibility with earlier versions.
  */
-#define GLFW_VRESIZE_CURSOR         GLFW_RESIZE_NS_CURSOR
+    GLFW_VRESIZE_CURSOR         = GLFW_RESIZE_NS_CURSOR,
 /*! @brief Legacy name for compatibility.
  *
  *  This is an alias for compatibility with earlier versions.
  */
-#define GLFW_HAND_CURSOR            GLFW_POINTING_HAND_CURSOR
+    GLFW_HAND_CURSOR            = GLFW_POINTING_HAND_CURSOR
+};
 /*! @} */
 
-#define GLFW_CONNECTED              0x00040001
-#define GLFW_DISCONNECTED           0x00040002
-
-/*! @addtogroup init
- *  @{ */
-/*! @brief Joystick hat buttons init hint.
- *
- *  Joystick hat buttons [init hint](@ref GLFW_JOYSTICK_HAT_BUTTONS).
- */
-#define GLFW_JOYSTICK_HAT_BUTTONS   0x00050001
-/*! @brief ANGLE rendering backend init hint.
- *
- *  ANGLE rendering backend [init hint](@ref GLFW_ANGLE_PLATFORM_TYPE_hint).
- */
-#define GLFW_ANGLE_PLATFORM_TYPE    0x00050002
-/*! @brief Platform selection init hint.
- *
- *  Platform selection [init hint](@ref GLFW_PLATFORM).
- */
-#define GLFW_PLATFORM               0x00050003
-/*! @brief macOS specific init hint.
- *
- *  macOS specific [init hint](@ref GLFW_COCOA_CHDIR_RESOURCES_hint).
- */
-#define GLFW_COCOA_CHDIR_RESOURCES  0x00051001
-/*! @brief macOS specific init hint.
- *
- *  macOS specific [init hint](@ref GLFW_COCOA_MENUBAR_hint).
- */
-#define GLFW_COCOA_MENUBAR          0x00051002
-/*! @brief X11 specific init hint.
- *
- *  X11 specific [init hint](@ref GLFW_X11_XCB_VULKAN_SURFACE_hint).
- */
-#define GLFW_X11_XCB_VULKAN_SURFACE 0x00052001
-/*! @} */
-
-/*! @addtogroup init
- *  @{ */
-/*! @brief Hint value that enables automatic platform selection.
- *
- *  Hint value for @ref GLFW_PLATFORM that enables automatic platform selection.
- */
-#define GLFW_ANY_PLATFORM           0x00060000
-#define GLFW_PLATFORM_WIN32         0x00060001
-#define GLFW_PLATFORM_COCOA         0x00060002
-#define GLFW_PLATFORM_WAYLAND       0x00060003
-#define GLFW_PLATFORM_X11           0x00060004
-#define GLFW_PLATFORM_NULL          0x00060005
-/*! @} */
-
-#define GLFW_DONT_CARE              -1
-
+enum GLFWmonitorevent{
+    GLFW_CONNECTED      = 0x00040001,
+    GLFW_DISCONNECTED   = 0x00040002
+};
 
 /*************************************************************************
  * GLFW API types
@@ -2321,7 +2349,7 @@ GLFWAPI void glfwInitVulkanLoader(PFN_vkGetInstanceProcAddr loader);
  *
  *  @ingroup init
  */
-GLFWAPI void glfwGetVersion(uint32_t* major, uint32_t* minor, uint32_t* rev);
+GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
 
 /*! @brief Returns a string describing the compile-time configuration.
  *
@@ -2386,7 +2414,7 @@ GLFWAPI const char* glfwGetVersionString(void);
  *
  *  @ingroup init
  */
-GLFWAPI int32_t glfwGetError(const char** description);
+GLFWAPI int glfwGetError(const char** description);
 
 /*! @brief Sets the error callback.
  *
@@ -2453,7 +2481,7 @@ GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun callback);
  *
  *  @ingroup init
  */
-GLFWAPI uint32_t glfwGetPlatform(void);
+GLFWAPI int glfwGetPlatform(void);
 
 /*! @brief Returns whether the library includes support for the specified platform.
  *
@@ -2477,7 +2505,7 @@ GLFWAPI uint32_t glfwGetPlatform(void);
  *
  *  @ingroup init
  */
-GLFWAPI uint32_t glfwPlatformSupported(uint32_t platform);
+GLFWAPI int glfwPlatformSupported(int platform);
 
 /*! @brief Returns the currently connected monitors.
  *
@@ -2506,7 +2534,7 @@ GLFWAPI uint32_t glfwPlatformSupported(uint32_t platform);
  *
  *  @ingroup monitor
  */
-GLFWAPI GLFWmonitor** glfwGetMonitors(uint32_t* count);
+GLFWAPI GLFWmonitor** glfwGetMonitors(int* count);
 
 /*! @brief Returns the primary monitor.
  *
@@ -2555,7 +2583,7 @@ GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void);
  *
  *  @ingroup monitor
  */
-GLFWAPI void glfwGetMonitorPos(GLFWmonitor* monitor, uint32_t* xpos, uint32_t* ypos);
+GLFWAPI void glfwGetMonitorPos(GLFWmonitor* monitor, int* xpos, int* ypos);
 
 /*! @brief Retrieves the work area of the monitor.
  *

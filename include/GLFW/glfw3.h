@@ -277,31 +277,38 @@ extern "C" {
  * GLFW API tokens
  *************************************************************************/
 
-/*! @name GLFW version macros
+/*! @name GLFW version enum 
  *  @{ */
+enum GLFWversion{
 /*! @brief The major version number of the GLFW header.
  *
  *  The major version number of the GLFW header.  This is incremented when the
  *  API is changed in non-compatible ways.
  *  @ingroup init
  */
-#define GLFW_VERSION_MAJOR          3
+    GLFW_VERSION_MAJOR      = 3,
 /*! @brief The minor version number of the GLFW header.
  *
  *  The minor version number of the GLFW header.  This is incremented when
  *  features are added to the API but it remains backward-compatible.
  *  @ingroup init
  */
-#define GLFW_VERSION_MINOR          4
+    GLFW_VERSION_MINOR      = 4,
 /*! @brief The revision number of the GLFW header.
  *
  *  The revision number of the GLFW header.  This is incremented when a bug fix
  *  release is made that does not contain any API changes.
  *  @ingroup init
  */
-#define GLFW_VERSION_REVISION       0
-/*! @} */
+    GLFW_VERSION_REVISION   = 0
+};
+/*! *} */
 
+/*! @name GLFWbool
+ *  @brief Semantic sugare for booleans.
+ *  @ingroup init
+ * @{ */
+enum GLFWbool{
 /*! @brief One.
  *
  *  This is only semantic sugar for the number 1.  You can instead use `1` or
@@ -310,7 +317,7 @@ extern "C" {
  *
  *  @ingroup init
  */
-#define GLFW_TRUE                   1
+    GLFW_FALSE,
 /*! @brief Zero.
  *
  *  This is only semantic sugar for the number 0.  You can instead use `0` or
@@ -319,31 +326,35 @@ extern "C" {
  *
  *  @ingroup init
  */
-#define GLFW_FALSE                  0
+    GLFW_TRUE,
+};
+/*! @} */
 
 /*! @name Key and button actions
  *  @{ */
+enum GLFWkey_state{
 /*! @brief The key or mouse button was released.
  *
  *  The key or mouse button was released.
  *
  *  @ingroup input
  */
-#define GLFW_RELEASE                0
+    GLFW_RELEASE,
 /*! @brief The key or mouse button was pressed.
  *
  *  The key or mouse button was pressed.
  *
  *  @ingroup input
  */
-#define GLFW_PRESS                  1
+    GLFW_PRESS,
 /*! @brief The key was held down until it repeated.
  *
  *  The key was held down until it repeated.
  *
  *  @ingroup input
  */
-#define GLFW_REPEAT                 2
+    GLFW_REPEAT
+};
 /*! @} */
 
 /*! @defgroup hat_state Joystick hat states
@@ -353,15 +364,17 @@ extern "C" {
  *
  *  @ingroup input
  *  @{ */
-#define GLFW_HAT_CENTERED           0
-#define GLFW_HAT_UP                 1
-#define GLFW_HAT_RIGHT              2
-#define GLFW_HAT_DOWN               4
-#define GLFW_HAT_LEFT               8
-#define GLFW_HAT_RIGHT_UP           (GLFW_HAT_RIGHT | GLFW_HAT_UP)
-#define GLFW_HAT_RIGHT_DOWN         (GLFW_HAT_RIGHT | GLFW_HAT_DOWN)
-#define GLFW_HAT_LEFT_UP            (GLFW_HAT_LEFT  | GLFW_HAT_UP)
-#define GLFW_HAT_LEFT_DOWN          (GLFW_HAT_LEFT  | GLFW_HAT_DOWN)
+enum GLFWhat{
+    GLFW_HAT_CENTERED   = 0,
+    GLFW_HAT_UP         = 1,
+    GLFW_HAT_RIGHT      = 2,
+    GLFW_HAT_DOWN       = 4,
+    GLFW_HAT_LEFT       = 8,
+    GLFW_HAT_RIGHT_UP   = (GLFW_HAT_RIGHT | GLFW_HAT_UP),
+    GLFW_HAT_RIGHT_DOWN = (GLFW_HAT_RIGHT | GLFW_HAT_DOWN),
+    GLFW_HAT_LEFT_UP    = (GLFW_HAT_LEFT | GLFW_HAT_UP),
+    GLFW_HAT_LEFT_DOWN  = (GLFW_HAT_LEFT | GLFW_HAT_DOWN),
+};
 /*! @} */
 
 /*! @defgroup keys Keyboard keys
@@ -385,137 +398,137 @@ extern "C" {
  *     "BACKSPACE", etc.)
  *
  *  @ingroup input
- *  @{
- */
+ *  @{ */
+enum GLFWkey{
+    /* Unkown key*/
+    GLFW_KEY_UNKNOWN           = -1,
 
-/* The unknown key */
-#define GLFW_KEY_UNKNOWN            -1
+    /* Printable keys*/
+    GLFW_KEY_SPACE             = 32,
+    GLFW_KEY_APOSTROPHE        = 39,  /* ' */
+    GLFW_KEY_COMMA             = 44,  /* , */
+    GLFW_KEY_MINUS             = 45,  /* - */
+    GLFW_KEY_PERIOD            = 46,  /* . */
+    GLFW_KEY_SLASH             = 47,  /* / */
+    GLFW_KEY_0                 = 48,
+    GLFW_KEY_1                 = 49,
+    GLFW_KEY_2                 = 50,
+    GLFW_KEY_3                 = 51,
+    GLFW_KEY_4                 = 52,
+    GLFW_KEY_5                 = 53,
+    GLFW_KEY_6                 = 54,
+    GLFW_KEY_7                 = 55,
+    GLFW_KEY_8                 = 56,
+    GLFW_KEY_9                 = 57,
+    GLFW_KEY_SEMICOLON         = 59,  /* ; */
+    GLFW_KEY_EQUAL             = 61,  /* = */
+    GLFW_KEY_A                 = 65,
+    GLFW_KEY_B                 = 66,
+    GLFW_KEY_C                 = 67,
+    GLFW_KEY_D                 = 68,
+    GLFW_KEY_E                 = 69,
+    GLFW_KEY_F                 = 70,
+    GLFW_KEY_G                 = 71,
+    GLFW_KEY_H                 = 72,
+    GLFW_KEY_I                 = 73,
+    GLFW_KEY_J                 = 74,
+    GLFW_KEY_K                 = 75,
+    GLFW_KEY_L                 = 76,
+    GLFW_KEY_M                 = 77,
+    GLFW_KEY_N                 = 78,
+    GLFW_KEY_O                 = 79,
+    GLFW_KEY_P                 = 80,
+    GLFW_KEY_Q                 = 81,
+    GLFW_KEY_R                 = 82,
+    GLFW_KEY_S                 = 83,
+    GLFW_KEY_T                 = 84,
+    GLFW_KEY_U                 = 85,
+    GLFW_KEY_V                 = 86,
+    GLFW_KEY_W                 = 87,
+    GLFW_KEY_X                 = 88,
+    GLFW_KEY_Y                 = 89,
+    GLFW_KEY_Z                 = 90,
+    GLFW_KEY_LEFT_BRACKET      = 91,  /* [ */
+    GLFW_KEY_BACKSLASH         = 92,  /* \ */
+    GLFW_KEY_RIGHT_BRACKET     = 93,  /* ] */
+    GLFW_KEY_GRAVE_ACCENT      = 96,  /* ` */
+    GLFW_KEY_WORLD_1           = 161, /* non-US #1 */
+    GLFW_KEY_WORLD_2           = 162, /* non-US #2 */
 
-/* Printable keys */
-#define GLFW_KEY_SPACE              32
-#define GLFW_KEY_APOSTROPHE         39  /* ' */
-#define GLFW_KEY_COMMA              44  /* , */
-#define GLFW_KEY_MINUS              45  /* - */
-#define GLFW_KEY_PERIOD             46  /* . */
-#define GLFW_KEY_SLASH              47  /* / */
-#define GLFW_KEY_0                  48
-#define GLFW_KEY_1                  49
-#define GLFW_KEY_2                  50
-#define GLFW_KEY_3                  51
-#define GLFW_KEY_4                  52
-#define GLFW_KEY_5                  53
-#define GLFW_KEY_6                  54
-#define GLFW_KEY_7                  55
-#define GLFW_KEY_8                  56
-#define GLFW_KEY_9                  57
-#define GLFW_KEY_SEMICOLON          59  /* ; */
-#define GLFW_KEY_EQUAL              61  /* = */
-#define GLFW_KEY_A                  65
-#define GLFW_KEY_B                  66
-#define GLFW_KEY_C                  67
-#define GLFW_KEY_D                  68
-#define GLFW_KEY_E                  69
-#define GLFW_KEY_F                  70
-#define GLFW_KEY_G                  71
-#define GLFW_KEY_H                  72
-#define GLFW_KEY_I                  73
-#define GLFW_KEY_J                  74
-#define GLFW_KEY_K                  75
-#define GLFW_KEY_L                  76
-#define GLFW_KEY_M                  77
-#define GLFW_KEY_N                  78
-#define GLFW_KEY_O                  79
-#define GLFW_KEY_P                  80
-#define GLFW_KEY_Q                  81
-#define GLFW_KEY_R                  82
-#define GLFW_KEY_S                  83
-#define GLFW_KEY_T                  84
-#define GLFW_KEY_U                  85
-#define GLFW_KEY_V                  86
-#define GLFW_KEY_W                  87
-#define GLFW_KEY_X                  88
-#define GLFW_KEY_Y                  89
-#define GLFW_KEY_Z                  90
-#define GLFW_KEY_LEFT_BRACKET       91  /* [ */
-#define GLFW_KEY_BACKSLASH          92  /* \ */
-#define GLFW_KEY_RIGHT_BRACKET      93  /* ] */
-#define GLFW_KEY_GRAVE_ACCENT       96  /* ` */
-#define GLFW_KEY_WORLD_1            161 /* non-US #1 */
-#define GLFW_KEY_WORLD_2            162 /* non-US #2 */
+    /* Function keys */
+    GLFW_KEY_ESCAPE            = 256,
+    GLFW_KEY_ENTER             = 257,
+    GLFW_KEY_TAB               = 258,
+    GLFW_KEY_BACKSPACE         = 259,
+    GLFW_KEY_INSERT            = 260,
+    GLFW_KEY_DELETE            = 261,
+    GLFW_KEY_RIGHT             = 262,
+    GLFW_KEY_LEFT              = 263,
+    GLFW_KEY_DOWN              = 264,
+    GLFW_KEY_UP                = 265,
+    GLFW_KEY_PAGE_UP           = 266,
+    GLFW_KEY_PAGE_DOWN         = 267,
+    GLFW_KEY_HOME              = 268,
+    GLFW_KEY_END               = 269,
+    GLFW_KEY_CAPS_LOCK         = 280,
+    GLFW_KEY_SCROLL_LOCK       = 281,
+    GLFW_KEY_NUM_LOCK          = 282,
+    GLFW_KEY_PRINT_SCREEN      = 283,
+    GLFW_KEY_PAUSE             = 284,
+    GLFW_KEY_F1                = 290,
+    GLFW_KEY_F2                = 291,
+    GLFW_KEY_F3                = 292,
+    GLFW_KEY_F4                = 293,
+    GLFW_KEY_F5                = 294,
+    GLFW_KEY_F6                = 295,
+    GLFW_KEY_F7                = 296,
+    GLFW_KEY_F8                = 297,
+    GLFW_KEY_F9                = 298,
+    GLFW_KEY_F10               = 299,
+    GLFW_KEY_F11               = 300,
+    GLFW_KEY_F12               = 301,
+    GLFW_KEY_F13               = 302,
+    GLFW_KEY_F14               = 303,
+    GLFW_KEY_F15               = 304,
+    GLFW_KEY_F16               = 305,
+    GLFW_KEY_F17               = 306,
+    GLFW_KEY_F18               = 307,
+    GLFW_KEY_F19               = 308,
+    GLFW_KEY_F20               = 309,
+    GLFW_KEY_F21               = 310,
+    GLFW_KEY_F22               = 311,
+    GLFW_KEY_F23               = 312,
+    GLFW_KEY_F24               = 313,
+    GLFW_KEY_F25               = 314,
+    GLFW_KEY_KP_0              = 320,
+    GLFW_KEY_KP_1              = 321,
+    GLFW_KEY_KP_2              = 322,
+    GLFW_KEY_KP_3              = 323,
+    GLFW_KEY_KP_4              = 324,
+    GLFW_KEY_KP_5              = 325,
+    GLFW_KEY_KP_6              = 326,
+    GLFW_KEY_KP_7              = 327,
+    GLFW_KEY_KP_8              = 328,
+    GLFW_KEY_KP_9              = 329,
+    GLFW_KEY_KP_DECIMAL        = 330,
+    GLFW_KEY_KP_DIVIDE         = 331,
+    GLFW_KEY_KP_MULTIPLY       = 332,
+    GLFW_KEY_KP_SUBTRACT       = 333,
+    GLFW_KEY_KP_ADD            = 334,
+    GLFW_KEY_KP_ENTER          = 335,
+    GLFW_KEY_KP_EQUAL          = 336,
+    GLFW_KEY_LEFT_SHIFT        = 340,
+    GLFW_KEY_LEFT_CONTROL      = 341,
+    GLFW_KEY_LEFT_ALT          = 342,
+    GLFW_KEY_LEFT_SUPER        = 343,
+    GLFW_KEY_RIGHT_SHIFT       = 344,
+    GLFW_KEY_RIGHT_CONTROL     = 345,
+    GLFW_KEY_RIGHT_ALT         = 346,
+    GLFW_KEY_RIGHT_SUPER       = 347,
+    GLFW_KEY_MENU              = 348,
 
-/* Function keys */
-#define GLFW_KEY_ESCAPE             256
-#define GLFW_KEY_ENTER              257
-#define GLFW_KEY_TAB                258
-#define GLFW_KEY_BACKSPACE          259
-#define GLFW_KEY_INSERT             260
-#define GLFW_KEY_DELETE             261
-#define GLFW_KEY_RIGHT              262
-#define GLFW_KEY_LEFT               263
-#define GLFW_KEY_DOWN               264
-#define GLFW_KEY_UP                 265
-#define GLFW_KEY_PAGE_UP            266
-#define GLFW_KEY_PAGE_DOWN          267
-#define GLFW_KEY_HOME               268
-#define GLFW_KEY_END                269
-#define GLFW_KEY_CAPS_LOCK          280
-#define GLFW_KEY_SCROLL_LOCK        281
-#define GLFW_KEY_NUM_LOCK           282
-#define GLFW_KEY_PRINT_SCREEN       283
-#define GLFW_KEY_PAUSE              284
-#define GLFW_KEY_F1                 290
-#define GLFW_KEY_F2                 291
-#define GLFW_KEY_F3                 292
-#define GLFW_KEY_F4                 293
-#define GLFW_KEY_F5                 294
-#define GLFW_KEY_F6                 295
-#define GLFW_KEY_F7                 296
-#define GLFW_KEY_F8                 297
-#define GLFW_KEY_F9                 298
-#define GLFW_KEY_F10                299
-#define GLFW_KEY_F11                300
-#define GLFW_KEY_F12                301
-#define GLFW_KEY_F13                302
-#define GLFW_KEY_F14                303
-#define GLFW_KEY_F15                304
-#define GLFW_KEY_F16                305
-#define GLFW_KEY_F17                306
-#define GLFW_KEY_F18                307
-#define GLFW_KEY_F19                308
-#define GLFW_KEY_F20                309
-#define GLFW_KEY_F21                310
-#define GLFW_KEY_F22                311
-#define GLFW_KEY_F23                312
-#define GLFW_KEY_F24                313
-#define GLFW_KEY_F25                314
-#define GLFW_KEY_KP_0               320
-#define GLFW_KEY_KP_1               321
-#define GLFW_KEY_KP_2               322
-#define GLFW_KEY_KP_3               323
-#define GLFW_KEY_KP_4               324
-#define GLFW_KEY_KP_5               325
-#define GLFW_KEY_KP_6               326
-#define GLFW_KEY_KP_7               327
-#define GLFW_KEY_KP_8               328
-#define GLFW_KEY_KP_9               329
-#define GLFW_KEY_KP_DECIMAL         330
-#define GLFW_KEY_KP_DIVIDE          331
-#define GLFW_KEY_KP_MULTIPLY        332
-#define GLFW_KEY_KP_SUBTRACT        333
-#define GLFW_KEY_KP_ADD             334
-#define GLFW_KEY_KP_ENTER           335
-#define GLFW_KEY_KP_EQUAL           336
-#define GLFW_KEY_LEFT_SHIFT         340
-#define GLFW_KEY_LEFT_CONTROL       341
-#define GLFW_KEY_LEFT_ALT           342
-#define GLFW_KEY_LEFT_SUPER         343
-#define GLFW_KEY_RIGHT_SHIFT        344
-#define GLFW_KEY_RIGHT_CONTROL      345
-#define GLFW_KEY_RIGHT_ALT          346
-#define GLFW_KEY_RIGHT_SUPER        347
-#define GLFW_KEY_MENU               348
-
-#define GLFW_KEY_LAST               GLFW_KEY_MENU
+    GLFW_KEY_LAST              = GLFW_KEY_MENU
+};
 
 /*! @} */
 
@@ -526,39 +539,40 @@ extern "C" {
  *
  *  @ingroup input
  *  @{ */
-
+enum GLFWkey_modifier{
 /*! @brief If this bit is set one or more Shift keys were held down.
  *
  *  If this bit is set one or more Shift keys were held down.
  */
-#define GLFW_MOD_SHIFT           0x0001
+    GLFW_MOD_SHIFT      = 0x0001,
 /*! @brief If this bit is set one or more Control keys were held down.
  *
  *  If this bit is set one or more Control keys were held down.
  */
-#define GLFW_MOD_CONTROL         0x0002
+    GLFW_MOD_CONTROL    = 0x0002,
 /*! @brief If this bit is set one or more Alt keys were held down.
  *
  *  If this bit is set one or more Alt keys were held down.
  */
-#define GLFW_MOD_ALT             0x0004
+    GLFW_MOD_ALT        = 0x0004,
 /*! @brief If this bit is set one or more Super keys were held down.
  *
  *  If this bit is set one or more Super keys were held down.
  */
-#define GLFW_MOD_SUPER           0x0008
+    GLFW_MOD_SUPER      = 0x0008,
 /*! @brief If this bit is set the Caps Lock key is enabled.
  *
  *  If this bit is set the Caps Lock key is enabled and the @ref
  *  GLFW_LOCK_KEY_MODS input mode is set.
  */
-#define GLFW_MOD_CAPS_LOCK       0x0010
+    GLFW_MOD_CAPS_LOCK  = 0x0010,
 /*! @brief If this bit is set the Num Lock key is enabled.
  *
  *  If this bit is set the Num Lock key is enabled and the @ref
  *  GLFW_LOCK_KEY_MODS input mode is set.
  */
-#define GLFW_MOD_NUM_LOCK        0x0020
+    GLFW_MOD_NUM_LOCK   = 0x0020 
+};
 
 /*! @} */
 
@@ -569,18 +583,21 @@ extern "C" {
  *
  *  @ingroup input
  *  @{ */
-#define GLFW_MOUSE_BUTTON_1         0
-#define GLFW_MOUSE_BUTTON_2         1
-#define GLFW_MOUSE_BUTTON_3         2
-#define GLFW_MOUSE_BUTTON_4         3
-#define GLFW_MOUSE_BUTTON_5         4
-#define GLFW_MOUSE_BUTTON_6         5
-#define GLFW_MOUSE_BUTTON_7         6
-#define GLFW_MOUSE_BUTTON_8         7
-#define GLFW_MOUSE_BUTTON_LAST      GLFW_MOUSE_BUTTON_8
-#define GLFW_MOUSE_BUTTON_LEFT      GLFW_MOUSE_BUTTON_1
-#define GLFW_MOUSE_BUTTON_RIGHT     GLFW_MOUSE_BUTTON_2
-#define GLFW_MOUSE_BUTTON_MIDDLE    GLFW_MOUSE_BUTTON_3
+enum GLFWmouse_button{
+    GLFW_MOUSE_BUTTON_1         = 0,
+    GLFW_MOUSE_BUTTON_2         = 1,
+    GLFW_MOUSE_BUTTON_3         = 2,
+    GLFW_MOUSE_BUTTON_4         = 3,
+    GLFW_MOUSE_BUTTON_5         = 4,
+    GLFW_MOUSE_BUTTON_6         = 5,
+    GLFW_MOUSE_BUTTON_7         = 6,
+    GLFW_MOUSE_BUTTON_8         = 7,
+    GLFW_MOUSE_BUTTON_LAST      = GLFW_MOUSE_BUTTON_8,
+    GLFW_MOUSE_BUTTON_LEFT      = GLFW_MOUSE_BUTTON_1,
+    GLFW_MOUSE_BUTTON_RIGHT     = GLFW_MOUSE_BUTTON_2,
+    GLFW_MOUSE_BUTTON_MIDDLE    = GLFW_MOUSE_BUTTON_3
+};
+
 /*! @} */
 
 /*! @defgroup joysticks Joysticks
@@ -590,23 +607,26 @@ extern "C" {
  *
  *  @ingroup input
  *  @{ */
-#define GLFW_JOYSTICK_1             0
-#define GLFW_JOYSTICK_2             1
-#define GLFW_JOYSTICK_3             2
-#define GLFW_JOYSTICK_4             3
-#define GLFW_JOYSTICK_5             4
-#define GLFW_JOYSTICK_6             5
-#define GLFW_JOYSTICK_7             6
-#define GLFW_JOYSTICK_8             7
-#define GLFW_JOYSTICK_9             8
-#define GLFW_JOYSTICK_10            9
-#define GLFW_JOYSTICK_11            10
-#define GLFW_JOYSTICK_12            11
-#define GLFW_JOYSTICK_13            12
-#define GLFW_JOYSTICK_14            13
-#define GLFW_JOYSTICK_15            14
-#define GLFW_JOYSTICK_16            15
-#define GLFW_JOYSTICK_LAST          GLFW_JOYSTICK_16
+enum GLFWjoystick{
+    GLFW_JOYSTICK_2             = 1,
+    GLFW_JOYSTICK_3             = 2,
+    GLFW_JOYSTICK_4             = 3,
+    GLFW_JOYSTICK_5             = 4,
+    GLFW_JOYSTICK_1             = 0,
+    GLFW_JOYSTICK_6             = 5,
+    GLFW_JOYSTICK_7             = 6,
+    GLFW_JOYSTICK_8             = 7,
+    GLFW_JOYSTICK_9             = 8,
+    GLFW_JOYSTICK_10            = 9,
+    GLFW_JOYSTICK_11            = 10,
+    GLFW_JOYSTICK_12            = 11,
+    GLFW_JOYSTICK_13            = 12,
+    GLFW_JOYSTICK_14            = 13,
+    GLFW_JOYSTICK_15            = 14,
+    GLFW_JOYSTICK_16            = 15,
+    GLFW_JOYSTICK_LAST          = GLFW_JOYSTICK_16
+};
+
 /*! @} */
 
 /*! @defgroup gamepad_buttons Gamepad buttons
@@ -616,27 +636,30 @@ extern "C" {
  *
  *  @ingroup input
  *  @{ */
-#define GLFW_GAMEPAD_BUTTON_A               0
-#define GLFW_GAMEPAD_BUTTON_B               1
-#define GLFW_GAMEPAD_BUTTON_X               2
-#define GLFW_GAMEPAD_BUTTON_Y               3
-#define GLFW_GAMEPAD_BUTTON_LEFT_BUMPER     4
-#define GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER    5
-#define GLFW_GAMEPAD_BUTTON_BACK            6
-#define GLFW_GAMEPAD_BUTTON_START           7
-#define GLFW_GAMEPAD_BUTTON_GUIDE           8
-#define GLFW_GAMEPAD_BUTTON_LEFT_THUMB      9
-#define GLFW_GAMEPAD_BUTTON_RIGHT_THUMB     10
-#define GLFW_GAMEPAD_BUTTON_DPAD_UP         11
-#define GLFW_GAMEPAD_BUTTON_DPAD_RIGHT      12
-#define GLFW_GAMEPAD_BUTTON_DPAD_DOWN       13
-#define GLFW_GAMEPAD_BUTTON_DPAD_LEFT       14
-#define GLFW_GAMEPAD_BUTTON_LAST            GLFW_GAMEPAD_BUTTON_DPAD_LEFT
+enum GLFWgamepad_button{
+    GLFW_GAMEPAD_BUTTON_A             = 0,
+    GLFW_GAMEPAD_BUTTON_B             = 1,
+    GLFW_GAMEPAD_BUTTON_X             = 2,
+    GLFW_GAMEPAD_BUTTON_Y             = 3,
+    GLFW_GAMEPAD_BUTTON_LEFT_BUMPER   = 4,
+    GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER  = 5,
+    GLFW_GAMEPAD_BUTTON_BACK          = 6,
+    GLFW_GAMEPAD_BUTTON_START         = 7,
+    GLFW_GAMEPAD_BUTTON_GUIDE         = 8,
+    GLFW_GAMEPAD_BUTTON_LEFT_THUMB    = 9,
+    GLFW_GAMEPAD_BUTTON_RIGHT_THUMB   = 10,
+    GLFW_GAMEPAD_BUTTON_DPAD_UP       = 11,
+    GLFW_GAMEPAD_BUTTON_DPAD_RIGHT    = 12,
+    GLFW_GAMEPAD_BUTTON_DPAD_DOWN     = 13,
+    GLFW_GAMEPAD_BUTTON_DPAD_LEFT     = 14,
 
-#define GLFW_GAMEPAD_BUTTON_CROSS       GLFW_GAMEPAD_BUTTON_A
-#define GLFW_GAMEPAD_BUTTON_CIRCLE      GLFW_GAMEPAD_BUTTON_B
-#define GLFW_GAMEPAD_BUTTON_SQUARE      GLFW_GAMEPAD_BUTTON_X
-#define GLFW_GAMEPAD_BUTTON_TRIANGLE    GLFW_GAMEPAD_BUTTON_Y
+    GLFW_GAMEPAD_BUTTON_LAST          = GLFW_GAMEPAD_BUTTON_DPAD_LEFT,
+    GLFW_GAMEPAD_BUTTON_CROSS         = GLFW_GAMEPAD_BUTTON_A,
+    GLFW_GAMEPAD_BUTTON_CIRCLE        = GLFW_GAMEPAD_BUTTON_B,
+    GLFW_GAMEPAD_BUTTON_SQUARE        = GLFW_GAMEPAD_BUTTON_X,
+    GLFW_GAMEPAD_BUTTON_TRIANGLE      = GLFW_GAMEPAD_BUTTON_Y
+};
+
 /*! @} */
 
 /*! @defgroup gamepad_axes Gamepad axes
@@ -646,16 +669,17 @@ extern "C" {
  *
  *  @ingroup input
  *  @{ */
-#define GLFW_GAMEPAD_AXIS_LEFT_X        0
-#define GLFW_GAMEPAD_AXIS_LEFT_Y        1
-#define GLFW_GAMEPAD_AXIS_RIGHT_X       2
-#define GLFW_GAMEPAD_AXIS_RIGHT_Y       3
-#define GLFW_GAMEPAD_AXIS_LEFT_TRIGGER  4
-#define GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER 5
-#define GLFW_GAMEPAD_AXIS_LAST          GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER
-/*! @} */
+enum GLFWgamepad_axis{
+    GLFW_GAMEPAD_AXIS_LEFT_X        = 0,
+    GLFW_GAMEPAD_AXIS_LEFT_Y        = 1,
+    GLFW_GAMEPAD_AXIS_RIGHT_X       = 2,
+    GLFW_GAMEPAD_AXIS_RIGHT_Y       = 3,
+    GLFW_GAMEPAD_AXIS_LEFT_TRIGGER  = 4,
+    GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER = 5,
+    GLFW_GAMEPAD_AXIS_LAST          = GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER
+};
 
-/*! @defgroup errors Error codes
+/*! @ errors Error codes
  *  @brief Error codes.
  *
  *  See [error handling](@ref error_handling) for how these are used.
@@ -2297,7 +2321,7 @@ GLFWAPI void glfwInitVulkanLoader(PFN_vkGetInstanceProcAddr loader);
  *
  *  @ingroup init
  */
-GLFWAPI void glfwGetVersion(int* major, int* minor, int* rev);
+GLFWAPI void glfwGetVersion(uint32_t* major, uint32_t* minor, uint32_t* rev);
 
 /*! @brief Returns a string describing the compile-time configuration.
  *
@@ -2362,7 +2386,7 @@ GLFWAPI const char* glfwGetVersionString(void);
  *
  *  @ingroup init
  */
-GLFWAPI int glfwGetError(const char** description);
+GLFWAPI int32_t glfwGetError(const char** description);
 
 /*! @brief Sets the error callback.
  *
@@ -2429,7 +2453,7 @@ GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun callback);
  *
  *  @ingroup init
  */
-GLFWAPI int glfwGetPlatform(void);
+GLFWAPI uint32_t glfwGetPlatform(void);
 
 /*! @brief Returns whether the library includes support for the specified platform.
  *
@@ -2453,7 +2477,7 @@ GLFWAPI int glfwGetPlatform(void);
  *
  *  @ingroup init
  */
-GLFWAPI int glfwPlatformSupported(int platform);
+GLFWAPI uint32_t glfwPlatformSupported(uint32_t platform);
 
 /*! @brief Returns the currently connected monitors.
  *
@@ -2482,7 +2506,7 @@ GLFWAPI int glfwPlatformSupported(int platform);
  *
  *  @ingroup monitor
  */
-GLFWAPI GLFWmonitor** glfwGetMonitors(int* count);
+GLFWAPI GLFWmonitor** glfwGetMonitors(uint32_t* count);
 
 /*! @brief Returns the primary monitor.
  *
@@ -2531,7 +2555,7 @@ GLFWAPI GLFWmonitor* glfwGetPrimaryMonitor(void);
  *
  *  @ingroup monitor
  */
-GLFWAPI void glfwGetMonitorPos(GLFWmonitor* monitor, int* xpos, int* ypos);
+GLFWAPI void glfwGetMonitorPos(GLFWmonitor* monitor, uint32_t* xpos, uint32_t* ypos);
 
 /*! @brief Retrieves the work area of the monitor.
  *

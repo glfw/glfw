@@ -2367,7 +2367,9 @@ GLFWAPI int glfwGetError(const char** description);
 /*! @brief Returns the description for a specific error code.
  *
  *  @param[in] code The error code whose description is requested.
- *  @return The error description pointer belonging to specified error code, or NULL if error code is not found.
+ *  @param[out] description The buffer which will store the contents of the description.
+ *  @param[in] descriptionSize The size of the buffer in bytes.
+ *  @return Nothing.
  *  
  *  @errors None.
  *
@@ -2385,7 +2387,7 @@ GLFWAPI int glfwGetError(const char** description);
  *
  *  @ingroup init
  */
-GLFWAPI const char* glfwGetErrorDescription(int code);
+GLFWAPI void glfwGetErrorDescription(int code, char *description, int descriptionSize);
 
 /*! @brief Sets the error callback.
  *

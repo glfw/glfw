@@ -484,6 +484,23 @@ GLFWAPI int glfwGetError(const char** description)
     return code;
 }
 
+GLFWAPI const char* glfwGetErrorDescription(int code)
+{
+    _GLFWerror* error;
+        
+    error = _glfw.errorListHead;
+    
+    while (error)
+    {
+        if (error->code == code)
+            return error->description;
+            
+        error = error->next;
+    }
+    
+    return NULL;
+}
+
 GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun)
 {
     _GLFW_SWAP(GLFWerrorfun, _glfwErrorCallback, cbfun);

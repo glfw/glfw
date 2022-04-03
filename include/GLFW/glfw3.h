@@ -2364,6 +2364,29 @@ GLFWAPI const char* glfwGetVersionString(void);
  */
 GLFWAPI int glfwGetError(const char** description);
 
+/*! @brief Returns the description for a specific error code.
+ *
+ *  @param[in] code The error code whose description is requested.
+ *  @return The error description pointer belonging to specified error code, or NULL if error code is not found.
+ *  
+ *  @errors None.
+ *
+ *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is guaranteed to be valid only until the library is terminated.
+ *
+ *  @remark This function may be called before @ref glfwInit.
+ *
+ *  @thread_safety This function may be called from any thread.
+ *
+ *  @sa @ref error_handling
+ *  @sa @ref glfwGetError
+ *
+ *  @since Added in version 3.3.7.
+ *
+ *  @ingroup init
+ */
+GLFWAPI const char* glfwGetErrorDescription(int code);
+
 /*! @brief Sets the error callback.
  *
  *  This function sets the error callback, which is called with an error code

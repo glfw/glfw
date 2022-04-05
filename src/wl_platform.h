@@ -45,10 +45,10 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #include "xkb_unicode.h"
 #include "posix_poll.h"
 
-typedef int (* PFN_wl_display_flush)(struct wl_display *display);
-typedef void (* PFN_wl_display_cancel_read)(struct wl_display *display);
-typedef int (* PFN_wl_display_dispatch_pending)(struct wl_display *display);
-typedef int (* PFN_wl_display_read_events)(struct wl_display *display);
+typedef int (* PFN_wl_display_flush)(struct wl_display* display);
+typedef void (* PFN_wl_display_cancel_read)(struct wl_display* display);
+typedef int (* PFN_wl_display_dispatch_pending)(struct wl_display* display);
+typedef int (* PFN_wl_display_read_events)(struct wl_display* display);
 typedef struct wl_display* (* PFN_wl_display_connect)(const char*);
 typedef void (* PFN_wl_display_disconnect)(struct wl_display*);
 typedef int (* PFN_wl_display_roundtrip)(struct wl_display*);
@@ -219,6 +219,13 @@ typedef struct _GLFWdecorationWayland
     struct wp_viewport*         viewport;
 } _GLFWdecorationWayland;
 
+typedef struct _GLFWofferWayland
+{
+    struct wl_data_offer*       offer;
+    GLFWbool                    text_plain_utf8;
+    GLFWbool                    text_uri_list;
+} _GLFWofferWayland;
+
 // Wayland-specific per-window data
 //
 typedef struct _GLFWwindowWayland
@@ -281,14 +288,22 @@ typedef struct _GLFWlibraryWayland
     struct wl_keyboard*         keyboard;
     struct wl_data_device_manager*          dataDeviceManager;
     struct wl_data_device*      dataDevice;
-    struct wl_data_offer*       dataOffer;
-    struct wl_data_source*      dataSource;
     struct xdg_wm_base*         wmBase;
     struct zxdg_decoration_manager_v1*      decorationManager;
     struct wp_viewporter*       viewporter;
     struct zwp_relative_pointer_manager_v1* relativePointerManager;
     struct zwp_pointer_constraints_v1*      pointerConstraints;
     struct zwp_idle_inhibit_manager_v1*     idleInhibitManager;
+
+    _GLFWofferWayland*          offers;
+    unsigned int                offerCount;
+
+    struct wl_data_offer*       selectionOffer;
+    struct wl_data_source*      selectionSource;
+
+    struct wl_data_offer*       dragOffer;
+    _GLFWwindow*                dragFocus;
+    uint32_t                    dragSerial;
 
     int                         compositorVersion;
     int                         seatVersion;
@@ -306,9 +321,6 @@ typedef struct _GLFWlibraryWayland
     int                         keyboardLastKey;
     int                         keyboardLastScancode;
     char*                       clipboardString;
-    size_t                      clipboardSize;
-    char*                       clipboardSendString;
-    size_t                      clipboardSendSize;
     int                         timerfd;
     short int                   keycodes[256];
     short int                   scancodes[GLFW_KEY_LAST + 1];
@@ -458,7 +470,7 @@ float _glfwGetWindowOpacityWayland(_GLFWwindow* window);
 void _glfwSetWindowOpacityWayland(_GLFWwindow* window, float opacity);
 void _glfwSetWindowMousePassthroughWayland(_GLFWwindow* window, GLFWbool enabled);
 
-void _glfwSetRawMouseMotionWayland(_GLFWwindow *window, GLFWbool enabled);
+void _glfwSetRawMouseMotionWayland(_GLFWwindow* window, GLFWbool enabled);
 GLFWbool _glfwRawMouseMotionSupportedWayland(void);
 
 void _glfwPollEventsWayland(void);
@@ -499,3 +511,7 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version);
 GLFWbool _glfwInputTextWayland(_GLFWwindow* window, uint32_t scancode);
 
 _GLFWusercontext* _glfwCreateUserContextWayland(_GLFWwindow* window);
+
+void _glfwAddSeatListenerWayland(struct wl_seat* seat);
+void _glfwAddDataDeviceListenerWayland(struct wl_data_device* device);
+

@@ -48,6 +48,7 @@
 #include "wayland-relative-pointer-unstable-v1-client-protocol.h"
 #include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
 #include "wayland-idle-inhibit-unstable-v1-client-protocol.h"
+#include "wayland-wlr-layer-shell-unstable-v1-client-protocol.h"
 
 
 static int createTmpfileCloexec(char* tmpname)
@@ -613,6 +614,31 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
     return GLFW_TRUE;
 }
 
+static void zwlrLayerSurfaceConfigure(void* data,
+            struct zwlr_layer_surface_v1* surface,
+            uint32_t serial, uint32_t width, uint32_t height) {
+    // Acknowledge configure request.
+    zwlr_layer_surface_v1_ack_configure(surface, serial);
+
+    // Handle layer surface resize as window resize.
+    _GLFWwindow* window = data;
+    _glfwInputWindowSize(window, width, height);
+    _glfwSetWindowSizeWayland(window, width, height);
+    _glfwInputWindowDamage(window);
+}
+
+static void zwlrLayerSurfaceClosed(void* data,
+            struct zwlr_layer_surface_v1* surface) {
+    // Handle layer surface close as window close.
+    _GLFWwindow* window = data;
+    _glfwInputWindowCloseRequest(window);
+}
+
+static const struct zwlr_layer_surface_v1_listener layer_surface_listener = {
+    zwlrLayerSurfaceConfigure,
+    zwlrLayerSurfaceClosed,
+};
+
 static GLFWbool createSurface(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
                               const _GLFWfbconfig* fbconfig)
@@ -642,7 +668,48 @@ static GLFWbool createSurface(_GLFWwindow* window,
     if (!window->wl.transparent)
         setOpaqueRegion(window);
 
-    if (window->monitor || wndconfig->visible)
+    if (wndconfig->wl.shellLayer != -1)
+    {
+        if (!_glfw.wl.layerShell)
+        {
+            _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                            "Wayland: Layer shell extension not available");
+            return GLFW_FALSE;
+        }
+
+        // Empty input region (background shouldn't capture events).
+        struct wl_region *input_region =
+                wl_compositor_create_region(_glfw.wl.compositor);
+        wl_surface_set_input_region(window->wl.surface, input_region);
+        wl_region_destroy(input_region);
+
+        // Setup layer surface for background.
+        window->wl.layer_surface = zwlr_layer_shell_v1_get_layer_surface(
+                        _glfw.wl.layerShell, window->wl.surface, window->monitor ? window->monitor->wl.output : NULL,
+                        wndconfig->wl.shellLayer, "wallpaper");
+        if (!window->wl.layer_surface)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Wayland: Could not create layer surface");
+            return GLFW_FALSE;
+        }
+
+        zwlr_layer_surface_v1_set_size(window->wl.layer_surface, 0, 0);
+        zwlr_layer_surface_v1_set_anchor(window->wl.layer_surface,
+                        ZWLR_LAYER_SURFACE_V1_ANCHOR_TOP |
+                        ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT |
+                        ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM |
+                        ZWLR_LAYER_SURFACE_V1_ANCHOR_LEFT);
+        zwlr_layer_surface_v1_set_exclusive_zone(window->wl.layer_surface, -1);
+        zwlr_layer_surface_v1_add_listener(window->wl.layer_surface,
+                        &layer_surface_listener, window);
+        wl_surface_commit(window->wl.surface);
+        wl_display_roundtrip(_glfw.wl.display);
+
+        // For layers, make the assumption that they're always visible.
+        window->wl.visible = GLFW_TRUE;
+    }
+    else if (window->monitor || wndconfig->visible)
     {
         if (!createXdgSurface(window))
             return GLFW_FALSE;
@@ -1770,6 +1837,9 @@ void _glfwDestroyWindowWayland(_GLFWwindow* window)
     if (window->wl.xdg.surface)
         xdg_surface_destroy(window->wl.xdg.surface);
 
+    if (window->wl.layer_surface)
+        zwlr_layer_surface_v1_destroy(window->wl.layer_surface);
+
     if (window->wl.surface)
         wl_surface_destroy(window->wl.surface);
 
@@ -1920,7 +1990,7 @@ void _glfwShowWindowWayland(_GLFWwindow* window)
     {
         // NOTE: The XDG surface and role are created here so command-line applications
         //       with off-screen windows do not appear in for example the Unity dock
-        if (!window->wl.xdg.toplevel)
+        if (!window->wl.layer_surface && !window->wl.xdg.toplevel)
             createXdgSurface(window);
 
         window->wl.visible = GLFW_TRUE;

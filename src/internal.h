@@ -421,6 +421,9 @@ struct _GLFWwndconfig
     struct {
         GLFWbool  keymenu;
     } win32;
+    struct {
+        int       shellLayer;
+    } wl;
 };
 
 // Context configuration

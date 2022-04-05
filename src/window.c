@@ -289,6 +289,9 @@ void glfwDefaultWindowHints(void)
 
     // The default is to use full Retina resolution framebuffers
     _glfw.hints.window.ns.retina = GLFW_TRUE;
+
+    // Default for wayland is to not create a shell layer but a application window
+    _glfw.hints.window.wl.shellLayer = -1;
 }
 
 GLFWAPI void glfwWindowHint(int hint, int value)
@@ -419,6 +422,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             return;
         case GLFW_REFRESH_RATE:
             _glfw.hints.refreshRate = value;
+            return;
+        case GLFW_WAYLAND_SHELL_LAYER:
+            _glfw.hints.window.wl.shellLayer = value;
             return;
     }
 

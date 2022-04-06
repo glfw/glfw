@@ -1493,7 +1493,13 @@ int _glfwCreateWindowWin32(_GLFWwindow* window,
             if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }
+
+        if (!_glfwRefreshContextAttribs(window, ctxconfig))
+            return GLFW_FALSE;
     }
+
+    if (wndconfig->mousePassthrough)
+        _glfwSetWindowMousePassthroughWin32(window, GLFW_TRUE);
 
     if (window->monitor)
     {
@@ -1501,6 +1507,18 @@ int _glfwCreateWindowWin32(_GLFWwindow* window,
         _glfwFocusWindowWin32(window);
         acquireMonitor(window);
         fitToMonitor(window);
+
+        if (wndconfig->centerCursor)
+            _glfwCenterCursorInContentArea(window);
+    }
+    else
+    {
+        if (wndconfig->visible)
+        {
+            _glfwShowWindowWin32(window);
+            if (wndconfig->focused)
+                _glfwFocusWindowWin32(window);
+        }
     }
 
     return GLFW_TRUE;

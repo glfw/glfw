@@ -325,6 +325,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Drag and drop data was misinterpreted as clipboard string
  - [Wayland] Bugfix: MIME type matching was not performed for clipboard string
  - [Wayland] Bugfix: The OSMesa library was not unloaded on termination
+ - [Wayland] Bugfix: `glfwCreateWindow` could emit `GLFW_FEATURE_UNAVAILABLE`
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)

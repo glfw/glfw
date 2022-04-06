@@ -215,38 +215,10 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->numer       = GLFW_DONT_CARE;
     window->denom       = GLFW_DONT_CARE;
 
-    // Open the actual window and create its context
     if (!_glfw.platform.createWindow(window, &wndconfig, &ctxconfig, &fbconfig))
     {
         glfwDestroyWindow((GLFWwindow*) window);
         return NULL;
-    }
-
-    if (ctxconfig.client != GLFW_NO_API)
-    {
-        if (!_glfwRefreshContextAttribs(window, &ctxconfig))
-        {
-            glfwDestroyWindow((GLFWwindow*) window);
-            return NULL;
-        }
-    }
-
-    if (wndconfig.mousePassthrough)
-        _glfw.platform.setWindowMousePassthrough(window, GLFW_TRUE);
-
-    if (window->monitor)
-    {
-        if (wndconfig.centerCursor)
-            _glfwCenterCursorInContentArea(window);
-    }
-    else
-    {
-        if (wndconfig.visible)
-        {
-            _glfw.platform.showWindow(window);
-            if (wndconfig.focused)
-                _glfw.platform.focusWindow(window);
-        }
     }
 
     return (GLFWwindow*) window;

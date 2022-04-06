@@ -1952,13 +1952,31 @@ int _glfwCreateWindowX11(_GLFWwindow* window,
             if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }
+
+        if (!_glfwRefreshContextAttribs(window, ctxconfig))
+            return GLFW_FALSE;
     }
+
+    if (wndconfig->mousePassthrough)
+        _glfwSetWindowMousePassthroughX11(window, GLFW_TRUE);
 
     if (window->monitor)
     {
         _glfwShowWindowX11(window);
         updateWindowMode(window);
         acquireMonitor(window);
+
+        if (wndconfig->centerCursor)
+            _glfwCenterCursorInContentArea(window);
+    }
+    else
+    {
+        if (wndconfig->visible)
+        {
+            _glfwShowWindowX11(window);
+            if (wndconfig->focused)
+                _glfwFocusWindowX11(window);
+        }
     }
 
     XFlush(_glfw.x11.display);

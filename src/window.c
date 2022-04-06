@@ -221,30 +221,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
         return NULL;
     }
 
-    if (ctxconfig.client != GLFW_NO_API)
-    {
-        if (!_glfwRefreshContextAttribs(window, &ctxconfig))
-        {
-            glfwDestroyWindow((GLFWwindow*) window);
-            return NULL;
-        }
-    }
-
-    if (window->monitor)
-    {
-        if (wndconfig.centerCursor)
-            _glfwCenterCursorInContentArea(window);
-    }
-    else
-    {
-        if (wndconfig.visible)
-        {
-            _glfwPlatformShowWindow(window);
-            if (wndconfig.focused)
-                _glfwPlatformFocusWindow(window);
-        }
-    }
-
     return (GLFWwindow*) window;
 }
 

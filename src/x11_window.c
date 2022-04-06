@@ -2013,6 +2013,9 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }
+
+        if (!_glfwRefreshContextAttribs(window, ctxconfig))
+            return GLFW_FALSE;
     }
 
     if (window->monitor)
@@ -2020,6 +2023,18 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         _glfwPlatformShowWindow(window);
         updateWindowMode(window);
         acquireMonitor(window);
+
+        if (wndconfig->centerCursor)
+            _glfwCenterCursorInContentArea(window);
+    }
+    else
+    {
+        if (wndconfig->visible)
+        {
+            _glfwPlatformShowWindow(window);
+            if (wndconfig->focused)
+                _glfwPlatformFocusWindow(window);
+        }
     }
 
     XFlush(_glfw.x11.display);

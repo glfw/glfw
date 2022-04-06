@@ -1925,6 +1925,9 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }
+
+        if (!_glfwRefreshContextAttribs(window, ctxconfig))
+            return GLFW_FALSE;
     }
 
     return GLFW_TRUE;

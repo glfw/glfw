@@ -3,6 +3,10 @@ link_libraries(glfw)
 
 include_directories("${GLFW_SOURCE_DIR}/deps")
 
+if (WIN32)
+    link_libraries(imm32)
+endif()
+
 if (MATH_LIBRARY)
     link_libraries("${MATH_LIBRARY}")
 endif()

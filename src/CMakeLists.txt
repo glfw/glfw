@@ -153,8 +153,7 @@ if (CMAKE_VERSION VERSION_LESS "3.16" AND APPLE)
 endif()
 
 if (GLFW_BUILD_WIN32)
-    list(APPEND glfw_PKG_LIBS "-lgdi32")
-    list(APPEND glfw_LIBRARIES "imm32")
+    list(APPEND glfw_PKG_LIBS "-lgdi32 -limm32")
 endif()
 
 if (GLFW_BUILD_COCOA)

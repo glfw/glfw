@@ -1428,7 +1428,7 @@ GLFWbool _glfwRegisterWindowClassWin32(void)
     ZeroMemory(&wc, sizeof(wc));
     wc.cbSize        = sizeof(wc);
     wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-    wc.lpfnWndProc   = (WNDPROC) windowProc;
+    wc.lpfnWndProc   = windowProc;
     wc.hInstance     = _glfw.win32.instance;
     wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
     wc.lpszClassName = _GLFW_WNDCLASSNAME;

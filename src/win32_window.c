@@ -868,10 +868,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                     if (ctext != window->ctext) {
                         unsigned int* preeditText = _glfw_realloc(window->preeditText, sizeof(unsigned int)*ctext);
                         if (preeditText == NULL) {
-                            return 0;
                             _glfw_free(buffer);
                             _glfw_free(attributes);
                             _glfw_free(clauses);
+                            return 0;
                         }
                         window->preeditText = preeditText;
                         window->ctext = ctext;
@@ -894,10 +894,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                     if (cblocks != window->cblocks) {
                         int* blocks = _glfw_realloc(window->preeditAttributeBlocks, sizeof(int)*cblocks);
                         if (blocks == NULL) {
-                            return 0;
                             _glfw_free(buffer);
                             _glfw_free(attributes);
                             _glfw_free(clauses);
+                            return 0;
                         }
                         window->preeditAttributeBlocks = blocks;
                         window->cblocks = cblocks;

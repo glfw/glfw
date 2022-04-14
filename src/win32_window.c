@@ -858,7 +858,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                 {
                     // get preedit data
                     int length = preeditTextLength / sizeof(WCHAR);
-                    LPWSTR buffer = (LPWSTR) _glfw_calloc(preeditTextLength, sizeof(WCHAR));
+                    LPWSTR buffer = (LPWSTR) _glfw_calloc(preeditTextLength, 1);
                     LPSTR attributes = (LPSTR) _glfw_calloc(attrLength, 1);
                     DWORD *clauses = (DWORD*) _glfw_calloc(clauseLength, 1);
                     ImmGetCompositionStringW(hIMC, GCS_COMPSTR, buffer, preeditTextLength);

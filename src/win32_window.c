@@ -852,8 +852,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                 HIMC hIMC = ImmGetContext(hWnd);
                 // get preedit data sizes
                 LONG preeditTextLength = ImmGetCompositionStringW(hIMC, GCS_COMPSTR, NULL, 0);
-                LONG attrLength = ImmGetCompositionString(hIMC, GCS_COMPATTR, NULL, 0);
-                LONG clauseLength = ImmGetCompositionString(hIMC, GCS_COMPCLAUSE, NULL, 0);
+                LONG attrLength = ImmGetCompositionStringW(hIMC, GCS_COMPATTR, NULL, 0);
+                LONG clauseLength = ImmGetCompositionStringW(hIMC, GCS_COMPCLAUSE, NULL, 0);
 
                 if (preeditTextLength > 0)
                 {
@@ -868,8 +868,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
                     // get preedit data
                     ImmGetCompositionStringW(hIMC, GCS_COMPSTR, buffer, preeditTextLength);
-                    ImmGetCompositionString(hIMC, GCS_COMPATTR, attributes, attrLength);
-                    ImmGetCompositionString(hIMC, GCS_COMPCLAUSE, clauses, clauseLength);
+                    ImmGetCompositionStringW(hIMC, GCS_COMPATTR, attributes, attrLength);
+                    ImmGetCompositionStringW(hIMC, GCS_COMPCLAUSE, clauses, clauseLength);
 
                     // store preedit text
                     while (ctext < length + 1)

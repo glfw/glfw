@@ -582,6 +582,7 @@ static GLFWbool getImmPreedit(_GLFWwindow* window)
                 _glfw_free(buffer);
                 _glfw_free(attributes);
                 _glfw_free(clauses);
+                ImmReleaseContext(window->win32.handle, hIMC);
                 return GLFW_FALSE;
             }
             window->preeditText = preeditText;
@@ -610,6 +611,7 @@ static GLFWbool getImmPreedit(_GLFWwindow* window)
                 _glfw_free(buffer);
                 _glfw_free(attributes);
                 _glfw_free(clauses);
+                ImmReleaseContext(window->win32.handle, hIMC);
                 return GLFW_FALSE;
             }
             window->preeditAttributeBlocks = blocks;

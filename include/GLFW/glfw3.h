@@ -1878,9 +1878,9 @@ typedef void (* GLFWcharfun)(GLFWwindow* window, unsigned int codepoint);
  */
 typedef void (* GLFWcharmodsfun)(GLFWwindow* window, unsigned int codepoint, int mods);
 
-/*! @brief The function signature for preedit callbacks.
+/*! @brief The function pointer type for preedit callbacks.
  *
- *  This is the function signature for preedit callback functions.
+ *  This is the function pointer type for preedit callback functions.
  *
  *  @param[in] window The window that received the event.
  *  @param[in] length Preedit string length.
@@ -1896,9 +1896,9 @@ typedef void (* GLFWcharmodsfun)(GLFWwindow* window, unsigned int codepoint, int
  */
 typedef void (* GLFWpreeditfun)(GLFWwindow*,int,unsigned int*,int,int*,int);
 
-/*! @brief The function signature for IME status change callbacks.
+/*! @brief The function pointer type for IME status change callbacks.
  *
- *  This is the function signature for IME status change callback functions.
+ *  This is the function pointer type for IME status change callback functions.
  *
  *  @param[in] window The window that received the event.
  *

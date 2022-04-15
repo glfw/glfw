@@ -559,9 +559,9 @@ static GLFWbool getImmPreedit(_GLFWwindow* window)
         int cblocks = window->cblocks;
         int focusedBlock = 0;
         int length = preeditBytes / sizeof(WCHAR);
-        LPWSTR buffer = (LPWSTR) _glfw_calloc(preeditBytes, 1);
-        LPSTR attributes = (LPSTR) _glfw_calloc(attrBytes, 1);
-        DWORD *clauses = (DWORD*) _glfw_calloc(clauseBytes, 1);
+        LPWSTR buffer = _glfw_calloc(preeditBytes, 1);
+        LPSTR attributes = _glfw_calloc(attrBytes, 1);
+        DWORD *clauses = _glfw_calloc(clauseBytes, 1);
 
         // get preedit data
         ImmGetCompositionStringW(hIMC, GCS_COMPSTR, buffer, preeditBytes);

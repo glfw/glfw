@@ -61,7 +61,7 @@ information.  The name and number of this chapter unfortunately varies between
 versions and APIs, but has at times been named _Shared Objects and Multiple
 Contexts_.
 
-GLFW comes with a barebones object sharing example program called `sharing`.
+GLFW comes with a bare-bones object sharing example program called `sharing`.
 
 
 @subsection context_offscreen Offscreen contexts
@@ -189,7 +189,7 @@ it suppresses the development environment's OpenGL or OpenGL ES header.
 #include <GLFW/glfw3.h>
 @endcode
 
-Finally you need to initialize glad once you have a suitable current context.
+Finally, you need to initialize glad once you have a suitable current context.
 
 @code
 window = glfwCreateWindow(640, 480, "My Window", NULL, NULL);
@@ -205,7 +205,7 @@ gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 
 Once glad has been loaded, you have access to all OpenGL core and extension
 functions supported by both the context you created and the glad loader you
-generated and you are ready to start rendering.
+generated. After that, you are ready to start rendering.
 
 You can specify a minimum required OpenGL or OpenGL ES version with
 [context hints](@ref window_hints_ctx).  If your needs are more complex, you can

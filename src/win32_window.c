@@ -636,6 +636,37 @@ static GLFWbool getImmPreedit(_GLFWwindow* window)
     return GLFW_TRUE;
 }
 
+static GLFWbool commitImmPreedit(_GLFWwindow* window)
+{
+    HIMC hIMC;
+    LONG preeditBytes;
+
+    if (!window->callbacks.character)
+        return GLFW_FALSE;
+
+    hIMC = ImmGetContext(window->win32.handle);
+    // get preedit data sizes
+    preeditBytes = ImmGetCompositionStringW(hIMC, GCS_RESULTSTR, NULL, 0);
+
+    if (preeditBytes > 0)
+    {
+        int i;
+        int length = preeditBytes / sizeof(WCHAR);
+        LPWSTR buffer = _glfw_calloc(preeditBytes, 1);
+
+        // get preedit data
+        ImmGetCompositionStringW(hIMC, GCS_RESULTSTR, buffer, preeditBytes);
+
+        for (i = 0; i < length; i++)
+            window->callbacks.character((GLFWwindow*) window, buffer[i]);
+
+        _glfw_free(buffer);
+    }
+
+    ImmReleaseContext(window->win32.handle, hIMC);
+    return GLFW_TRUE;
+}
+
 // Window callback function (handles window messages)
 //
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -937,6 +968,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                 window->nblocks = 0;
                 window->ntext = 0;
                 _glfwInputPreedit(window, 0);
+                commitImmPreedit(window);
                 return TRUE;
             }
             if (lParam & GCS_COMPSTR)

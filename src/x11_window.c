@@ -985,13 +985,16 @@ static const char* getSelectionString(Atom selection)
 
                 if (!itemCount)
                 {
-                    if (targets[i] == XA_STRING)
+                    if (string)
                     {
-                        *selectionString = convertLatin1toUTF8(string);
-                        _glfw_free(string);
+                        if (targets[i] == XA_STRING)
+                        {
+                            *selectionString = convertLatin1toUTF8(string);
+                            _glfw_free(string);
+                        }
+                        else
+                            *selectionString = string;
                     }
-                    else
-                        *selectionString = string;
 
                     break;
                 }

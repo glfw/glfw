@@ -486,6 +486,9 @@ GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* window);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
+ *  @remark Because EGL is initialized on demand, this function will return
+ *  `EGL_NO_DISPLAY` until the first context has been created via EGL.
+ *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.
  *

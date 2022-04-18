@@ -123,6 +123,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - Added `GLFW_NATIVE_INCLUDE_NONE` for disabling inclusion of native headers (#1348)
  - Bugfix: `glfwMakeContextCurrent` would access TLS slot before initialization
  - Bugfix: `glfwSetGammaRamp` could emit `GLFW_INVALID_VALUE` before initialization
  - Bugfix: `glfwGetJoystickUserPointer` returned `NULL` during disconnection (#2092)

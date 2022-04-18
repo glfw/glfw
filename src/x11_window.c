@@ -929,20 +929,6 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
     return None;
 }
 
-static void handleSelectionClear(XEvent* event)
-{
-    if (event->xselectionclear.selection == _glfw.x11.PRIMARY)
-    {
-        free(_glfw.x11.primarySelectionString);
-        _glfw.x11.primarySelectionString = NULL;
-    }
-    else
-    {
-        free(_glfw.x11.clipboardString);
-        _glfw.x11.clipboardString = NULL;
-    }
-}
-
 static void handleSelectionRequest(XEvent* event)
 {
     const XSelectionRequestEvent* request = &event->xselectionrequest;
@@ -1236,12 +1222,7 @@ static void processEvent(XEvent *event)
         return;
     }
 
-    if (event->type == SelectionClear)
-    {
-        handleSelectionClear(event);
-        return;
-    }
-    else if (event->type == SelectionRequest)
+    if (event->type == SelectionRequest)
     {
         handleSelectionRequest(event);
         return;
@@ -1944,10 +1925,6 @@ void _glfwPushSelectionToManagerX11(void)
             {
                 case SelectionRequest:
                     handleSelectionRequest(&event);
-                    break;
-
-                case SelectionClear:
-                    handleSelectionClear(&event);
                     break;
 
                 case SelectionNotify:

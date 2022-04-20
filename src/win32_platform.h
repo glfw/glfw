@@ -316,6 +316,26 @@ typedef HRESULT (WINAPI * PFN_GetDpiForMonitor)(HMONITOR,MONITOR_DPI_TYPE,UINT*,
 typedef LONG (WINAPI * PFN_RtlVerifyVersionInfo)(OSVERSIONINFOEXW*,ULONG,ULONGLONG);
 #define RtlVerifyVersionInfo _glfw.win32.ntdll.RtlVerifyVersionInfo_
 
+// imm32 function pointer typedefs
+typedef LONG (WINAPI * PFN_ImmGetCompositionStringW)(HIMC,DWORD,LPVOID,DWORD);
+typedef HIMC (WINAPI * PFN_ImmGetContext)(HWND);
+typedef BOOL (WINAPI * PFN_ImmGetConversionStatus)(HIMC,LPDWORD,LPDWORD);
+typedef UINT (WINAPI * PFN_ImmGetDescriptionW)(HKL,LPWSTR,UINT);
+typedef BOOL (WINAPI * PFN_ImmGetOpenStatus)(HIMC);
+typedef BOOL (WINAPI * PFN_ImmNotifyIME)(HIMC,DWORD,DWORD,DWORD);
+typedef BOOL (WINAPI * PFN_ImmReleaseContext)(HWND,HIMC);
+typedef BOOL (WINAPI * PFN_ImmSetCandidateWindow)(HIMC,LPCANDIDATEFORM);
+typedef BOOL (WINAPI * PFN_ImmSetOpenStatus)(HIMC,BOOL);
+#define ImmGetCompositionStringW _glfw.win32.imm32.ImmGetCompositionStringW_
+#define ImmGetContext _glfw.win32.imm32.ImmGetContext_
+#define ImmGetConversionStatus _glfw.win32.imm32.ImmGetConversionStatus_
+#define ImmGetDescriptionW _glfw.win32.imm32.ImmGetDescriptionW_
+#define ImmGetOpenStatus _glfw.win32.imm32.ImmGetOpenStatus_
+#define ImmNotifyIME _glfw.win32.imm32.ImmNotifyIME_
+#define ImmReleaseContext _glfw.win32.imm32.ImmReleaseContext_
+#define ImmSetCandidateWindow _glfw.win32.imm32.ImmSetCandidateWindow_
+#define ImmSetOpenStatus _glfw.win32.imm32.ImmSetOpenStatus_
+
 // WGL extension pointer typedefs
 typedef BOOL (WINAPI * PFNWGLSWAPINTERVALEXTPROC)(int);
 typedef BOOL (WINAPI * PFNWGLGETPIXELFORMATATTRIBIVARBPROC)(HDC,int,int,UINT,const int*,int*);
@@ -499,6 +519,19 @@ typedef struct _GLFWlibraryWin32
         HINSTANCE                       instance;
         PFN_RtlVerifyVersionInfo        RtlVerifyVersionInfo_;
     } ntdll;
+
+    struct {
+        HINSTANCE                       instance;
+        PFN_ImmGetCompositionStringW    ImmGetCompositionStringW_;
+        PFN_ImmGetContext               ImmGetContext_;
+        PFN_ImmGetConversionStatus      ImmGetConversionStatus_;
+        PFN_ImmGetDescriptionW          ImmGetDescriptionW_;
+        PFN_ImmGetOpenStatus            ImmGetOpenStatus_;
+        PFN_ImmNotifyIME                ImmNotifyIME_;
+        PFN_ImmReleaseContext           ImmReleaseContext_;
+        PFN_ImmSetCandidateWindow       ImmSetCandidateWindow_;
+        PFN_ImmSetOpenStatus            ImmSetOpenStatus_;
+    } imm32;
 } _GLFWlibraryWin32;
 
 // Win32-specific per-monitor data

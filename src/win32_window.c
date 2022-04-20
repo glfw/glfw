@@ -34,7 +34,6 @@
 #include <string.h>
 #include <windowsx.h>
 #include <shellapi.h>
-#include <imm.h>
 
 // Returns the window style for the specified window
 //

@@ -13,7 +13,6 @@ if (MSVC OR CMAKE_C_SIMULATE_ID STREQUAL "MSVC")
 endif()
 
 if (WIN32)
-    link_libraries(imm32)
     set(ICON glfw.rc)
 elseif (APPLE)
     set(ICON glfw.icns)

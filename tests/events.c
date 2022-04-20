@@ -458,6 +458,7 @@ static void preedit_callback(GLFWwindow* window, int strLength, unsigned int* st
     Slot* slot = glfwGetWindowUserPointer(window);
     int i, blockIndex = -1, blockCount = 0;
     int width, height;
+    char encoded[5] = "";
     printf("%08x to %i at %0.3f: Preedit text ",
            counter++, slot->number, glfwGetTime());
     if (strLength == 0 || blockLength == 0) {
@@ -475,7 +476,8 @@ static void preedit_callback(GLFWwindow* window, int strLength, unsigned int* st
                     printf("[");
                 }
             }
-            printf("%s", get_character_string(string[i]));
+            encode_utf8(encoded, string[i]);
+            printf("%s", encoded);
             blockCount--;
         }
         if (blockIndex == focusedBlock) {

@@ -124,6 +124,7 @@ information on what to include when reporting a bug.
 ## Changelog
 
  - Bugfix: `glfwMakeContextCurrent` would access TLS slot before initialization
+ - Bugfix: `glfwSetGammaRamp` could emit `GLFW_INVALID_VALUE` before initialization
  - [Win32] Bugfix: `Alt+PrtSc` would emit `GLFW_KEY_UNKNOWN` and a different
    scancode than `PrtSc` (#1993)
  - [Win32] Bugfix: `GLFW_KEY_PAUSE` scancode from `glfwGetKeyScancode` did not

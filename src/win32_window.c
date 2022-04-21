@@ -186,53 +186,38 @@ static HICON createIcon(const GLFWimage* image,
     return handle;
 }
 
-// Translate content area size to full window size according to styles and DPI
-//
-static void getFullWindowSize(DWORD style, DWORD exStyle,
-                              int contentWidth, int contentHeight,
-                              int* fullWidth, int* fullHeight,
-                              UINT dpi)
-{
-    RECT rect = { 0, 0, contentWidth, contentHeight };
-
-    if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
-        AdjustWindowRectExForDpi(&rect, style, FALSE, exStyle, dpi);
-    else
-        AdjustWindowRectEx(&rect, style, FALSE, exStyle);
-
-    *fullWidth = rect.right - rect.left;
-    *fullHeight = rect.bottom - rect.top;
-}
-
 // Enforce the content area aspect ratio based on which edge is being dragged
 //
 static void applyAspectRatio(_GLFWwindow* window, int edge, RECT* area)
 {
-    int xoff, yoff;
-    UINT dpi = USER_DEFAULT_SCREEN_DPI;
+    RECT frame = {0};
     const float ratio = (float) window->numer / (float) window->denom;
+    const DWORD style = getWindowStyle(window);
+    const DWORD exStyle = getWindowExStyle(window);
 
     if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
-        dpi = GetDpiForWindow(window->win32.handle);
-
-    getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
-                      0, 0, &xoff, &yoff, dpi);
+    {
+        AdjustWindowRectExForDpi(&frame, style, FALSE, exStyle,
+                                 GetDpiForWindow(window->win32.handle));
+    }
+    else
+        AdjustWindowRectEx(&frame, style, FALSE, exStyle);
 
     if (edge == WMSZ_LEFT  || edge == WMSZ_BOTTOMLEFT ||
         edge == WMSZ_RIGHT || edge == WMSZ_BOTTOMRIGHT)
     {
-        area->bottom = area->top + yoff +
-            (int) ((area->right - area->left - xoff) / ratio);
+        area->bottom = area->top + (frame.bottom - frame.top) +
+            (int) (((area->right - area->left) - (frame.right - frame.left)) / ratio);
     }
     else if (edge == WMSZ_TOPLEFT || edge == WMSZ_TOPRIGHT)
     {
-        area->top = area->bottom - yoff -
-            (int) ((area->right - area->left - xoff) / ratio);
+        area->top = area->bottom - (frame.bottom - frame.top) -
+            (int) (((area->right - area->left) - (frame.right - frame.left)) / ratio);
     }
     else if (edge == WMSZ_TOP || edge == WMSZ_BOTTOM)
     {
-        area->right = area->left + xoff +
-            (int) ((area->bottom - area->top - yoff) * ratio);
+        area->right = area->left + (frame.right - frame.left) +
+            (int) (((area->bottom - area->top) - (frame.bottom - frame.top)) * ratio);
     }
 }
 
@@ -1098,31 +1083,34 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
         case WM_GETMINMAXINFO:
         {
-            int xoff, yoff;
-            UINT dpi = USER_DEFAULT_SCREEN_DPI;
+            RECT frame = {0};
             MINMAXINFO* mmi = (MINMAXINFO*) lParam;
+            const DWORD style = getWindowStyle(window);
+            const DWORD exStyle = getWindowExStyle(window);
 
             if (window->monitor)
                 break;
 
             if (_glfwIsWindows10AnniversaryUpdateOrGreaterWin32())
-                dpi = GetDpiForWindow(window->win32.handle);
-
-            getFullWindowSize(getWindowStyle(window), getWindowExStyle(window),
-                              0, 0, &xoff, &yoff, dpi);
+            {
+                AdjustWindowRectExForDpi(&frame, style, FALSE, exStyle,
+                                         GetDpiForWindow(window->win32.handle));
+            }
+            else
+                AdjustWindowRectEx(&frame, style, FALSE, exStyle);
 
             if (window->minwidth != GLFW_DONT_CARE &&
                 window->minheight != GLFW_DONT_CARE)
             {
-                mmi->ptMinTrackSize.x = window->minwidth + xoff;
-                mmi->ptMinTrackSize.y = window->minheight + yoff;
+                mmi->ptMinTrackSize.x = window->minwidth + frame.right - frame.left;
+                mmi->ptMinTrackSize.y = window->minheight + frame.bottom - frame.top;
             }
 
             if (window->maxwidth != GLFW_DONT_CARE &&
                 window->maxheight != GLFW_DONT_CARE)
             {
-                mmi->ptMaxTrackSize.x = window->maxwidth + xoff;
-                mmi->ptMaxTrackSize.y = window->maxheight + yoff;
+                mmi->ptMaxTrackSize.x = window->maxwidth + frame.right - frame.left;
+                mmi->ptMaxTrackSize.y = window->maxheight + frame.bottom - frame.top;
             }
 
             if (!window->decorated)
@@ -1281,7 +1269,7 @@ static int createNativeWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
                               const _GLFWfbconfig* fbconfig)
 {
-    int xpos, ypos, fullWidth, fullHeight;
+    int frameX, frameY, frameWidth, frameHeight;
     WCHAR* wideTitle;
     DWORD style = getWindowStyle(window);
     DWORD exStyle = getWindowExStyle(window);
@@ -1294,24 +1282,25 @@ static int createNativeWindow(_GLFWwindow* window,
         // NOTE: This window placement is temporary and approximate, as the
         //       correct position and size cannot be known until the monitor
         //       video mode has been picked in _glfwSetVideoModeWin32
-        xpos = mi.rcMonitor.left;
-        ypos = mi.rcMonitor.top;
-        fullWidth  = mi.rcMonitor.right - mi.rcMonitor.left;
-        fullHeight = mi.rcMonitor.bottom - mi.rcMonitor.top;
+        frameX = mi.rcMonitor.left;
+        frameY = mi.rcMonitor.top;
+        frameWidth  = mi.rcMonitor.right - mi.rcMonitor.left;
+        frameHeight = mi.rcMonitor.bottom - mi.rcMonitor.top;
     }
     else
     {
-        xpos = CW_USEDEFAULT;
-        ypos = CW_USEDEFAULT;
+        RECT rect = { 0, 0, wndconfig->width, wndconfig->height };
 
         window->win32.maximized = wndconfig->maximized;
         if (wndconfig->maximized)
             style |= WS_MAXIMIZE;
 
-        getFullWindowSize(style, exStyle,
-                          wndconfig->width, wndconfig->height,
-                          &fullWidth, &fullHeight,
-                          USER_DEFAULT_SCREEN_DPI);
+        AdjustWindowRectEx(&rect, style, FALSE, exStyle);
+
+        frameX = CW_USEDEFAULT;
+        frameY = CW_USEDEFAULT;
+        frameWidth  = rect.right - rect.left;
+        frameHeight = rect.bottom - rect.top;
     }
 
     wideTitle = _glfwCreateWideStringFromUTF8Win32(wndconfig->title);
@@ -1322,8 +1311,8 @@ static int createNativeWindow(_GLFWwindow* window,
                                            _GLFW_WNDCLASSNAME,
                                            wideTitle,
                                            style,
-                                           xpos, ypos,
-                                           fullWidth, fullHeight,
+                                           frameX, frameY,
+                                           frameWidth, frameHeight,
                                            NULL, // No parent window
                                            NULL, // No window menu
                                            _glfw.win32.instance,

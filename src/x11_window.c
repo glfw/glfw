@@ -2052,7 +2052,7 @@ void _glfwCreateInputContextX11(_GLFWwindow* window)
 
     window->x11.ic = XCreateIC(_glfw.x11.im,
                                XNInputStyle,
-                               XIMPreeditNothing | XIMStatusNothing,
+                               XIMPreeditCallbacks | XIMStatusCallbacks,
                                XNClientWindow,
                                window->x11.handle,
                                XNFocusWindow,

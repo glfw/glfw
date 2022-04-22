@@ -1,5 +1,6 @@
 //========================================================================
 // IME test
+// Copyright (c) Camilla Löwy <elmindreda@glfw.org>
 // Copyright (c) Daijiro Fukuda <fukuda@clear-code.com>
 //
 // This software is provided 'as-is', without any express or implied
@@ -26,6 +27,10 @@
 // This test hooks IME callbacks.
 // Left-click clears preedit and toggles IME status.
 // Right-click updates preedit cursor position to current cursor position.
+//
+// This test code is based on `tests/ime.c` of shibukawa's fix:
+// * https://github.com/glfw/glfw/pull/658
+// * https://github.com/shibukawa/glfw-1/commit/d36a164423c933948661f3f17576e5a6388ff251
 //
 //========================================================================
 

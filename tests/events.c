@@ -454,42 +454,48 @@ static void char_callback(GLFWwindow* window, unsigned int codepoint)
            counter++, slot->number, glfwGetTime(), codepoint, string);
 }
 
-static void preedit_callback(GLFWwindow* window, int strLength, unsigned int* string, int blockLength, int* blocks, int focusedBlock) {
+static void preedit_callback(GLFWwindow* window, int strLength,
+                             unsigned int* string, int blockLength,
+                             int* blocks, int focusedBlock)
+{
     Slot* slot = glfwGetWindowUserPointer(window);
     int i, blockIndex = -1, blockCount = 0;
     int width, height;
     char encoded[5] = "";
     printf("%08x to %i at %0.3f: Preedit text ",
            counter++, slot->number, glfwGetTime());
-    if (strLength == 0 || blockLength == 0) {
+    if (strLength == 0 || blockLength == 0)
+    {
         printf("(empty)\n");
-    } else {
-        for (i = 0; i < strLength; i++) {
-            if (blockCount == 0) {
-                if (blockIndex == focusedBlock) {
+    }
+    else
+    {
+        for (i = 0; i < strLength; i++)
+        {
+            if (blockCount == 0)
+            {
+                if (blockIndex == focusedBlock)
                     printf("]");
-                }
                 blockIndex++;
                 blockCount = blocks[blockIndex];
                 printf("\n   block %d: ", blockIndex);
-                if (blockIndex == focusedBlock) {
+                if (blockIndex == focusedBlock)
                     printf("[");
-                }
             }
             encode_utf8(encoded, string[i]);
             printf("%s", encoded);
             blockCount--;
         }
-        if (blockIndex == focusedBlock) {
+        if (blockIndex == focusedBlock)
             printf("]");
-        }
         printf("\n");
         glfwGetWindowSize(window, &width, &height);
         glfwSetPreeditCursorPos(window, width/2, height/2, 20);
     }
 }
 
-static void ime_callback(GLFWwindow* window) {
+static void ime_callback(GLFWwindow* window)
+{
     Slot* slot = glfwGetWindowUserPointer(window);
     printf("%08x to %i at %0.3f: IME switched\n",
            counter++, slot->number, glfwGetTime());

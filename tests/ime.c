@@ -82,13 +82,18 @@ static void error_callback(int error, const char* description)
 
 static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-    if (action == GLFW_PRESS) {
-        if (button == GLFW_MOUSE_BUTTON_LEFT) {
+    if (action == GLFW_PRESS)
+    {
+        if (button == GLFW_MOUSE_BUTTON_LEFT)
+        {
             int currentIMEstatus = glfwGetInputMode(window, GLFW_IME);
             glfwSetInputMode(window, GLFW_IME, !currentIMEstatus);
             glfwResetPreeditText(window);
-            printf("Reset preedit text and IME status -> %s\n", currentIMEstatus ? "OFF" : "ON");
-        } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+            printf("Reset preedit text and IME status -> %s\n",
+                   currentIMEstatus ? "OFF" : "ON");
+        }
+        else if (button == GLFW_MOUSE_BUTTON_RIGHT)
+        {
             int preX, preY;
             double curX, curY;
             glfwGetPreeditCursorPos(window, &preX, &preY, NULL);
@@ -108,38 +113,44 @@ static void char_callback(GLFWwindow* window, unsigned int codepoint)
     printf("Character 0x%08x (%s) input\n", codepoint, string);
 }
 
-static void preedit_callback(GLFWwindow* window, int strLength, unsigned int* string, int blockLength, int* blocks, int focusedBlock) {
+static void preedit_callback(GLFWwindow* window, int strLength,
+                             unsigned int* string, int blockLength,
+                             int* blocks, int focusedBlock)
+{
     int i, blockIndex = -1, blockCount = 0;
     int width, height;
     char encoded[5] = "";
     printf("Preedit text ");
-    if (strLength == 0 || blockLength == 0) {
+    if (strLength == 0 || blockLength == 0)
+    {
         printf("(empty)\n");
-    } else {
-        for (i = 0; i < strLength; i++) {
-            if (blockCount == 0) {
-                if (blockIndex == focusedBlock) {
+    }
+    else
+    {
+        for (i = 0; i < strLength; i++)
+        {
+            if (blockCount == 0)
+            {
+                if (blockIndex == focusedBlock)
                     printf("]");
-                }
                 blockIndex++;
                 blockCount = blocks[blockIndex];
                 printf("\n   block %d: ", blockIndex);
-                if (blockIndex == focusedBlock) {
+                if (blockIndex == focusedBlock)
                     printf("[");
-                }
             }
             encode_utf8(encoded, string[i]);
             printf("%s", encoded);
             blockCount--;
         }
-        if (blockIndex == focusedBlock) {
+        if (blockIndex == focusedBlock)
             printf("]");
-        }
         printf("\n");
     }
 }
 
-static void ime_callback(GLFWwindow* window) {
+static void ime_callback(GLFWwindow* window)
+{
     int currentIMEstatus = glfwGetInputMode(window, GLFW_IME);
     printf("IME switched: %s\n", currentIMEstatus ? "ON" : "OFF");
 }

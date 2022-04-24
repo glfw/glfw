@@ -73,18 +73,13 @@ static int choosePixelFormat(_GLFWwindow* window,
     int attribs[40];
     int values[sizeof(attribs) / sizeof(attribs[0])];
 
+    nativeCount = DescribePixelFormat(window->context.wgl.dc,
+                                      1,
+                                      sizeof(PIXELFORMATDESCRIPTOR),
+                                      NULL);
+
     if (_glfw.wgl.ARB_pixel_format)
     {
-        const int attrib = WGL_NUMBER_PIXEL_FORMATS_ARB;
-
-        if (!wglGetPixelFormatAttribivARB(window->context.wgl.dc,
-                                          1, 0, 1, &attrib, &nativeCount))
-        {
-            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                                 "WGL: Failed to retrieve pixel format attribute");
-            return 0;
-        }
-
         addAttrib(WGL_SUPPORT_OPENGL_ARB);
         addAttrib(WGL_DRAW_TO_WINDOW_ARB);
         addAttrib(WGL_PIXEL_TYPE_ARB);
@@ -121,13 +116,6 @@ static int choosePixelFormat(_GLFWwindow* window,
             if (_glfw.wgl.EXT_colorspace)
                 addAttrib(WGL_COLORSPACE_EXT);
         }
-    }
-    else
-    {
-        nativeCount = DescribePixelFormat(window->context.wgl.dc,
-                                          1,
-                                          sizeof(PIXELFORMATDESCRIPTOR),
-                                          NULL);
     }
 
     usableConfigs = calloc(nativeCount, sizeof(_GLFWfbconfig));

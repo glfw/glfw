@@ -91,6 +91,9 @@
 #define GLX_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB 0x2098
 #define GLX_CONTEXT_OPENGL_NO_ERROR_ARB 0x31b3
 
+#define STYLE_OVERTHESPOT (XIMPreeditNothing | XIMStatusNothing)
+#define STYLE_ONTHESPOT (XIMPreeditCallbacks | XIMStatusCallbacks)
+
 typedef XID GLXWindow;
 typedef XID GLXDrawable;
 typedef struct __GLXFBConfig* GLXFBConfig;
@@ -584,6 +587,8 @@ typedef struct _GLFWlibraryX11
     XContext        context;
     // XIM input method
     XIM             im;
+    // XIM input method style
+    XIMStyle        imStyle;
     // Most recent error code received by X error handler
     int             errorCode;
     // Primary selection string (while the primary selection is owned)

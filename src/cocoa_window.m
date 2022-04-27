@@ -772,8 +772,17 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 - (NSRect)firstRectForCharacterRange:(NSRange)range
                          actualRange:(NSRangePointer)actualRange
 {
-    const NSRect frame = [window->ns.view frame];
-    return NSMakeRect(frame.origin.x, frame.origin.y, 0.0, 0.0);
+    int x = window->preeditCursorPosX;
+    int y = window->preeditCursorPosY;
+    int h = window->preeditCursorHeight;
+
+    const NSRect frame =
+        [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
+
+    return NSMakeRect(frame.origin.x + x, 
+                      frame.origin.y + frame.size.height - y,
+                      0.0,
+                      h);
 }
 
 - (void)insertText:(id)string replacementRange:(NSRange)replacementRange

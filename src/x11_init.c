@@ -1235,6 +1235,7 @@ void _glfwPlatformTerminate(void)
         _glfw.x11.xi.handle = NULL;
     }
 
+    _glfwTerminateOSMesa();
     // NOTE: These need to be unloaded after XCloseDisplay, as they register
     //       cleanup callbacks that get called by that function
     _glfwTerminateEGL();

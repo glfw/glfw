@@ -484,6 +484,8 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateJoysticksLinux();
 #endif
     _glfwTerminateEGL();
+    _glfwTerminateOSMesa();
+
     if (_glfw.wl.egl.handle)
     {
         _glfw_dlclose(_glfw.wl.egl.handle);

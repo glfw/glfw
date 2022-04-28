@@ -542,6 +542,19 @@ const char* _glfwGetClipboardStringNull(void)
     return _glfw.null.clipboardString;
 }
 
+void _glfwResetPreeditTextNull(_GLFWwindow* window)
+{
+}
+
+void _glfwSetIMEStatusNull(_GLFWwindow* window, int active)
+{
+}
+
+int _glfwGetIMEStatusNull(_GLFWwindow* window)
+{
+    return GLFW_FALSE;
+}
+
 EGLenum _glfwGetEGLPlatformNull(EGLint** attribs)
 {
     return 0;

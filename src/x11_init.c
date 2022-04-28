@@ -1184,6 +1184,9 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
         _glfwGetKeyScancodeX11,
         _glfwSetClipboardStringX11,
         _glfwGetClipboardStringX11,
+        _glfwResetPreeditTextX11,
+        _glfwSetIMEStatusX11,
+        _glfwGetIMEStatusX11,
 #if defined(__linux__)
         _glfwInitJoysticksLinux,
         _glfwTerminateJoysticksLinux,

@@ -2524,6 +2524,31 @@ const char* _glfwGetClipboardStringWin32(void)
     return _glfw.win32.clipboardString;
 }
 
+void _glfwResetPreeditTextWin32(_GLFWwindow* window)
+{
+    HWND hWnd = window->win32.handle;
+    HIMC hIMC = ImmGetContext(hWnd);
+    ImmNotifyIME(hIMC, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
+    ImmReleaseContext(hWnd, hIMC);
+}
+
+void _glfwSetIMEStatusWin32(_GLFWwindow* window, int active)
+{
+    HWND hWnd = window->win32.handle;
+    HIMC hIMC = ImmGetContext(hWnd);
+    ImmSetOpenStatus(hIMC, active ? TRUE : FALSE);
+    ImmReleaseContext(hWnd, hIMC);
+}
+
+int _glfwGetIMEStatusWin32(_GLFWwindow* window)
+{
+    HWND hWnd = window->win32.handle;
+    HIMC hIMC = ImmGetContext(hWnd);
+    BOOL result = ImmGetOpenStatus(hIMC);
+    ImmReleaseContext(hWnd, hIMC);
+    return result ? GLFW_TRUE : GLFW_FALSE;
+}
+
 EGLenum _glfwGetEGLPlatformWin32(EGLint** attribs)
 {
     if (_glfw.egl.ANGLE_platform_angle)
@@ -2634,31 +2659,6 @@ VkResult _glfwCreateWindowSurfaceWin32(VkInstance instance,
     }
 
     return err;
-}
-
-void _glfwPlatformResetPreeditText(_GLFWwindow* window)
-{
-    HWND hWnd = window->win32.handle;
-    HIMC hIMC = ImmGetContext(hWnd);
-    ImmNotifyIME(hIMC, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
-    ImmReleaseContext(hWnd, hIMC);
-}
-
-void _glfwPlatformSetIMEStatus(_GLFWwindow* window, int active)
-{
-    HWND hWnd = window->win32.handle;
-    HIMC hIMC = ImmGetContext(hWnd);
-    ImmSetOpenStatus(hIMC, active ? TRUE : FALSE);
-    ImmReleaseContext(hWnd, hIMC);
-}
-
-int _glfwPlatformGetIMEStatus(_GLFWwindow* window)
-{
-    HWND hWnd = window->win32.handle;
-    HIMC hIMC = ImmGetContext(hWnd);
-    BOOL result = ImmGetOpenStatus(hIMC);
-    ImmReleaseContext(hWnd, hIMC);
-    return result ? GLFW_TRUE : GLFW_FALSE;
 }
 
 GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)

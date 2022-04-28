@@ -699,6 +699,9 @@ struct _GLFWplatform
     int (*getKeyScancode)(int);
     void (*setClipboardString)(const char*);
     const char* (*getClipboardString)(void);
+    void (*resetPreeditText)(_GLFWwindow*);
+    void (*setIMEStatus)(_GLFWwindow*,int);
+    int  (*getIMEStatus)(_GLFWwindow*);
     GLFWbool (*initJoysticks)(void);
     void (*terminateJoysticks)(void);
     int (*pollJoystick)(_GLFWjoystick*,int);
@@ -952,10 +955,6 @@ void _glfwInputError(int code, const char* format, ...)
 #else
 void _glfwInputError(int code, const char* format, ...);
 #endif
-
-void _glfwPlatformResetPreeditText(_GLFWwindow* window);
-void _glfwPlatformSetIMEStatus(_GLFWwindow* window, int active);
-int  _glfwPlatformGetIMEStatus(_GLFWwindow* window);
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////

@@ -3259,6 +3259,62 @@ const char* _glfwGetClipboardStringX11(void)
     return getSelectionString(_glfw.x11.CLIPBOARD);
 }
 
+void _glfwResetPreeditTextX11(_GLFWwindow* window)
+{
+    XIC ic = window->x11.ic;
+
+    /* restore conversion state after resetting ic later */
+    XIMPreeditState preedit_state = XIMPreeditUnKnown;
+    XVaNestedList preedit_attr;
+    char* result;
+
+    // Can not manage IME in the case of over-the-spot.
+    if (_glfw.x11.imStyle == STYLE_OVERTHESPOT)
+        return;
+
+    if (window->ntext == 0)
+        return;
+
+    preedit_attr = XVaCreateNestedList(0, XNPreeditState, &preedit_state, NULL);
+    XGetICValues(ic, XNPreeditAttributes, preedit_attr, NULL);
+    XFree(preedit_attr);
+
+    result = XmbResetIC(ic);
+
+    preedit_attr = XVaCreateNestedList(0, XNPreeditState, preedit_state, NULL);
+    XSetICValues(ic, XNPreeditAttributes, preedit_attr, NULL);
+    XFree(preedit_attr);
+
+    window->ntext = 0;
+    window->nblocks = 0;
+    _glfwInputPreedit(window, 0);
+
+    XFree (result);
+}
+
+void _glfwSetIMEStatusX11(_GLFWwindow* window, int active)
+{
+    XIC ic = window->x11.ic;
+
+    // Can not manage IME in the case of over-the-spot.
+    if (_glfw.x11.imStyle == STYLE_OVERTHESPOT)
+        return;
+
+    if (active)
+        XSetICFocus(ic);
+    else
+        XUnsetICFocus(ic);
+}
+
+int _glfwGetIMEStatusX11(_GLFWwindow* window)
+{
+    // Can not manage IME in the case of over-the-spot.
+    if (_glfw.x11.imStyle == STYLE_OVERTHESPOT)
+        return GLFW_FALSE;
+
+    return window->x11.imeFocus;
+}
+
 EGLenum _glfwGetEGLPlatformX11(EGLint** attribs)
 {
     if (_glfw.egl.ANGLE_platform_angle)
@@ -3455,62 +3511,6 @@ VkResult _glfwCreateWindowSurfaceX11(VkInstance instance,
 
         return err;
     }
-}
-
-void _glfwPlatformResetPreeditText(_GLFWwindow* window)
-{
-    XIC ic = window->x11.ic;
-
-    /* restore conversion state after resetting ic later */
-    XIMPreeditState preedit_state = XIMPreeditUnKnown;
-    XVaNestedList preedit_attr;
-    char* result;
-
-    // Can not manage IME in the case of over-the-spot.
-    if (_glfw.x11.imStyle == STYLE_OVERTHESPOT)
-        return;
-
-    if (window->ntext == 0)
-        return;
-
-    preedit_attr = XVaCreateNestedList(0, XNPreeditState, &preedit_state, NULL);
-    XGetICValues(ic, XNPreeditAttributes, preedit_attr, NULL);
-    XFree(preedit_attr);
-
-    result = XmbResetIC(ic);
-
-    preedit_attr = XVaCreateNestedList(0, XNPreeditState, preedit_state, NULL);
-    XSetICValues(ic, XNPreeditAttributes, preedit_attr, NULL);
-    XFree(preedit_attr);
-
-    window->ntext = 0;
-    window->nblocks = 0;
-    _glfwInputPreedit(window, 0);
-
-    XFree (result);
-}
-
-void _glfwPlatformSetIMEStatus(_GLFWwindow* window, int active)
-{
-    XIC ic = window->x11.ic;
-
-    // Can not manage IME in the case of over-the-spot.
-    if (_glfw.x11.imStyle == STYLE_OVERTHESPOT)
-        return;
-
-    if (active)
-        XSetICFocus(ic);
-    else
-        XUnsetICFocus(ic);
-}
-
-int  _glfwPlatformGetIMEStatus(_GLFWwindow* window)
-{
-    // Can not manage IME in the case of over-the-spot.
-    if (_glfw.x11.imStyle == STYLE_OVERTHESPOT)
-        return GLFW_FALSE;
-
-    return window->x11.imeFocus;
 }
 
 //////////////////////////////////////////////////////////////////////////

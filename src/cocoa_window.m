@@ -1858,6 +1858,71 @@ const char* _glfwGetClipboardStringCocoa(void)
     } // autoreleasepool
 }
 
+void _glfwResetPreeditTextCocoa(_GLFWwindow* window)
+{
+    NSTextInputContext* context = [NSTextInputContext currentInputContext];
+    [context discardMarkedText];
+    [window->ns.view unmarkText];
+}
+
+void _glfwSetIMEStatusCocoa(_GLFWwindow* window, int active)
+{
+    // Mac OS has several input sources.
+    // this code assumes input methods not in ascii capable inputs using IME.
+    NSArray* asciiInputSources =
+        CFBridgingRelease(TISCreateASCIICapableInputSourceList());
+    TISInputSourceRef asciiSource =
+        (__bridge TISInputSourceRef) [asciiInputSources firstObject];
+    if (active)
+    {
+        NSArray* allInputSources =
+            CFBridgingRelease(TISCreateInputSourceList(NULL, false));
+        NSString* asciiSourceID =
+            (__bridge NSString *) TISGetInputSourceProperty(asciiSource,
+                                                            kTISPropertyInputSourceID);
+        int i;
+        int count = [allInputSources count];
+        for (i = 0; i < count; i++)
+        {
+            TISInputSourceRef source =
+                (__bridge TISInputSourceRef) [allInputSources objectAtIndex:i];
+            NSString* sourceID =
+                (__bridge NSString *) TISGetInputSourceProperty(source,
+                                                                kTISPropertyInputSourceID);
+            if ([asciiSourceID compare:sourceID] != NSOrderedSame)
+            {
+                TISSelectInputSource(source);
+                break;
+            }
+        }
+    }
+    else if (asciiSource)
+    {
+        TISSelectInputSource(asciiSource);
+    }
+}
+
+int _glfwGetIMEStatusCocoa(_GLFWwindow* window)
+{
+    TISInputSourceRef currentSource = TISCopyCurrentKeyboardInputSource();
+    NSString* currentSourceID =
+        (__bridge NSString *) TISGetInputSourceProperty(currentSource,
+                                                        kTISPropertyInputSourceID);
+    NSArray* asciiInputSources =
+        CFBridgingRelease(TISCreateASCIICapableInputSourceList());
+    TISInputSourceRef asciiSource =
+        (__bridge TISInputSourceRef) [asciiInputSources firstObject];
+    if (asciiSource)
+    {
+        NSString* asciiSourceID =
+            (__bridge NSString *) TISGetInputSourceProperty(asciiSource,
+                                                            kTISPropertyInputSourceID);
+        return [asciiSourceID compare:currentSourceID] == NSOrderedSame
+            ? GLFW_FALSE : GLFW_TRUE;
+    }
+    return GLFW_FALSE;
+}
+
 EGLenum _glfwGetEGLPlatformCocoa(EGLint** attribs)
 {
     if (_glfw.egl.ANGLE_platform_angle)
@@ -2009,71 +2074,6 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
 #endif
 
     } // autoreleasepool
-}
-
-void _glfwPlatformResetPreeditText(_GLFWwindow* window)
-{
-    NSTextInputContext* context = [NSTextInputContext currentInputContext];
-    [context discardMarkedText];
-    [window->ns.view unmarkText];
-}
-
-void _glfwPlatformSetIMEStatus(_GLFWwindow* window, int active)
-{
-    // Mac OS has several input sources.
-    // this code assumes input methods not in ascii capable inputs using IME.
-    NSArray* asciiInputSources =
-        CFBridgingRelease(TISCreateASCIICapableInputSourceList());
-    TISInputSourceRef asciiSource =
-        (__bridge TISInputSourceRef) [asciiInputSources firstObject];
-    if (active)
-    {
-        NSArray* allInputSources =
-            CFBridgingRelease(TISCreateInputSourceList(NULL, false));
-        NSString* asciiSourceID =
-            (__bridge NSString *) TISGetInputSourceProperty(asciiSource,
-                                                            kTISPropertyInputSourceID);
-        int i;
-        int count = [allInputSources count];
-        for (i = 0; i < count; i++)
-        {
-            TISInputSourceRef source =
-                (__bridge TISInputSourceRef) [allInputSources objectAtIndex:i];
-            NSString* sourceID =
-                (__bridge NSString *) TISGetInputSourceProperty(source,
-                                                                kTISPropertyInputSourceID);
-            if ([asciiSourceID compare:sourceID] != NSOrderedSame)
-            {
-                TISSelectInputSource(source);
-                break;
-            }
-        }
-    }
-    else if (asciiSource)
-    {
-        TISSelectInputSource(asciiSource);
-    }
-}
-
-int _glfwPlatformGetIMEStatus(_GLFWwindow* window)
-{
-    TISInputSourceRef currentSource = TISCopyCurrentKeyboardInputSource();
-    NSString* currentSourceID =
-        (__bridge NSString *) TISGetInputSourceProperty(currentSource,
-                                                        kTISPropertyInputSourceID);
-    NSArray* asciiInputSources =
-        CFBridgingRelease(TISCreateASCIICapableInputSourceList());
-    TISInputSourceRef asciiSource =
-        (__bridge TISInputSourceRef) [asciiInputSources firstObject];
-    if (asciiSource)
-    {
-        NSString* asciiSourceID =
-            (__bridge NSString *) TISGetInputSourceProperty(asciiSource,
-                                                            kTISPropertyInputSourceID);
-        return [asciiSourceID compare:currentSourceID] == NSOrderedSame
-            ? GLFW_FALSE : GLFW_TRUE;
-    }
-    return GLFW_FALSE;
 }
 
 //////////////////////////////////////////////////////////////////////////

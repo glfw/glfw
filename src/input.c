@@ -526,7 +526,7 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* handle, int mode)
         case GLFW_RAW_MOUSE_MOTION:
             return window->rawMouseMotion;
         case GLFW_IME:
-            return _glfwPlatformGetIMEStatus(window);
+            return _glfw.platform.getIMEStatus(window);
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode 0x%08X", mode);
@@ -636,7 +636,7 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
 
         case GLFW_IME:
         {
-            _glfwPlatformSetIMEStatus(window, value ? GLFW_TRUE : GLFW_FALSE);
+            _glfw.platform.setIMEStatus(window, value ? GLFW_TRUE : GLFW_FALSE);
             return;
         }
     }
@@ -915,7 +915,7 @@ GLFWAPI void glfwSetPreeditCursorPos(GLFWwindow* handle, int x, int y, int h)
 GLFWAPI void glfwResetPreeditText(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-    _glfwPlatformResetPreeditText(window);
+    _glfw.platform.resetPreeditText(window);
 }
 
 GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* handle, GLFWkeyfun cbfun)

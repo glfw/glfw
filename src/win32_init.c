@@ -610,6 +610,7 @@ void _glfwPlatformTerminate(void)
 
     _glfwTerminateWGL();
     _glfwTerminateEGL();
+    _glfwTerminateOSMesa();
 
     _glfwTerminateJoysticksWin32();
 

@@ -217,6 +217,7 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: `GLFW_KEY_PAUSE` scancode from `glfwGetKeyScancode` did not
    match event scancode (#1993)
  - [Win32] Bugfix: Instance-local operations used executable instance (#469,#1296,#1395)
+ - [Win32] Bugfix: The OSMesa library was not unloaded on termination
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)

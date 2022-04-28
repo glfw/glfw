@@ -607,6 +607,8 @@ void _glfwPlatformTerminate(void)
     free(_glfw.ns.clipboardString);
 
     _glfwTerminateNSGL();
+    _glfwTerminateEGL();
+    _glfwTerminateOSMesa();
     _glfwTerminateJoysticksNS();
 
     } // autoreleasepool

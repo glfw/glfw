@@ -132,6 +132,7 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: Instance-local operations used executable instance (#469,#1296,#1395)
  - [Win32] Bugfix: The OSMesa library was not unloaded on termination
  - [Cocoa] Bugfix: A connected Apple AirPlay would emit a useless error (#1791)
+ - [Cocoa] Bugfix: The EGL and OSMesa libraries were not unloaded on termination
  - [Wayland] Added support for file path drop events (#2040)
  - [Wayland] Bugfix: `glfwSetClipboardString` would fail if set to result of
    `glfwGetClipboardString`

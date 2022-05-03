@@ -244,26 +244,18 @@ int _glfw_max(int a, int b)
 
 float _glfw_fminf(float a, float b)
 {
-    if (a != a)
-        return b;
-    else if (b != b)
+    if (b != b || a < b)
         return a;
-    else if (a < b)
-        return a;
-    else
-        return b;
+
+    return b;
 }
 
 float _glfw_fmaxf(float a, float b)
 {
-    if (a != a)
-        return b;
-    else if (b != b)
+    if (b != b || a > b)
         return a;
-    else if (a > b)
-        return a;
-    else
-        return b;
+    
+    return b;
 }
 
 void* _glfw_calloc(size_t count, size_t size)
@@ -343,36 +335,53 @@ void _glfwInputError(int code, const char* format, ...)
     }
     else
     {
-        if (code == GLFW_NOT_INITIALIZED)
+        switch (code)
+        {
+        case GLFW_NOT_INITIALIZED:
             strcpy(description, "The GLFW library is not initialized");
-        else if (code == GLFW_NO_CURRENT_CONTEXT)
+            break;
+        case GLFW_NO_CURRENT_CONTEXT:
             strcpy(description, "There is no current context");
-        else if (code == GLFW_INVALID_ENUM)
+            break;
+        case GLFW_INVALID_ENUM:
             strcpy(description, "Invalid argument for enum parameter");
-        else if (code == GLFW_INVALID_VALUE)
+            break;
+        case GLFW_INVALID_VALUE:
             strcpy(description, "Invalid value for parameter");
-        else if (code == GLFW_OUT_OF_MEMORY)
+            break;
+        case GLFW_OUT_OF_MEMORY:
             strcpy(description, "Out of memory");
-        else if (code == GLFW_API_UNAVAILABLE)
+            break;
+        case GLFW_API_UNAVAILABLE:
             strcpy(description, "The requested API is unavailable");
-        else if (code == GLFW_VERSION_UNAVAILABLE)
+            break;
+        case GLFW_VERSION_UNAVAILABLE:
             strcpy(description, "The requested API version is unavailable");
-        else if (code == GLFW_PLATFORM_ERROR)
+            break;
+        case GLFW_PLATFORM_ERROR:
             strcpy(description, "A platform-specific error occurred");
-        else if (code == GLFW_FORMAT_UNAVAILABLE)
+            break;
+        case GLFW_FORMAT_UNAVAILABLE:
             strcpy(description, "The requested format is unavailable");
-        else if (code == GLFW_NO_WINDOW_CONTEXT)
+            break;
+        case GLFW_NO_WINDOW_CONTEXT:
             strcpy(description, "The specified window has no context");
-        else if (code == GLFW_CURSOR_UNAVAILABLE)
+            break;
+        case GLFW_CURSOR_UNAVAILABLE:
             strcpy(description, "The specified cursor shape is unavailable");
-        else if (code == GLFW_FEATURE_UNAVAILABLE)
+            break;
+        case GLFW_FEATURE_UNAVAILABLE:
             strcpy(description, "The requested feature cannot be implemented for this platform");
-        else if (code == GLFW_FEATURE_UNIMPLEMENTED)
+            break;
+        case GLFW_FEATURE_UNIMPLEMENTED:
             strcpy(description, "The requested feature has not yet been implemented for this platform");
-        else if (code == GLFW_PLATFORM_UNAVAILABLE)
+            break;
+        case GLFW_PLATFORM_UNAVAILABLE:
             strcpy(description, "The requested platform is unavailable");
-        else
+            break;
+        default:
             strcpy(description, "ERROR: UNKNOWN GLFW ERROR");
+        }
     }
 
     if (_glfw.initialized)

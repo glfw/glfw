@@ -634,7 +634,8 @@ struct _GLFWmapping
 //
 struct _GLFWjoystick
 {
-    GLFWbool        present;
+    GLFWbool        allocated;
+    GLFWbool        connected;
     float*          axes;
     int             axisCount;
     unsigned char*  buttons;

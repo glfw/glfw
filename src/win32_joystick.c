@@ -256,6 +256,8 @@ static GLFWbool supportsXInput(const GUID* guid)
 //
 static void closeJoystick(_GLFWjoystick* js)
 {
+    _glfwInputJoystick(js, GLFW_DISCONNECTED);
+
     if (js->win32.device)
     {
         IDirectInputDevice8_Unacquire(js->win32.device);
@@ -263,9 +265,7 @@ static void closeJoystick(_GLFWjoystick* js)
     }
 
     free(js->win32.objects);
-
     _glfwFreeJoystick(js);
-    _glfwInputJoystick(js, GLFW_DISCONNECTED);
 }
 
 // DirectInput device object enumeration callback
@@ -357,7 +357,7 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
     for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         js = _glfw.joysticks + jid;
-        if (js->present)
+        if (js->connected)
         {
             if (memcmp(&js->win32.guid, &di->guidInstance, sizeof(GUID)) == 0)
                 return DIENUM_CONTINUE;
@@ -541,7 +541,7 @@ void _glfwDetectJoystickConnectionWin32(void)
 
             for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
             {
-                if (_glfw.joysticks[jid].present &&
+                if (_glfw.joysticks[jid].connected &&
                     _glfw.joysticks[jid].win32.device == NULL &&
                     _glfw.joysticks[jid].win32.index == index)
                 {
@@ -593,7 +593,7 @@ void _glfwDetectJoystickDisconnectionWin32(void)
     for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         _GLFWjoystick* js = _glfw.joysticks + jid;
-        if (js->present)
+        if (js->connected)
             _glfwPlatformPollJoystick(js, _GLFW_POLL_PRESENCE);
     }
 }

@@ -358,10 +358,6 @@ typedef struct VkWin32SurfaceCreateInfoKHR
 typedef VkResult (APIENTRY *PFN_vkCreateWin32SurfaceKHR)(VkInstance,const VkWin32SurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(VkPhysicalDevice,uint32_t);
 
-#if !defined(_GLFW_WNDCLASSNAME)
- #define _GLFW_WNDCLASSNAME L"GLFW30"
-#endif
-
 #define GLFW_WIN32_WINDOW_STATE         _GLFWwindowWin32  win32;
 #define GLFW_WIN32_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 win32;
 #define GLFW_WIN32_MONITOR_STATE        _GLFWmonitorWin32 win32;
@@ -444,6 +440,8 @@ typedef struct _GLFWlibraryWin32
 {
     HINSTANCE           instance;
     HWND                helperWindowHandle;
+    ATOM                helperWindowClass;
+    ATOM                mainWindowClass;
     HDEVNOTIFY          deviceNotificationHandle;
     int                 acquiredMonitorCount;
     char*               clipboardString;
@@ -526,9 +524,6 @@ typedef struct _GLFWcursorWin32
 GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform);
 int _glfwInitWin32(void);
 void _glfwTerminateWin32(void);
-
-GLFWbool _glfwRegisterWindowClassWin32(void);
-void _glfwUnregisterWindowClassWin32(void);
 
 WCHAR* _glfwCreateWideStringFromUTF8Win32(const char* source);
 char* _glfwCreateUTF8FromWideStringWin32(const WCHAR* source);

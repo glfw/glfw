@@ -1249,6 +1249,39 @@ static int createNativeWindow(_GLFWwindow* window,
     DWORD style = getWindowStyle(window);
     DWORD exStyle = getWindowExStyle(window);
 
+    if (!_glfw.win32.mainWindowClass)
+    {
+        WNDCLASSEXW wc = { sizeof(wc) };
+        wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+        wc.lpfnWndProc   = windowProc;
+        wc.hInstance     = _glfw.win32.instance;
+        wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
+#if defined(_GLFW_WNDCLASSNAME)
+        wc.lpszClassName = _GLFW_WNDCLASSNAME;
+#else
+        wc.lpszClassName = L"GLFW30";
+#endif
+        // Load user-provided icon if available
+        wc.hIcon = LoadImageW(GetModuleHandleW(NULL),
+                              L"GLFW_ICON", IMAGE_ICON,
+                              0, 0, LR_DEFAULTSIZE | LR_SHARED);
+        if (!wc.hIcon)
+        {
+            // No user-provided icon found, load default icon
+            wc.hIcon = LoadImageW(NULL,
+                                  IDI_APPLICATION, IMAGE_ICON,
+                                  0, 0, LR_DEFAULTSIZE | LR_SHARED);
+        }
+
+        _glfw.win32.mainWindowClass = RegisterClassExW(&wc);
+        if (!_glfw.win32.mainWindowClass)
+        {
+            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                 "Win32: Failed to register window class");
+            return GLFW_FALSE;
+        }
+    }
+
     if (window->monitor)
     {
         MONITORINFO mi = { sizeof(mi) };
@@ -1282,7 +1315,7 @@ static int createNativeWindow(_GLFWwindow* window,
         return GLFW_FALSE;
 
     window->win32.handle = CreateWindowExW(exStyle,
-                                           _GLFW_WNDCLASSNAME,
+                                           MAKEINTATOM(_glfw.win32.mainWindowClass),
                                            wideTitle,
                                            style,
                                            xpos, ypos,
@@ -1385,49 +1418,6 @@ static int createNativeWindow(_GLFWwindow* window,
     _glfwGetWindowSizeWin32(window, &window->win32.width, &window->win32.height);
 
     return GLFW_TRUE;
-}
-
-// Registers the GLFW window class
-//
-GLFWbool _glfwRegisterWindowClassWin32(void)
-{
-    WNDCLASSEXW wc;
-
-    ZeroMemory(&wc, sizeof(wc));
-    wc.cbSize        = sizeof(wc);
-    wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-    wc.lpfnWndProc   = windowProc;
-    wc.hInstance     = _glfw.win32.instance;
-    wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
-    wc.lpszClassName = _GLFW_WNDCLASSNAME;
-
-    // Load user-provided icon if available
-    wc.hIcon = LoadImageW(GetModuleHandleW(NULL),
-                          L"GLFW_ICON", IMAGE_ICON,
-                          0, 0, LR_DEFAULTSIZE | LR_SHARED);
-    if (!wc.hIcon)
-    {
-        // No user-provided icon found, load default icon
-        wc.hIcon = LoadImageW(NULL,
-                              IDI_APPLICATION, IMAGE_ICON,
-                              0, 0, LR_DEFAULTSIZE | LR_SHARED);
-    }
-
-    if (!RegisterClassExW(&wc))
-    {
-        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                             "Win32: Failed to register window class");
-        return GLFW_FALSE;
-    }
-
-    return GLFW_TRUE;
-}
-
-// Unregisters the GLFW window class
-//
-void _glfwUnregisterWindowClassWin32(void)
-{
-    UnregisterClassW(_GLFW_WNDCLASSNAME, _glfw.win32.instance);
 }
 
 GLFWbool _glfwCreateWindowWin32(_GLFWwindow* window,

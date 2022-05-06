@@ -378,7 +378,8 @@ static GLFWbool createHelperWindow(void)
     wc.hInstance     = _glfw.win32.instance;
     wc.lpszClassName = L"GLFW3 Helper";
 
-    if (!RegisterClassExW(&wc))
+    _glfw.win32.helperWindowClass = RegisterClassExW(&wc);
+    if (!_glfw.win32.helperWindowClass)
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
                              "WIn32: Failed to register helper window class");
@@ -387,7 +388,7 @@ static GLFWbool createHelperWindow(void)
 
     _glfw.win32.helperWindowHandle =
         CreateWindowExW(WS_EX_OVERLAPPEDWINDOW,
-                        L"GLFW3 Helper",
+                        MAKEINTATOM(_glfw.win32.helperWindowClass),
                         L"GLFW message window",
                         WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
                         0, 0, 1, 1,
@@ -695,9 +696,6 @@ int _glfwInitWin32(void)
     else if (IsWindowsVistaOrGreater())
         SetProcessDPIAware();
 
-    if (!_glfwRegisterWindowClassWin32())
-        return GLFW_FALSE;
-
     if (!createHelperWindow())
         return GLFW_FALSE;
 
@@ -711,12 +709,11 @@ void _glfwTerminateWin32(void)
         UnregisterDeviceNotification(_glfw.win32.deviceNotificationHandle);
 
     if (_glfw.win32.helperWindowHandle)
-    {
         DestroyWindow(_glfw.win32.helperWindowHandle);
-        UnregisterClassW(L"GLFW3 Helper", _glfw.win32.instance);
-    }
-
-    _glfwUnregisterWindowClassWin32();
+    if (_glfw.win32.helperWindowClass)
+        UnregisterClassW(MAKEINTATOM(_glfw.win32.helperWindowClass), _glfw.win32.instance);
+    if (_glfw.win32.mainWindowClass)
+        UnregisterClassW(MAKEINTATOM(_glfw.win32.mainWindowClass), _glfw.win32.instance);
 
     _glfw_free(_glfw.win32.clipboardString);
     _glfw_free(_glfw.win32.rawInput);

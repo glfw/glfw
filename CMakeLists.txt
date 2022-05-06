@@ -32,7 +32,7 @@ include(GNUInstallDirs)
 include(CMakeDependentOption)
 
 if (GLFW_USE_OSMESA)
-    message(FATAL_ERROR "GLFW_USE_OSMESA has been removed; set the GLFW_PLATFORM init hint")
+    message(FATAL_ERROR "GLFW_USE_OSMESA has been removed; set the GLFW_CONTEXT_CREATION_API window hint to GLFW_OSMESA_CONTEXT_API")
 endif()
 
 cmake_dependent_option(GLFW_BUILD_WIN32 "Build support for Win32" ON "WIN32" OFF)

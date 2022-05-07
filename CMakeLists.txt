@@ -43,7 +43,7 @@ cmake_dependent_option(GLFW_BUILD_WAYLAND "Build support for Wayland"
 
 cmake_dependent_option(GLFW_USE_HYBRID_HPG "Force use of high-performance GPU on hybrid systems" OFF
                        "WIN32" OFF)
-cmake_dependent_option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON
+cmake_dependent_option(GLFW_USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON
                        "MSVC" OFF)
 
 set(GLFW_LIBRARY_TYPE "${GLFW_LIBRARY_TYPE}" CACHE STRING
@@ -88,7 +88,7 @@ endif()
 # Apply Microsoft C runtime library option
 # This is here because it also applies to tests and examples
 #--------------------------------------------------------------------
-if (MSVC AND NOT USE_MSVC_RUNTIME_LIBRARY_DLL)
+if (MSVC AND NOT GLFW_USE_MSVC_RUNTIME_LIBRARY_DLL)
     if (CMAKE_VERSION VERSION_LESS 3.15)
         foreach (flag CMAKE_C_FLAGS
                       CMAKE_C_FLAGS_DEBUG

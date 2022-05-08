@@ -409,6 +409,11 @@ void _glfwSetWindowOpacityNull(_GLFWwindow* window, float opacity)
     window->null.opacity = opacity;
 }
 
+void _glfwSetWindowBlurNull(_GLFWwindow* window, GLFWbool enable)
+{
+    window->null.blurred = enable;
+}
+
 void _glfwSetRawMouseMotionNull(_GLFWwindow *window, GLFWbool enabled)
 {
 }

@@ -112,6 +112,7 @@ GLFWbool _glfwConnectNull(int platformID, _GLFWplatform* platform)
         _glfwGetRequiredInstanceExtensionsNull,
         _glfwGetPhysicalDevicePresentationSupportNull,
         _glfwCreateWindowSurfaceNull,
+        _glfwSetWindowBlurNull,
     };
 
     *platform = null;

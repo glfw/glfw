@@ -410,6 +410,7 @@ struct _GLFWwndconfig
     GLFWbool      focusOnShow;
     GLFWbool      mousePassthrough;
     GLFWbool      scaleToMonitor;
+    GLFWbool      blurred;
     struct {
         GLFWbool  retina;
         char      frameName[256];
@@ -531,6 +532,7 @@ struct _GLFWwindow
     GLFWbool            focusOnShow;
     GLFWbool            mousePassthrough;
     GLFWbool            shouldClose;
+    GLFWbool            blurred;
     void*               userPointer;
     GLFWbool            doublebuffer;
     GLFWvidmode         videoMode;
@@ -748,6 +750,7 @@ struct _GLFWplatform
     void (*getRequiredInstanceExtensions)(char**);
     int (*getPhysicalDevicePresentationSupport)(VkInstance,VkPhysicalDevice,uint32_t);
     VkResult (*createWindowSurface)(VkInstance,_GLFWwindow*,const VkAllocationCallbacks*,VkSurfaceKHR*);
+    void (*setWindowBlur)(_GLFWwindow*,GLFWbool);
 };
 
 // Library global data

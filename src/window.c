@@ -359,6 +359,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_MOUSE_PASSTHROUGH:
             _glfw.hints.window.mousePassthrough = value ? GLFW_TRUE : GLFW_FALSE;
             return;
+        case GLFW_BLURRED:
+            _glfw.hints.window.blurred = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
         case GLFW_CLIENT_API:
             _glfw.hints.context.client = value;
             return;
@@ -826,6 +829,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->focusOnShow;
         case GLFW_MOUSE_PASSTHROUGH:
             return window->mousePassthrough;
+        case GLFW_BLURRED:
+            return window->blurred;
         case GLFW_TRANSPARENT_FRAMEBUFFER:
             return _glfw.platform.framebufferTransparent(window);
         case GLFW_RESIZABLE:
@@ -906,6 +911,11 @@ GLFWAPI void glfwSetWindowAttrib(GLFWwindow* handle, int attrib, int value)
         case GLFW_MOUSE_PASSTHROUGH:
             window->mousePassthrough = value;
             _glfw.platform.setWindowMousePassthrough(window, value);
+            return;
+
+        case GLFW_BLURRED:
+            window->blurred = value;
+            _glfw.platform.setWindowBlur(window, value);
             return;
     }
 

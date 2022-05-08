@@ -406,6 +406,10 @@ int main(int argc, char** argv)
             if (nk_checkbox_label(nk, "Auto Iconify", &auto_iconify))
                 glfwSetWindowAttrib(window, GLFW_AUTO_ICONIFY, auto_iconify);
 
+            int blurred = glfwGetWindowAttrib(window, GLFW_BLURRED);
+            if (nk_checkbox_label(nk, "Blur", &blurred))
+                glfwSetWindowAttrib(window, GLFW_BLURRED, blurred);
+
             nk_value_bool(nk, "Focused", glfwGetWindowAttrib(window, GLFW_FOCUSED));
             nk_value_bool(nk, "Hovered", glfwGetWindowAttrib(window, GLFW_HOVERED));
             nk_value_bool(nk, "Visible", glfwGetWindowAttrib(window, GLFW_VISIBLE));

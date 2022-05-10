@@ -495,7 +495,7 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
         }
     }
 
-    _glfwGrabErrorHandlerX11();
+    int (*orighandler)() = _glfwGrabErrorHandlerX11();
 
     if (_glfw.glx.ARB_create_context)
     {
@@ -605,7 +605,7 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
             createLegacyContextGLX(window, native, share);
     }
 
-    _glfwReleaseErrorHandlerX11();
+    _glfwReleaseErrorHandlerX11(orighandler);
 
     if (!window->context.glx.handle)
     {

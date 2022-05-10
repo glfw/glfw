@@ -573,7 +573,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                     ExposureMask | FocusChangeMask | VisibilityChangeMask |
                     EnterWindowMask | LeaveWindowMask | PropertyChangeMask;
 
-    _glfwGrabErrorHandlerX11();
+    int (*orighandler)() = _glfwGrabErrorHandlerX11();
 
     window->x11.parent = _glfw.x11.root;
     window->x11.handle = XCreateWindow(_glfw.x11.display,
@@ -587,7 +587,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                                        CWBorderPixel | CWColormap | CWEventMask,
                                        &wa);
 
-    _glfwReleaseErrorHandlerX11();
+    _glfwReleaseErrorHandlerX11(orighandler);
 
     if (!window->x11.handle)
     {
@@ -1452,7 +1452,7 @@ static void processEvent(XEvent *event)
             //       the position into root (screen) coordinates
             if (!event->xany.send_event && window->x11.parent != _glfw.x11.root)
             {
-                _glfwGrabErrorHandlerX11();
+                int (*orighandler)() = _glfwGrabErrorHandlerX11();
 
                 Window dummy;
                 XTranslateCoordinates(_glfw.x11.display,
@@ -1462,7 +1462,7 @@ static void processEvent(XEvent *event)
                                       &xpos, &ypos,
                                       &dummy);
 
-                _glfwReleaseErrorHandlerX11();
+                _glfwReleaseErrorHandlerX11(orighandler);
                 if (_glfw.x11.errorCode == BadWindow)
                     return;
             }
@@ -2526,13 +2526,13 @@ int _glfwWindowHoveredX11(_GLFWwindow* window)
         int rootX, rootY, childX, childY;
         unsigned int mask;
 
-        _glfwGrabErrorHandlerX11();
+        int (*orighandler)() = _glfwGrabErrorHandlerX11();
 
         const Bool result = XQueryPointer(_glfw.x11.display, w,
                                           &root, &w, &rootX, &rootY,
                                           &childX, &childY, &mask);
 
-        _glfwReleaseErrorHandlerX11();
+        _glfwReleaseErrorHandlerX11(orighandler);
 
         if (_glfw.x11.errorCode == BadWindow)
             w = _glfw.x11.root;

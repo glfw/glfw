@@ -523,7 +523,7 @@ static void detectEWMH(void)
         return;
     }
 
-    _glfwGrabErrorHandlerX11();
+    int (*orighandler)() = _glfwGrabErrorHandlerX11();
 
     // If it exists, it should be the XID of a top-level window
     // Then we look for the same property on that window
@@ -538,7 +538,7 @@ static void detectEWMH(void)
         return;
     }
 
-    _glfwReleaseErrorHandlerX11();
+    _glfwReleaseErrorHandlerX11(orighandler);
 
     // If the property exists, it should contain the XID of the window
 
@@ -1093,19 +1093,19 @@ static int errorHandler(Display *display, XErrorEvent* event)
 
 // Sets the X error handler callback
 //
-void _glfwGrabErrorHandlerX11(void)
+int (*_glfwGrabErrorHandlerX11(void))()
 {
     _glfw.x11.errorCode = Success;
-    XSetErrorHandler(errorHandler);
+    return XSetErrorHandler(errorHandler);
 }
 
 // Clears the X error handler callback
 //
-void _glfwReleaseErrorHandlerX11(void)
+void _glfwReleaseErrorHandlerX11(int (*orighandler)())
 {
     // Synchronize to make sure all commands are processed
     XSync(_glfw.x11.display, False);
-    XSetErrorHandler(NULL);
+    XSetErrorHandler(orighandler);
 }
 
 // Reports the specified error, appending information about the last X error

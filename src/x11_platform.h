@@ -983,8 +983,8 @@ unsigned long _glfwGetWindowPropertyX11(Window window,
                                         unsigned char** value);
 GLFWbool _glfwIsVisualTransparentX11(Visual* visual);
 
-void _glfwGrabErrorHandlerX11(void);
-void _glfwReleaseErrorHandlerX11(void);
+int (*_glfwGrabErrorHandlerX11(void))();
+void _glfwReleaseErrorHandlerX11(int (*orighandler)());
 void _glfwInputErrorX11(int error, const char* message);
 
 void _glfwPushSelectionToManagerX11(void);

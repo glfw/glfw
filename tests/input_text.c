@@ -290,7 +290,8 @@ static void set_font_selecter(GLFWwindow* window, struct nk_context* nk, int hei
 {
     int newSelectedIndex;
 
-    nk_layout_row_dynamic(nk, height, 1);
+    nk_layout_row_dynamic(nk, height, 2);
+    nk_label(nk, "Font", NK_TEXT_RIGHT);
     newSelectedIndex = nk_combo(nk, (const char**) fontFamilyNames, fontNum, currentFontIndex, font_height, nk_vec2(300, 400));
 
     if (newSelectedIndex == currentFontIndex)

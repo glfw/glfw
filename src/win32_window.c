@@ -533,16 +533,6 @@ static void maximizeWindowManually(_GLFWwindow* window)
                  SWP_NOACTIVATE | SWP_NOZORDER | SWP_FRAMECHANGED);
 }
 
-// Set cursor position to decide candidate window
-static void _win32ChangeCursorPosition(HIMC hIMC, _GLFWwindow* window)
-{
-    int x = window->preeditCursorPosX;
-    int y = window->preeditCursorPosY;
-    int h = window->preeditCursorHeight;
-    CANDIDATEFORM excludeRect = { 0, CFS_EXCLUDE, { x, y }, { x, y, x, y + h } };
-    ImmSetCandidateWindow(hIMC, &excludeRect);
-}
-
 static GLFWbool getImmPreedit(_GLFWwindow* window)
 {
     HIMC hIMC = ImmGetContext(window->win32.handle);
@@ -628,7 +618,6 @@ static GLFWbool getImmPreedit(_GLFWwindow* window)
         _glfw_free(clauses);
 
         _glfwInputPreedit(window, focusedBlock);
-        _win32ChangeCursorPosition(hIMC, window);
     }
 
     ImmReleaseContext(window->win32.handle, hIMC);
@@ -2522,6 +2511,21 @@ const char* _glfwGetClipboardStringWin32(void)
     CloseClipboard();
 
     return _glfw.win32.clipboardString;
+}
+
+void _glfwUpdatePreeditCursorPosWin32(_GLFWwindow* window)
+{
+    HWND hWnd = window->win32.handle;
+    HIMC hIMC = ImmGetContext(hWnd);
+
+    int x = window->preeditCursorPosX;
+    int y = window->preeditCursorPosY;
+    int h = window->preeditCursorHeight;
+    CANDIDATEFORM excludeRect = { 0, CFS_EXCLUDE, { x, y }, { x, y, x, y + h } };
+
+    ImmSetCandidateWindow(hIMC, &excludeRect);
+
+    ImmReleaseContext(hWnd, hIMC);
 }
 
 void _glfwResetPreeditTextWin32(_GLFWwindow* window)

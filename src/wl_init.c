@@ -362,6 +362,7 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         _glfwGetKeyScancodeWayland,
         _glfwSetClipboardStringWayland,
         _glfwGetClipboardStringWayland,
+        _glfwUpdatePreeditCursorPosWayland,
         _glfwResetPreeditTextWayland,
         _glfwSetIMEStatusWayland,
         _glfwGetIMEStatusWayland,

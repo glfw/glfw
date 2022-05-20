@@ -979,6 +979,7 @@ void _glfwSetCursorX11(_GLFWwindow* window, _GLFWcursor* cursor);
 void _glfwSetClipboardStringX11(const char* string);
 const char* _glfwGetClipboardStringX11(void);
 
+void _glfwUpdatePreeditCursorPosX11(_GLFWwindow* window);
 void _glfwResetPreeditTextX11(_GLFWwindow* window);
 void _glfwSetIMEStatusX11(_GLFWwindow* window, int active);
 int _glfwGetIMEStatusX11(_GLFWwindow* window);

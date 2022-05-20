@@ -543,20 +543,6 @@ static void inputContextDestroyCallback(XIC ic, XPointer clientData, XPointer ca
     window->x11.ic = NULL;
 }
 
-// Update cursor position to decide candidate window
-//
-static void _ximChangeCursorPosition(XIC xic, _GLFWwindow* window)
-{
-    XVaNestedList preedit_attr;
-    XPoint spot;
-
-    spot.x = window->preeditCursorPosX;
-    spot.y = window->preeditCursorPosY + window->preeditCursorHeight;
-    preedit_attr = XVaCreateNestedList(0, XNSpotLocation, &spot, NULL);
-    XSetICValues(xic, XNPreeditAttributes, preedit_attr, NULL);
-    XFree(preedit_attr);
-}
-
 // IME Start callback (do nothing)
 //
 static void _ximPreeditStartCallback(XIC xic, XPointer clientData, XPointer callData)
@@ -580,11 +566,6 @@ static void _ximPreeditDrawCallback(XIC xic, XPointer clientData, XIMPreeditDraw
     unsigned int* preeditText;
     XIMFeedback f;
     _GLFWwindow* window = (_GLFWwindow*) clientData;
-
-    // keep cursor position to reduce API call
-    int cursorX = window->preeditCursorPosX;
-    int cursorY = window->preeditCursorPosY;
-    int cursorHeight = window->preeditCursorHeight;
 
     if (!callData->text)
     {
@@ -687,12 +668,6 @@ static void _ximPreeditDrawCallback(XIC xic, XPointer clientData, XIMPreeditDraw
             window->preeditAttributeBlocks[2] = length - rend - 1;
             window->preeditAttributeBlocks[3] = 0;
             _glfwInputPreedit(window, 1);
-        }
-        if ((cursorX != window->preeditCursorPosX) ||
-            (cursorY != window->preeditCursorPosY) ||
-            (cursorHeight != window->preeditCursorHeight))
-        {
-            _ximChangeCursorPosition(xic, window);
         }
     }
 }
@@ -1461,11 +1436,6 @@ static void processEvent(XEvent *event)
 
                     if (chars != buffer)
                         _glfw_free(chars);
-
-                    // In the case of over-the-spot, need to update the position here
-                    // because preedit-callbacks can not be used.
-                    if (_glfw.x11.imStyle == STYLE_OVERTHESPOT)
-                        _ximChangeCursorPosition(window->x11.ic, window);
                 }
             }
             else
@@ -3259,6 +3229,21 @@ const char* _glfwGetClipboardStringX11(void)
     return getSelectionString(_glfw.x11.CLIPBOARD);
 }
 
+void _glfwUpdatePreeditCursorPosX11(_GLFWwindow* window)
+{
+    XVaNestedList preedit_attr;
+    XPoint spot;
+
+    if (!window->x11.ic)
+        return;
+
+    spot.x = window->preeditCursorPosX;
+    spot.y = window->preeditCursorPosY + window->preeditCursorHeight;
+    preedit_attr = XVaCreateNestedList(0, XNSpotLocation, &spot, NULL);
+    XSetICValues(window->x11.ic, XNPreeditAttributes, preedit_attr, NULL);
+    XFree(preedit_attr);
+}
+
 void _glfwResetPreeditTextX11(_GLFWwindow* window)
 {
     XIC ic = window->x11.ic;
@@ -3267,6 +3252,9 @@ void _glfwResetPreeditTextX11(_GLFWwindow* window)
     XIMPreeditState preedit_state = XIMPreeditUnKnown;
     XVaNestedList preedit_attr;
     char* result;
+
+    if (!ic)
+        return;
 
     // Can not manage IME in the case of over-the-spot.
     if (_glfw.x11.imStyle == STYLE_OVERTHESPOT)
@@ -3296,6 +3284,9 @@ void _glfwSetIMEStatusX11(_GLFWwindow* window, int active)
 {
     XIC ic = window->x11.ic;
 
+    if (!ic)
+        return;
+
     // Can not manage IME in the case of over-the-spot.
     if (_glfw.x11.imStyle == STYLE_OVERTHESPOT)
         return;
@@ -3308,6 +3299,9 @@ void _glfwSetIMEStatusX11(_GLFWwindow* window, int active)
 
 int _glfwGetIMEStatusX11(_GLFWwindow* window)
 {
+    if (!window->x11.ic)
+        return GLFW_FALSE;
+
     // Can not manage IME in the case of over-the-spot.
     if (_glfw.x11.imStyle == STYLE_OVERTHESPOT)
         return GLFW_FALSE;

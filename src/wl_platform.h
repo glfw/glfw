@@ -490,6 +490,7 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor);
 void _glfwSetClipboardStringWayland(const char* string);
 const char* _glfwGetClipboardStringWayland(void);
 
+void _glfwUpdatePreeditCursorPosWayland(_GLFWwindow* window);
 void _glfwResetPreeditTextWayland(_GLFWwindow* window);
 void _glfwSetIMEStatusWayland(_GLFWwindow* window, int active);
 int _glfwGetIMEStatusWayland(_GLFWwindow* window);

@@ -596,6 +596,7 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         _glfwGetKeyScancodeWin32,
         _glfwSetClipboardStringWin32,
         _glfwGetClipboardStringWin32,
+        _glfwUpdatePreeditCursorPosWin32,
         _glfwResetPreeditTextWin32,
         _glfwSetIMEStatusWin32,
         _glfwGetIMEStatusWin32,

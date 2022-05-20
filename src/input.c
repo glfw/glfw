@@ -907,9 +907,17 @@ GLFWAPI void glfwGetPreeditCursorPos(GLFWwindow* handle, int *x, int *y, int *h)
 GLFWAPI void glfwSetPreeditCursorPos(GLFWwindow* handle, int x, int y, int h)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+
+    if (x == window->preeditCursorPosX &&
+        y == window->preeditCursorPosY &&
+        h == window->preeditCursorHeight)
+        return;
+
     window->preeditCursorPosX = x;
     window->preeditCursorPosY = y;
     window->preeditCursorHeight = h;
+
+    _glfw.platform.updatePreeditCursorPos(window);
 }
 
 GLFWAPI void glfwResetPreeditText(GLFWwindow* handle)

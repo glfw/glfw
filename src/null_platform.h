@@ -137,6 +137,7 @@ const char* _glfwGetClipboardStringNull(void);
 const char* _glfwGetScancodeNameNull(int scancode);
 int _glfwGetKeyScancodeNull(int key);
 
+void _glfwUpdatePreeditCursorPosNull(_GLFWwindow* window);
 void _glfwResetPreeditTextNull(_GLFWwindow* window);
 void _glfwSetIMEStatusNull(_GLFWwindow* window, int active);
 int _glfwGetIMEStatusNull(_GLFWwindow* window);

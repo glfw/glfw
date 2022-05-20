@@ -4562,8 +4562,8 @@ GLFWAPI void glfwPostEmptyEvent(void);
  *
  *  @param[in] window The window to query.
  *  @param[in] mode One of `GLFW_CURSOR`, `GLFW_STICKY_KEYS`,
- *  `GLFW_STICKY_MOUSE_BUTTONS`, `GLFW_LOCK_KEY_MODS` or
- *  `GLFW_RAW_MOUSE_MOTION`.
+ *  `GLFW_STICKY_MOUSE_BUTTONS`, `GLFW_LOCK_KEY_MODS`, `GLFW_RAW_MOUSE_MOTION`,
+ *  or `GLFW_IME`.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_INVALID_ENUM.
@@ -5077,8 +5077,7 @@ GLFWAPI void glfwGetPreeditCursorPos(GLFWwindow* window, int *x, int *y, int *h)
  *  This function teach position hint to decide the candidate window. The candidate window
  *  is a part of IME(Input Method Editor) and show several candidate strings.
  *
- *  Windows sytems decide proper pisition from text cursor geometry.
- *  You should call this function in preedit callback.
+ *  Windows systems decide proper position from text cursor geometry.
  *
  *  @param[in] window The window to set the text cursor for.
  *  @param[in] x The text cursor x position (relative position from window coordinates).
@@ -5250,8 +5249,8 @@ GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmods
 
 /*! @brief Sets the preedit callback.
  *
- *  This function sets the  preedit callback of the specified
- *  window, which is called when an IME is processing text before commited.
+ *  This function sets the preedit callback of the specified
+ *  window, which is called when an IME is processing text before committed.
  *
  *  Callback receives relative position of input cursor inside preedit text and
  *  attributed text blocks. This callback is used for on-the-spot text editing
@@ -5276,12 +5275,8 @@ GLFWAPI GLFWpreeditfun glfwSetPreeditCallback(GLFWwindow* window, GLFWpreeditfun
 
 /*! @brief Sets the IME status change callback.
  *
- *  This function sets the  preedit callback of the specified
- *  window, which is called when an IME is processing text before commited.
- *
- *  Callback receives relative position of input cursor inside preedit text and
- *  attributed text blocks. This callback is used for on-the-spot text editing
- *  with IME.
+ *  This function sets the IME status callback of the specified
+ *  window, which is called when an IME is switched on and off.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] cbfun The new callback, or `NULL` to remove the currently set

@@ -29,7 +29,8 @@
 //
 // Currently, it is made for Japanese input only.
 // You have to select the correct font to display Japanese texts.
-// You can set TTF_FONT_FILEPATH to set default font or you can choose a font by GUI in UNIX-like OS.
+// You can set TTF_FONT_FILEPATH to set default font or you can choose a font by GUI
+// if fontconfig libary is enabled in X11 or Wayland.
 //
 // To handle other languages, you need to add correct ranges to nk_font_config.
 //
@@ -69,7 +70,7 @@
 #include <stdlib.h>
 #include <limits.h>
 
-#if !defined(_GLFW_WIN32)
+#if defined(FONTCONFIG_ENABLED)
     #include <fontconfig/fontconfig.h>
 #endif
 
@@ -98,7 +99,7 @@ static char** fontFilePaths;
 static int fontNum = 0;
 static int currentFontIndex = 0;
 
-#if (defined(_GLFW_WIN32) || defined(TTF_FONT_FILEPATH))
+#if (!defined(FONTCONFIG_ENABLED) || defined(TTF_FONT_FILEPATH))
 static void init_font_list()
 {
     fontFamilyNames = (char**) malloc(sizeof(char*) * MAX_FONTS_LEN);
@@ -207,7 +208,7 @@ static void init_font_list()
 
 static void deinit_font_list()
 {
-#if !(defined(_GLFW_WIN32) || defined(TTF_FONT_FILEPATH))
+#if !(!defined(FONTCONFIG_ENABLED) || defined(TTF_FONT_FILEPATH))
     for (int i = 1; i < fontNum; ++i)
     {
         free(fontFamilyNames[i]);

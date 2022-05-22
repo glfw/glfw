@@ -100,6 +100,36 @@ static int fontNum = 0;
 static int currentFontIndex = 0;
 
 static int currentIMEStatus = GLFW_FALSE;
+#define MAX_PREDIT_LEN 128
+static char preeditBuf[MAX_PREDIT_LEN] = "";
+
+static size_t encode_utf8(char* s, unsigned int ch)
+{
+    size_t count = 0;
+
+    if (ch < 0x80)
+        s[count++] = (char) ch;
+    else if (ch < 0x800)
+    {
+        s[count++] = (ch >> 6) | 0xc0;
+        s[count++] = (ch & 0x3f) | 0x80;
+    }
+    else if (ch < 0x10000)
+    {
+        s[count++] = (ch >> 12) | 0xe0;
+        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
+        s[count++] = (ch & 0x3f) | 0x80;
+    }
+    else if (ch < 0x110000)
+    {
+        s[count++] = (ch >> 18) | 0xf0;
+        s[count++] = ((ch >> 12) & 0x3f) | 0x80;
+        s[count++] = ((ch >> 6) & 0x3f) | 0x80;
+        s[count++] = (ch & 0x3f) | 0x80;
+    }
+
+    return count;
+}
 
 #if (!defined(FONTCONFIG_ENABLED) || defined(TTF_FONT_FILEPATH))
 static void init_font_list()
@@ -404,6 +434,19 @@ static void set_ime_stauts_labels(GLFWwindow* window, struct nk_context* nk, int
     nk_value_bool(nk, "IME status", currentIMEStatus);
 }
 
+static void set_preedit_labels(GLFWwindow* window, struct nk_context* nk, int height)
+{
+    nk_layout_row_begin(nk, NK_DYNAMIC, height, 5);
+
+    nk_layout_row_push(nk, 1.f / 3.f);
+    nk_label(nk, "Preedit info:", NK_TEXT_LEFT);
+
+    nk_layout_row_push(nk, 2.f / 3.f);
+    nk_label(nk, (const char*) preeditBuf, NK_TEXT_LEFT);
+
+    nk_layout_row_end(nk);
+}
+
 // If it is possible to take the text-cursor position calculated in `nk_do_edit` function in `deps/nuklear.h`,
 // we can set preedit-cursor position more easily.
 // However, there doesn't seem to be a way to do that, so this does a simplified calculation only for the end
@@ -446,7 +489,7 @@ static void update_preedit_pos(GLFWwindow* window, struct nk_context* nk, struct
     {
         // I don't know how to get these info.
         int widgetLayoutX = 10;
-        int widgetLayoutY = 190;
+        int widgetLayoutY = 220;
 
         int preeditPosX = widgetLayoutX + lineWidth;
         int preeditPosY = widgetLayoutY + totalLines * (f->height + nk->style.edit.row_padding);
@@ -459,6 +502,50 @@ static void ime_callback(GLFWwindow* window)
 {
     currentIMEStatus = glfwGetInputMode(window, GLFW_IME);
     printf("IME switched: %s\n", currentIMEStatus ? "ON" : "OFF");
+}
+
+static void preedit_callback(GLFWwindow* window, int strLength,
+                             unsigned int* string, int blockLength,
+                             int* blocks, int focusedBlock)
+{
+    int blockIndex = -1, blockCount = 0;
+    if (strLength == 0 || blockLength == 0)
+    {
+        strcpy(preeditBuf, "(empty)");
+        return;
+    }
+
+    strcpy(preeditBuf, "");
+
+    for (int i = 0; i < strLength; i++)
+    {
+        char encoded[5] = "";
+
+        if (blockCount == 0)
+        {
+            if (blockIndex == focusedBlock)
+            {
+                if (strlen(preeditBuf) + strlen("]") < MAX_PREDIT_LEN)
+                    strcat(preeditBuf, "]");
+            }
+            blockIndex++;
+            blockCount = blocks[blockIndex];
+            if (blockIndex == focusedBlock)
+            {
+                if (strlen(preeditBuf) + strlen("[") < MAX_PREDIT_LEN)
+                    strcat(preeditBuf, "[");
+            }
+        }
+        encode_utf8(encoded, string[i]);
+        if (strlen(preeditBuf) + strlen(encoded) < MAX_PREDIT_LEN)
+            strcat(preeditBuf, encoded);
+        blockCount--;
+    }
+    if (blockIndex == focusedBlock)
+    {
+        if (strlen(preeditBuf) + strlen("]") < MAX_PREDIT_LEN)
+            strcat(preeditBuf, "]");
+    }
 }
 
 int main(int argc, char** argv)
@@ -486,6 +573,7 @@ int main(int argc, char** argv)
     }
 
     glfwSetIMEStatusCallback(window, ime_callback);
+    glfwSetPreeditCallback(window, preedit_callback);
 
     glfwMakeContextCurrent(window);
     gladLoadGL(glfwGetProcAddress);
@@ -513,8 +601,9 @@ int main(int argc, char** argv)
             set_ime_buttons(window, nk, 30);
             set_preedit_cursor_edit(window, nk, 30, &isAutoUpdatingPreeditPosEnabled);
             set_ime_stauts_labels(window, nk, 30);
+            set_preedit_labels(window, nk, 30);
 
-            nk_layout_row_dynamic(nk, height - 200, 1);
+            nk_layout_row_dynamic(nk, height - 250, 1);
             nk_edit_string(nk, NK_EDIT_BOX, boxBuffer, &boxLen, MAX_BUFFER_LEN, nk_filter_default);
         }
         nk_end(nk);

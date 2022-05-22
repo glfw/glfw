@@ -601,7 +601,7 @@ void _glfwTerminateJoysticksWin32(void)
         IDirectInput8_Release(_glfw.win32.dinput8.api);
 }
 
-int _glfwPollJoystickWin32(_GLFWjoystick* js, int mode)
+GLFWbool _glfwPollJoystickWin32(_GLFWjoystick* js, int mode)
 {
     if (js->win32.device)
     {

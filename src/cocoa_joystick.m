@@ -393,7 +393,7 @@ void _glfwTerminateJoysticksCocoa(void)
 }
 
 
-int _glfwPollJoystickCocoa(_GLFWjoystick* js, int mode)
+GLFWbool _glfwPollJoystickCocoa(_GLFWjoystick* js, int mode)
 {
     if (mode & _GLFW_POLL_AXES)
     {

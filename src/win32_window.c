@@ -1463,10 +1463,10 @@ void _glfwUnregisterWindowClassWin32(void)
     UnregisterClassW(_GLFW_WNDCLASSNAME, _glfw.win32.instance);
 }
 
-int _glfwCreateWindowWin32(_GLFWwindow* window,
-                           const _GLFWwndconfig* wndconfig,
-                           const _GLFWctxconfig* ctxconfig,
-                           const _GLFWfbconfig* fbconfig)
+GLFWbool _glfwCreateWindowWin32(_GLFWwindow* window,
+                                const _GLFWwndconfig* wndconfig,
+                                const _GLFWctxconfig* ctxconfig,
+                                const _GLFWfbconfig* fbconfig)
 {
     if (!createNativeWindow(window, wndconfig, fbconfig))
         return GLFW_FALSE;
@@ -1900,32 +1900,32 @@ void _glfwSetWindowMonitorWin32(_GLFWwindow* window,
     }
 }
 
-int _glfwWindowFocusedWin32(_GLFWwindow* window)
+GLFWbool _glfwWindowFocusedWin32(_GLFWwindow* window)
 {
     return window->win32.handle == GetActiveWindow();
 }
 
-int _glfwWindowIconifiedWin32(_GLFWwindow* window)
+GLFWbool _glfwWindowIconifiedWin32(_GLFWwindow* window)
 {
     return IsIconic(window->win32.handle);
 }
 
-int _glfwWindowVisibleWin32(_GLFWwindow* window)
+GLFWbool _glfwWindowVisibleWin32(_GLFWwindow* window)
 {
     return IsWindowVisible(window->win32.handle);
 }
 
-int _glfwWindowMaximizedWin32(_GLFWwindow* window)
+GLFWbool _glfwWindowMaximizedWin32(_GLFWwindow* window)
 {
     return IsZoomed(window->win32.handle);
 }
 
-int _glfwWindowHoveredWin32(_GLFWwindow* window)
+GLFWbool _glfwWindowHoveredWin32(_GLFWwindow* window)
 {
     return cursorInContentArea(window);
 }
 
-int _glfwFramebufferTransparentWin32(_GLFWwindow* window)
+GLFWbool _glfwFramebufferTransparentWin32(_GLFWwindow* window)
 {
     BOOL composition, opaque;
     DWORD color;
@@ -2209,9 +2209,9 @@ int _glfwGetKeyScancodeWin32(int key)
     return _glfw.win32.scancodes[key];
 }
 
-int _glfwCreateCursorWin32(_GLFWcursor* cursor,
-                           const GLFWimage* image,
-                           int xhot, int yhot)
+GLFWbool _glfwCreateCursorWin32(_GLFWcursor* cursor,
+                                const GLFWimage* image,
+                                int xhot, int yhot)
 {
     cursor->win32.handle = (HCURSOR) createIcon(image, xhot, yhot, GLFW_FALSE);
     if (!cursor->win32.handle)
@@ -2220,7 +2220,7 @@ int _glfwCreateCursorWin32(_GLFWcursor* cursor,
     return GLFW_TRUE;
 }
 
-int _glfwCreateStandardCursorWin32(_GLFWcursor* cursor, int shape)
+GLFWbool _glfwCreateStandardCursorWin32(_GLFWcursor* cursor, int shape)
 {
     int id = 0;
 
@@ -2428,9 +2428,9 @@ void _glfwGetRequiredInstanceExtensionsWin32(char** extensions)
     extensions[1] = "VK_KHR_win32_surface";
 }
 
-int _glfwGetPhysicalDevicePresentationSupportWin32(VkInstance instance,
-                                                   VkPhysicalDevice device,
-                                                   uint32_t queuefamily)
+GLFWbool _glfwGetPhysicalDevicePresentationSupportWin32(VkInstance instance,
+                                                        VkPhysicalDevice device,
+                                                        uint32_t queuefamily)
 {
     PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR
         vkGetPhysicalDeviceWin32PresentationSupportKHR =

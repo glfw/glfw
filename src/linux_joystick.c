@@ -380,7 +380,7 @@ void _glfwTerminateJoysticksLinux(void)
     }
 }
 
-int _glfwPollJoystickLinux(_GLFWjoystick* js, int mode)
+GLFWbool _glfwPollJoystickLinux(_GLFWjoystick* js, int mode)
 {
     // Read all queued events (non-blocking)
     for (;;)

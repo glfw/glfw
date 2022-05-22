@@ -1721,10 +1721,10 @@ void _glfwAddDataDeviceListenerWayland(struct wl_data_device* device)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwCreateWindowWayland(_GLFWwindow* window,
-                             const _GLFWwndconfig* wndconfig,
-                             const _GLFWctxconfig* ctxconfig,
-                             const _GLFWfbconfig* fbconfig)
+GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
+                                  const _GLFWwndconfig* wndconfig,
+                                  const _GLFWctxconfig* ctxconfig,
+                                  const _GLFWfbconfig* fbconfig)
 {
     if (!createSurface(window, wndconfig, fbconfig))
         return GLFW_FALSE;
@@ -1994,34 +1994,34 @@ void _glfwSetWindowMonitorWayland(_GLFWwindow* window,
     _glfwInputWindowMonitor(window, monitor);
 }
 
-int _glfwWindowFocusedWayland(_GLFWwindow* window)
+GLFWbool _glfwWindowFocusedWayland(_GLFWwindow* window)
 {
     return _glfw.wl.keyboardFocus == window;
 }
 
-int _glfwWindowIconifiedWayland(_GLFWwindow* window)
+GLFWbool _glfwWindowIconifiedWayland(_GLFWwindow* window)
 {
     // xdg-shell doesn’t give any way to request whether a surface is
     // iconified.
     return GLFW_FALSE;
 }
 
-int _glfwWindowVisibleWayland(_GLFWwindow* window)
+GLFWbool _glfwWindowVisibleWayland(_GLFWwindow* window)
 {
     return window->wl.visible;
 }
 
-int _glfwWindowMaximizedWayland(_GLFWwindow* window)
+GLFWbool _glfwWindowMaximizedWayland(_GLFWwindow* window)
 {
     return window->wl.maximized;
 }
 
-int _glfwWindowHoveredWayland(_GLFWwindow* window)
+GLFWbool _glfwWindowHoveredWayland(_GLFWwindow* window)
 {
     return window->wl.hovered;
 }
 
-int _glfwFramebufferTransparentWayland(_GLFWwindow* window)
+GLFWbool _glfwFramebufferTransparentWayland(_GLFWwindow* window)
 {
     return window->wl.transparent;
 }
@@ -2193,9 +2193,9 @@ int _glfwGetKeyScancodeWayland(int key)
     return _glfw.wl.scancodes[key];
 }
 
-int _glfwCreateCursorWayland(_GLFWcursor* cursor,
-                             const GLFWimage* image,
-                             int xhot, int yhot)
+GLFWbool _glfwCreateCursorWayland(_GLFWcursor* cursor,
+                                  const GLFWimage* image,
+                                  int xhot, int yhot)
 {
     cursor->wl.buffer = createShmBuffer(image);
     if (!cursor->wl.buffer)
@@ -2208,7 +2208,7 @@ int _glfwCreateCursorWayland(_GLFWcursor* cursor,
     return GLFW_TRUE;
 }
 
-int _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape)
+GLFWbool _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape)
 {
     const char* name = NULL;
 
@@ -2635,9 +2635,9 @@ void _glfwGetRequiredInstanceExtensionsWayland(char** extensions)
     extensions[1] = "VK_KHR_wayland_surface";
 }
 
-int _glfwGetPhysicalDevicePresentationSupportWayland(VkInstance instance,
-                                                     VkPhysicalDevice device,
-                                                     uint32_t queuefamily)
+GLFWbool _glfwGetPhysicalDevicePresentationSupportWayland(VkInstance instance,
+                                                          VkPhysicalDevice device,
+                                                          uint32_t queuefamily)
 {
     PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
         vkGetPhysicalDeviceWaylandPresentationSupportKHR =

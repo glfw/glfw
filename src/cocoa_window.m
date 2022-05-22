@@ -893,10 +893,10 @@ float _glfwTransformYCocoa(float y)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwCreateWindowCocoa(_GLFWwindow* window,
-                           const _GLFWwndconfig* wndconfig,
-                           const _GLFWctxconfig* ctxconfig,
-                           const _GLFWfbconfig* fbconfig)
+GLFWbool _glfwCreateWindowCocoa(_GLFWwindow* window,
+                                const _GLFWwndconfig* wndconfig,
+                                const _GLFWctxconfig* ctxconfig,
+                                const _GLFWfbconfig* fbconfig)
 {
     @autoreleasepool {
 
@@ -1309,35 +1309,35 @@ void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
     } // autoreleasepool
 }
 
-int _glfwWindowFocusedCocoa(_GLFWwindow* window)
+GLFWbool _glfwWindowFocusedCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     return [window->ns.object isKeyWindow];
     } // autoreleasepool
 }
 
-int _glfwWindowIconifiedCocoa(_GLFWwindow* window)
+GLFWbool _glfwWindowIconifiedCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     return [window->ns.object isMiniaturized];
     } // autoreleasepool
 }
 
-int _glfwWindowVisibleCocoa(_GLFWwindow* window)
+GLFWbool _glfwWindowVisibleCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     return [window->ns.object isVisible];
     } // autoreleasepool
 }
 
-int _glfwWindowMaximizedCocoa(_GLFWwindow* window)
+GLFWbool _glfwWindowMaximizedCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     return [window->ns.object isZoomed];
     } // autoreleasepool
 }
 
-int _glfwWindowHoveredCocoa(_GLFWwindow* window)
+GLFWbool _glfwWindowHoveredCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
 
@@ -1355,7 +1355,7 @@ int _glfwWindowHoveredCocoa(_GLFWwindow* window)
     } // autoreleasepool
 }
 
-int _glfwFramebufferTransparentCocoa(_GLFWwindow* window)
+GLFWbool _glfwFramebufferTransparentCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
     return ![window->ns.object isOpaque] && ![window->ns.view isOpaque];
@@ -1605,9 +1605,9 @@ int _glfwGetKeyScancodeCocoa(int key)
     return _glfw.ns.scancodes[key];
 }
 
-int _glfwCreateCursorCocoa(_GLFWcursor* cursor,
-                           const GLFWimage* image,
-                           int xhot, int yhot)
+GLFWbool _glfwCreateCursorCocoa(_GLFWcursor* cursor,
+                                const GLFWimage* image,
+                                int xhot, int yhot)
 {
     @autoreleasepool {
 
@@ -1649,7 +1649,7 @@ int _glfwCreateCursorCocoa(_GLFWcursor* cursor,
     } // autoreleasepool
 }
 
-int _glfwCreateStandardCursorCocoa(_GLFWcursor* cursor, int shape)
+GLFWbool _glfwCreateStandardCursorCocoa(_GLFWcursor* cursor, int shape)
 {
     @autoreleasepool {
 
@@ -1832,9 +1832,9 @@ void _glfwGetRequiredInstanceExtensionsCocoa(char** extensions)
     }
 }
 
-int _glfwGetPhysicalDevicePresentationSupportCocoa(VkInstance instance,
-                                                   VkPhysicalDevice device,
-                                                   uint32_t queuefamily)
+GLFWbool _glfwGetPhysicalDevicePresentationSupportCocoa(VkInstance instance,
+                                                        VkPhysicalDevice device,
+                                                        uint32_t queuefamily)
 {
     return GLFW_TRUE;
 }

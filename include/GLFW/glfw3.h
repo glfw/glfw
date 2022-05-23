@@ -1883,11 +1883,11 @@ typedef void (* GLFWcharmodsfun)(GLFWwindow* window, unsigned int codepoint, int
  *  This is the function pointer type for preedit callback functions.
  *
  *  @param[in] window The window that received the event.
- *  @param[in] length Preedit string length.
- *  @param[in] string Preedit string.
- *  @param[in] count Attributed block count.
- *  @param[in] blocksizes List of attributed block size.
- *  @param[in] focusedblock Focused block index.
+ *  @param[in] preedit_length Preedit string length.
+ *  @param[in] preedit_string Preedit string.
+ *  @param[in] block_count Attributed block count.
+ *  @param[in] block_sizes List of attributed block size.
+ *  @param[in] focused_block Focused block index.
  *
  *  @sa @ref preedit
  *  @sa glfwSetPreeditCallback
@@ -1898,7 +1898,7 @@ typedef void (* GLFWpreeditfun)(GLFWwindow* window,
                                 int preedit_length,
                                 unsigned int* preedit_string,
                                 int block_count,
-                                int* block_sizes_list,
+                                int* block_sizes,
                                 int focused_block);
 
 /*! @brief The function pointer type for IME status change callbacks.
@@ -5261,6 +5261,18 @@ GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmods
  *  callback.
  *  @return The previously set callback, or `NULL` if no callback was set or an
  *  error occurred.
+ * 
+ *  @callback_signature
+ *  @code
+ *  void function_name(GLFWwindow* window,
+                       int preedit_length,
+                       unsigned int* preedit_string,
+                       int block_count,
+                       int* block_sizes,
+                       int focused_block)
+ *  @endcode
+ *  For more information about the callback parameters, see the
+ *  [function pointer type](@ref GLFWpreeditfun).
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
@@ -5283,6 +5295,13 @@ GLFWAPI GLFWpreeditfun glfwSetPreeditCallback(GLFWwindow* window, GLFWpreeditfun
  *  callback.
  *  @return The previously set callback, or `NULL` if no callback was set or an
  *  error occurred.
+ * 
+ *  @callback_signature
+ *  @code
+ *  void function_name(GLFWwindow* window)
+ *  @endcode
+ *  For more information about the callback parameters, see the
+ *  [function pointer type](@ref GLFWimestatusfun).
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.

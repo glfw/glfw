@@ -235,36 +235,42 @@ glfwSetPreeditCallback(window, preedit_callback);
 The callback function receives chunk of text and focused block information.
 
 @code
-static void preedit_callback(GLFWwindow* window, int strLength, unsigned int* string, int blockLength, int* blocks, int focusedBlock) {
+void preedit_callback(GLFWwindow* window,
+                      int preedit_length,
+                      unsigned int* preedit_string,
+                      int block_count,
+                      int* block_sizes,
+                      int focused_block)
+{
 }
 @endcode
 
-strLength and string parameter represent whole preedit text. Each character of the preedit string is a codepoint like @ref input_char.
+"preedit_length" and "preedit_string" parameter represent whole preedit text. Each character of the preedit string is a codepoint like @ref input_char.
 
 If you want to type the text "寿司(sushi)", Usually the callback is called several times like the following sequence:
 
 -# key event: s
--# preedit: [string: "ｓ", block: [1], focusedBlock: 0]
+-# preedit: [preedit_string: "ｓ", block_sizes: [1], focused_block: 0]
 -# key event: u
--# preedit: [string: "す", block: [1], focusedBlock: 0]
+-# preedit: [preedit_string: "す", block_sizes: [1], focused_block: 0]
 -# key event: s
--# preedit: [string: "すｓ", block: [2], focusedBlock: 0]
+-# preedit: [preedit_string: "すｓ", block_sizes: [2], focused_block: 0]
 -# key event: h
--# preedit: [string: "すｓｈ", block: [2], focusedBlock: 0]
+-# preedit: [preedit_string: "すｓｈ", block_sizes: [2], focused_block: 0]
 -# key event: i
--# preedit: [string: "すし", block: [2], focusedBlock: 0]
+-# preedit: [preedit_string: "すし", block_sizes: [2], focused_block: 0]
 -# key event: ' '
--# preedit: [string: "寿司", block: [2], focusedBlock: 0]
+-# preedit: [preedit_string: "寿司", block_sizes: [2], focused_block: 0]
 -# char: '寿'
 -# char: '司'
--# preedit: [string: "", block: [], focusedBlock: 0]
+-# preedit: [preedit_string: "", block_sizes: [], focused_block: 0]
 
 If preedit text includes several semantic blocks, preedit callbacks returns several blocks after a space key pressed:
 
--# preedit: [string: "わたしはすしをたべます", block: [11], focusedBlock: 0]
--# preedit: [string: "私は寿司を食べます", block: [2, 7], focusedBlock: 1]
+-# preedit: [preedit_string: "わたしはすしをたべます", block_sizes: [11], focused_block: 0]
+-# preedit: [preedit_string: "私は寿司を食べます", block_sizes: [2, 7], focused_block: 1]
 
-"blocks" is a list of block length. The above case, it contains the following blocks and second block is focused.
+"block_sizes" is a list of block length. The above case, it contains the following blocks and second block is focused.
 
 - 私は
 - [寿司を食べます]

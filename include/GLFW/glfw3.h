@@ -1287,6 +1287,11 @@ extern "C" {
  *  X11 specific [init hint](@ref GLFW_X11_XCB_VULKAN_SURFACE_hint).
  */
 #define GLFW_X11_XCB_VULKAN_SURFACE 0x00052001
+/*! @brief X11 specific init hint.
+ *
+ *  X11 specific [init hint](@ref GLFW_X11_ONTHESPOT_hint).
+ */
+#define GLFW_X11_ONTHESPOT 0x00052002
 /*! @} */
 
 /*! @addtogroup init

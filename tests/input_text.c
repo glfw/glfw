@@ -70,6 +70,8 @@
 #include <stdlib.h>
 #include <limits.h>
 
+#include "getopt.h"
+
 #if defined(FONTCONFIG_ENABLED)
     #include <fontconfig/fontconfig.h>
 #endif
@@ -102,6 +104,14 @@ static int currentFontIndex = 0;
 static int currentIMEStatus = GLFW_FALSE;
 #define MAX_PREDIT_LEN 128
 static char preeditBuf[MAX_PREDIT_LEN] = "";
+
+void usage(void)
+{
+    printf("Usage: input_text [-h] [-s]\n");
+    printf("Options:\n");
+    printf("  -s Use on-the-spot sytle on X11. This is ignored on other platforms.\n");
+    printf("  -h Show this help\n");
+}
 
 static size_t encode_utf8(char* s, unsigned int ch)
 {
@@ -556,6 +566,21 @@ int main(int argc, char** argv)
     char boxBuffer[MAX_BUFFER_LEN] = "Input text here.\nここに入力してください。";
     int boxLen = strlen(boxBuffer);
     int isAutoUpdatingPreeditPosEnabled = GLFW_TRUE;
+    int ch;
+
+    while ((ch = getopt(argc, argv, "hs")) != -1)
+    {
+        switch (ch)
+        {
+            case 'h':
+                usage();
+                exit(EXIT_SUCCESS);
+
+            case 's':
+                glfwInitHint(GLFW_X11_ONTHESPOT, GLFW_TRUE);
+                break;
+        }
+    }
 
     if (!glfwInit())
         exit(EXIT_FAILURE);

@@ -440,14 +440,14 @@ static GLFWbool hasUsableInputMethodStyle(void)
 {
     GLFWbool found = GLFW_FALSE;
     XIMStyles* styles = NULL;
-    const char* imStyle = getenv("IM_STYLE");
 
     if (XGetIMValues(_glfw.x11.im, XNQueryInputStyle, &styles, NULL) != NULL)
         return GLFW_FALSE;
 
-    _glfw.x11.imStyle = STYLE_OVERTHESPOT;
-    if (imStyle && strcmp(imStyle, "on-the-spot") == 0)
+    if (_glfw.hints.init.x11.onTheSpotIMStyle)
         _glfw.x11.imStyle = STYLE_ONTHESPOT;
+    else
+        _glfw.x11.imStyle = STYLE_OVERTHESPOT;
 
     for (unsigned int i = 0;  i < styles->count_styles;  i++)
     {

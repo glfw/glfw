@@ -61,6 +61,7 @@ static _GLFWinitconfig _glfwInitHints =
     },
     {
         GLFW_TRUE,  // X11 XCB Vulkan surface
+        GLFW_FALSE  // X11 on-the-spot IM-style
     },
 };
 
@@ -479,7 +480,10 @@ GLFWAPI void glfwInitHint(int hint, int value)
         case GLFW_X11_XCB_VULKAN_SURFACE:
             _glfwInitHints.x11.xcbVulkanSurface = value;
             return;
-    }
+        case GLFW_X11_ONTHESPOT:
+            _glfwInitHints.x11.onTheSpotIMStyle = value;
+            return;
+        }
 
     _glfwInputError(GLFW_INVALID_ENUM,
                     "Invalid init hint 0x%08X", hint);

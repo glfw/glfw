@@ -290,14 +290,16 @@ glfwGetPreeditCursorPos(window, &x, &y, &h);
 @endcode
 
 Sometimes IME task is interrupted by user or application. There are several functions
-to support these situation. You can receive notification about IME status change(on/off)
-by using the following functions:
+to support these situation.
+
+You can receive notification about IME status change(on/off) by using the following
+function:
 
 @code
 glfwSetIMEStatusCallback(window, imestatus_callback);
 @endcode
 
-imestatus_callback has simple signature like this:
+The callback has a simple signature like this:
 
 @code
 void imestatus_callback(GLFWwindow* window)
@@ -305,16 +307,26 @@ void imestatus_callback(GLFWwindow* window)
 }
 @endcode
 
-You can implement the code that resets or commits the preedit text when IME status
-is changed and the preedit text is not empty.
-
-When the focus is gone from a text box, you can use the following functions to reset
-IME status:
+@anchor GLFW_IME
+You can get the current IME status by the following function:
 
 @code
-void glfwResetPreeditText(GLFWwindow* window);
-void glfwSetIMEStatus(GLFWwindow* window, int active);
-int glfwGetIMEStatus(GLFWwindow* window);
+glfwGetInputMode(window, GLFW_IME);
+@endcode
+
+If you get GLFW_TRUE, it means the IME is on, and GLFW_FALSE means the IME is off.
+
+You can also change the IME status by the following function:
+
+@code
+glfwSetInputMode(window, GLFW_IME, GLFW_TRUE);
+glfwSetInputMode(window, GLFW_IME, GLFW_FALSE);
+@endcode
+
+You can use the following function to clear the preedit text.
+
+@code
+glfwResetPreeditText(window);
 @endcode
 
 @subsection input_key_name Key names

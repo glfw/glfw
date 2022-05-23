@@ -35,6 +35,41 @@
 #include <windowsx.h>
 #include <shellapi.h>
 
+// Converts utf16 units to Unicode code points (UTF32).
+// Returns GLFW_TRUE when the converting completes and the result is assigned to
+// the argument `codepoint`.
+// Returns GLFW_FALSE when the converting is not yet completed (for
+// Surrogate-pair processing) and the unit is assigned to the argument
+// `highsurrogate`. It will be used in the next unit's processing.
+// 
+static int convertToUTF32FromUTF16(WCHAR utf16_unit, 
+                                   WCHAR* highsurrogate,
+                                   uint32_t* codepoint)
+{
+    *codepoint = 0;
+
+    if (utf16_unit >= 0xd800 && utf16_unit <= 0xdbff)
+    {
+        *highsurrogate = (WCHAR) utf16_unit;
+        return GLFW_FALSE;
+    }
+
+    if (utf16_unit >= 0xdc00 && utf16_unit <= 0xdfff)
+    {
+        if (*highsurrogate)
+        {
+            *codepoint += (*highsurrogate - 0xd800) << 10;
+            *codepoint += (WCHAR) utf16_unit - 0xdc00;
+            *codepoint += 0x10000;
+        }
+    }
+    else
+        *codepoint = (WCHAR) utf16_unit;
+
+    *highsurrogate = 0;
+    return GLFW_TRUE;
+}
+
 // Returns the window style for the specified window
 //
 static DWORD getWindowStyle(const _GLFWwindow* window)
@@ -544,10 +579,13 @@ static GLFWbool getImmPreedit(_GLFWwindow* window)
     if (preeditBytes > 0)
     {
         int i;
+        uint32_t codepoint;
+        WCHAR highSurrogate = 0;
         int ctext = window->ctext;
         int cblocks = window->cblocks;
         int focusedBlock = 0;
         int length = preeditBytes / sizeof(WCHAR);
+        int convertedLength = 0;
         LPWSTR buffer = _glfw_calloc(preeditBytes, 1);
         LPSTR attributes = _glfw_calloc(attrBytes, 1);
         DWORD *clauses = _glfw_calloc(clauseBytes, 1);
@@ -577,10 +615,16 @@ static GLFWbool getImmPreedit(_GLFWwindow* window)
             window->preeditText = preeditText;
             window->ctext = ctext;
         }
-        window->ntext = length;
-        window->preeditText[length] = 0;
+
         for (i = 0; i < length; i++)
-            window->preeditText[i] = buffer[i];
+        {
+            if (convertToUTF32FromUTF16(buffer[i],
+                                        &highSurrogate,
+                                        &codepoint))
+                window->preeditText[convertedLength++] = codepoint;
+        }
+        window->ntext = convertedLength;
+        window->preeditText[convertedLength] = 0;
 
         // store blocks
         window->nblocks = clauseBytes / sizeof(DWORD) - 1;
@@ -628,6 +672,8 @@ static GLFWbool commitImmResultStr(_GLFWwindow* window)
 {
     HIMC hIMC;
     LONG bytes;
+    uint32_t codepoint;
+    WCHAR highSurrogate = 0;
 
     if (!window->callbacks.character)
         return GLFW_FALSE;
@@ -646,7 +692,12 @@ static GLFWbool commitImmResultStr(_GLFWwindow* window)
         ImmGetCompositionStringW(hIMC, GCS_RESULTSTR, buffer, bytes);
 
         for (i = 0; i < length; i++)
-            window->callbacks.character((GLFWwindow*) window, buffer[i]);
+        {
+            if (convertToUTF32FromUTF16(buffer[i],
+                                        &highSurrogate,
+                                        &codepoint))
+                window->callbacks.character((GLFWwindow*) window, codepoint);
+        }
 
         _glfw_free(buffer);
     }
@@ -815,27 +866,11 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         case WM_CHAR:
         case WM_SYSCHAR:
         {
-            if (wParam >= 0xd800 && wParam <= 0xdbff)
-                window->win32.highSurrogate = (WCHAR) wParam;
-            else
-            {
-                uint32_t codepoint = 0;
-
-                if (wParam >= 0xdc00 && wParam <= 0xdfff)
-                {
-                    if (window->win32.highSurrogate)
-                    {
-                        codepoint += (window->win32.highSurrogate - 0xd800) << 10;
-                        codepoint += (WCHAR) wParam - 0xdc00;
-                        codepoint += 0x10000;
-                    }
-                }
-                else
-                    codepoint = (WCHAR) wParam;
-
-                window->win32.highSurrogate = 0;
+            uint32_t codepoint;
+            if (convertToUTF32FromUTF16((WCHAR) wParam,
+                                        &window->win32.highSurrogate,
+                                        &codepoint))
                 _glfwInputChar(window, codepoint, getKeyMods(), uMsg != WM_SYSCHAR);
-            }
 
             if (uMsg == WM_SYSCHAR && window->win32.keymenu)
                 break;

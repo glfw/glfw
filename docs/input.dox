@@ -217,7 +217,7 @@ void character_callback(GLFWwindow* window, unsigned int codepoint)
 @subsection preedit IME Support
 
 All desktop operating systems support IME (Input Method Editor) to input characters
-that are not mapped with physical keys. IME have been popular among Eeastern Asian people.
+that are not mapped with physical keys. IME have been popular among East Asian people.
 And some operating systems start supporting voice input via IME mechanism.
 
 GLFW provides IME support functions to help
@@ -239,7 +239,7 @@ static void preedit_callback(GLFWwindow* window, int strLength, unsigned int* st
 }
 @endcode
 
-strLength and string parameter reprsent whole preedit text. Each character of the preedit string is a codepoint like @ref input_char.
+strLength and string parameter represent whole preedit text. Each character of the preedit string is a codepoint like @ref input_char.
 
 If you want to type the text "寿司(sushi)", Usually the callback is called several times like the following sequence:
 
@@ -269,7 +269,7 @@ If preedit text includes several semantic blocks, preedit callbacks returns seve
 - 私は
 - [寿司を食べます]
 
-commited text(passed via regular @ref input_char event), unfocused block, focused block should have different text style.
+committed text(passed via regular @ref input_char event), unfocused block, focused block should have different text style.
 
 
 GLFW provides helper function to teach suitable position of the candidate window to window system.
@@ -288,7 +288,7 @@ You can receive notification about IME status change(on/off) by using the follow
 glfwSetIMEStatusCallback(window, imestatus_callback);
 @endcode
 
-imestatus_callback has simple sigunature like this:
+imestatus_callback has simple signature like this:
 
 @code
 static void imestatus_callback(GLFWwindow* window) {

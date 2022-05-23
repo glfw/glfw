@@ -696,7 +696,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
     NSString* markedTextString = markedText.string;
 
-    NSUInteger i, length = [markedTextString length];
+    NSUInteger length = [markedTextString length];
     int ctext = window->ctext;
     while (ctext < length + 1)
     {
@@ -711,13 +711,30 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         window->preeditText = preeditText;
         window->ctext = ctext;
     }
-    window->ntext = length;
-    window->preeditText[length] = 0;
-    for (i = 0; i < length; i++)
+
+    NSInteger preeditTextLength = 0;
+    NSRange range = NSMakeRange(0, length);
+    while (range.length)
     {
-        const unichar codepoint = [markedTextString characterAtIndex:i];
-        window->preeditText[i] = codepoint;
+        uint32_t codepoint = 0;
+
+        if ([markedTextString getBytes:&codepoint
+                             maxLength:sizeof(codepoint)
+                            usedLength:NULL
+                              encoding:NSUTF32StringEncoding
+                               options:0
+                                 range:range
+                        remainingRange:&range])
+        {
+            if (codepoint >= 0xf700 && codepoint <= 0xf7ff)
+                continue;
+
+            window->preeditText[preeditTextLength++] = codepoint;
+        }
     }
+    window->ntext = preeditTextLength;
+    window->preeditText[preeditTextLength] = 0;
+
     int focusedBlock = 0;
     NSInteger offset = 0;
     window->nblocks = 0;

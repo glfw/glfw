@@ -43,8 +43,8 @@
 // `highsurrogate`. It will be used in the next unit's processing.
 //
 static GLFWbool convertToUTF32FromUTF16(WCHAR utf16_unit,
-                                   WCHAR* highsurrogate,
-                                   uint32_t* codepoint)
+                                        WCHAR* highsurrogate,
+                                        uint32_t* codepoint)
 {
     *codepoint = 0;
 

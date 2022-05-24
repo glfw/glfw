@@ -41,8 +41,8 @@
 // Returns GLFW_FALSE when the converting is not yet completed (for
 // Surrogate-pair processing) and the unit is assigned to the argument
 // `highsurrogate`. It will be used in the next unit's processing.
-// 
-static GLFWbool convertToUTF32FromUTF16(WCHAR utf16_unit, 
+//
+static GLFWbool convertToUTF32FromUTF16(WCHAR utf16_unit,
                                    WCHAR* highsurrogate,
                                    uint32_t* codepoint)
 {

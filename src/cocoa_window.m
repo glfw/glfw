@@ -800,7 +800,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     const NSRect frame =
         [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
 
-    return NSMakeRect(frame.origin.x + x, 
+    return NSMakeRect(frame.origin.x + x,
                       frame.origin.y + frame.size.height - y,
                       0.0,
                       h);

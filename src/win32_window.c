@@ -893,7 +893,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             }
 
             _glfwInputChar(window, (uint32_t) wParam, getKeyMods(), GLFW_TRUE);
-            return TRUE;
+            return 0;
         }
 
         case WM_KEYDOWN:

@@ -69,6 +69,7 @@
 #include <dinput.h>
 #include <xinput.h>
 #include <dbt.h>
+#include <imm.h>
 
 // HACK: Define macros that some windows.h variants don't
 #ifndef WM_MOUSEHWHEEL

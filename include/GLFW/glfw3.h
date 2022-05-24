@@ -5079,7 +5079,7 @@ GLFWAPI void glfwGetPreeditCursorPos(GLFWwindow* window, int *x, int *y, int *h)
 
 /*! @brief Notify the text cursor position to window system to decide the candidate window position.
  *
- *  This function teach position hint to decide the candidate window. The candidate window
+ *  This function teach position hint to decide the candidate window.  The candidate window
  *  is a part of IME(Input Method Editor) and show several candidate strings.
  *
  *  Windows systems decide proper position from text cursor geometry.
@@ -5258,7 +5258,7 @@ GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmods
  *  window, which is called when an IME is processing text before committed.
  *
  *  Callback receives relative position of input cursor inside preedit text and
- *  attributed text blocks. This callback is used for on-the-spot text editing
+ *  attributed text blocks.  This callback is used for on-the-spot text editing
  *  with IME.
  *
  *  @param[in] window The window whose callback to set.

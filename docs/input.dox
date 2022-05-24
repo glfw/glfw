@@ -217,7 +217,7 @@ void character_callback(GLFWwindow* window, unsigned int codepoint)
 @subsection preedit IME Support
 
 All desktop operating systems support IME (Input Method Editor) to input characters
-that are not mapped with physical keys. IME have been popular among East Asian people.
+that are not mapped with physical keys.  IME have been popular among East Asian people.
 And some operating systems start supporting voice input via IME mechanism.
 
 GLFW provides IME support functions to help you implement better text input features.

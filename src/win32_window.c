@@ -568,6 +568,8 @@ static void maximizeWindowManually(_GLFWwindow* window)
                  SWP_NOACTIVATE | SWP_NOZORDER | SWP_FRAMECHANGED);
 }
 
+// Get preedit texts of Imm32 and path them to preedit-callback
+//
 static GLFWbool getImmPreedit(_GLFWwindow* window)
 {
     HIMC hIMC = ImmGetContext(window->win32.handle);
@@ -668,6 +670,8 @@ static GLFWbool getImmPreedit(_GLFWwindow* window)
     return GLFW_TRUE;
 }
 
+// Commit the result texts of Imm32 to character-callback
+//
 static GLFWbool commitImmResultStr(_GLFWwindow* window)
 {
     HIMC hIMC;

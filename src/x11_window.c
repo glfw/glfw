@@ -556,6 +556,8 @@ static void _ximPreeditDoneCallback(XIC xic, XPointer clientData, XPointer callD
 }
 
 // IME Draw callback
+// When using the dafault style: STYLE_OVERTHESPOT, this is not used since applications
+// don't need to display preedit texts.
 //
 static void _ximPreeditDrawCallback(XIC xic, XPointer clientData, XIMPreeditDrawCallbackStruct *callData)
 {
@@ -678,18 +680,30 @@ static void _ximPreeditCaretCallback(XIC xic, XPointer clientData, XPointer call
 {
 }
 
+// IME Status Start callback
+// When using the dafault style: STYLE_OVERTHESPOT, this is not used and the IME status
+// can not be taken.
+//
 static void _ximStatusStartCallback(XIC xic, XPointer clientData, XPointer callData)
 {
     _GLFWwindow* window = (_GLFWwindow*) clientData;
     window->x11.imeFocus = GLFW_TRUE;
 }
 
+// IME Status Done callback
+// When using the dafault style: STYLE_OVERTHESPOT, this is not used and the IME status
+// can not be taken.
+//
 static void _ximStatusDoneCallback(XIC xic, XPointer clientData, XPointer callData)
 {
     _GLFWwindow* window = (_GLFWwindow*) clientData;
     window->x11.imeFocus = GLFW_FALSE;
 }
 
+// IME Status Draw callback
+// When using the dafault style: STYLE_OVERTHESPOT, this is not used and the IME status
+// can not be taken.
+//
 static void _ximStatusDrawCallback(XIC xic, XPointer clientData, XIMStatusDrawCallbackStruct* callData)
 {
     _GLFWwindow* window = (_GLFWwindow*) clientData;
@@ -697,6 +711,8 @@ static void _ximStatusDrawCallback(XIC xic, XPointer clientData, XIMStatusDrawCa
 }
 
 // Create XIM Preedit callback
+// When using the dafault style: STYLE_OVERTHESPOT, this is not used since applications
+// don't need to display preedit texts.
 //
 static XVaNestedList _createXIMPreeditCallbacks(_GLFWwindow* window)
 {
@@ -721,6 +737,8 @@ static XVaNestedList _createXIMPreeditCallbacks(_GLFWwindow* window)
 }
 
 // Create XIM status callback
+// When using the dafault style: STYLE_OVERTHESPOT, this is not used and the IME status
+// can not be taken.
 //
 static XVaNestedList _createXIMStatusCallbacks(_GLFWwindow* window)
 {
@@ -2065,6 +2083,9 @@ void _glfwCreateInputContextX11(_GLFWwindow* window)
 
     if (_glfw.x11.imStyle == STYLE_ONTHESPOT)
     {
+        // On X11, on-the-spot style is unstable.
+        // Status callbacks are not called and the preedit cursor position
+        // can not be changed.
         XVaNestedList preeditList = _createXIMPreeditCallbacks(window);
         XVaNestedList statusList = _createXIMStatusCallbacks(window);
 
@@ -3229,6 +3250,8 @@ const char* _glfwGetClipboardStringX11(void)
     return getSelectionString(_glfw.x11.CLIPBOARD);
 }
 
+// When using STYLE_ONTHESPOT, this doesn't work and the cursor position can't be updated
+//
 void _glfwUpdatePreeditCursorPosX11(_GLFWwindow* window)
 {
     XVaNestedList preedit_attr;

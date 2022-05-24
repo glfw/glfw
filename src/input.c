@@ -313,14 +313,23 @@ void _glfwInputChar(_GLFWwindow* window, uint32_t codepoint, int mods, GLFWbool 
     }
 }
 
+// Notifies shrared code of a preedit event
+//
 void _glfwInputPreedit(_GLFWwindow* window, int focusedBlock)
 {
     if (window->callbacks.preedit)
     {
-        window->callbacks.preedit((GLFWwindow*) window, window->ntext, window->preeditText, window->nblocks, window->preeditAttributeBlocks, focusedBlock);
+        window->callbacks.preedit((GLFWwindow*) window,
+                                  window->ntext,
+                                  window->preeditText,
+                                  window->nblocks,
+                                  window->preeditAttributeBlocks,
+                                  focusedBlock);
     }
 }
 
+// Notifies shared code of a IME status event
+//
 void _glfwInputIMEStatus(_GLFWwindow* window)
 {
     if (window->callbacks.imestatus)

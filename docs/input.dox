@@ -271,7 +271,7 @@ If preedit text includes several semantic blocks, the callback returns several b
 -# preedit: [preedit_string: "わたしはすしをたべます", block_sizes: [11], focused_block: 0]
 -# preedit: [preedit_string: "私は寿司を食べます", block_sizes: [2, 7], focused_block: 1]
 
-"block_sizes" is a list of block length. The above case, it contains the following
+"block_sizes" is a list of block length.  The above case, it contains the following
 blocks and the second block is focused.
 
 - 私は
@@ -281,7 +281,7 @@ The application side should draw a focused block and unfocused blocks
 in different styles.
 
 GLFW provides helper functions to teach the suitable position of the candidate window
-to the window system. The window system decides the best position from text cursor
+to the window system.  The window system decides the best position from text cursor
 geometry (x, y coords and height).
 
 @code
@@ -289,7 +289,7 @@ glfwSetPreeditCursorPos(window, x, y, h);
 glfwGetPreeditCursorPos(window, &x, &y, &h);
 @endcode
 
-Sometimes IME task is interrupted by user or application. There are several functions
+Sometimes IME task is interrupted by user or application.  There are several functions
 to support these situation.
 
 You can receive notification about IME status change(on/off) by using the following

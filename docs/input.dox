@@ -218,14 +218,30 @@ void character_callback(GLFWwindow* window, unsigned int codepoint)
 
 All desktop operating systems support IME (Input Method Editor) to input characters
 that are not mapped with physical keys.  IME have been popular among East Asian people.
-And some operating systems start supporting voice input via IME mechanism.
 
 GLFW provides IME support functions to help you implement better text input features.
-You should add suitable visualization code for preedit text.
+GLFW supports the following two styles of IME.
 
-IME works in front of actual character input events (@ref input_char).
-If your application uses text input and you want to support IME,
-you should register preedit callback to receive preedit text before committed.
+ - On-the-spot
+ - Over-the-spot
+
+On-the-spot style is supported on Windows and macOS.  On these platforms, applications
+need to draw preedit text directly in their UI by using the preedit callback described
+below.
+
+Over-the-spot style is supported on X11.  On this platform, the IME displays preedit text,
+and applications don't need to draw it.  So the preedit callback described below doesn't
+work on X11.
+
+In both styles, applications should manage the position of the candidate window by using
+@ref glfwSetPreeditCursorPos.
+
+@note
+@x11 You can use on-the-spot style also on X11 by using @ref init_hints_x11.  In this case,
+the preedit callback also works on X11.  However, on-the-spot style on X11 is unstable,
+so it is not recommended.
+
+You can register the preedit callback as follows.
 
 @code
 glfwSetPreeditCallback(window, preedit_callback);
@@ -290,7 +306,11 @@ glfwGetPreeditCursorPos(window, &x, &y, &h);
 @endcode
 
 Sometimes IME task is interrupted by user or application.  There are several functions
-to support these situation.
+to support these situation on Windows and macOS.
+
+@note
+@x11 The following functions are not supported.  This wouldn't be a big problem since
+applications don't need to draw preedit text because of using over-the-spot style.
 
 You can receive notification about IME status change(on/off) by using the following
 function:

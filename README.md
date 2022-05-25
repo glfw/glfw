@@ -292,6 +292,7 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: Left shift of int constant relied on undefined behavior (#1951)
  - [X11] Bugfix: The OSMesa libray was not unloaded on termination
  - [X11] Bugfix: A malformed response during selection transfer could cause a segfault
+ - [X11] Bugfix: Some calls would reset Xlib to the default error handler (#2108)
  - [Wayland] Added dynamic loading of all Wayland libraries
  - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Added support for file path drop events (#2040)

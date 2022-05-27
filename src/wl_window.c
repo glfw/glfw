@@ -579,6 +579,9 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
                               &xdgToplevelListener,
                               window);
 
+    if (strlen(window->wl.appId))
+      xdg_toplevel_set_app_id(window->wl.xdg.toplevel, window->wl.appId);
+
     if (window->wl.title)
         xdg_toplevel_set_title(window->wl.xdg.toplevel, window->wl.title);
 
@@ -637,6 +640,8 @@ static GLFWbool createSurface(_GLFWwindow* window,
     window->wl.height = wndconfig->height;
     window->wl.scale = 1;
     window->wl.title = _glfw_strdup(wndconfig->title);
+    if (strlen(wndconfig->wl.appId))
+        window->wl.appId = _glfw_strdup(wndconfig->wl.appId);
 
     window->wl.transparent = fbconfig->transparent;
     if (!window->wl.transparent)

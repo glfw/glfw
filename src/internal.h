@@ -421,6 +421,9 @@ struct _GLFWwndconfig
     struct {
         GLFWbool  keymenu;
     } win32;
+    struct {
+        char      appId[256];
+    } wl;
 };
 
 // Context configuration

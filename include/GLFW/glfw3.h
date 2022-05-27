@@ -1104,6 +1104,11 @@ extern "C" {
  *  [window hint](@ref GLFW_X11_CLASS_NAME_hint).
  */
 #define GLFW_X11_INSTANCE_NAME      0x00024002
+
+#define GLFW_WAYLAND_APP_ID         0x00026001
+/*! @brief Wayland specific
+ *  [window hint](@ref GLDW_WAYLAND_CLASS_NAME_hint).
+ */
 #define GLFW_WIN32_KEYBOARD_MENU    0x00025001
 /*! @} */
 

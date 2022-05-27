@@ -614,6 +614,9 @@ static GLFWbool createShellObjects(_GLFWwindow* window)
 
     xdg_toplevel_add_listener(window->wl.xdg.toplevel, &xdgToplevelListener, window);
 
+    if (window->wl.appId)
+        xdg_toplevel_set_app_id(window->wl.xdg.toplevel, window->wl.appId);
+
     if (window->wl.title)
         xdg_toplevel_set_title(window->wl.xdg.toplevel, window->wl.title);
 
@@ -728,6 +731,7 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     window->wl.height = wndconfig->height;
     window->wl.scale = 1;
     window->wl.title = _glfw_strdup(wndconfig->title);
+    window->wl.appId = _glfw_strdup(wndconfig->wl.appId);
 
     window->wl.maximized = wndconfig->maximized;
 
@@ -1865,6 +1869,7 @@ void _glfwDestroyWindowWayland(_GLFWwindow* window)
         wl_surface_destroy(window->wl.surface);
 
     _glfw_free(window->wl.title);
+    _glfw_free(window->wl.appId);
     _glfw_free(window->wl.monitors);
 }
 

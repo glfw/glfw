@@ -492,6 +492,13 @@ __GLFW_X11_CLASS_NAME__ and __GLFW_X11_INSTANCE_NAME__ specifies the desired
 ASCII encoded class and instance parts of the ICCCM `WM_CLASS` window property.
 These are set with @ref glfwWindowHintString.
 
+@subsubsection window_hints_wayland Wayland specific window hints
+
+@anchor GLFW_WAYLAND_APP_ID_hint
+__GLFW_WAYLAND_APP_ID__ specifies the Wayland app_id for a window, used
+by window managers to identify types of windows. This is set with
+@ref glfwWindowHintString.
+
 
 @subsubsection window_hints_values Supported and default values
 
@@ -540,6 +547,7 @@ GLFW_COCOA_FRAME_NAME         | `""`                        | A UTF-8 encoded fr
 GLFW_COCOA_GRAPHICS_SWITCHING | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_X11_CLASS_NAME           | `""`                        | An ASCII encoded `WM_CLASS` class name
 GLFW_X11_INSTANCE_NAME        | `""`                        | An ASCII encoded `WM_CLASS` instance name
+GLFW_WAYLAND_APP_ID           | `""`                        | An ASCII encoded Wayland `app_id` name
 
 
 @section window_events Window event processing

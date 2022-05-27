@@ -142,6 +142,8 @@ information on what to include when reporting a bug.
  - Added `GLFW_PLATFORM_UNAVAILABLE` error for platform detection failures (#1958)
  - Added `GLFW_FEATURE_UNAVAILABLE` error for platform limitations (#1692)
  - Added `GLFW_FEATURE_UNIMPLEMENTED` error for incomplete backends (#1692)
+ - Added `GLFW_WAYLAND_APP_ID` window hint string for Wayland app\_id selection
+   (#2121,#2122)
  - Added `GLFW_ANGLE_PLATFORM_TYPE` init hint and `GLFW_ANGLE_PLATFORM_TYPE_*`
    values to select ANGLE backend (#1380)
  - Added `GLFW_X11_XCB_VULKAN_SURFACE` init hint for selecting X11 Vulkan

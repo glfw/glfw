@@ -43,6 +43,12 @@ to whatever window is behind it.  This can also be changed after window
 creation with the matching [window attribute](@ref GLFW_MOUSE_PASSTHROUGH_attrib).
 
 
+@subsubsection wayland_app_id_34 Wayland app_id specification
+
+GLFW now supports specifying the app_id for a Wayland window using the
+[GLFW_WAYLAND_APP_ID](@ref GLFW_WAYLAND_APP_ID_hint) window hint string.
+
+
 @subsubsection features_34_angle_backend Support for ANGLE rendering backend selection
 
 GLFW now provides the

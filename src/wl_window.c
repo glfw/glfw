@@ -580,7 +580,7 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
                               window);
 
     if (strlen(window->wl.appId))
-      xdg_toplevel_set_app_id(window->wl.xdg.toplevel, window->wl.appId);
+        xdg_toplevel_set_app_id(window->wl.xdg.toplevel, window->wl.appId);
 
     if (window->wl.title)
         xdg_toplevel_set_title(window->wl.xdg.toplevel, window->wl.title);

@@ -1893,6 +1893,7 @@ typedef void (* GLFWcharmodsfun)(GLFWwindow* window, unsigned int codepoint, int
  *  @param[in] block_count Attributed block count.
  *  @param[in] block_sizes List of attributed block size.
  *  @param[in] focused_block Focused block index.
+ *  @param[in] caret Caret position.
  *
  *  @sa @ref preedit
  *  @sa glfwSetPreeditCallback
@@ -1904,7 +1905,8 @@ typedef void (* GLFWpreeditfun)(GLFWwindow* window,
                                 unsigned int* preedit_string,
                                 int block_count,
                                 int* block_sizes,
-                                int focused_block);
+                                int focused_block,
+                                int caret);
 
 /*! @brief The function pointer type for IME status change callbacks.
  *
@@ -5277,7 +5279,8 @@ GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmods
                        unsigned int* preedit_string,
                        int block_count,
                        int* block_sizes,
-                       int focused_block)
+                       int focused_block,
+                       int caret)
  *  @endcode
  *  For more information about the callback parameters, see the
  *  [function pointer type](@ref GLFWpreeditfun).

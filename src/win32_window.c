@@ -577,6 +577,7 @@ static GLFWbool getImmPreedit(_GLFWwindow* window)
     LONG preeditBytes = ImmGetCompositionStringW(hIMC, GCS_COMPSTR, NULL, 0);
     LONG attrBytes = ImmGetCompositionStringW(hIMC, GCS_COMPATTR, NULL, 0);
     LONG clauseBytes = ImmGetCompositionStringW(hIMC, GCS_COMPCLAUSE, NULL, 0);
+    LONG cursorPos = ImmGetCompositionStringW(hIMC, GCS_CURSORPOS, NULL, 0);
 
     if (preeditBytes > 0)
     {
@@ -663,7 +664,7 @@ static GLFWbool getImmPreedit(_GLFWwindow* window)
         _glfw_free(attributes);
         _glfw_free(clauses);
 
-        _glfwInputPreedit(window, focusedBlock);
+        _glfwInputPreedit(window, focusedBlock, cursorPos);
     }
 
     ImmReleaseContext(window->win32.handle, hIMC);
@@ -994,7 +995,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             {
                 window->nblocks = 0;
                 window->ntext = 0;
-                _glfwInputPreedit(window, 0);
+                _glfwInputPreedit(window, 0, 0);
                 commitImmResultStr(window);
                 return TRUE;
             }

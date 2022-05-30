@@ -456,7 +456,7 @@ static void char_callback(GLFWwindow* window, unsigned int codepoint)
 
 static void preedit_callback(GLFWwindow* window, int strLength,
                              unsigned int* string, int blockLength,
-                             int* blocks, int focusedBlock)
+                             int* blocks, int focusedBlock, int caret)
 {
     Slot* slot = glfwGetWindowUserPointer(window);
     int i, blockIndex = -1, blockCount = 0;
@@ -482,12 +482,16 @@ static void preedit_callback(GLFWwindow* window, int strLength,
                 if (blockIndex == focusedBlock)
                     printf("[");
             }
+            if (i == caret)
+                printf("|");
             encode_utf8(encoded, string[i]);
             printf("%s", encoded);
             blockCount--;
         }
         if (blockIndex == focusedBlock)
             printf("]");
+        if (caret == strLength)
+            printf("|");
         printf("\n");
         glfwGetWindowSize(window, &width, &height);
         glfwSetPreeditCursorPos(window, width/2, height/2, 20);

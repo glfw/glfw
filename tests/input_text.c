@@ -516,7 +516,7 @@ static void ime_callback(GLFWwindow* window)
 
 static void preedit_callback(GLFWwindow* window, int strLength,
                              unsigned int* string, int blockLength,
-                             int* blocks, int focusedBlock)
+                             int* blocks, int focusedBlock, int caret)
 {
     int blockIndex = -1, blockCount = 0;
     if (strLength == 0 || blockLength == 0)
@@ -531,6 +531,11 @@ static void preedit_callback(GLFWwindow* window, int strLength,
     {
         char encoded[5] = "";
 
+        if (i == caret)
+        {
+            if (strlen(preeditBuf) + strlen("|") < MAX_PREDIT_LEN)
+                strcat(preeditBuf, "|");
+        }
         if (blockCount == 0)
         {
             if (blockIndex == focusedBlock)
@@ -555,6 +560,11 @@ static void preedit_callback(GLFWwindow* window, int strLength,
     {
         if (strlen(preeditBuf) + strlen("]") < MAX_PREDIT_LEN)
             strcat(preeditBuf, "]");
+    }
+    if (caret == strLength)
+    {
+        if (strlen(preeditBuf) + strlen("|") < MAX_PREDIT_LEN)
+            strcat(preeditBuf, "|");
     }
 }
 

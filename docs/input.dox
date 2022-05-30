@@ -255,7 +255,8 @@ void preedit_callback(GLFWwindow* window,
                       unsigned int* preedit_string,
                       int block_count,
                       int* block_sizes,
-                      int focused_block)
+                      int focused_block,
+                      int caret)
 {
 }
 @endcode
@@ -273,7 +274,7 @@ times like the following sequence:
 -# key event: s
 -# preedit: [preedit_string: "すｓ", block_sizes: [2], focused_block: 0]
 -# key event: h
--# preedit: [preedit_string: "すｓｈ", block_sizes: [2], focused_block: 0]
+-# preedit: [preedit_string: "すｓｈ", block_sizes: [3], focused_block: 0]
 -# key event: i
 -# preedit: [preedit_string: "すし", block_sizes: [2], focused_block: 0]
 -# key event: ' '
@@ -295,6 +296,16 @@ blocks and the second block is focused.
 
 The application side should draw a focused block and unfocused blocks
 in different styles.
+
+You can use the "caret" parameter to draw the caret of the preedit text.
+The specification of this parameter depends on the specification of the input method.
+The following is an example on Win32.
+
+- "あいうえお|" (caret: 5)
+- key event: arrow-left
+- "あいうえ|お" (caret: 4)
+- ...
+- "|あいうえお" (caret: 0)
 
 GLFW provides helper functions to teach the suitable position of the candidate window
 to the window system.  The window system decides the best position from text cursor

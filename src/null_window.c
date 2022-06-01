@@ -39,15 +39,15 @@ static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
         *height = (int) (*width / ratio);
     }
 
-    if (window->minwidth != GLFW_DONT_CARE && *width < window->minwidth)
-        *width = window->minwidth;
-    else if (window->maxwidth != GLFW_DONT_CARE && *width > window->maxwidth)
-        *width = window->maxwidth;
+    if (window->minwidth != GLFW_DONT_CARE)
+        *width = _glfw_max(*width, window->minwidth);
+    else if (window->maxwidth != GLFW_DONT_CARE)
+        *width = _glfw_min(*width, window->maxwidth);
 
-    if (window->minheight != GLFW_DONT_CARE && *height < window->minheight)
-        *height = window->minheight;
-    else if (window->maxheight != GLFW_DONT_CARE && *height > window->maxheight)
-        *height = window->maxheight;
+    if (window->minheight != GLFW_DONT_CARE)
+        *height = _glfw_min(*height, window->minheight);
+    else if (window->maxheight != GLFW_DONT_CARE)
+        *height = _glfw_max(*height, window->maxheight);
 }
 
 static void fitToMonitor(_GLFWwindow* window)
@@ -128,13 +128,31 @@ int _glfwCreateWindowNull(_GLFWwindow* window,
             if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }
+
+        if (!_glfwRefreshContextAttribs(window, ctxconfig))
+            return GLFW_FALSE;
     }
+
+    if (wndconfig->mousePassthrough)
+        _glfwSetWindowMousePassthroughNull(window, GLFW_TRUE);
 
     if (window->monitor)
     {
         _glfwShowWindowNull(window);
         _glfwFocusWindowNull(window);
         acquireMonitor(window);
+
+        if (wndconfig->centerCursor)
+            _glfwCenterCursorInContentArea(window);
+    }
+    else
+    {
+        if (wndconfig->visible)
+        {
+            _glfwShowWindowNull(window);
+            if (wndconfig->focused)
+                _glfwFocusWindowNull(window);
+        }
     }
 
     return GLFW_TRUE;

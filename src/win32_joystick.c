@@ -574,7 +574,7 @@ GLFWbool _glfwInitJoysticksWin32(void)
 {
     if (_glfw.win32.dinput8.instance)
     {
-        if (FAILED(DirectInput8Create(GetModuleHandle(NULL),
+        if (FAILED(DirectInput8Create(_glfw.win32.instance,
                                       DIRECTINPUT_VERSION,
                                       &IID_IDirectInput8W,
                                       (void**) &_glfw.win32.dinput8.api,
@@ -607,7 +607,7 @@ int _glfwPollJoystickWin32(_GLFWjoystick* js, int mode)
     {
         int i, ai = 0, bi = 0, pi = 0;
         HRESULT result;
-        DIJOYSTATE state;
+        DIJOYSTATE state = {0};
 
         IDirectInputDevice8_Poll(js->win32.device);
         result = IDirectInputDevice8_GetDeviceState(js->win32.device,

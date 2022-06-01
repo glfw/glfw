@@ -68,8 +68,10 @@ install the `xorgproto` package.
 pkg install xorgproto
 @endcode
 
-On Cygwin the `xorgproto` package in the Devel section of the GUI installer will
-install the headers and other development related files for all of X11.
+On Cygwin the `libXcursor-devel`, `libXi-devel`, `libXinerama-devel`,
+`libXrandr-devel` and `libXrender-devel` packages in the Libs section of the GUI
+installer will install all the headers and other development related files GLFW
+requires for X11.
 
 Once you have the required dependencies, move on to @ref compile_generate.
 

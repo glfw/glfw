@@ -262,13 +262,12 @@ extern "C" {
  /* We are building GLFW as a Win32 DLL */
  #define GLFWAPI __declspec(dllexport)
 #elif defined(_WIN32) && defined(GLFW_DLL)
- /* We are calling GLFW as a Win32 DLL */
+ /* We are calling a GLFW Win32 DLL */
  #define GLFWAPI __declspec(dllimport)
 #elif defined(__GNUC__) && defined(_GLFW_BUILD_DLL)
- /* We are building GLFW as a shared / dynamic library */
+ /* We are building GLFW as a Unix shared library */
  #define GLFWAPI __attribute__((visibility("default")))
 #else
- /* We are building or calling GLFW as a static library */
  #define GLFWAPI
 #endif
 
@@ -3258,7 +3257,8 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *  count is zero.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
- *  GLFW_PLATFORM_ERROR and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
+ *  GLFW_INVALID_VALUE, @ref GLFW_PLATFORM_ERROR and @ref
+ *  GLFW_FEATURE_UNAVAILABLE (see remarks).
  *
  *  @pointer_lifetime The specified image data is copied before this function
  *  returns.
@@ -4892,8 +4892,8 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
  *  @return The handle of the created cursor, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
- *  GLFW_PLATFORM_ERROR.
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_INVALID_VALUE and @ref GLFW_PLATFORM_ERROR.
  *
  *  @pointer_lifetime The specified image data is copied before this function
  *  returns.
@@ -6383,6 +6383,7 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window
  */
 #ifndef GLAPIENTRY
  #define GLAPIENTRY APIENTRY
+ #define GLFW_GLAPIENTRY_DEFINED
 #endif
 
 /* -------------------- END SYSTEM/COMPILER SPECIFIC --------------------- */

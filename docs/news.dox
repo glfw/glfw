@@ -138,6 +138,12 @@ GLFW_TRANSPARENT_FRAMEBUFFER on Windows 7 if DWM transparency is off
 (the Transparency setting under Personalization > Window Color).
 
 
+@subsubsection emptyevents_34 Empty events on X11 no longer roundtrip to server
+
+Events posted with @ref glfwPostEmptyEvent now use a separate unnamed pipe
+instead of sending an X11 client event to the helper window.
+
+
 @subsection deprecations_34 Deprecations in version 3.4
 
 @subsection removals_34 Removals in 3.4

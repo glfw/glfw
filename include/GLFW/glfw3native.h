@@ -82,9 +82,10 @@ extern "C" {
  *************************************************************************/
 
 #if defined(GLFW_EXPOSE_NATIVE_WIN32) || defined(GLFW_EXPOSE_NATIVE_WGL)
- // This is a workaround for the fact that glfw3.h needs to export APIENTRY (for
- // example to allow applications to correctly declare a GL_KHR_debug callback)
- // but windows.h assumes no one will define APIENTRY before it does
+ /* This is a workaround for the fact that glfw3.h needs to export APIENTRY (for
+  * example to allow applications to correctly declare a GL_KHR_debug callback)
+  * but windows.h assumes no one will define APIENTRY before it does
+  */
  #if defined(GLFW_APIENTRY_DEFINED)
   #undef APIENTRY
   #undef GLFW_APIENTRY_DEFINED
@@ -111,12 +112,28 @@ extern "C" {
  /* NSGL is declared by Cocoa.h */
 #endif
 #if defined(GLFW_EXPOSE_NATIVE_GLX)
+ /* This is a workaround for the fact that glfw3.h defines GLAPIENTRY because by
+  * default it also acts as an OpenGL header
+  * However, glx.h will include gl.h, which will define it unconditionally
+  */
+ #if defined(GLFW_GLAPIENTRY_DEFINED)
+  #undef GLAPIENTRY
+  #undef GLFW_GLAPIENTRY_DEFINED
+ #endif
  #include <GL/glx.h>
 #endif
 #if defined(GLFW_EXPOSE_NATIVE_EGL)
  #include <EGL/egl.h>
 #endif
 #if defined(GLFW_EXPOSE_NATIVE_OSMESA)
+ /* This is a workaround for the fact that glfw3.h defines GLAPIENTRY because by
+  * default it also acts as an OpenGL header
+  * However, osmesa.h will include gl.h, which will define it unconditionally
+  */
+ #if defined(GLFW_GLAPIENTRY_DEFINED)
+  #undef GLAPIENTRY
+  #undef GLFW_GLAPIENTRY_DEFINED
+ #endif
  #include <GL/osmesa.h>
 #endif
 
@@ -488,6 +505,9 @@ GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* window);
  *  [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @remark Because EGL is initialized on demand, this function will return
+ *  `EGL_NO_DISPLAY` until the first context has been created via EGL.
  *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.

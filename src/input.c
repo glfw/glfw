@@ -764,8 +764,15 @@ GLFWAPI GLFWcursor* glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
     _GLFWcursor* cursor;
 
     assert(image != NULL);
+    assert(image->pixels != NULL);
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+    if (image->width <= 0 || image->height <= 0)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid image dimensions for cursor");
+        return NULL;
+    }
 
     cursor = _glfw_calloc(1, sizeof(_GLFWcursor));
     cursor->next = _glfw.cursorListHead;
@@ -1421,3 +1428,4 @@ GLFWAPI uint64_t glfwGetTimerFrequency(void)
     _GLFW_REQUIRE_INIT_OR_RETURN(0);
     return _glfwPlatformGetTimerFrequency();
 }
+

@@ -215,38 +215,10 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->numer       = GLFW_DONT_CARE;
     window->denom       = GLFW_DONT_CARE;
 
-    // Open the actual window and create its context
     if (!_glfw.platform.createWindow(window, &wndconfig, &ctxconfig, &fbconfig))
     {
         glfwDestroyWindow((GLFWwindow*) window);
         return NULL;
-    }
-
-    if (ctxconfig.client != GLFW_NO_API)
-    {
-        if (!_glfwRefreshContextAttribs(window, &ctxconfig))
-        {
-            glfwDestroyWindow((GLFWwindow*) window);
-            return NULL;
-        }
-    }
-
-    if (wndconfig.mousePassthrough)
-        _glfw.platform.setWindowMousePassthrough(window, GLFW_TRUE);
-
-    if (window->monitor)
-    {
-        if (wndconfig.centerCursor)
-            _glfwCenterCursorInContentArea(window);
-    }
-    else
-    {
-        if (wndconfig.visible)
-        {
-            _glfw.platform.showWindow(window);
-            if (wndconfig.focused)
-                _glfw.platform.focusWindow(window);
-        }
     }
 
     return (GLFWwindow*) window;
@@ -514,12 +486,33 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* handle, const char* title)
 GLFWAPI void glfwSetWindowIcon(GLFWwindow* handle,
                                int count, const GLFWimage* images)
 {
+    int i;
     _GLFWwindow* window = (_GLFWwindow*) handle;
+
     assert(window != NULL);
     assert(count >= 0);
     assert(count == 0 || images != NULL);
 
     _GLFW_REQUIRE_INIT();
+
+    if (count < 0)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid image count for window icon");
+        return;
+    }
+
+    for (i = 0; i < count; i++)
+    {
+        assert(images[i].pixels != NULL);
+
+        if (images[i].width <= 0 || images[i].height <= 0)
+        {
+            _glfwInputError(GLFW_INVALID_VALUE,
+                            "Invalid image dimensions for window icon");
+            return;
+        }
+    }
+
     _glfw.platform.setWindowIcon(window, count, images);
 }
 

@@ -44,6 +44,7 @@ video tutorials.
  - Noel Cower
  - CuriouserThing
  - Jason Daly
+ - danhambleton
  - Jarrod Davis
  - Olivier Delannoy
  - Paul R. Deppe

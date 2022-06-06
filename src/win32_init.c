@@ -502,6 +502,8 @@ void _glfwUpdateKeyNamesWin32(void)
 
         if (length == -1)
         {
+            // This is a dead key, so we need a second simulated key press
+            // to make it output its own character (usually a diacritic)
             length = ToUnicode(vk, scancode, state,
                                chars, sizeof(chars) / sizeof(WCHAR),
                                0);
@@ -671,6 +673,7 @@ void _glfwTerminateWin32(void)
 
     _glfwTerminateWGL();
     _glfwTerminateEGL();
+    _glfwTerminateOSMesa();
 
     freeLibraries();
 }

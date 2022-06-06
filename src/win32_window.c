@@ -1284,15 +1284,16 @@ static int createNativeWindow(_GLFWwindow* window,
 
     if (window->monitor)
     {
-        GLFWvidmode mode;
+        MONITORINFO mi = { sizeof(mi) };
+        GetMonitorInfoW(window->monitor->win32.handle, &mi);
 
         // NOTE: This window placement is temporary and approximate, as the
         //       correct position and size cannot be known until the monitor
         //       video mode has been picked in _glfwSetVideoModeWin32
-        _glfwGetMonitorPosWin32(window->monitor, &xpos, &ypos);
-        _glfwGetVideoModeWin32(window->monitor, &mode);
-        fullWidth  = mode.width;
-        fullHeight = mode.height;
+        xpos = mi.rcMonitor.left;
+        ypos = mi.rcMonitor.top;
+        fullWidth  = mi.rcMonitor.right - mi.rcMonitor.left;
+        fullHeight = mi.rcMonitor.bottom - mi.rcMonitor.top;
     }
     else
     {
@@ -1428,7 +1429,7 @@ GLFWbool _glfwRegisterWindowClassWin32(void)
     ZeroMemory(&wc, sizeof(wc));
     wc.cbSize        = sizeof(wc);
     wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-    wc.lpfnWndProc   = (WNDPROC) windowProc;
+    wc.lpfnWndProc   = windowProc;
     wc.hInstance     = _glfw.win32.instance;
     wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
     wc.lpszClassName = _GLFW_WNDCLASSNAME;
@@ -1493,7 +1494,13 @@ int _glfwCreateWindowWin32(_GLFWwindow* window,
             if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }
+
+        if (!_glfwRefreshContextAttribs(window, ctxconfig))
+            return GLFW_FALSE;
     }
+
+    if (wndconfig->mousePassthrough)
+        _glfwSetWindowMousePassthroughWin32(window, GLFW_TRUE);
 
     if (window->monitor)
     {
@@ -1501,6 +1508,18 @@ int _glfwCreateWindowWin32(_GLFWwindow* window,
         _glfwFocusWindowWin32(window);
         acquireMonitor(window);
         fitToMonitor(window);
+
+        if (wndconfig->centerCursor)
+            _glfwCenterCursorInContentArea(window);
+    }
+    else
+    {
+        if (wndconfig->visible)
+        {
+            _glfwShowWindowWin32(window);
+            if (wndconfig->focused)
+                _glfwFocusWindowWin32(window);
+        }
     }
 
     return GLFW_TRUE;

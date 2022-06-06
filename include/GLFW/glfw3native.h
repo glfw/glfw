@@ -116,7 +116,10 @@ extern "C" {
   * default it also acts as an OpenGL header
   * However, glx.h will include gl.h, which will define it unconditionally
   */
- #undef GLAPIENTRY
+ #if defined(GLFW_GLAPIENTRY_DEFINED)
+  #undef GLAPIENTRY
+  #undef GLFW_GLAPIENTRY_DEFINED
+ #endif
  #include <GL/glx.h>
 #endif
 #if defined(GLFW_EXPOSE_NATIVE_EGL)
@@ -127,7 +130,10 @@ extern "C" {
   * default it also acts as an OpenGL header
   * However, osmesa.h will include gl.h, which will define it unconditionally
   */
- #undef GLAPIENTRY
+ #if defined(GLFW_GLAPIENTRY_DEFINED)
+  #undef GLAPIENTRY
+  #undef GLFW_GLAPIENTRY_DEFINED
+ #endif
  #include <GL/osmesa.h>
 #endif
 
@@ -485,6 +491,9 @@ GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* window);
  *  [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @remark Because EGL is initialized on demand, this function will return
+ *  `EGL_NO_DISPLAY` until the first context has been created via EGL.
  *
  *  @thread_safety This function may be called from any thread.  Access is not
  *  synchronized.

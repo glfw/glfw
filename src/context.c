@@ -609,11 +609,12 @@ GLFWbool _glfwStringInExtensionString(const char* string, const char* extensions
 GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
-    _GLFWwindow* previous = _glfwPlatformGetTls(&_glfw.contextSlot);
+    _GLFWwindow* previous;
 
     _GLFW_REQUIRE_INIT();
 
     _glfwPlatformSetTls(&_glfw.usercontextSlot, NULL);
+    previous = _glfwPlatformGetTls(&_glfw.contextSlot);
 
     if (window && window->context.client == GLFW_NO_API)
     {

@@ -607,7 +607,7 @@ int _glfwPollJoystickWin32(_GLFWjoystick* js, int mode)
     {
         int i, ai = 0, bi = 0, pi = 0;
         HRESULT result;
-        DIJOYSTATE state;
+        DIJOYSTATE state = {0};
 
         IDirectInputDevice8_Poll(js->win32.device);
         result = IDirectInputDevice8_GetDeviceState(js->win32.device,

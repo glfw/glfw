@@ -865,20 +865,6 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
     return None;
 }
 
-static void handleSelectionClear(XEvent* event)
-{
-    if (event->xselectionclear.selection == _glfw.x11.PRIMARY)
-    {
-        _glfw_free(_glfw.x11.primarySelectionString);
-        _glfw.x11.primarySelectionString = NULL;
-    }
-    else
-    {
-        _glfw_free(_glfw.x11.clipboardString);
-        _glfw.x11.clipboardString = NULL;
-    }
-}
-
 static void handleSelectionRequest(XEvent* event)
 {
     const XSelectionRequestEvent* request = &event->xselectionrequest;
@@ -999,13 +985,16 @@ static const char* getSelectionString(Atom selection)
 
                 if (!itemCount)
                 {
-                    if (targets[i] == XA_STRING)
+                    if (string)
                     {
-                        *selectionString = convertLatin1toUTF8(string);
-                        _glfw_free(string);
+                        if (targets[i] == XA_STRING)
+                        {
+                            *selectionString = convertLatin1toUTF8(string);
+                            _glfw_free(string);
+                        }
+                        else
+                            *selectionString = string;
                     }
-                    else
-                        *selectionString = string;
 
                     break;
                 }
@@ -1171,12 +1160,7 @@ static void processEvent(XEvent *event)
         return;
     }
 
-    if (event->type == SelectionClear)
-    {
-        handleSelectionClear(event);
-        return;
-    }
-    else if (event->type == SelectionRequest)
+    if (event->type == SelectionRequest)
     {
         handleSelectionRequest(event);
         return;
@@ -1853,10 +1837,6 @@ void _glfwPushSelectionToManagerX11(void)
                     handleSelectionRequest(&event);
                     break;
 
-                case SelectionClear:
-                    handleSelectionClear(&event);
-                    break;
-
                 case SelectionNotify:
                 {
                     if (event.xselection.target == _glfw.x11.SAVE_TARGETS)
@@ -1972,13 +1952,31 @@ int _glfwCreateWindowX11(_GLFWwindow* window,
             if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }
+
+        if (!_glfwRefreshContextAttribs(window, ctxconfig))
+            return GLFW_FALSE;
     }
+
+    if (wndconfig->mousePassthrough)
+        _glfwSetWindowMousePassthroughX11(window, GLFW_TRUE);
 
     if (window->monitor)
     {
         _glfwShowWindowX11(window);
         updateWindowMode(window);
         acquireMonitor(window);
+
+        if (wndconfig->centerCursor)
+            _glfwCenterCursorInContentArea(window);
+    }
+    else
+    {
+        if (wndconfig->visible)
+        {
+            _glfwShowWindowX11(window);
+            if (wndconfig->focused)
+                _glfwFocusWindowX11(window);
+        }
     }
 
     XFlush(_glfw.x11.display);

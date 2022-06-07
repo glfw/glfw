@@ -243,11 +243,19 @@ if (BUILD_SHARED_LIBS)
     endif()
 endif()
 
-if (GLFW_INSTALL)
-    install(TARGETS glfw
-            EXPORT glfwTargets
-            RUNTIME DESTINATION "bin"
-            ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-            LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-endif()
+#--------------------------------------------------------------------
+# Preparing the Target
+#--------------------------------------------------------------------
+target_include_directories(glfw
+    PRIVATE
+        # where the library itself will look for its internal headers
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PUBLIC
+        # where top-level project will look for the library's public headers
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        # where external projects will look for the library's public headers
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+target_compile_definitions(glfw PUBLIC GLFW)
 

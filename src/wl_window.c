@@ -1442,18 +1442,12 @@ static void keyboardHandleKeymap(void* userData,
     _glfw.wl.xkb.keymap = keymap;
     _glfw.wl.xkb.state = state;
 
-    _glfw.wl.xkb.controlMask =
-        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Control");
-    _glfw.wl.xkb.altMask =
-        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod1");
-    _glfw.wl.xkb.shiftMask =
-        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Shift");
-    _glfw.wl.xkb.superMask =
-        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod4");
-    _glfw.wl.xkb.capsLockMask =
-        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Lock");
-    _glfw.wl.xkb.numLockMask =
-        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod2");
+    _glfw.wl.xkb.controlIndex  = xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Control");
+    _glfw.wl.xkb.altIndex      = xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod1");
+    _glfw.wl.xkb.shiftIndex    = xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Shift");
+    _glfw.wl.xkb.superIndex    = xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod4");
+    _glfw.wl.xkb.capsLockIndex = xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Lock");
+    _glfw.wl.xkb.numLockIndex  = xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod2");
 }
 
 static void keyboardHandleEnter(void* userData,
@@ -1607,27 +1601,49 @@ static void keyboardHandleModifiers(void* userData,
                           0,
                           group);
 
-    const xkb_mod_mask_t mask =
-        xkb_state_serialize_mods(_glfw.wl.xkb.state,
-                                 XKB_STATE_MODS_DEPRESSED |
-                                 XKB_STATE_LAYOUT_DEPRESSED |
-                                 XKB_STATE_MODS_LATCHED |
-                                 XKB_STATE_LAYOUT_LATCHED);
-
     unsigned int mods = 0;
 
-    if (mask & _glfw.wl.xkb.controlMask)
+    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
+                                      _glfw.wl.xkb.controlIndex,
+                                      XKB_STATE_MODS_EFFECTIVE) == 1)
+    {
         mods |= GLFW_MOD_CONTROL;
-    if (mask & _glfw.wl.xkb.altMask)
+    }
+
+    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
+                                      _glfw.wl.xkb.altIndex,
+                                      XKB_STATE_MODS_EFFECTIVE) == 1)
+    {
         mods |= GLFW_MOD_ALT;
-    if (mask & _glfw.wl.xkb.shiftMask)
+    }
+
+    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
+                                      _glfw.wl.xkb.shiftIndex,
+                                      XKB_STATE_MODS_EFFECTIVE) == 1)
+    {
         mods |= GLFW_MOD_SHIFT;
-    if (mask & _glfw.wl.xkb.superMask)
+    }
+
+    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
+                                      _glfw.wl.xkb.superIndex,
+                                      XKB_STATE_MODS_EFFECTIVE) == 1)
+    {
         mods |= GLFW_MOD_SUPER;
-    if (mask & _glfw.wl.xkb.capsLockMask)
+    }
+
+    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
+                                      _glfw.wl.xkb.capsLockIndex,
+                                      XKB_STATE_MODS_EFFECTIVE) == 1)
+    {
         mods |= GLFW_MOD_CAPS_LOCK;
-    if (mask & _glfw.wl.xkb.numLockMask)
+    }
+
+    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
+                                      _glfw.wl.xkb.numLockIndex,
+                                      XKB_STATE_MODS_EFFECTIVE) == 1)
+    {
         mods |= GLFW_MOD_NUM_LOCK;
+    }
 
     _glfw.wl.xkb.modifiers = mods;
 }

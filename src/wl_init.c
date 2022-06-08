@@ -381,10 +381,10 @@ int _glfwPlatformInit(void)
         _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_key_get_syms");
     _glfw.wl.xkb.state_update_mask = (PFN_xkb_state_update_mask)
         _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_update_mask");
-    _glfw.wl.xkb.state_serialize_mods = (PFN_xkb_state_serialize_mods)
-        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_serialize_mods");
     _glfw.wl.xkb.state_key_get_layout = (PFN_xkb_state_key_get_layout)
         _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_key_get_layout");
+    _glfw.wl.xkb.state_mod_index_is_active = (PFN_xkb_state_mod_index_is_active)
+        _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_state_mod_index_is_active");
 
     _glfw.wl.xkb.compose_table_new_from_locale = (PFN_xkb_compose_table_new_from_locale)
         _glfw_dlsym(_glfw.wl.xkb.handle, "xkb_compose_table_new_from_locale");

@@ -115,8 +115,8 @@ typedef struct xkb_state* (* PFN_xkb_state_new)(struct xkb_keymap*);
 typedef void (* PFN_xkb_state_unref)(struct xkb_state*);
 typedef int (* PFN_xkb_state_key_get_syms)(struct xkb_state*, xkb_keycode_t, const xkb_keysym_t**);
 typedef enum xkb_state_component (* PFN_xkb_state_update_mask)(struct xkb_state*, xkb_mod_mask_t, xkb_mod_mask_t, xkb_mod_mask_t, xkb_layout_index_t, xkb_layout_index_t, xkb_layout_index_t);
-typedef xkb_mod_mask_t (* PFN_xkb_state_serialize_mods)(struct xkb_state*, enum xkb_state_component);
 typedef xkb_layout_index_t (* PFN_xkb_state_key_get_layout)(struct xkb_state*,xkb_keycode_t);
+typedef int (* PFN_xkb_state_mod_index_is_active)(struct xkb_state*,xkb_mod_index_t,enum xkb_state_component);
 #define xkb_context_new _glfw.wl.xkb.context_new
 #define xkb_context_unref _glfw.wl.xkb.context_unref
 #define xkb_keymap_new_from_string _glfw.wl.xkb.keymap_new_from_string
@@ -128,8 +128,8 @@ typedef xkb_layout_index_t (* PFN_xkb_state_key_get_layout)(struct xkb_state*,xk
 #define xkb_state_unref _glfw.wl.xkb.state_unref
 #define xkb_state_key_get_syms _glfw.wl.xkb.state_key_get_syms
 #define xkb_state_update_mask _glfw.wl.xkb.state_update_mask
-#define xkb_state_serialize_mods _glfw.wl.xkb.state_serialize_mods
 #define xkb_state_key_get_layout _glfw.wl.xkb.state_key_get_layout
+#define xkb_state_mod_index_is_active _glfw.wl.xkb.state_mod_index_is_active
 
 typedef struct xkb_compose_table* (* PFN_xkb_compose_table_new_from_locale)(struct xkb_context*, const char*, enum xkb_compose_compile_flags);
 typedef void (* PFN_xkb_compose_table_unref)(struct xkb_compose_table*);
@@ -283,12 +283,12 @@ typedef struct _GLFWlibraryWayland
         struct xkb_state*       state;
         struct xkb_compose_state* composeState;
 
-        xkb_mod_mask_t          controlMask;
-        xkb_mod_mask_t          altMask;
-        xkb_mod_mask_t          shiftMask;
-        xkb_mod_mask_t          superMask;
-        xkb_mod_mask_t          capsLockMask;
-        xkb_mod_mask_t          numLockMask;
+        xkb_mod_index_t         controlIndex;
+        xkb_mod_index_t         altIndex;
+        xkb_mod_index_t         shiftIndex;
+        xkb_mod_index_t         superIndex;
+        xkb_mod_index_t         capsLockIndex;
+        xkb_mod_index_t         numLockIndex;
         unsigned int            modifiers;
 
         PFN_xkb_context_new context_new;
@@ -302,8 +302,8 @@ typedef struct _GLFWlibraryWayland
         PFN_xkb_state_unref state_unref;
         PFN_xkb_state_key_get_syms state_key_get_syms;
         PFN_xkb_state_update_mask state_update_mask;
-        PFN_xkb_state_serialize_mods state_serialize_mods;
         PFN_xkb_state_key_get_layout state_key_get_layout;
+        PFN_xkb_state_mod_index_is_active state_mod_index_is_active;
 
         PFN_xkb_compose_table_new_from_locale compose_table_new_from_locale;
         PFN_xkb_compose_table_unref compose_table_unref;

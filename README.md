@@ -145,6 +145,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: MIME type matching was not performed for clipboard string
  - [Wayland] Bugfix: The OSMesa library was not unloaded on termination
  - [Wayland] Bugfix: `glfwCreateWindow` could emit `GLFW_PLATFORM_ERROR`
+ - [Wayland] Bugfix: Lock key modifier bits were only set when lock keys were pressed
 
 
 ## Contact

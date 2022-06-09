@@ -181,6 +181,7 @@ typedef struct _GLFWwindowWayland
     int                         width, height;
     GLFWbool                    visible;
     GLFWbool                    maximized;
+    GLFWbool                    activated;
     GLFWbool                    hovered;
     GLFWbool                    transparent;
     struct wl_surface*          surface;
@@ -211,8 +212,6 @@ typedef struct _GLFWwindowWayland
     } pointerLock;
 
     struct zwp_idle_inhibitor_v1*          idleInhibitor;
-
-    GLFWbool                    wasFullscreen;
 
     struct {
         GLFWbool                           serverSide;

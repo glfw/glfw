@@ -471,19 +471,33 @@ static void setIdleInhibitor(_GLFWwindow* window, GLFWbool enable)
     }
 }
 
-static void setFullscreen(_GLFWwindow* window, _GLFWmonitor* monitor,
-                          int refreshRate)
+// Make the specified window and its video mode active on its monitor
+//
+static void acquireMonitor(_GLFWwindow* window)
 {
     if (window->wl.xdg.toplevel)
     {
-        xdg_toplevel_set_fullscreen(
-            window->wl.xdg.toplevel,
-            monitor->wl.output);
+        xdg_toplevel_set_fullscreen(window->wl.xdg.toplevel,
+                                    window->monitor->wl.output);
     }
 
     setIdleInhibitor(window, GLFW_TRUE);
+
     if (!window->wl.decorations.serverSide)
         destroyDecorations(window);
+}
+
+// Remove the window and restore the original video mode
+//
+static void releaseMonitor(_GLFWwindow* window)
+{
+    if (window->wl.xdg.toplevel)
+        xdg_toplevel_unset_fullscreen(window->wl.xdg.toplevel);
+
+    setIdleInhibitor(window, GLFW_FALSE);
+
+    if (!_glfw.wl.decorationManager)
+        createDecorations(window);
 }
 
 static void xdgToplevelHandleConfigure(void* userData,
@@ -538,16 +552,13 @@ static void xdgToplevelHandleConfigure(void* userData,
         _glfwInputWindowDamage(window);
     }
 
-    if (window->wl.wasFullscreen && window->autoIconify)
+    if (window->wl.activated && !activated)
     {
-        if (!activated || !fullscreen)
-        {
+        if (window->monitor && window->autoIconify)
             _glfwPlatformIconifyWindow(window);
-            window->wl.wasFullscreen = GLFW_FALSE;
-        }
     }
-    if (fullscreen && activated)
-        window->wl.wasFullscreen = GLFW_TRUE;
+
+    window->wl.activated = activated;
 }
 
 static void xdgToplevelHandleClose(void* userData,
@@ -1960,15 +1971,12 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
 {
     if (window->wl.xdg.toplevel)
     {
-        if (window->monitor)
-            xdg_toplevel_unset_fullscreen(window->wl.xdg.toplevel);
         if (window->wl.maximized)
             xdg_toplevel_unset_maximized(window->wl.xdg.toplevel);
         // There is no way to unset minimized, or even to know if we are
         // minimized, so there is nothing to do here.
     }
 
-    _glfwInputWindowMonitor(window, NULL);
     window->wl.maximized = GLFW_FALSE;
 }
 
@@ -2025,19 +2033,23 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
                                    int width, int height,
                                    int refreshRate)
 {
-    if (monitor)
+    if (window->monitor == monitor)
     {
-        setFullscreen(window, monitor, refreshRate);
+        if (!monitor)
+            _glfwPlatformSetWindowSize(window, width, height);
+
+        return;
     }
-    else
-    {
-        if (window->wl.xdg.toplevel)
-            xdg_toplevel_unset_fullscreen(window->wl.xdg.toplevel);
-        setIdleInhibitor(window, GLFW_FALSE);
-        if (!_glfw.wl.decorationManager)
-            createDecorations(window);
-    }
+
+    if (window->monitor)
+        releaseMonitor(window);
+
     _glfwInputWindowMonitor(window, monitor);
+
+    if (window->monitor)
+        acquireMonitor(window);
+    else
+        _glfwPlatformSetWindowSize(window, width, height);
 }
 
 int _glfwPlatformWindowFocused(_GLFWwindow* window)

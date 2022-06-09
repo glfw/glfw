@@ -150,6 +150,7 @@ information on what to include when reporting a bug.
    values to select ANGLE backend (#1380)
  - Added `GLFW_X11_XCB_VULKAN_SURFACE` init hint for selecting X11 Vulkan
    surface extension (#1793)
+ - Added `GLFW_NATIVE_INCLUDE_NONE` for disabling inclusion of native headers (#1348)
  - Added `GLFW_BUILD_WIN32` CMake option for enabling Win32 support (#1958)
  - Added `GLFW_BUILD_COCOA` CMake option for enabling Cocoa support (#1958)
  - Added `GLFW_BUILD_X11` CMake option for enabling X11 support (#1958)
@@ -178,9 +179,11 @@ information on what to include when reporting a bug.
  - Bugfix: Native access functions for context handles did not check that the API matched
  - Bugfix: `glfwMakeContextCurrent` would access TLS slot before initialization
  - Bugfix: `glfwSetGammaRamp` could emit `GLFW_INVALID_VALUE` before initialization
+ - Bugfix: `glfwGetJoystickUserPointer` returned `NULL` during disconnection (#2092)
  - [Win32] Added the `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access
            to the window menu
  - [Win32] Added a version info resource to the GLFW DLL
+ - [Win32] Made hidden helper window use its own window class
  - [Win32] Disabled framebuffer transparency on Windows 7 when DWM windows are
    opaque (#1512)
  - [Win32] Bugfix: `GLFW_INCLUDE_VULKAN` plus `VK_USE_PLATFORM_WIN32_KHR` caused
@@ -295,6 +298,7 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: Left shift of int constant relied on undefined behavior (#1951)
  - [X11] Bugfix: The OSMesa libray was not unloaded on termination
  - [X11] Bugfix: A malformed response during selection transfer could cause a segfault
+ - [X11] Bugfix: Some calls would reset Xlib to the default error handler (#2108)
  - [Wayland] Added dynamic loading of all Wayland libraries
  - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Added support for file path drop events (#2040)
@@ -330,6 +334,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: MIME type matching was not performed for clipboard string
  - [Wayland] Bugfix: The OSMesa library was not unloaded on termination
  - [Wayland] Bugfix: `glfwCreateWindow` could emit `GLFW_FEATURE_UNAVAILABLE`
+ - [Wayland] Bugfix: Lock key modifier bits were only set when lock keys were pressed
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)

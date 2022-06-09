@@ -1269,18 +1269,12 @@ static void keyboardHandleKeymap(void* userData,
     _glfw.wl.xkb.keymap = keymap;
     _glfw.wl.xkb.state = state;
 
-    _glfw.wl.xkb.controlMask =
-        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Control");
-    _glfw.wl.xkb.altMask =
-        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod1");
-    _glfw.wl.xkb.shiftMask =
-        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Shift");
-    _glfw.wl.xkb.superMask =
-        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod4");
-    _glfw.wl.xkb.capsLockMask =
-        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Lock");
-    _glfw.wl.xkb.numLockMask =
-        1 << xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod2");
+    _glfw.wl.xkb.controlIndex  = xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Control");
+    _glfw.wl.xkb.altIndex      = xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod1");
+    _glfw.wl.xkb.shiftIndex    = xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Shift");
+    _glfw.wl.xkb.superIndex    = xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod4");
+    _glfw.wl.xkb.capsLockIndex = xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Lock");
+    _glfw.wl.xkb.numLockIndex  = xkb_keymap_mod_get_index(_glfw.wl.xkb.keymap, "Mod2");
 }
 
 static void keyboardHandleEnter(void* userData,
@@ -1434,27 +1428,49 @@ static void keyboardHandleModifiers(void* userData,
                           0,
                           group);
 
-    const xkb_mod_mask_t mask =
-        xkb_state_serialize_mods(_glfw.wl.xkb.state,
-                                 XKB_STATE_MODS_DEPRESSED |
-                                 XKB_STATE_LAYOUT_DEPRESSED |
-                                 XKB_STATE_MODS_LATCHED |
-                                 XKB_STATE_LAYOUT_LATCHED);
-
     unsigned int mods = 0;
 
-    if (mask & _glfw.wl.xkb.controlMask)
+    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
+                                      _glfw.wl.xkb.controlIndex,
+                                      XKB_STATE_MODS_EFFECTIVE) == 1)
+    {
         mods |= GLFW_MOD_CONTROL;
-    if (mask & _glfw.wl.xkb.altMask)
+    }
+
+    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
+                                      _glfw.wl.xkb.altIndex,
+                                      XKB_STATE_MODS_EFFECTIVE) == 1)
+    {
         mods |= GLFW_MOD_ALT;
-    if (mask & _glfw.wl.xkb.shiftMask)
+    }
+
+    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
+                                      _glfw.wl.xkb.shiftIndex,
+                                      XKB_STATE_MODS_EFFECTIVE) == 1)
+    {
         mods |= GLFW_MOD_SHIFT;
-    if (mask & _glfw.wl.xkb.superMask)
+    }
+
+    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
+                                      _glfw.wl.xkb.superIndex,
+                                      XKB_STATE_MODS_EFFECTIVE) == 1)
+    {
         mods |= GLFW_MOD_SUPER;
-    if (mask & _glfw.wl.xkb.capsLockMask)
+    }
+
+    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
+                                      _glfw.wl.xkb.capsLockIndex,
+                                      XKB_STATE_MODS_EFFECTIVE) == 1)
+    {
         mods |= GLFW_MOD_CAPS_LOCK;
-    if (mask & _glfw.wl.xkb.numLockMask)
+    }
+
+    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
+                                      _glfw.wl.xkb.numLockIndex,
+                                      XKB_STATE_MODS_EFFECTIVE) == 1)
+    {
         mods |= GLFW_MOD_NUM_LOCK;
+    }
 
     _glfw.wl.xkb.modifiers = mods;
 }
@@ -1705,10 +1721,10 @@ void _glfwAddDataDeviceListenerWayland(struct wl_data_device* device)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwCreateWindowWayland(_GLFWwindow* window,
-                             const _GLFWwndconfig* wndconfig,
-                             const _GLFWctxconfig* ctxconfig,
-                             const _GLFWfbconfig* fbconfig)
+GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
+                                  const _GLFWwndconfig* wndconfig,
+                                  const _GLFWctxconfig* ctxconfig,
+                                  const _GLFWfbconfig* fbconfig)
 {
     if (!createSurface(window, wndconfig, fbconfig))
         return GLFW_FALSE;
@@ -1978,34 +1994,34 @@ void _glfwSetWindowMonitorWayland(_GLFWwindow* window,
     _glfwInputWindowMonitor(window, monitor);
 }
 
-int _glfwWindowFocusedWayland(_GLFWwindow* window)
+GLFWbool _glfwWindowFocusedWayland(_GLFWwindow* window)
 {
     return _glfw.wl.keyboardFocus == window;
 }
 
-int _glfwWindowIconifiedWayland(_GLFWwindow* window)
+GLFWbool _glfwWindowIconifiedWayland(_GLFWwindow* window)
 {
     // xdg-shell doesn’t give any way to request whether a surface is
     // iconified.
     return GLFW_FALSE;
 }
 
-int _glfwWindowVisibleWayland(_GLFWwindow* window)
+GLFWbool _glfwWindowVisibleWayland(_GLFWwindow* window)
 {
     return window->wl.visible;
 }
 
-int _glfwWindowMaximizedWayland(_GLFWwindow* window)
+GLFWbool _glfwWindowMaximizedWayland(_GLFWwindow* window)
 {
     return window->wl.maximized;
 }
 
-int _glfwWindowHoveredWayland(_GLFWwindow* window)
+GLFWbool _glfwWindowHoveredWayland(_GLFWwindow* window)
 {
     return window->wl.hovered;
 }
 
-int _glfwFramebufferTransparentWayland(_GLFWwindow* window)
+GLFWbool _glfwFramebufferTransparentWayland(_GLFWwindow* window)
 {
     return window->wl.transparent;
 }
@@ -2177,9 +2193,9 @@ int _glfwGetKeyScancodeWayland(int key)
     return _glfw.wl.scancodes[key];
 }
 
-int _glfwCreateCursorWayland(_GLFWcursor* cursor,
-                             const GLFWimage* image,
-                             int xhot, int yhot)
+GLFWbool _glfwCreateCursorWayland(_GLFWcursor* cursor,
+                                  const GLFWimage* image,
+                                  int xhot, int yhot)
 {
     cursor->wl.buffer = createShmBuffer(image);
     if (!cursor->wl.buffer)
@@ -2192,7 +2208,7 @@ int _glfwCreateCursorWayland(_GLFWcursor* cursor,
     return GLFW_TRUE;
 }
 
-int _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape)
+GLFWbool _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape)
 {
     const char* name = NULL;
 
@@ -2619,9 +2635,9 @@ void _glfwGetRequiredInstanceExtensionsWayland(char** extensions)
     extensions[1] = "VK_KHR_wayland_surface";
 }
 
-int _glfwGetPhysicalDevicePresentationSupportWayland(VkInstance instance,
-                                                     VkPhysicalDevice device,
-                                                     uint32_t queuefamily)
+GLFWbool _glfwGetPhysicalDevicePresentationSupportWayland(VkInstance instance,
+                                                          VkPhysicalDevice device,
+                                                          uint32_t queuefamily)
 {
     PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
         vkGetPhysicalDeviceWaylandPresentationSupportKHR =

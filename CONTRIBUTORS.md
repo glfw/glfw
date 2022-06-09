@@ -160,6 +160,7 @@ video tutorials.
  - Christopher Pelloux
  - Arturo J. Pérez
  - Vladimir Perminov
+ - Olivier Perret
  - Anthony Pesch
  - Orson Peters
  - Emmanuel Gil Peyrot

@@ -96,8 +96,7 @@ static CFComparisonResult compareElements(const void* fp,
 //
 static void closeJoystick(_GLFWjoystick* js)
 {
-    if (!js->present)
-        return;
+    _glfwInputJoystick(js, GLFW_DISCONNECTED);
 
     for (int i = 0;  i < CFArrayGetCount(js->ns.axes);  i++)
         _glfw_free((void*) CFArrayGetValueAtIndex(js->ns.axes, i));
@@ -112,7 +111,6 @@ static void closeJoystick(_GLFWjoystick* js)
     CFRelease(js->ns.hats);
 
     _glfwFreeJoystick(js);
-    _glfwInputJoystick(js, GLFW_DISCONNECTED);
 }
 
 // Callback for user-initiated joystick addition
@@ -289,9 +287,9 @@ static void removeCallback(void* context,
 {
     for (int jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
-        if (_glfw.joysticks[jid].ns.device == device)
+        if (_glfw.joysticks[jid].connected && _glfw.joysticks[jid].ns.device == device)
         {
-            closeJoystick(_glfw.joysticks + jid);
+            closeJoystick(&_glfw.joysticks[jid]);
             break;
         }
     }
@@ -382,7 +380,10 @@ GLFWbool _glfwInitJoysticksCocoa(void)
 void _glfwTerminateJoysticksCocoa(void)
 {
     for (int jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
-        closeJoystick(_glfw.joysticks + jid);
+    {
+        if (_glfw.joysticks[jid].connected)
+            closeJoystick(&_glfw.joysticks[jid]);
+    }
 
     if (_glfw.ns.hidManager)
     {
@@ -392,7 +393,7 @@ void _glfwTerminateJoysticksCocoa(void)
 }
 
 
-int _glfwPollJoystickCocoa(_GLFWjoystick* js, int mode)
+GLFWbool _glfwPollJoystickCocoa(_GLFWjoystick* js, int mode)
 {
     if (mode & _GLFW_POLL_AXES)
     {
@@ -455,7 +456,7 @@ int _glfwPollJoystickCocoa(_GLFWjoystick* js, int mode)
         }
     }
 
-    return js->present;
+    return js->connected;
 }
 
 const char* _glfwGetMappingNameCocoa(void)

@@ -30,6 +30,7 @@
 #include "internal.h"
 
 #include <limits.h>
+#include <stdio.h> // TODO remove
 #include <stdlib.h>
 #include <string.h>
 #include <windowsx.h>
@@ -1407,7 +1408,15 @@ static int createNativeWindow(_GLFWwindow* window,
         }
     }
 
-    DragAcceptFiles(window->win32.handle, TRUE);
+    //DragAcceptFiles(window->win32.handle, TRUE);
+    window->win32.dropTarget.lpVtbl = &_glfw.win32.dropTargetVtbl;
+    window->win32.dropTarget.window = window;
+    if (FAILED(RegisterDragDrop(window->win32.handle, (LPDROPTARGET)&window->win32.dropTarget)))
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to register window for drag & drop");
+        return GLFW_FALSE;
+    }
 
     if (fbconfig->transparent)
     {
@@ -1492,6 +1501,8 @@ void _glfwDestroyWindowWin32(_GLFWwindow* window)
 
     if (_glfw.win32.disabledCursorWindow == window)
         _glfw.win32.disabledCursorWindow = NULL;
+
+    RevokeDragDrop(window->win32.handle);
 
     if (window->win32.handle)
     {
@@ -2452,3 +2463,119 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
     return window->win32.handle;
 }
 
+/*static GLFWbool _glfwIsEqualIID(REFIID riid1, REFIID riid2)
+{
+    return riid1->Data1 == riid2->Data1
+        && riid1->Data2 == riid2->Data2
+        && riid1->Data3 == riid2->Data3
+        && (memcmp(riid1->Data4, riid2->Data4, sizeof(riid1->Data4)) == 0);
+}
+
+// IDropTarget vtable functions
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_QueryInterface(_GLFWdropTarget *This, REFIID riid, void **ppvObject)
+{
+    printf("DropTarget_QueryInterface\n");
+    if(!ppvObject)
+        return E_POINTER;
+
+    if (_glfwIsEqualIID(riid, &IID_IUnknown) || _glfwIsEqualIID(riid, &IID_IDropTarget))
+    {
+        *ppvObject = This;
+        This->lpVtbl->AddRef(This);
+        return S_OK;
+    }
+
+    *ppvObject = 0;
+    return E_NOINTERFACE;
+}*/
+
+// IDropTarget vtable functions
+ULONG STDMETHODCALLTYPE _glfwDropTarget_AddRef(_GLFWdropTarget *This)
+{
+    printf("DropTarget_AddRef\n");
+    return ++This->cRefCount;
+}
+
+ULONG STDMETHODCALLTYPE _glfwDropTarget_Release(_GLFWdropTarget *This)
+{
+    printf("DropTarget_Release\n");
+    return --This->cRefCount;
+}
+
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_DragEnter(_GLFWdropTarget *This, IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
+{
+    FORMATETC fmt = { CF_HDROP, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+
+    printf("DropTarget_DragEnter\n");
+	if(SUCCEEDED(IDataObject_QueryGetData(pDataObj, &fmt)))
+	{
+        printf("QueryGetData OK\n");
+        *pdwEffect = DROPEFFECT_COPY;
+    }
+    else
+        *pdwEffect = DROPEFFECT_NONE;
+
+    return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_DragOver(_GLFWdropTarget *This, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
+{
+    printf("DropTarget_DragOver\n");
+    *pdwEffect = DROPEFFECT_COPY;
+
+    return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_DragLeave(_GLFWdropTarget *This)
+{
+    printf("DropTarget_DragLeave\n");
+    return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_Drop(_GLFWdropTarget *This, IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
+{
+    FORMATETC fmt = { CF_HDROP, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+	STGMEDIUM stgmed;
+
+    printf("DropTarget_Drop\n");
+    *pdwEffect = DROPEFFECT_NONE;
+
+	if(SUCCEEDED(IDataObject_QueryGetData(pDataObj, &fmt)))
+	{
+        printf("QueryGetData OK\n");
+		if(SUCCEEDED(IDataObject_GetData(pDataObj, &fmt, &stgmed)))
+		{
+			HDROP drop = (HDROP) GlobalLock(stgmed.hGlobal);
+            const int count = DragQueryFileW(drop, 0xffffffff, NULL, 0);
+            char** paths = _glfw_calloc(count, sizeof(char*));
+            int i;
+
+            printf("GetData OK\n");
+            _glfwInputCursorPos(This->window, pt.x, pt.y);
+
+            for (i = 0; i < count; ++i)
+            {
+                const UINT length = DragQueryFileW(drop, i, NULL, 0);
+                WCHAR* buffer = _glfw_calloc((size_t) length + 1, sizeof(WCHAR));
+
+                DragQueryFileW(drop, i, buffer, length + 1);
+                paths[i] = _glfwCreateUTF8FromWideStringWin32(buffer);
+
+                _glfw_free(buffer);
+            }
+
+            _glfwInputDrop(This->window, count, (const char**) paths);
+
+            for (i = 0; i < count; ++i)
+                _glfw_free(paths[i]);
+            _glfw_free(paths);
+
+			GlobalUnlock(stgmed.hGlobal);
+			ReleaseStgMedium(&stgmed);
+
+            *pdwEffect = DROPEFFECT_COPY;
+		}
+	}
+
+    return S_OK;
+}

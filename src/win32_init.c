@@ -167,6 +167,19 @@ static GLFWbool loadLibraries(void)
             _glfwPlatformGetModuleSymbol(_glfw.win32.ntdll.instance, "RtlVerifyVersionInfo");
     }
 
+    _glfw.win32.ole32.instance = _glfwPlatformLoadModule("ole32.dll");
+    if (_glfw.win32.ole32.instance)
+    {
+        _glfw.win32.ole32.OleInitialize_ = (PFN_OleInitialize)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.ole32.instance, "OleInitialize");
+        _glfw.win32.ole32.OleUninitialize_ = (PFN_OleUninitialize)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.ole32.instance, "OleUninitialize");
+        _glfw.win32.ole32.RegisterDragDrop_ = (PFN_RegisterDragDrop)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.ole32.instance, "RegisterDragDrop");
+        _glfw.win32.ole32.RevokeDragDrop_ = (PFN_RevokeDragDrop)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.ole32.instance, "RevokeDragDrop");
+    }
+
     return GLFW_TRUE;
 }
 
@@ -191,6 +204,9 @@ static void freeLibraries(void)
 
     if (_glfw.win32.ntdll.instance)
         _glfwPlatformFreeModule(_glfw.win32.ntdll.instance);
+
+    if (_glfw.win32.ole32.instance)
+        _glfwPlatformFreeModule(_glfw.win32.ole32.instance);
 }
 
 // Create key code translation tables
@@ -430,6 +446,27 @@ static GLFWbool createHelperWindow(void)
    return GLFW_TRUE;
 }
 
+// Initialize OLE as well as the IDropTarget vtable
+//
+static GLFWbool initDragDrop()
+{
+    if (FAILED(OleInitialize(NULL)))
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to initialize OLE");
+        return GLFW_FALSE;
+    }
+
+    //_glfw.win32.dropTargetVtbl.QueryInterface = _glfwDropTarget_QueryInterface;
+    _glfw.win32.dropTargetVtbl.AddRef = (PFN_IDropTarget_AddRef)_glfwDropTarget_AddRef;
+    _glfw.win32.dropTargetVtbl.Release = (PFN_IDropTarget_Release)_glfwDropTarget_Release;
+    _glfw.win32.dropTargetVtbl.DragEnter = (PFN_IDropTarget_DragEnter)_glfwDropTarget_DragEnter;
+    _glfw.win32.dropTargetVtbl.DragOver = (PFN_IDropTarget_DragOver)_glfwDropTarget_DragOver;
+    _glfw.win32.dropTargetVtbl.DragLeave = (PFN_IDropTarget_DragLeave)_glfwDropTarget_DragLeave;
+    _glfw.win32.dropTargetVtbl.Drop = (PFN_IDropTarget_Drop)_glfwDropTarget_Drop;
+
+    return GLFW_TRUE;
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -699,6 +736,9 @@ int _glfwInitWin32(void)
     if (!createHelperWindow())
         return GLFW_FALSE;
 
+    if (!initDragDrop())
+        return GLFW_FALSE;
+
     _glfwPollMonitorsWin32();
     return GLFW_TRUE;
 }
@@ -707,6 +747,8 @@ void _glfwTerminateWin32(void)
 {
     if (_glfw.win32.deviceNotificationHandle)
         UnregisterDeviceNotification(_glfw.win32.deviceNotificationHandle);
+
+    OleUninitialize();
 
     if (_glfw.win32.helperWindowHandle)
         DestroyWindow(_glfw.win32.helperWindowHandle);

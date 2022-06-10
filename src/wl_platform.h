@@ -190,6 +190,10 @@ typedef struct _GLFWwindowWayland
     struct wl_callback*         callback;
 
     struct {
+        int                     width, height;
+    } pending;
+
+    struct {
         struct xdg_surface*     surface;
         struct xdg_toplevel*    toplevel;
         struct zxdg_toplevel_decoration_v1* decoration;

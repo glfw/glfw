@@ -464,8 +464,6 @@ static void xdgToplevelHandleConfigure(void* userData,
                                        struct wl_array* states)
 {
     _GLFWwindow* window = userData;
-    float aspectRatio;
-    float targetRatio;
     uint32_t* state;
     GLFWbool maximized = GLFW_FALSE;
     GLFWbool fullscreen = GLFW_FALSE;
@@ -489,28 +487,6 @@ static void xdgToplevelHandleConfigure(void* userData,
         }
     }
 
-    if (width != 0 && height != 0)
-    {
-        if (!maximized && !fullscreen)
-        {
-            if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
-            {
-                aspectRatio = (float)width / (float)height;
-                targetRatio = (float)window->numer / (float)window->denom;
-                if (aspectRatio < targetRatio)
-                    height = width / targetRatio;
-                else if (aspectRatio > targetRatio)
-                    width = height * targetRatio;
-            }
-        }
-
-        _glfwInputWindowSize(window, width, height);
-        window->wl.width = width;
-        window->wl.height = height;
-        resizeWindow(window);
-        _glfwInputWindowDamage(window);
-    }
-
     if (window->wl.activated && !activated)
     {
         if (window->monitor && window->autoIconify)
@@ -525,6 +501,17 @@ static void xdgToplevelHandleConfigure(void* userData,
     window->wl.activated  = activated;
     window->wl.maximized  = maximized;
     window->wl.fullscreen = fullscreen;
+
+    if (width && height)
+    {
+        window->wl.pending.width  = width;
+        window->wl.pending.height = height;
+    }
+    else
+    {
+        window->wl.pending.width  = window->wl.width;
+        window->wl.pending.height = window->wl.height;
+    }
 }
 
 static void xdgToplevelHandleClose(void* userData,
@@ -544,7 +531,34 @@ static void xdgSurfaceHandleConfigure(void* userData,
                                       struct xdg_surface* surface,
                                       uint32_t serial)
 {
+    _GLFWwindow* window = userData;
+    int width  = window->wl.pending.width;
+    int height = window->wl.pending.height;
+
     xdg_surface_ack_configure(surface, serial);
+
+    if (!window->wl.maximized && !window->wl.fullscreen)
+    {
+        if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
+        {
+            const float aspectRatio = (float) width / (float) height;
+            const float targetRatio = (float) window->numer / (float) window->denom;
+            if (aspectRatio < targetRatio)
+                height = width / targetRatio;
+            else if (aspectRatio > targetRatio)
+                width = height * targetRatio;
+        }
+    }
+
+    if (width != window->wl.width || height != window->wl.height)
+    {
+        window->wl.width = width;
+        window->wl.height = height;
+        resizeWindow(window);
+
+        _glfwInputWindowSize(window, width, height);
+        _glfwInputWindowDamage(window);
+    }
 }
 
 static const struct xdg_surface_listener xdgSurfaceListener = {

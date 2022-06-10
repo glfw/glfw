@@ -856,6 +856,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->focusOnShow;
         case GLFW_MOUSE_PASSTHROUGH:
             return window->mousePassthrough;
+        case GLFW_DND_DRAGGING:
+            return window->dndDragging;
         case GLFW_TRANSPARENT_FRAMEBUFFER:
             return _glfw.platform.framebufferTransparent(window);
         case GLFW_RESIZABLE:

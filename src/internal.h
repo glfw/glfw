@@ -541,6 +541,7 @@ struct _GLFWwindow
     GLFWbool            floating;
     GLFWbool            focusOnShow;
     GLFWbool            mousePassthrough;
+    GLFWbool            dndDragging;
     GLFWbool            shouldClose;
     void*               userPointer;
     GLFWbool            doublebuffer;

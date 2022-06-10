@@ -158,6 +158,7 @@ information on what to include when reporting a bug.
    inconsistent state
  - [Wayland] Bugfix: Window maximization events were not emitted
  - [Wayland] Bugfix: `glfwRestoreWindow` assumed it was always in windowed mode
+ - [Wayland] Bugfix: `glfwSetWindowSize` would resize a full screen window
 
 
 ## Contact

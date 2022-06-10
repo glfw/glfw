@@ -234,6 +234,7 @@ typedef struct _GLFWwindowWayland
     GLFWbool                    visible;
     GLFWbool                    maximized;
     GLFWbool                    activated;
+    GLFWbool                    fullscreen;
     GLFWbool                    hovered;
     GLFWbool                    transparent;
     struct wl_surface*          surface;

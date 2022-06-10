@@ -1842,6 +1842,15 @@ void _glfwGetWindowSizeWayland(_GLFWwindow* window, int* width, int* height)
 
 void _glfwSetWindowSizeWayland(_GLFWwindow* window, int width, int height)
 {
+    if (window->decorated && !window->monitor && !window->wl.decorations.serverSide)
+    {
+        width -= _GLFW_DECORATION_HORIZONTAL;
+        height -= _GLFW_DECORATION_VERTICAL;
+    }
+    if (width <= 0 || height <= 0)
+    {
+        return;
+    }
     window->wl.width = width;
     window->wl.height = height;
     resizeWindow(window);
@@ -1857,6 +1866,13 @@ void _glfwSetWindowSizeLimitsWayland(_GLFWwindow* window,
             minwidth = minheight = 0;
         if (maxwidth == GLFW_DONT_CARE || maxheight == GLFW_DONT_CARE)
             maxwidth = maxheight = 0;
+        if (window->decorated && !window->monitor && !window->wl.decorations.serverSide)
+        {
+            minwidth += _GLFW_DECORATION_HORIZONTAL;
+            minheight += _GLFW_DECORATION_VERTICAL;
+            maxwidth += _GLFW_DECORATION_HORIZONTAL;
+            maxheight += _GLFW_DECORATION_VERTICAL;
+        }
         xdg_toplevel_set_min_size(window->wl.xdg.toplevel, minwidth, minheight);
         xdg_toplevel_set_max_size(window->wl.xdg.toplevel, maxwidth, maxheight);
         wl_surface_commit(window->wl.surface);

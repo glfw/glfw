@@ -346,8 +346,7 @@ static void resizeWindow(_GLFWwindow* window)
 
 static void checkScaleChange(_GLFWwindow* window)
 {
-    // Check if we will be able to set the buffer scale or not.
-    if (_glfw.wl.compositorVersion < 3)
+    if (_glfw.wl.compositorVersion < WL_SURFACE_SET_BUFFER_SCALE_SINCE_VERSION)
         return;
 
     // Get the scale factor from the highest scale monitor.

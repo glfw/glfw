@@ -639,8 +639,10 @@ int _glfwInitWayland(void)
     // Sync so we got all initial output events
     wl_display_roundtrip(_glfw.wl.display);
 
-    if (_glfw.wl.seatVersion >= 4)
+#ifdef WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION
+    if (_glfw.wl.seatVersion >= WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION)
         _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
+#endif
 
     if (!_glfw.wl.wmBase)
     {

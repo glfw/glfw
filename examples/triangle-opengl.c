@@ -80,8 +80,89 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
+void drag_callback(GLFWwindow* window, int event, double xpos, double ypos, int availableFormats, int *format, int availableActions, int *action)
+{
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    switch(event)
+    {
+        case GLFW_DND_ENTER:
+        {
+            printf("ENTER (%d, %d)\n", (int)xpos, (int)ypos);
+            break;
+        }
+        case GLFW_DND_DRAG:
+        {
+            printf("DRAG (%d, %d)\n", (int)xpos, (int)ypos);
+
+            if ((int) xpos < (width / 2))
+            {
+                if ((availableFormats & GLFW_DND_PATHS) == GLFW_DND_PATHS)
+                {
+                    printf("accepting paths\n");
+                    *format = GLFW_DND_PATHS;
+                }
+                else
+                {
+                    printf("reject\n");
+                    *action = GLFW_DND_NONE;
+                }
+            }
+            else {
+                if ((availableFormats & GLFW_DND_TEXT) == GLFW_DND_TEXT)
+                {
+                    printf("accepting text\n");
+                    *format = GLFW_DND_TEXT;
+                }
+                else
+                {
+                    printf("reject\n");
+                    *action = GLFW_DND_NONE;
+                }
+            }
+
+            break;
+        }
+        case GLFW_DND_LEAVE:
+        {
+            printf("LEAVE\n");
+            break;
+        }
+    }
+}
+
+void drop_callback(GLFWwindow* window, int count, const char** paths)
+{
+    for (int i = 0; i < count; ++i)
+        printf("path[%d]: %s\n", i, paths[i]);
+}
+
+void dropex_callback(GLFWwindow* window, int format, int data_count, void *data, int *action)
+{
+    printf("DROP\n");
+
+    switch(format)
+    {
+        case GLFW_DND_PATHS:
+        {
+            const char **paths = (const char **) data;
+            for(int i = 0; i < data_count; ++i)
+                printf("path[%d]: %s\n", i, paths[i]);
+            break;
+        }
+        case GLFW_DND_TEXT:
+            printf("text: %s\n", (const char *) data);
+            break;
+        default:
+            break;
+    }
+}
+
 int main(void)
 {
+   (void)setvbuf(stdout, NULL, _IONBF, 0);
+   (void)setvbuf(stderr, NULL, _IONBF, 0);
+
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
@@ -99,6 +180,9 @@ int main(void)
     }
 
     glfwSetKeyCallback(window, key_callback);
+    glfwSetDragCallback(window, drag_callback);
+    glfwSetDropCallback(window, drop_callback);
+    glfwSetDropCallbackEx(window, dropex_callback);
 
     glfwMakeContextCurrent(window);
     gladLoadGL(glfwGetProcAddress);
@@ -149,7 +233,8 @@ int main(void)
 
         mat4x4 m, p, mvp;
         mat4x4_identity(m);
-        mat4x4_rotate_Z(m, m, (float) glfwGetTime());
+        if (glfwGetWindowAttrib(window, GLFW_DND_DRAGGING))
+            mat4x4_rotate_Z(m, m, (float) glfwGetTime());
         mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
         mat4x4_mul(mvp, p, m);
 

@@ -479,6 +479,10 @@ int _glfwInitWayland(void)
     long cursorSizeLong;
     int cursorSize;
 
+    // These must be set before any failure checks
+    _glfw.wl.timerfd = -1;
+    _glfw.wl.cursorTimerfd = -1;
+
     _glfw.wl.client.display_flush = (PFN_wl_display_flush)
         _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_flush");
     _glfw.wl.client.display_cancel_read = (PFN_wl_display_cancel_read)
@@ -635,7 +639,6 @@ int _glfwInitWayland(void)
     // Sync so we got all initial output events
     wl_display_roundtrip(_glfw.wl.display);
 
-    _glfw.wl.timerfd = -1;
     if (_glfw.wl.seatVersion >= 4)
         _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
 

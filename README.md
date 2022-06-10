@@ -342,6 +342,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: `glfwSetWindowSize` would resize a full screen window
  - [Wayland] Bugfix: A window content scale event would be emitted every time
    the window resized
+ - [Wayland] Bugfix: If `glfwInit` failed it would close stdin
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)

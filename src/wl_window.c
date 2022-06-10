@@ -319,24 +319,20 @@ static void resizeWindow(_GLFWwindow* window)
     if (!window->wl.decorations.top.surface)
         return;
 
-    // Top decoration.
     wp_viewport_set_destination(window->wl.decorations.top.viewport,
                                 window->wl.width, _GLFW_DECORATION_TOP);
     wl_surface_commit(window->wl.decorations.top.surface);
 
-    // Left decoration.
     wp_viewport_set_destination(window->wl.decorations.left.viewport,
                                 _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
     wl_surface_commit(window->wl.decorations.left.surface);
 
-    // Right decoration.
     wl_subsurface_set_position(window->wl.decorations.right.subsurface,
                                window->wl.width, -_GLFW_DECORATION_TOP);
     wp_viewport_set_destination(window->wl.decorations.right.viewport,
                                 _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
     wl_surface_commit(window->wl.decorations.right.surface);
 
-    // Bottom decoration.
     wl_subsurface_set_position(window->wl.decorations.bottom.subsurface,
                                -_GLFW_DECORATION_WIDTH, window->wl.height);
     wp_viewport_set_destination(window->wl.decorations.bottom.viewport,

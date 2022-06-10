@@ -159,6 +159,8 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Window maximization events were not emitted
  - [Wayland] Bugfix: `glfwRestoreWindow` assumed it was always in windowed mode
  - [Wayland] Bugfix: `glfwSetWindowSize` would resize a full screen window
+ - [Wayland] Bugfix: A window content scale event would be emitted every time
+   the window resized
 
 
 ## Contact

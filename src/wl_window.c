@@ -356,7 +356,6 @@ static void resizeWindow(_GLFWwindow* window)
     if (!window->wl.transparent)
         setOpaqueRegion(window);
     _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
-    _glfwInputWindowContentScale(window, scale, scale);
 
     if (!window->wl.decorations.top.surface)
         return;
@@ -403,6 +402,7 @@ static void checkScaleChange(_GLFWwindow* window)
     {
         window->wl.scale = maxScale;
         wl_surface_set_buffer_scale(window->wl.surface, maxScale);
+        _glfwInputWindowContentScale(window, maxScale, maxScale);
         resizeWindow(window);
     }
 }

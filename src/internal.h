@@ -58,6 +58,17 @@
 
 #define _GLFW_MESSAGE_SIZE      1024
 
+#define _GLFW_DND_MASK          0x000fffff
+
+#define _GLFW_DND_TEXT_INDEX    1
+#define _GLFW_DND_PATHS_INDEX   0
+#define _GLFW_DND_FORMAT_COUNT  2
+
+#define _GLFW_DND_COPY_INDEX    0
+#define _GLFW_DND_LINK_INDEX    1
+#define _GLFW_DND_MOVE_INDEX    2
+#define _GLFW_DND_ACTION_COUNT  3
+
 typedef int GLFWbool;
 typedef void (*GLFWproc)(void);
 

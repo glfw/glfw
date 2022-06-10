@@ -927,6 +927,9 @@ extern "C" {
  */
 #define GLFW_MOUSE_PASSTHROUGH      0x0002000D
 
+// TODO doc
+#define GLFW_DND_DRAGGING           0x0002000E
+
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_RED_BITS).
@@ -1301,6 +1304,25 @@ extern "C" {
 #define GLFW_PLATFORM_X11           0x00060004
 #define GLFW_PLATFORM_NULL          0x00060005
 /*! @} */
+
+// TODO doc
+#define GLFW_DND_NONE               0
+
+// Drag and drop events
+#define GLFW_DND_ENTER              0xdd100001
+#define GLFW_DND_DRAG               0xdd100002
+#define GLFW_DND_LEAVE              0xdd100003
+
+// Drag and drop actions
+// GLFW_DND_NONE
+#define GLFW_DND_COPY               0xdd200001
+#define GLFW_DND_LINK               0xdd200002
+#define GLFW_DND_MOVE               0xdd200004
+
+// Drag and drop formats
+// GLFW_DND_NONE
+#define GLFW_DND_TEXT               0xdd300002
+#define GLFW_DND_PATHS              0xdd300001
 
 #define GLFW_DONT_CARE              -1
 

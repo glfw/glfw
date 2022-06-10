@@ -314,6 +314,10 @@ int _glfwPlatformInit(void)
     long cursorSizeLong;
     int cursorSize;
 
+    // These must be set before any failure checks
+    _glfw.wl.timerfd = -1;
+    _glfw.wl.cursorTimerfd = -1;
+
     _glfw.wl.cursor.handle = _glfw_dlopen("libwayland-cursor.so.0");
     if (!_glfw.wl.cursor.handle)
     {
@@ -430,7 +434,6 @@ int _glfwPlatformInit(void)
 
     _glfwInitTimerPOSIX();
 
-    _glfw.wl.timerfd = -1;
     if (_glfw.wl.seatVersion >= 4)
         _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
 

@@ -401,6 +401,14 @@ void _glfwInputCursorEnter(_GLFWwindow* window, GLFWbool entered)
         window->callbacks.cursorEnter((GLFWwindow*) window, entered);
 }
 
+// Notifies shared code of data being dragged in/over/out of a window
+//
+void _glfwInputDrag(_GLFWwindow* window, int event, double xpos, double ypos, int availableFormats, int *format, int availableActions, int *action)
+{
+    if (window->callbacks.drag)
+        window->callbacks.drag((GLFWwindow*) window, event, xpos, ypos, availableFormats, format, availableActions, action);
+}
+
 // Notifies shared code of files or directories dropped on a window
 //
 void _glfwInputDrop(_GLFWwindow* window, int count, const char** paths)
@@ -411,6 +419,14 @@ void _glfwInputDrop(_GLFWwindow* window, int count, const char** paths)
 
     if (window->callbacks.drop)
         window->callbacks.drop((GLFWwindow*) window, count, paths);
+}
+
+// Notifies shared code of data dropped on a window
+//
+void _glfwInputDropEx(_GLFWwindow* window, int format, int data_count, void *data, int *action)
+{
+    if (window->callbacks.dropex)
+        window->callbacks.dropex((GLFWwindow*) window, format, data_count, data, action);
 }
 
 // Notifies shared code of a joystick connection or disconnection
@@ -1011,6 +1027,16 @@ GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* handle,
     return cbfun;
 }
 
+GLFWAPI GLFWdragfun glfwSetDragCallback(GLFWwindow* handle, GLFWdragfun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP(GLFWdragfun, window->callbacks.drag, cbfun);
+    return cbfun;
+}
+
 GLFWAPI GLFWdropfun glfwSetDropCallback(GLFWwindow* handle, GLFWdropfun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -1018,6 +1044,16 @@ GLFWAPI GLFWdropfun glfwSetDropCallback(GLFWwindow* handle, GLFWdropfun cbfun)
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     _GLFW_SWAP(GLFWdropfun, window->callbacks.drop, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWdropfunex glfwSetDropCallbackEx(GLFWwindow* handle, GLFWdropfunex cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP(GLFWdropfunex, window->callbacks.dropex, cbfun);
     return cbfun;
 }
 

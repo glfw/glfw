@@ -506,7 +506,9 @@ static void xdgToplevelHandleConfigure(void* userData,
         }
 
         _glfwInputWindowSize(window, width, height);
-        _glfwSetWindowSizeWayland(window, width, height);
+        window->wl.width = width;
+        window->wl.height = height;
+        resizeWindow(window);
         _glfwInputWindowDamage(window);
     }
 
@@ -1840,9 +1842,16 @@ void _glfwGetWindowSizeWayland(_GLFWwindow* window, int* width, int* height)
 
 void _glfwSetWindowSizeWayland(_GLFWwindow* window, int width, int height)
 {
-    window->wl.width = width;
-    window->wl.height = height;
-    resizeWindow(window);
+    if (window->monitor)
+    {
+        // Video mode setting is not available on Wayland
+    }
+    else
+    {
+        window->wl.width = width;
+        window->wl.height = height;
+        resizeWindow(window);
+    }
 }
 
 void _glfwSetWindowSizeLimitsWayland(_GLFWwindow* window,

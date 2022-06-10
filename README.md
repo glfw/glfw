@@ -339,6 +339,7 @@ information on what to include when reporting a bug.
    inconsistent state
  - [Wayland] Bugfix: Window maximization events were not emitted
  - [Wayland] Bugfix: `glfwRestoreWindow` assumed it was always in windowed mode
+ - [Wayland] Bugfix: `glfwSetWindowSize` would resize a full screen window
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)

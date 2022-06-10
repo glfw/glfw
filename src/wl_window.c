@@ -564,8 +564,9 @@ static void xdgToplevelHandleConfigure(void* userData,
     else if (maximized && !window->wl.maximized)
         _glfwInputWindowMaximize(window, GLFW_TRUE);
 
-    window->wl.activated = activated;
-    window->wl.maximized = maximized;
+    window->wl.activated  = activated;
+    window->wl.maximized  = maximized;
+    window->wl.fullscreen = fullscreen;
 }
 
 static void xdgToplevelHandleClose(void* userData,

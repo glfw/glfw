@@ -443,7 +443,8 @@ static void surfaceHandleLeave(void* userData,
     checkScaleChange(window);
 }
 
-static const struct wl_surface_listener surfaceListener = {
+static const struct wl_surface_listener surfaceListener =
+{
     surfaceHandleEnter,
     surfaceHandleLeave
 };
@@ -599,7 +600,8 @@ static void xdgSurfaceHandleConfigure(void* userData,
     }
 }
 
-static const struct xdg_surface_listener xdgSurfaceListener = {
+static const struct xdg_surface_listener xdgSurfaceListener =
+{
     xdgSurfaceHandleConfigure
 };
 

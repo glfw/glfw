@@ -516,7 +516,13 @@ static void xdgToplevelHandleConfigure(void* userData,
             _glfwIconifyWindowWayland(window);
     }
 
+    if (window->wl.maximized && !maximized)
+        _glfwInputWindowMaximize(window, GLFW_FALSE);
+    else if (maximized && !window->wl.maximized)
+        _glfwInputWindowMaximize(window, GLFW_TRUE);
+
     window->wl.activated = activated;
+    window->wl.maximized = maximized;
 }
 
 static void xdgToplevelHandleClose(void* userData,
@@ -1913,17 +1919,12 @@ void _glfwRestoreWindowWayland(_GLFWwindow* window)
         // There is no way to unset minimized, or even to know if we are
         // minimized, so there is nothing to do in this case.
     }
-
-    window->wl.maximized = GLFW_FALSE;
 }
 
 void _glfwMaximizeWindowWayland(_GLFWwindow* window)
 {
     if (window->wl.xdg.toplevel)
-    {
         xdg_toplevel_set_maximized(window->wl.xdg.toplevel);
-    }
-    window->wl.maximized = GLFW_TRUE;
 }
 
 void _glfwShowWindowWayland(_GLFWwindow* window)

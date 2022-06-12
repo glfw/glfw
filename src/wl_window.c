@@ -233,12 +233,10 @@ static GLFWbool waitForData(struct pollfd* fds, nfds_t count, double* timeout)
 
 static void createDecoration(_GLFWdecorationWayland* decoration,
                              struct wl_surface* parent,
-                             struct wl_buffer* buffer, GLFWbool opaque,
+                             struct wl_buffer* buffer,
                              int x, int y,
                              int width, int height)
 {
-    struct wl_region* region;
-
     decoration->surface = wl_compositor_create_surface(_glfw.wl.compositor);
     decoration->subsurface =
         wl_subcompositor_get_subsurface(_glfw.wl.subcompositor,
@@ -249,23 +247,17 @@ static void createDecoration(_GLFWdecorationWayland* decoration,
     wp_viewport_set_destination(decoration->viewport, width, height);
     wl_surface_attach(decoration->surface, buffer, 0, 0);
 
-    if (opaque)
-    {
-        region = wl_compositor_create_region(_glfw.wl.compositor);
-        wl_region_add(region, 0, 0, width, height);
-        wl_surface_set_opaque_region(decoration->surface, region);
-        wl_surface_commit(decoration->surface);
-        wl_region_destroy(region);
-    }
-    else
-        wl_surface_commit(decoration->surface);
+    struct wl_region* region = wl_compositor_create_region(_glfw.wl.compositor);
+    wl_region_add(region, 0, 0, width, height);
+    wl_surface_set_opaque_region(decoration->surface, region);
+    wl_surface_commit(decoration->surface);
+    wl_region_destroy(region);
 }
 
 static void createDecorations(_GLFWwindow* window)
 {
     unsigned char data[] = { 224, 224, 224, 255 };
     const GLFWimage image = { 1, 1, data };
-    GLFWbool opaque = (data[3] == 255);
 
     if (!_glfw.wl.viewporter || !window->decorated || window->wl.decorations.serverSide)
         return;
@@ -276,19 +268,19 @@ static void createDecorations(_GLFWwindow* window)
         return;
 
     createDecoration(&window->wl.decorations.top, window->wl.surface,
-                     window->wl.decorations.buffer, opaque,
+                     window->wl.decorations.buffer,
                      0, -_GLFW_DECORATION_TOP,
                      window->wl.width, _GLFW_DECORATION_TOP);
     createDecoration(&window->wl.decorations.left, window->wl.surface,
-                     window->wl.decorations.buffer, opaque,
+                     window->wl.decorations.buffer,
                      -_GLFW_DECORATION_WIDTH, -_GLFW_DECORATION_TOP,
                      _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
     createDecoration(&window->wl.decorations.right, window->wl.surface,
-                     window->wl.decorations.buffer, opaque,
+                     window->wl.decorations.buffer,
                      window->wl.width, -_GLFW_DECORATION_TOP,
                      _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
     createDecoration(&window->wl.decorations.bottom, window->wl.surface,
-                     window->wl.decorations.buffer, opaque,
+                     window->wl.decorations.buffer,
                      -_GLFW_DECORATION_WIDTH, window->wl.height,
                      window->wl.width + _GLFW_DECORATION_HORIZONTAL, _GLFW_DECORATION_WIDTH);
 }

@@ -666,14 +666,11 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
                                     window->monitor->wl.output);
         setIdleInhibitor(window, GLFW_TRUE);
     }
-    else if (window->wl.maximized)
-    {
-        xdg_toplevel_set_maximized(window->wl.xdg.toplevel);
-        setIdleInhibitor(window, GLFW_FALSE);
-        setXdgDecorations(window);
-    }
     else
     {
+        if (window->wl.maximized)
+            xdg_toplevel_set_maximized(window->wl.xdg.toplevel);
+
         setIdleInhibitor(window, GLFW_FALSE);
         setXdgDecorations(window);
     }

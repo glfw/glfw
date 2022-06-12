@@ -345,6 +345,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: If `glfwInit` failed it would close stdin
  - [Wayland] Bugfix: Manual resizing with fallback decorations behaved erratically
    (#1991,#2115,#2127)
+ - [Wayland] Bugfix: Size limits included frame size for fallback decorations
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)

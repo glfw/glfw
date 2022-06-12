@@ -660,13 +660,6 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
     if (window->wl.title)
         xdg_toplevel_set_title(window->wl.xdg.toplevel, window->wl.title);
 
-    if (window->minwidth != GLFW_DONT_CARE && window->minheight != GLFW_DONT_CARE)
-        xdg_toplevel_set_min_size(window->wl.xdg.toplevel,
-                                  window->minwidth, window->minheight);
-    if (window->maxwidth != GLFW_DONT_CARE && window->maxheight != GLFW_DONT_CARE)
-        xdg_toplevel_set_max_size(window->wl.xdg.toplevel,
-                                  window->maxwidth, window->maxheight);
-
     if (window->monitor)
     {
         xdg_toplevel_set_fullscreen(window->wl.xdg.toplevel,
@@ -683,6 +676,34 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
     {
         setIdleInhibitor(window, GLFW_FALSE);
         setXdgDecorations(window);
+    }
+
+    if (window->minwidth != GLFW_DONT_CARE && window->minheight != GLFW_DONT_CARE)
+    {
+        int minwidth  = window->minwidth;
+        int minheight = window->minheight;
+
+        if (window->wl.decorations.top.surface)
+        {
+            minwidth  += GLFW_BORDER_SIZE * 2;
+            minheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
+        }
+
+        xdg_toplevel_set_min_size(window->wl.xdg.toplevel, minwidth, minheight);
+    }
+
+    if (window->maxwidth != GLFW_DONT_CARE && window->maxheight != GLFW_DONT_CARE)
+    {
+        int maxwidth  = window->maxwidth;
+        int maxheight = window->maxheight;
+
+        if (window->wl.decorations.top.surface)
+        {
+            maxwidth  += GLFW_BORDER_SIZE * 2;
+            maxheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
+        }
+
+        xdg_toplevel_set_max_size(window->wl.xdg.toplevel, maxwidth, maxheight);
     }
 
     wl_surface_commit(window->wl.surface);
@@ -1941,8 +1962,26 @@ void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
     {
         if (minwidth == GLFW_DONT_CARE || minheight == GLFW_DONT_CARE)
             minwidth = minheight = 0;
+        else
+        {
+            if (window->wl.decorations.top.surface)
+            {
+                minwidth  += GLFW_BORDER_SIZE * 2;
+                minheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
+            }
+        }
+
         if (maxwidth == GLFW_DONT_CARE || maxheight == GLFW_DONT_CARE)
             maxwidth = maxheight = 0;
+        else
+        {
+            if (window->wl.decorations.top.surface)
+            {
+                maxwidth  += GLFW_BORDER_SIZE * 2;
+                maxheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
+            }
+        }
+
         xdg_toplevel_set_min_size(window->wl.xdg.toplevel, minwidth, minheight);
         xdg_toplevel_set_max_size(window->wl.xdg.toplevel, maxwidth, maxheight);
         wl_surface_commit(window->wl.surface);

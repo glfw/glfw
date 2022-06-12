@@ -164,6 +164,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: If `glfwInit` failed it would close stdin
  - [Wayland] Bugfix: Manual resizing with fallback decorations behaved erratically
    (#1991,#2115,#2127)
+ - [Wayland] Bugfix: Size limits included frame size for fallback decorations
 
 
 ## Contact

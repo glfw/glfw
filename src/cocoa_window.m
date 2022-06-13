@@ -30,6 +30,7 @@
 
 #include <float.h>
 #include <string.h>
+#import <MetalKit/MetalKit.h>
 
 // Returns the style mask corresponding to the window settings
 //
@@ -1948,5 +1949,22 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
     }
 
     return window->ns.object;
+}
+
+GLFWAPI void glfwAddCocoaMTKSubview(GLFWwindow* handle, void* view) {
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN();
+
+    if (_glfw.platform.platformID != GLFW_PLATFORM_COCOA)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
+                        "Cocoa: Platform not initialized");
+        return;
+    }
+
+    [window->ns.view addSubview: (MTKView*) view];
+
+
 }
 

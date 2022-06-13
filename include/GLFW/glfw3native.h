@@ -275,6 +275,20 @@ GLFWAPI CGDirectDisplayID glfwGetCocoaMonitor(GLFWmonitor* monitor);
  *  @ingroup native
  */
 GLFWAPI id glfwGetCocoaWindow(GLFWwindow* window);
+
+/*! @brief Adds an 'MTKView' to the window's main NSView as a subview
+ *
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety Call this function from the main thread.
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup native
+ */
+GLFWAPI void glfwAddCocoaMTKSubview(GLFWwindow* window, void* view);
+
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_NSGL)

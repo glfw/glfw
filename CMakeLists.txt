@@ -46,6 +46,8 @@ cmake_dependent_option(GLFW_USE_HYBRID_HPG "Force use of high-performance GPU on
 cmake_dependent_option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC runtime library DLL" ON
                        "MSVC" OFF)
 
+cmake_dependent_option(GLFW_USE_METALKIT "Allow GLFW to include MetalKit.h for metal support" OFF GLFW_BUILD_COCOA ON)
+
 set(GLFW_LIBRARY_TYPE "${GLFW_LIBRARY_TYPE}" CACHE STRING
     "Library type override for GLFW (SHARED, STATIC, OBJECT, or empty to follow BUILD_SHARED_LIBS)")
 

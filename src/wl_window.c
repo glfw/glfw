@@ -2098,10 +2098,24 @@ void _glfwSetWindowResizableWayland(_GLFWwindow* window, GLFWbool enabled)
 
 void _glfwSetWindowDecoratedWayland(_GLFWwindow* window, GLFWbool enabled)
 {
-    if (enabled)
-        createDecorations(window);
+    if (window->wl.xdg.decoration)
+    {
+        uint32_t mode;
+
+        if (enabled)
+            mode = ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE;
+        else
+            mode = ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE;
+
+        zxdg_toplevel_decoration_v1_set_mode(window->wl.xdg.decoration, mode);
+    }
     else
-        destroyDecorations(window);
+    {
+        if (enabled)
+            createDecorations(window);
+        else
+            destroyDecorations(window);
+    }
 }
 
 void _glfwSetWindowFloatingWayland(_GLFWwindow* window, GLFWbool enabled)

@@ -2161,13 +2161,10 @@ void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
 
 void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
 {
-    if (!window->monitor)
-    {
-        if (enabled)
-            createDecorations(window);
-        else
-            destroyDecorations(window);
-    }
+    if (enabled)
+        createDecorations(window);
+    else
+        destroyDecorations(window);
 }
 
 void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled)

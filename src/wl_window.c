@@ -2098,13 +2098,10 @@ void _glfwSetWindowResizableWayland(_GLFWwindow* window, GLFWbool enabled)
 
 void _glfwSetWindowDecoratedWayland(_GLFWwindow* window, GLFWbool enabled)
 {
-    if (!window->monitor)
-    {
-        if (enabled)
-            createDecorations(window);
-        else
-            destroyDecorations(window);
-    }
+    if (enabled)
+        createDecorations(window);
+    else
+        destroyDecorations(window);
 }
 
 void _glfwSetWindowFloatingWayland(_GLFWwindow* window, GLFWbool enabled)

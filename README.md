@@ -165,6 +165,8 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Manual resizing with fallback decorations behaved erratically
    (#1991,#2115,#2127)
  - [Wayland] Bugfix: Size limits included frame size for fallback decorations
+ - [Wayland] Bugfix: Updating `GLFW_DECORATED` had no effect on server-side
+   decorations
 
 
 ## Contact

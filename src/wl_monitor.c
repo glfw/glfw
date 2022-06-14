@@ -97,6 +97,12 @@ static void outputHandleDone(void* userData, struct wl_output* output)
         monitor->heightMM = (int) (mode->height * 25.4f / 96.f);
     }
 
+    for (int i = 0; i < _glfw.monitorCount; i++)
+    {
+        if (_glfw.monitors[i] == monitor)
+            return;
+    }
+
     _glfwInputMonitor(monitor, GLFW_CONNECTED, _GLFW_INSERT_LAST);
 }
 

@@ -111,6 +111,18 @@ static void outputHandleScale(void* userData,
     struct _GLFWmonitor* monitor = userData;
 
     monitor->wl.scale = factor;
+
+    for (_GLFWwindow* window = _glfw.windowListHead; window; window = window->next)
+    {
+        for (int i = 0; i < window->wl.monitorsCount; i++)
+        {
+            if (window->wl.monitors[i] == monitor)
+            {
+                _glfwUpdateContentScaleWayland(window);
+                break;
+            }
+        }
+    }
 }
 
 #ifdef WL_OUTPUT_NAME_SINCE_VERSION

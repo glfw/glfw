@@ -172,6 +172,8 @@ information on what to include when reporting a bug.
    changed
  - [Wayland] Bugfix: `glfwTerminate` would segfault if any monitor had changed
    scale
+ - [Wayland] Bugfix: Window content scale events were not emitted when monitor
+   scale changed
 
 
 ## Contact

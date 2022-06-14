@@ -184,11 +184,9 @@ static void registryHandleGlobalRemove(void* userData,
                                        struct wl_registry* registry,
                                        uint32_t name)
 {
-    _GLFWmonitor* monitor;
-
     for (int i = 0; i < _glfw.monitorCount; ++i)
     {
-        monitor = _glfw.monitors[i];
+        _GLFWmonitor* monitor = _glfw.monitors[i];
         if (monitor->wl.name == name)
         {
             _glfwInputMonitor(monitor, GLFW_DISCONNECTED, 0);

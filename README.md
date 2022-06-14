@@ -168,6 +168,10 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Size limits included frame size for fallback decorations
  - [Wayland] Bugfix: Updating `GLFW_DECORATED` had no effect on server-side
    decorations
+ - [Wayland] Bugfix: A monitor would be reported as connected again if its scale
+   changed
+ - [Wayland] Bugfix: `glfwTerminate` would segfault if any monitor had changed
+   scale
 
 
 ## Contact

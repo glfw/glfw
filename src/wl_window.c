@@ -305,7 +305,7 @@ static void resizeWindow(_GLFWwindow* window)
     int scale = window->wl.scale;
     int scaledWidth = window->wl.width * scale;
     int scaledHeight = window->wl.height * scale;
-    wl_egl_window_resize(window->wl.native, scaledWidth, scaledHeight, 0, 0);
+    wl_egl_window_resize(window->wl.egl.window, scaledWidth, scaledHeight, 0, 0);
     if (!window->wl.transparent)
         setOpaqueRegion(window);
     _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
@@ -666,9 +666,9 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
     return GLFW_TRUE;
 }
 
-static GLFWbool createSurface(_GLFWwindow* window,
-                              const _GLFWwndconfig* wndconfig,
-                              const _GLFWfbconfig* fbconfig)
+static GLFWbool createNativeSurface(_GLFWwindow* window,
+                                    const _GLFWwndconfig* wndconfig,
+                                    const _GLFWfbconfig* fbconfig)
 {
     window->wl.surface = wl_compositor_create_surface(_glfw.wl.compositor);
     if (!window->wl.surface)
@@ -680,10 +680,10 @@ static GLFWbool createSurface(_GLFWwindow* window,
 
     wl_surface_set_user_data(window->wl.surface, window);
 
-    window->wl.native = wl_egl_window_create(window->wl.surface,
-                                             wndconfig->width,
-                                             wndconfig->height);
-    if (!window->wl.native)
+    window->wl.egl.window = wl_egl_window_create(window->wl.surface,
+                                                 wndconfig->width,
+                                                 wndconfig->height);
+    if (!window->wl.egl.window)
         return GLFW_FALSE;
 
     window->wl.width = wndconfig->width;
@@ -1759,7 +1759,7 @@ GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
                                   const _GLFWctxconfig* ctxconfig,
                                   const _GLFWfbconfig* fbconfig)
 {
-    if (!createSurface(window, wndconfig, fbconfig))
+    if (!createNativeSurface(window, wndconfig, fbconfig))
         return GLFW_FALSE;
 
     if (ctxconfig->client != GLFW_NO_API)
@@ -1816,8 +1816,8 @@ void _glfwDestroyWindowWayland(_GLFWwindow* window)
     if (window->wl.decorations.buffer)
         wl_buffer_destroy(window->wl.decorations.buffer);
 
-    if (window->wl.native)
-        wl_egl_window_destroy(window->wl.native);
+    if (window->wl.egl.window)
+        wl_egl_window_destroy(window->wl.egl.window);
 
     if (window->wl.xdg.toplevel)
         xdg_toplevel_destroy(window->wl.xdg.toplevel);
@@ -2707,7 +2707,7 @@ EGLNativeDisplayType _glfwGetEGLNativeDisplayWayland(void)
 
 EGLNativeWindowType _glfwGetEGLNativeWindowWayland(_GLFWwindow* window)
 {
-    return window->wl.native;
+    return window->wl.egl.window;
 }
 
 void _glfwGetRequiredInstanceExtensionsWayland(char** extensions)

@@ -233,8 +233,11 @@ typedef struct _GLFWwindowWayland
     GLFWbool                    hovered;
     GLFWbool                    transparent;
     struct wl_surface*          surface;
-    struct wl_egl_window*       native;
     struct wl_callback*         callback;
+
+    struct {
+        struct wl_egl_window*   window;
+    } egl;
 
     struct {
         int                     width, height;

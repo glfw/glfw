@@ -1923,10 +1923,20 @@ void _glfwSetWindowSizeLimitsWayland(_GLFWwindow* window,
 
 void _glfwSetWindowAspectRatioWayland(_GLFWwindow* window, int numer, int denom)
 {
-    // TODO: find out how to trigger a resize.
-    // The actual limits are checked in the xdg_toplevel::configure handler.
-    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
-                    "Wayland: Window aspect ratio not yet implemented");
+    if (window->wl.maximized || window->wl.fullscreen)
+        return;
+
+    if (numer != GLFW_DONT_CARE && denom != GLFW_DONT_CARE)
+    {
+        const float aspectRatio = (float) window->wl.width / (float) window->wl.height;
+        const float targetRatio = (float) numer / (float) denom;
+        if (aspectRatio < targetRatio)
+            window->wl.height = window->wl.width / targetRatio;
+        else if (aspectRatio > targetRatio)
+            window->wl.width = window->wl.height * targetRatio;
+
+        resizeWindow(window);
+    }
 }
 
 void _glfwGetFramebufferSizeWayland(_GLFWwindow* window, int* width, int* height)

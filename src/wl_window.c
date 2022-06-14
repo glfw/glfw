@@ -1988,8 +1988,20 @@ void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
 void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window,
                                        int numer, int denom)
 {
-    // TODO: find out how to trigger a resize.
-    // The actual limits are checked in the xdg_toplevel::configure handler.
+    if (window->wl.maximized || window->wl.fullscreen)
+        return;
+
+    if (numer != GLFW_DONT_CARE && denom != GLFW_DONT_CARE)
+    {
+        const float aspectRatio = (float) window->wl.width / (float) window->wl.height;
+        const float targetRatio = (float) numer / (float) denom;
+        if (aspectRatio < targetRatio)
+            window->wl.height = window->wl.width / targetRatio;
+        else if (aspectRatio > targetRatio)
+            window->wl.width = window->wl.height * targetRatio;
+
+        resizeWindow(window);
+    }
 }
 
 void _glfwPlatformGetFramebufferSize(_GLFWwindow* window,

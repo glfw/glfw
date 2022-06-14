@@ -174,6 +174,8 @@ information on what to include when reporting a bug.
    scale
  - [Wayland] Bugfix: Window content scale events were not emitted when monitor
    scale changed
+ - [Wayland] Bugfix: `glfwSetWindowAspectRatio` reported an error instead of
+   applying the specified ratio
 
 
 ## Contact

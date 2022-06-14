@@ -65,7 +65,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWaylandPresentationSupportKHR
 #define _glfw_dlclose(handle) dlclose(handle)
 #define _glfw_dlsym(handle, name) dlsym(handle, name)
 
-#define _GLFW_EGL_NATIVE_WINDOW         ((EGLNativeWindowType) window->wl.native)
+#define _GLFW_EGL_NATIVE_WINDOW         ((EGLNativeWindowType) window->wl.egl.window)
 #define _GLFW_EGL_NATIVE_DISPLAY        ((EGLNativeDisplayType) _glfw.wl.display)
 
 #define _GLFW_PLATFORM_WINDOW_STATE         _GLFWwindowWayland  wl
@@ -181,8 +181,11 @@ typedef struct _GLFWwindowWayland
     GLFWbool                    hovered;
     GLFWbool                    transparent;
     struct wl_surface*          surface;
-    struct wl_egl_window*       native;
     struct wl_callback*         callback;
+
+    struct {
+        struct wl_egl_window*   window;
+    } egl;
 
     struct {
         int                     width, height;

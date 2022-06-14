@@ -672,7 +672,10 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
 {
     window->wl.surface = wl_compositor_create_surface(_glfw.wl.compositor);
     if (!window->wl.surface)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Wayland: Failed to create window surface");
         return GLFW_FALSE;
+    }
 
     wl_surface_add_listener(window->wl.surface,
                             &surfaceListener,
@@ -684,7 +687,10 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
                                                  wndconfig->width,
                                                  wndconfig->height);
     if (!window->wl.egl.window)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Wayland: Failed to create EGL window");
         return GLFW_FALSE;
+    }
 
     window->wl.width = wndconfig->width;
     window->wl.height = wndconfig->height;

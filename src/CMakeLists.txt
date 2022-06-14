@@ -164,6 +164,15 @@ if (GLFW_BUILD_COCOA)
                                        "-framework IOKit"
                                        "-framework CoreFoundation")
 
+    if(GLFW_USE_METALKIT)
+
+        target_link_libraries(glfw PRIVATE "-framework Metal"  
+                                           "-framework MetalKit")
+
+    endif()
+
+
+
     set(glfw_PKG_DEPS "")
     set(glfw_PKG_LIBS "-framework Cocoa -framework IOKit -framework CoreFoundation")
 endif()

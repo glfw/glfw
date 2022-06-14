@@ -121,6 +121,8 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - Added `GLFW_USE_METALKIT` to cmake build options to make metal support optional 
+ - [Cocoa] Added `glfwResetCocoaMTKFramesize` function for metal view resizing
  - [Cocoa] Added `glfwAddCocoaMTKSubview` function for better metal support
  - Added `GLFW_PLATFORM` init hint for runtime platform selection (#1958)
  - Added `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`,

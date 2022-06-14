@@ -334,7 +334,7 @@ static void resizeWindow(_GLFWwindow* window)
     wl_surface_commit(window->wl.decorations.bottom.surface);
 }
 
-static void checkScaleChange(_GLFWwindow* window)
+void _glfwUpdateContentScaleWayland(_GLFWwindow* window)
 {
     if (_glfw.wl.compositorVersion < WL_SURFACE_SET_BUFFER_SCALE_SINCE_VERSION)
         return;
@@ -372,7 +372,7 @@ static void surfaceHandleEnter(void* userData,
 
     window->wl.monitors[window->wl.monitorsCount++] = monitor;
 
-    checkScaleChange(window);
+    _glfwUpdateContentScaleWayland(window);
 }
 
 static void surfaceHandleLeave(void* userData,
@@ -392,7 +392,7 @@ static void surfaceHandleLeave(void* userData,
     }
     window->wl.monitors[--window->wl.monitorsCount] = NULL;
 
-    checkScaleChange(window);
+    _glfwUpdateContentScaleWayland(window);
 }
 
 static const struct wl_surface_listener surfaceListener =

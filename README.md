@@ -353,6 +353,8 @@ information on what to include when reporting a bug.
    changed
  - [Wayland] Bugfix: `glfwTerminate` would segfault if any monitor had changed
    scale
+ - [Wayland] Bugfix: Window content scale events were not emitted when monitor
+   scale changed
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)

@@ -495,8 +495,17 @@ static void xdgToplevelHandleConfigure(void* userData,
 
     if (width && height)
     {
-        window->wl.pending.width  = width;
-        window->wl.pending.height = height;
+        if (window->wl.decorations.top.surface)
+        {
+            window->wl.pending.width  = _glfw_max(0, width - GLFW_BORDER_SIZE * 2);
+            window->wl.pending.height =
+                _glfw_max(0, height - GLFW_BORDER_SIZE - GLFW_CAPTION_HEIGHT);
+        }
+        else
+        {
+            window->wl.pending.width  = width;
+            window->wl.pending.height = height;
+        }
     }
     else
     {

@@ -2156,6 +2156,7 @@ void _glfwSetWindowMousePassthroughWayland(_GLFWwindow* window, GLFWbool enabled
     }
     else
         wl_surface_set_input_region(window->wl.surface, 0);
+
     wl_surface_commit(window->wl.surface);
 }
 

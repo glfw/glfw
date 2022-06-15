@@ -1845,9 +1845,10 @@ void _glfwDestroyWindowWayland(_GLFWwindow* window)
 
 void _glfwSetWindowTitleWayland(_GLFWwindow* window, const char* title)
 {
-    if (window->wl.title)
-        _glfw_free(window->wl.title);
-    window->wl.title = _glfw_strdup(title);
+    char* copy = _glfw_strdup(title);
+    _glfw_free(window->wl.title);
+    window->wl.title = copy;
+
     if (window->wl.xdg.toplevel)
         xdg_toplevel_set_title(window->wl.xdg.toplevel, title);
 }

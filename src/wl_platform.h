@@ -189,6 +189,10 @@ typedef struct _GLFWwindowWayland
 
     struct {
         int                     width, height;
+        GLFWbool                maximized;
+        GLFWbool                iconified;
+        GLFWbool                activated;
+        GLFWbool                fullscreen;
     } pending;
 
     struct {

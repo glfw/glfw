@@ -23,6 +23,7 @@ video tutorials.
  - Waris Boonyasiriwat
  - Kyle Brenneman
  - Rok Breulj
+ - TheBrokenRail
  - Kai Burjack
  - Martin Capitanio
  - Nicolas Caramelli
@@ -143,6 +144,7 @@ video tutorials.
  - Jon Morton
  - Pierre Moulon
  - Martins Mozeiko
+ - James Murphy
  - Julian Møller
  - ndogxj
  - Kristian Nielsen

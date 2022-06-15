@@ -745,6 +745,8 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     window->wl.scale = 1;
     window->wl.title = _glfw_strdup(wndconfig->title);
 
+    window->wl.maximized = wndconfig->maximized;
+
     window->wl.transparent = fbconfig->transparent;
     if (!window->wl.transparent)
         setOpaqueRegion(window);
@@ -2068,10 +2070,12 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
     {
         // We assume we are not minimized and acto only on maximization
 
-        if (window->wl.xdg.toplevel)
+        if (window->wl.maximized)
         {
-            if (window->wl.maximized)
+            if (window->wl.xdg.toplevel)
                 xdg_toplevel_unset_maximized(window->wl.xdg.toplevel);
+            else
+                window->wl.maximized = GLFW_FALSE;
         }
     }
 }
@@ -2080,6 +2084,8 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 {
     if (window->wl.xdg.toplevel)
         xdg_toplevel_set_maximized(window->wl.xdg.toplevel);
+    else
+        window->wl.maximized = GLFW_TRUE;
 }
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)

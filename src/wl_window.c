@@ -614,27 +614,6 @@ static const struct xdg_surface_listener xdgSurfaceListener =
     xdgSurfaceHandleConfigure
 };
 
-static void setXdgDecorations(_GLFWwindow* window)
-{
-    if (_glfw.wl.decorationManager)
-    {
-        window->wl.xdg.decoration =
-            zxdg_decoration_manager_v1_get_toplevel_decoration(
-                _glfw.wl.decorationManager, window->wl.xdg.toplevel);
-        zxdg_toplevel_decoration_v1_add_listener(window->wl.xdg.decoration,
-                                                 &xdgDecorationListener,
-                                                 window);
-        zxdg_toplevel_decoration_v1_set_mode(
-            window->wl.xdg.decoration,
-            ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
-    }
-    else
-    {
-        window->wl.decorations.serverSide = GLFW_FALSE;
-        createDecorations(window);
-    }
-}
-
 static GLFWbool createXdgSurface(_GLFWwindow* window)
 {
     window->wl.xdg.surface = xdg_wm_base_get_xdg_surface(_glfw.wl.wmBase,
@@ -677,7 +656,24 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
             xdg_toplevel_set_maximized(window->wl.xdg.toplevel);
 
         setIdleInhibitor(window, GLFW_FALSE);
-        setXdgDecorations(window);
+
+        if (_glfw.wl.decorationManager)
+        {
+            window->wl.xdg.decoration =
+                zxdg_decoration_manager_v1_get_toplevel_decoration(
+                    _glfw.wl.decorationManager, window->wl.xdg.toplevel);
+            zxdg_toplevel_decoration_v1_add_listener(window->wl.xdg.decoration,
+                                                     &xdgDecorationListener,
+                                                     window);
+            zxdg_toplevel_decoration_v1_set_mode(
+                window->wl.xdg.decoration,
+                ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
+        }
+        else
+        {
+            window->wl.decorations.serverSide = GLFW_FALSE;
+            createDecorations(window);
+        }
     }
 
     if (window->minwidth != GLFW_DONT_CARE && window->minheight != GLFW_DONT_CARE)

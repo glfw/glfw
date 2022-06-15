@@ -456,42 +456,28 @@ static void xdgToplevelHandleConfigure(void* userData,
 {
     _GLFWwindow* window = userData;
     uint32_t* state;
-    GLFWbool maximized = GLFW_FALSE;
-    GLFWbool fullscreen = GLFW_FALSE;
-    GLFWbool activated = GLFW_FALSE;
+
+    window->wl.pending.activated  = GLFW_FALSE;
+    window->wl.pending.maximized  = GLFW_FALSE;
+    window->wl.pending.fullscreen = GLFW_FALSE;
 
     wl_array_for_each(state, states)
     {
         switch (*state)
         {
             case XDG_TOPLEVEL_STATE_MAXIMIZED:
-                maximized = GLFW_TRUE;
+                window->wl.pending.maximized = GLFW_TRUE;
                 break;
             case XDG_TOPLEVEL_STATE_FULLSCREEN:
-                fullscreen = GLFW_TRUE;
+                window->wl.pending.fullscreen = GLFW_TRUE;
                 break;
             case XDG_TOPLEVEL_STATE_RESIZING:
                 break;
             case XDG_TOPLEVEL_STATE_ACTIVATED:
-                activated = GLFW_TRUE;
+                window->wl.pending.activated = GLFW_TRUE;
                 break;
         }
     }
-
-    if (window->wl.activated && !activated)
-    {
-        if (window->monitor && window->autoIconify)
-            _glfwIconifyWindowWayland(window);
-    }
-
-    if (window->wl.maximized && !maximized)
-        _glfwInputWindowMaximize(window, GLFW_FALSE);
-    else if (maximized && !window->wl.maximized)
-        _glfwInputWindowMaximize(window, GLFW_TRUE);
-
-    window->wl.activated  = activated;
-    window->wl.maximized  = maximized;
-    window->wl.fullscreen = fullscreen;
 
     if (width && height)
     {
@@ -532,10 +518,29 @@ static void xdgSurfaceHandleConfigure(void* userData,
                                       uint32_t serial)
 {
     _GLFWwindow* window = userData;
-    int width  = window->wl.pending.width;
-    int height = window->wl.pending.height;
 
     xdg_surface_ack_configure(surface, serial);
+
+    if (window->wl.activated != window->wl.pending.activated)
+    {
+        window->wl.activated = window->wl.pending.activated;
+        if (!window->wl.activated)
+        {
+            if (window->monitor && window->autoIconify)
+                xdg_toplevel_set_minimized(window->wl.xdg.toplevel);
+        }
+    }
+
+    if (window->wl.maximized != window->wl.pending.maximized)
+    {
+        window->wl.maximized = window->wl.pending.maximized;
+        _glfwInputWindowMaximize(window, window->wl.maximized);
+    }
+
+    window->wl.fullscreen = window->wl.pending.fullscreen;
+
+    int width  = window->wl.pending.width;
+    int height = window->wl.pending.height;
 
     if (!window->wl.maximized && !window->wl.fullscreen)
     {

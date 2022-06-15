@@ -43,6 +43,9 @@
 #include <signal.h>
 #include <time.h>
 
+#define GLFW_BORDER_SIZE    4
+#define GLFW_CAPTION_HEIGHT 24
+
 static int createTmpfileCloexec(char* tmpname)
 {
     int fd;
@@ -269,20 +272,20 @@ static void createDecorations(_GLFWwindow* window)
 
     createDecoration(&window->wl.decorations.top, window->wl.surface,
                      window->wl.decorations.buffer,
-                     0, -_GLFW_DECORATION_TOP,
-                     window->wl.width, _GLFW_DECORATION_TOP);
+                     0, -GLFW_CAPTION_HEIGHT,
+                     window->wl.width, GLFW_CAPTION_HEIGHT);
     createDecoration(&window->wl.decorations.left, window->wl.surface,
                      window->wl.decorations.buffer,
-                     -_GLFW_DECORATION_WIDTH, -_GLFW_DECORATION_TOP,
-                     _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
+                     -GLFW_BORDER_SIZE, -GLFW_CAPTION_HEIGHT,
+                     GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
     createDecoration(&window->wl.decorations.right, window->wl.surface,
                      window->wl.decorations.buffer,
-                     window->wl.width, -_GLFW_DECORATION_TOP,
-                     _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
+                     window->wl.width, -GLFW_CAPTION_HEIGHT,
+                     GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
     createDecoration(&window->wl.decorations.bottom, window->wl.surface,
                      window->wl.decorations.buffer,
-                     -_GLFW_DECORATION_WIDTH, window->wl.height,
-                     window->wl.width + _GLFW_DECORATION_HORIZONTAL, _GLFW_DECORATION_WIDTH);
+                     -GLFW_BORDER_SIZE, window->wl.height,
+                     window->wl.width + GLFW_BORDER_SIZE * 2, GLFW_BORDER_SIZE);
 }
 
 static void destroyDecoration(_GLFWdecorationWayland* decoration)
@@ -353,23 +356,23 @@ static void resizeWindow(_GLFWwindow* window)
         return;
 
     wp_viewport_set_destination(window->wl.decorations.top.viewport,
-                                window->wl.width, _GLFW_DECORATION_TOP);
+                                window->wl.width, GLFW_CAPTION_HEIGHT);
     wl_surface_commit(window->wl.decorations.top.surface);
 
     wp_viewport_set_destination(window->wl.decorations.left.viewport,
-                                _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
+                                GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
     wl_surface_commit(window->wl.decorations.left.surface);
 
     wl_subsurface_set_position(window->wl.decorations.right.subsurface,
-                               window->wl.width, -_GLFW_DECORATION_TOP);
+                               window->wl.width, -GLFW_CAPTION_HEIGHT);
     wp_viewport_set_destination(window->wl.decorations.right.viewport,
-                                _GLFW_DECORATION_WIDTH, window->wl.height + _GLFW_DECORATION_TOP);
+                                GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
     wl_surface_commit(window->wl.decorations.right.surface);
 
     wl_subsurface_set_position(window->wl.decorations.bottom.subsurface,
-                               -_GLFW_DECORATION_WIDTH, window->wl.height);
+                               -GLFW_BORDER_SIZE, window->wl.height);
     wp_viewport_set_destination(window->wl.decorations.bottom.viewport,
-                                window->wl.width + _GLFW_DECORATION_HORIZONTAL, _GLFW_DECORATION_WIDTH);
+                                window->wl.width + GLFW_BORDER_SIZE * 2, GLFW_BORDER_SIZE);
     wl_surface_commit(window->wl.decorations.bottom.surface);
 }
 
@@ -1099,27 +1102,27 @@ static void pointerHandleMotion(void* userData,
             _glfw.wl.cursorPreviousName = NULL;
             return;
         case topDecoration:
-            if (y < _GLFW_DECORATION_WIDTH)
+            if (y < GLFW_BORDER_SIZE)
                 cursorName = "n-resize";
             else
                 cursorName = "left_ptr";
             break;
         case leftDecoration:
-            if (y < _GLFW_DECORATION_WIDTH)
+            if (y < GLFW_BORDER_SIZE)
                 cursorName = "nw-resize";
             else
                 cursorName = "w-resize";
             break;
         case rightDecoration:
-            if (y < _GLFW_DECORATION_WIDTH)
+            if (y < GLFW_BORDER_SIZE)
                 cursorName = "ne-resize";
             else
                 cursorName = "e-resize";
             break;
         case bottomDecoration:
-            if (x < _GLFW_DECORATION_WIDTH)
+            if (x < GLFW_BORDER_SIZE)
                 cursorName = "sw-resize";
-            else if (x > window->wl.width + _GLFW_DECORATION_WIDTH)
+            else if (x > window->wl.width + GLFW_BORDER_SIZE)
                 cursorName = "se-resize";
             else
                 cursorName = "s-resize";
@@ -1152,7 +1155,7 @@ static void pointerHandleButton(void* userData,
             case mainWindow:
                 break;
             case topDecoration:
-                if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
+                if (window->wl.cursorPosY < GLFW_BORDER_SIZE)
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP;
                 else
                 {
@@ -1160,21 +1163,21 @@ static void pointerHandleButton(void* userData,
                 }
                 break;
             case leftDecoration:
-                if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
+                if (window->wl.cursorPosY < GLFW_BORDER_SIZE)
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT;
                 else
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_LEFT;
                 break;
             case rightDecoration:
-                if (window->wl.cursorPosY < _GLFW_DECORATION_WIDTH)
+                if (window->wl.cursorPosY < GLFW_BORDER_SIZE)
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT;
                 else
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_RIGHT;
                 break;
             case bottomDecoration:
-                if (window->wl.cursorPosX < _GLFW_DECORATION_WIDTH)
+                if (window->wl.cursorPosX < GLFW_BORDER_SIZE)
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT;
-                else if (window->wl.cursorPosX > window->wl.width + _GLFW_DECORATION_WIDTH)
+                else if (window->wl.cursorPosX > window->wl.width + GLFW_BORDER_SIZE)
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT;
                 else
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM;
@@ -1961,13 +1964,13 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
     if (window->decorated && !window->monitor && !window->wl.decorations.serverSide)
     {
         if (top)
-            *top = _GLFW_DECORATION_TOP;
+            *top = GLFW_CAPTION_HEIGHT;
         if (left)
-            *left = _GLFW_DECORATION_WIDTH;
+            *left = GLFW_BORDER_SIZE;
         if (right)
-            *right = _GLFW_DECORATION_WIDTH;
+            *right = GLFW_BORDER_SIZE;
         if (bottom)
-            *bottom = _GLFW_DECORATION_WIDTH;
+            *bottom = GLFW_BORDER_SIZE;
     }
 }
 

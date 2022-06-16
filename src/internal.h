@@ -1015,6 +1015,7 @@ int _glfw_min(int a, int b);
 int _glfw_max(int a, int b);
 float _glfw_fminf(float a, float b);
 float _glfw_fmaxf(float a, float b);
+int _glfw_ffs(int i);
 
 void* _glfw_calloc(size_t count, size_t size);
 void* _glfw_realloc(void* pointer, size_t size);

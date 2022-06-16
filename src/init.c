@@ -266,6 +266,41 @@ float _glfw_fmaxf(float a, float b)
         return b;
 }
 
+int _glfw_ffs(int i)
+{
+#if defined(__GNUC__) || defined(__clang__)
+    return __builtin_ffs(i);
+#elif defined(_MSC_VER)
+    unsigned long n, u = i;
+    return _BitScanForward(&n, u) ? n + 1 : 0;
+#else
+    // https://en.wikipedia.org/wiki/Find_first_set#CTZ
+    unsigned int u = i;
+    int n = 1;
+    if (!u) return 0;
+    if (!(u & 0x0000FFFF)) {
+        n += 16;
+        u >>= 16;
+    }
+    if (!(u & 0x000000FF)) {
+        n += 8;
+        u >>= 8;
+    }
+    if (!(u & 0x0000000F)) {
+        n += 4;
+        u >>= 4;
+    }
+    if (!(u & 0x00000003)) {
+        n += 2;
+        u >>= 2;
+    }
+    if (!(u & 0x00000001)) {
+        n += 1;
+    }
+    return n;
+#endif
+}
+
 void* _glfw_calloc(size_t count, size_t size)
 {
     if (count && size)

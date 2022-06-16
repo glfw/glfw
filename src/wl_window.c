@@ -1601,51 +1601,31 @@ static void keyboardHandleModifiers(void* userData,
                           0,
                           group);
 
-    unsigned int mods = 0;
+    _glfw.wl.xkb.modifiers = 0;
 
-    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
-                                      _glfw.wl.xkb.controlIndex,
-                                      XKB_STATE_MODS_EFFECTIVE) == 1)
+    struct
     {
-        mods |= GLFW_MOD_CONTROL;
-    }
-
-    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
-                                      _glfw.wl.xkb.altIndex,
-                                      XKB_STATE_MODS_EFFECTIVE) == 1)
+        xkb_mod_index_t index;
+        unsigned int bit;
+    } modifiers[] =
     {
-        mods |= GLFW_MOD_ALT;
-    }
+        { _glfw.wl.xkb.controlIndex,  GLFW_MOD_CONTROL },
+        { _glfw.wl.xkb.altIndex,      GLFW_MOD_ALT },
+        { _glfw.wl.xkb.shiftIndex,    GLFW_MOD_SHIFT },
+        { _glfw.wl.xkb.superIndex,    GLFW_MOD_SUPER },
+        { _glfw.wl.xkb.capsLockIndex, GLFW_MOD_CAPS_LOCK },
+        { _glfw.wl.xkb.numLockIndex,  GLFW_MOD_NUM_LOCK }
+    };
 
-    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
-                                      _glfw.wl.xkb.shiftIndex,
-                                      XKB_STATE_MODS_EFFECTIVE) == 1)
+    for (size_t i = 0; i < sizeof(modifiers) / sizeof(modifiers[0]); i++)
     {
-        mods |= GLFW_MOD_SHIFT;
+        if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
+                                          modifiers[i].index,
+                                          XKB_STATE_MODS_EFFECTIVE) == 1)
+        {
+            _glfw.wl.xkb.modifiers |= modifiers[i].bit;
+        }
     }
-
-    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
-                                      _glfw.wl.xkb.superIndex,
-                                      XKB_STATE_MODS_EFFECTIVE) == 1)
-    {
-        mods |= GLFW_MOD_SUPER;
-    }
-
-    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
-                                      _glfw.wl.xkb.capsLockIndex,
-                                      XKB_STATE_MODS_EFFECTIVE) == 1)
-    {
-        mods |= GLFW_MOD_CAPS_LOCK;
-    }
-
-    if (xkb_state_mod_index_is_active(_glfw.wl.xkb.state,
-                                      _glfw.wl.xkb.numLockIndex,
-                                      XKB_STATE_MODS_EFFECTIVE) == 1)
-    {
-        mods |= GLFW_MOD_NUM_LOCK;
-    }
-
-    _glfw.wl.xkb.modifiers = mods;
 }
 
 #ifdef WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION

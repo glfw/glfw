@@ -325,12 +325,6 @@ typedef HRESULT (WINAPI * PFN_OleInitialize)(LPVOID);
 typedef VOID (WINAPI * PFN_OleUninitialize)(VOID);
 typedef HRESULT (WINAPI * PFN_RegisterDragDrop)(HWND,LPDROPTARGET);
 typedef HRESULT (WINAPI * PFN_RevokeDragDrop)(HWND);
-typedef ULONG (STDMETHODCALLTYPE * PFN_IDropTarget_AddRef)(LPDROPTARGET);
-typedef ULONG (STDMETHODCALLTYPE * PFN_IDropTarget_Release)(LPDROPTARGET);
-typedef HRESULT (STDMETHODCALLTYPE * PFN_IDropTarget_DragEnter)(LPDROPTARGET,IDataObject*,DWORD,POINTL,DWORD*);
-typedef HRESULT (STDMETHODCALLTYPE * PFN_IDropTarget_DragOver)(LPDROPTARGET,DWORD,POINTL,DWORD*);
-typedef HRESULT (STDMETHODCALLTYPE * PFN_IDropTarget_DragLeave)(LPDROPTARGET);
-typedef HRESULT (STDMETHODCALLTYPE * PFN_IDropTarget_Drop)(LPDROPTARGET,IDataObject*,DWORD,POINTL,DWORD*);
 #define OleInitialize _glfw.win32.ole32.OleInitialize_
 #define OleUninitialize _glfw.win32.ole32.OleUninitialize_
 #define RegisterDragDrop _glfw.win32.ole32.RegisterDragDrop_
@@ -428,12 +422,17 @@ typedef struct _GLFWlibraryWGL
     GLFWbool                            ARB_context_flush_control;
 } _GLFWlibraryWGL;
 
-typedef struct _GLFWdropTarget
+typedef struct _GLFWdroptarget
 {
     IDropTargetVtbl*            lpVtbl;
     ULONG                       cRefCount;
     _GLFWwindow*                window;
-} _GLFWdropTarget;
+    int                         availableFormats;
+    int                         chosenFormat;
+    int                         availableActions;
+    int                         proposedAction;
+    int                         chosenAction;
+} _GLFWdroptarget;
 
 // Win32-specific per-window data
 //
@@ -460,7 +459,7 @@ typedef struct _GLFWwindowWin32
     // The last received high surrogate when decoding pairs of UTF-16 messages
     WCHAR               highSurrogate;
 
-    _GLFWdropTarget     dropTarget;
+    _GLFWdroptarget     dropTarget;
 } _GLFWwindowWin32;
 
 // Win32-specific global data
@@ -660,10 +659,10 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                                const _GLFWfbconfig* fbconfig);
 
 // IDropTarget vtable functions
-//HRESULT STDMETHODCALLTYPE _glfwDropTarget_QueryInterface(_GLFWdropTarget *This, REFIID riid, void **ppvObject);
-ULONG STDMETHODCALLTYPE _glfwDropTarget_AddRef(_GLFWdropTarget *This);
-ULONG STDMETHODCALLTYPE _glfwDropTarget_Release(_GLFWdropTarget *This);
-HRESULT STDMETHODCALLTYPE _glfwDropTarget_DragEnter(_GLFWdropTarget *This, IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
-HRESULT STDMETHODCALLTYPE _glfwDropTarget_DragOver(_GLFWdropTarget *This, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
-HRESULT STDMETHODCALLTYPE _glfwDropTarget_DragLeave(_GLFWdropTarget *This);
-HRESULT STDMETHODCALLTYPE _glfwDropTarget_Drop(_GLFWdropTarget *This, IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
+//HRESULT STDMETHODCALLTYPE _glfwDropTarget_QueryInterface(IDropTarget *_This, REFIID riid, void **ppvObject);
+ULONG STDMETHODCALLTYPE _glfwDropTarget_AddRef(IDropTarget *_This);
+ULONG STDMETHODCALLTYPE _glfwDropTarget_Release(IDropTarget *_This);
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_DragEnter(IDropTarget *_This, IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_DragOver(IDropTarget *_This, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_DragLeave(IDropTarget *_This);
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_Drop(IDropTarget *_This, IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);

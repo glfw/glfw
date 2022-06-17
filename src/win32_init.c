@@ -458,12 +458,12 @@ static GLFWbool initDragDrop()
     }
 
     //_glfw.win32.dropTargetVtbl.QueryInterface = _glfwDropTarget_QueryInterface;
-    _glfw.win32.dropTargetVtbl.AddRef = (PFN_IDropTarget_AddRef)_glfwDropTarget_AddRef;
-    _glfw.win32.dropTargetVtbl.Release = (PFN_IDropTarget_Release)_glfwDropTarget_Release;
-    _glfw.win32.dropTargetVtbl.DragEnter = (PFN_IDropTarget_DragEnter)_glfwDropTarget_DragEnter;
-    _glfw.win32.dropTargetVtbl.DragOver = (PFN_IDropTarget_DragOver)_glfwDropTarget_DragOver;
-    _glfw.win32.dropTargetVtbl.DragLeave = (PFN_IDropTarget_DragLeave)_glfwDropTarget_DragLeave;
-    _glfw.win32.dropTargetVtbl.Drop = (PFN_IDropTarget_Drop)_glfwDropTarget_Drop;
+    _glfw.win32.dropTargetVtbl.AddRef = _glfwDropTarget_AddRef;
+    _glfw.win32.dropTargetVtbl.Release = _glfwDropTarget_Release;
+    _glfw.win32.dropTargetVtbl.DragEnter = _glfwDropTarget_DragEnter;
+    _glfw.win32.dropTargetVtbl.DragOver = _glfwDropTarget_DragOver;
+    _glfw.win32.dropTargetVtbl.DragLeave = _glfwDropTarget_DragLeave;
+    _glfw.win32.dropTargetVtbl.Drop = _glfwDropTarget_Drop;
 
     return GLFW_TRUE;
 }

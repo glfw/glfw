@@ -121,9 +121,6 @@ static const struct wl_output_listener outputListener =
 
 void _glfwAddOutputWayland(uint32_t name, uint32_t version)
 {
-    _GLFWmonitor* monitor;
-    struct wl_output* output;
-
     if (version < 2)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -131,19 +128,15 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
         return;
     }
 
-    // The actual name of this output will be set in the geometry handler.
-    monitor = _glfwAllocMonitor("", 0, 0);
-
-    output = wl_registry_bind(_glfw.wl.registry,
-                              name,
-                              &wl_output_interface,
-                              2);
+    struct wl_output* output = wl_registry_bind(_glfw.wl.registry,
+                                                name,
+                                                &wl_output_interface,
+                                                2);
     if (!output)
-    {
-        _glfwFreeMonitor(monitor);
         return;
-    }
 
+    // The actual name of this output will be set in the geometry handler
+    _GLFWmonitor* monitor = _glfwAllocMonitor("", 0, 0);
     monitor->wl.scale = 1;
     monitor->wl.output = output;
     monitor->wl.name = name;

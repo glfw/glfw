@@ -1912,12 +1912,20 @@ void _glfwIconifyWindowWayland(_GLFWwindow* window)
 
 void _glfwRestoreWindowWayland(_GLFWwindow* window)
 {
-    if (window->wl.xdg.toplevel)
+    if (window->monitor)
     {
-        if (window->wl.maximized)
-            xdg_toplevel_unset_maximized(window->wl.xdg.toplevel);
         // There is no way to unset minimized, or even to know if we are
         // minimized, so there is nothing to do in this case.
+    }
+    else
+    {
+        // We assume we are not minimized and acto only on maximization
+
+        if (window->wl.xdg.toplevel)
+        {
+            if (window->wl.maximized)
+                xdg_toplevel_unset_maximized(window->wl.xdg.toplevel);
+        }
     }
 }
 

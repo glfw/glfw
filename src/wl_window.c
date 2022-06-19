@@ -234,11 +234,11 @@ static GLFWbool waitForData(struct pollfd* fds, nfds_t count, double* timeout)
     }
 }
 
-static void createDecoration(_GLFWdecorationWayland* decoration,
-                             struct wl_surface* parent,
-                             struct wl_buffer* buffer,
-                             int x, int y,
-                             int width, int height)
+static void createFallbackDecoration(_GLFWdecorationWayland* decoration,
+                                     struct wl_surface* parent,
+                                     struct wl_buffer* buffer,
+                                     int x, int y,
+                                     int width, int height)
 {
     decoration->surface = wl_compositor_create_surface(_glfw.wl.compositor);
     decoration->subsurface =
@@ -257,7 +257,7 @@ static void createDecoration(_GLFWdecorationWayland* decoration,
     wl_region_destroy(region);
 }
 
-static void createDecorations(_GLFWwindow* window)
+static void createFallbackDecorations(_GLFWwindow* window)
 {
     unsigned char data[] = { 224, 224, 224, 255 };
     const GLFWimage image = { 1, 1, data };
@@ -270,25 +270,25 @@ static void createDecorations(_GLFWwindow* window)
     if (!window->wl.decorations.buffer)
         return;
 
-    createDecoration(&window->wl.decorations.top, window->wl.surface,
-                     window->wl.decorations.buffer,
-                     0, -GLFW_CAPTION_HEIGHT,
-                     window->wl.width, GLFW_CAPTION_HEIGHT);
-    createDecoration(&window->wl.decorations.left, window->wl.surface,
-                     window->wl.decorations.buffer,
-                     -GLFW_BORDER_SIZE, -GLFW_CAPTION_HEIGHT,
-                     GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
-    createDecoration(&window->wl.decorations.right, window->wl.surface,
-                     window->wl.decorations.buffer,
-                     window->wl.width, -GLFW_CAPTION_HEIGHT,
-                     GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
-    createDecoration(&window->wl.decorations.bottom, window->wl.surface,
-                     window->wl.decorations.buffer,
-                     -GLFW_BORDER_SIZE, window->wl.height,
-                     window->wl.width + GLFW_BORDER_SIZE * 2, GLFW_BORDER_SIZE);
+    createFallbackDecoration(&window->wl.decorations.top, window->wl.surface,
+                             window->wl.decorations.buffer,
+                             0, -GLFW_CAPTION_HEIGHT,
+                             window->wl.width, GLFW_CAPTION_HEIGHT);
+    createFallbackDecoration(&window->wl.decorations.left, window->wl.surface,
+                             window->wl.decorations.buffer,
+                             -GLFW_BORDER_SIZE, -GLFW_CAPTION_HEIGHT,
+                             GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
+    createFallbackDecoration(&window->wl.decorations.right, window->wl.surface,
+                             window->wl.decorations.buffer,
+                             window->wl.width, -GLFW_CAPTION_HEIGHT,
+                             GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
+    createFallbackDecoration(&window->wl.decorations.bottom, window->wl.surface,
+                             window->wl.decorations.buffer,
+                             -GLFW_BORDER_SIZE, window->wl.height,
+                             window->wl.width + GLFW_BORDER_SIZE * 2, GLFW_BORDER_SIZE);
 }
 
-static void destroyDecoration(_GLFWdecorationWayland* decoration)
+static void destroyFallbackDecoration(_GLFWdecorationWayland* decoration)
 {
     if (decoration->subsurface)
         wl_subsurface_destroy(decoration->subsurface);
@@ -301,12 +301,12 @@ static void destroyDecoration(_GLFWdecorationWayland* decoration)
     decoration->viewport = NULL;
 }
 
-static void destroyDecorations(_GLFWwindow* window)
+static void destroyFallbackDecorations(_GLFWwindow* window)
 {
-    destroyDecoration(&window->wl.decorations.top);
-    destroyDecoration(&window->wl.decorations.left);
-    destroyDecoration(&window->wl.decorations.right);
-    destroyDecoration(&window->wl.decorations.bottom);
+    destroyFallbackDecoration(&window->wl.decorations.top);
+    destroyFallbackDecoration(&window->wl.decorations.left);
+    destroyFallbackDecoration(&window->wl.decorations.right);
+    destroyFallbackDecoration(&window->wl.decorations.bottom);
 }
 
 static void xdgDecorationHandleConfigure(void* userData,
@@ -318,7 +318,7 @@ static void xdgDecorationHandleConfigure(void* userData,
     window->wl.decorations.serverSide = (mode == ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
 
     if (!window->wl.decorations.serverSide)
-        createDecorations(window);
+        createFallbackDecorations(window);
 }
 
 static const struct zxdg_toplevel_decoration_v1_listener xdgDecorationListener =
@@ -475,7 +475,7 @@ static void acquireMonitor(_GLFWwindow* window)
     setIdleInhibitor(window, GLFW_TRUE);
 
     if (!window->wl.decorations.serverSide)
-        destroyDecorations(window);
+        destroyFallbackDecorations(window);
 }
 
 // Remove the window and restore the original video mode
@@ -488,7 +488,7 @@ static void releaseMonitor(_GLFWwindow* window)
     setIdleInhibitor(window, GLFW_FALSE);
 
     if (!_glfw.wl.decorationManager)
-        createDecorations(window);
+        createFallbackDecorations(window);
 }
 
 static void xdgToplevelHandleConfigure(void* userData,
@@ -672,7 +672,7 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
         else
         {
             window->wl.decorations.serverSide = GLFW_FALSE;
-            createDecorations(window);
+            createFallbackDecorations(window);
         }
     }
 
@@ -1882,7 +1882,7 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     if (window->context.destroy)
         window->context.destroy(window);
 
-    destroyDecorations(window);
+    destroyFallbackDecorations(window);
     if (window->wl.xdg.decoration)
         zxdg_toplevel_decoration_v1_destroy(window->wl.xdg.decoration);
 
@@ -2200,9 +2200,9 @@ void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
     else
     {
         if (enabled)
-            createDecorations(window);
+            createFallbackDecorations(window);
         else
-            destroyDecorations(window);
+            destroyFallbackDecorations(window);
     }
 }
 

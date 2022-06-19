@@ -605,6 +605,14 @@ static void xdgSurfaceHandleConfigure(void* userData,
         resizeWindow(window);
 
         _glfwInputWindowSize(window, width, height);
+
+        if (window->wl.visible)
+            _glfwInputWindowDamage(window);
+    }
+
+    if (!window->wl.visible)
+    {
+        window->wl.visible = GLFW_TRUE;
         _glfwInputWindowDamage(window);
     }
 }
@@ -614,7 +622,7 @@ static const struct xdg_surface_listener xdgSurfaceListener =
     xdgSurfaceHandleConfigure
 };
 
-static GLFWbool createXdgSurface(_GLFWwindow* window)
+static GLFWbool createShellObjects(_GLFWwindow* window)
 {
     window->wl.xdg.surface = xdg_wm_base_get_xdg_surface(_glfw.wl.wmBase,
                                                          window->wl.surface);
@@ -710,6 +718,24 @@ static GLFWbool createXdgSurface(_GLFWwindow* window)
     return GLFW_TRUE;
 }
 
+static void destroyShellObjects(_GLFWwindow* window)
+{
+    destroyFallbackDecorations(window);
+
+    if (window->wl.xdg.decoration)
+        zxdg_toplevel_decoration_v1_destroy(window->wl.xdg.decoration);
+
+    if (window->wl.xdg.toplevel)
+        xdg_toplevel_destroy(window->wl.xdg.toplevel);
+
+    if (window->wl.xdg.surface)
+        xdg_surface_destroy(window->wl.xdg.surface);
+
+    window->wl.xdg.decoration = NULL;
+    window->wl.xdg.toplevel = NULL;
+    window->wl.xdg.surface = NULL;
+}
+
 static GLFWbool createNativeSurface(_GLFWwindow* window,
                                     const _GLFWwndconfig* wndconfig,
                                     const _GLFWfbconfig* fbconfig)
@@ -749,10 +775,8 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
 
     if (window->monitor || wndconfig->visible)
     {
-        if (!createXdgSurface(window))
+        if (!createShellObjects(window))
             return GLFW_FALSE;
-
-        window->wl.visible = GLFW_TRUE;
     }
 
     return GLFW_TRUE;
@@ -1882,21 +1906,13 @@ void _glfwPlatformDestroyWindow(_GLFWwindow* window)
     if (window->context.destroy)
         window->context.destroy(window);
 
-    destroyFallbackDecorations(window);
-    if (window->wl.xdg.decoration)
-        zxdg_toplevel_decoration_v1_destroy(window->wl.xdg.decoration);
+    destroyShellObjects(window);
 
     if (window->wl.decorations.buffer)
         wl_buffer_destroy(window->wl.decorations.buffer);
 
     if (window->wl.egl.window)
         wl_egl_window_destroy(window->wl.egl.window);
-
-    if (window->wl.xdg.toplevel)
-        xdg_toplevel_destroy(window->wl.xdg.toplevel);
-
-    if (window->wl.xdg.surface)
-        xdg_surface_destroy(window->wl.xdg.surface);
 
     if (window->wl.surface)
         wl_surface_destroy(window->wl.surface);
@@ -2086,15 +2102,11 @@ void _glfwPlatformMaximizeWindow(_GLFWwindow* window)
 
 void _glfwPlatformShowWindow(_GLFWwindow* window)
 {
-    if (!window->wl.visible)
+    if (!window->wl.xdg.toplevel)
     {
         // NOTE: The XDG/shell surface is created here so command-line applications
         //       with off-screen windows do not appear in for example the Unity dock
-        if (!window->wl.xdg.toplevel)
-            createXdgSurface(window);
-
-        window->wl.visible = GLFW_TRUE;
-        _glfwInputWindowDamage(window);
+        createShellObjects(window);
     }
 }
 
@@ -2103,6 +2115,8 @@ void _glfwPlatformHideWindow(_GLFWwindow* window)
     if (window->wl.visible)
     {
         window->wl.visible = GLFW_FALSE;
+        destroyShellObjects(window);
+
         wl_surface_attach(window->wl.surface, NULL, 0, 0);
         wl_surface_commit(window->wl.surface);
     }

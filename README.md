@@ -359,6 +359,8 @@ information on what to include when reporting a bug.
    applying the specified ratio
  - [Wayland] Bugfix: `GLFW_MAXIMIZED` window hint had no effect
  - [Wayland] Bugfix: `glfwRestoreWindow` had no effect before first show
+ - [Wayland] Bugfix: Hiding and then showing a window caused program abort on
+   wlroots compositors (#1268)
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)

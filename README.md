@@ -157,6 +157,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: A window maximized or restored by the user would enter an
    inconsistent state
  - [Wayland] Bugfix: Window maximization events were not emitted
+ - [Wayland] Bugfix: `glfwRestoreWindow` assumed it was always in windowed mode
 
 
 ## Contact

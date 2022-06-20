@@ -262,7 +262,7 @@ static void createFallbackDecorations(_GLFWwindow* window)
     unsigned char data[] = { 224, 224, 224, 255 };
     const GLFWimage image = { 1, 1, data };
 
-    if (!_glfw.wl.viewporter || !window->decorated || window->wl.decorations.serverSide)
+    if (!_glfw.wl.viewporter || !window->decorated)
         return;
 
     if (!window->wl.decorations.buffer)
@@ -315,9 +315,9 @@ static void xdgDecorationHandleConfigure(void* userData,
 {
     _GLFWwindow* window = userData;
 
-    window->wl.decorations.serverSide = (mode == ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
+    window->wl.xdg.decorationMode = mode;
 
-    if (!window->wl.decorations.serverSide)
+    if (mode == ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE)
         createFallbackDecorations(window);
 }
 
@@ -474,7 +474,7 @@ static void acquireMonitor(_GLFWwindow* window)
 
     setIdleInhibitor(window, GLFW_TRUE);
 
-    if (!window->wl.decorations.serverSide)
+    if (window->wl.decorations.top.surface)
         destroyFallbackDecorations(window);
 }
 
@@ -487,7 +487,7 @@ static void releaseMonitor(_GLFWwindow* window)
 
     setIdleInhibitor(window, GLFW_FALSE);
 
-    if (!_glfw.wl.decorationManager)
+    if (window->wl.xdg.decorationMode != ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE)
         createFallbackDecorations(window);
 }
 
@@ -678,10 +678,7 @@ static GLFWbool createShellObjects(_GLFWwindow* window)
                 ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
         }
         else
-        {
-            window->wl.decorations.serverSide = GLFW_FALSE;
             createFallbackDecorations(window);
-        }
     }
 
     if (window->minwidth != GLFW_DONT_CARE && window->minheight != GLFW_DONT_CARE)
@@ -732,6 +729,7 @@ static void destroyShellObjects(_GLFWwindow* window)
         xdg_surface_destroy(window->wl.xdg.surface);
 
     window->wl.xdg.decoration = NULL;
+    window->wl.xdg.decorationMode = 0;
     window->wl.xdg.toplevel = NULL;
     window->wl.xdg.surface = NULL;
 }
@@ -2043,7 +2041,7 @@ void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
                                      int* left, int* top,
                                      int* right, int* bottom)
 {
-    if (window->decorated && !window->monitor && !window->wl.decorations.serverSide)
+    if (window->decorated && !window->monitor && window->wl.decorations.top.surface)
     {
         if (top)
             *top = GLFW_CAPTION_HEIGHT;

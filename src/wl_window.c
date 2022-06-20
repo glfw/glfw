@@ -1019,9 +1019,9 @@ static char* readDataOfferAsString(struct wl_data_offer* offer, const char* mime
 }
 
 static _GLFWwindow* findWindowFromDecorationSurface(struct wl_surface* surface,
-                                                    int* which)
+                                                    _GLFWdecorationSideWayland* which)
 {
-    int focus;
+    _GLFWdecorationSideWayland focus;
     _GLFWwindow* window = _glfw.windowListHead;
     if (!which)
         which = &focus;
@@ -1063,7 +1063,7 @@ static void pointerHandleEnter(void* userData,
     if (!surface)
         return;
 
-    int focus = 0;
+    _GLFWdecorationSideWayland focus = mainWindow;
     _GLFWwindow* window = wl_surface_get_user_data(surface);
     if (!window)
     {

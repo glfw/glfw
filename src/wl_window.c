@@ -635,9 +635,15 @@ static GLFWbool createShellObjects(_GLFWwindow* window)
             zxdg_toplevel_decoration_v1_add_listener(window->wl.xdg.decoration,
                                                      &xdgDecorationListener,
                                                      window);
-            zxdg_toplevel_decoration_v1_set_mode(
-                window->wl.xdg.decoration,
-                ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE);
+
+            uint32_t mode;
+
+            if (window->decorated)
+                mode = ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE;
+            else
+                mode = ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE;
+
+            zxdg_toplevel_decoration_v1_set_mode(window->wl.xdg.decoration, mode);
         }
         else
             createFallbackDecorations(window);

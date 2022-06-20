@@ -180,6 +180,8 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: `glfwRestoreWindow` had no effect before first show
  - [Wayland] Bugfix: Hiding and then showing a window caused program abort on
    wlroots compositors (#1268)
+ - [Wayland] Bugfix: `GLFW_DECORATED` was ignored when showing a window with XDG
+   decorations
 
 
 ## Contact

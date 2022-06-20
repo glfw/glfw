@@ -251,6 +251,7 @@ typedef struct _GLFWwindowWayland
         struct xdg_surface*     surface;
         struct xdg_toplevel*    toplevel;
         struct zxdg_toplevel_decoration_v1* decoration;
+        uint32_t                decorationMode;
     } xdg;
 
     _GLFWcursor*                currentCursor;
@@ -273,7 +274,6 @@ typedef struct _GLFWwindowWayland
     struct zwp_idle_inhibitor_v1*          idleInhibitor;
 
     struct {
-        GLFWbool                           serverSide;
         struct wl_buffer*                  buffer;
         _GLFWdecorationWayland             top, left, right, bottom;
         int                                focus;

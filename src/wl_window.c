@@ -277,6 +277,8 @@ static void xdgDecorationHandleConfigure(void* userData,
 
     if (mode == ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE)
         createFallbackDecorations(window);
+    else
+        destroyFallbackDecorations(window);
 }
 
 static const struct zxdg_toplevel_decoration_v1_listener xdgDecorationListener =

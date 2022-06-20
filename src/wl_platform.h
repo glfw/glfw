@@ -276,7 +276,7 @@ typedef struct _GLFWwindowWayland
     struct {
         struct wl_buffer*                  buffer;
         _GLFWdecorationWayland             top, left, right, bottom;
-        int                                focus;
+        _GLFWdecorationSideWayland         focus;
     } decorations;
 } _GLFWwindowWayland;
 

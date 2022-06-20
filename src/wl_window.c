@@ -569,8 +569,13 @@ static void xdgSurfaceHandleConfigure(void* userData,
 
     if (!window->wl.visible)
     {
-        window->wl.visible = GLFW_TRUE;
-        _glfwInputWindowDamage(window);
+        // Allow the window to be mapped only if it either has no XDG
+        // decorations or they have already received a configure event
+        if (!window->wl.xdg.decoration || window->wl.xdg.decorationMode)
+        {
+            window->wl.visible = GLFW_TRUE;
+            _glfwInputWindowDamage(window);
+        }
     }
 }
 

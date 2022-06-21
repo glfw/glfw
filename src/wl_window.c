@@ -297,7 +297,6 @@ static void setContentAreaOpaque(_GLFWwindow* window)
 
     wl_region_add(region, 0, 0, window->wl.width, window->wl.height);
     wl_surface_set_opaque_region(window->wl.surface, region);
-    wl_surface_commit(window->wl.surface);
     wl_region_destroy(region);
 }
 
@@ -2183,8 +2182,6 @@ void _glfwSetWindowMousePassthroughWayland(_GLFWwindow* window, GLFWbool enabled
     }
     else
         wl_surface_set_input_region(window->wl.surface, 0);
-
-    wl_surface_commit(window->wl.surface);
 }
 
 float _glfwGetWindowOpacityWayland(_GLFWwindow* window)
@@ -2247,7 +2244,6 @@ void _glfwSetCursorPosWayland(_GLFWwindow* window, double x, double y)
         zwp_locked_pointer_v1_set_cursor_position_hint(
             window->wl.pointerLock.lockedPointer,
             wl_fixed_from_double(x), wl_fixed_from_double(y));
-        wl_surface_commit(window->wl.surface);
     }
 }
 

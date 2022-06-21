@@ -277,7 +277,7 @@ static void xdgDecorationHandleConfigure(void* userData,
 
     if (mode == ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE)
     {
-        if (window->decorated)
+        if (window->decorated && !window->monitor)
             createFallbackDecorations(window);
     }
     else

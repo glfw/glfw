@@ -749,12 +749,6 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     if (!window->wl.transparent)
         setContentAreaOpaque(window);
 
-    if (window->monitor || wndconfig->visible)
-    {
-        if (!createShellObjects(window))
-            return GLFW_FALSE;
-    }
-
     return GLFW_TRUE;
 }
 
@@ -1838,6 +1832,12 @@ GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
 
     if (wndconfig->mousePassthrough)
         _glfwSetWindowMousePassthroughWayland(window, GLFW_TRUE);
+
+    if (window->monitor || wndconfig->visible)
+    {
+        if (!createShellObjects(window))
+            return GLFW_FALSE;
+    }
 
     return GLFW_TRUE;
 }

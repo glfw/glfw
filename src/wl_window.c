@@ -792,12 +792,6 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     if (!window->wl.transparent)
         setContentAreaOpaque(window);
 
-    if (window->monitor || wndconfig->visible)
-    {
-        if (!createShellObjects(window))
-            return GLFW_FALSE;
-    }
-
     return GLFW_TRUE;
 }
 
@@ -1900,6 +1894,12 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         }
 
         if (!_glfwRefreshContextAttribs(window, ctxconfig))
+            return GLFW_FALSE;
+    }
+
+    if (window->monitor || wndconfig->visible)
+    {
+        if (!createShellObjects(window))
             return GLFW_FALSE;
     }
 

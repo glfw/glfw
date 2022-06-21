@@ -2102,7 +2102,7 @@ void _glfwPlatformRestoreWindow(_GLFWwindow* window)
     }
     else
     {
-        // We assume we are not minimized and acto only on maximization
+        // We assume we are not minimized and act only on maximization
 
         if (window->wl.maximized)
         {

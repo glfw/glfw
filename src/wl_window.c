@@ -604,9 +604,7 @@ static GLFWbool createShellObjects(_GLFWwindow* window)
         return GLFW_FALSE;
     }
 
-    xdg_surface_add_listener(window->wl.xdg.surface,
-                             &xdgSurfaceListener,
-                             window);
+    xdg_surface_add_listener(window->wl.xdg.surface, &xdgSurfaceListener, window);
 
     window->wl.xdg.toplevel = xdg_surface_get_toplevel(window->wl.xdg.surface);
     if (!window->wl.xdg.toplevel)
@@ -616,17 +614,14 @@ static GLFWbool createShellObjects(_GLFWwindow* window)
         return GLFW_FALSE;
     }
 
-    xdg_toplevel_add_listener(window->wl.xdg.toplevel,
-                              &xdgToplevelListener,
-                              window);
+    xdg_toplevel_add_listener(window->wl.xdg.toplevel, &xdgToplevelListener, window);
 
     if (window->wl.title)
         xdg_toplevel_set_title(window->wl.xdg.toplevel, window->wl.title);
 
     if (window->monitor)
     {
-        xdg_toplevel_set_fullscreen(window->wl.xdg.toplevel,
-                                    window->monitor->wl.output);
+        xdg_toplevel_set_fullscreen(window->wl.xdg.toplevel, window->monitor->wl.output);
         setIdleInhibitor(window, GLFW_TRUE);
     }
     else

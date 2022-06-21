@@ -220,7 +220,7 @@ static void createFallbackDecorations(_GLFWwindow* window)
     unsigned char data[] = { 224, 224, 224, 255 };
     const GLFWimage image = { 1, 1, data };
 
-    if (!_glfw.wl.viewporter || !window->decorated)
+    if (!_glfw.wl.viewporter)
         return;
 
     if (!window->wl.decorations.buffer)
@@ -276,7 +276,10 @@ static void xdgDecorationHandleConfigure(void* userData,
     window->wl.xdg.decorationMode = mode;
 
     if (mode == ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE)
-        createFallbackDecorations(window);
+    {
+        if (window->decorated)
+            createFallbackDecorations(window);
+    }
     else
         destroyFallbackDecorations(window);
 }
@@ -446,7 +449,10 @@ static void releaseMonitor(_GLFWwindow* window)
     setIdleInhibitor(window, GLFW_FALSE);
 
     if (window->wl.xdg.decorationMode != ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE)
-        createFallbackDecorations(window);
+    {
+        if (window->decorated)
+            createFallbackDecorations(window);
+    }
 }
 
 static void xdgToplevelHandleConfigure(void* userData,
@@ -647,7 +653,10 @@ static GLFWbool createShellObjects(_GLFWwindow* window)
             zxdg_toplevel_decoration_v1_set_mode(window->wl.xdg.decoration, mode);
         }
         else
-            createFallbackDecorations(window);
+        {
+            if (window->decorated)
+                createFallbackDecorations(window);
+        }
     }
 
     if (window->minwidth != GLFW_DONT_CARE && window->minheight != GLFW_DONT_CARE)

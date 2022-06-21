@@ -329,7 +329,7 @@ static const struct zxdg_toplevel_decoration_v1_listener xdgDecorationListener =
 };
 
 // Makes the surface considered as XRGB instead of ARGB.
-static void setOpaqueRegion(_GLFWwindow* window)
+static void setContentAreaOpaque(_GLFWwindow* window)
 {
     struct wl_region* region;
 
@@ -351,7 +351,7 @@ static void resizeWindow(_GLFWwindow* window)
     int scaledHeight = window->wl.height * scale;
     wl_egl_window_resize(window->wl.egl.window, scaledWidth, scaledHeight, 0, 0);
     if (!window->wl.transparent)
-        setOpaqueRegion(window);
+        setContentAreaOpaque(window);
     _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
 
     if (!window->wl.decorations.top.surface)
@@ -782,7 +782,7 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
 
     window->wl.transparent = fbconfig->transparent;
     if (!window->wl.transparent)
-        setOpaqueRegion(window);
+        setContentAreaOpaque(window);
 
     if (window->monitor || wndconfig->visible)
     {

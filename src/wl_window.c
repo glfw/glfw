@@ -309,7 +309,9 @@ static void resizeWindow(_GLFWwindow* window)
     int scale = window->wl.scale;
     int scaledWidth = window->wl.width * scale;
     int scaledHeight = window->wl.height * scale;
-    wl_egl_window_resize(window->wl.egl.window, scaledWidth, scaledHeight, 0, 0);
+
+    if (window->wl.egl.window)
+        wl_egl_window_resize(window->wl.egl.window, scaledWidth, scaledHeight, 0, 0);
     if (!window->wl.transparent)
         setContentAreaOpaque(window);
     _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
@@ -728,15 +730,6 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
                             window);
 
     wl_surface_set_user_data(window->wl.surface, window);
-
-    window->wl.egl.window = wl_egl_window_create(window->wl.surface,
-                                                 wndconfig->width,
-                                                 wndconfig->height);
-    if (!window->wl.egl.window)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Wayland: Failed to create EGL window");
-        return GLFW_FALSE;
-    }
 
     window->wl.width = wndconfig->width;
     window->wl.height = wndconfig->height;
@@ -1813,6 +1806,16 @@ GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
         if (ctxconfig->source == GLFW_EGL_CONTEXT_API ||
             ctxconfig->source == GLFW_NATIVE_CONTEXT_API)
         {
+            window->wl.egl.window = wl_egl_window_create(window->wl.surface,
+                                                         wndconfig->width,
+                                                         wndconfig->height);
+            if (!window->wl.egl.window)
+            {
+                _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "Wayland: Failed to create EGL window");
+                return GLFW_FALSE;
+            }
+
             if (!_glfwInitEGL())
                 return GLFW_FALSE;
             if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))

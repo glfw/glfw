@@ -797,6 +797,11 @@ glfwUpdateGamepadMappings(mappings);
 This function supports everything from single lines up to and including the
 unmodified contents of the whole `gamecontrollerdb.txt` file.
 
+If you are compiling GLFW from source with CMake you can update the built-in mappings by
+building the _update_mappings_ target.  This runs the `GenerateMappings.cmake` CMake
+script, which downloads `gamecontrollerdb.txt` and regenerates the `mappings.h` header
+file.
+
 Below is a description of the mapping format.  Please keep in mind that __this
 description is not authoritative__.  The format is defined by the SDL and
 SDL_GameControllerDB projects and their documentation and code takes precedence.
@@ -816,7 +821,7 @@ The second value is always the human-readable name of the gamepad.
 All subsequent values are in the form `<field>:<value>` and describe the layout
 of the mapping.  These fields may not all be present and may occur in any order.
 
-The button fields are `a`, `b`, `c`, `d`, `back`, `start`, `guide`, `dpup`,
+The button fields are `a`, `b`, `x`, `y`, `back`, `start`, `guide`, `dpup`,
 `dpright`, `dpdown`, `dpleft`, `leftshoulder`, `rightshoulder`, `leftstick` and
 `rightstick`.
 

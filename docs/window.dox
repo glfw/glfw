@@ -236,7 +236,8 @@ does not affect window decorations.  Possible values are `GLFW_TRUE` and
 
 @anchor GLFW_FOCUS_ON_SHOW_hint
 __GLFW_FOCUS_ON_SHOW__ specifies whether the window will be given input
-focus when @ref glfwShowWindow is called. Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+focus when @ref glfwShowWindow is called. Possible values are `GLFW_TRUE` and
+`GLFW_FALSE`.
 
 @anchor GLFW_SCALE_TO_MONITOR
 __GLFW_SCALE_TO_MONITOR__ specified whether the window content area should be
@@ -278,7 +279,6 @@ __GLFW_ACCUM_ALPHA_BITS__ specify the desired bit depths of the various
 components of the accumulation buffer.  A value of `GLFW_DONT_CARE` means the
 application has no preference.
 
-@par
 Accumulation buffers are a legacy OpenGL feature and should not be used in new
 code.
 
@@ -286,7 +286,6 @@ code.
 __GLFW_AUX_BUFFERS__ specifies the desired number of auxiliary buffers.  A value
 of `GLFW_DONT_CARE` means the application has no preference.
 
-@par
 Auxiliary buffers are a legacy OpenGL feature and should not be used in new
 code.
 
@@ -303,16 +302,15 @@ the application has no preference.
 __GLFW_SRGB_CAPABLE__ specifies whether the framebuffer should be sRGB capable.
 Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 
-@par
-__OpenGL:__ If enabled and supported by the system, the `GL_FRAMEBUFFER_SRGB`
-enable will control sRGB rendering.  By default, sRGB rendering will be
-disabled.
+@note __OpenGL:__ If enabled and supported by the system, the
+`GL_FRAMEBUFFER_SRGB` enable will control sRGB rendering.  By default, sRGB
+rendering will be disabled.
 
-@par
-__OpenGL ES:__ If enabled and supported by the system, the context will always
-have sRGB rendering enabled.
+@note __OpenGL ES:__ If enabled and supported by the system, the context will
+always have sRGB rendering enabled.
 
 @anchor GLFW_DOUBLEBUFFER
+@anchor GLFW_DOUBLEBUFFER_hint
 __GLFW_DOUBLEBUFFER__ specifies whether the framebuffer should be double
 buffered.  You nearly always want to use double buffering.  This is a hard
 constraint.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
@@ -339,28 +337,22 @@ create the context.  Possible values are `GLFW_NATIVE_CONTEXT_API`,
 `GLFW_EGL_CONTEXT_API` and `GLFW_OSMESA_CONTEXT_API`.  This is a hard
 constraint.  If no client API is requested, this hint is ignored.
 
-@par
-@macos The EGL API is not available on this platform and requests to use it
-will fail.
+An [extension loader library](@ref context_glext_auto) that assumes it knows
+which API was used to create the current context may fail if you change this
+hint.  This can be resolved by having it load functions via @ref
+glfwGetProcAddress.
 
-@par
-__Wayland:__ The EGL API _is_ the native context creation API, so this hint
+@note @wayland The EGL API _is_ the native context creation API, so this hint
 will have no effect.
 
-@par
-__OSMesa:__ As its name implies, an OpenGL context created with OSMesa does not
-update the window contents when its buffers are swapped.  Use OpenGL functions
-or the OSMesa native access functions @ref glfwGetOSMesaColorBuffer and @ref
-glfwGetOSMesaDepthBuffer to retrieve the framebuffer contents.
+@note @x11 On some Linux systems, creating contexts via both the native and EGL
+APIs in a single process will cause the application to segfault.  Stick to one
+API or the other on Linux for now.
 
-@note An OpenGL extension loader library that assumes it knows which context
-creation API is used on a given platform may fail if you change this hint.  This
-can be resolved by having it load via @ref glfwGetProcAddress, which always uses
-the selected API.
-
-@bug On some Linux systems, creating contexts via both the native and EGL APIs
-in a single process will cause the application to segfault.  Stick to one API or
-the other on Linux for now.
+@note __OSMesa:__ As its name implies, an OpenGL context created with OSMesa
+does not update the window contents when its buffers are swapped.  Use OpenGL
+functions or the OSMesa native access functions @ref glfwGetOSMesaColorBuffer
+and @ref glfwGetOSMesaDepthBuffer to retrieve the framebuffer contents.
 
 @anchor GLFW_CONTEXT_VERSION_MAJOR_hint
 @anchor GLFW_CONTEXT_VERSION_MINOR_hint
@@ -368,27 +360,24 @@ __GLFW_CONTEXT_VERSION_MAJOR__ and __GLFW_CONTEXT_VERSION_MINOR__ specify the
 client API version that the created context must be compatible with.  The exact
 behavior of these hints depend on the requested client API.
 
-@note Do not confuse these hints with `GLFW_VERSION_MAJOR` and
-`GLFW_VERSION_MINOR`, which provide the API version of the GLFW header.
-
-@par
-__OpenGL:__ These hints are not hard constraints, but creation will fail if the
-OpenGL version of the created context is less than the one requested.  It is
-therefore perfectly safe to use the default of version 1.0 for legacy code and
-you will still get backwards-compatible contexts of version 3.0 and above when
-available.
-
-@par
 While there is no way to ask the driver for a context of the highest supported
 version, GLFW will attempt to provide this when you ask for a version 1.0
 context, which is the default for these hints.
 
-@par
-__OpenGL ES:__ These hints are not hard constraints, but creation will fail if
-the OpenGL ES version of the created context is less than the one requested.
-Additionally, OpenGL ES 1.x cannot be returned if 2.0 or later was requested,
-and vice versa.  This is because OpenGL ES 3.x is backward compatible with 2.0,
-but OpenGL ES 2.0 is not backward compatible with 1.x.
+Do not confuse these hints with @ref GLFW_VERSION_MAJOR and @ref
+GLFW_VERSION_MINOR, which provide the API version of the GLFW header.
+
+@note __OpenGL:__ These hints are not hard constraints, but creation will fail
+if the OpenGL version of the created context is less than the one requested.  It
+is therefore perfectly safe to use the default of version 1.0 for legacy code
+and you will still get backwards-compatible contexts of version 3.0 and above
+when available.
+
+@note __OpenGL ES:__ These hints are not hard constraints, but creation will
+fail if the OpenGL ES version of the created context is less than the one
+requested.  Additionally, OpenGL ES 1.x cannot be returned if 2.0 or later was
+requested, and vice versa.  This is because OpenGL ES 3.x is backward compatible
+with 2.0, but OpenGL ES 2.0 is not backward compatible with 1.x.
 
 @note @macos The OS only supports core profile contexts for OpenGL versions 3.2
 and later.  Before creating an OpenGL context of version 3.2 or later you must
@@ -401,7 +390,6 @@ forward-compatible, i.e. one where all functionality deprecated in the requested
 version of OpenGL is removed.  This must only be used if the requested OpenGL
 version is 3.0 or above.  If OpenGL ES is requested, this hint is ignored.
 
-@par
 Forward-compatibility is described in detail in the
 [OpenGL Reference Manual](https://www.opengl.org/registry/).
 
@@ -411,13 +399,11 @@ __GLFW_CONTEXT_DEBUG__ specifies whether the context should be created in debug
 mode, which may provide additional error and diagnostic reporting functionality.
 Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 
-@par
 Debug contexts for OpenGL and OpenGL ES are described in detail by the
 [GL_KHR_debug](https://www.khronos.org/registry/OpenGL/extensions/KHR/KHR_debug.txt)
 extension.
 
-@par
-This is the new name, introduced in GLFW 3.4.  The older
+@note `GLFW_CONTEXT_DEBUG` is the new name introduced in GLFW 3.4.  The older
 `GLFW_OPENGL_DEBUG_CONTEXT` name is also available for compatibility.
 
 @anchor GLFW_OPENGL_PROFILE_hint
@@ -428,7 +414,6 @@ a specific profile.  If requesting an OpenGL version below 3.2,
 `GLFW_OPENGL_ANY_PROFILE` must be used.  If OpenGL ES is requested, this hint
 is ignored.
 
-@par
 OpenGL profiles are described in detail in the
 [OpenGL Reference Manual](https://www.opengl.org/registry/).
 
@@ -448,7 +433,6 @@ the pipeline will be flushed whenever the context is released from being the
 current one.  If the behavior is `GLFW_RELEASE_BEHAVIOR_NONE`, the pipeline will
 not be flushed on release.
 
-@par
 Context release behaviors are described in detail by the
 [GL_KHR_context_flush_control](https://www.opengl.org/registry/specs/KHR/context_flush_control.txt)
 extension.
@@ -458,13 +442,12 @@ __GLFW_CONTEXT_NO_ERROR__ specifies whether errors should be generated by the
 context.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.  If enabled,
 situations that would have generated errors instead cause undefined behavior.
 
-@par
 The no error mode for OpenGL and OpenGL ES is described in detail by the
 [GL_KHR_no_error](https://www.opengl.org/registry/specs/KHR/no_error.txt)
 extension.
 
 
-@subsubsection window_hints_win32 Windows specific window hints
+@subsubsection window_hints_win32 Win32 specific hints
 
 @anchor GLFW_WIN32_KEYBOARD_MENU_hint
 __GLFW_WIN32_KEYBOARD_MENU__ specifies whether to allow access to the window
@@ -472,7 +455,7 @@ menu via the Alt+Space and Alt-and-then-Space keyboard shortcuts.  This is
 ignored on other platforms.
 
 
-@subsubsection window_hints_osx macOS specific window hints
+@subsubsection window_hints_osx macOS specific hints
 
 @anchor GLFW_COCOA_RETINA_FRAMEBUFFER_hint
 __GLFW_COCOA_RETINA_FRAMEBUFFER__ specifies whether to use full resolution
@@ -492,12 +475,10 @@ run on the discrete GPU.  This only affects systems with both integrated and
 discrete GPUs.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.  This is
 ignored on other platforms.
 
-@par
 Simpler programs and tools may want to enable this to save power, while games
 and other applications performing advanced rendering will want to leave it
 disabled.
 
-@par
 A bundled application that wishes to participate in Automatic Graphics Switching
 should also declare this in its `Info.plist` by setting the
 `NSSupportsAutomaticGraphicsSwitching` key to `true`.
@@ -1397,9 +1378,11 @@ if the window's context supports robustness, or `GLFW_NO_ROBUSTNESS` otherwise.
 
 @subsubsection window_attribs_fb Framebuffer related attributes
 
-GLFW does not expose attributes of the default framebuffer (i.e. the framebuffer
-attached to the window) as these can be queried directly with either OpenGL,
-OpenGL ES or Vulkan.
+GLFW does not expose most attributes of the default framebuffer (i.e. the
+framebuffer attached to the window) as these can be queried directly with either
+OpenGL, OpenGL ES or Vulkan.  The one exception is
+[GLFW_DOUBLEBUFFER](@ref GLFW_DOUBLEBUFFER_attrib), as this is not provided by
+OpenGL ES.
 
 If you are using version 3.0 or later of OpenGL or OpenGL ES, the
 `glGetFramebufferAttachmentParameteriv` function can be used to retrieve the
@@ -1424,6 +1407,11 @@ When calling `glGetFramebufferAttachmentParameteriv`, the red, green, blue and
 alpha sizes are queried from the `GL_BACK_LEFT`, while the depth and stencil
 sizes are queried from the `GL_DEPTH` and `GL_STENCIL` attachments,
 respectively.
+
+@anchor GLFW_DOUBLEBUFFER_attrib
+__GLFW_DOUBLEBUFFER__ indicates whether the specified window is double-buffered
+when rendering with OpenGL or OpenGL ES.  This can be set before creation with
+the [GLFW_DOUBLEBUFFER](@ref GLFW_DOUBLEBUFFER_hint) window hint.
 
 
 @section buffer_swap Buffer swapping

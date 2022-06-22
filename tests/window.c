@@ -23,6 +23,7 @@
 //
 //========================================================================
 
+#define GLAD_GL_IMPLEMENTATION
 #include <glad/gl.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -55,11 +56,11 @@ int main(int argc, char** argv)
     int limit_aspect_ratio = false, aspect_numer = 1, aspect_denom = 1;
     int limit_min_size = false, min_width = 400, min_height = 400;
     int limit_max_size = false, max_width = 400, max_height = 400;
-    char width_buffer[10] = "", height_buffer[10] = "";
-    char xpos_buffer[10] = "", ypos_buffer[10] = "";
-    char numer_buffer[10] = "", denom_buffer[10] = "";
-    char min_width_buffer[10] = "", min_height_buffer[10] = "";
-    char max_width_buffer[10] = "", max_height_buffer[10] = "";
+    char width_buffer[12] = "", height_buffer[12] = "";
+    char xpos_buffer[12] = "", ypos_buffer[12] = "";
+    char numer_buffer[12] = "", denom_buffer[12] = "";
+    char min_width_buffer[12] = "", min_height_buffer[12] = "";
+    char max_width_buffer[12] = "", max_height_buffer[12] = "";
     int may_close = true;
 
     if (!glfwInit())
@@ -120,7 +121,7 @@ int main(int argc, char** argv)
         nk_glfw3_new_frame();
         if (nk_begin(nk, "main", area, 0))
         {
-            nk_layout_row_dynamic(nk, 30, 4);
+            nk_layout_row_dynamic(nk, 30, 5);
 
             if (nk_button_label(nk, "Toggle Fullscreen"))
             {
@@ -148,6 +149,16 @@ int main(int argc, char** argv)
                 glfwIconifyWindow(window);
             if (nk_button_label(nk, "Restore"))
                 glfwRestoreWindow(window);
+            if (nk_button_label(nk, "Hide (briefly)"))
+            {
+                glfwHideWindow(window);
+
+                const double time = glfwGetTime() + 3.0;
+                while (glfwGetTime() < time)
+                    glfwWaitEventsTimeout(1.0);
+
+                glfwShowWindow(window);
+            }
 
             nk_layout_row_dynamic(nk, 30, 1);
 

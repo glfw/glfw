@@ -23,14 +23,10 @@
 //
 //========================================================================
 
+#define GLAD_GL_IMPLEMENTATION
 #include <glad/gl.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
-
-#if USE_NATIVE_OSMESA
- #define GLFW_EXPOSE_NATIVE_OSMESA
- #include <GLFW/glfw3native.h>
-#endif
 
 #include "linmath.h"
 
@@ -150,12 +146,8 @@ int main(void)
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glFinish();
 
-#if USE_NATIVE_OSMESA
-    glfwGetOSMesaColorBuffer(window, &width, &height, NULL, (void**) &buffer);
-#else
     buffer = calloc(4, width * height);
     glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-#endif
 
     // Write image Y-flipped because OpenGL
     stbi_write_png("offscreen.png",
@@ -163,11 +155,7 @@ int main(void)
                    buffer + (width * 4 * (height - 1)),
                    -width * 4);
 
-#if USE_NATIVE_OSMESA
-    // Here is where there's nothing
-#else
     free(buffer);
-#endif
 
     glfwDestroyWindow(window);
 

@@ -198,11 +198,6 @@ typedef xkb_keysym_t (* PFN_xkb_compose_state_get_one_sym)(struct xkb_compose_st
 #define xkb_compose_state_get_status _glfw.wl.xkb.compose_state_get_status
 #define xkb_compose_state_get_one_sym _glfw.wl.xkb.compose_state_get_one_sym
 
-#define _GLFW_DECORATION_WIDTH 4
-#define _GLFW_DECORATION_TOP 24
-#define _GLFW_DECORATION_VERTICAL (_GLFW_DECORATION_TOP + _GLFW_DECORATION_WIDTH)
-#define _GLFW_DECORATION_HORIZONTAL (2 * _GLFW_DECORATION_WIDTH)
-
 typedef enum _GLFWdecorationSideWayland
 {
     mainWindow,
@@ -233,16 +228,30 @@ typedef struct _GLFWwindowWayland
     int                         width, height;
     GLFWbool                    visible;
     GLFWbool                    maximized;
+    GLFWbool                    activated;
+    GLFWbool                    fullscreen;
     GLFWbool                    hovered;
     GLFWbool                    transparent;
     struct wl_surface*          surface;
-    struct wl_egl_window*       native;
     struct wl_callback*         callback;
+
+    struct {
+        struct wl_egl_window*   window;
+    } egl;
+
+    struct {
+        int                     width, height;
+        GLFWbool                maximized;
+        GLFWbool                iconified;
+        GLFWbool                activated;
+        GLFWbool                fullscreen;
+    } pending;
 
     struct {
         struct xdg_surface*     surface;
         struct xdg_toplevel*    toplevel;
         struct zxdg_toplevel_decoration_v1* decoration;
+        uint32_t                decorationMode;
     } xdg;
 
     _GLFWcursor*                currentCursor;
@@ -264,13 +273,10 @@ typedef struct _GLFWwindowWayland
 
     struct zwp_idle_inhibitor_v1*          idleInhibitor;
 
-    GLFWbool                    wasFullscreen;
-
     struct {
-        GLFWbool                           serverSide;
         struct wl_buffer*                  buffer;
         _GLFWdecorationWayland             top, left, right, bottom;
-        int                                focus;
+        _GLFWdecorationSideWayland         focus;
     } decorations;
 } _GLFWwindowWayland;
 
@@ -508,6 +514,7 @@ GLFWbool _glfwGetGammaRampWayland(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
 void _glfwSetGammaRampWayland(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
 void _glfwAddOutputWayland(uint32_t name, uint32_t version);
+void _glfwUpdateContentScaleWayland(_GLFWwindow* window);
 GLFWbool _glfwInputTextWayland(_GLFWwindow* window, uint32_t scancode);
 
 _GLFWusercontext* _glfwCreateUserContextWayland(_GLFWwindow* window);

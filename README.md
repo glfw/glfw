@@ -302,6 +302,7 @@ information on what to include when reporting a bug.
  - [Wayland] Added dynamic loading of all Wayland libraries
  - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Added support for file path drop events (#2040)
+ - [Wayland] Added support for more human-readable monitor names where available
  - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
@@ -335,6 +336,37 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: The OSMesa library was not unloaded on termination
  - [Wayland] Bugfix: `glfwCreateWindow` could emit `GLFW_FEATURE_UNAVAILABLE`
  - [Wayland] Bugfix: Lock key modifier bits were only set when lock keys were pressed
+ - [Wayland] Bugfix: A window leaving full screen mode would be iconified (#1995)
+ - [Wayland] Bugfix: A window leaving full screen mode ignored its desired size
+ - [Wayland] Bugfix: `glfwSetWindowMonitor` did not update windowed mode size
+ - [Wayland] Bugfix: `glfwRestoreWindow` would make a full screen window windowed
+ - [Wayland] Bugfix: A window maximized or restored by the user would enter an
+   inconsistent state
+ - [Wayland] Bugfix: Window maximization events were not emitted
+ - [Wayland] Bugfix: `glfwRestoreWindow` assumed it was always in windowed mode
+ - [Wayland] Bugfix: `glfwSetWindowSize` would resize a full screen window
+ - [Wayland] Bugfix: A window content scale event would be emitted every time
+   the window resized
+ - [Wayland] Bugfix: If `glfwInit` failed it would close stdin
+ - [Wayland] Bugfix: Manual resizing with fallback decorations behaved erratically
+   (#1991,#2115,#2127)
+ - [Wayland] Bugfix: Size limits included frame size for fallback decorations
+ - [Wayland] Bugfix: Updating `GLFW_DECORATED` had no effect on server-side
+   decorations
+ - [Wayland] Bugfix: A monitor would be reported as connected again if its scale
+   changed
+ - [Wayland] Bugfix: `glfwTerminate` would segfault if any monitor had changed
+   scale
+ - [Wayland] Bugfix: Window content scale events were not emitted when monitor
+   scale changed
+ - [Wayland] Bugfix: `glfwSetWindowAspectRatio` reported an error instead of
+   applying the specified ratio
+ - [Wayland] Bugfix: `GLFW_MAXIMIZED` window hint had no effect
+ - [Wayland] Bugfix: `glfwRestoreWindow` had no effect before first show
+ - [Wayland] Bugfix: Hiding and then showing a window caused program abort on
+   wlroots compositors (#1268)
+ - [Wayland] Bugfix: `GLFW_DECORATED` was ignored when showing a window with XDG
+   decorations
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)

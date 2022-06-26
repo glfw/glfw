@@ -184,11 +184,9 @@ static void registryHandleGlobalRemove(void* userData,
                                        struct wl_registry* registry,
                                        uint32_t name)
 {
-    _GLFWmonitor* monitor;
-
     for (int i = 0; i < _glfw.monitorCount; ++i)
     {
-        monitor = _glfw.monitors[i];
+        _GLFWmonitor* monitor = _glfw.monitors[i];
         if (monitor->wl.name == name)
         {
             _glfwInputMonitor(monitor, GLFW_DISCONNECTED, 0);
@@ -480,6 +478,10 @@ int _glfwInitWayland(void)
     long cursorSizeLong;
     int cursorSize;
 
+    // These must be set before any failure checks
+    _glfw.wl.timerfd = -1;
+    _glfw.wl.cursorTimerfd = -1;
+
     _glfw.wl.client.display_flush = (PFN_wl_display_flush)
         _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_flush");
     _glfw.wl.client.display_cancel_read = (PFN_wl_display_cancel_read)
@@ -636,9 +638,10 @@ int _glfwInitWayland(void)
     // Sync so we got all initial output events
     wl_display_roundtrip(_glfw.wl.display);
 
-    _glfw.wl.timerfd = -1;
-    if (_glfw.wl.seatVersion >= 4)
+#ifdef WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION
+    if (_glfw.wl.seatVersion >= WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION)
         _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
+#endif
 
     if (!_glfw.wl.wmBase)
     {

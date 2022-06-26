@@ -24,6 +24,7 @@ video tutorials.
  - Waris Boonyasiriwat
  - Kyle Brenneman
  - Rok Breulj
+ - TheBrokenRail
  - Kai Burjack
  - Martin Capitanio
  - Nicolas Caramelli
@@ -145,6 +146,7 @@ video tutorials.
  - Pierre Moulon
  - Martins Mozeiko
  - Pascal Muetschard
+ - James Murphy
  - Julian Møller
  - ndogxj
  - n3rdopolis
@@ -160,6 +162,7 @@ video tutorials.
  - Christopher Pelloux
  - Arturo J. Pérez
  - Vladimir Perminov
+ - Olivier Perret
  - Anthony Pesch
  - Orson Peters
  - Emmanuel Gil Peyrot
@@ -173,6 +176,7 @@ video tutorials.
  - Pablo Prietz
  - przemekmirek
  - pthom
+ - Martin Pulec
  - Guillaume Racicot
  - Philip Rideout
  - Eddie Ringle

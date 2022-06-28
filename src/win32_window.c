@@ -727,6 +727,10 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             if (scancode == 0x146)
                 scancode = 0x45;
 
+            // HACK: CJK IME sets the extended bit for right Shift
+            if (scancode == 0x136)
+                scancode = 0x36;
+
             key = _glfw.win32.keycodes[scancode];
 
             // The Ctrl keys require special handling

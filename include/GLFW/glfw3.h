@@ -4734,8 +4734,7 @@ GLFWAPI int glfwGetKeyScancode(int key);
  *
  *  This function returns the last state reported for the specified key to the
  *  specified window.  The returned state is one of `GLFW_PRESS` or
- *  `GLFW_RELEASE`.  The higher-level action `GLFW_REPEAT` is only reported to
- *  the key callback.
+ *  `GLFW_RELEASE`.  The action `GLFW_REPEAT` is only reported to the key callback.
  *
  *  If the @ref GLFW_STICKY_KEYS input mode is enabled, this function returns
  *  `GLFW_PRESS` the first time you call it for a key that was pressed, even if

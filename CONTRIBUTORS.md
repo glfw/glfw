@@ -18,6 +18,7 @@ video tutorials.
  - Nevyn Bengtsson
  - Niklas Bergström
  - Denis Bernard
+ - BiBi
  - Doug Binks
  - blanco
  - Waris Boonyasiriwat

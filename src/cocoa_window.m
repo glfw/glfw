@@ -1356,7 +1356,12 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
 int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 {
     @autoreleasepool {
-    return [window->ns.object isZoomed];
+
+    if (window->resizable)
+        return [window->ns.object isZoomed];
+    else
+        return GLFW_FALSE;
+
     } // autoreleasepool
 }
 

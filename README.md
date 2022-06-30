@@ -254,6 +254,7 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: `kUTTypeURL` was deprecated in macOS 12.0 (#2003)
  - [Cocoa] Bugfix: A connected Apple AirPlay would emit a useless error (#1791)
  - [Cocoa] Bugfix: The EGL and OSMesa libraries were not unloaded on termination
+ - [Cocoa] Bugfix: `GLFW_MAXIMIZED` was always true when `GLFW_RESIZABLE` was false
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)

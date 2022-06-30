@@ -1353,7 +1353,12 @@ GLFWbool _glfwWindowVisibleCocoa(_GLFWwindow* window)
 GLFWbool _glfwWindowMaximizedCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
-    return [window->ns.object isZoomed];
+
+    if (window->resizable)
+        return [window->ns.object isZoomed];
+    else
+        return GLFW_FALSE;
+
     } // autoreleasepool
 }
 

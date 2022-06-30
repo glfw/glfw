@@ -837,6 +837,12 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                 NSWindowCollectionBehaviorManaged;
             [window->ns.object setCollectionBehavior:behavior];
         }
+        else
+        {
+            const NSWindowCollectionBehavior behavior =
+                NSWindowCollectionBehaviorFullScreenNone;
+            [window->ns.object setCollectionBehavior:behavior];
+        }
 
         if (wndconfig->floating)
             [window->ns.object setLevel:NSFloatingWindowLevel];
@@ -1300,6 +1306,20 @@ void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
         else
             [window->ns.object setLevel:NSNormalWindowLevel];
 
+        if (window->resizable)
+        {
+            const NSWindowCollectionBehavior behavior =
+                NSWindowCollectionBehaviorFullScreenPrimary |
+                NSWindowCollectionBehaviorManaged;
+            [window->ns.object setCollectionBehavior:behavior];
+        }
+        else
+        {
+            const NSWindowCollectionBehavior behavior =
+                NSWindowCollectionBehaviorFullScreenNone;
+            [window->ns.object setCollectionBehavior:behavior];
+        }
+
         [window->ns.object setHasShadow:YES];
         // HACK: Clearing NSWindowStyleMaskTitled resets and disables the window
         //       title property but the miniwindow title property is unaffected
@@ -1365,7 +1385,23 @@ GLFWbool _glfwFramebufferTransparentCocoa(_GLFWwindow* window)
 void _glfwSetWindowResizableCocoa(_GLFWwindow* window, GLFWbool enabled)
 {
     @autoreleasepool {
+
     [window->ns.object setStyleMask:getStyleMask(window)];
+
+    if (enabled)
+    {
+        const NSWindowCollectionBehavior behavior =
+            NSWindowCollectionBehaviorFullScreenPrimary |
+            NSWindowCollectionBehaviorManaged;
+        [window->ns.object setCollectionBehavior:behavior];
+    }
+    else
+    {
+        const NSWindowCollectionBehavior behavior =
+            NSWindowCollectionBehaviorFullScreenNone;
+        [window->ns.object setCollectionBehavior:behavior];
+    }
+
     } // autoreleasepool
 }
 

@@ -227,6 +227,7 @@ information on what to include when reporting a bug.
  - [Cocoa] Changed `EGLNativeWindowType` from `NSView` to `CALayer` (#1169)
  - [Cocoa] Changed F13 key to report Print Screen for cross-platform consistency
    (#1786)
+ - [Cocoa] Disabled macOS fullscreen when `GLFW_RESIZABLE` is false
  - [Cocoa] Removed dependency on the CoreVideo framework
  - [Cocoa] Bugfix: `glfwSetWindowSize` used a bottom-left anchor point (#1553)
  - [Cocoa] Bugfix: Window remained on screen after destruction until event poll

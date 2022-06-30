@@ -31,6 +31,10 @@
 #include <float.h>
 #include <string.h>
 
+// HACK: This enum value is missing from framework headers on OS X 10.11 despite
+//       having been (according to documentation) added in Mac OS X 10.7
+#define NSWindowCollectionBehaviorFullScreenNone (1 << 9)
+
 // Returns the style mask corresponding to the window settings
 //
 static NSUInteger getStyleMask(_GLFWwindow* window)
@@ -837,6 +841,12 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                 NSWindowCollectionBehaviorManaged;
             [window->ns.object setCollectionBehavior:behavior];
         }
+        else
+        {
+            const NSWindowCollectionBehavior behavior =
+                NSWindowCollectionBehaviorFullScreenNone;
+            [window->ns.object setCollectionBehavior:behavior];
+        }
 
         if (wndconfig->floating)
             [window->ns.object setLevel:NSFloatingWindowLevel];
@@ -1299,6 +1309,20 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
         else
             [window->ns.object setLevel:NSNormalWindowLevel];
 
+        if (window->resizable)
+        {
+            const NSWindowCollectionBehavior behavior =
+                NSWindowCollectionBehaviorFullScreenPrimary |
+                NSWindowCollectionBehaviorManaged;
+            [window->ns.object setCollectionBehavior:behavior];
+        }
+        else
+        {
+            const NSWindowCollectionBehavior behavior =
+                NSWindowCollectionBehaviorFullScreenNone;
+            [window->ns.object setCollectionBehavior:behavior];
+        }
+
         [window->ns.object setHasShadow:YES];
         // HACK: Clearing NSWindowStyleMaskTitled resets and disables the window
         //       title property but the miniwindow title property is unaffected
@@ -1364,7 +1388,23 @@ int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
 void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
 {
     @autoreleasepool {
+
     [window->ns.object setStyleMask:getStyleMask(window)];
+
+    if (enabled)
+    {
+        const NSWindowCollectionBehavior behavior =
+            NSWindowCollectionBehaviorFullScreenPrimary |
+            NSWindowCollectionBehaviorManaged;
+        [window->ns.object setCollectionBehavior:behavior];
+    }
+    else
+    {
+        const NSWindowCollectionBehavior behavior =
+            NSWindowCollectionBehaviorFullScreenNone;
+        [window->ns.object setCollectionBehavior:behavior];
+    }
+
     } // autoreleasepool
 }
 

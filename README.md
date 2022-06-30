@@ -133,6 +133,7 @@ information on what to include when reporting a bug.
    match event scancode (#1993)
  - [Win32] Bugfix: Instance-local operations used executable instance (#469,#1296,#1395)
  - [Win32] Bugfix: The OSMesa library was not unloaded on termination
+ - [Cocoa] Disabled macOS fullscreen when `GLFW_RESIZABLE` is false
  - [Cocoa] Bugfix: A connected Apple AirPlay would emit a useless error (#1791)
  - [Cocoa] Bugfix: The EGL and OSMesa libraries were not unloaded on termination
  - [X11] Bugfix: The OSMesa libray was not unloaded on termination

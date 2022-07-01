@@ -31,26 +31,6 @@
 #include <float.h>
 #include <string.h>
 
-// Returns the style mask corresponding to the window settings
-//
-static NSUInteger getStyleMask(_GLFWwindow* window)
-{
-    NSUInteger styleMask = NSWindowStyleMaskMiniaturizable;
-
-    if (window->monitor || !window->decorated)
-        styleMask |= NSWindowStyleMaskBorderless;
-    else
-    {
-        styleMask |= NSWindowStyleMaskTitled |
-                     NSWindowStyleMaskClosable;
-
-        if (window->resizable)
-            styleMask |= NSWindowStyleMaskResizable;
-    }
-
-    return styleMask;
-}
-
 // Returns whether the cursor is in the content area of the specified window
 //
 static GLFWbool cursorInContentArea(_GLFWwindow* window)
@@ -809,9 +789,21 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     else
         contentRect = NSMakeRect(0, 0, wndconfig->width, wndconfig->height);
 
+    NSUInteger styleMask = NSWindowStyleMaskMiniaturizable;
+
+    if (window->monitor || !window->decorated)
+        styleMask |= NSWindowStyleMaskBorderless;
+    else
+    {
+        styleMask |= (NSWindowStyleMaskTitled | NSWindowStyleMaskClosable);
+
+        if (window->resizable)
+            styleMask |= NSWindowStyleMaskResizable;
+    }
+
     window->ns.object = [[GLFWWindow alloc]
         initWithContentRect:contentRect
-                  styleMask:getStyleMask(window)
+                  styleMask:styleMask
                     backing:NSBackingStoreBuffered
                       defer:NO];
 
@@ -1241,9 +1233,10 @@ void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
         {
             const NSRect contentRect =
                 NSMakeRect(xpos, _glfwTransformYCocoa(ypos + height - 1), width, height);
+            const NSUInteger styleMask = [window->ns.object styleMask];
             const NSRect frameRect =
                 [window->ns.object frameRectForContentRect:contentRect
-                                                 styleMask:getStyleMask(window)];
+                                                 styleMask:styleMask];
 
             [window->ns.object setFrame:frameRect display:YES];
         }
@@ -1260,7 +1253,27 @@ void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
     // TODO: Solve this in a less terrible way
     _glfwPollEventsCocoa();
 
-    const NSUInteger styleMask = getStyleMask(window);
+    NSUInteger styleMask = [window->ns.object styleMask];
+
+    if (window->monitor)
+    {
+        styleMask &= ~(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable);
+        styleMask |= NSWindowStyleMaskBorderless;
+    }
+    else
+    {
+        if (window->decorated)
+        {
+            styleMask &= ~NSWindowStyleMaskBorderless;
+            styleMask |= (NSWindowStyleMaskTitled | NSWindowStyleMaskClosable);
+        }
+
+        if (window->resizable)
+            styleMask |= NSWindowStyleMaskResizable;
+        else
+            styleMask &= ~NSWindowStyleMaskResizable;
+    }
+
     [window->ns.object setStyleMask:styleMask];
     // HACK: Changing the style mask can cause the first responder to be cleared
     [window->ns.object makeFirstResponder:window->ns.view];
@@ -1391,10 +1404,10 @@ void _glfwSetWindowResizableCocoa(_GLFWwindow* window, GLFWbool enabled)
 {
     @autoreleasepool {
 
-    [window->ns.object setStyleMask:getStyleMask(window)];
-
+    const NSUInteger styleMask = [window->ns.object styleMask];
     if (enabled)
     {
+        [window->ns.object setStyleMask:(styleMask | NSWindowStyleMaskResizable)];
         const NSWindowCollectionBehavior behavior =
             NSWindowCollectionBehaviorFullScreenPrimary |
             NSWindowCollectionBehaviorManaged;
@@ -1402,6 +1415,7 @@ void _glfwSetWindowResizableCocoa(_GLFWwindow* window, GLFWbool enabled)
     }
     else
     {
+        [window->ns.object setStyleMask:(styleMask & ~NSWindowStyleMaskResizable)];
         const NSWindowCollectionBehavior behavior =
             NSWindowCollectionBehaviorFullScreenNone;
         [window->ns.object setCollectionBehavior:behavior];
@@ -1413,8 +1427,22 @@ void _glfwSetWindowResizableCocoa(_GLFWwindow* window, GLFWbool enabled)
 void _glfwSetWindowDecoratedCocoa(_GLFWwindow* window, GLFWbool enabled)
 {
     @autoreleasepool {
-    [window->ns.object setStyleMask:getStyleMask(window)];
+
+    NSUInteger styleMask = [window->ns.object styleMask];
+    if (enabled)
+    {
+        styleMask |= (NSWindowStyleMaskTitled | NSWindowStyleMaskClosable);
+        styleMask &= ~NSWindowStyleMaskBorderless;
+    }
+    else
+    {
+        styleMask |= NSWindowStyleMaskBorderless;
+        styleMask &= ~(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable);
+    }
+
+    [window->ns.object setStyleMask:styleMask];
     [window->ns.object makeFirstResponder:window->ns.view];
+
     } // autoreleasepool
 }
 

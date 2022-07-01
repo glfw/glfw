@@ -83,6 +83,7 @@ video tutorials.
  - heromyth
  - Lucas Hinderberger
  - Paul Holden
+ - Hajime Hoshi
  - Warren Hu
  - Charles Huber
  - Brent Huisman
@@ -147,6 +148,7 @@ video tutorials.
  - James Murphy
  - Julian Møller
  - ndogxj
+ - F. Nedelec
  - Kristian Nielsen
  - Kamil Nowakowski
  - onox

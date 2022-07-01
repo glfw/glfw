@@ -137,6 +137,10 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: A connected Apple AirPlay would emit a useless error (#1791)
  - [Cocoa] Bugfix: The EGL and OSMesa libraries were not unloaded on termination
  - [Cocoa] Bugfix: `GLFW_MAXIMIZED` was always true when `GLFW_RESIZABLE` was false
+ - [Cocoa] Bugfix: Changing `GLFW_DECORATED` in macOS fullscreen would abort
+   application (#1886)
+ - [Cocoa] Bugfix: Setting a monitor from macOS fullscreen would abort
+   application (#2110)
  - [X11] Bugfix: The OSMesa libray was not unloaded on termination
  - [X11] Bugfix: A malformed response during selection transfer could cause a segfault
  - [X11] Bugfix: Some calls would reset Xlib to the default error handler (#2108)

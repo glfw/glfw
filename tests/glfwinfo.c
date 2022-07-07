@@ -962,7 +962,7 @@ int main(int argc, char** argv)
                 continue;
 
             re_count++;
-            re = realloc(re, sizeof(char*) * re_count);
+            re = realloc((void*) re, sizeof(char*) * re_count);
             re[re_count - 1] = "VK_KHR_portability_enumeration";
             portability_enumeration = true;
         }
@@ -999,7 +999,7 @@ int main(int argc, char** argv)
             exit(EXIT_FAILURE);
         }
 
-        free(re);
+        free((void*) re);
 
         gladLoadVulkanUserPtr(NULL, (GLADuserptrloadfunc) glfwGetInstanceProcAddress, instance);
 

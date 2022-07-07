@@ -479,9 +479,9 @@ void* _glfwLoadLocalVulkanLoaderNS(void)
     if (!frameworksUrl)
         return NULL;
 
-    CFURLRef url = CFURLCreateCopyAppendingPathComponent(
+    CFURLRef loaderUrl = CFURLCreateCopyAppendingPathComponent(
         kCFAllocatorDefault, frameworksUrl, CFSTR("libvulkan.1.dylib"), false);
-    if (!url)
+    if (!loaderUrl)
     {
         CFRelease(frameworksUrl);
         return NULL;
@@ -490,10 +490,10 @@ void* _glfwLoadLocalVulkanLoaderNS(void)
     char path[PATH_MAX];
     void* handle = NULL;
 
-    if (CFURLGetFileSystemRepresentation(url, true, (UInt8*) path, sizeof(path) - 1))
+    if (CFURLGetFileSystemRepresentation(loaderUrl, true, (UInt8*) path, sizeof(path) - 1))
         handle = _glfw_dlopen(path);
 
-    CFRelease(url);
+    CFRelease(loaderUrl);
     CFRelease(frameworksUrl);
     return handle;
 }

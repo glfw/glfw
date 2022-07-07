@@ -59,6 +59,7 @@ video tutorials.
  - Jan Ekström
  - Siavash Eliasi
  - TheExileFox
+ - Nikita Fediuchin
  - Felipe Ferreira
  - Michael Fogleman
  - Jason Francis

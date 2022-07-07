@@ -141,6 +141,8 @@ information on what to include when reporting a bug.
    application (#1886)
  - [Cocoa] Bugfix: Setting a monitor from macOS fullscreen would abort
    application (#2110)
+ - [Cocoa] Bugfix: The Vulkan loader was not loaded from the `Frameworks` bundle
+   subdirectory (#2113,#2120)
  - [X11] Bugfix: The OSMesa libray was not unloaded on termination
  - [X11] Bugfix: A malformed response during selection transfer could cause a segfault
  - [X11] Bugfix: Some calls would reset Xlib to the default error handler (#2108)

@@ -33,7 +33,7 @@ add_custom_target(update_mappings
     SOURCES mappings.h.in "${GLFW_SOURCE_DIR}/CMake/GenerateMappings.cmake"
     VERBATIM)
 
-set_target_properties(update_mappings PROPERTIES FOLDER "GLFW3")
+set_target_properties(update_mappings PROPERTIES FOLDER "${KARMALIBRARYFOLDER}")
 
 if (GLFW_BUILD_COCOA)
     target_compile_definitions(glfw PRIVATE _GLFW_COCOA)
@@ -141,7 +141,7 @@ set_target_properties(glfw PROPERTIES
                       C_STANDARD 99
                       C_EXTENSIONS OFF
                       DEFINE_SYMBOL _GLFW_BUILD_DLL
-                      FOLDER "GLFW3")
+                      FOLDER "${KARMALIBRARYFOLDER}")
 
 target_include_directories(glfw PUBLIC
                            "$<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>"

@@ -60,6 +60,7 @@ video tutorials.
  - Jan Ekström
  - Siavash Eliasi
  - Ahmad Fatoum
+ - Nikita Fediuchin
  - Felipe Ferreira
  - Michael Fogleman
  - Jason Francis

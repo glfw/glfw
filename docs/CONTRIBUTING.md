@@ -352,7 +352,7 @@ already is an open issue for it and if it's already being developed in an
 [experimental branch](https://github.com/glfw/glfw/branches/all).
 
 __There is no preferred patch size__.  A one-character change is just as welcome
-as a thousand-line long one, if that is the appropriate size for the
+as one adding a thousand lines, if that is the appropriate size for the
 feature.
 
 In addition to the code, a complete feature includes:

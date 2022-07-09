@@ -60,7 +60,7 @@ GLFWbool _glfwInitVulkan(int mode)
 #elif defined(_GLFW_WIN32)
         _glfw.vk.handle = _glfwPlatformLoadModule("vulkan-1.dll");
 #elif defined(_GLFW_COCOA)
-        _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.1.dylib");
+        _glfw.vk.handle = _glfwPlatformLoadModule("libMoltenVK.dylib");
         if (!_glfw.vk.handle)
             _glfw.vk.handle = _glfwLoadLocalVulkanLoaderCocoa();
 #elif defined(__OpenBSD__) || defined(__NetBSD__)

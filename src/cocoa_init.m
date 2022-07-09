@@ -465,7 +465,7 @@ void* _glfwLoadLocalVulkanLoaderCocoa(void)
         return NULL;
 
     CFURLRef loaderUrl = CFURLCreateCopyAppendingPathComponent(
-        kCFAllocatorDefault, frameworksUrl, CFSTR("libvulkan.1.dylib"), false);
+        kCFAllocatorDefault, frameworksUrl, CFSTR("libMoltenVK.dylib"), false);
     if (!loaderUrl)
     {
         CFRelease(frameworksUrl);

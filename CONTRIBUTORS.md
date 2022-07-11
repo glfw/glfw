@@ -154,6 +154,7 @@ video tutorials.
  - F. Nedelec
  - n3rdopolis
  - Kristian Nielsen
+ - Joel Niemelä
  - Kamil Nowakowski
  - onox
  - Denis Ovod

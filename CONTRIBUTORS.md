@@ -151,6 +151,7 @@ video tutorials.
  - ndogxj
  - F. Nedelec
  - Kristian Nielsen
+ - Joel Niemelä
  - Kamil Nowakowski
  - onox
  - Denis Ovod

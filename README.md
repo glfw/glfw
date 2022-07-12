@@ -139,6 +139,7 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: A malformed response during selection transfer could cause a segfault
  - [X11] Bugfix: Some calls would reset Xlib to the default error handler (#2108)
  - [Wayland] Added support for file path drop events (#2040)
+ - [Wayland] Removed support for the deprecated wl\_shell protocol
  - [Wayland] Bugfix: `glfwSetClipboardString` would fail if set to result of
    `glfwGetClipboardString`
  - [Wayland] Bugfix: Data source creation error would cause double free at termination

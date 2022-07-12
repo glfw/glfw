@@ -378,6 +378,13 @@ Existing projects and makefiles that set the `LIB_SUFFIX` option will use the
 suffix chosen by the GNUInstallDirs package and the option will be ignored.
 
 
+@subsubsection wl_shell_33 Support for the wl_shell protocol
+
+Support for the wl_shell protocol has been removed and GLFW now only supports
+the XDG-Shell protocol.  If your Wayland compositor does not support XDG-Shell
+then GLFW will fail to initialize.
+
+
 @subsubsection mir_removed_33 Mir support
 
 The experimental Mir support has been completely removed as the Mir project has

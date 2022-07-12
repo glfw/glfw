@@ -76,11 +76,6 @@ static void registryHandleGlobal(void* userData,
         _glfw.wl.shm =
             wl_registry_bind(registry, name, &wl_shm_interface, 1);
     }
-    else if (strcmp(interface, "wl_shell") == 0)
-    {
-        _glfw.wl.shell =
-            wl_registry_bind(registry, name, &wl_shell_interface, 1);
-    }
     else if (strcmp(interface, "wl_output") == 0)
     {
         _glfwAddOutputWayland(name, version);
@@ -439,6 +434,13 @@ int _glfwPlatformInit(void)
     if (_glfw.wl.seatVersion >= 4)
         _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
 
+    if (!_glfw.wl.wmBase)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to find xdg-shell in your compositor");
+        return GLFW_FALSE;
+    }
+
     if (_glfw.wl.pointer && _glfw.wl.shm)
     {
         cursorTheme = getenv("XCURSOR_THEME");
@@ -529,8 +531,6 @@ void _glfwPlatformTerminate(void)
         wl_compositor_destroy(_glfw.wl.compositor);
     if (_glfw.wl.shm)
         wl_shm_destroy(_glfw.wl.shm);
-    if (_glfw.wl.shell)
-        wl_shell_destroy(_glfw.wl.shell);
     if (_glfw.wl.viewporter)
         wp_viewporter_destroy(_glfw.wl.viewporter);
     if (_glfw.wl.decorationManager)

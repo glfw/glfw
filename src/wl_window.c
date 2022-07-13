@@ -1843,15 +1843,10 @@ GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
 void _glfwDestroyWindowWayland(_GLFWwindow* window)
 {
     if (window == _glfw.wl.pointerFocus)
-    {
         _glfw.wl.pointerFocus = NULL;
-        _glfwInputCursorEnter(window, GLFW_FALSE);
-    }
+
     if (window == _glfw.wl.keyboardFocus)
-    {
         _glfw.wl.keyboardFocus = NULL;
-        _glfwInputWindowFocus(window, GLFW_FALSE);
-    }
 
     if (window->wl.idleInhibitor)
         zwp_idle_inhibitor_v1_destroy(window->wl.idleInhibitor);

@@ -1044,8 +1044,8 @@ static void pointerHandleLeave(void* userData,
 
     _glfw.wl.serial = serial;
     _glfw.wl.pointerFocus = NULL;
-    _glfwInputCursorEnter(window, GLFW_FALSE);
     _glfw.wl.cursorPreviousName = NULL;
+    _glfwInputCursorEnter(window, GLFW_FALSE);
 }
 
 static void setCursor(_GLFWwindow* window, const char* name)
@@ -1116,8 +1116,8 @@ static void pointerHandleMotion(void* userData,
     switch (window->wl.decorations.focus)
     {
         case mainWindow:
-            _glfwInputCursorPos(window, x, y);
             _glfw.wl.cursorPreviousName = NULL;
+            _glfwInputCursorPos(window, x, y);
             return;
         case topDecoration:
             if (y < GLFW_BORDER_SIZE)

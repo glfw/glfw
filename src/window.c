@@ -833,6 +833,16 @@ GLFWAPI void glfwFocusWindow(GLFWwindow* handle)
     _glfw.platform.focusWindow(window);
 }
 
+GLFWAPI void glfwDragWindow(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT();
+
+    _glfw.platform.dragWindow(window);
+}
+
 GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;

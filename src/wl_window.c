@@ -2087,6 +2087,11 @@ void _glfwFocusWindowWayland(_GLFWwindow* window)
                     "Wayland: The platform does not support setting the input focus");
 }
 
+void _glfwDragWindowWayland(_GLFWwindow* window)
+{
+    wl_shell_surface_move(window->wl.shellSurface, _glfw.wl.seat, _glfw.wl.pointerSerial);
+}
+
 void _glfwSetWindowMonitorWayland(_GLFWwindow* window,
                                   _GLFWmonitor* monitor,
                                   int xpos, int ypos,

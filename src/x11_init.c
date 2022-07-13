@@ -1223,6 +1223,7 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
         _glfwHideWindowX11,
         _glfwRequestWindowAttentionX11,
         _glfwFocusWindowX11,
+        _glfwDragWindowX11,
         _glfwSetWindowMonitorX11,
         _glfwWindowFocusedX11,
         _glfwWindowIconifiedX11,

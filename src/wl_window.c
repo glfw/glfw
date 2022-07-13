@@ -2089,7 +2089,7 @@ void _glfwFocusWindowWayland(_GLFWwindow* window)
 
 void _glfwDragWindowWayland(_GLFWwindow* window)
 {
-    wl_shell_surface_move(window->wl.shellSurface, _glfw.wl.seat, _glfw.wl.pointerSerial);
+    xdg_toplevel_move(window->wl.xdg.toplevel, _glfw.wl.seat, _glfw.wl.pointerEnterSerial);
 }
 
 void _glfwSetWindowMonitorWayland(_GLFWwindow* window,

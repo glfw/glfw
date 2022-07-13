@@ -786,7 +786,7 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
 static void setCursorImage(_GLFWwindow* window,
                            _GLFWcursorWayland* cursorWayland)
 {
-    struct itimerspec timer = {};
+    struct itimerspec timer = {0};
     struct wl_cursor* wlCursor = cursorWayland->cursor;
     struct wl_cursor_image* image;
     struct wl_buffer* buffer;
@@ -1442,7 +1442,7 @@ static void keyboardHandleLeave(void* userData,
     if (!window)
         return;
 
-    struct itimerspec timer = {};
+    struct itimerspec timer = {0};
     timerfd_settime(_glfw.wl.timerfd, 0, &timer, NULL);
 
     _glfw.wl.serial = serial;
@@ -1516,7 +1516,7 @@ static void keyboardHandleKey(void* userData,
     _glfw.wl.serial = serial;
     _glfwInputKey(window, key, scancode, action, _glfw.wl.xkb.modifiers);
 
-    struct itimerspec timer = {};
+    struct itimerspec timer = {0};
 
     if (action == GLFW_PRESS)
     {

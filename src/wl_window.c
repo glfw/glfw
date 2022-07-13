@@ -892,7 +892,7 @@ static xkb_keysym_t composeSymbol(xkb_keysym_t sym)
     }
 }
 
-GLFWbool inputText(_GLFWwindow* window, uint32_t scancode)
+void inputText(_GLFWwindow* window, uint32_t scancode)
 {
     const xkb_keysym_t* keysyms;
     const xkb_keycode_t keycode = scancode + 8;
@@ -908,8 +908,6 @@ GLFWbool inputText(_GLFWwindow* window, uint32_t scancode)
             _glfwInputChar(window, codepoint, mods, plain);
         }
     }
-
-    return xkb_keymap_key_repeats(_glfw.wl.xkb.keymap, keycode);
 }
 
 static void handleEvents(double* timeout)
@@ -918,7 +916,7 @@ static void handleEvents(double* timeout)
     struct pollfd fds[] =
     {
         { wl_display_get_fd(_glfw.wl.display), POLLIN },
-        { _glfw.wl.timerfd, POLLIN },
+        { _glfw.wl.keyRepeatTimerfd, POLLIN },
         { _glfw.wl.cursorTimerfd, POLLIN },
     };
 
@@ -962,16 +960,16 @@ static void handleEvents(double* timeout)
         {
             uint64_t repeats;
 
-            if (read(_glfw.wl.timerfd, &repeats, sizeof(repeats)) == 8)
+            if (read(_glfw.wl.keyRepeatTimerfd, &repeats, sizeof(repeats)) == 8)
             {
                 for (uint64_t i = 0; i < repeats; i++)
                 {
                     _glfwInputKey(_glfw.wl.keyboardFocus,
-                                  _glfw.wl.keyboardLastKey,
-                                  _glfw.wl.keyboardLastScancode,
+                                  translateKey(_glfw.wl.keyRepeatScancode),
+                                  _glfw.wl.keyRepeatScancode,
                                   GLFW_PRESS,
                                   _glfw.wl.xkb.modifiers);
-                    inputText(_glfw.wl.keyboardFocus, _glfw.wl.keyboardLastScancode);
+                    inputText(_glfw.wl.keyboardFocus, _glfw.wl.keyRepeatScancode);
                 }
 
                 event = GLFW_TRUE;
@@ -1490,7 +1488,7 @@ static void keyboardHandleLeave(void* userData,
         return;
 
     struct itimerspec timer = {0};
-    timerfd_settime(_glfw.wl.timerfd, 0, &timer, NULL);
+    timerfd_settime(_glfw.wl.keyRepeatTimerfd, 0, &timer, NULL);
 
     _glfw.wl.serial = serial;
     _glfw.wl.keyboardFocus = NULL;
@@ -1519,23 +1517,25 @@ static void keyboardHandleKey(void* userData,
 
     if (action == GLFW_PRESS)
     {
-        const GLFWbool shouldRepeat = inputText(window, scancode);
+        inputText(window, scancode);
 
-        if (shouldRepeat && _glfw.wl.keyboardRepeatRate > 0)
+        const xkb_keycode_t keycode = scancode + 8;
+
+        if (xkb_keymap_key_repeats(_glfw.wl.xkb.keymap, keycode) &&
+            _glfw.wl.keyRepeatRate > 0)
         {
-            _glfw.wl.keyboardLastKey = key;
-            _glfw.wl.keyboardLastScancode = scancode;
-            if (_glfw.wl.keyboardRepeatRate > 1)
-                timer.it_interval.tv_nsec = 1000000000 / _glfw.wl.keyboardRepeatRate;
+            _glfw.wl.keyRepeatScancode = scancode;
+            if (_glfw.wl.keyRepeatRate > 1)
+                timer.it_interval.tv_nsec = 1000000000 / _glfw.wl.keyRepeatRate;
             else
                 timer.it_interval.tv_sec = 1;
 
-            timer.it_value.tv_sec = _glfw.wl.keyboardRepeatDelay / 1000;
-            timer.it_value.tv_nsec = (_glfw.wl.keyboardRepeatDelay % 1000) * 1000000;
+            timer.it_value.tv_sec = _glfw.wl.keyRepeatDelay / 1000;
+            timer.it_value.tv_nsec = (_glfw.wl.keyRepeatDelay % 1000) * 1000000;
         }
     }
 
-    timerfd_settime(_glfw.wl.timerfd, 0, &timer, NULL);
+    timerfd_settime(_glfw.wl.keyRepeatTimerfd, 0, &timer, NULL);
 }
 
 static void keyboardHandleModifiers(void* userData,
@@ -1595,8 +1595,8 @@ static void keyboardHandleRepeatInfo(void* userData,
     if (keyboard != _glfw.wl.keyboard)
         return;
 
-    _glfw.wl.keyboardRepeatRate = rate;
-    _glfw.wl.keyboardRepeatDelay = delay;
+    _glfw.wl.keyRepeatRate = rate;
+    _glfw.wl.keyRepeatDelay = delay;
 }
 #endif
 

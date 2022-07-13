@@ -1511,14 +1511,11 @@ static void keyboardHandleKey(void* userData,
         state == WL_KEYBOARD_KEY_STATE_PRESSED ? GLFW_PRESS : GLFW_RELEASE;
 
     _glfw.wl.serial = serial;
-    _glfwInputKey(window, key, scancode, action, _glfw.wl.xkb.modifiers);
 
     struct itimerspec timer = {0};
 
     if (action == GLFW_PRESS)
     {
-        inputText(window, scancode);
-
         const xkb_keycode_t keycode = scancode + 8;
 
         if (xkb_keymap_key_repeats(_glfw.wl.xkb.keymap, keycode) &&
@@ -1536,6 +1533,11 @@ static void keyboardHandleKey(void* userData,
     }
 
     timerfd_settime(_glfw.wl.keyRepeatTimerfd, 0, &timer, NULL);
+
+    _glfwInputKey(window, key, scancode, action, _glfw.wl.xkb.modifiers);
+
+    if (action == GLFW_PRESS)
+        inputText(window, scancode);
 }
 
 static void keyboardHandleModifiers(void* userData,

@@ -478,7 +478,7 @@ int _glfwInitWayland(void)
     int cursorSize;
 
     // These must be set before any failure checks
-    _glfw.wl.timerfd = -1;
+    _glfw.wl.keyRepeatTimerfd = -1;
     _glfw.wl.cursorTimerfd = -1;
 
     _glfw.wl.client.display_flush = (PFN_wl_display_flush)
@@ -639,7 +639,10 @@ int _glfwInitWayland(void)
 
 #ifdef WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION
     if (_glfw.wl.seatVersion >= WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION)
-        _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
+    {
+        _glfw.wl.keyRepeatTimerfd =
+            timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
+    }
 #endif
 
     if (!_glfw.wl.wmBase)
@@ -772,8 +775,8 @@ void _glfwTerminateWayland(void)
         wl_display_disconnect(_glfw.wl.display);
     }
 
-    if (_glfw.wl.timerfd >= 0)
-        close(_glfw.wl.timerfd);
+    if (_glfw.wl.keyRepeatTimerfd >= 0)
+        close(_glfw.wl.keyRepeatTimerfd);
     if (_glfw.wl.cursorTimerfd >= 0)
         close(_glfw.wl.cursorTimerfd);
 

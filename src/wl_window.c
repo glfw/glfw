@@ -821,6 +821,54 @@ static GLFWbool flushDisplay(void)
     return GLFW_TRUE;
 }
 
+static int translateKey(uint32_t scancode)
+{
+    if (scancode < sizeof(_glfw.wl.keycodes) / sizeof(_glfw.wl.keycodes[0]))
+        return _glfw.wl.keycodes[scancode];
+
+    return GLFW_KEY_UNKNOWN;
+}
+
+static xkb_keysym_t composeSymbol(xkb_keysym_t sym)
+{
+    if (sym == XKB_KEY_NoSymbol || !_glfw.wl.xkb.composeState)
+        return sym;
+    if (xkb_compose_state_feed(_glfw.wl.xkb.composeState, sym)
+            != XKB_COMPOSE_FEED_ACCEPTED)
+        return sym;
+    switch (xkb_compose_state_get_status(_glfw.wl.xkb.composeState))
+    {
+        case XKB_COMPOSE_COMPOSED:
+            return xkb_compose_state_get_one_sym(_glfw.wl.xkb.composeState);
+        case XKB_COMPOSE_COMPOSING:
+        case XKB_COMPOSE_CANCELLED:
+            return XKB_KEY_NoSymbol;
+        case XKB_COMPOSE_NOTHING:
+        default:
+            return sym;
+    }
+}
+
+GLFWbool inputText(_GLFWwindow* window, uint32_t scancode)
+{
+    const xkb_keysym_t* keysyms;
+    const xkb_keycode_t keycode = scancode + 8;
+
+    if (xkb_state_key_get_syms(_glfw.wl.xkb.state, keycode, &keysyms) == 1)
+    {
+        const xkb_keysym_t keysym = composeSymbol(keysyms[0]);
+        const uint32_t codepoint = _glfwKeySym2Unicode(keysym);
+        if (codepoint != GLFW_INVALID_CODEPOINT)
+        {
+            const int mods = _glfw.wl.xkb.modifiers;
+            const int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
+            _glfwInputChar(window, codepoint, mods, plain);
+        }
+    }
+
+    return xkb_keymap_key_repeats(_glfw.wl.xkb.keymap, keycode);
+}
+
 static void handleEvents(double* timeout)
 {
     GLFWbool event = GLFW_FALSE;
@@ -880,8 +928,7 @@ static void handleEvents(double* timeout)
                                   _glfw.wl.keyboardLastScancode,
                                   GLFW_PRESS,
                                   _glfw.wl.xkb.modifiers);
-                    _glfwInputTextWayland(_glfw.wl.keyboardFocus,
-                                          _glfw.wl.keyboardLastScancode);
+                    inputText(_glfw.wl.keyboardFocus, _glfw.wl.keyboardLastScancode);
                 }
 
                 event = GLFW_TRUE;
@@ -1405,54 +1452,6 @@ static void keyboardHandleLeave(void* userData,
     _glfwInputWindowFocus(window, GLFW_FALSE);
 }
 
-static int translateKey(uint32_t scancode)
-{
-    if (scancode < sizeof(_glfw.wl.keycodes) / sizeof(_glfw.wl.keycodes[0]))
-        return _glfw.wl.keycodes[scancode];
-
-    return GLFW_KEY_UNKNOWN;
-}
-
-static xkb_keysym_t composeSymbol(xkb_keysym_t sym)
-{
-    if (sym == XKB_KEY_NoSymbol || !_glfw.wl.xkb.composeState)
-        return sym;
-    if (xkb_compose_state_feed(_glfw.wl.xkb.composeState, sym)
-            != XKB_COMPOSE_FEED_ACCEPTED)
-        return sym;
-    switch (xkb_compose_state_get_status(_glfw.wl.xkb.composeState))
-    {
-        case XKB_COMPOSE_COMPOSED:
-            return xkb_compose_state_get_one_sym(_glfw.wl.xkb.composeState);
-        case XKB_COMPOSE_COMPOSING:
-        case XKB_COMPOSE_CANCELLED:
-            return XKB_KEY_NoSymbol;
-        case XKB_COMPOSE_NOTHING:
-        default:
-            return sym;
-    }
-}
-
-GLFWbool _glfwInputTextWayland(_GLFWwindow* window, uint32_t scancode)
-{
-    const xkb_keysym_t* keysyms;
-    const xkb_keycode_t keycode = scancode + 8;
-
-    if (xkb_state_key_get_syms(_glfw.wl.xkb.state, keycode, &keysyms) == 1)
-    {
-        const xkb_keysym_t keysym = composeSymbol(keysyms[0]);
-        const uint32_t codepoint = _glfwKeySym2Unicode(keysym);
-        if (codepoint != GLFW_INVALID_CODEPOINT)
-        {
-            const int mods = _glfw.wl.xkb.modifiers;
-            const int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
-            _glfwInputChar(window, codepoint, mods, plain);
-        }
-    }
-
-    return xkb_keymap_key_repeats(_glfw.wl.xkb.keymap, keycode);
-}
-
 static void keyboardHandleKey(void* userData,
                               struct wl_keyboard* keyboard,
                               uint32_t serial,
@@ -1475,7 +1474,7 @@ static void keyboardHandleKey(void* userData,
 
     if (action == GLFW_PRESS)
     {
-        const GLFWbool shouldRepeat = _glfwInputTextWayland(window, scancode);
+        const GLFWbool shouldRepeat = inputText(window, scancode);
 
         if (shouldRepeat && _glfw.wl.keyboardRepeatRate > 0)
         {

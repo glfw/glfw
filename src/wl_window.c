@@ -889,7 +889,7 @@ static xkb_keysym_t composeSymbol(xkb_keysym_t sym)
     }
 }
 
-void inputText(_GLFWwindow* window, uint32_t scancode)
+static void inputText(_GLFWwindow* window, uint32_t scancode)
 {
     const xkb_keysym_t* keysyms;
     const xkb_keycode_t keycode = scancode + 8;

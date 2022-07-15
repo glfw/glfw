@@ -183,6 +183,7 @@ video tutorials.
  - Philip Rideout
  - Eddie Ringle
  - Max Risuhin
+ - Joe Roback
  - Jorge Rodriguez
  - Luca Rood
  - Ed Ropple

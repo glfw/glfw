@@ -123,6 +123,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - [Wayland] Bugfix: Connecting a mouse after `glfwInit` would segfault (#1450)
  - [Linux] Bugfix: Joysticks without buttons were ignored (#2042,#2043)
 
 

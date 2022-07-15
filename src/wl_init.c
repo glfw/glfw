@@ -302,35 +302,32 @@ static void createKeyTables(void)
 
 static GLFWbool loadCursorTheme(void)
 {
-    const char* cursorTheme;
-    const char* cursorSizeStr;
-    char* cursorSizeEnd;
-    long cursorSizeLong;
-    int cursorSize;
+    int cursorSize = 32;
 
-    cursorTheme = getenv("XCURSOR_THEME");
-    cursorSizeStr = getenv("XCURSOR_SIZE");
-    cursorSize = 32;
-    if (cursorSizeStr)
+    const char* sizeString = getenv("XCURSOR_SIZE");
+    if (sizeString)
     {
         errno = 0;
-        cursorSizeLong = strtol(cursorSizeStr, &cursorSizeEnd, 10);
-        if (!*cursorSizeEnd && !errno && cursorSizeLong > 0 && cursorSizeLong <= INT_MAX)
-            cursorSize = (int)cursorSizeLong;
+        const long cursorSizeLong = strtol(sizeString, NULL, 10);
+        if (errno == 0 && cursorSizeLong > 0 && cursorSizeLong < INT_MAX)
+            cursorSize = (int) cursorSizeLong;
     }
-    _glfw.wl.cursorTheme =
-        wl_cursor_theme_load(cursorTheme, cursorSize, _glfw.wl.shm);
+
+    const char* themeName = getenv("XCURSOR_THEME");
+
+    _glfw.wl.cursorTheme = wl_cursor_theme_load(themeName, cursorSize, _glfw.wl.shm);
     if (!_glfw.wl.cursorTheme)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Failed to load default cursor theme");
         return GLFW_FALSE;
     }
+
     // If this happens to be NULL, we just fallback to the scale=1 version.
     _glfw.wl.cursorThemeHiDPI =
-        wl_cursor_theme_load(cursorTheme, 2 * cursorSize, _glfw.wl.shm);
-    _glfw.wl.cursorSurface =
-        wl_compositor_create_surface(_glfw.wl.compositor);
+        wl_cursor_theme_load(themeName, cursorSize * 2, _glfw.wl.shm);
+
+    _glfw.wl.cursorSurface = wl_compositor_create_surface(_glfw.wl.compositor);
     _glfw.wl.cursorTimerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
     return GLFW_TRUE;
 }

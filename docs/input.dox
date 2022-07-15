@@ -123,9 +123,21 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 @endcode
 
-The action is one of `GLFW_PRESS`, `GLFW_REPEAT` or `GLFW_RELEASE`.  The key
-will be `GLFW_KEY_UNKNOWN` if GLFW lacks a key token for it, for example
-_E-mail_ and _Play_ keys.
+The action is one of `GLFW_PRESS`, `GLFW_REPEAT` or `GLFW_RELEASE`.  Events with
+`GLFW_PRESS` and `GLFW_RELEASE` actions are emitted for every key press.  Most
+keys will also emit events with `GLFW_REPEAT` actions while a key is held down.
+
+Key events with `GLFW_REPEAT` actions are intended for text input.  They are
+emitted at the rate set in the user's keyboard settings.  At most one key is
+repeated even if several keys are held down.  `GLFW_REPEAT` actions should not
+be relied on to know which keys are being held down or to drive animation.
+Instead you should either save the state of relevant keys based on `GLFW_PRESS`
+and `GLFW_RELEASE` actions, or call @ref glfwGetKey, which provides basic cached
+key state.
+
+The key will be one of the existing [key tokens](@ref keys), or
+`GLFW_KEY_UNKNOWN` if GLFW lacks a token for it, for example _E-mail_ and _Play_
+keys.
 
 The scancode is unique for every key, regardless of whether it has a key token.
 Scancodes are platform-specific but consistent over time, so keys will have

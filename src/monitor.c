@@ -96,6 +96,10 @@ static GLFWbool refreshVideoModes(_GLFWmonitor* monitor)
 //
 void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement)
 {
+    assert(monitor != NULL);
+    assert(action == GLFW_CONNECTED || action == GLFW_DISCONNECTED);
+    assert(placement == _GLFW_INSERT_FIRST || placement == _GLFW_INSERT_LAST);
+
     if (action == GLFW_CONNECTED)
     {
         _glfw.monitorCount++;
@@ -155,6 +159,7 @@ void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement)
 //
 void _glfwInputMonitorWindow(_GLFWmonitor* monitor, _GLFWwindow* window)
 {
+    assert(monitor != NULL);
     monitor->window = window;
 }
 

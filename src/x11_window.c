@@ -1895,10 +1895,10 @@ void _glfwCreateInputContextX11(_GLFWwindow* window)
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwCreateWindowX11(_GLFWwindow* window,
-                         const _GLFWwndconfig* wndconfig,
-                         const _GLFWctxconfig* ctxconfig,
-                         const _GLFWfbconfig* fbconfig)
+GLFWbool _glfwCreateWindowX11(_GLFWwindow* window,
+                              const _GLFWwndconfig* wndconfig,
+                              const _GLFWctxconfig* ctxconfig,
+                              const _GLFWfbconfig* fbconfig)
 {
     Visual* visual = NULL;
     int depth;
@@ -2462,7 +2462,7 @@ void _glfwSetWindowMonitorX11(_GLFWwindow* window,
     XFlush(_glfw.x11.display);
 }
 
-int _glfwWindowFocusedX11(_GLFWwindow* window)
+GLFWbool _glfwWindowFocusedX11(_GLFWwindow* window)
 {
     Window focused;
     int state;
@@ -2471,19 +2471,19 @@ int _glfwWindowFocusedX11(_GLFWwindow* window)
     return window->x11.handle == focused;
 }
 
-int _glfwWindowIconifiedX11(_GLFWwindow* window)
+GLFWbool _glfwWindowIconifiedX11(_GLFWwindow* window)
 {
     return getWindowState(window) == IconicState;
 }
 
-int _glfwWindowVisibleX11(_GLFWwindow* window)
+GLFWbool _glfwWindowVisibleX11(_GLFWwindow* window)
 {
     XWindowAttributes wa;
     XGetWindowAttributes(_glfw.x11.display, window->x11.handle, &wa);
     return wa.map_state == IsViewable;
 }
 
-int _glfwWindowMaximizedX11(_GLFWwindow* window)
+GLFWbool _glfwWindowMaximizedX11(_GLFWwindow* window)
 {
     Atom* states;
     GLFWbool maximized = GLFW_FALSE;
@@ -2517,7 +2517,7 @@ int _glfwWindowMaximizedX11(_GLFWwindow* window)
     return maximized;
 }
 
-int _glfwWindowHoveredX11(_GLFWwindow* window)
+GLFWbool _glfwWindowHoveredX11(_GLFWwindow* window)
 {
     Window w = _glfw.x11.root;
     while (w)
@@ -2545,7 +2545,7 @@ int _glfwWindowHoveredX11(_GLFWwindow* window)
     return GLFW_FALSE;
 }
 
-int _glfwFramebufferTransparentX11(_GLFWwindow* window)
+GLFWbool _glfwFramebufferTransparentX11(_GLFWwindow* window)
 {
     if (!window->x11.transparent)
         return GLFW_FALSE;
@@ -2848,9 +2848,9 @@ int _glfwGetKeyScancodeX11(int key)
     return _glfw.x11.scancodes[key];
 }
 
-int _glfwCreateCursorX11(_GLFWcursor* cursor,
-                         const GLFWimage* image,
-                         int xhot, int yhot)
+GLFWbool _glfwCreateCursorX11(_GLFWcursor* cursor,
+                              const GLFWimage* image,
+                              int xhot, int yhot)
 {
     cursor->x11.handle = _glfwCreateNativeCursorX11(image, xhot, yhot);
     if (!cursor->x11.handle)
@@ -2859,7 +2859,7 @@ int _glfwCreateCursorX11(_GLFWcursor* cursor,
     return GLFW_TRUE;
 }
 
-int _glfwCreateStandardCursorX11(_GLFWcursor* cursor, int shape)
+GLFWbool _glfwCreateStandardCursorX11(_GLFWcursor* cursor, int shape)
 {
     if (_glfw.x11.xcursor.handle)
     {
@@ -3066,9 +3066,9 @@ void _glfwGetRequiredInstanceExtensionsX11(char** extensions)
         extensions[1] = "VK_KHR_xlib_surface";
 }
 
-int _glfwGetPhysicalDevicePresentationSupportX11(VkInstance instance,
-                                                 VkPhysicalDevice device,
-                                                 uint32_t queuefamily)
+GLFWbool _glfwGetPhysicalDevicePresentationSupportX11(VkInstance instance,
+                                                      VkPhysicalDevice device,
+                                                      uint32_t queuefamily)
 {
     VisualID visualID = XVisualIDFromVisual(DefaultVisual(_glfw.x11.display,
                                                           _glfw.x11.screen));

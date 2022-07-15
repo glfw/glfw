@@ -602,7 +602,7 @@ The format of the string is as follows:
  - The names of the always supported context creation APIs EGL and OSMesa
  - Any additional compile-time options, APIs and (on Windows) what compiler was used
 
-For example, GLFW 3.4 compiled as a DLL for Windows with MinGW may have a version string
+For example, compiling GLFW 3.4 with MinGW as a DLL for Windows, may result in a version string
 like this:
 
 @code

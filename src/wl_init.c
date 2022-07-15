@@ -335,6 +335,41 @@ static void createKeyTables(void)
     }
 }
 
+static GLFWbool loadCursorTheme(void)
+{
+    const char* cursorTheme;
+    const char* cursorSizeStr;
+    char* cursorSizeEnd;
+    long cursorSizeLong;
+    int cursorSize;
+
+    cursorTheme = getenv("XCURSOR_THEME");
+    cursorSizeStr = getenv("XCURSOR_SIZE");
+    cursorSize = 32;
+    if (cursorSizeStr)
+    {
+        errno = 0;
+        cursorSizeLong = strtol(cursorSizeStr, &cursorSizeEnd, 10);
+        if (!*cursorSizeEnd && !errno && cursorSizeLong > 0 && cursorSizeLong <= INT_MAX)
+            cursorSize = (int)cursorSizeLong;
+    }
+    _glfw.wl.cursorTheme =
+        wl_cursor_theme_load(cursorTheme, cursorSize, _glfw.wl.shm);
+    if (!_glfw.wl.cursorTheme)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to load default cursor theme");
+        return GLFW_FALSE;
+    }
+    // If this happens to be NULL, we just fallback to the scale=1 version.
+    _glfw.wl.cursorThemeHiDPI =
+        wl_cursor_theme_load(cursorTheme, 2 * cursorSize, _glfw.wl.shm);
+    _glfw.wl.cursorSurface =
+        wl_compositor_create_surface(_glfw.wl.compositor);
+    _glfw.wl.cursorTimerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
+    return GLFW_TRUE;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -471,12 +506,6 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
 
 int _glfwInitWayland(void)
 {
-    const char* cursorTheme;
-    const char* cursorSizeStr;
-    char* cursorSizeEnd;
-    long cursorSizeLong;
-    int cursorSize;
-
     // These must be set before any failure checks
     _glfw.wl.keyRepeatTimerfd = -1;
     _glfw.wl.cursorTimerfd = -1;
@@ -652,33 +681,15 @@ int _glfwInitWayland(void)
         return GLFW_FALSE;
     }
 
-    if (_glfw.wl.pointer && _glfw.wl.shm)
+    if (!_glfw.wl.shm)
     {
-        cursorTheme = getenv("XCURSOR_THEME");
-        cursorSizeStr = getenv("XCURSOR_SIZE");
-        cursorSize = 32;
-        if (cursorSizeStr)
-        {
-            errno = 0;
-            cursorSizeLong = strtol(cursorSizeStr, &cursorSizeEnd, 10);
-            if (!*cursorSizeEnd && !errno && cursorSizeLong > 0 && cursorSizeLong <= INT_MAX)
-                cursorSize = (int)cursorSizeLong;
-        }
-        _glfw.wl.cursorTheme =
-            wl_cursor_theme_load(cursorTheme, cursorSize, _glfw.wl.shm);
-        if (!_glfw.wl.cursorTheme)
-        {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Wayland: Failed to load default cursor theme");
-            return GLFW_FALSE;
-        }
-        // If this happens to be NULL, we just fallback to the scale=1 version.
-        _glfw.wl.cursorThemeHiDPI =
-            wl_cursor_theme_load(cursorTheme, 2 * cursorSize, _glfw.wl.shm);
-        _glfw.wl.cursorSurface =
-            wl_compositor_create_surface(_glfw.wl.compositor);
-        _glfw.wl.cursorTimerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to find wl_shm in your compositor");
+        return GLFW_FALSE;
     }
+
+    if (!loadCursorTheme())
+        return GLFW_FALSE;
 
     if (_glfw.wl.seat && _glfw.wl.dataDeviceManager)
     {

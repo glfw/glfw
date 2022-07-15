@@ -372,6 +372,7 @@ information on what to include when reporting a bug.
    wlroots compositors (#1268)
  - [Wayland] Bugfix: `GLFW_DECORATED` was ignored when showing a window with XDG
    decorations
+ - [Wayland] Bugfix: Connecting a mouse after `glfwInit` would segfault (#1450)
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [Linux] Bugfix: Joysticks without buttons were ignored (#2042,#2043)

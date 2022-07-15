@@ -243,7 +243,7 @@ while (!glfwWindowShouldClose(window))
 @endcode
 
 The close callback no longer returns a value.  Instead, it is called after the
-close flag has been set, so it can override its value, if it chooses to, before
+close flag has been set, so it can optionally override its value, before
 event processing completes.  You may however not call @ref glfwDestroyWindow
 from the close callback (or any other window related callback).
 

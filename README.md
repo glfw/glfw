@@ -123,7 +123,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
-There is nothing here yet.
+ - [Linux] Bugfix: Joysticks without buttons were ignored (#2042,#2043)
 
 
 ## Contact

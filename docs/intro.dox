@@ -609,8 +609,8 @@ like this:
 3.4.0 Win32 WGL Null EGL OSMesa MinGW DLL
 @endcode
 
-When GLFW gets compiled as a static library for Linux with both Wayland and X11 enabled may
-have a version string like this:
+Compiling GLFW as a static library for Linux, with both Wayland and X11 enabled, may
+result in a version string like this:
 
 @code
 3.4.0 Wayland X11 GLX Null EGL OSMesa monotonic

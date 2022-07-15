@@ -136,14 +136,10 @@ static int createAnonymousFile(off_t size)
 
 static struct wl_buffer* createShmBuffer(const GLFWimage* image)
 {
-    struct wl_shm_pool* pool;
-    struct wl_buffer* buffer;
-    int stride = image->width * 4;
-    int length = image->width * image->height * 4;
-    void* data;
-    int fd, i;
+    const int stride = image->width * 4;
+    const int length = image->width * image->height * 4;
 
-    fd = createAnonymousFile(length);
+    const int fd = createAnonymousFile(length);
     if (fd < 0)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -152,7 +148,7 @@ static struct wl_buffer* createShmBuffer(const GLFWimage* image)
         return NULL;
     }
 
-    data = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    void* data = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (data == MAP_FAILED)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -161,12 +157,13 @@ static struct wl_buffer* createShmBuffer(const GLFWimage* image)
         return NULL;
     }
 
-    pool = wl_shm_create_pool(_glfw.wl.shm, fd, length);
+    struct wl_shm_pool* pool = wl_shm_create_pool(_glfw.wl.shm, fd, length);
 
     close(fd);
+
     unsigned char* source = (unsigned char*) image->pixels;
     unsigned char* target = data;
-    for (i = 0;  i < image->width * image->height;  i++, source += 4)
+    for (int i = 0;  i < image->width * image->height;  i++, source += 4)
     {
         unsigned int alpha = source[3];
 
@@ -176,7 +173,7 @@ static struct wl_buffer* createShmBuffer(const GLFWimage* image)
         *target++ = (unsigned char) alpha;
     }
 
-    buffer =
+    struct wl_buffer* buffer =
         wl_shm_pool_create_buffer(pool, 0,
                                   image->width,
                                   image->height,

@@ -387,6 +387,7 @@ information on what to include when reporting a bug.
    (#1380)
  - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
  - [GLX] Bugfix: Context creation failed if GLX 1.4 was not exported by GLX library
+ - [X11] Bugfix: Inconsistency for Key Event Modifiers between Windows and Linux/X11
 
 
 ## Contact

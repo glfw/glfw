@@ -123,74 +123,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
- - Added `GLFW_NATIVE_INCLUDE_NONE` for disabling inclusion of native headers (#1348)
- - Bugfix: `glfwMakeContextCurrent` would access TLS slot before initialization
- - Bugfix: `glfwSetGammaRamp` could emit `GLFW_INVALID_VALUE` before initialization
- - Bugfix: `glfwGetJoystickUserPointer` returned `NULL` during disconnection (#2092)
- - [Win32] Bugfix: `Alt+PrtSc` would emit `GLFW_KEY_UNKNOWN` and a different
-   scancode than `PrtSc` (#1993)
- - [Win32] Bugfix: `GLFW_KEY_PAUSE` scancode from `glfwGetKeyScancode` did not
-   match event scancode (#1993)
- - [Win32] Bugfix: Instance-local operations used executable instance (#469,#1296,#1395)
- - [Win32] Bugfix: The OSMesa library was not unloaded on termination
- - [Win32] Bugfix: Right shift emitted `GLFW_KEY_UNKNOWN` when using a CJK IME (#2050)
- - [Cocoa] Disabled macOS fullscreen when `GLFW_RESIZABLE` is false
- - [Cocoa] Bugfix: A connected Apple AirPlay would emit a useless error (#1791)
- - [Cocoa] Bugfix: The EGL and OSMesa libraries were not unloaded on termination
- - [Cocoa] Bugfix: `GLFW_MAXIMIZED` was always true when `GLFW_RESIZABLE` was false
- - [Cocoa] Bugfix: Changing `GLFW_DECORATED` in macOS fullscreen would abort
-   application (#1886)
- - [Cocoa] Bugfix: Setting a monitor from macOS fullscreen would abort
-   application (#2110)
- - [Cocoa] Bugfix: The Vulkan loader was not loaded from the `Frameworks` bundle
-   subdirectory (#2113,#2120)
- - [X11] Bugfix: The OSMesa libray was not unloaded on termination
- - [X11] Bugfix: A malformed response during selection transfer could cause a segfault
- - [X11] Bugfix: Some calls would reset Xlib to the default error handler (#2108)
- - [Wayland] Added support for file path drop events (#2040)
- - [Wayland] Added support for more human-readable monitor names where available
- - [Wayland] Removed support for the deprecated wl\_shell protocol
- - [Wayland] Bugfix: `glfwSetClipboardString` would fail if set to result of
-   `glfwGetClipboardString`
- - [Wayland] Bugfix: Data source creation error would cause double free at termination
- - [Wayland] Bugfix: Partial writes of clipboard string would cause beginning to repeat
- - [Wayland] Bugfix: Some errors would cause clipboard string transfer to hang
- - [Wayland] Bugfix: Drag and drop data was misinterpreted as clipboard string
- - [Wayland] Bugfix: MIME type matching was not performed for clipboard string
- - [Wayland] Bugfix: The OSMesa library was not unloaded on termination
- - [Wayland] Bugfix: `glfwCreateWindow` could emit `GLFW_PLATFORM_ERROR`
- - [Wayland] Bugfix: Lock key modifier bits were only set when lock keys were pressed
- - [Wayland] Bugfix: A window leaving full screen mode would be iconified (#1995)
- - [Wayland] Bugfix: A window leaving full screen mode ignored its desired size
- - [Wayland] Bugfix: `glfwSetWindowMonitor` did not update windowed mode size
- - [Wayland] Bugfix: `glfwRestoreWindow` would make a full screen window windowed
- - [Wayland] Bugfix: A window maximized or restored by the user would enter an
-   inconsistent state
- - [Wayland] Bugfix: Window maximization events were not emitted
- - [Wayland] Bugfix: `glfwRestoreWindow` assumed it was always in windowed mode
- - [Wayland] Bugfix: `glfwSetWindowSize` would resize a full screen window
- - [Wayland] Bugfix: A window content scale event would be emitted every time
-   the window resized
- - [Wayland] Bugfix: If `glfwInit` failed it would close stdin
- - [Wayland] Bugfix: Manual resizing with fallback decorations behaved erratically
-   (#1991,#2115,#2127)
- - [Wayland] Bugfix: Size limits included frame size for fallback decorations
- - [Wayland] Bugfix: Updating `GLFW_DECORATED` had no effect on server-side
-   decorations
- - [Wayland] Bugfix: A monitor would be reported as connected again if its scale
-   changed
- - [Wayland] Bugfix: `glfwTerminate` would segfault if any monitor had changed
-   scale
- - [Wayland] Bugfix: Window content scale events were not emitted when monitor
-   scale changed
- - [Wayland] Bugfix: `glfwSetWindowAspectRatio` reported an error instead of
-   applying the specified ratio
- - [Wayland] Bugfix: `GLFW_MAXIMIZED` window hint had no effect
- - [Wayland] Bugfix: `glfwRestoreWindow` had no effect before first show
- - [Wayland] Bugfix: Hiding and then showing a window caused program abort on
-   wlroots compositors (#1268)
- - [Wayland] Bugfix: `GLFW_DECORATED` was ignored when showing a window with XDG
-   decorations
+There is nothing here yet.
 
 
 ## Contact

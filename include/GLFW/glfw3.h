@@ -276,31 +276,38 @@ extern "C" {
  * GLFW API tokens
  *************************************************************************/
 
-/*! @name GLFW version macros
+/*! @name GLFW version enum 
  *  @{ */
+enum GLFWversion{
 /*! @brief The major version number of the GLFW header.
  *
  *  The major version number of the GLFW header.  This is incremented when the
  *  API is changed in non-compatible ways.
  *  @ingroup init
  */
-#define GLFW_VERSION_MAJOR          3
+    GLFW_VERSION_MAJOR      = 3,
 /*! @brief The minor version number of the GLFW header.
  *
  *  The minor version number of the GLFW header.  This is incremented when
  *  features are added to the API but it remains backward-compatible.
  *  @ingroup init
  */
-#define GLFW_VERSION_MINOR          4
+    GLFW_VERSION_MINOR      = 4,
 /*! @brief The revision number of the GLFW header.
  *
  *  The revision number of the GLFW header.  This is incremented when a bug fix
  *  release is made that does not contain any API changes.
  *  @ingroup init
  */
-#define GLFW_VERSION_REVISION       0
-/*! @} */
+    GLFW_VERSION_REVISION   = 0
+};
+/*! *} */
 
+/*! @name GLFWbool
+ *  @brief Semantic sugare for booleans.
+ *  @ingroup init
+ * @{ */
+enum GLFWbool{
 /*! @brief One.
  *
  *  This is only semantic sugar for the number 1.  You can instead use `1` or
@@ -309,7 +316,7 @@ extern "C" {
  *
  *  @ingroup init
  */
-#define GLFW_TRUE                   1
+    GLFW_FALSE,
 /*! @brief Zero.
  *
  *  This is only semantic sugar for the number 0.  You can instead use `0` or
@@ -318,31 +325,35 @@ extern "C" {
  *
  *  @ingroup init
  */
-#define GLFW_FALSE                  0
+    GLFW_TRUE,
+};
+/*! @} */
 
 /*! @name Key and button actions
  *  @{ */
+enum GLFWkey_state{
 /*! @brief The key or mouse button was released.
  *
  *  The key or mouse button was released.
  *
  *  @ingroup input
  */
-#define GLFW_RELEASE                0
+    GLFW_RELEASE,
 /*! @brief The key or mouse button was pressed.
  *
  *  The key or mouse button was pressed.
  *
  *  @ingroup input
  */
-#define GLFW_PRESS                  1
+    GLFW_PRESS,
 /*! @brief The key was held down until it repeated.
  *
  *  The key was held down until it repeated.
  *
  *  @ingroup input
  */
-#define GLFW_REPEAT                 2
+    GLFW_REPEAT
+};
 /*! @} */
 
 /*! @defgroup hat_state Joystick hat states
@@ -352,15 +363,17 @@ extern "C" {
  *
  *  @ingroup input
  *  @{ */
-#define GLFW_HAT_CENTERED           0
-#define GLFW_HAT_UP                 1
-#define GLFW_HAT_RIGHT              2
-#define GLFW_HAT_DOWN               4
-#define GLFW_HAT_LEFT               8
-#define GLFW_HAT_RIGHT_UP           (GLFW_HAT_RIGHT | GLFW_HAT_UP)
-#define GLFW_HAT_RIGHT_DOWN         (GLFW_HAT_RIGHT | GLFW_HAT_DOWN)
-#define GLFW_HAT_LEFT_UP            (GLFW_HAT_LEFT  | GLFW_HAT_UP)
-#define GLFW_HAT_LEFT_DOWN          (GLFW_HAT_LEFT  | GLFW_HAT_DOWN)
+enum GLFWhat{
+    GLFW_HAT_CENTERED   = 0,
+    GLFW_HAT_UP         = 1,
+    GLFW_HAT_RIGHT      = 2,
+    GLFW_HAT_DOWN       = 4,
+    GLFW_HAT_LEFT       = 8,
+    GLFW_HAT_RIGHT_UP   = (GLFW_HAT_RIGHT | GLFW_HAT_UP),
+    GLFW_HAT_RIGHT_DOWN = (GLFW_HAT_RIGHT | GLFW_HAT_DOWN),
+    GLFW_HAT_LEFT_UP    = (GLFW_HAT_LEFT | GLFW_HAT_UP),
+    GLFW_HAT_LEFT_DOWN  = (GLFW_HAT_LEFT | GLFW_HAT_DOWN),
+};
 /*! @} */
 
 /*! @defgroup keys Keyboard keys
@@ -384,137 +397,137 @@ extern "C" {
  *     "BACKSPACE", etc.)
  *
  *  @ingroup input
- *  @{
- */
+ *  @{ */
+enum GLFWkey{
+    /* Unkown key*/
+    GLFW_KEY_UNKNOWN           = -1,
 
-/* The unknown key */
-#define GLFW_KEY_UNKNOWN            -1
+    /* Printable keys*/
+    GLFW_KEY_SPACE             = 32,
+    GLFW_KEY_APOSTROPHE        = 39,  /* ' */
+    GLFW_KEY_COMMA             = 44,  /* , */
+    GLFW_KEY_MINUS             = 45,  /* - */
+    GLFW_KEY_PERIOD            = 46,  /* . */
+    GLFW_KEY_SLASH             = 47,  /* / */
+    GLFW_KEY_0                 = 48,
+    GLFW_KEY_1                 = 49,
+    GLFW_KEY_2                 = 50,
+    GLFW_KEY_3                 = 51,
+    GLFW_KEY_4                 = 52,
+    GLFW_KEY_5                 = 53,
+    GLFW_KEY_6                 = 54,
+    GLFW_KEY_7                 = 55,
+    GLFW_KEY_8                 = 56,
+    GLFW_KEY_9                 = 57,
+    GLFW_KEY_SEMICOLON         = 59,  /* ; */
+    GLFW_KEY_EQUAL             = 61,  /* = */
+    GLFW_KEY_A                 = 65,
+    GLFW_KEY_B                 = 66,
+    GLFW_KEY_C                 = 67,
+    GLFW_KEY_D                 = 68,
+    GLFW_KEY_E                 = 69,
+    GLFW_KEY_F                 = 70,
+    GLFW_KEY_G                 = 71,
+    GLFW_KEY_H                 = 72,
+    GLFW_KEY_I                 = 73,
+    GLFW_KEY_J                 = 74,
+    GLFW_KEY_K                 = 75,
+    GLFW_KEY_L                 = 76,
+    GLFW_KEY_M                 = 77,
+    GLFW_KEY_N                 = 78,
+    GLFW_KEY_O                 = 79,
+    GLFW_KEY_P                 = 80,
+    GLFW_KEY_Q                 = 81,
+    GLFW_KEY_R                 = 82,
+    GLFW_KEY_S                 = 83,
+    GLFW_KEY_T                 = 84,
+    GLFW_KEY_U                 = 85,
+    GLFW_KEY_V                 = 86,
+    GLFW_KEY_W                 = 87,
+    GLFW_KEY_X                 = 88,
+    GLFW_KEY_Y                 = 89,
+    GLFW_KEY_Z                 = 90,
+    GLFW_KEY_LEFT_BRACKET      = 91,  /* [ */
+    GLFW_KEY_BACKSLASH         = 92,  /* \ */
+    GLFW_KEY_RIGHT_BRACKET     = 93,  /* ] */
+    GLFW_KEY_GRAVE_ACCENT      = 96,  /* ` */
+    GLFW_KEY_WORLD_1           = 161, /* non-US #1 */
+    GLFW_KEY_WORLD_2           = 162, /* non-US #2 */
 
-/* Printable keys */
-#define GLFW_KEY_SPACE              32
-#define GLFW_KEY_APOSTROPHE         39  /* ' */
-#define GLFW_KEY_COMMA              44  /* , */
-#define GLFW_KEY_MINUS              45  /* - */
-#define GLFW_KEY_PERIOD             46  /* . */
-#define GLFW_KEY_SLASH              47  /* / */
-#define GLFW_KEY_0                  48
-#define GLFW_KEY_1                  49
-#define GLFW_KEY_2                  50
-#define GLFW_KEY_3                  51
-#define GLFW_KEY_4                  52
-#define GLFW_KEY_5                  53
-#define GLFW_KEY_6                  54
-#define GLFW_KEY_7                  55
-#define GLFW_KEY_8                  56
-#define GLFW_KEY_9                  57
-#define GLFW_KEY_SEMICOLON          59  /* ; */
-#define GLFW_KEY_EQUAL              61  /* = */
-#define GLFW_KEY_A                  65
-#define GLFW_KEY_B                  66
-#define GLFW_KEY_C                  67
-#define GLFW_KEY_D                  68
-#define GLFW_KEY_E                  69
-#define GLFW_KEY_F                  70
-#define GLFW_KEY_G                  71
-#define GLFW_KEY_H                  72
-#define GLFW_KEY_I                  73
-#define GLFW_KEY_J                  74
-#define GLFW_KEY_K                  75
-#define GLFW_KEY_L                  76
-#define GLFW_KEY_M                  77
-#define GLFW_KEY_N                  78
-#define GLFW_KEY_O                  79
-#define GLFW_KEY_P                  80
-#define GLFW_KEY_Q                  81
-#define GLFW_KEY_R                  82
-#define GLFW_KEY_S                  83
-#define GLFW_KEY_T                  84
-#define GLFW_KEY_U                  85
-#define GLFW_KEY_V                  86
-#define GLFW_KEY_W                  87
-#define GLFW_KEY_X                  88
-#define GLFW_KEY_Y                  89
-#define GLFW_KEY_Z                  90
-#define GLFW_KEY_LEFT_BRACKET       91  /* [ */
-#define GLFW_KEY_BACKSLASH          92  /* \ */
-#define GLFW_KEY_RIGHT_BRACKET      93  /* ] */
-#define GLFW_KEY_GRAVE_ACCENT       96  /* ` */
-#define GLFW_KEY_WORLD_1            161 /* non-US #1 */
-#define GLFW_KEY_WORLD_2            162 /* non-US #2 */
+    /* Function keys */
+    GLFW_KEY_ESCAPE            = 256,
+    GLFW_KEY_ENTER             = 257,
+    GLFW_KEY_TAB               = 258,
+    GLFW_KEY_BACKSPACE         = 259,
+    GLFW_KEY_INSERT            = 260,
+    GLFW_KEY_DELETE            = 261,
+    GLFW_KEY_RIGHT             = 262,
+    GLFW_KEY_LEFT              = 263,
+    GLFW_KEY_DOWN              = 264,
+    GLFW_KEY_UP                = 265,
+    GLFW_KEY_PAGE_UP           = 266,
+    GLFW_KEY_PAGE_DOWN         = 267,
+    GLFW_KEY_HOME              = 268,
+    GLFW_KEY_END               = 269,
+    GLFW_KEY_CAPS_LOCK         = 280,
+    GLFW_KEY_SCROLL_LOCK       = 281,
+    GLFW_KEY_NUM_LOCK          = 282,
+    GLFW_KEY_PRINT_SCREEN      = 283,
+    GLFW_KEY_PAUSE             = 284,
+    GLFW_KEY_F1                = 290,
+    GLFW_KEY_F2                = 291,
+    GLFW_KEY_F3                = 292,
+    GLFW_KEY_F4                = 293,
+    GLFW_KEY_F5                = 294,
+    GLFW_KEY_F6                = 295,
+    GLFW_KEY_F7                = 296,
+    GLFW_KEY_F8                = 297,
+    GLFW_KEY_F9                = 298,
+    GLFW_KEY_F10               = 299,
+    GLFW_KEY_F11               = 300,
+    GLFW_KEY_F12               = 301,
+    GLFW_KEY_F13               = 302,
+    GLFW_KEY_F14               = 303,
+    GLFW_KEY_F15               = 304,
+    GLFW_KEY_F16               = 305,
+    GLFW_KEY_F17               = 306,
+    GLFW_KEY_F18               = 307,
+    GLFW_KEY_F19               = 308,
+    GLFW_KEY_F20               = 309,
+    GLFW_KEY_F21               = 310,
+    GLFW_KEY_F22               = 311,
+    GLFW_KEY_F23               = 312,
+    GLFW_KEY_F24               = 313,
+    GLFW_KEY_F25               = 314,
+    GLFW_KEY_KP_0              = 320,
+    GLFW_KEY_KP_1              = 321,
+    GLFW_KEY_KP_2              = 322,
+    GLFW_KEY_KP_3              = 323,
+    GLFW_KEY_KP_4              = 324,
+    GLFW_KEY_KP_5              = 325,
+    GLFW_KEY_KP_6              = 326,
+    GLFW_KEY_KP_7              = 327,
+    GLFW_KEY_KP_8              = 328,
+    GLFW_KEY_KP_9              = 329,
+    GLFW_KEY_KP_DECIMAL        = 330,
+    GLFW_KEY_KP_DIVIDE         = 331,
+    GLFW_KEY_KP_MULTIPLY       = 332,
+    GLFW_KEY_KP_SUBTRACT       = 333,
+    GLFW_KEY_KP_ADD            = 334,
+    GLFW_KEY_KP_ENTER          = 335,
+    GLFW_KEY_KP_EQUAL          = 336,
+    GLFW_KEY_LEFT_SHIFT        = 340,
+    GLFW_KEY_LEFT_CONTROL      = 341,
+    GLFW_KEY_LEFT_ALT          = 342,
+    GLFW_KEY_LEFT_SUPER        = 343,
+    GLFW_KEY_RIGHT_SHIFT       = 344,
+    GLFW_KEY_RIGHT_CONTROL     = 345,
+    GLFW_KEY_RIGHT_ALT         = 346,
+    GLFW_KEY_RIGHT_SUPER       = 347,
+    GLFW_KEY_MENU              = 348,
 
-/* Function keys */
-#define GLFW_KEY_ESCAPE             256
-#define GLFW_KEY_ENTER              257
-#define GLFW_KEY_TAB                258
-#define GLFW_KEY_BACKSPACE          259
-#define GLFW_KEY_INSERT             260
-#define GLFW_KEY_DELETE             261
-#define GLFW_KEY_RIGHT              262
-#define GLFW_KEY_LEFT               263
-#define GLFW_KEY_DOWN               264
-#define GLFW_KEY_UP                 265
-#define GLFW_KEY_PAGE_UP            266
-#define GLFW_KEY_PAGE_DOWN          267
-#define GLFW_KEY_HOME               268
-#define GLFW_KEY_END                269
-#define GLFW_KEY_CAPS_LOCK          280
-#define GLFW_KEY_SCROLL_LOCK        281
-#define GLFW_KEY_NUM_LOCK           282
-#define GLFW_KEY_PRINT_SCREEN       283
-#define GLFW_KEY_PAUSE              284
-#define GLFW_KEY_F1                 290
-#define GLFW_KEY_F2                 291
-#define GLFW_KEY_F3                 292
-#define GLFW_KEY_F4                 293
-#define GLFW_KEY_F5                 294
-#define GLFW_KEY_F6                 295
-#define GLFW_KEY_F7                 296
-#define GLFW_KEY_F8                 297
-#define GLFW_KEY_F9                 298
-#define GLFW_KEY_F10                299
-#define GLFW_KEY_F11                300
-#define GLFW_KEY_F12                301
-#define GLFW_KEY_F13                302
-#define GLFW_KEY_F14                303
-#define GLFW_KEY_F15                304
-#define GLFW_KEY_F16                305
-#define GLFW_KEY_F17                306
-#define GLFW_KEY_F18                307
-#define GLFW_KEY_F19                308
-#define GLFW_KEY_F20                309
-#define GLFW_KEY_F21                310
-#define GLFW_KEY_F22                311
-#define GLFW_KEY_F23                312
-#define GLFW_KEY_F24                313
-#define GLFW_KEY_F25                314
-#define GLFW_KEY_KP_0               320
-#define GLFW_KEY_KP_1               321
-#define GLFW_KEY_KP_2               322
-#define GLFW_KEY_KP_3               323
-#define GLFW_KEY_KP_4               324
-#define GLFW_KEY_KP_5               325
-#define GLFW_KEY_KP_6               326
-#define GLFW_KEY_KP_7               327
-#define GLFW_KEY_KP_8               328
-#define GLFW_KEY_KP_9               329
-#define GLFW_KEY_KP_DECIMAL         330
-#define GLFW_KEY_KP_DIVIDE          331
-#define GLFW_KEY_KP_MULTIPLY        332
-#define GLFW_KEY_KP_SUBTRACT        333
-#define GLFW_KEY_KP_ADD             334
-#define GLFW_KEY_KP_ENTER           335
-#define GLFW_KEY_KP_EQUAL           336
-#define GLFW_KEY_LEFT_SHIFT         340
-#define GLFW_KEY_LEFT_CONTROL       341
-#define GLFW_KEY_LEFT_ALT           342
-#define GLFW_KEY_LEFT_SUPER         343
-#define GLFW_KEY_RIGHT_SHIFT        344
-#define GLFW_KEY_RIGHT_CONTROL      345
-#define GLFW_KEY_RIGHT_ALT          346
-#define GLFW_KEY_RIGHT_SUPER        347
-#define GLFW_KEY_MENU               348
-
-#define GLFW_KEY_LAST               GLFW_KEY_MENU
+    GLFW_KEY_LAST              = GLFW_KEY_MENU
+};
 
 /*! @} */
 
@@ -525,39 +538,40 @@ extern "C" {
  *
  *  @ingroup input
  *  @{ */
-
+enum GLFWmodkey{
 /*! @brief If this bit is set one or more Shift keys were held down.
  *
  *  If this bit is set one or more Shift keys were held down.
  */
-#define GLFW_MOD_SHIFT           0x0001
+    GLFW_MOD_SHIFT      = 0x0001,
 /*! @brief If this bit is set one or more Control keys were held down.
  *
  *  If this bit is set one or more Control keys were held down.
  */
-#define GLFW_MOD_CONTROL         0x0002
+    GLFW_MOD_CONTROL    = 0x0002,
 /*! @brief If this bit is set one or more Alt keys were held down.
  *
  *  If this bit is set one or more Alt keys were held down.
  */
-#define GLFW_MOD_ALT             0x0004
+    GLFW_MOD_ALT        = 0x0004,
 /*! @brief If this bit is set one or more Super keys were held down.
  *
  *  If this bit is set one or more Super keys were held down.
  */
-#define GLFW_MOD_SUPER           0x0008
+    GLFW_MOD_SUPER      = 0x0008,
 /*! @brief If this bit is set the Caps Lock key is enabled.
  *
  *  If this bit is set the Caps Lock key is enabled and the @ref
  *  GLFW_LOCK_KEY_MODS input mode is set.
  */
-#define GLFW_MOD_CAPS_LOCK       0x0010
+    GLFW_MOD_CAPS_LOCK  = 0x0010,
 /*! @brief If this bit is set the Num Lock key is enabled.
  *
  *  If this bit is set the Num Lock key is enabled and the @ref
  *  GLFW_LOCK_KEY_MODS input mode is set.
  */
-#define GLFW_MOD_NUM_LOCK        0x0020
+    GLFW_MOD_NUM_LOCK   = 0x0020 
+};
 
 /*! @} */
 
@@ -568,18 +582,21 @@ extern "C" {
  *
  *  @ingroup input
  *  @{ */
-#define GLFW_MOUSE_BUTTON_1         0
-#define GLFW_MOUSE_BUTTON_2         1
-#define GLFW_MOUSE_BUTTON_3         2
-#define GLFW_MOUSE_BUTTON_4         3
-#define GLFW_MOUSE_BUTTON_5         4
-#define GLFW_MOUSE_BUTTON_6         5
-#define GLFW_MOUSE_BUTTON_7         6
-#define GLFW_MOUSE_BUTTON_8         7
-#define GLFW_MOUSE_BUTTON_LAST      GLFW_MOUSE_BUTTON_8
-#define GLFW_MOUSE_BUTTON_LEFT      GLFW_MOUSE_BUTTON_1
-#define GLFW_MOUSE_BUTTON_RIGHT     GLFW_MOUSE_BUTTON_2
-#define GLFW_MOUSE_BUTTON_MIDDLE    GLFW_MOUSE_BUTTON_3
+enum GLFWmousebutton{
+    GLFW_MOUSE_BUTTON_1         = 0,
+    GLFW_MOUSE_BUTTON_2         = 1,
+    GLFW_MOUSE_BUTTON_3         = 2,
+    GLFW_MOUSE_BUTTON_4         = 3,
+    GLFW_MOUSE_BUTTON_5         = 4,
+    GLFW_MOUSE_BUTTON_6         = 5,
+    GLFW_MOUSE_BUTTON_7         = 6,
+    GLFW_MOUSE_BUTTON_8         = 7,
+    GLFW_MOUSE_BUTTON_LAST      = GLFW_MOUSE_BUTTON_8,
+    GLFW_MOUSE_BUTTON_LEFT      = GLFW_MOUSE_BUTTON_1,
+    GLFW_MOUSE_BUTTON_RIGHT     = GLFW_MOUSE_BUTTON_2,
+    GLFW_MOUSE_BUTTON_MIDDLE    = GLFW_MOUSE_BUTTON_3
+};
+
 /*! @} */
 
 /*! @defgroup joysticks Joysticks
@@ -589,23 +606,26 @@ extern "C" {
  *
  *  @ingroup input
  *  @{ */
-#define GLFW_JOYSTICK_1             0
-#define GLFW_JOYSTICK_2             1
-#define GLFW_JOYSTICK_3             2
-#define GLFW_JOYSTICK_4             3
-#define GLFW_JOYSTICK_5             4
-#define GLFW_JOYSTICK_6             5
-#define GLFW_JOYSTICK_7             6
-#define GLFW_JOYSTICK_8             7
-#define GLFW_JOYSTICK_9             8
-#define GLFW_JOYSTICK_10            9
-#define GLFW_JOYSTICK_11            10
-#define GLFW_JOYSTICK_12            11
-#define GLFW_JOYSTICK_13            12
-#define GLFW_JOYSTICK_14            13
-#define GLFW_JOYSTICK_15            14
-#define GLFW_JOYSTICK_16            15
-#define GLFW_JOYSTICK_LAST          GLFW_JOYSTICK_16
+enum GLFWjoystick{
+    GLFW_JOYSTICK_2             = 1,
+    GLFW_JOYSTICK_3             = 2,
+    GLFW_JOYSTICK_4             = 3,
+    GLFW_JOYSTICK_5             = 4,
+    GLFW_JOYSTICK_1             = 0,
+    GLFW_JOYSTICK_6             = 5,
+    GLFW_JOYSTICK_7             = 6,
+    GLFW_JOYSTICK_8             = 7,
+    GLFW_JOYSTICK_9             = 8,
+    GLFW_JOYSTICK_10            = 9,
+    GLFW_JOYSTICK_11            = 10,
+    GLFW_JOYSTICK_12            = 11,
+    GLFW_JOYSTICK_13            = 12,
+    GLFW_JOYSTICK_14            = 13,
+    GLFW_JOYSTICK_15            = 14,
+    GLFW_JOYSTICK_16            = 15,
+    GLFW_JOYSTICK_LAST          = GLFW_JOYSTICK_16
+};
+
 /*! @} */
 
 /*! @defgroup gamepad_buttons Gamepad buttons
@@ -615,27 +635,30 @@ extern "C" {
  *
  *  @ingroup input
  *  @{ */
-#define GLFW_GAMEPAD_BUTTON_A               0
-#define GLFW_GAMEPAD_BUTTON_B               1
-#define GLFW_GAMEPAD_BUTTON_X               2
-#define GLFW_GAMEPAD_BUTTON_Y               3
-#define GLFW_GAMEPAD_BUTTON_LEFT_BUMPER     4
-#define GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER    5
-#define GLFW_GAMEPAD_BUTTON_BACK            6
-#define GLFW_GAMEPAD_BUTTON_START           7
-#define GLFW_GAMEPAD_BUTTON_GUIDE           8
-#define GLFW_GAMEPAD_BUTTON_LEFT_THUMB      9
-#define GLFW_GAMEPAD_BUTTON_RIGHT_THUMB     10
-#define GLFW_GAMEPAD_BUTTON_DPAD_UP         11
-#define GLFW_GAMEPAD_BUTTON_DPAD_RIGHT      12
-#define GLFW_GAMEPAD_BUTTON_DPAD_DOWN       13
-#define GLFW_GAMEPAD_BUTTON_DPAD_LEFT       14
-#define GLFW_GAMEPAD_BUTTON_LAST            GLFW_GAMEPAD_BUTTON_DPAD_LEFT
+enum GLFWgamepadbutton{
+    GLFW_GAMEPAD_BUTTON_A             = 0,
+    GLFW_GAMEPAD_BUTTON_B             = 1,
+    GLFW_GAMEPAD_BUTTON_X             = 2,
+    GLFW_GAMEPAD_BUTTON_Y             = 3,
+    GLFW_GAMEPAD_BUTTON_LEFT_BUMPER   = 4,
+    GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER  = 5,
+    GLFW_GAMEPAD_BUTTON_BACK          = 6,
+    GLFW_GAMEPAD_BUTTON_START         = 7,
+    GLFW_GAMEPAD_BUTTON_GUIDE         = 8,
+    GLFW_GAMEPAD_BUTTON_LEFT_THUMB    = 9,
+    GLFW_GAMEPAD_BUTTON_RIGHT_THUMB   = 10,
+    GLFW_GAMEPAD_BUTTON_DPAD_UP       = 11,
+    GLFW_GAMEPAD_BUTTON_DPAD_RIGHT    = 12,
+    GLFW_GAMEPAD_BUTTON_DPAD_DOWN     = 13,
+    GLFW_GAMEPAD_BUTTON_DPAD_LEFT     = 14,
 
-#define GLFW_GAMEPAD_BUTTON_CROSS       GLFW_GAMEPAD_BUTTON_A
-#define GLFW_GAMEPAD_BUTTON_CIRCLE      GLFW_GAMEPAD_BUTTON_B
-#define GLFW_GAMEPAD_BUTTON_SQUARE      GLFW_GAMEPAD_BUTTON_X
-#define GLFW_GAMEPAD_BUTTON_TRIANGLE    GLFW_GAMEPAD_BUTTON_Y
+    GLFW_GAMEPAD_BUTTON_LAST          = GLFW_GAMEPAD_BUTTON_DPAD_LEFT,
+    GLFW_GAMEPAD_BUTTON_CROSS         = GLFW_GAMEPAD_BUTTON_A,
+    GLFW_GAMEPAD_BUTTON_CIRCLE        = GLFW_GAMEPAD_BUTTON_B,
+    GLFW_GAMEPAD_BUTTON_SQUARE        = GLFW_GAMEPAD_BUTTON_X,
+    GLFW_GAMEPAD_BUTTON_TRIANGLE      = GLFW_GAMEPAD_BUTTON_Y
+};
+
 /*! @} */
 
 /*! @defgroup gamepad_axes Gamepad axes
@@ -645,14 +668,15 @@ extern "C" {
  *
  *  @ingroup input
  *  @{ */
-#define GLFW_GAMEPAD_AXIS_LEFT_X        0
-#define GLFW_GAMEPAD_AXIS_LEFT_Y        1
-#define GLFW_GAMEPAD_AXIS_RIGHT_X       2
-#define GLFW_GAMEPAD_AXIS_RIGHT_Y       3
-#define GLFW_GAMEPAD_AXIS_LEFT_TRIGGER  4
-#define GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER 5
-#define GLFW_GAMEPAD_AXIS_LAST          GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER
-/*! @} */
+enum GLFWgamepadaxis{
+    GLFW_GAMEPAD_AXIS_LEFT_X        = 0,
+    GLFW_GAMEPAD_AXIS_LEFT_Y        = 1,
+    GLFW_GAMEPAD_AXIS_RIGHT_X       = 2,
+    GLFW_GAMEPAD_AXIS_RIGHT_Y       = 3,
+    GLFW_GAMEPAD_AXIS_LEFT_TRIGGER  = 4,
+    GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER = 5,
+    GLFW_GAMEPAD_AXIS_LAST          = GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER
+};
 
 /*! @defgroup errors Error codes
  *  @brief Error codes.
@@ -661,13 +685,14 @@ extern "C" {
  *
  *  @ingroup init
  *  @{ */
+enum GLFWerror{
 /*! @brief No error has occurred.
  *
  *  No error has occurred.
  *
  *  @analysis Yay.
  */
-#define GLFW_NO_ERROR               0
+    GLFW_NO_ERROR               = 0x00000000,
 /*! @brief GLFW has not been initialized.
  *
  *  This occurs if a GLFW function was called that must not be called unless the
@@ -676,7 +701,7 @@ extern "C" {
  *  @analysis Application programmer error.  Initialize GLFW before calling any
  *  function that requires initialization.
  */
-#define GLFW_NOT_INITIALIZED        0x00010001
+    GLFW_NOT_INITIALIZED        = 0x00010001,
 /*! @brief No context is current for this thread.
  *
  *  This occurs if a GLFW function was called that needs and operates on the
@@ -686,7 +711,7 @@ extern "C" {
  *  @analysis Application programmer error.  Ensure a context is current before
  *  calling functions that require a current context.
  */
-#define GLFW_NO_CURRENT_CONTEXT     0x00010002
+    GLFW_NO_CURRENT_CONTEXT     = 0x00010002,
 /*! @brief One of the arguments to the function was an invalid enum value.
  *
  *  One of the arguments to the function was an invalid enum value, for example
@@ -694,7 +719,7 @@ extern "C" {
  *
  *  @analysis Application programmer error.  Fix the offending call.
  */
-#define GLFW_INVALID_ENUM           0x00010003
+    GLFW_INVALID_ENUM           = 0x00010003,
 /*! @brief One of the arguments to the function was an invalid value.
  *
  *  One of the arguments to the function was an invalid value, for example
@@ -705,7 +730,7 @@ extern "C" {
  *
  *  @analysis Application programmer error.  Fix the offending call.
  */
-#define GLFW_INVALID_VALUE          0x00010004
+    GLFW_INVALID_VALUE          = 0x00010004,
 /*! @brief A memory allocation failed.
  *
  *  A memory allocation failed.
@@ -713,7 +738,7 @@ extern "C" {
  *  @analysis A bug in GLFW or the underlying operating system.  Report the bug
  *  to our [issue tracker](https://github.com/glfw/glfw/issues).
  */
-#define GLFW_OUT_OF_MEMORY          0x00010005
+    GLFW_OUT_OF_MEMORY          = 0x00010005,
 /*! @brief GLFW could not find support for the requested API on the system.
  *
  *  GLFW could not find support for the requested API on the system.
@@ -729,7 +754,7 @@ extern "C" {
  *  EGL, OpenGL and OpenGL ES libraries do not interface with the Nvidia binary
  *  driver.  Older graphics drivers do not support Vulkan.
  */
-#define GLFW_API_UNAVAILABLE        0x00010006
+    GLFW_API_UNAVAILABLE        = 0x00010006,
 /*! @brief The requested OpenGL or OpenGL ES version is not available.
  *
  *  The requested OpenGL or OpenGL ES version (including any requested context
@@ -746,7 +771,7 @@ extern "C" {
  *  not @ref GLFW_INVALID_VALUE, because GLFW cannot know what future versions
  *  will exist.
  */
-#define GLFW_VERSION_UNAVAILABLE    0x00010007
+    GLFW_VERSION_UNAVAILABLE    = 0x00010007,
 /*! @brief A platform-specific error occurred that does not match any of the
  *  more specific categories.
  *
@@ -757,7 +782,7 @@ extern "C" {
  *  system or its drivers, or a lack of required resources.  Report the issue to
  *  our [issue tracker](https://github.com/glfw/glfw/issues).
  */
-#define GLFW_PLATFORM_ERROR         0x00010008
+    GLFW_PLATFORM_ERROR         = 0x00010008,
 /*! @brief The requested format is not supported or available.
  *
  *  If emitted during window creation, the requested pixel format is not
@@ -776,7 +801,7 @@ extern "C" {
  *  If emitted when querying the clipboard, ignore the error or report it to
  *  the user, as appropriate.
  */
-#define GLFW_FORMAT_UNAVAILABLE     0x00010009
+    GLFW_FORMAT_UNAVAILABLE     = 0x00010009,
 /*! @brief The specified window does not have an OpenGL or OpenGL ES context.
  *
  *  A window that does not have an OpenGL or OpenGL ES context was passed to
@@ -784,7 +809,7 @@ extern "C" {
  *
  *  @analysis Application programmer error.  Fix the offending call.
  */
-#define GLFW_NO_WINDOW_CONTEXT      0x0001000A
+    GLFW_NO_WINDOW_CONTEXT      = 0x0001000A,
 /*! @brief The specified cursor shape is not available.
  *
  *  The specified standard cursor shape is not available, either because the
@@ -795,7 +820,7 @@ extern "C" {
  *  [standard cursor shape](@ref shapes) or create a
  *  [custom cursor](@ref cursor_custom).
  */
-#define GLFW_CURSOR_UNAVAILABLE     0x0001000B
+    GLFW_CURSOR_UNAVAILABLE     = 0x0001000B,
 /*! @brief The requested feature is not provided by the platform.
  *
  *  The requested feature is not provided by the platform, so GLFW is unable to
@@ -809,7 +834,7 @@ extern "C" {
  *  A function call that emits this error has no effect other than the error and
  *  updating any existing out parameters.
  */
-#define GLFW_FEATURE_UNAVAILABLE    0x0001000C
+    GLFW_FEATURE_UNAVAILABLE    = 0x0001000C,
 /*! @brief The requested feature is not implemented for the platform.
  *
  *  The requested feature has not yet been implemented in GLFW for this platform.
@@ -822,7 +847,7 @@ extern "C" {
  *  A function call that emits this error has no effect other than the error and
  *  updating any existing out parameters.
  */
-#define GLFW_FEATURE_UNIMPLEMENTED  0x0001000D
+    GLFW_FEATURE_UNIMPLEMENTED  = 0x0001000D,
 /*! @brief Platform unavailable or no matching platform was found.
  *
  *  If emitted during initialization, no matching platform was found.  If @ref
@@ -844,306 +869,381 @@ extern "C" {
  *  support for that platform was not compiled in.  Call @ref glfwPlatformSupported to
  *  check whether a specific platform is supported by a library binary.
  */
-#define GLFW_PLATFORM_UNAVAILABLE   0x0001000E
+    GLFW_PLATFORM_UNAVAILABLE   = 0x0001000E,
+};
 /*! @} */
 
 /*! @addtogroup window
  *  @{ */
+enum GLFWwindowhint{
 /*! @brief Input focus window hint and attribute
  *
  *  Input focus [window hint](@ref GLFW_FOCUSED_hint) or
  *  [window attribute](@ref GLFW_FOCUSED_attrib).
  */
-#define GLFW_FOCUSED                0x00020001
+    GLFW_FOCUSED                    = 0x00020001,
 /*! @brief Window iconification window attribute
  *
  *  Window iconification [window attribute](@ref GLFW_ICONIFIED_attrib).
  */
-#define GLFW_ICONIFIED              0x00020002
+    GLFW_ICONIFIED                  = 0x00020002,
 /*! @brief Window resize-ability window hint and attribute
  *
  *  Window resize-ability [window hint](@ref GLFW_RESIZABLE_hint) and
  *  [window attribute](@ref GLFW_RESIZABLE_attrib).
  */
-#define GLFW_RESIZABLE              0x00020003
+    GLFW_RESIZABLE                  = 0x00020003,
 /*! @brief Window visibility window hint and attribute
  *
  *  Window visibility [window hint](@ref GLFW_VISIBLE_hint) and
  *  [window attribute](@ref GLFW_VISIBLE_attrib).
  */
-#define GLFW_VISIBLE                0x00020004
+    GLFW_VISIBLE                    = 0x00020004,
 /*! @brief Window decoration window hint and attribute
  *
  *  Window decoration [window hint](@ref GLFW_DECORATED_hint) and
  *  [window attribute](@ref GLFW_DECORATED_attrib).
  */
-#define GLFW_DECORATED              0x00020005
+    GLFW_DECORATED                  = 0x00020005,
 /*! @brief Window auto-iconification window hint and attribute
  *
  *  Window auto-iconification [window hint](@ref GLFW_AUTO_ICONIFY_hint) and
  *  [window attribute](@ref GLFW_AUTO_ICONIFY_attrib).
  */
-#define GLFW_AUTO_ICONIFY           0x00020006
+    GLFW_AUTO_ICONIFY               = 0x00020006,
 /*! @brief Window decoration window hint and attribute
  *
  *  Window decoration [window hint](@ref GLFW_FLOATING_hint) and
  *  [window attribute](@ref GLFW_FLOATING_attrib).
  */
-#define GLFW_FLOATING               0x00020007
+    GLFW_FLOATING                   = 0x00020007,
 /*! @brief Window maximization window hint and attribute
  *
  *  Window maximization [window hint](@ref GLFW_MAXIMIZED_hint) and
  *  [window attribute](@ref GLFW_MAXIMIZED_attrib).
  */
-#define GLFW_MAXIMIZED              0x00020008
+    GLFW_MAXIMIZED                  = 0x00020008,
 /*! @brief Cursor centering window hint
  *
  *  Cursor centering [window hint](@ref GLFW_CENTER_CURSOR_hint).
  */
-#define GLFW_CENTER_CURSOR          0x00020009
+    GLFW_CENTER_CURSOR              = 0x00020009,
 /*! @brief Window framebuffer transparency hint and attribute
  *
  *  Window framebuffer transparency
  *  [window hint](@ref GLFW_TRANSPARENT_FRAMEBUFFER_hint) and
  *  [window attribute](@ref GLFW_TRANSPARENT_FRAMEBUFFER_attrib).
  */
-#define GLFW_TRANSPARENT_FRAMEBUFFER 0x0002000A
+    GLFW_TRANSPARENT_FRAMEBUFFER    =  0x0002000A,
 /*! @brief Mouse cursor hover window attribute.
  *
  *  Mouse cursor hover [window attribute](@ref GLFW_HOVERED_attrib).
  */
-#define GLFW_HOVERED                0x0002000B
+    GLFW_HOVERED                    = 0x0002000B,
 /*! @brief Input focus on calling show window hint and attribute
  *
  *  Input focus [window hint](@ref GLFW_FOCUS_ON_SHOW_hint) or
  *  [window attribute](@ref GLFW_FOCUS_ON_SHOW_attrib).
  */
-#define GLFW_FOCUS_ON_SHOW          0x0002000C
+    GLFW_FOCUS_ON_SHOW              = 0x0002000C,
 
 /*! @brief Mouse input transparency window hint and attribute
  *
  *  Mouse input transparency [window hint](@ref GLFW_MOUSE_PASSTHROUGH_hint) or
  *  [window attribute](@ref GLFW_MOUSE_PASSTHROUGH_attrib).
  */
-#define GLFW_MOUSE_PASSTHROUGH      0x0002000D
+    GLFW_MOUSE_PASSTHROUGH          = 0x0002000D,
 
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_RED_BITS).
  */
-#define GLFW_RED_BITS               0x00021001
+    GLFW_RED_BITS                   = 0x00021001,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_GREEN_BITS).
  */
-#define GLFW_GREEN_BITS             0x00021002
+    GLFW_GREEN_BITS                 = 0x00021002,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_BLUE_BITS).
  */
-#define GLFW_BLUE_BITS              0x00021003
+    GLFW_BLUE_BITS                  = 0x00021003,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_ALPHA_BITS).
  */
-#define GLFW_ALPHA_BITS             0x00021004
+    GLFW_ALPHA_BITS                 = 0x00021004,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_DEPTH_BITS).
  */
-#define GLFW_DEPTH_BITS             0x00021005
+    GLFW_DEPTH_BITS                 = 0x00021005,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_STENCIL_BITS).
  */
-#define GLFW_STENCIL_BITS           0x00021006
+    GLFW_STENCIL_BITS               = 0x00021006,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_ACCUM_RED_BITS).
  */
-#define GLFW_ACCUM_RED_BITS         0x00021007
+    GLFW_ACCUM_RED_BITS             = 0x00021007,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_ACCUM_GREEN_BITS).
  */
-#define GLFW_ACCUM_GREEN_BITS       0x00021008
+    GLFW_ACCUM_GREEN_BITS           = 0x00021008,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_ACCUM_BLUE_BITS).
  */
-#define GLFW_ACCUM_BLUE_BITS        0x00021009
+    GLFW_ACCUM_BLUE_BITS            = 0x00021009,
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_ACCUM_ALPHA_BITS).
  */
-#define GLFW_ACCUM_ALPHA_BITS       0x0002100A
+    GLFW_ACCUM_ALPHA_BITS           = 0x0002100A,
 /*! @brief Framebuffer auxiliary buffer hint.
  *
  *  Framebuffer auxiliary buffer [hint](@ref GLFW_AUX_BUFFERS).
  */
-#define GLFW_AUX_BUFFERS            0x0002100B
+    GLFW_AUX_BUFFERS                = 0x0002100B,
 /*! @brief OpenGL stereoscopic rendering hint.
  *
  *  OpenGL stereoscopic rendering [hint](@ref GLFW_STEREO).
  */
-#define GLFW_STEREO                 0x0002100C
+    GLFW_STEREO                     = 0x0002100C,
 /*! @brief Framebuffer MSAA samples hint.
  *
  *  Framebuffer MSAA samples [hint](@ref GLFW_SAMPLES).
  */
-#define GLFW_SAMPLES                0x0002100D
+    GLFW_SAMPLES                    = 0x0002100D,
 /*! @brief Framebuffer sRGB hint.
  *
  *  Framebuffer sRGB [hint](@ref GLFW_SRGB_CAPABLE).
  */
-#define GLFW_SRGB_CAPABLE           0x0002100E
+    GLFW_SRGB_CAPABLE               = 0x0002100E,
 /*! @brief Monitor refresh rate hint.
  *
  *  Monitor refresh rate [hint](@ref GLFW_REFRESH_RATE).
  */
-#define GLFW_REFRESH_RATE           0x0002100F
+    GLFW_REFRESH_RATE               = 0x0002100F,
 /*! @brief Framebuffer double buffering hint and attribute.
  *
  *  Framebuffer double buffering [hint](@ref GLFW_DOUBLEBUFFER_hint) and
  *  [attribute](@ref GLFW_DOUBLEBUFFER_attrib).
  */
-#define GLFW_DOUBLEBUFFER           0x00021010
+    GLFW_DOUBLEBUFFER               = 0x00021010,
 
 /*! @brief Context client API hint and attribute.
  *
  *  Context client API [hint](@ref GLFW_CLIENT_API_hint) and
  *  [attribute](@ref GLFW_CLIENT_API_attrib).
  */
-#define GLFW_CLIENT_API             0x00022001
+    GLFW_CLIENT_API                 = 0x00022001,
 /*! @brief Context client API major version hint and attribute.
  *
  *  Context client API major version [hint](@ref GLFW_CONTEXT_VERSION_MAJOR_hint)
  *  and [attribute](@ref GLFW_CONTEXT_VERSION_MAJOR_attrib).
  */
-#define GLFW_CONTEXT_VERSION_MAJOR  0x00022002
+    GLFW_CONTEXT_VERSION_MAJOR      = 0x00022002,
 /*! @brief Context client API minor version hint and attribute.
  *
  *  Context client API minor version [hint](@ref GLFW_CONTEXT_VERSION_MINOR_hint)
  *  and [attribute](@ref GLFW_CONTEXT_VERSION_MINOR_attrib).
  */
-#define GLFW_CONTEXT_VERSION_MINOR  0x00022003
+    GLFW_CONTEXT_VERSION_MINOR      = 0x00022003,
 /*! @brief Context client API revision number attribute.
  *
  *  Context client API revision number
  *  [attribute](@ref GLFW_CONTEXT_REVISION_attrib).
  */
-#define GLFW_CONTEXT_REVISION       0x00022004
+    GLFW_CONTEXT_REVISION           = 0x00022004,
 /*! @brief Context robustness hint and attribute.
  *
  *  Context client API revision number [hint](@ref GLFW_CONTEXT_ROBUSTNESS_hint)
  *  and [attribute](@ref GLFW_CONTEXT_ROBUSTNESS_attrib).
  */
-#define GLFW_CONTEXT_ROBUSTNESS     0x00022005
+    GLFW_CONTEXT_ROBUSTNESS         = 0x00022005,
 /*! @brief OpenGL forward-compatibility hint and attribute.
  *
  *  OpenGL forward-compatibility [hint](@ref GLFW_OPENGL_FORWARD_COMPAT_hint)
  *  and [attribute](@ref GLFW_OPENGL_FORWARD_COMPAT_attrib).
  */
-#define GLFW_OPENGL_FORWARD_COMPAT  0x00022006
+    GLFW_OPENGL_FORWARD_COMPAT      = 0x00022006,
 /*! @brief Debug mode context hint and attribute.
  *
  *  Debug mode context [hint](@ref GLFW_CONTEXT_DEBUG_hint) and
  *  [attribute](@ref GLFW_CONTEXT_DEBUG_attrib).
  */
-#define GLFW_CONTEXT_DEBUG          0x00022007
+    GLFW_CONTEXT_DEBUG              = 0x00022007,
 /*! @brief Legacy name for compatibility.
  *
  *  This is an alias for compatibility with earlier versions.
  */
-#define GLFW_OPENGL_DEBUG_CONTEXT   GLFW_CONTEXT_DEBUG
+    GLFW_OPENGL_DEBUG_CONTEXT       = GLFW_CONTEXT_DEBUG,
 /*! @brief OpenGL profile hint and attribute.
  *
  *  OpenGL profile [hint](@ref GLFW_OPENGL_PROFILE_hint) and
  *  [attribute](@ref GLFW_OPENGL_PROFILE_attrib).
  */
-#define GLFW_OPENGL_PROFILE         0x00022008
+    GLFW_OPENGL_PROFILE             = 0x00022008,
 /*! @brief Context flush-on-release hint and attribute.
  *
  *  Context flush-on-release [hint](@ref GLFW_CONTEXT_RELEASE_BEHAVIOR_hint) and
  *  [attribute](@ref GLFW_CONTEXT_RELEASE_BEHAVIOR_attrib).
  */
-#define GLFW_CONTEXT_RELEASE_BEHAVIOR 0x00022009
+    GLFW_CONTEXT_RELEASE_BEHAVIOR   = 0x00022009,
 /*! @brief Context error suppression hint and attribute.
  *
  *  Context error suppression [hint](@ref GLFW_CONTEXT_NO_ERROR_hint) and
  *  [attribute](@ref GLFW_CONTEXT_NO_ERROR_attrib).
  */
-#define GLFW_CONTEXT_NO_ERROR       0x0002200A
+    GLFW_CONTEXT_NO_ERROR           = 0x0002200A,
 /*! @brief Context creation API hint and attribute.
  *
  *  Context creation API [hint](@ref GLFW_CONTEXT_CREATION_API_hint) and
  *  [attribute](@ref GLFW_CONTEXT_CREATION_API_attrib).
  */
-#define GLFW_CONTEXT_CREATION_API   0x0002200B
+    GLFW_CONTEXT_CREATION_API       = 0x0002200B,
 /*! @brief Window content area scaling window
  *  [window hint](@ref GLFW_SCALE_TO_MONITOR).
  */
-#define GLFW_SCALE_TO_MONITOR       0x0002200C
+    GLFW_SCALE_TO_MONITOR           = 0x0002200C,
 /*! @brief macOS specific
  *  [window hint](@ref GLFW_COCOA_RETINA_FRAMEBUFFER_hint).
  */
-#define GLFW_COCOA_RETINA_FRAMEBUFFER 0x00023001
+    GLFW_COCOA_RETINA_FRAMEBUFFER   = 0x00023001,
 /*! @brief macOS specific
  *  [window hint](@ref GLFW_COCOA_FRAME_NAME_hint).
  */
-#define GLFW_COCOA_FRAME_NAME         0x00023002
+    GLFW_COCOA_FRAME_NAME           = 0x00023002,
 /*! @brief macOS specific
  *  [window hint](@ref GLFW_COCOA_GRAPHICS_SWITCHING_hint).
  */
-#define GLFW_COCOA_GRAPHICS_SWITCHING 0x00023003
+    GLFW_COCOA_GRAPHICS_SWITCHING   = 0x00023003,
 /*! @brief X11 specific
  *  [window hint](@ref GLFW_X11_CLASS_NAME_hint).
  */
-#define GLFW_X11_CLASS_NAME         0x00024001
+    GLFW_X11_CLASS_NAME             = 0x00024001,
 /*! @brief X11 specific
  *  [window hint](@ref GLFW_X11_CLASS_NAME_hint).
  */
-#define GLFW_X11_INSTANCE_NAME      0x00024002
-#define GLFW_WIN32_KEYBOARD_MENU    0x00025001
+    GLFW_X11_INSTANCE_NAME          = 0x00024002,
+    GLFW_WIN32_KEYBOARD_MENU        = 0x00025001
+};
 /*! @} */
 
-#define GLFW_NO_API                          0
-#define GLFW_OPENGL_API             0x00030001
-#define GLFW_OPENGL_ES_API          0x00030002
+enum GLFWapihint{
+    GLFW_NO_API         = 0,
+    GLFW_OPENGL_API     = 0x00030001,
+    GLFW_OPENGL_ES_API  = 0x00030002
+};
 
-#define GLFW_NO_ROBUSTNESS                   0
-#define GLFW_NO_RESET_NOTIFICATION  0x00031001
-#define GLFW_LOSE_CONTEXT_ON_RESET  0x00031002
+enum GLFWresethint{
+    GLFW_NO_ROBUSTNESS          = 0,
+    GLFW_NO_RESET_NOTIFICATION  = 0x00031001,
+    GLFW_LOSE_CONTEXT_ON_RESET  = 0x00031002
+};
 
-#define GLFW_OPENGL_ANY_PROFILE              0
-#define GLFW_OPENGL_CORE_PROFILE    0x00032001
-#define GLFW_OPENGL_COMPAT_PROFILE  0x00032002
+enum GLFWopenglprofilehint{
+    GLFW_OPENGL_ANY_PROFILE     = 0,
+    GLFW_OPENGL_CORE_PROFILE    = 0x00032001,
+    GLFW_OPENGL_COMPAT_PROFILE  = 0x00032002
+};
 
-#define GLFW_CURSOR                 0x00033001
-#define GLFW_STICKY_KEYS            0x00033002
-#define GLFW_STICKY_MOUSE_BUTTONS   0x00033003
-#define GLFW_LOCK_KEY_MODS          0x00033004
-#define GLFW_RAW_MOUSE_MOTION       0x00033005
+enum GLFWinputhint{
+    GLFW_CURSOR                 = 0x00033001,
+    GLFW_STICKY_KEYS            = 0x00033002,
+    GLFW_STICKY_MOUSE_BUTTONS   = 0x00033003,
+    GLFW_LOCK_KEY_MODS          = 0x00033004,
+    GLFW_RAW_MOUSE_MOTION       = 0x00033005
+};
 
-#define GLFW_CURSOR_NORMAL          0x00034001
-#define GLFW_CURSOR_HIDDEN          0x00034002
-#define GLFW_CURSOR_DISABLED        0x00034003
+enum GLFWcursorhint{
+    GLFW_CURSOR_NORMAL          = 0x00034001,
+    GLFW_CURSOR_HIDDEN          = 0x00034002,
+    GLFW_CURSOR_DISABLED        = 0x00034003
+};
 
-#define GLFW_ANY_RELEASE_BEHAVIOR            0
-#define GLFW_RELEASE_BEHAVIOR_FLUSH 0x00035001
-#define GLFW_RELEASE_BEHAVIOR_NONE  0x00035002
+enum GLFWreleasebehaviourhint{
+    GLFW_ANY_RELEASE_BEHAVIOR   = 0,
+    GLFW_RELEASE_BEHAVIOR_FLUSH = 0x00035001,
+    GLFW_RELEASE_BEHAVIOR_NONE  = 0x00035002
+};
 
-#define GLFW_NATIVE_CONTEXT_API     0x00036001
-#define GLFW_EGL_CONTEXT_API        0x00036002
-#define GLFW_OSMESA_CONTEXT_API     0x00036003
+enum GLFWcontextapihint{
+    GLFW_NATIVE_CONTEXT_API = 0x00036001,
+    GLFW_EGL_CONTEXT_API    = 0x00036002,
+    GLFW_OSMESA_CONTEXT_API = 0x00036003
+};
 
-#define GLFW_ANGLE_PLATFORM_TYPE_NONE    0x00037001
-#define GLFW_ANGLE_PLATFORM_TYPE_OPENGL  0x00037002
-#define GLFW_ANGLE_PLATFORM_TYPE_OPENGLES 0x00037003
-#define GLFW_ANGLE_PLATFORM_TYPE_D3D9    0x00037004
-#define GLFW_ANGLE_PLATFORM_TYPE_D3D11   0x00037005
-#define GLFW_ANGLE_PLATFORM_TYPE_VULKAN  0x00037007
-#define GLFW_ANGLE_PLATFORM_TYPE_METAL   0x00037008
+enum GLFWangleplatformtypehint{
+    GLFW_ANGLE_PLATFORM_TYPE_NONE       = 0x00037001,
+    GLFW_ANGLE_PLATFORM_TYPE_OPENGL     = 0x00037002,
+    GLFW_ANGLE_PLATFORM_TYPE_OPENGLES   = 0x00037003,
+    GLFW_ANGLE_PLATFORM_TYPE_D3D9       = 0x00037004,
+    GLFW_ANGLE_PLATFORM_TYPE_D3D11      = 0x00037005,
+    GLFW_ANGLE_PLATFORM_TYPE_VULKAN     = 0x00037007,
+    GLFW_ANGLE_PLATFORM_TYPE_METAL      = 0x00037008
+};
+
+/*! @addtogroup init
+ *  @{ */
+enum GLFWinithint{
+/*! @brief Joystick hat buttons init hint.
+ *
+ *  Joystick hat buttons [init hint](@ref GLFW_JOYSTICK_HAT_BUTTONS).
+ */
+    GLFW_JOYSTICK_HAT_BUTTONS   = 0x00050001,
+/*! @brief ANGLE rendering backend init hint.
+ *
+ *  ANGLE rendering backend [init hint](@ref GLFW_ANGLE_PLATFORM_TYPE_hint).
+ */
+    GLFW_ANGLE_PLATFORM_TYPE    = 0x00050002,
+/*! @brief Platform selection init hint.
+ *
+ *  Platform selection [init hint](@ref GLFW_PLATFORM).
+ */
+    GLFW_PLATFORM               = 0x00050003,
+/*! @brief macOS specific init hint.
+ *
+ *  macOS specific [init hint](@ref GLFW_COCOA_CHDIR_RESOURCES_hint).
+ */
+    GLFW_COCOA_CHDIR_RESOURCES  = 0x00051001,
+/*! @brief macOS specific init hint.
+ *
+ *  macOS specific [init hint](@ref GLFW_COCOA_MENUBAR_hint).
+ */
+    GLFW_COCOA_MENUBAR          = 0x00051002,
+/*! @brief X11 specific init hint.
+ *
+ *  X11 specific [init hint](@ref GLFW_X11_XCB_VULKAN_SURFACE_hint).
+ */
+    GLFW_X11_XCB_VULKAN_SURFACE = 0x00052001
+};
+/*! @} */
+
+/*! @addtogroup init
+ *  @{ */
+/*! @brief Hint value that enables automatic platform selection.
+ *
+ *  Hint value for @ref GLFW_PLATFORM that enables automatic platform selection.
+ */
+enum GLFWplatformhint{
+    GLFW_ANY_PLATFORM           = 0x00060000,
+    GLFW_PLATFORM_WIN32         = 0x00060001,
+    GLFW_PLATFORM_COCOA         = 0x00060002,
+    GLFW_PLATFORM_WAYLAND       = 0x00060003,
+    GLFW_PLATFORM_X11           = 0x00060004,
+    GLFW_PLATFORM_NULL          = 0x00060005
+};
+/*! @} */
+
+enum GLFWmischint{
+    GLFW_DONT_CARE              = -1
+};
 
 /*! @defgroup shapes Standard cursor shapes
  *  @brief Standard system cursor shapes.
@@ -1153,39 +1253,39 @@ extern "C" {
  *
  *  @ingroup input
  *  @{ */
-
+enum GLFWcursorshape{
 /*! @brief The regular arrow cursor shape.
  *
  *  The regular arrow cursor shape.
  */
-#define GLFW_ARROW_CURSOR           0x00036001
+    GLFW_ARROW_CURSOR           = 0x00036001,
 /*! @brief The text input I-beam cursor shape.
  *
  *  The text input I-beam cursor shape.
  */
-#define GLFW_IBEAM_CURSOR           0x00036002
+    GLFW_IBEAM_CURSOR           = 0x00036002,
 /*! @brief The crosshair cursor shape.
  *
  *  The crosshair cursor shape.
  */
-#define GLFW_CROSSHAIR_CURSOR       0x00036003
+    GLFW_CROSSHAIR_CURSOR       = 0x00036003,
 /*! @brief The pointing hand cursor shape.
  *
  *  The pointing hand cursor shape.
  */
-#define GLFW_POINTING_HAND_CURSOR   0x00036004
+    GLFW_POINTING_HAND_CURSOR   = 0x00036004,
 /*! @brief The horizontal resize/move arrow shape.
  *
  *  The horizontal resize/move arrow shape.  This is usually a horizontal
  *  double-headed arrow.
  */
-#define GLFW_RESIZE_EW_CURSOR       0x00036005
+    GLFW_RESIZE_EW_CURSOR       = 0x00036005,
 /*! @brief The vertical resize/move arrow shape.
  *
  *  The vertical resize/move shape.  This is usually a vertical double-headed
  *  arrow.
  */
-#define GLFW_RESIZE_NS_CURSOR       0x00036006
+    GLFW_RESIZE_NS_CURSOR       = 0x00036006,
 /*! @brief The top-left to bottom-right diagonal resize/move arrow shape.
  *
  *  The top-left to bottom-right diagonal resize/move shape.  This is usually
@@ -1200,7 +1300,7 @@ extern "C" {
  *  @note @wayland This shape is provided by a newer standard not supported by
  *  all cursor themes.
  */
-#define GLFW_RESIZE_NWSE_CURSOR     0x00036007
+    GLFW_RESIZE_NWSE_CURSOR     = 0x00036007,
 /*! @brief The top-right to bottom-left diagonal resize/move arrow shape.
  *
  *  The top-right to bottom-left diagonal resize/move shape.  This is usually
@@ -1215,13 +1315,13 @@ extern "C" {
  *  @note @wayland This shape is provided by a newer standard not supported by
  *  all cursor themes.
  */
-#define GLFW_RESIZE_NESW_CURSOR     0x00036008
+    GLFW_RESIZE_NESW_CURSOR     = 0x00036008,
 /*! @brief The omni-directional resize/move cursor shape.
  *
  *  The omni-directional resize cursor/move shape.  This is usually either
  *  a combined horizontal and vertical double-headed arrow or a grabbing hand.
  */
-#define GLFW_RESIZE_ALL_CURSOR      0x00036009
+    GLFW_RESIZE_ALL_CURSOR      = 0x00036009,
 /*! @brief The operation-not-allowed shape.
  *
  *  The operation-not-allowed shape.  This is usually a circle with a diagonal
@@ -1233,77 +1333,29 @@ extern "C" {
  *  @note @wayland This shape is provided by a newer standard not supported by
  *  all cursor themes.
  */
-#define GLFW_NOT_ALLOWED_CURSOR     0x0003600A
+    GLFW_NOT_ALLOWED_CURSOR     = 0x0003600A,
 /*! @brief Legacy name for compatibility.
  *
  *  This is an alias for compatibility with earlier versions.
  */
-#define GLFW_HRESIZE_CURSOR         GLFW_RESIZE_EW_CURSOR
+    GLFW_HRESIZE_CURSOR         = GLFW_RESIZE_EW_CURSOR,
 /*! @brief Legacy name for compatibility.
  *
  *  This is an alias for compatibility with earlier versions.
  */
-#define GLFW_VRESIZE_CURSOR         GLFW_RESIZE_NS_CURSOR
+    GLFW_VRESIZE_CURSOR         = GLFW_RESIZE_NS_CURSOR,
 /*! @brief Legacy name for compatibility.
  *
  *  This is an alias for compatibility with earlier versions.
  */
-#define GLFW_HAND_CURSOR            GLFW_POINTING_HAND_CURSOR
+    GLFW_HAND_CURSOR            = GLFW_POINTING_HAND_CURSOR
+};
 /*! @} */
 
-#define GLFW_CONNECTED              0x00040001
-#define GLFW_DISCONNECTED           0x00040002
-
-/*! @addtogroup init
- *  @{ */
-/*! @brief Joystick hat buttons init hint.
- *
- *  Joystick hat buttons [init hint](@ref GLFW_JOYSTICK_HAT_BUTTONS).
- */
-#define GLFW_JOYSTICK_HAT_BUTTONS   0x00050001
-/*! @brief ANGLE rendering backend init hint.
- *
- *  ANGLE rendering backend [init hint](@ref GLFW_ANGLE_PLATFORM_TYPE_hint).
- */
-#define GLFW_ANGLE_PLATFORM_TYPE    0x00050002
-/*! @brief Platform selection init hint.
- *
- *  Platform selection [init hint](@ref GLFW_PLATFORM).
- */
-#define GLFW_PLATFORM               0x00050003
-/*! @brief macOS specific init hint.
- *
- *  macOS specific [init hint](@ref GLFW_COCOA_CHDIR_RESOURCES_hint).
- */
-#define GLFW_COCOA_CHDIR_RESOURCES  0x00051001
-/*! @brief macOS specific init hint.
- *
- *  macOS specific [init hint](@ref GLFW_COCOA_MENUBAR_hint).
- */
-#define GLFW_COCOA_MENUBAR          0x00051002
-/*! @brief X11 specific init hint.
- *
- *  X11 specific [init hint](@ref GLFW_X11_XCB_VULKAN_SURFACE_hint).
- */
-#define GLFW_X11_XCB_VULKAN_SURFACE 0x00052001
-/*! @} */
-
-/*! @addtogroup init
- *  @{ */
-/*! @brief Hint value that enables automatic platform selection.
- *
- *  Hint value for @ref GLFW_PLATFORM that enables automatic platform selection.
- */
-#define GLFW_ANY_PLATFORM           0x00060000
-#define GLFW_PLATFORM_WIN32         0x00060001
-#define GLFW_PLATFORM_COCOA         0x00060002
-#define GLFW_PLATFORM_WAYLAND       0x00060003
-#define GLFW_PLATFORM_X11           0x00060004
-#define GLFW_PLATFORM_NULL          0x00060005
-/*! @} */
-
-#define GLFW_DONT_CARE              -1
-
+enum GLFWmonitorevent{
+    GLFW_CONNECTED      = 0x00040001,
+    GLFW_DISCONNECTED   = 0x00040002
+};
 
 /*************************************************************************
  * GLFW API types

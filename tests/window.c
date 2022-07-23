@@ -71,7 +71,7 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    GLFWwindow* window = glfwCreateWindow(600, 600, "Window Features", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(600, 700, "Window Features", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -411,6 +411,27 @@ int main(int argc, char** argv)
             nk_value_bool(nk, "Visible", glfwGetWindowAttrib(window, GLFW_VISIBLE));
             nk_value_bool(nk, "Iconified", glfwGetWindowAttrib(window, GLFW_ICONIFIED));
             nk_value_bool(nk, "Maximized", glfwGetWindowAttrib(window, GLFW_MAXIMIZED));
+
+            nk_layout_row_dynamic(nk, 30, 1);
+
+            nk_label(nk, "Taskbar Progress", NK_TEXT_CENTERED);
+
+            nk_layout_row_dynamic(nk, 30, 5);
+
+            static int progress = 0;
+            if(nk_button_label(nk, "No progress"))
+                glfwSetWindowTaskbarProgress(window, GLFW_TASKBAR_PROGRESS_NOPROGRESS, progress);
+            if (nk_button_label(nk, "Indeterminate"))
+                glfwSetWindowTaskbarProgress(window, GLFW_TASKBAR_PROGRESS_INDETERMINATE, progress);
+            if (nk_button_label(nk, "Normal"))
+                glfwSetWindowTaskbarProgress(window, GLFW_TASKBAR_PROGRESS_NORMAL, progress);
+            if (nk_button_label(nk, "Error"))
+                glfwSetWindowTaskbarProgress(window, GLFW_TASKBAR_PROGRESS_ERROR, progress);
+            if (nk_button_label(nk, "Paused"))
+                glfwSetWindowTaskbarProgress(window, GLFW_TASKBAR_PROGRESS_PAUSED, progress);
+
+            nk_label(nk, "Progress: ", NK_TEXT_ALIGN_LEFT);
+            nk_slider_int(nk, 0, &progress, 100, 1);
         }
         nk_end(nk);
 

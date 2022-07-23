@@ -1014,6 +1014,12 @@ void _glfwSetWindowIconCocoa(_GLFWwindow* window,
                     "Cocoa: Regular windows do not have icons on macOS");
 }
 
+void _glfwSetWindowTaskbarProgress(_GLFWwindow* window, const int progressState, int completed)
+{
+    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
+                    "Cocoa: Window taskbar progress is not implemented");
+}
+
 void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos)
 {
     @autoreleasepool {

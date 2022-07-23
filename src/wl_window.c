@@ -1885,6 +1885,12 @@ void _glfwSetWindowIconWayland(_GLFWwindow* window,
                     "Wayland: The platform does not support setting the window icon");
 }
 
+void _glfwSetWindowTaskbarProgress(_GLFWwindow* window, const int progressState, int completed)
+{
+    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+        "Wayland: The platform does not support setting the window taskbar progress");
+}
+
 void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos)
 {
     // A Wayland client is not aware of its position, so just warn and leave it

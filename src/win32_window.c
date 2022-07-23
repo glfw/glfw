@@ -1239,6 +1239,18 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         }
     }
 
+    if(uMsg == window->win32.TaskbarListMsgID)
+    {
+        HRESULT res = CoCreateInstance(&CLSID_TaskbarList, NULL, CLSCTX_INPROC_SERVER, &IID_ITaskbarList3, (LPVOID*)&window->win32.TaskbarList);
+        if (res != S_OK && window->win32.TaskbarList)
+            window->win32.TaskbarList->lpVtbl->Release(window->win32.TaskbarList);
+        else
+        {
+            window->win32.TaskbarList->lpVtbl->AddRef(window->win32.TaskbarList);
+            window->win32.TaskbarList->lpVtbl->HrInit(window->win32.TaskbarList);
+        }
+    }
+
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
 }
 
@@ -1348,6 +1360,10 @@ static int createNativeWindow(_GLFWwindow* window,
                                     WM_COPYDATA, MSGFLT_ALLOW, NULL);
         ChangeWindowMessageFilterEx(window->win32.handle,
                                     WM_COPYGLOBALDATA, MSGFLT_ALLOW, NULL);
+
+        window->win32.TaskbarListMsgID = RegisterWindowMessageW(L"TaskbarButtonCreated");
+        if (window->win32.TaskbarListMsgID)
+            ChangeWindowMessageFilterEx(window->win32.handle, window->win32.TaskbarListMsgID, MSGFLT_ALLOW, NULL);
     }
 
     window->win32.scaleToMonitor = wndconfig->scaleToMonitor;
@@ -1497,6 +1513,9 @@ void _glfwDestroyWindowWin32(_GLFWwindow* window)
     if (_glfw.win32.disabledCursorWindow == window)
         _glfw.win32.disabledCursorWindow = NULL;
 
+    if (window->win32.TaskbarList)
+        window->win32.TaskbarList->lpVtbl->Release(window->win32.TaskbarList);
+
     if (window->win32.handle)
     {
         RemovePropW(window->win32.handle, L"GLFW");
@@ -1557,6 +1576,23 @@ void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* im
         window->win32.bigIcon = bigIcon;
         window->win32.smallIcon = smallIcon;
     }
+}
+
+void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, const int progressState, int completed)
+{
+    if(!window->win32.TaskbarList)
+        return;
+
+    HRESULT res = window->win32.TaskbarList->lpVtbl->SetProgressValue(window->win32.TaskbarList, window->win32.handle, completed, 100);
+    if(res != S_OK)
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar progress value");
+        return;
+    }
+
+    res = window->win32.TaskbarList->lpVtbl->SetProgressState(window->win32.TaskbarList, window->win32.handle, progressState);
+    if (res != S_OK)
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar progress state");
 }
 
 void _glfwGetWindowPosWin32(_GLFWwindow* window, int* xpos, int* ypos)

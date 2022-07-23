@@ -1251,6 +1251,12 @@ extern "C" {
 #define GLFW_HAND_CURSOR            GLFW_POINTING_HAND_CURSOR
 /*! @} */
 
+#define GLFW_TASKBAR_PROGRESS_NOPROGRESS    0x00
+#define GLFW_TASKBAR_PROGRESS_INDETERMINATE 0x01
+#define GLFW_TASKBAR_PROGRESS_NORMAL        0x02
+#define GLFW_TASKBAR_PROGRESS_ERROR         0x04
+#define GLFW_TASKBAR_PROGRESS_PAUSED        0x08
+
 #define GLFW_CONNECTED              0x00040001
 #define GLFW_DISCONNECTED           0x00040002
 
@@ -3282,6 +3288,8 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *  @ingroup window
  */
 GLFWAPI void glfwSetWindowIcon(GLFWwindow* window, int count, const GLFWimage* images);
+
+GLFWAPI void glfwSetWindowTaskbarProgress(GLFWwindow* window, const int progressState, int completed);
 
 /*! @brief Retrieves the position of the content area of the specified window.
  *

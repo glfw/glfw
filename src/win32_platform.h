@@ -69,6 +69,7 @@
 #include <dinput.h>
 #include <xinput.h>
 #include <dbt.h>
+#include <ShObjIdl_core.h>
 
 // HACK: Define macros that some windows.h variants don't
 #ifndef WM_MOUSEHWHEEL
@@ -432,6 +433,9 @@ typedef struct _GLFWwindowWin32
     int                 lastCursorPosX, lastCursorPosY;
     // The last received high surrogate when decoding pairs of UTF-16 messages
     WCHAR               highSurrogate;
+
+    ITaskbarList3* TaskbarList;
+    UINT TaskbarListMsgID;
 } _GLFWwindowWin32;
 
 // Win32-specific global data
@@ -541,6 +545,7 @@ GLFWbool _glfwCreateWindowWin32(_GLFWwindow* window, const _GLFWwndconfig* wndco
 void _glfwDestroyWindowWin32(_GLFWwindow* window);
 void _glfwSetWindowTitleWin32(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* images);
+void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, const int taskbarState, int completed);
 void _glfwGetWindowPosWin32(_GLFWwindow* window, int* xpos, int* ypos);
 void _glfwSetWindowPosWin32(_GLFWwindow* window, int xpos, int ypos);
 void _glfwGetWindowSizeWin32(_GLFWwindow* window, int* width, int* height);

@@ -2091,6 +2091,11 @@ void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* imag
     XFlush(_glfw.x11.display);
 }
 
+void _glfwSetWindowTaskbarProgressX11(_GLFWwindow* window, const int taskbarState, int completed)
+{
+    _glfwInputError(GLFW_FEATURE_UNAVAILABLE, "X11: The platform does not support setting the window taskbar progress");
+}
+
 void _glfwGetWindowPosX11(_GLFWwindow* window, int* xpos, int* ypos)
 {
     Window dummy;

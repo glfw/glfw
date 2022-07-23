@@ -708,6 +708,7 @@ struct _GLFWplatform
     void (*destroyWindow)(_GLFWwindow*);
     void (*setWindowTitle)(_GLFWwindow*,const char*);
     void (*setWindowIcon)(_GLFWwindow*,int,const GLFWimage*);
+    void (*setWindowTaskbarProgress)(_GLFWwindow*,const int,int);
     void (*getWindowPos)(_GLFWwindow*,int*,int*);
     void (*setWindowPos)(_GLFWwindow*,int,int);
     void (*getWindowSize)(_GLFWwindow*,int*,int*);

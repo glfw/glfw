@@ -178,6 +178,10 @@ void _glfwSetWindowIconNull(_GLFWwindow* window, int count, const GLFWimage* ima
 {
 }
 
+void _glfwSetWindowTaskbarProgressNull(_GLFWwindow* window, const int progressState, int completed)
+{
+}
+
 void _glfwSetWindowMonitorNull(_GLFWwindow* window,
                                _GLFWmonitor* monitor,
                                int xpos, int ypos,

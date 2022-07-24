@@ -2507,8 +2507,8 @@ static void lockPointer(_GLFWwindow* window)
 {
     if (!_glfw.wl.relativePointerManager)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: no relative pointer manager");
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Wayland: The compositor does not support pointer locking");
         return;
     }
 

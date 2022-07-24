@@ -267,10 +267,8 @@ typedef struct _GLFWwindowWayland
     int                         monitorsCount;
     int                         monitorsSize;
 
-    struct {
-        struct zwp_relative_pointer_v1*    relativePointer;
-        struct zwp_locked_pointer_v1*      lockedPointer;
-    } pointerLock;
+    struct zwp_relative_pointer_v1* relativePointer;
+    struct zwp_locked_pointer_v1*   lockedPointer;
 
     struct zwp_idle_inhibitor_v1*          idleInhibitor;
 

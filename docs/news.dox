@@ -312,6 +312,19 @@ Starting with GLFW 3.3.7, events posted with @ref glfwPostEmptyEvent now use a s
 unnamed pipe instead of sending an X11 client event to the helper window.
 
 
+@subsubsection wayland_alpha_34 Frambuffer may lack alpha channel on older Wayland systems
+
+On Wayland, when creating an EGL context on a machine lacking the new
+`EGL_EXT_present_opaque` extension, the @ref GLFW_ALPHA_BITS window hint will be
+ignored and the framebuffer will have no alpha channel.  This is because some
+Wayland compositors treat any buffer with an alpha channel as per-pixel
+transparent.
+
+If you want a per-pixel transparent window, see the
+[GLFW_TRANSPARENT_FRAMEBUFFER](@ref GLFW_TRANSPARENT_FRAMEBUFFER_hint) window
+hint.
+
+
 @subsection deprecations_33 Deprecations in version 3.3
 
 @subsubsection charmods_callback_33 Character with modifiers callback

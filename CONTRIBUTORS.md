@@ -180,6 +180,7 @@ video tutorials.
  - pthom
  - Martin Pulec
  - Guillaume Racicot
+ - Christian Rauch
  - Philip Rideout
  - Eddie Ringle
  - Max Risuhin

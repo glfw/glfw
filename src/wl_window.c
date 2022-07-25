@@ -2294,13 +2294,6 @@ void _glfwPlatformGetCursorPos(_GLFWwindow* window, double* xpos, double* ypos)
 
 void _glfwPlatformSetCursorPos(_GLFWwindow* window, double x, double y)
 {
-    if (window->wl.lockedPointer)
-    {
-        zwp_locked_pointer_v1_set_cursor_position_hint(
-            window->wl.lockedPointer,
-            wl_fixed_from_double(x),
-            wl_fixed_from_double(y));
-    }
 }
 
 void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)

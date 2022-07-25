@@ -1854,6 +1854,12 @@ void _glfwDestroyWindowWayland(_GLFWwindow* window)
     if (window->wl.idleInhibitor)
         zwp_idle_inhibitor_v1_destroy(window->wl.idleInhibitor);
 
+    if (window->wl.relativePointer)
+        zwp_relative_pointer_v1_destroy(window->wl.relativePointer);
+
+    if (window->wl.lockedPointer)
+        zwp_locked_pointer_v1_destroy(window->wl.lockedPointer);
+
     if (window->context.destroy)
         window->context.destroy(window);
 

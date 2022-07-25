@@ -2460,15 +2460,6 @@ static void lockedPointerHandleLocked(void* userData,
 {
 }
 
-static void unlockPointer(_GLFWwindow* window)
-{
-    zwp_relative_pointer_v1_destroy(window->wl.relativePointer);
-    window->wl.relativePointer = NULL;
-
-    zwp_locked_pointer_v1_destroy(window->wl.lockedPointer);
-    window->wl.lockedPointer = NULL;
-}
-
 static void lockedPointerHandleUnlocked(void* userData,
                                         struct zwp_locked_pointer_v1* lockedPointer)
 {
@@ -2507,6 +2498,15 @@ static void lockPointer(_GLFWwindow* window)
     zwp_locked_pointer_v1_add_listener(window->wl.lockedPointer,
                                        &lockedPointerListener,
                                        window);
+}
+
+static void unlockPointer(_GLFWwindow* window)
+{
+    zwp_relative_pointer_v1_destroy(window->wl.relativePointer);
+    window->wl.relativePointer = NULL;
+
+    zwp_locked_pointer_v1_destroy(window->wl.lockedPointer);
+    window->wl.lockedPointer = NULL;
 }
 
 void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)

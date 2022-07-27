@@ -149,10 +149,6 @@ if (!window)
 }
 @endcode
 
-The window handle is passed to all window related functions and is provided
-along all window related callbacks, so they can tell which window received
-the event.
-
 When a window and context is no longer needed, destroy it.
 
 @code

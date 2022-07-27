@@ -485,6 +485,8 @@ GLFWbool _glfwInitEGL(void)
         extensionSupportedEGL("EGL_KHR_context_flush_control");
     _glfw.egl.EXT_present_opaque =
         extensionSupportedEGL("EGL_EXT_present_opaque");
+    _glfw.egl.IMG_context_priority =
+        extensionSupportedEGL("EGL_IMG_context_priority");
 
     return GLFW_TRUE;
 }
@@ -631,6 +633,24 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         {
             SET_ATTRIB(EGL_CONTEXT_RELEASE_BEHAVIOR_KHR,
                        EGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR);
+        }
+    }
+
+    if (_glfw.egl.IMG_context_priority && ctxconfig->priority != GLFW_PRIORITY_MEDIUM)
+    {
+        if (ctxconfig->priority == GLFW_PRIORITY_LOW)
+        {
+            SET_ATTRIB(EGL_CONTEXT_PRIORITY_LEVEL_IMG,
+                      EGL_CONTEXT_PRIORITY_LOW_IMG);
+        } else if (ctxconfig->priority == GLFW_PRIORITY_HIGH)
+        {
+            SET_ATTRIB(EGL_CONTEXT_PRIORITY_LEVEL_IMG,
+                      EGL_CONTEXT_PRIORITY_HIGH_IMG);
+        }
+        else if (ctxconfig->priority == GLFW_PRIORITY_REALTIME)
+        {
+            SET_ATTRIB(EGL_CONTEXT_PRIORITY_LEVEL_IMG,
+                      EGL_CONTEXT_PRIORITY_REALTIME_NV);
         }
     }
 

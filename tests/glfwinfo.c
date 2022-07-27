@@ -71,6 +71,11 @@
 #define PLATFORM_NAME_X11   "x11"
 #define PLATFORM_NAME_NULL  "null"
 
+#define PRIORITY_LOW        "low"
+#define PRIORITY_MEDIUM     "medium"
+#define PRIORITY_HIGH       "high"
+#define PRIORITY_REALTIME   "realtime"
+
 static void usage(void)
 {
     printf("Usage: glfwinfo [OPTION]...\n");
@@ -133,6 +138,11 @@ static void usage(void)
                                         ANGLE_TYPE_METAL ")\n");
     printf("      --graphics-switching  request macOS graphics switching\n");
     printf("      --disable-xcb-surface disable VK_KHR_xcb_surface extension\n");
+    printf("      --priority=PRIORITY   request context priority to use ("
+                                        PRIORITY_LOW ","
+                                        PRIORITY_MEDIUM "," 
+                                        PRIORITY_HIGH "," 
+                                        PRIORITY_REALTIME ")\n");
 }
 
 static void error_callback(int error, const char* description)
@@ -361,6 +371,7 @@ int main(int argc, char** argv)
     int context_robustness = GLFW_NO_ROBUSTNESS;
     bool context_debug = false;
     bool context_no_error = false;
+    int context_priority = GLFW_PRIORITY_MEDIUM;
     bool opengl_forward = false;
     int opengl_profile = GLFW_OPENGL_ANY_PROFILE;
     int fb_red_bits = 8;
@@ -388,7 +399,7 @@ int main(int argc, char** argv)
            REDBITS, GREENBITS, BLUEBITS, ALPHABITS, DEPTHBITS, STENCILBITS,
            ACCUMREDBITS, ACCUMGREENBITS, ACCUMBLUEBITS, ACCUMALPHABITS,
            AUXBUFFERS, SAMPLES, STEREO, SRGB, SINGLEBUFFER, NOERROR_SRSLY,
-           ANGLE_TYPE, GRAPHICS_SWITCHING, XCB_SURFACE };
+           ANGLE_TYPE, GRAPHICS_SWITCHING, XCB_SURFACE, PRIORITY };
     const struct option options[] =
     {
         { "platform",           1, NULL, PLATFORM },
@@ -424,6 +435,7 @@ int main(int argc, char** argv)
         { "angle-type",         1, NULL, ANGLE_TYPE },
         { "graphics-switching", 0, NULL, GRAPHICS_SWITCHING },
         { "vk-xcb-surface",     0, NULL, XCB_SURFACE },
+        { "priority",           1, NULL, PRIORITY },
         { NULL, 0, NULL, 0 }
     };
 
@@ -652,6 +664,22 @@ int main(int argc, char** argv)
             case XCB_SURFACE:
                 disable_xcb_surface = true;
                 break;
+            case PRIORITY:
+                if (strcasecmp(optarg, PRIORITY_LOW) == 0)
+                    context_priority = GLFW_PRIORITY_LOW;
+                else if (strcasecmp(optarg, PRIORITY_MEDIUM) == 0)
+                    context_priority = GLFW_PRIORITY_MEDIUM;
+                else if (strcasecmp(optarg, PRIORITY_HIGH) == 0)
+                    context_priority = GLFW_PRIORITY_HIGH;
+                else if (strcasecmp(optarg, PRIORITY_REALTIME) == 0)
+                    context_priority = GLFW_PRIORITY_REALTIME;
+                else
+                {
+                    usage();
+                    exit(EXIT_FAILURE);
+                }
+                break;
+
             default:
                 usage();
                 exit(EXIT_FAILURE);
@@ -690,6 +718,7 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_CONTEXT_NO_ERROR, context_no_error);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, opengl_forward);
     glfwWindowHint(GLFW_OPENGL_PROFILE, opengl_profile);
+    glfwWindowHint(GLFW_CONTEXT_PRIORITY, context_priority);
 
     glfwWindowHint(GLFW_RED_BITS, fb_red_bits);
     glfwWindowHint(GLFW_BLUE_BITS, fb_blue_bits);

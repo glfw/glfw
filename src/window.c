@@ -264,6 +264,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.context.source = GLFW_NATIVE_CONTEXT_API;
     _glfw.hints.context.major  = 1;
     _glfw.hints.context.minor  = 0;
+    _glfw.hints.context.priority = GLFW_PRIORITY_MEDIUM;
 
     // The default is a focused, visible, resizable window with decorations
     memset(&_glfw.hints.window, 0, sizeof(_glfw.hints.window));
@@ -421,6 +422,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             return;
         case GLFW_REFRESH_RATE:
             _glfw.hints.refreshRate = value;
+            return;
+        case GLFW_CONTEXT_PRIORITY:
+            _glfw.hints.context.priority = value;
             return;
     }
 

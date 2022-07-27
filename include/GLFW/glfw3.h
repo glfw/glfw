@@ -1084,6 +1084,11 @@ extern "C" {
  *  [window hint](@ref GLFW_SCALE_TO_MONITOR).
  */
 #define GLFW_SCALE_TO_MONITOR       0x0002200C
+/*! @brief Context priority.
+ *
+ *  Context priority hint [hint](@ref GLFW_CONTEXT_PRIORITY_hint).
+ */
+#define GLFW_CONTEXT_PRIORITY       0x0002200D
 /*! @brief macOS specific
  *  [window hint](@ref GLFW_COCOA_RETINA_FRAMEBUFFER_hint).
  */
@@ -1151,6 +1156,11 @@ extern "C" {
 #define GLFW_ANGLE_PLATFORM_TYPE_D3D11   0x00037005
 #define GLFW_ANGLE_PLATFORM_TYPE_VULKAN  0x00037007
 #define GLFW_ANGLE_PLATFORM_TYPE_METAL   0x00037008
+
+#define GLFW_PRIORITY_LOW           0x00038001
+#define GLFW_PRIORITY_MEDIUM        0x00038002
+#define GLFW_PRIORITY_HIGH          0x00038003
+#define GLFW_PRIORITY_REALTIME      0x00038004
 
 /*! @defgroup shapes Standard cursor shapes
  *  @brief Standard system cursor shapes.

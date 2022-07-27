@@ -170,6 +170,20 @@ GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
         }
     }
 
+    if (ctxconfig->priority)
+    {
+        if (ctxconfig->priority != GLFW_PRIORITY_LOW &&
+            ctxconfig->priority != GLFW_PRIORITY_MEDIUM &&
+            ctxconfig->priority != GLFW_PRIORITY_HIGH &&
+            ctxconfig->priority != GLFW_PRIORITY_REALTIME)
+        {
+            _glfwInputError(GLFW_INVALID_ENUM,
+                            "Invalid context priority 0x%08X",
+                            ctxconfig->priority);
+            return GLFW_FALSE;
+        }
+    }
+
     return GLFW_TRUE;
 }
 

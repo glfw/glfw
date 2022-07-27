@@ -396,6 +396,7 @@ information on what to include when reporting a bug.
    (#1380)
    [EGL] Added loading of glvnd `libOpenGL.so.0` where available for OpenGL
  - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
+ - [GLX] Added loading of glvnd `libGLX.so.0` where available
  - [GLX] Bugfix: Context creation failed if GLX 1.4 was not exported by GLX library
 
 

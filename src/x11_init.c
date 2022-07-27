@@ -973,6 +973,8 @@ static GLFWbool initExtensions(void)
         XInternAtom(_glfw.x11.display, "_NET_WM_WINDOW_OPACITY", False);
     _glfw.x11.MOTIF_WM_HINTS =
         XInternAtom(_glfw.x11.display, "_MOTIF_WM_HINTS", False);
+    _glfw.x11.KDE_NET_WM_BLUR_BEHIND_REGION =
+        XInternAtom(_glfw.x11.display, "_KDE_NET_WM_BLUR_BEHIND_REGION", False);
 
     // The compositing manager selection name contains the screen number
     {
@@ -1246,6 +1248,7 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
         _glfwGetRequiredInstanceExtensionsX11,
         _glfwGetPhysicalDevicePresentationSupportX11,
         _glfwCreateWindowSurfaceX11,
+        _glfwSetWindowBlurX11,
     };
 
     // HACK: If the application has left the locale as "C" then both wide

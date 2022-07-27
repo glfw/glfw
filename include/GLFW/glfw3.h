@@ -927,6 +927,13 @@ extern "C" {
  */
 #define GLFW_MOUSE_PASSTHROUGH      0x0002000D
 
+/*! @brief Blur behind window hint and attribute
+ *
+ *  Blur behind [window hint](@ref GLFW_BLURRED_hint) or
+ *  [window attribute](@ref GLFW_BLURRED_attrib).
+ */
+#define GLFW_BLURRED                 0x0002000E
+
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_RED_BITS).

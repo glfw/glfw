@@ -51,6 +51,7 @@ typedef struct _GLFWwindowNull
     GLFWbool        floating;
     GLFWbool        transparent;
     float           opacity;
+    GLFWbool        blurred;
 } _GLFWwindowNull;
 
 // Null-specific per-monitor data
@@ -111,6 +112,7 @@ void _glfwSetWindowFloatingNull(_GLFWwindow* window, GLFWbool enabled);
 void _glfwSetWindowMousePassthroughNull(_GLFWwindow* window, GLFWbool enabled);
 float _glfwGetWindowOpacityNull(_GLFWwindow* window);
 void _glfwSetWindowOpacityNull(_GLFWwindow* window, float opacity);
+void _glfwSetWindowBlurNull(_GLFWwindow* window, GLFWbool enabled);
 void _glfwSetRawMouseMotionNull(_GLFWwindow *window, GLFWbool enabled);
 GLFWbool _glfwRawMouseMotionSupportedNull(void);
 void _glfwShowWindowNull(_GLFWwindow* window);

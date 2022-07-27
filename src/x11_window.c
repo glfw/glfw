@@ -619,6 +619,9 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     if (!wndconfig->decorated)
         _glfwSetWindowDecoratedX11(window, GLFW_FALSE);
 
+    if (wndconfig->blurred)
+        _glfwSetWindowBlurX11(window, GLFW_TRUE);
+
     if (_glfw.x11.NET_WM_STATE && !window->monitor)
     {
         Atom states[3];
@@ -2716,6 +2719,17 @@ void _glfwSetWindowOpacityX11(_GLFWwindow* window, float opacity)
     XChangeProperty(_glfw.x11.display, window->x11.handle,
                     _glfw.x11.NET_WM_WINDOW_OPACITY, XA_CARDINAL, 32,
                     PropModeReplace, (unsigned char*) &value, 1);
+}
+
+void _glfwSetWindowBlurX11(_GLFWwindow* window, GLFWbool enable)
+{
+    if (enable)
+        XChangeProperty(_glfw.x11.display, window->x11.handle,
+                        _glfw.x11.KDE_NET_WM_BLUR_BEHIND_REGION, XA_CARDINAL, 32,
+                        PropModeReplace, NULL, 0);
+    else
+        XDeleteProperty(_glfw.x11.display, window->x11.handle,
+                        _glfw.x11.KDE_NET_WM_BLUR_BEHIND_REGION);
 }
 
 void _glfwSetRawMouseMotionX11(_GLFWwindow *window, GLFWbool enabled)

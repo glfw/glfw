@@ -927,6 +927,9 @@ extern "C" {
  */
 #define GLFW_MOUSE_PASSTHROUGH      0x0002000D
 
+// TODO doc
+#define GLFW_DND_DRAGGING           0x0002000E
+
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_RED_BITS).
@@ -1308,6 +1311,25 @@ extern "C" {
 #define GLFW_PLATFORM_X11           0x00060004
 #define GLFW_PLATFORM_NULL          0x00060005
 /*! @} */
+
+// TODO doc
+#define GLFW_DND_NONE               0
+
+// Drag and drop events
+#define GLFW_DND_ENTER              0xdd100001
+#define GLFW_DND_DRAG               0xdd100002
+#define GLFW_DND_LEAVE              0xdd100003
+
+// Drag and drop actions
+// GLFW_DND_NONE
+#define GLFW_DND_COPY               0xdd200001
+#define GLFW_DND_LINK               0xdd200002
+#define GLFW_DND_MOVE               0xdd200004
+
+// Drag and drop formats
+// GLFW_DND_NONE
+#define GLFW_DND_TEXT               0xdd300002
+#define GLFW_DND_PATHS              0xdd300001
 
 #define GLFW_DONT_CARE              -1
 
@@ -1884,6 +1906,9 @@ typedef void (* GLFWcharfun)(GLFWwindow* window, unsigned int codepoint);
  */
 typedef void (* GLFWcharmodsfun)(GLFWwindow* window, unsigned int codepoint, int mods);
 
+// TODO doc
+typedef void (* GLFWdragfun)(GLFWwindow* window, int event, double xpos, double ypos, int availableFormats, int *format, int availableActions, int *action);
+
 /*! @brief The function pointer type for path drop callbacks.
  *
  *  This is the function pointer type for path drop callbacks.  A path drop
@@ -1907,6 +1932,9 @@ typedef void (* GLFWcharmodsfun)(GLFWwindow* window, unsigned int codepoint, int
  *  @ingroup input
  */
 typedef void (* GLFWdropfun)(GLFWwindow* window, int path_count, const char* paths[]);
+
+// TODO doc
+typedef void (* GLFWdropfunex)(GLFWwindow* window, int format, int data_count, void *data, int *action);
 
 /*! @brief The function pointer type for monitor configuration callbacks.
  *
@@ -5293,6 +5321,9 @@ GLFWAPI GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcu
  */
 GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun callback);
 
+// TODO doc
+GLFWAPI GLFWdragfun glfwSetDragCallback(GLFWwindow* window, GLFWdragfun callback);
+
 /*! @brief Sets the path drop callback.
  *
  *  This function sets the path drop callback of the specified window, which is
@@ -5329,6 +5360,9 @@ GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun ca
  *  @ingroup input
  */
 GLFWAPI GLFWdropfun glfwSetDropCallback(GLFWwindow* window, GLFWdropfun callback);
+
+// TODO doc
+GLFWAPI GLFWdropfunex glfwSetDropCallbackEx(GLFWwindow* window, GLFWdropfunex callback);
 
 /*! @brief Returns whether the specified joystick is present.
  *

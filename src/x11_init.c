@@ -910,11 +910,6 @@ static GLFWbool initExtensions(void)
     // the keyboard mapping.
     createKeyTables();
 
-    // String format atoms
-    _glfw.x11.NULL_ = XInternAtom(_glfw.x11.display, "NULL", False);
-    _glfw.x11.UTF8_STRING = XInternAtom(_glfw.x11.display, "UTF8_STRING", False);
-    _glfw.x11.ATOM_PAIR = XInternAtom(_glfw.x11.display, "ATOM_PAIR", False);
-
     // Custom selection property atom
     _glfw.x11.GLFW_SELECTION =
         XInternAtom(_glfw.x11.display, "GLFW_SELECTION", False);
@@ -925,6 +920,7 @@ static GLFWbool initExtensions(void)
     _glfw.x11.PRIMARY = XInternAtom(_glfw.x11.display, "PRIMARY", False);
     _glfw.x11.INCR = XInternAtom(_glfw.x11.display, "INCR", False);
     _glfw.x11.CLIPBOARD = XInternAtom(_glfw.x11.display, "CLIPBOARD", False);
+    _glfw.x11.ATOM_PAIR = XInternAtom(_glfw.x11.display, "ATOM_PAIR", False);
 
     // Clipboard manager atoms
     _glfw.x11.CLIPBOARD_MANAGER =
@@ -937,11 +933,24 @@ static GLFWbool initExtensions(void)
     _glfw.x11.XdndEnter = XInternAtom(_glfw.x11.display, "XdndEnter", False);
     _glfw.x11.XdndPosition = XInternAtom(_glfw.x11.display, "XdndPosition", False);
     _glfw.x11.XdndStatus = XInternAtom(_glfw.x11.display, "XdndStatus", False);
-    _glfw.x11.XdndActionCopy = XInternAtom(_glfw.x11.display, "XdndActionCopy", False);
+    _glfw.x11.XdndLeave = XInternAtom(_glfw.x11.display, "XdndLeave", False);
+    _glfw.x11.XdndActions[_GLFW_DND_COPY_INDEX] =
+        XInternAtom(_glfw.x11.display, "XdndActionCopy", False);
+    _glfw.x11.XdndActions[_GLFW_DND_LINK_INDEX] =
+        XInternAtom(_glfw.x11.display, "XdndActionLink", False);
+    _glfw.x11.XdndActions[_GLFW_DND_MOVE_INDEX] =
+        XInternAtom(_glfw.x11.display, "XdndActionMove", False);
     _glfw.x11.XdndDrop = XInternAtom(_glfw.x11.display, "XdndDrop", False);
     _glfw.x11.XdndFinished = XInternAtom(_glfw.x11.display, "XdndFinished", False);
     _glfw.x11.XdndSelection = XInternAtom(_glfw.x11.display, "XdndSelection", False);
     _glfw.x11.XdndTypeList = XInternAtom(_glfw.x11.display, "XdndTypeList", False);
+
+    // Format atoms (shared by Xdnd and selection)
+    _glfw.x11.NULL_ = XInternAtom(_glfw.x11.display, "NULL", False);
+    _glfw.x11.UTF8_STRING = XInternAtom(_glfw.x11.display, "UTF8_STRING", False);
+    _glfw.x11.STRING = XInternAtom(_glfw.x11.display, "STRING", False);
+    _glfw.x11.TEXT = XInternAtom(_glfw.x11.display, "TEXT", False);
+    _glfw.x11.text_plain = XInternAtom(_glfw.x11.display, "text/plain", False);
     _glfw.x11.text_uri_list = XInternAtom(_glfw.x11.display, "text/uri-list", False);
 
     // ICCCM, EWMH and Motif window property atoms

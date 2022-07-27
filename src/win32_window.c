@@ -30,6 +30,7 @@
 #include "internal.h"
 
 #include <limits.h>
+#include <stdio.h> // TODO remove
 #include <stdlib.h>
 #include <string.h>
 #include <windowsx.h>
@@ -1426,7 +1427,15 @@ static int createNativeWindow(_GLFWwindow* window,
         }
     }
 
-    DragAcceptFiles(window->win32.handle, TRUE);
+    //DragAcceptFiles(window->win32.handle, TRUE);
+    window->win32.dropTarget.lpVtbl = &_glfw.win32.dropTargetVtbl;
+    window->win32.dropTarget.window = window;
+    if (FAILED(RegisterDragDrop(window->win32.handle, (LPDROPTARGET)&window->win32.dropTarget)))
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to register window for drag & drop");
+        return GLFW_FALSE;
+    }
 
     if (fbconfig->transparent)
     {
@@ -1514,6 +1523,8 @@ void _glfwDestroyWindowWin32(_GLFWwindow* window)
 
     if (_glfw.win32.capturedCursorWindow == window)
         releaseCursor();
+
+    RevokeDragDrop(window->win32.handle);
 
     if (window->win32.handle)
     {
@@ -2500,3 +2511,232 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
     return window->win32.handle;
 }
 
+/*static GLFWbool _glfwIsEqualIID(REFIID riid1, REFIID riid2)
+{
+    return riid1->Data1 == riid2->Data1
+        && riid1->Data2 == riid2->Data2
+        && riid1->Data3 == riid2->Data3
+        && (memcmp(riid1->Data4, riid2->Data4, sizeof(riid1->Data4)) == 0);
+}
+
+// IDropTarget vtable functions
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_QueryInterface(IDropTarget *_This, REFIID riid, void **ppvObject)
+{
+    _GLFWdroptarget *This = (_GLFWdroptarget*) _This;
+    printf("DropTarget_QueryInterface\n");
+    if(!ppvObject)
+        return E_POINTER;
+
+    if (_glfwIsEqualIID(riid, &IID_IUnknown) || _glfwIsEqualIID(riid, &IID_IDropTarget))
+    {
+        *ppvObject = This;
+        This->lpVtbl->AddRef(This);
+        return S_OK;
+    }
+
+    *ppvObject = 0;
+    return E_NOINTERFACE;
+}*/
+
+// IDropTarget utility functions
+static void getActions(_GLFWdroptarget *This, DWORD dwEffect)
+{
+    This->availableActions = GLFW_DND_NONE;
+    This->proposedAction = GLFW_DND_NONE;
+    if ((dwEffect & DROPEFFECT_COPY) == DROPEFFECT_COPY)
+    {
+        This->availableActions |= GLFW_DND_COPY;
+        if (!This->proposedAction)
+            This->proposedAction = GLFW_DND_COPY;
+    }
+    if ((dwEffect & DROPEFFECT_LINK) == DROPEFFECT_LINK)
+    {
+        This->availableActions |= GLFW_DND_LINK;
+        if (!This->proposedAction)
+            This->proposedAction = GLFW_DND_LINK;
+    }
+    if ((dwEffect & DROPEFFECT_MOVE) == DROPEFFECT_MOVE)
+    {
+        This->availableActions |= GLFW_DND_MOVE;
+        if (!This->proposedAction)
+            This->proposedAction = GLFW_DND_MOVE;
+    }
+}
+
+static void setActions(_GLFWdroptarget *This, DWORD *pdwEffect)
+{
+    if((This->chosenAction & GLFW_DND_COPY) == GLFW_DND_COPY)
+        *pdwEffect = DROPEFFECT_COPY;
+    else if((This->chosenAction & GLFW_DND_LINK) == GLFW_DND_LINK)
+        *pdwEffect = DROPEFFECT_LINK;
+    else if((This->chosenAction & GLFW_DND_MOVE) == GLFW_DND_MOVE)
+        *pdwEffect = DROPEFFECT_MOVE;
+    else
+        *pdwEffect = DROPEFFECT_NONE;
+}
+
+static FORMATETC *withClipFormat(FORMATETC *pFmt, CLIPFORMAT cf)
+{
+    pFmt->cfFormat = cf;
+    return pFmt;
+}
+
+// IDropTarget vtable functions
+ULONG STDMETHODCALLTYPE _glfwDropTarget_AddRef(IDropTarget *_This)
+{
+    _GLFWdroptarget *This = (_GLFWdroptarget*) _This;
+    printf("DropTarget_AddRef\n");
+    return ++This->cRefCount;
+}
+
+ULONG STDMETHODCALLTYPE _glfwDropTarget_Release(IDropTarget *_This)
+{
+    _GLFWdroptarget *This = (_GLFWdroptarget*) _This;
+    printf("DropTarget_Release\n");
+    return --This->cRefCount;
+}
+
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_DragEnter(IDropTarget *_This, IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
+{
+    _GLFWdroptarget *This = (_GLFWdroptarget*) _This;
+    FORMATETC fmt = { 0, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+    STGMEDIUM stgmed;
+
+    printf("DropTarget_DragEnter\n");
+
+    getActions(This, *pdwEffect);
+
+    This->availableFormats = GLFW_DND_NONE;
+
+	if (SUCCEEDED(IDataObject_QueryGetData(pDataObj, withClipFormat(&fmt, CF_HDROP)))
+        && SUCCEEDED(IDataObject_GetData(pDataObj, &fmt, &stgmed)))
+	{
+        This->availableFormats |= GLFW_DND_PATHS;
+        printf("paths\n");
+    }
+    if (SUCCEEDED(IDataObject_QueryGetData(pDataObj, withClipFormat(&fmt, CF_TEXT)))
+        && SUCCEEDED(IDataObject_GetData(pDataObj, &fmt, &stgmed)))
+    {
+        This->availableFormats |= GLFW_DND_TEXT;
+        printf("text\n");
+        ReleaseStgMedium(&stgmed);
+    }
+
+    This->window->dndDragging = GLFW_TRUE;
+
+    This->chosenFormat = This->availableFormats;
+    This->chosenAction = This->proposedAction;
+    _glfwInputDrag(This->window, GLFW_DND_ENTER, pt.x, pt.y,
+                    This->availableFormats,
+                    &This->chosenFormat,
+                    This->availableActions,
+                    &This->chosenAction);
+
+    return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_DragOver(IDropTarget *_This, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
+{
+    _GLFWdroptarget *This = (_GLFWdroptarget*) _This;
+    printf("DropTarget_DragOver\n");
+
+    getActions(This, *pdwEffect);
+
+    _glfwInputCursorPos(This->window, pt.x, pt.y);
+
+    This->chosenAction = This->proposedAction;
+    _glfwInputDrag(This->window, GLFW_DND_DRAG, pt.x, pt.y,
+                   This->availableFormats,
+                   &This->chosenFormat,
+                   This->availableActions,
+                   &This->chosenAction);
+
+    setActions(This, pdwEffect);
+
+    return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_DragLeave(IDropTarget *_This)
+{
+    _GLFWdroptarget *This = (_GLFWdroptarget*) _This;
+    printf("DropTarget_DragLeave\n");
+
+    This->window->dndDragging = GLFW_FALSE;
+
+    This->chosenFormat =
+        This->availableFormats = GLFW_DND_NONE;
+    This->chosenAction =
+        This->proposedAction =
+        This->availableActions = GLFW_DND_NONE;
+    _glfwInputDrag(This->window, GLFW_DND_LEAVE, 0.0, 0.0,
+                    This->availableFormats,
+                    &This->chosenFormat,
+                    This->availableActions,
+                    &This->chosenAction);
+
+    return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_Drop(IDropTarget *_This, IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
+{
+    _GLFWdroptarget *This = (_GLFWdroptarget*) _This;
+    FORMATETC fmt = { 0, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+	STGMEDIUM stgmed;
+
+    printf("DropTarget_Drop\n");
+    *pdwEffect = DROPEFFECT_NONE;
+
+    This->window->dndDragging = GLFW_FALSE;
+
+    if ((This->chosenFormat & GLFW_DND_PATHS) == GLFW_DND_PATHS
+        && SUCCEEDED(IDataObject_GetData(pDataObj, withClipFormat(&fmt, CF_HDROP), &stgmed)))
+    {
+        HDROP drop = (HDROP) GlobalLock(stgmed.hGlobal);
+        const int count = DragQueryFileW(drop, 0xffffffff, NULL, 0);
+        char** paths = _glfw_calloc(count, sizeof(char*));
+        int i;
+
+        printf("GetData OK (paths)\n");
+        _glfwInputCursorPos(This->window, pt.x, pt.y);
+
+        for (i = 0; i < count; ++i)
+        {
+            const UINT length = DragQueryFileW(drop, i, NULL, 0);
+            WCHAR* buffer = _glfw_calloc((size_t) length + 1, sizeof(WCHAR));
+
+            DragQueryFileW(drop, i, buffer, length + 1);
+            paths[i] = _glfwCreateUTF8FromWideStringWin32(buffer);
+
+            _glfw_free(buffer);
+        }
+
+        _glfwInputDrop(This->window, count, (const char**) paths);
+
+        _glfwInputDropEx(This->window, GLFW_DND_PATHS, count, paths,
+                         &This->chosenAction);
+
+        for (i = 0; i < count; ++i)
+            _glfw_free(paths[i]);
+        _glfw_free(paths);
+    }
+    else if ((This->chosenFormat & GLFW_DND_TEXT) == GLFW_DND_TEXT
+             && SUCCEEDED(IDataObject_GetData(pDataObj, withClipFormat(&fmt, CF_TEXT), &stgmed)))
+    {
+        char *text = (char*) GlobalLock(stgmed.hGlobal);
+
+        printf("GetData OK (text)\n");
+        _glfwInputCursorPos(This->window, pt.x, pt.y);
+
+        _glfwInputDropEx(This->window, GLFW_DND_TEXT, -1, text,
+                         &This->chosenAction);
+    }
+    else
+        return S_OK;
+
+    GlobalUnlock(stgmed.hGlobal);
+    ReleaseStgMedium(&stgmed);
+
+    setActions(This, pdwEffect);
+
+    return S_OK;
+}

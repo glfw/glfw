@@ -64,11 +64,15 @@
 // GLFW uses OEM cursor resources
 #define OEMRESOURCE
 
+// define COM C object macros
+#define COBJMACROS
+
 #include <wctype.h>
 #include <windows.h>
 #include <dinput.h>
 #include <xinput.h>
 #include <dbt.h>
+#include <ole2.h>
 
 // HACK: Define macros that some windows.h variants don't
 #ifndef WM_MOUSEHWHEEL
@@ -316,6 +320,16 @@ typedef HRESULT (WINAPI * PFN_GetDpiForMonitor)(HMONITOR,MONITOR_DPI_TYPE,UINT*,
 typedef LONG (WINAPI * PFN_RtlVerifyVersionInfo)(OSVERSIONINFOEXW*,ULONG,ULONGLONG);
 #define RtlVerifyVersionInfo _glfw.win32.ntdll.RtlVerifyVersionInfo_
 
+// ole32.dll function pointer typedefs
+typedef HRESULT (WINAPI * PFN_OleInitialize)(LPVOID);
+typedef VOID (WINAPI * PFN_OleUninitialize)(VOID);
+typedef HRESULT (WINAPI * PFN_RegisterDragDrop)(HWND,LPDROPTARGET);
+typedef HRESULT (WINAPI * PFN_RevokeDragDrop)(HWND);
+#define OleInitialize _glfw.win32.ole32.OleInitialize_
+#define OleUninitialize _glfw.win32.ole32.OleUninitialize_
+#define RegisterDragDrop _glfw.win32.ole32.RegisterDragDrop_
+#define RevokeDragDrop _glfw.win32.ole32.RevokeDragDrop_
+
 // WGL extension pointer typedefs
 typedef BOOL (WINAPI * PFNWGLSWAPINTERVALEXTPROC)(int);
 typedef BOOL (WINAPI * PFNWGLGETPIXELFORMATATTRIBIVARBPROC)(HDC,int,int,UINT,const int*,int*);
@@ -408,6 +422,18 @@ typedef struct _GLFWlibraryWGL
     GLFWbool                            ARB_context_flush_control;
 } _GLFWlibraryWGL;
 
+typedef struct _GLFWdroptarget
+{
+    IDropTargetVtbl*            lpVtbl;
+    ULONG                       cRefCount;
+    _GLFWwindow*                window;
+    int                         availableFormats;
+    int                         chosenFormat;
+    int                         availableActions;
+    int                         proposedAction;
+    int                         chosenAction;
+} _GLFWdroptarget;
+
 // Win32-specific per-window data
 //
 typedef struct _GLFWwindowWin32
@@ -432,6 +458,8 @@ typedef struct _GLFWwindowWin32
     int                 lastCursorPosX, lastCursorPosY;
     // The last received high surrogate when decoding pairs of UTF-16 messages
     WCHAR               highSurrogate;
+
+    _GLFWdroptarget     dropTarget;
 } _GLFWwindowWin32;
 
 // Win32-specific global data
@@ -457,6 +485,7 @@ typedef struct _GLFWlibraryWin32
     RAWINPUT*           rawInput;
     int                 rawInputSize;
     UINT                mouseTrailSize;
+    IDropTargetVtbl     dropTargetVtbl;
 
     struct {
         HINSTANCE                       instance;
@@ -499,6 +528,15 @@ typedef struct _GLFWlibraryWin32
         HINSTANCE                       instance;
         PFN_RtlVerifyVersionInfo        RtlVerifyVersionInfo_;
     } ntdll;
+
+    struct {
+        HINSTANCE                       instance;
+
+        PFN_OleInitialize               OleInitialize_;
+        PFN_OleUninitialize             OleUninitialize_;
+        PFN_RegisterDragDrop            RegisterDragDrop_;
+        PFN_RevokeDragDrop              RevokeDragDrop_;
+    } ole32;
 } _GLFWlibraryWin32;
 
 // Win32-specific per-monitor data
@@ -622,3 +660,11 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig);
 
+// IDropTarget vtable functions
+//HRESULT STDMETHODCALLTYPE _glfwDropTarget_QueryInterface(IDropTarget *_This, REFIID riid, void **ppvObject);
+ULONG STDMETHODCALLTYPE _glfwDropTarget_AddRef(IDropTarget *_This);
+ULONG STDMETHODCALLTYPE _glfwDropTarget_Release(IDropTarget *_This);
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_DragEnter(IDropTarget *_This, IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_DragOver(IDropTarget *_This, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_DragLeave(IDropTarget *_This);
+HRESULT STDMETHODCALLTYPE _glfwDropTarget_Drop(IDropTarget *_This, IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);

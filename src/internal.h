@@ -58,6 +58,17 @@
 
 #define _GLFW_MESSAGE_SIZE      1024
 
+#define _GLFW_DND_MASK          0x000fffff
+
+#define _GLFW_DND_TEXT_INDEX    1
+#define _GLFW_DND_PATHS_INDEX   0
+#define _GLFW_DND_FORMAT_COUNT  2
+
+#define _GLFW_DND_COPY_INDEX    0
+#define _GLFW_DND_LINK_INDEX    1
+#define _GLFW_DND_MOVE_INDEX    2
+#define _GLFW_DND_ACTION_COUNT  3
+
 typedef int GLFWbool;
 typedef void (*GLFWproc)(void);
 
@@ -533,6 +544,7 @@ struct _GLFWwindow
     GLFWbool            floating;
     GLFWbool            focusOnShow;
     GLFWbool            mousePassthrough;
+    GLFWbool            dndDragging;
     GLFWbool            shouldClose;
     void*               userPointer;
     GLFWbool            doublebuffer;
@@ -573,7 +585,9 @@ struct _GLFWwindow
         GLFWkeyfun                key;
         GLFWcharfun               character;
         GLFWcharmodsfun           charmods;
+        GLFWdragfun               drag;
         GLFWdropfun               drop;
+        GLFWdropfunex             dropex;
     } callbacks;
 
     // This is defined in platform.h
@@ -928,7 +942,9 @@ void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset);
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods);
 void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos);
 void _glfwInputCursorEnter(_GLFWwindow* window, GLFWbool entered);
+void _glfwInputDrag(_GLFWwindow* window, int event, double xpos, double ypos, int availableFormats, int *format, int availableActions, int *action);
 void _glfwInputDrop(_GLFWwindow* window, int count, const char** names);
+void _glfwInputDropEx(_GLFWwindow* window, int format, int data_count, void *data, int *action);
 void _glfwInputJoystick(_GLFWjoystick* js, int event);
 void _glfwInputJoystickAxis(_GLFWjoystick* js, int axis, float value);
 void _glfwInputJoystickButton(_GLFWjoystick* js, int button, char value);
@@ -1007,6 +1023,7 @@ int _glfw_min(int a, int b);
 int _glfw_max(int a, int b);
 float _glfw_fminf(float a, float b);
 float _glfw_fmaxf(float a, float b);
+int _glfw_ffs(int i);
 
 void* _glfw_calloc(size_t count, size_t size);
 void* _glfw_realloc(void* pointer, size_t size);

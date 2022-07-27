@@ -97,6 +97,9 @@ typedef struct __GLXFBConfig* GLXFBConfig;
 typedef struct __GLXcontext* GLXContext;
 typedef void (*__GLXextproc)(void);
 
+// TODO for dev; remove
+typedef char* (* PFN_XGetAtomName)(Display*,Atom);
+
 typedef XClassHint* (* PFN_XAllocClassHint)(void);
 typedef XSizeHints* (* PFN_XAllocSizeHints)(void);
 typedef XWMHints* (* PFN_XAllocWMHints)(void);
@@ -622,12 +625,12 @@ typedef struct _GLFWlibraryX11
     Atom            XdndEnter;
     Atom            XdndPosition;
     Atom            XdndStatus;
-    Atom            XdndActionCopy;
+    Atom            XdndLeave;
+    Atom            XdndActions[_GLFW_DND_ACTION_COUNT];
     Atom            XdndDrop;
     Atom            XdndFinished;
     Atom            XdndSelection;
     Atom            XdndTypeList;
-    Atom            text_uri_list;
 
     // Selection (clipboard) atoms
     Atom            TARGETS;
@@ -637,11 +640,16 @@ typedef struct _GLFWlibraryX11
     Atom            PRIMARY;
     Atom            CLIPBOARD_MANAGER;
     Atom            SAVE_TARGETS;
-    Atom            NULL_;
-    Atom            UTF8_STRING;
-    Atom            COMPOUND_STRING;
     Atom            ATOM_PAIR;
     Atom            GLFW_SELECTION;
+
+    // Format atoms (shared by Xdnd and Selection)
+    Atom            NULL_;
+    Atom            UTF8_STRING;
+    Atom            STRING;
+    Atom            TEXT;
+    Atom            text_plain;
+    Atom            text_uri_list;
 
     struct {
         void*       handle;
@@ -800,7 +808,12 @@ typedef struct _GLFWlibraryX11
     struct {
         int         version;
         Window      source;
-        Atom        format;
+        Atom        formatAtoms[_GLFW_DND_FORMAT_COUNT];
+        int         availableFormats;
+        int         chosenFormat;
+        int         availableActions;
+        int         proposedAction;
+        int         chosenAction;
     } xdnd;
 
     struct {

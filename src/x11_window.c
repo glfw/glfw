@@ -1534,14 +1534,21 @@ static void processEvent(XEvent *event)
                 // A drag operation has entered the window
                 unsigned long count;
                 Atom* formats = NULL;
+                double xpos, ypos;
                 const GLFWbool list = event->xclient.data.l[1] & 1;
 
+                memset(&_glfw.x11.xdnd, 0, sizeof(_glfw.x11.xdnd));
                 _glfw.x11.xdnd.source  = event->xclient.data.l[0];
                 _glfw.x11.xdnd.version = event->xclient.data.l[1] >> 24;
-                _glfw.x11.xdnd.format  = None;
 
                 if (_glfw.x11.xdnd.version > _GLFW_XDND_VERSION)
                     return;
+
+                // Xdnd doesn't support the concepts "available actions" and
+                // "proposed action"; default to all and copy
+                _glfw.x11.xdnd.availableActions =
+                    GLFW_DND_COPY | GLFW_DND_LINK | GLFW_DND_MOVE;
+                _glfw.x11.xdnd.proposedAction = GLFW_DND_COPY;
 
                 if (list)
                 {
@@ -1556,27 +1563,75 @@ static void processEvent(XEvent *event)
                     formats = (Atom*) event->xclient.data.l + 2;
                 }
 
+                // TODO remove
+                PFN_XGetAtomName GetAtomName = (PFN_XGetAtomName)
+                    _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XGetAtomName");
                 for (unsigned int i = 0;  i < count;  i++)
                 {
-                    if (formats[i] == _glfw.x11.text_uri_list)
+                    printf("format (%d): %s\n", i, GetAtomName(_glfw.x11.display, formats[i]));
+                    if (!_glfw.x11.xdnd.formatAtoms[_GLFW_DND_PATHS_INDEX]
+                        && formats[i] == _glfw.x11.text_uri_list)
                     {
-                        _glfw.x11.xdnd.format = _glfw.x11.text_uri_list;
-                        break;
+                        _glfw.x11.xdnd.formatAtoms[_GLFW_DND_PATHS_INDEX] = formats[i];
+                        _glfw.x11.xdnd.availableFormats |= GLFW_DND_PATHS;
+                    }
+                    else if (!_glfw.x11.xdnd.formatAtoms[_GLFW_DND_TEXT_INDEX]
+                             && (formats[i] == _glfw.x11.text_plain
+                                 || formats[i] == _glfw.x11.UTF8_STRING
+                                 || formats[i] == _glfw.x11.STRING
+                                 || formats[i] == _glfw.x11.TEXT))
+                    {
+                        _glfw.x11.xdnd.formatAtoms[_GLFW_DND_TEXT_INDEX] = formats[i];
+                        _glfw.x11.xdnd.availableFormats |= GLFW_DND_TEXT;
                     }
                 }
 
                 if (list && formats)
                     XFree(formats);
+
+                window->dndDragging = GLFW_TRUE;
+
+                _glfwGetCursorPosX11(window, &xpos, &ypos);
+
+                _glfw.x11.xdnd.chosenFormat = _glfw.x11.xdnd.availableFormats;
+                _glfw.x11.xdnd.chosenAction = _glfw.x11.xdnd.proposedAction;
+                _glfwInputDrag(window, GLFW_DND_ENTER, xpos, ypos,
+                               _glfw.x11.xdnd.availableFormats,
+                               &_glfw.x11.xdnd.chosenFormat,
+                               _glfw.x11.xdnd.availableActions,
+                               &_glfw.x11.xdnd.chosenAction);
+            }
+            else if (event->xclient.message_type == _glfw.x11.XdndLeave)
+            {
+                // A drag operation has left the window or was canceled
+                window->dndDragging = GLFW_FALSE;
+
+                _glfw.x11.xdnd.chosenFormat =
+                    _glfw.x11.xdnd.availableFormats = GLFW_DND_NONE;
+                _glfw.x11.xdnd.chosenAction =
+                    _glfw.x11.xdnd.proposedAction =
+                    _glfw.x11.xdnd.availableActions = GLFW_DND_NONE;
+                _glfwInputDrag(window, GLFW_DND_LEAVE, 0.0, 0.0,
+                               _glfw.x11.xdnd.availableFormats,
+                               &_glfw.x11.xdnd.chosenFormat,
+                               _glfw.x11.xdnd.availableActions,
+                               &_glfw.x11.xdnd.chosenAction);
             }
             else if (event->xclient.message_type == _glfw.x11.XdndDrop)
             {
                 // The drag operation has finished by dropping on the window
                 Time time = CurrentTime;
+                int formatIndex = _glfw_ffs(_glfw.x11.xdnd.chosenFormat
+                                            & _GLFW_DND_MASK) - 1;
+
+                window->dndDragging = GLFW_FALSE;
 
                 if (_glfw.x11.xdnd.version > _GLFW_XDND_VERSION)
                     return;
 
-                if (_glfw.x11.xdnd.format)
+                if (_glfw.x11.xdnd.chosenAction
+                    && formatIndex >= 0 && formatIndex < _GLFW_DND_FORMAT_COUNT
+                    && _glfw.x11.xdnd.formatAtoms[formatIndex])
                 {
                     if (_glfw.x11.xdnd.version >= 1)
                         time = event->xclient.data.l[2];
@@ -1584,7 +1639,7 @@ static void processEvent(XEvent *event)
                     // Request the chosen format from the source window
                     XConvertSelection(_glfw.x11.display,
                                       _glfw.x11.XdndSelection,
-                                      _glfw.x11.xdnd.format,
+                                      _glfw.x11.xdnd.formatAtoms[formatIndex],
                                       _glfw.x11.XdndSelection,
                                       window->x11.handle,
                                       time);
@@ -1609,11 +1664,28 @@ static void processEvent(XEvent *event)
                 // The drag operation has moved over the window
                 const int xabs = (event->xclient.data.l[2] >> 16) & 0xffff;
                 const int yabs = (event->xclient.data.l[2]) & 0xffff;
+                const Atom action = event->xclient.data.l[4];
                 Window dummy;
                 int xpos, ypos;
 
                 if (_glfw.x11.xdnd.version > _GLFW_XDND_VERSION)
                     return;
+
+                if (_glfw.x11.xdnd.version >= 2)
+                {
+                    _glfw.x11.xdnd.proposedAction = GLFW_DND_NONE;
+                    for(int i = 0; i < _GLFW_DND_ACTION_COUNT; ++i)
+                    {
+                        if(action == _glfw.x11.XdndActions[i])
+                        {
+                            _glfw.x11.xdnd.proposedAction =
+                                (GLFW_DND_COPY & ~_GLFW_DND_MASK) | (1 << i);
+                            break;
+                        }
+                    }
+                }
+                else
+                    _glfw.x11.xdnd.proposedAction = GLFW_DND_COPY;
 
                 XTranslateCoordinates(_glfw.x11.display,
                                       _glfw.x11.root,
@@ -1624,6 +1696,13 @@ static void processEvent(XEvent *event)
 
                 _glfwInputCursorPos(window, xpos, ypos);
 
+                _glfw.x11.xdnd.chosenAction = _glfw.x11.xdnd.proposedAction;
+                _glfwInputDrag(window, GLFW_DND_DRAG, xpos, ypos,
+                               _glfw.x11.xdnd.availableFormats,
+                               &_glfw.x11.xdnd.chosenFormat,
+                               _glfw.x11.xdnd.availableActions,
+                               &_glfw.x11.xdnd.chosenAction);
+
                 XEvent reply = { ClientMessage };
                 reply.xclient.window = _glfw.x11.xdnd.source;
                 reply.xclient.message_type = _glfw.x11.XdndStatus;
@@ -1632,12 +1711,19 @@ static void processEvent(XEvent *event)
                 reply.xclient.data.l[2] = 0; // Specify an empty rectangle
                 reply.xclient.data.l[3] = 0;
 
-                if (_glfw.x11.xdnd.format)
+                if (_glfw.x11.xdnd.chosenAction)
                 {
                     // Reply that we are ready to copy the dragged data
                     reply.xclient.data.l[1] = 1; // Accept with no rectangle
                     if (_glfw.x11.xdnd.version >= 2)
-                        reply.xclient.data.l[4] = _glfw.x11.XdndActionCopy;
+                    {
+                        int actionIndex = _glfw_ffs(_glfw.x11.xdnd.chosenAction
+                                            & _GLFW_DND_MASK) - 1;
+                        if(actionIndex >= 0 && actionIndex < _GLFW_DND_ACTION_COUNT)
+                        {
+                            reply.xclient.data.l[4] = _glfw.x11.XdndActions[actionIndex];
+                        }
+                    }
                 }
 
                 XSendEvent(_glfw.x11.display, _glfw.x11.xdnd.source,
@@ -1662,14 +1748,38 @@ static void processEvent(XEvent *event)
 
                 if (result)
                 {
-                    int count;
-                    char** paths = _glfwParseUriList(data, &count);
+                    int formatIndex = _glfw_ffs(_glfw.x11.xdnd.chosenFormat
+                                                & _GLFW_DND_MASK) - 1;
+                    if(formatIndex >= 0 && formatIndex < _GLFW_DND_FORMAT_COUNT)
+                    {
+                        int format = (GLFW_DND_TEXT & ~_GLFW_DND_MASK) | (1 << formatIndex);
+                        switch (format)
+                        {
+                            case GLFW_DND_PATHS:
+                            {
+                                int count;
+                                char** paths = _glfwParseUriList(data, &count);
 
-                    _glfwInputDrop(window, count, (const char**) paths);
+                                _glfwInputDrop(window, count, (const char **) paths);
 
-                    for (int i = 0;  i < count;  i++)
-                        _glfw_free(paths[i]);
-                    _glfw_free(paths);
+                                _glfwInputDropEx(window, format, count, paths,
+                                                 &_glfw.x11.xdnd.chosenAction);
+
+                                for (int i = 0; i < count; ++i)
+                                    _glfw_free(paths[i]);
+                                _glfw_free(paths);
+                                break;
+                            }
+                            case GLFW_DND_TEXT:
+                            {
+                                _glfwInputDropEx(window, format, -1, data,
+                                                 &_glfw.x11.xdnd.chosenAction);
+                                break;
+                            }
+                            default:
+                                break;
+                        }
+                    }
                 }
 
                 if (data)
@@ -1683,7 +1793,13 @@ static void processEvent(XEvent *event)
                     reply.xclient.format = 32;
                     reply.xclient.data.l[0] = window->x11.handle;
                     reply.xclient.data.l[1] = result;
-                    reply.xclient.data.l[2] = _glfw.x11.XdndActionCopy;
+
+                    int actionIndex = _glfw_ffs(_glfw.x11.xdnd.chosenAction
+                                        & _GLFW_DND_MASK) - 1;
+                    if(actionIndex >= 0 && actionIndex < _GLFW_DND_ACTION_COUNT)
+                    {
+                        reply.xclient.data.l[2] = _glfw.x11.XdndActions[actionIndex];
+                    }
 
                     XSendEvent(_glfw.x11.display, _glfw.x11.xdnd.source,
                                False, NoEventMask, &reply);

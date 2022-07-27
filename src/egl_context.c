@@ -678,6 +678,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 #elif defined(__OpenBSD__) || defined(__NetBSD__)
             "libGL.so",
 #else
+            "libOpenGL.so.0",
             "libGL.so.1",
 #endif
             NULL

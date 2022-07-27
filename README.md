@@ -125,6 +125,7 @@ information on what to include when reporting a bug.
 
  - [Wayland] Bugfix: Connecting a mouse after `glfwInit` would segfault (#1450)
  - [Linux] Bugfix: Joysticks without buttons were ignored (#2042,#2043)
+   [EGL] Added loading of glvnd `libOpenGL.so.0` where available for OpenGL
 
 
 ## Contact

@@ -124,9 +124,9 @@ This will destroy any remaining window, monitor and cursor objects, restore any
 modified gamma ramps, re-enable the screensaver if it had been disabled and free
 any other resources allocated by GLFW.
 
-Once the library is terminated, it is as if it had never been initialized and
+Once the library is terminated, it is as if it had never been initialized, therefore
 you will need to initialize it again before being able to use GLFW.  If the
-library was not initialized or had already been terminated, it return
+library was not initialized or had already been terminated, it returns
 immediately.
 
 
@@ -246,14 +246,14 @@ which monitor the window is currently considered to be on.
 
 This section describes the conditions under which GLFW can be expected to
 function, barring bugs in the operating system or drivers.  Use of GLFW outside
-of these limits may work on some platforms, or on some machines, or some of the
+these limits may work on some platforms, or on some machines, or some of the
 time, or on some versions of GLFW, but it may break at any time and this will
 not be considered a bug.
 
 
 @subsection lifetime Pointer lifetimes
 
-GLFW will never free any pointer you provide to it and you must never free any
+GLFW will never free any pointer you provide to it, and you must never free any
 pointer it provides to you.
 
 Many GLFW functions return pointers to dynamically allocated structures, strings
@@ -444,11 +444,11 @@ The format of the string is as follows:
  - The name of the context creation API
  - Any additional options or APIs
 
-For example, when compiling GLFW 3.0 with MinGW using the Win32 and WGL
-back ends, the version string may look something like this:
+For example, when compiling GLFW 3.3.9 with MinGW for Windows, may result in
+a version string like this:
 
 @code
-3.0.0 Win32 WGL MinGW
+3.3.9 Win32 WGL EGL OSMesa MinGW
 @endcode
 
 */

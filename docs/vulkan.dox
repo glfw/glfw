@@ -131,7 +131,7 @@ PFN_vkGetDeviceProcAddr pfnGetDeviceProcAddr = (PFN_vkGetDeviceProcAddr)
     glfwGetInstanceProcAddress(instance, "vkGetDeviceProcAddr");
 @endcode
 
-Device-specific functions may execute a little bit faster, due to not having to
+Device-specific functions may execute a little faster, due to not having to
 dispatch internally based on the device passed to them.  For more information
 about `vkGetDeviceProcAddr`, see the Vulkan documentation.
 

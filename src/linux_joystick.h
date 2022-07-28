@@ -59,7 +59,7 @@ void _glfwDetectJoystickConnectionLinux(void);
 
 GLFWbool _glfwInitJoysticksLinux(void);
 void _glfwTerminateJoysticksLinux(void);
-int _glfwPollJoystickLinux(_GLFWjoystick* js, int mode);
+GLFWbool _glfwPollJoystickLinux(_GLFWjoystick* js, int mode);
 const char* _glfwGetMappingNameLinux(void);
 void _glfwUpdateGamepadGUIDLinux(char* guid);
 

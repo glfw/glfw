@@ -47,13 +47,38 @@
 #include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
 #include "wayland-idle-inhibit-unstable-v1-client-protocol.h"
 
+// NOTE: Versions of wayland-scanner prior to 1.17.91 named every global array of
+//       wl_interface pointers 'types', making it impossible to combine several unmodified
+//       private-code files into a single compilation unit
+// HACK: We override this name with a macro for each file, allowing them to coexist
+
+#define types _glfw_wayland_types
 #include "wayland-client-protocol-code.h"
+#undef types
+
+#define types _glfw_xdg_shell_types
 #include "wayland-xdg-shell-client-protocol-code.h"
+#undef types
+
+#define types _glfw_xdg_decoration_types
 #include "wayland-xdg-decoration-client-protocol-code.h"
+#undef types
+
+#define types _glfw_viewporter_types
 #include "wayland-viewporter-client-protocol-code.h"
+#undef types
+
+#define types _glfw_relative_pointer_types
 #include "wayland-relative-pointer-unstable-v1-client-protocol-code.h"
+#undef types
+
+#define types _glfw_pointer_constraints_types
 #include "wayland-pointer-constraints-unstable-v1-client-protocol-code.h"
+#undef types
+
+#define types _glfw_idle_inhibit_types
 #include "wayland-idle-inhibit-unstable-v1-client-protocol-code.h"
+#undef types
 
 static void wmBaseHandlePing(void* userData,
                              struct xdg_wm_base* wmBase,
@@ -159,11 +184,9 @@ static void registryHandleGlobalRemove(void* userData,
                                        struct wl_registry* registry,
                                        uint32_t name)
 {
-    _GLFWmonitor* monitor;
-
     for (int i = 0; i < _glfw.monitorCount; ++i)
     {
-        monitor = _glfw.monitors[i];
+        _GLFWmonitor* monitor = _glfw.monitors[i];
         if (monitor->wl.name == name)
         {
             _glfwInputMonitor(monitor, GLFW_DISCONNECTED, 0);
@@ -312,6 +335,38 @@ static void createKeyTables(void)
     }
 }
 
+static GLFWbool loadCursorTheme(void)
+{
+    int cursorSize = 32;
+
+    const char* sizeString = getenv("XCURSOR_SIZE");
+    if (sizeString)
+    {
+        errno = 0;
+        const long cursorSizeLong = strtol(sizeString, NULL, 10);
+        if (errno == 0 && cursorSizeLong > 0 && cursorSizeLong < INT_MAX)
+            cursorSize = (int) cursorSizeLong;
+    }
+
+    const char* themeName = getenv("XCURSOR_THEME");
+
+    _glfw.wl.cursorTheme = wl_cursor_theme_load(themeName, cursorSize, _glfw.wl.shm);
+    if (!_glfw.wl.cursorTheme)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to load default cursor theme");
+        return GLFW_FALSE;
+    }
+
+    // If this happens to be NULL, we just fallback to the scale=1 version.
+    _glfw.wl.cursorThemeHiDPI =
+        wl_cursor_theme_load(themeName, cursorSize * 2, _glfw.wl.shm);
+
+    _glfw.wl.cursorSurface = wl_compositor_create_surface(_glfw.wl.compositor);
+    _glfw.wl.cursorTimerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
+    return GLFW_TRUE;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -448,11 +503,9 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
 
 int _glfwInitWayland(void)
 {
-    const char* cursorTheme;
-    const char* cursorSizeStr;
-    char* cursorSizeEnd;
-    long cursorSizeLong;
-    int cursorSize;
+    // These must be set before any failure checks
+    _glfw.wl.keyRepeatTimerfd = -1;
+    _glfw.wl.cursorTimerfd = -1;
 
     _glfw.wl.client.display_flush = (PFN_wl_display_flush)
         _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_flush");
@@ -572,10 +625,10 @@ int _glfwInitWayland(void)
         _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_state_key_get_syms");
     _glfw.wl.xkb.state_update_mask = (PFN_xkb_state_update_mask)
         _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_state_update_mask");
-    _glfw.wl.xkb.state_serialize_mods = (PFN_xkb_state_serialize_mods)
-        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_state_serialize_mods");
     _glfw.wl.xkb.state_key_get_layout = (PFN_xkb_state_key_get_layout)
         _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_state_key_get_layout");
+    _glfw.wl.xkb.state_mod_index_is_active = (PFN_xkb_state_mod_index_is_active)
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_state_mod_index_is_active");
     _glfw.wl.xkb.compose_table_new_from_locale = (PFN_xkb_compose_table_new_from_locale)
         _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_compose_table_new_from_locale");
     _glfw.wl.xkb.compose_table_unref = (PFN_xkb_compose_table_unref)
@@ -610,9 +663,13 @@ int _glfwInitWayland(void)
     // Sync so we got all initial output events
     wl_display_roundtrip(_glfw.wl.display);
 
-    _glfw.wl.timerfd = -1;
-    if (_glfw.wl.seatVersion >= 4)
-        _glfw.wl.timerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
+#ifdef WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION
+    if (_glfw.wl.seatVersion >= WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION)
+    {
+        _glfw.wl.keyRepeatTimerfd =
+            timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
+    }
+#endif
 
     if (!_glfw.wl.wmBase)
     {
@@ -621,33 +678,15 @@ int _glfwInitWayland(void)
         return GLFW_FALSE;
     }
 
-    if (_glfw.wl.pointer && _glfw.wl.shm)
+    if (!_glfw.wl.shm)
     {
-        cursorTheme = getenv("XCURSOR_THEME");
-        cursorSizeStr = getenv("XCURSOR_SIZE");
-        cursorSize = 32;
-        if (cursorSizeStr)
-        {
-            errno = 0;
-            cursorSizeLong = strtol(cursorSizeStr, &cursorSizeEnd, 10);
-            if (!*cursorSizeEnd && !errno && cursorSizeLong > 0 && cursorSizeLong <= INT_MAX)
-                cursorSize = (int)cursorSizeLong;
-        }
-        _glfw.wl.cursorTheme =
-            wl_cursor_theme_load(cursorTheme, cursorSize, _glfw.wl.shm);
-        if (!_glfw.wl.cursorTheme)
-        {
-            _glfwInputError(GLFW_PLATFORM_ERROR,
-                            "Wayland: Failed to load default cursor theme");
-            return GLFW_FALSE;
-        }
-        // If this happens to be NULL, we just fallback to the scale=1 version.
-        _glfw.wl.cursorThemeHiDPI =
-            wl_cursor_theme_load(cursorTheme, 2 * cursorSize, _glfw.wl.shm);
-        _glfw.wl.cursorSurface =
-            wl_compositor_create_surface(_glfw.wl.compositor);
-        _glfw.wl.cursorTimerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to find wl_shm in your compositor");
+        return GLFW_FALSE;
     }
+
+    if (!loadCursorTheme())
+        return GLFW_FALSE;
 
     if (_glfw.wl.seat && _glfw.wl.dataDeviceManager)
     {
@@ -663,6 +702,8 @@ int _glfwInitWayland(void)
 void _glfwTerminateWayland(void)
 {
     _glfwTerminateEGL();
+    _glfwTerminateOSMesa();
+
     if (_glfw.wl.egl.handle)
     {
         _glfwPlatformFreeModule(_glfw.wl.egl.handle);
@@ -742,8 +783,8 @@ void _glfwTerminateWayland(void)
         wl_display_disconnect(_glfw.wl.display);
     }
 
-    if (_glfw.wl.timerfd >= 0)
-        close(_glfw.wl.timerfd);
+    if (_glfw.wl.keyRepeatTimerfd >= 0)
+        close(_glfw.wl.keyRepeatTimerfd);
     if (_glfw.wl.cursorTimerfd >= 0)
         close(_glfw.wl.cursorTimerfd);
 

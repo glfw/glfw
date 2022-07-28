@@ -45,7 +45,7 @@ typedef struct _GLFWjoystickNS
 
 GLFWbool _glfwInitJoysticksCocoa(void);
 void _glfwTerminateJoysticksCocoa(void);
-int _glfwPollJoystickCocoa(_GLFWjoystick* js, int mode);
+GLFWbool _glfwPollJoystickCocoa(_GLFWjoystick* js, int mode);
 const char* _glfwGetMappingNameCocoa(void);
 void _glfwUpdateGamepadGUIDCocoa(char* guid);
 

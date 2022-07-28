@@ -358,10 +358,6 @@ typedef struct VkWin32SurfaceCreateInfoKHR
 typedef VkResult (APIENTRY *PFN_vkCreateWin32SurfaceKHR)(VkInstance,const VkWin32SurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(VkPhysicalDevice,uint32_t);
 
-#if !defined(_GLFW_WNDCLASSNAME)
- #define _GLFW_WNDCLASSNAME L"GLFW30"
-#endif
-
 #define GLFW_WIN32_WINDOW_STATE         _GLFWwindowWin32  win32;
 #define GLFW_WIN32_LIBRARY_WINDOW_STATE _GLFWlibraryWin32 win32;
 #define GLFW_WIN32_MONITOR_STATE        _GLFWmonitorWin32 win32;
@@ -444,6 +440,8 @@ typedef struct _GLFWlibraryWin32
 {
     HINSTANCE           instance;
     HWND                helperWindowHandle;
+    ATOM                helperWindowClass;
+    ATOM                mainWindowClass;
     HDEVNOTIFY          deviceNotificationHandle;
     int                 acquiredMonitorCount;
     char*               clipboardString;
@@ -454,6 +452,8 @@ typedef struct _GLFWlibraryWin32
     double              restoreCursorPosX, restoreCursorPosY;
     // The window whose disabled cursor mode is active
     _GLFWwindow*        disabledCursorWindow;
+    // The window the cursor is captured in
+    _GLFWwindow*        capturedCursorWindow;
     RAWINPUT*           rawInput;
     int                 rawInputSize;
     UINT                mouseTrailSize;
@@ -527,9 +527,6 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform);
 int _glfwInitWin32(void);
 void _glfwTerminateWin32(void);
 
-GLFWbool _glfwRegisterWindowClassWin32(void);
-void _glfwUnregisterWindowClassWin32(void);
-
 WCHAR* _glfwCreateWideStringFromUTF8Win32(const char* source);
 char* _glfwCreateUTF8FromWideStringWin32(const WCHAR* source);
 BOOL _glfwIsWindowsVersionOrGreaterWin32(WORD major, WORD minor, WORD sp);
@@ -542,7 +539,7 @@ void _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoModeWin32(_GLFWmonitor* monitor);
 void _glfwGetHMONITORContentScaleWin32(HMONITOR handle, float* xscale, float* yscale);
 
-int _glfwCreateWindowWin32(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
+GLFWbool _glfwCreateWindowWin32(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
 void _glfwDestroyWindowWin32(_GLFWwindow* window);
 void _glfwSetWindowTitleWin32(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* images);
@@ -563,12 +560,12 @@ void _glfwHideWindowWin32(_GLFWwindow* window);
 void _glfwRequestWindowAttentionWin32(_GLFWwindow* window);
 void _glfwFocusWindowWin32(_GLFWwindow* window);
 void _glfwSetWindowMonitorWin32(_GLFWwindow* window, _GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);
-int _glfwWindowFocusedWin32(_GLFWwindow* window);
-int _glfwWindowIconifiedWin32(_GLFWwindow* window);
-int _glfwWindowVisibleWin32(_GLFWwindow* window);
-int _glfwWindowMaximizedWin32(_GLFWwindow* window);
-int _glfwWindowHoveredWin32(_GLFWwindow* window);
-int _glfwFramebufferTransparentWin32(_GLFWwindow* window);
+GLFWbool _glfwWindowFocusedWin32(_GLFWwindow* window);
+GLFWbool _glfwWindowIconifiedWin32(_GLFWwindow* window);
+GLFWbool _glfwWindowVisibleWin32(_GLFWwindow* window);
+GLFWbool _glfwWindowMaximizedWin32(_GLFWwindow* window);
+GLFWbool _glfwWindowHoveredWin32(_GLFWwindow* window);
+GLFWbool _glfwFramebufferTransparentWin32(_GLFWwindow* window);
 void _glfwSetWindowResizableWin32(_GLFWwindow* window, GLFWbool enabled);
 void _glfwSetWindowDecoratedWin32(_GLFWwindow* window, GLFWbool enabled);
 void _glfwSetWindowFloatingWin32(_GLFWwindow* window, GLFWbool enabled);
@@ -589,8 +586,8 @@ void _glfwSetCursorPosWin32(_GLFWwindow* window, double xpos, double ypos);
 void _glfwSetCursorModeWin32(_GLFWwindow* window, int mode);
 const char* _glfwGetScancodeNameWin32(int scancode);
 int _glfwGetKeyScancodeWin32(int key);
-int _glfwCreateCursorWin32(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot);
-int _glfwCreateStandardCursorWin32(_GLFWcursor* cursor, int shape);
+GLFWbool _glfwCreateCursorWin32(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot);
+GLFWbool _glfwCreateStandardCursorWin32(_GLFWcursor* cursor, int shape);
 void _glfwDestroyCursorWin32(_GLFWcursor* cursor);
 void _glfwSetCursorWin32(_GLFWwindow* window, _GLFWcursor* cursor);
 void _glfwSetClipboardStringWin32(const char* string);
@@ -601,7 +598,7 @@ EGLNativeDisplayType _glfwGetEGLNativeDisplayWin32(void);
 EGLNativeWindowType _glfwGetEGLNativeWindowWin32(_GLFWwindow* window);
 
 void _glfwGetRequiredInstanceExtensionsWin32(char** extensions);
-int _glfwGetPhysicalDevicePresentationSupportWin32(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
+GLFWbool _glfwGetPhysicalDevicePresentationSupportWin32(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
 VkResult _glfwCreateWindowSurfaceWin32(VkInstance instance, _GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
 
 void _glfwFreeMonitorWin32(_GLFWmonitor* monitor);
@@ -615,7 +612,7 @@ void _glfwSetGammaRampWin32(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
 GLFWbool _glfwInitJoysticksWin32(void);
 void _glfwTerminateJoysticksWin32(void);
-int _glfwPollJoystickWin32(_GLFWjoystick* js, int mode);
+GLFWbool _glfwPollJoystickWin32(_GLFWjoystick* js, int mode);
 const char* _glfwGetMappingNameWin32(void);
 void _glfwUpdateGamepadGUIDWin32(char* guid);
 

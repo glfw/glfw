@@ -44,6 +44,13 @@
 #define _GLFW_JOYSTICK_BUTTON   2
 #define _GLFW_JOYSTICK_HATBIT   3
 
+#define GLFW_MOD_MASK (GLFW_MOD_SHIFT | \
+                       GLFW_MOD_CONTROL | \
+                       GLFW_MOD_ALT | \
+                       GLFW_MOD_SUPER | \
+                       GLFW_MOD_CAPS_LOCK | \
+                       GLFW_MOD_NUM_LOCK)
+
 // Initializes the platform joystick API if it has not been already
 //
 static GLFWbool initJoysticks(void)
@@ -266,6 +273,12 @@ static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
 //
 void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    assert(window != NULL);
+    assert(key >= 0 || key == GLFW_KEY_UNKNOWN);
+    assert(key <= GLFW_KEY_LAST);
+    assert(action == GLFW_PRESS || action == GLFW_RELEASE);
+    assert(mods == (mods & GLFW_MOD_MASK));
+
     if (key >= 0 && key <= GLFW_KEY_LAST)
     {
         GLFWbool repeated = GLFW_FALSE;
@@ -297,6 +310,10 @@ void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int m
 //
 void _glfwInputChar(_GLFWwindow* window, uint32_t codepoint, int mods, GLFWbool plain)
 {
+    assert(window != NULL);
+    assert(mods == (mods & GLFW_MOD_MASK));
+    assert(plain == GLFW_TRUE || plain == GLFW_FALSE);
+
     if (codepoint < 32 || (codepoint > 126 && codepoint < 160))
         return;
 
@@ -317,6 +334,12 @@ void _glfwInputChar(_GLFWwindow* window, uint32_t codepoint, int mods, GLFWbool 
 //
 void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset)
 {
+    assert(window != NULL);
+    assert(xoffset > -FLT_MAX);
+    assert(xoffset < FLT_MAX);
+    assert(yoffset > -FLT_MAX);
+    assert(yoffset < FLT_MAX);
+
     if (window->callbacks.scroll)
         window->callbacks.scroll((GLFWwindow*) window, xoffset, yoffset);
 }
@@ -325,6 +348,12 @@ void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset)
 //
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
 {
+    assert(window != NULL);
+    assert(button >= 0);
+    assert(button <= GLFW_MOUSE_BUTTON_LAST);
+    assert(action == GLFW_PRESS || action == GLFW_RELEASE);
+    assert(mods == (mods & GLFW_MOD_MASK));
+
     if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST)
         return;
 
@@ -345,6 +374,12 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
 //
 void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos)
 {
+    assert(window != NULL);
+    assert(xpos > -FLT_MAX);
+    assert(xpos < FLT_MAX);
+    assert(ypos > -FLT_MAX);
+    assert(ypos < FLT_MAX);
+
     if (window->virtualCursorPosX == xpos && window->virtualCursorPosY == ypos)
         return;
 
@@ -359,6 +394,9 @@ void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos)
 //
 void _glfwInputCursorEnter(_GLFWwindow* window, GLFWbool entered)
 {
+    assert(window != NULL);
+    assert(entered == GLFW_TRUE || entered == GLFW_FALSE);
+
     if (window->callbacks.cursorEnter)
         window->callbacks.cursorEnter((GLFWwindow*) window, entered);
 }
@@ -367,6 +405,10 @@ void _glfwInputCursorEnter(_GLFWwindow* window, GLFWbool entered)
 //
 void _glfwInputDrop(_GLFWwindow* window, int count, const char** paths)
 {
+    assert(window != NULL);
+    assert(count > 0);
+    assert(paths != NULL);
+
     if (window->callbacks.drop)
         window->callbacks.drop((GLFWwindow*) window, count, paths);
 }
@@ -375,16 +417,26 @@ void _glfwInputDrop(_GLFWwindow* window, int count, const char** paths)
 //
 void _glfwInputJoystick(_GLFWjoystick* js, int event)
 {
-    const int jid = (int) (js - _glfw.joysticks);
+    assert(js != NULL);
+    assert(event == GLFW_CONNECTED || event == GLFW_DISCONNECTED);
+
+    if (event == GLFW_CONNECTED)
+        js->connected = GLFW_TRUE;
+    else if (event == GLFW_DISCONNECTED)
+        js->connected = GLFW_FALSE;
 
     if (_glfw.callbacks.joystick)
-        _glfw.callbacks.joystick(jid, event);
+        _glfw.callbacks.joystick((int) (js - _glfw.joysticks), event);
 }
 
 // Notifies shared code of the new value of a joystick axis
 //
 void _glfwInputJoystickAxis(_GLFWjoystick* js, int axis, float value)
 {
+    assert(js != NULL);
+    assert(axis >= 0);
+    assert(axis < js->axisCount);
+
     js->axes[axis] = value;
 }
 
@@ -392,6 +444,11 @@ void _glfwInputJoystickAxis(_GLFWjoystick* js, int axis, float value)
 //
 void _glfwInputJoystickButton(_GLFWjoystick* js, int button, char value)
 {
+    assert(js != NULL);
+    assert(button >= 0);
+    assert(button < js->buttonCount);
+    assert(value == GLFW_PRESS || value == GLFW_RELEASE);
+
     js->buttons[button] = value;
 }
 
@@ -399,7 +456,18 @@ void _glfwInputJoystickButton(_GLFWjoystick* js, int button, char value)
 //
 void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value)
 {
-    const int base = js->buttonCount + hat * 4;
+    int base;
+
+    assert(js != NULL);
+    assert(hat >= 0);
+    assert(hat < js->hatCount);
+
+    // Valid hat values only use the least significant nibble and have at most two bits
+    // set, which can be considered adjacent plus an arbitrary rotation within the nibble
+    assert((value & 0xf0) == 0);
+    assert((value & ((value << 2) | (value >> 2))) == 0);
+
+    base = js->buttonCount + hat * 4;
 
     js->buttons[base + 0] = (value & 0x01) ? GLFW_PRESS : GLFW_RELEASE;
     js->buttons[base + 1] = (value & 0x02) ? GLFW_PRESS : GLFW_RELEASE;
@@ -442,7 +510,7 @@ _GLFWjoystick* _glfwAllocJoystick(const char* name,
 
     for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
-        if (!_glfw.joysticks[jid].present)
+        if (!_glfw.joysticks[jid].allocated)
             break;
     }
 
@@ -450,7 +518,7 @@ _GLFWjoystick* _glfwAllocJoystick(const char* name,
         return NULL;
 
     js = _glfw.joysticks + jid;
-    js->present     = GLFW_TRUE;
+    js->allocated   = GLFW_TRUE;
     js->axes        = _glfw_calloc(axisCount, sizeof(float));
     js->buttons     = _glfw_calloc(buttonCount + (size_t) hatCount * 4, 1);
     js->hats        = _glfw_calloc(hatCount, 1);
@@ -528,7 +596,8 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
         {
             if (value != GLFW_CURSOR_NORMAL &&
                 value != GLFW_CURSOR_HIDDEN &&
-                value != GLFW_CURSOR_DISABLED)
+                value != GLFW_CURSOR_DISABLED &&
+                value != GLFW_CURSOR_CAPTURED)
             {
                 _glfwInputError(GLFW_INVALID_ENUM,
                                 "Invalid cursor mode 0x%08X",
@@ -972,7 +1041,7 @@ GLFWAPI int glfwJoystickPresent(int jid)
         return GLFW_FALSE;
 
     js = _glfw.joysticks + jid;
-    if (!js->present)
+    if (!js->connected)
         return GLFW_FALSE;
 
     return _glfw.platform.pollJoystick(js, _GLFW_POLL_PRESENCE);
@@ -1000,7 +1069,7 @@ GLFWAPI const float* glfwGetJoystickAxes(int jid, int* count)
         return NULL;
 
     js = _glfw.joysticks + jid;
-    if (!js->present)
+    if (!js->connected)
         return NULL;
 
     if (!_glfw.platform.pollJoystick(js, _GLFW_POLL_AXES))
@@ -1032,7 +1101,7 @@ GLFWAPI const unsigned char* glfwGetJoystickButtons(int jid, int* count)
         return NULL;
 
     js = _glfw.joysticks + jid;
-    if (!js->present)
+    if (!js->connected)
         return NULL;
 
     if (!_glfw.platform.pollJoystick(js, _GLFW_POLL_BUTTONS))
@@ -1068,7 +1137,7 @@ GLFWAPI const unsigned char* glfwGetJoystickHats(int jid, int* count)
         return NULL;
 
     js = _glfw.joysticks + jid;
-    if (!js->present)
+    if (!js->connected)
         return NULL;
 
     if (!_glfw.platform.pollJoystick(js, _GLFW_POLL_BUTTONS))
@@ -1097,7 +1166,7 @@ GLFWAPI const char* glfwGetJoystickName(int jid)
         return NULL;
 
     js = _glfw.joysticks + jid;
-    if (!js->present)
+    if (!js->connected)
         return NULL;
 
     if (!_glfw.platform.pollJoystick(js, _GLFW_POLL_PRESENCE))
@@ -1125,7 +1194,7 @@ GLFWAPI const char* glfwGetJoystickGUID(int jid)
         return NULL;
 
     js = _glfw.joysticks + jid;
-    if (!js->present)
+    if (!js->connected)
         return NULL;
 
     if (!_glfw.platform.pollJoystick(js, _GLFW_POLL_PRESENCE))
@@ -1144,7 +1213,7 @@ GLFWAPI void glfwSetJoystickUserPointer(int jid, void* pointer)
     _GLFW_REQUIRE_INIT();
 
     js = _glfw.joysticks + jid;
-    if (!js->present)
+    if (!js->allocated)
         return;
 
     js->userPointer = pointer;
@@ -1160,7 +1229,7 @@ GLFWAPI void* glfwGetJoystickUserPointer(int jid)
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     js = _glfw.joysticks + jid;
-    if (!js->present)
+    if (!js->allocated)
         return NULL;
 
     return js->userPointer;
@@ -1230,7 +1299,7 @@ GLFWAPI int glfwUpdateGamepadMappings(const char* string)
     for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         _GLFWjoystick* js = _glfw.joysticks + jid;
-        if (js->present)
+        if (js->connected)
             js->mapping = findValidMapping(js);
     }
 
@@ -1256,7 +1325,7 @@ GLFWAPI int glfwJoystickIsGamepad(int jid)
         return GLFW_FALSE;
 
     js = _glfw.joysticks + jid;
-    if (!js->present)
+    if (!js->connected)
         return GLFW_FALSE;
 
     if (!_glfw.platform.pollJoystick(js, _GLFW_POLL_PRESENCE))
@@ -1284,7 +1353,7 @@ GLFWAPI const char* glfwGetGamepadName(int jid)
         return NULL;
 
     js = _glfw.joysticks + jid;
-    if (!js->present)
+    if (!js->connected)
         return NULL;
 
     if (!_glfw.platform.pollJoystick(js, _GLFW_POLL_PRESENCE))
@@ -1319,7 +1388,7 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state)
         return GLFW_FALSE;
 
     js = _glfw.joysticks + jid;
-    if (!js->present)
+    if (!js->connected)
         return GLFW_FALSE;
 
     if (!_glfw.platform.pollJoystick(js, _GLFW_POLL_ALL))

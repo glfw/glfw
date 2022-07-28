@@ -103,10 +103,10 @@ static int createNativeWindow(_GLFWwindow* window,
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwCreateWindowNull(_GLFWwindow* window,
-                          const _GLFWwndconfig* wndconfig,
-                          const _GLFWctxconfig* ctxconfig,
-                          const _GLFWfbconfig* fbconfig)
+GLFWbool _glfwCreateWindowNull(_GLFWwindow* window,
+                               const _GLFWwndconfig* wndconfig,
+                               const _GLFWctxconfig* ctxconfig,
+                               const _GLFWfbconfig* fbconfig)
 {
     if (!createNativeWindow(window, wndconfig, fbconfig))
         return GLFW_FALSE;
@@ -128,13 +128,31 @@ int _glfwCreateWindowNull(_GLFWwindow* window,
             if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }
+
+        if (!_glfwRefreshContextAttribs(window, ctxconfig))
+            return GLFW_FALSE;
     }
+
+    if (wndconfig->mousePassthrough)
+        _glfwSetWindowMousePassthroughNull(window, GLFW_TRUE);
 
     if (window->monitor)
     {
         _glfwShowWindowNull(window);
         _glfwFocusWindowNull(window);
         acquireMonitor(window);
+
+        if (wndconfig->centerCursor)
+            _glfwCenterCursorInContentArea(window);
+    }
+    else
+    {
+        if (wndconfig->visible)
+        {
+            _glfwShowWindowNull(window);
+            if (wndconfig->focused)
+                _glfwFocusWindowNull(window);
+        }
     }
 
     return GLFW_TRUE;
@@ -344,12 +362,12 @@ void _glfwMaximizeWindowNull(_GLFWwindow* window)
     }
 }
 
-int _glfwWindowMaximizedNull(_GLFWwindow* window)
+GLFWbool _glfwWindowMaximizedNull(_GLFWwindow* window)
 {
     return window->null.maximized;
 }
 
-int _glfwWindowHoveredNull(_GLFWwindow* window)
+GLFWbool _glfwWindowHoveredNull(_GLFWwindow* window)
 {
     return _glfw.null.xcursor >= window->null.xpos &&
            _glfw.null.ycursor >= window->null.ypos &&
@@ -357,7 +375,7 @@ int _glfwWindowHoveredNull(_GLFWwindow* window)
            _glfw.null.ycursor <= window->null.ypos + window->null.height - 1;
 }
 
-int _glfwFramebufferTransparentNull(_GLFWwindow* window)
+GLFWbool _glfwFramebufferTransparentNull(_GLFWwindow* window)
 {
     return window->null.transparent;
 }
@@ -443,17 +461,17 @@ void _glfwFocusWindowNull(_GLFWwindow* window)
     _glfwInputWindowFocus(window, GLFW_TRUE);
 }
 
-int _glfwWindowFocusedNull(_GLFWwindow* window)
+GLFWbool _glfwWindowFocusedNull(_GLFWwindow* window)
 {
     return _glfw.null.focusedWindow == window;
 }
 
-int _glfwWindowIconifiedNull(_GLFWwindow* window)
+GLFWbool _glfwWindowIconifiedNull(_GLFWwindow* window)
 {
     return window->null.iconified;
 }
 
-int _glfwWindowVisibleNull(_GLFWwindow* window)
+GLFWbool _glfwWindowVisibleNull(_GLFWwindow* window)
 {
     return window->null.visible;
 }
@@ -492,14 +510,14 @@ void _glfwSetCursorModeNull(_GLFWwindow* window, int mode)
 {
 }
 
-int _glfwCreateCursorNull(_GLFWcursor* cursor,
-                          const GLFWimage* image,
-                          int xhot, int yhot)
+GLFWbool _glfwCreateCursorNull(_GLFWcursor* cursor,
+                               const GLFWimage* image,
+                               int xhot, int yhot)
 {
     return GLFW_TRUE;
 }
 
-int _glfwCreateStandardCursorNull(_GLFWcursor* cursor, int shape)
+GLFWbool _glfwCreateStandardCursorNull(_GLFWcursor* cursor, int shape)
 {
     return GLFW_TRUE;
 }
@@ -675,9 +693,9 @@ void _glfwGetRequiredInstanceExtensionsNull(char** extensions)
 {
 }
 
-int _glfwGetPhysicalDevicePresentationSupportNull(VkInstance instance,
-                                                  VkPhysicalDevice device,
-                                                  uint32_t queuefamily)
+GLFWbool _glfwGetPhysicalDevicePresentationSupportNull(VkInstance instance,
+                                                       VkPhysicalDevice device,
+                                                       uint32_t queuefamily)
 {
     return GLFW_FALSE;
 }

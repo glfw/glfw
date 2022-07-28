@@ -37,6 +37,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <assert.h>
 
 
 // Translate the X11 KeySyms for a key to a GLFW key code
@@ -1095,8 +1096,9 @@ static int errorHandler(Display *display, XErrorEvent* event)
 //
 void _glfwGrabErrorHandlerX11(void)
 {
+    assert(_glfw.x11.errorHandler == NULL);
     _glfw.x11.errorCode = Success;
-    XSetErrorHandler(errorHandler);
+    _glfw.x11.errorHandler = XSetErrorHandler(errorHandler);
 }
 
 // Clears the X error handler callback
@@ -1105,7 +1107,8 @@ void _glfwReleaseErrorHandlerX11(void)
 {
     // Synchronize to make sure all commands are processed
     XSync(_glfw.x11.display, False);
-    XSetErrorHandler(NULL);
+    XSetErrorHandler(_glfw.x11.errorHandler);
+    _glfw.x11.errorHandler = NULL;
 }
 
 // Reports the specified error, appending information about the last X error
@@ -1630,6 +1633,7 @@ void _glfwTerminateX11(void)
         _glfw.x11.xi.handle = NULL;
     }
 
+    _glfwTerminateOSMesa();
     // NOTE: These need to be unloaded after XCloseDisplay, as they register
     //       cleanup callbacks that get called by that function
     _glfwTerminateEGL();

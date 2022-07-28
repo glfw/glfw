@@ -55,7 +55,8 @@ static void outputHandleGeometry(void* userData,
     monitor->widthMM = physicalWidth;
     monitor->heightMM = physicalHeight;
 
-    snprintf(monitor->name, sizeof(monitor->name), "%s %s", make, model);
+    if (strlen(monitor->name) == 0)
+        snprintf(monitor->name, sizeof(monitor->name), "%s %s", make, model);
 }
 
 static void outputHandleMode(void* userData,
@@ -96,6 +97,12 @@ static void outputHandleDone(void* userData, struct wl_output* output)
         monitor->heightMM = (int) (mode->height * 25.4f / 96.f);
     }
 
+    for (int i = 0; i < _glfw.monitorCount; i++)
+    {
+        if (_glfw.monitors[i] == monitor)
+            return;
+    }
+
     _glfwInputMonitor(monitor, GLFW_CONNECTED, _GLFW_INSERT_LAST);
 }
 
@@ -106,7 +113,36 @@ static void outputHandleScale(void* userData,
     struct _GLFWmonitor* monitor = userData;
 
     monitor->wl.scale = factor;
+
+    for (_GLFWwindow* window = _glfw.windowListHead; window; window = window->next)
+    {
+        for (int i = 0; i < window->wl.monitorsCount; i++)
+        {
+            if (window->wl.monitors[i] == monitor)
+            {
+                _glfwUpdateContentScaleWayland(window);
+                break;
+            }
+        }
+    }
 }
+
+#ifdef WL_OUTPUT_NAME_SINCE_VERSION
+
+void outputHandleName(void* userData, struct wl_output* wl_output, const char* name)
+{
+    struct _GLFWmonitor* monitor = userData;
+
+    strncpy(monitor->name, name, sizeof(monitor->name) - 1);
+}
+
+void outputHandleDescription(void* userData,
+                             struct wl_output* wl_output,
+                             const char* description)
+{
+}
+
+#endif // WL_OUTPUT_NAME_SINCE_VERSION
 
 static const struct wl_output_listener outputListener =
 {
@@ -114,6 +150,10 @@ static const struct wl_output_listener outputListener =
     outputHandleMode,
     outputHandleDone,
     outputHandleScale,
+#ifdef WL_OUTPUT_NAME_SINCE_VERSION
+    outputHandleName,
+    outputHandleDescription,
+#endif
 };
 
 
@@ -123,9 +163,6 @@ static const struct wl_output_listener outputListener =
 
 void _glfwAddOutputWayland(uint32_t name, uint32_t version)
 {
-    _GLFWmonitor* monitor;
-    struct wl_output* output;
-
     if (version < 2)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -133,19 +170,21 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
         return;
     }
 
-    // The actual name of this output will be set in the geometry handler.
-    monitor = _glfwAllocMonitor("", 0, 0);
+#ifdef WL_OUTPUT_NAME_SINCE_VERSION
+    version = _glfw_min(version, WL_OUTPUT_NAME_SINCE_VERSION);
+#else
+    version = 2;
+#endif
 
-    output = wl_registry_bind(_glfw.wl.registry,
-                              name,
-                              &wl_output_interface,
-                              2);
+    struct wl_output* output = wl_registry_bind(_glfw.wl.registry,
+                                                name,
+                                                &wl_output_interface,
+                                                version);
     if (!output)
-    {
-        _glfwFreeMonitor(monitor);
         return;
-    }
 
+    // The actual name of this output will be set in the geometry handler
+    _GLFWmonitor* monitor = _glfwAllocMonitor("", 0, 0);
     monitor->wl.scale = 1;
     monitor->wl.output = output;
     monitor->wl.name = name;

@@ -421,6 +421,9 @@ struct _GLFWwndconfig
     struct {
         GLFWbool  keymenu;
     } win32;
+    struct {
+        char      appId[256];
+    } wl;
 };
 
 // Context configuration
@@ -634,7 +637,8 @@ struct _GLFWmapping
 //
 struct _GLFWjoystick
 {
-    GLFWbool        present;
+    GLFWbool        allocated;
+    GLFWbool        connected;
     float*          axes;
     int             axisCount;
     unsigned char*  buttons;
@@ -680,8 +684,8 @@ struct _GLFWplatform
     void (*setCursorMode)(_GLFWwindow*,int);
     void (*setRawMouseMotion)(_GLFWwindow*,GLFWbool);
     GLFWbool (*rawMouseMotionSupported)(void);
-    int (*createCursor)(_GLFWcursor*,const GLFWimage*,int,int);
-    int (*createStandardCursor)(_GLFWcursor*,int);
+    GLFWbool (*createCursor)(_GLFWcursor*,const GLFWimage*,int,int);
+    GLFWbool (*createStandardCursor)(_GLFWcursor*,int);
     void (*destroyCursor)(_GLFWcursor*);
     void (*setCursor)(_GLFWwindow*,_GLFWcursor*);
     const char* (*getScancodeName)(int);
@@ -690,7 +694,7 @@ struct _GLFWplatform
     const char* (*getClipboardString)(void);
     GLFWbool (*initJoysticks)(void);
     void (*terminateJoysticks)(void);
-    int (*pollJoystick)(_GLFWjoystick*,int);
+    GLFWbool (*pollJoystick)(_GLFWjoystick*,int);
     const char* (*getMappingName)(void);
     void (*updateGamepadGUID)(char*);
     // monitor
@@ -703,7 +707,7 @@ struct _GLFWplatform
     GLFWbool (*getGammaRamp)(_GLFWmonitor*,GLFWgammaramp*);
     void (*setGammaRamp)(_GLFWmonitor*,const GLFWgammaramp*);
     // window
-    int (*createWindow)(_GLFWwindow*,const _GLFWwndconfig*,const _GLFWctxconfig*,const _GLFWfbconfig*);
+    GLFWbool (*createWindow)(_GLFWwindow*,const _GLFWwndconfig*,const _GLFWctxconfig*,const _GLFWfbconfig*);
     void (*destroyWindow)(_GLFWwindow*);
     void (*setWindowTitle)(_GLFWwindow*,const char*);
     void (*setWindowIcon)(_GLFWwindow*,int,const GLFWimage*);
@@ -724,12 +728,12 @@ struct _GLFWplatform
     void (*requestWindowAttention)(_GLFWwindow*);
     void (*focusWindow)(_GLFWwindow*);
     void (*setWindowMonitor)(_GLFWwindow*,_GLFWmonitor*,int,int,int,int,int);
-    int (*windowFocused)(_GLFWwindow*);
-    int (*windowIconified)(_GLFWwindow*);
-    int (*windowVisible)(_GLFWwindow*);
-    int (*windowMaximized)(_GLFWwindow*);
-    int (*windowHovered)(_GLFWwindow*);
-    int (*framebufferTransparent)(_GLFWwindow*);
+    GLFWbool (*windowFocused)(_GLFWwindow*);
+    GLFWbool (*windowIconified)(_GLFWwindow*);
+    GLFWbool (*windowVisible)(_GLFWwindow*);
+    GLFWbool (*windowMaximized)(_GLFWwindow*);
+    GLFWbool (*windowHovered)(_GLFWwindow*);
+    GLFWbool (*framebufferTransparent)(_GLFWwindow*);
     float (*getWindowOpacity)(_GLFWwindow*);
     void (*setWindowResizable)(_GLFWwindow*,GLFWbool);
     void (*setWindowDecorated)(_GLFWwindow*,GLFWbool);
@@ -746,7 +750,7 @@ struct _GLFWplatform
     EGLNativeWindowType (*getEGLNativeWindow)(_GLFWwindow*);
     // vulkan
     void (*getRequiredInstanceExtensions)(char**);
-    int (*getPhysicalDevicePresentationSupport)(VkInstance,VkPhysicalDevice,uint32_t);
+    GLFWbool (*getPhysicalDevicePresentationSupport)(VkInstance,VkPhysicalDevice,uint32_t);
     VkResult (*createWindowSurface)(VkInstance,_GLFWwindow*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 };
 

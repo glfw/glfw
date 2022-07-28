@@ -21,7 +21,7 @@ support for a given platform is compiled in with @ref glfwPlatformSupported.
 
 GLFW now provides the standard cursor shapes @ref GLFW_RESIZE_NWSE_CURSOR and
 @ref GLFW_RESIZE_NESW_CURSOR for diagonal resizing, @ref GLFW_RESIZE_ALL_CURSOR
-for omni-directional resizing and @ref GLFW_NOT_ALLOWED_CURSOR for showing an
+for omnidirectional resizing and @ref GLFW_NOT_ALLOWED_CURSOR for showing an
 action is not allowed.
 
 Unlike the original set, these shapes may not be available everywhere and
@@ -92,7 +92,7 @@ applications.
 Because GLFW now supports runtime selection of platform (window system), a library binary
 may export native access functions for multiple platforms.  Starting with version 3.4 you
 must not assume that GLFW is running on a platform just because it exports native access
-functions for it.  After initialization you can query the selected platform with @ref
+functions for it.  After initialization, you can query the selected platform with @ref
 glfwGetPlatform.
 
 
@@ -118,7 +118,7 @@ To work around this, call any joystick function before waiting for events, for
 example by setting a [joystick callback](@ref joystick_event).
 
 
-@subsubsection standalone_34 Tests and examples are disabled when built as a sub-project
+@subsubsection standalone_34 Tests and examples are disabled when built as a subproject
 
 GLFW now does not build the tests and examples when it is added as
 a subdirectory of another CMake project.  To enable these, set the @ref
@@ -152,7 +152,7 @@ GLFW_TRANSPARENT_FRAMEBUFFER on Windows 7 if DWM transparency is off
 (the Transparency setting under Personalization > Window Color).
 
 
-@subsubsection emptyevents_34 Empty events on X11 no longer roundtrip to server
+@subsubsection emptyevents_34 Empty events on X11 no longer round-trip to server
 
 Events posted with @ref glfwPostEmptyEvent now use a separate unnamed pipe
 instead of sending an X11 client event to the helper window.

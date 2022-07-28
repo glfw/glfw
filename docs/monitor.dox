@@ -138,7 +138,7 @@ glfwGetMonitorPhysicalSize(monitor, &width_mm, &height_mm);
 @endcode
 
 While this can be used to calculate the raw DPI of a monitor, this is often not
-useful.  Instead use the [monitor content scale](@ref monitor_scale) and
+useful.  Instead, use the [monitor content scale](@ref monitor_scale) and
 [window content scale](@ref window_scale) to scale your content.
 
 
@@ -261,7 +261,7 @@ To experiment with gamma correction via the @ref glfwSetGamma function, run the
 `gamma` test program.
 
 @note The software controlled gamma ramp is applied _in addition_ to the
-hardware gamma correction, which today is usually an approximation of sRGB
+hardware gamma correction, which today is typically an approximation of sRGB
 gamma.  This means that setting a perfectly linear ramp, or gamma 1.0, will
 produce the default (usually sRGB-like) behavior.
 

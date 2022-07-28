@@ -26,7 +26,7 @@ GLFW.
 @endcode
 
 This header defines all the constants and declares all the types and function
-prototypes of the GLFW API.  By default it also includes the OpenGL header from
+prototypes of the GLFW API.  By default, it also includes the OpenGL header from
 your development environment.  See [option macros](@ref build_macros) below for
 how to select OpenGL ES headers and more.
 

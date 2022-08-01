@@ -480,7 +480,6 @@ typedef struct _GLFWlibraryGLX
     int             eventBase;
     int             errorBase;
 
-    // dlopen handle for libGL.so.1
     void*           handle;
 
     // GLX 1.3 functions

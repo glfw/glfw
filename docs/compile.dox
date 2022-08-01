@@ -45,7 +45,7 @@ Linux and FreeBSD you will need a few extra packages.
 To compile GLFW for X11, you need to have the X11 development packages
 installed.  They are not needed to build or run programs that use GLFW.
 
-On Debian and derivates like Ubuntu and Linux Mint the `xorg-dev` meta-package
+On Debian and derivatives like Ubuntu and Linux Mint the `xorg-dev` meta-package
 pulls in the development packages for all of X11.
 
 @code{.sh}
@@ -83,7 +83,7 @@ development packages installed.  They are not needed to build or run programs th
 GLFW.  You will also need to set the @ref GLFW_BUILD_WAYLAND CMake option in the next
 step when generating build files.
 
-On Debian and derivates like Ubuntu and Linux Mint you will need the `libwayland-dev`,
+On Debian and derivatives like Ubuntu and Linux Mint you will need the `libwayland-dev`,
 `libxkbcommon-dev` and `wayland-protocols` packages and the `xorg-dev` meta-package.
 These will pull in all other dependencies.
 
@@ -142,7 +142,7 @@ If you wish change any CMake variables in the list, press _Configure_ and then
 _Generate_ to have the new values take effect.  The variable list will be
 populated after the first configure step.
 
-By default GLFW will use X11 on Linux and other Unix-like systems other than macOS.  To
+By default, GLFW will use X11 on Linux and other Unix-like systems other than macOS.  To
 include support for Wayland as well, set the @ref GLFW_BUILD_WAYLAND option in the GLFW
 section of the variable list, then apply the new value as described above.
 
@@ -176,7 +176,7 @@ flag.
 cmake -S path/to/glfw -B path/to/build -G Xcode
 @endcode
 
-By default GLFW will use X11 on Linux and other Unix-like systems other
+By default, GLFW will use X11 on Linux and other Unix-like systems other
 than macOS.  To also include support for Wayland, set the @ref GLFW_BUILD_WAYLAND CMake
 option.
 
@@ -263,12 +263,12 @@ build GLFW as a static library, `SHARED` to build it as a shared library
 @anchor GLFW_BUILD_EXAMPLES
 __GLFW_BUILD_EXAMPLES__ determines whether the GLFW examples are built
 along with the library.  This is enabled by default unless GLFW is being built
-as a sub-project of a larger CMake project.
+as a subproject of a larger CMake project.
 
 @anchor GLFW_BUILD_TESTS
 __GLFW_BUILD_TESTS__ determines whether the GLFW test programs are
 built along with the library.  This is enabled by default unless GLFW is being
-built as a sub-project of a larger CMake project.
+built as a subproject of a larger CMake project.
 
 @anchor GLFW_BUILD_DOCS
 __GLFW_BUILD_DOCS__ determines whether the GLFW documentation is built along
@@ -358,7 +358,7 @@ For more details see the
 @section compile_manual Compiling GLFW manually
 
 If you wish to compile GLFW without its CMake build environment then you will have to do
-at least some of the platform detection yourself.  There are preprocessor macros for
+at least some platform-detection yourself.  There are preprocessor macros for
 enabling support for the platforms (window systems) available.  There are also optional,
 platform-specific macros for various features.
 

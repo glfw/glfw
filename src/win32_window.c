@@ -238,7 +238,8 @@ static void applyAspectRatio(_GLFWwindow* window, int edge, RECT* area)
 //
 static void updateCursorImage(_GLFWwindow* window)
 {
-    if (window->cursorMode == GLFW_CURSOR_NORMAL)
+    if (window->cursorMode == GLFW_CURSOR_NORMAL ||
+        window->cursorMode == GLFW_CURSOR_CAPTURED)
     {
         if (window->cursor)
             SetCursor(window->cursor->win32.handle);
@@ -249,20 +250,24 @@ static void updateCursorImage(_GLFWwindow* window)
         SetCursor(NULL);
 }
 
-// Updates the cursor clip rect
+// Sets the cursor clip rect to the window content area
 //
-static void updateClipRect(_GLFWwindow* window)
+static void captureCursor(_GLFWwindow* window)
 {
-    if (window)
-    {
-        RECT clipRect;
-        GetClientRect(window->win32.handle, &clipRect);
-        ClientToScreen(window->win32.handle, (POINT*) &clipRect.left);
-        ClientToScreen(window->win32.handle, (POINT*) &clipRect.right);
-        ClipCursor(&clipRect);
-    }
-    else
-        ClipCursor(NULL);
+    RECT clipRect;
+    GetClientRect(window->win32.handle, &clipRect);
+    ClientToScreen(window->win32.handle, (POINT*) &clipRect.left);
+    ClientToScreen(window->win32.handle, (POINT*) &clipRect.right);
+    ClipCursor(&clipRect);
+    _glfw.win32.capturedCursorWindow = window;
+}
+
+// Disabled clip cursor
+//
+static void releaseCursor(void)
+{
+    ClipCursor(NULL);
+    _glfw.win32.capturedCursorWindow = NULL;
 }
 
 // Enables WM_INPUT messages for the mouse for the specified window
@@ -301,7 +306,7 @@ static void disableCursor(_GLFWwindow* window)
                            &_glfw.win32.restoreCursorPosY);
     updateCursorImage(window);
     _glfwCenterCursorInContentArea(window);
-    updateClipRect(window);
+    captureCursor(window);
 
     if (window->rawMouseMotion)
         enableRawMouseMotion(window);
@@ -315,7 +320,7 @@ static void enableCursor(_GLFWwindow* window)
         disableRawMouseMotion(window);
 
     _glfw.win32.disabledCursorWindow = NULL;
-    updateClipRect(NULL);
+    releaseCursor();
     _glfwSetCursorPosWin32(window,
                            _glfw.win32.restoreCursorPosX,
                            _glfw.win32.restoreCursorPosY);
@@ -582,6 +587,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             {
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)
                     disableCursor(window);
+                else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+                    captureCursor(window);
 
                 window->win32.frameAction = GLFW_FALSE;
             }
@@ -600,6 +607,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 disableCursor(window);
+            else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+                captureCursor(window);
 
             return 0;
         }
@@ -608,6 +617,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         {
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 enableCursor(window);
+            else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+                releaseCursor();
 
             if (window->monitor && window->autoIconify)
                 _glfwIconifyWindowWin32(window);
@@ -977,6 +988,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             //       resizing the window or using the window menu
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 enableCursor(window);
+            else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+                releaseCursor();
 
             break;
         }
@@ -991,6 +1004,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             //       resizing the window or using the menu
             if (window->cursorMode == GLFW_CURSOR_DISABLED)
                 disableCursor(window);
+            else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+                captureCursor(window);
 
             break;
         }
@@ -1004,8 +1019,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                                        (window->win32.maximized &&
                                         wParam != SIZE_RESTORED);
 
-            if (_glfw.win32.disabledCursorWindow == window)
-                updateClipRect(window);
+            if (_glfw.win32.capturedCursorWindow == window)
+                captureCursor(window);
 
             if (window->win32.iconified != iconified)
                 _glfwInputWindowIconify(window, iconified);
@@ -1040,8 +1055,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
         case WM_MOVE:
         {
-            if (_glfw.win32.disabledCursorWindow == window)
-                updateClipRect(window);
+            if (_glfw.win32.capturedCursorWindow == window)
+                captureCursor(window);
 
             // NOTE: This cannot use LOWORD/HIWORD recommended by MSDN, as
             // those macros do not handle negative window positions correctly
@@ -1313,17 +1328,27 @@ static int createNativeWindow(_GLFWwindow* window,
     }
     else
     {
-        xpos = CW_USEDEFAULT;
-        ypos = CW_USEDEFAULT;
+        RECT rect = { 0, 0, wndconfig->width, wndconfig->height };
 
         window->win32.maximized = wndconfig->maximized;
         if (wndconfig->maximized)
             style |= WS_MAXIMIZE;
 
-        getFullWindowSize(style, exStyle,
-                          wndconfig->width, wndconfig->height,
-                          &fullWidth, &fullHeight,
-                          USER_DEFAULT_SCREEN_DPI);
+        AdjustWindowRectEx(&rect, style, FALSE, exStyle);
+
+        if (wndconfig->xpos == GLFW_ANY_POSITION && wndconfig->ypos == GLFW_ANY_POSITION)
+        {
+            xpos = CW_USEDEFAULT;
+            ypos = CW_USEDEFAULT;
+        }
+        else
+        {
+            xpos = wndconfig->xpos + rect.left;
+            ypos = wndconfig->ypos + rect.top;
+        }
+
+        fullWidth = rect.right - rect.left;
+        fullHeight = rect.bottom - rect.top;
     }
 
     wideTitle = _glfwCreateWideStringFromUTF8Win32(wndconfig->title);
@@ -1511,7 +1536,10 @@ void _glfwDestroyWindowWin32(_GLFWwindow* window)
         window->context.destroy(window);
 
     if (_glfw.win32.disabledCursorWindow == window)
-        _glfw.win32.disabledCursorWindow = NULL;
+        enableCursor(window);
+
+    if (_glfw.win32.capturedCursorWindow == window)
+        releaseCursor();
 
     if (window->win32.TaskbarList)
         window->win32.TaskbarList->lpVtbl->Release(window->win32.TaskbarList);
@@ -2178,14 +2206,40 @@ void _glfwSetCursorPosWin32(_GLFWwindow* window, double xpos, double ypos)
 
 void _glfwSetCursorModeWin32(_GLFWwindow* window, int mode)
 {
-    if (mode == GLFW_CURSOR_DISABLED)
+    if (_glfwWindowFocusedWin32(window))
     {
-        if (_glfwWindowFocusedWin32(window))
-            disableCursor(window);
+        if (mode == GLFW_CURSOR_DISABLED)
+        {
+            _glfwGetCursorPosWin32(window,
+                                   &_glfw.win32.restoreCursorPosX,
+                                   &_glfw.win32.restoreCursorPosY);
+            _glfwCenterCursorInContentArea(window);
+            if (window->rawMouseMotion)
+                enableRawMouseMotion(window);
+        }
+        else if (_glfw.win32.disabledCursorWindow == window)
+        {
+            if (window->rawMouseMotion)
+                disableRawMouseMotion(window);
+        }
+
+        if (mode == GLFW_CURSOR_DISABLED || mode == GLFW_CURSOR_CAPTURED)
+            captureCursor(window);
+        else
+            releaseCursor();
+
+        if (mode == GLFW_CURSOR_DISABLED)
+            _glfw.win32.disabledCursorWindow = window;
+        else if (_glfw.win32.disabledCursorWindow == window)
+        {
+            _glfw.win32.disabledCursorWindow = NULL;
+            _glfwSetCursorPosWin32(window,
+                                   _glfw.win32.restoreCursorPosX,
+                                   _glfw.win32.restoreCursorPosY);
+        }
     }
-    else if (_glfw.win32.disabledCursorWindow == window)
-        enableCursor(window);
-    else if (cursorInContentArea(window))
+
+    if (cursorInContentArea(window))
         updateCursorImage(window);
 }
 

@@ -614,6 +614,9 @@ static GLFWbool createShellObjects(_GLFWwindow* window)
 
     xdg_toplevel_add_listener(window->wl.xdg.toplevel, &xdgToplevelListener, window);
 
+    if (window->wl.appId)
+        xdg_toplevel_set_app_id(window->wl.xdg.toplevel, window->wl.appId);
+
     if (window->wl.title)
         xdg_toplevel_set_title(window->wl.xdg.toplevel, window->wl.title);
 
@@ -728,6 +731,7 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     window->wl.height = wndconfig->height;
     window->wl.scale = 1;
     window->wl.title = _glfw_strdup(wndconfig->title);
+    window->wl.appId = _glfw_strdup(wndconfig->wl.appId);
 
     window->wl.maximized = wndconfig->maximized;
 
@@ -1850,6 +1854,15 @@ void _glfwDestroyWindowWayland(_GLFWwindow* window)
     if (window->wl.idleInhibitor)
         zwp_idle_inhibitor_v1_destroy(window->wl.idleInhibitor);
 
+    if (window->wl.relativePointer)
+        zwp_relative_pointer_v1_destroy(window->wl.relativePointer);
+
+    if (window->wl.lockedPointer)
+        zwp_locked_pointer_v1_destroy(window->wl.lockedPointer);
+
+    if (window->wl.confinedPointer)
+        zwp_confined_pointer_v1_destroy(window->wl.confinedPointer);
+
     if (window->context.destroy)
         window->context.destroy(window);
 
@@ -1865,6 +1878,7 @@ void _glfwDestroyWindowWayland(_GLFWwindow* window)
         wl_surface_destroy(window->wl.surface);
 
     _glfw_free(window->wl.title);
+    _glfw_free(window->wl.appId);
     _glfw_free(window->wl.monitors);
 }
 
@@ -2242,16 +2256,10 @@ void _glfwGetCursorPosWayland(_GLFWwindow* window, double* xpos, double* ypos)
         *ypos = window->wl.cursorPosY;
 }
 
-static GLFWbool isPointerLocked(_GLFWwindow* window);
-
 void _glfwSetCursorPosWayland(_GLFWwindow* window, double x, double y)
 {
-    if (isPointerLocked(window))
-    {
-        zwp_locked_pointer_v1_set_cursor_position_hint(
-            window->wl.pointerLock.lockedPointer,
-            wl_fixed_from_double(x), wl_fixed_from_double(y));
-    }
+    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                    "Wayland: The platform does not support setting the cursor position");
 }
 
 void _glfwSetCursorModeWayland(_GLFWwindow* window, int mode)
@@ -2485,22 +2493,6 @@ static void lockedPointerHandleLocked(void* userData,
 {
 }
 
-static void unlockPointer(_GLFWwindow* window)
-{
-    struct zwp_relative_pointer_v1* relativePointer =
-        window->wl.pointerLock.relativePointer;
-    struct zwp_locked_pointer_v1* lockedPointer =
-        window->wl.pointerLock.lockedPointer;
-
-    zwp_relative_pointer_v1_destroy(relativePointer);
-    zwp_locked_pointer_v1_destroy(lockedPointer);
-
-    window->wl.pointerLock.relativePointer = NULL;
-    window->wl.pointerLock.lockedPointer = NULL;
-}
-
-static void lockPointer(_GLFWwindow* window);
-
 static void lockedPointerHandleUnlocked(void* userData,
                                         struct zwp_locked_pointer_v1* lockedPointer)
 {
@@ -2514,52 +2506,81 @@ static const struct zwp_locked_pointer_v1_listener lockedPointerListener =
 
 static void lockPointer(_GLFWwindow* window)
 {
-    struct zwp_relative_pointer_v1* relativePointer;
-    struct zwp_locked_pointer_v1* lockedPointer;
-
     if (!_glfw.wl.relativePointerManager)
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: no relative pointer manager");
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Wayland: The compositor does not support pointer locking");
         return;
     }
 
-    relativePointer =
+    window->wl.relativePointer =
         zwp_relative_pointer_manager_v1_get_relative_pointer(
             _glfw.wl.relativePointerManager,
             _glfw.wl.pointer);
-    zwp_relative_pointer_v1_add_listener(relativePointer,
+    zwp_relative_pointer_v1_add_listener(window->wl.relativePointer,
                                          &relativePointerListener,
                                          window);
 
-    lockedPointer =
+    window->wl.lockedPointer =
         zwp_pointer_constraints_v1_lock_pointer(
             _glfw.wl.pointerConstraints,
             window->wl.surface,
             _glfw.wl.pointer,
             NULL,
             ZWP_POINTER_CONSTRAINTS_V1_LIFETIME_PERSISTENT);
-    zwp_locked_pointer_v1_add_listener(lockedPointer,
+    zwp_locked_pointer_v1_add_listener(window->wl.lockedPointer,
                                        &lockedPointerListener,
                                        window);
-
-    window->wl.pointerLock.relativePointer = relativePointer;
-    window->wl.pointerLock.lockedPointer = lockedPointer;
-
-    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial,
-                          NULL, 0, 0);
 }
 
-static GLFWbool isPointerLocked(_GLFWwindow* window)
+static void unlockPointer(_GLFWwindow* window)
 {
-    return window->wl.pointerLock.lockedPointer != NULL;
+    zwp_relative_pointer_v1_destroy(window->wl.relativePointer);
+    window->wl.relativePointer = NULL;
+
+    zwp_locked_pointer_v1_destroy(window->wl.lockedPointer);
+    window->wl.lockedPointer = NULL;
+}
+
+static void confinedPointerHandleConfined(void* userData,
+                                          struct zwp_confined_pointer_v1* confinedPointer)
+{
+}
+
+static void confinedPointerHandleUnconfined(void* userData,
+                                            struct zwp_confined_pointer_v1* confinedPointer)
+{
+}
+
+static const struct zwp_confined_pointer_v1_listener confinedPointerListener =
+{
+    confinedPointerHandleConfined,
+    confinedPointerHandleUnconfined
+};
+
+static void confinePointer(_GLFWwindow* window)
+{
+    window->wl.confinedPointer =
+        zwp_pointer_constraints_v1_confine_pointer(
+            _glfw.wl.pointerConstraints,
+            window->wl.surface,
+            _glfw.wl.pointer,
+            NULL,
+            ZWP_POINTER_CONSTRAINTS_V1_LIFETIME_PERSISTENT);
+
+    zwp_confined_pointer_v1_add_listener(window->wl.confinedPointer,
+                                         &confinedPointerListener,
+                                         window);
+}
+
+static void unconfinePointer(_GLFWwindow* window)
+{
+    zwp_confined_pointer_v1_destroy(window->wl.confinedPointer);
+    window->wl.confinedPointer = NULL;
 }
 
 void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
 {
-    struct wl_cursor* defaultCursor;
-    struct wl_cursor* defaultCursorHiDPI = NULL;
-
     if (!_glfw.wl.pointer)
         return;
 
@@ -2570,29 +2591,55 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
     if (window != _glfw.wl.pointerFocus || window->wl.decorations.focus != mainWindow)
         return;
 
-    // Unlock possible pointer lock if no longer disabled.
-    if (window->cursorMode != GLFW_CURSOR_DISABLED && isPointerLocked(window))
-        unlockPointer(window);
+    // Update pointer lock to match cursor mode
+    if (window->cursorMode == GLFW_CURSOR_DISABLED)
+    {
+        if (window->wl.confinedPointer)
+            unconfinePointer(window);
+        if (!window->wl.lockedPointer)
+            lockPointer(window);
+    }
+    else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
+    {
+        if (window->wl.lockedPointer)
+            unlockPointer(window);
+        if (!window->wl.confinedPointer)
+            confinePointer(window);
+    }
+    else if (window->cursorMode == GLFW_CURSOR_NORMAL ||
+             window->cursorMode == GLFW_CURSOR_HIDDEN)
+    {
+        if (window->wl.lockedPointer)
+            unlockPointer(window);
+        else if (window->wl.confinedPointer)
+            unconfinePointer(window);
+    }
 
-    if (window->cursorMode == GLFW_CURSOR_NORMAL)
+    if (window->cursorMode == GLFW_CURSOR_NORMAL ||
+        window->cursorMode == GLFW_CURSOR_CAPTURED)
     {
         if (cursor)
             setCursorImage(window, &cursor->wl);
         else
         {
-            defaultCursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme,
-                                                       "left_ptr");
+            struct wl_cursor* defaultCursor =
+                wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, "left_ptr");
             if (!defaultCursor)
             {
                 _glfwInputError(GLFW_PLATFORM_ERROR,
                                 "Wayland: Standard cursor not found");
                 return;
             }
+
+            struct wl_cursor* defaultCursorHiDPI = NULL;
             if (_glfw.wl.cursorThemeHiDPI)
+            {
                 defaultCursorHiDPI =
-                    wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI,
-                                               "left_ptr");
-            _GLFWcursorWayland cursorWayland = {
+                    wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI, "left_ptr");
+            }
+
+            _GLFWcursorWayland cursorWayland =
+            {
                 defaultCursor,
                 defaultCursorHiDPI,
                 NULL,
@@ -2600,15 +2647,12 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
                 0, 0,
                 0
             };
+
             setCursorImage(window, &cursorWayland);
         }
     }
-    else if (window->cursorMode == GLFW_CURSOR_DISABLED)
-    {
-        if (!isPointerLocked(window))
-            lockPointer(window);
-    }
-    else if (window->cursorMode == GLFW_CURSOR_HIDDEN)
+    else if (window->cursorMode == GLFW_CURSOR_HIDDEN ||
+             window->cursorMode == GLFW_CURSOR_DISABLED)
     {
         wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial, NULL, 0, 0);
     }

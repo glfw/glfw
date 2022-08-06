@@ -396,6 +396,8 @@ struct _GLFWinitconfig
 //
 struct _GLFWwndconfig
 {
+    int           xpos;
+    int           ypos;
     int           width;
     int           height;
     const char*   title;
@@ -421,6 +423,9 @@ struct _GLFWwndconfig
     struct {
         GLFWbool  keymenu;
     } win32;
+    struct {
+        char      appId[256];
+    } wl;
 };
 
 // Context configuration

@@ -259,6 +259,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         window->ns.height = contentRect.size.height;
         _glfwInputWindowSize(window, contentRect.size.width, contentRect.size.height);
     }
+
 }
 
 - (void)windowDidMove:(NSNotification *)notification
@@ -346,6 +347,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
         [self updateTrackingAreas];
         [self registerForDraggedTypes:@[NSPasteboardTypeURL]];
+        
     }
 
     return self;
@@ -2047,3 +2049,64 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
     return window->ns.object;
 }
 
+
+#ifdef _GLFW_BUILD_METAL_DEPENDENCIES
+#import <MetalKit/MetalKit.h>
+GLFWAPI void glfwAddCocoaMTKSubview(GLFWwindow* handle, void* view) {
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN();
+
+    if (_glfw.platform.platformID != GLFW_PLATFORM_COCOA)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
+                        "Cocoa: Platform not initialized");
+        return;
+    }
+
+    [window->ns.view addSubview: (MTKView*) view];
+
+
+}
+
+GLFWAPI void glfwResetCocoaMTKFramesize(GLFWwindow* handle, void* view) { 
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN();
+
+    if (_glfw.platform.platformID != GLFW_PLATFORM_COCOA)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
+                        "Cocoa: Platform not initialized");
+        return;
+    }
+
+    MTKView* mtkView = (MTKView*) view;
+    int width, height;
+    _glfwGetFramebufferSizeCocoa(window, &width, &height);
+    NSSize size = NSMakeSize(width, height);
+    [mtkView setFrameSize: size];
+
+
+}
+
+#else
+GLFWAPI void glfwAddCocoaMTKSubview(GLFWwindow* handle, void* view) {
+
+    _GLFW_REQUIRE_INIT_OR_RETURN();
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "GLFW was compiled without \"GLFW_USE_METALKIT\" enabled");
+    
+
+}
+
+GLFWAPI void glfwResetCocoaMTKFramesize(GLFWwindow* handle, void* view) {
+
+    _GLFW_REQUIRE_INIT_OR_RETURN();
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "GLFW was compiled without \"GLFW_USE_METALKIT\" enabled");
+
+}
+
+
+#endif

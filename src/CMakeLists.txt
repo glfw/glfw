@@ -31,6 +31,9 @@ set_target_properties(update_mappings PROPERTIES FOLDER "GLFW3")
 
 if (GLFW_BUILD_COCOA)
     target_compile_definitions(glfw PRIVATE _GLFW_COCOA)
+    if(GLFW_USE_METALKIT)
+        target_compile_definitions(glfw PRIVATE _GLFW_BUILD_METAL_DEPENDENCIES)
+    endif()
     target_sources(glfw PRIVATE cocoa_platform.h cocoa_joystick.h cocoa_init.m
                                 cocoa_joystick.m cocoa_monitor.m cocoa_window.m
                                 nsgl_context.m)
@@ -160,6 +163,15 @@ if (GLFW_BUILD_COCOA)
     target_link_libraries(glfw PRIVATE "-framework Cocoa"
                                        "-framework IOKit"
                                        "-framework CoreFoundation")
+
+    if(GLFW_USE_METALKIT)
+
+        target_link_libraries(glfw PRIVATE "-framework Metal"  
+                                           "-framework MetalKit")
+
+    endif()
+
+
 
     set(glfw_PKG_DEPS "")
     set(glfw_PKG_LIBS "-framework Cocoa -framework IOKit -framework CoreFoundation")

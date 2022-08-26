@@ -88,7 +88,7 @@ static int getEGLConfigAttrib(EGLConfig config, int attrib)
 // Return the EGLConfig most closely matching the specified hints
 //
 static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
-                                const _GLFWfbconfig* desired,
+                                const _GLFWfbconfig* fbconfig,
                                 EGLConfig* result)
 {
     EGLConfig* nativeConfigs;
@@ -107,7 +107,7 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
     else
         apiBit = EGL_OPENGL_BIT;
 
-    if (desired->stereo)
+    if (fbconfig->stereo)
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE, "EGL: Stereo rendering not supported");
         return GLFW_FALSE;
@@ -148,7 +148,7 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
             if (!vi.visualid)
                 continue;
 
-            if (desired->transparent)
+            if (fbconfig->transparent)
             {
                 int count;
                 XVisualInfo* vis =
@@ -183,19 +183,19 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
         //       with an alpha channel to ensure the buffer is opaque
         if (!_glfw.egl.EXT_present_opaque)
         {
-            if (!desired->transparent && u->alphaBits > 0)
+            if (!fbconfig->transparent && u->alphaBits > 0)
                 continue;
         }
 #endif // _GLFW_WAYLAND
 
         u->samples = getEGLConfigAttrib(n, EGL_SAMPLES);
-        u->doublebuffer = desired->doublebuffer;
+        u->doublebuffer = fbconfig->doublebuffer;
 
         u->handle = (uintptr_t) n;
         usableCount++;
     }
 
-    closest = _glfwChooseFBConfig(desired, usableConfigs, usableCount);
+    closest = _glfwChooseFBConfig(fbconfig, usableConfigs, usableCount);
     if (closest)
         *result = (EGLConfig) closest->handle;
     else

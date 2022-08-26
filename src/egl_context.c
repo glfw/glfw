@@ -107,6 +107,12 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
     else
         apiBit = EGL_OPENGL_BIT;
 
+    if (desired->stereo)
+    {
+        _glfwInputError(GLFW_FORMAT_UNAVAILABLE, "EGL: Stereo rendering not supported");
+        return GLFW_FALSE;
+    }
+
     eglGetConfigs(_glfw.egl.display, NULL, 0, &nativeCount);
     if (!nativeCount)
     {

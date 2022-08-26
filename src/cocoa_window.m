@@ -894,6 +894,48 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
+static GLFWbool createMetalLayer(_GLFWwindow* window)
+{
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101100
+
+    @autoreleasepool {
+
+    // HACK: Dynamically load Core Animation to avoid adding an extra
+    //       dependency for the majority who don't use MoltenVK
+    NSBundle* bundle = [NSBundle bundleWithPath:@"/System/Library/Frameworks/QuartzCore.framework"];
+    if (!bundle)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to find QuartzCore.framework");
+        return GLFW_FALSE;
+    }
+
+    // NOTE: Create the layer here as makeBackingLayer should not return nil
+    window->ns.layer = [[bundle classNamed:@"CAMetalLayer"] layer];
+    if (!window->ns.layer)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to create layer for view");
+        return GLFW_FALSE;
+    }
+
+    if (window->ns.retina)
+        [window->ns.layer setContentsScale:[window->ns.object backingScaleFactor]];
+
+    [window->ns.view setLayer:window->ns.layer];
+    [window->ns.view setWantsLayer:YES];
+
+    } // autoreleasepool
+
+    return GLFW_TRUE;
+
+#else
+
+    return GLFW_FALSE;
+
+#endif
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -1941,33 +1983,8 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
                                        const VkAllocationCallbacks* allocator,
                                        VkSurfaceKHR* surface)
 {
-    @autoreleasepool {
-
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101100
-    // HACK: Dynamically load Core Animation to avoid adding an extra
-    //       dependency for the majority who don't use MoltenVK
-    NSBundle* bundle = [NSBundle bundleWithPath:@"/System/Library/Frameworks/QuartzCore.framework"];
-    if (!bundle)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Failed to find QuartzCore.framework");
+    if (!createMetalLayer(window))
         return VK_ERROR_EXTENSION_NOT_PRESENT;
-    }
-
-    // NOTE: Create the layer here as makeBackingLayer should not return nil
-    window->ns.layer = [[bundle classNamed:@"CAMetalLayer"] layer];
-    if (!window->ns.layer)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Failed to create layer for view");
-        return VK_ERROR_EXTENSION_NOT_PRESENT;
-    }
-
-    if (window->ns.retina)
-        [window->ns.layer setContentsScale:[window->ns.object backingScaleFactor]];
-
-    [window->ns.view setLayer:window->ns.layer];
-    [window->ns.view setWantsLayer:YES];
 
     VkResult err;
 
@@ -2020,11 +2037,6 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
     }
 
     return err;
-#else
-    return VK_ERROR_EXTENSION_NOT_PRESENT;
-#endif
-
-    } // autoreleasepool
 }
 
 
@@ -2045,5 +2057,19 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
     }
 
     return window->ns.object;
+}
+
+GLFWAPI id glfwGetMetalLayer(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN(nil);
+
+    if (!window->ns.layer)
+    {
+        if (!createMetalLayer(window))
+            return nil;
+    }
+
+    return window->ns.layer;
 }
 

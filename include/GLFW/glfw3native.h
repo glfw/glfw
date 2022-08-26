@@ -281,6 +281,20 @@ GLFWAPI CGDirectDisplayID glfwGetCocoaMonitor(GLFWmonitor* monitor);
  *  @ingroup native
  */
 GLFWAPI id glfwGetCocoaWindow(GLFWwindow* window);
+
+/*! @brief Returns the `CAMetalLayer` for the specified window.
+ *
+ *  @return The `CAMetalLayer` of the specified window, or `nil` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @since Added in version 3.0.
+ *
+ *  @ingroup native
+ */
+GLFWAPI id glfwGetMetalLayer(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_NSGL)

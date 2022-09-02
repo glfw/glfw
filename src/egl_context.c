@@ -173,6 +173,21 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
         u->depthBits = getEGLConfigAttrib(n, EGL_DEPTH_SIZE);
         u->stencilBits = getEGLConfigAttrib(n, EGL_STENCIL_SIZE);
 
+#if defined(_GLFW_WAYLAND)
+        if (_glfw.platform.platformID == GLFW_PLATFORM_WAYLAND)
+        {
+            // NOTE: The wl_surface opaque region is no guarantee that its buffer
+            //       is presented as opaque, if it also has an alpha channel
+            // HACK: If EGL_EXT_present_opaque is unavailable, ignore any config
+            //       with an alpha channel to ensure the buffer is opaque
+            if (!_glfw.egl.EXT_present_opaque)
+            {
+                if (!desired->transparent && u->alphaBits > 0)
+                    continue;
+            }
+        }
+#endif // _GLFW_WAYLAND
+
         u->samples = getEGLConfigAttrib(n, EGL_SAMPLES);
         u->doublebuffer = desired->doublebuffer;
 

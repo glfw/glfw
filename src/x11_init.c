@@ -1320,6 +1320,8 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
 
 int _glfwInitX11(void)
 {
+    _glfwInitDBusPOSIX();
+
     _glfw.x11.xlib.AllocClassHint = (PFN_XAllocClassHint)
         _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XAllocClassHint");
     _glfw.x11.xlib.AllocSizeHints = (PFN_XAllocSizeHints)
@@ -1651,5 +1653,7 @@ void _glfwTerminateX11(void)
         close(_glfw.x11.emptyEventPipe[0]);
         close(_glfw.x11.emptyEventPipe[1]);
     }
+
+    _glfwTerminateDBusPOSIX();
 }
 

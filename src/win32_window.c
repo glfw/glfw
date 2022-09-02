@@ -1618,7 +1618,28 @@ void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, const int progressS
         return;
     }
 
-    res = window->win32.TaskbarList->lpVtbl->SetProgressState(window->win32.TaskbarList, window->win32.handle, progressState);
+    int32_t winProgressState = 0;
+    switch(progressState)
+	{
+	case 1:
+		winProgressState = 0x1;
+		break;
+	case 2:
+		winProgressState = 0x2;
+		break;
+	case 3:
+		winProgressState = 0x4;
+		break;
+	case 4:
+		winProgressState = 0x8;
+		break;
+	case 0:
+	default:
+		winProgressState = 0x0;
+		break;
+	}
+
+    res = window->win32.TaskbarList->lpVtbl->SetProgressState(window->win32.TaskbarList, window->win32.handle, winProgressState);
     if (res != S_OK)
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar progress state");
 }

@@ -2150,9 +2150,96 @@ void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* imag
     XFlush(_glfw.x11.display);
 }
 
-void _glfwSetWindowTaskbarProgressX11(_GLFWwindow* window, const int taskbarState, int completed)
+void _glfwSetWindowTaskbarProgressX11(_GLFWwindow* /*window*/, const int taskbarState, int completed)
 {
-    _glfwInputError(GLFW_FEATURE_UNAVAILABLE, "X11: The platform does not support setting the window taskbar progress");
+    if(!_glfw.dbus.handle || !_glfw.dbus.connection)
+        return;
+
+    //Signal signature:
+    //signal com.canonical.Unity.LauncherEntry.Update (in s app_uri, in a{sv} properties)
+
+    const dbus_bool_t progressVisible = (taskbarState != GLFW_TASKBAR_PROGRESS_NOPROGRESS);
+    const double progressValue = (double)completed / 100.0;
+
+    struct DBusMessageIter args;
+    memset(&args, 0, sizeof(args));
+
+    //Get name of the running executable
+    char exeName[PATH_MAX];
+    memset(exeName, 0, sizeof(char) * PATH_MAX);
+    if(readlink("/proc/self/exe", exeName, PATH_MAX) == -1)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to get name of the running executable");
+        return;
+    }
+    char* exeNameEnd = strchr(exeName, '\0');
+    char* lastFound = strrchr(exeName, '/');
+    if(!lastFound || !exeNameEnd)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to get name of the running executable");
+        return;
+    }
+    unsigned int exeNameLength = (exeNameEnd - lastFound) - 1;
+
+    //Create our final desktop file uri
+    unsigned int desktopFileLength = strlen("application://") + exeNameLength + strlen(".desktop") + 1;
+    char desktopFile[desktopFileLength];
+    memset(desktopFile, 0, sizeof(char) * desktopFileLength);
+    strcpy(desktopFile, "application://");
+    memcpy(desktopFile + strlen("application://"), lastFound + 1, exeNameLength);
+    strcpy(desktopFile + strlen("application://") + (exeNameLength), ".desktop");
+    desktopFile[desktopFileLength - 1] = '\0';
+
+    DBusMessage* msg = dbus_message_new_signal("/org/glfw", "com.canonical.Unity.LauncherEntry", "Update");
+    if(!msg)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to create new DBus message");
+        return;
+    }
+
+    dbus_message_iter_init_append(msg, &args);
+
+    //Setup app_uri parameter
+    const char* desktopFileStr = desktopFile;
+    dbus_message_iter_append_basic(&args, DBUS_TYPE_STRING, &desktopFileStr);
+
+    //Set properties parameter
+    struct DBusMessageIter sub1, sub2, sub3;
+    memset(&sub1, 0, sizeof(sub1));
+    memset(&sub2, 0, sizeof(sub2));
+    memset(&sub3, 0, sizeof(sub3));
+
+    dbus_message_iter_open_container(&args, DBUS_TYPE_ARRAY, "{sv}", &sub1);
+
+    //Set progress visible property
+    dbus_message_iter_open_container(&sub1, DBUS_TYPE_DICT_ENTRY, NULL, &sub2);
+    const char* progressVisibleStr = "progress-visible";
+    dbus_message_iter_append_basic(&sub2, DBUS_TYPE_STRING, &progressVisibleStr);
+    dbus_message_iter_open_container(&sub2, DBUS_TYPE_VARIANT, "b", &sub3);
+    dbus_message_iter_append_basic(&sub3, DBUS_TYPE_BOOLEAN, &progressVisible);
+    dbus_message_iter_close_container(&sub2, &sub3);
+    dbus_message_iter_close_container(&sub1, &sub2);
+
+    //Set progress value property
+    dbus_message_iter_open_container(&sub1, DBUS_TYPE_DICT_ENTRY, NULL, &sub2);
+    const char* progressValueStr = "progress";
+    dbus_message_iter_append_basic(&sub2, DBUS_TYPE_STRING, &progressValueStr);
+    dbus_message_iter_open_container(&sub2, DBUS_TYPE_VARIANT, "d", &sub3);
+    dbus_message_iter_append_basic(&sub3, DBUS_TYPE_DOUBLE, &progressValue);
+    dbus_message_iter_close_container(&sub2, &sub3);
+    dbus_message_iter_close_container(&sub1, &sub2);
+
+    dbus_message_iter_close_container(&args, &sub1);
+
+    //Finally send the signal
+    unsigned int serial = 0;
+    if(!dbus_connection_send(_glfw.dbus.connection, msg, &serial))
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to send DBus message");
+    else
+        dbus_connection_flush(_glfw.dbus.connection);
+
+    //Free the message
+    dbus_message_unref(msg);
 }
 
 void _glfwGetWindowPosX11(_GLFWwindow* window, int* xpos, int* ypos)

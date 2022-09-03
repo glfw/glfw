@@ -316,6 +316,8 @@ information on what to include when reporting a bug.
  - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Added support for file path drop events (#2040)
  - [Wayland] Added support for more human-readable monitor names where available
+ - [Wayland] Disabled alpha channel for opaque windows on systems lacking
+   `EGL_EXT_present_opaque` (#1895)
  - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled

@@ -471,7 +471,8 @@ should also declare this in its `Info.plist` by setting the
 @anchor GLFW_X11_CLASS_NAME_hint
 @anchor GLFW_X11_INSTANCE_NAME_hint
 __GLFW_X11_CLASS_NAME__ and __GLFW_X11_INSTANCE_NAME__ specifies the desired
-ASCII encoded class and instance parts of the ICCCM `WM_CLASS` window property.
+ASCII encoded class and instance parts of the ICCCM `WM_CLASS` window property.  Both
+hints need to be set to something other than an empty string for them to take effect.
 These are set with @ref glfwWindowHintString.
 
 

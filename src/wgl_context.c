@@ -72,10 +72,20 @@ static int choosePixelFormatWGL(_GLFWwindow* window,
     int attribs[40];
     int values[sizeof(attribs) / sizeof(attribs[0])];
 
-    nativeCount = DescribePixelFormat(window->context.wgl.dc,
-                                      1,
-                                      sizeof(PIXELFORMATDESCRIPTOR),
-                                      NULL);
+    if (_glfw.wgl.ARB_pixel_format)
+    {
+        int attrib[] = { WGL_NUMBER_PIXEL_FORMATS_ARB };
+
+        wglGetPixelFormatAttribivARB(window->context.wgl.dc, 1, 0,
+                                     1, attrib, &nativeCount);
+    }
+    else
+    {
+        nativeCount = DescribePixelFormat(window->context.wgl.dc,
+                                          1,
+                                          sizeof(PIXELFORMATDESCRIPTOR),
+                                          NULL);
+    }
 
     if (_glfw.wgl.ARB_pixel_format)
     {

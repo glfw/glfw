@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_X11)
+
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
@@ -1182,7 +1184,7 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
         _glfwGetKeyScancodeX11,
         _glfwSetClipboardStringX11,
         _glfwGetClipboardStringX11,
-#if defined(__linux__)
+#if defined(_GLFW_LINUX_JOYSTICK)
         _glfwInitJoysticksLinux,
         _glfwTerminateJoysticksLinux,
         _glfwPollJoystickLinux,
@@ -1652,4 +1654,6 @@ void _glfwTerminateX11(void)
         close(_glfw.x11.emptyEventPipe[1]);
     }
 }
+
+#endif // _GLFW_X11
 

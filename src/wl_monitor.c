@@ -28,6 +28,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_WAYLAND)
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -269,4 +271,6 @@ GLFWAPI struct wl_output* glfwGetWaylandMonitor(GLFWmonitor* handle)
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     return monitor->wl.output;
 }
+
+#endif // _GLFW_WAYLAND
 

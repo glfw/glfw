@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_COCOA)
+
 #include <unistd.h>
 #include <ctype.h>
 #include <string.h>
@@ -475,4 +477,6 @@ void _glfwUpdateGamepadGUIDCocoa(char* guid)
                 original, original + 16);
     }
 }
+
+#endif // _GLFW_COCOA
 

@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(GLFW_BUILD_LINUX_JOYSTICK)
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/inotify.h>
@@ -428,4 +430,6 @@ const char* _glfwGetMappingNameLinux(void)
 void _glfwUpdateGamepadGUIDLinux(char* guid)
 {
 }
+
+#endif // GLFW_BUILD_LINUX_JOYSTICK
 

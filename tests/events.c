@@ -642,7 +642,7 @@ int main(int argc, char** argv)
 
         glfwMakeContextCurrent(slots[i].window);
         gladLoadGL(glfwGetProcAddress);
-        glfwSwapInterval(1);
+        glfwSwapBuffers(slots[i].window);
     }
 
     printf("Main loop starting\n");

@@ -9,11 +9,19 @@
 
 @subsection features_34 New features in version 3.4
 
+@subsubsection runtime_platform_34 Runtime platform selection
+
+GLFW now supports being compiled for multiple backends and selecting between
+them at runtime with the @ref GLFW_PLATFORM init hint.  After initialization the
+selected platform can be queried with @ref glfwGetPlatform.  You can check if
+support for a given platform is compiled in with @ref glfwPlatformSupported.
+
+
 @subsubsection standard_cursors_34 More standard cursors
 
 GLFW now provides the standard cursor shapes @ref GLFW_RESIZE_NWSE_CURSOR and
 @ref GLFW_RESIZE_NESW_CURSOR for diagonal resizing, @ref GLFW_RESIZE_ALL_CURSOR
-for omni-directional resizing and @ref GLFW_NOT_ALLOWED_CURSOR for showing an
+for omnidirectional resizing and @ref GLFW_NOT_ALLOWED_CURSOR for showing an
 action is not allowed.
 
 Unlike the original set, these shapes may not be available everywhere and
@@ -35,6 +43,12 @@ to whatever window is behind it.  This can also be changed after window
 creation with the matching [window attribute](@ref GLFW_MOUSE_PASSTHROUGH_attrib).
 
 
+@subsubsection wayland_app_id_34 Wayland app_id specification
+
+GLFW now supports specifying the app_id for a Wayland window using the
+[GLFW_WAYLAND_APP_ID](@ref GLFW_WAYLAND_APP_ID_hint) window hint string.
+
+
 @subsubsection features_34_angle_backend Support for ANGLE rendering backend selection
 
 GLFW now provides the
@@ -42,6 +56,14 @@ GLFW now provides the
 requesting a specific rendering backend when using
 [ANGLE](https://chromium.googlesource.com/angle/angle/) to create OpenGL ES
 contexts.
+
+
+@subsubsection captured_cursor_34 Captured cursor mode
+
+GLFW now supports confining the cursor to the window content area with the @ref
+GLFW_CURSOR_CAPTURED cursor mode.
+
+For more information see @ref cursor_mode.
 
 
 @subsubsection features_34_init_allocator Support for custom memory allocator
@@ -54,6 +76,14 @@ function pointers corresponding to the standard library functions `malloc`,
 For more information see @ref init_allocator.
 
 
+@subsubsection features_34_position_hint Window hints for initial position
+
+GLFW now provides the @ref GLFW_POSITION_X and @ref GLFW_POSITION_Y window hints for
+specifying the initial position of the window.  This removes the need to create a hidden
+window, move it and then show it.  The default value of these hints is
+`GLFW_ANY_POSITION`, which selects the previous behavior.
+
+
 @subsubsection features_34_win32_keymenu Support for keyboard access to Windows window menu
 
 GLFW now provides the
@@ -63,7 +93,23 @@ Alt-and-then-Space shortcuts.  This may be useful for more GUI-oriented
 applications.
 
 
-@subsection caveats_34 Caveats for version 3.4
+@subsection caveats Caveats for version 3.4
+
+@subsubsection native_34 Multiple sets of native access functions
+
+Because GLFW now supports runtime selection of platform (window system), a library binary
+may export native access functions for multiple platforms.  Starting with version 3.4 you
+must not assume that GLFW is running on a platform just because it exports native access
+functions for it.  After initialization, you can query the selected platform with @ref
+glfwGetPlatform.
+
+
+@subsubsection version_string_34 Version string format has been changed
+
+Because GLFW now supports runtime selection of platform (window system), the version
+string returned by @ref glfwGetVersionString has been expanded.  It now contains the names
+of all APIs for all the platforms that the library binary supports.
+
 
 @subsubsection joysticks_34 Joystick support is initialized on demand
 
@@ -80,7 +126,20 @@ To work around this, call any joystick function before waiting for events, for
 example by setting a [joystick callback](@ref joystick_event).
 
 
-@subsubsection standalone_34 Tests and examples are disabled when built as a sub-project
+@subsubsection wayland_alpha_34 Frambuffer may lack alpha channel on older Wayland systems
+
+On Wayland, when creating an EGL context on a machine lacking the new
+`EGL_EXT_present_opaque` extension, the @ref GLFW_ALPHA_BITS window hint will be
+ignored and the framebuffer will have no alpha channel.  This is because some
+Wayland compositors treat any buffer with an alpha channel as per-pixel
+transparent.
+
+If you want a per-pixel transparent window, see the
+[GLFW_TRANSPARENT_FRAMEBUFFER](@ref GLFW_TRANSPARENT_FRAMEBUFFER_hint) window
+hint.
+
+
+@subsubsection standalone_34 Tests and examples are disabled when built as a subproject
 
 GLFW now does not build the tests and examples when it is added as
 a subdirectory of another CMake project.  To enable these, set the @ref
@@ -114,9 +173,38 @@ GLFW_TRANSPARENT_FRAMEBUFFER on Windows 7 if DWM transparency is off
 (the Transparency setting under Personalization > Window Color).
 
 
+@subsubsection emptyevents_34 Empty events on X11 no longer round-trip to server
+
+Events posted with @ref glfwPostEmptyEvent now use a separate unnamed pipe
+instead of sending an X11 client event to the helper window.
+
+
 @subsection deprecations_34 Deprecations in version 3.4
 
 @subsection removals_34 Removals in 3.4
+
+@subsubsection vulkan_static_34 GLFW_VULKAN_STATIC CMake option has been removed
+
+This option was used to compile GLFW directly linked with the Vulkan loader, instead of
+using dynamic loading to get hold of `vkGetInstanceProcAddr` at initialization.  This is
+now done by calling the @ref glfwInitVulkanLoader function before initialization.
+
+If you need backward compatibility, this macro can still be defined for GLFW 3.4 and will
+have no effect.  The call to @ref glfwInitVulkanLoader can be conditionally enabled in
+your code by checking the @ref GLFW_VERSION_MAJOR and @ref GLFW_VERSION_MINOR macros.
+
+
+@subsubsection osmesa_option_34 GLFW_USE_OSMESA CMake option has been removed
+
+This option was used to compile GLFW for the Null platform.  The Null platform is now
+always supported.  To produce a library binary that only supports this platform, the way
+this CMake option used to do, you will instead need to disable the default platform for
+the target OS.  This means setting the @ref GLFW_BUILD_WIN32, @ref GLFW_BUILD_COCOA or
+@ref GLFW_BUILD_X11 CMake option to false.
+
+You can set all of them to false and the ones that don't apply for the target OS will be
+ignored.
+
 
 @subsubsection wl_shell_34 Support for the wl_shell protocol has been removed
 
@@ -130,6 +218,9 @@ then GLFW will fail to initialize.
 @subsubsection functions_34 New functions in version 3.4
 
  - @ref glfwInitAllocator
+ - @ref glfwGetPlatform
+ - @ref glfwPlatformSupported
+ - @ref glfwInitVulkanLoader
 
 
 @subsubsection types_34 New types in version 3.4
@@ -142,6 +233,14 @@ then GLFW will fail to initialize.
 
 @subsubsection constants_34 New constants in version 3.4
 
+ - @ref GLFW_PLATFORM
+ - @ref GLFW_ANY_PLATFORM
+ - @ref GLFW_PLATFORM_WIN32
+ - @ref GLFW_PLATFORM_COCOA
+ - @ref GLFW_PLATFORM_WAYLAND
+ - @ref GLFW_PLATFORM_X11
+ - @ref GLFW_PLATFORM_NULL
+ - @ref GLFW_PLATFORM_UNAVAILABLE
  - @ref GLFW_POINTING_HAND_CURSOR
  - @ref GLFW_RESIZE_EW_CURSOR
  - @ref GLFW_RESIZE_NS_CURSOR
@@ -164,6 +263,10 @@ then GLFW will fail to initialize.
  - @ref GLFW_ANGLE_PLATFORM_TYPE_VULKAN
  - @ref GLFW_ANGLE_PLATFORM_TYPE_METAL
  - @ref GLFW_X11_XCB_VULKAN_SURFACE
+ - @ref GLFW_CURSOR_CAPTURED
+ - @ref GLFW_POSITION_X
+ - @ref GLFW_POSITION_Y
+ - @ref GLFW_ANY_POSITION
 
 
 @section news_archive Release notes for earlier versions

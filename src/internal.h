@@ -554,6 +554,8 @@ struct _GLFWwindow
     struct {
         GLFWwindowposfun          pos;
         GLFWwindowsizefun         size;
+        GLFWwindowsizebeginfun    sizeBegin;
+        GLFWwindowsizeendfun    sizeEnd;
         GLFWwindowclosefun        close;
         GLFWwindowrefreshfun      refresh;
         GLFWwindowfocusfun        focus;
@@ -905,7 +907,7 @@ GLFWproc _glfwPlatformGetModuleSymbol(void* module, const char* name);
 
 void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused);
 void _glfwInputWindowPos(_GLFWwindow* window, int xpos, int ypos);
-void _glfwInputWindowSize(_GLFWwindow* window, int width, int height);
+int _glfwInputWindowSize(_GLFWwindow* window, int width, int height);
 void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height);
 void _glfwInputWindowContentScale(_GLFWwindow* window,
                                   float xscale, float yscale);

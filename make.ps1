@@ -63,5 +63,8 @@ cd ..\..
 Write-Host ""
 Write-Host "-----------------------------"
 
-
-
+$libOutputDir = "$buildPath/src/Release/*"
+$examplesOutputDir = "$buildPath/examples/Release"
+$testsOutputDir = "$buildPath/tests/Release"
+Copy-item -Force -Recurse -Verbose $libOutputDir -Destination $examplesOutputDir
+Copy-item -Force -Recurse -Verbose $libOutputDir -Destination $testsOutputDir

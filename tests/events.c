@@ -294,11 +294,24 @@ static void window_pos_callback(GLFWwindow* window, int x, int y)
            counter++, slot->number, glfwGetTime(), x, y);*/
 }
 
+int desiredWidth = 0;
+int desiredHeight = 0;
+
 static void window_size_callback(GLFWwindow* window, int width, int height)
 {
     Slot* slot = glfwGetWindowUserPointer(window);
     /*printf("%08x to %i at %0.3f: Window size: %i %i\n",
            counter++, slot->number, glfwGetTime(), width, height);*/
+
+    desiredWidth = width;
+    desiredHeight = height;
+
+    int currentWidth = 0;
+    int currentHeight = 0;
+    glfwGetWindowSize(window, &currentWidth, &currentHeight);
+    if (currentWidth != desiredWidth || currentHeight != desiredHeight) {
+        glfwSetWindowSize(window, desiredWidth, desiredHeight);
+    }
 }
 
 static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -588,6 +601,9 @@ int main(int argc, char** argv)
         height = 480;
     }
 
+    desiredWidth = width;
+    desiredHeight = height;
+
     slots = calloc(count, sizeof(Slot));
 
     for (i = 0;  i < count;  i++)
@@ -659,6 +675,15 @@ int main(int argc, char** argv)
             break;
 
         glfwWaitEvents();
+
+        int currentWidth = 0;
+        int currentHeight = 0;
+        glfwGetWindowSize(slots[0].window, &currentWidth, &currentHeight);
+
+        if (currentWidth != desiredWidth || currentHeight != desiredHeight) {
+            printf("will resize to: (%i, %i)", desiredWidth, desiredHeight);
+            glfwSetWindowSize(slots[0].window, desiredWidth, desiredHeight);
+        }
 
         // Workaround for an issue with msvcrt and mintty
         fflush(stdout);

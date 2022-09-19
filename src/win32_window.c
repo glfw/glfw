@@ -986,6 +986,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         }
 
         case WM_ENTERSIZEMOVE:
+            _glfwInputWindowSizeBegin(window);
         case WM_ENTERMENULOOP:
         {
             if (window->win32.frameAction)
@@ -1002,6 +1003,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         }
 
         case WM_EXITSIZEMOVE:
+            _glfwInputWindowSizeEnd(window);
         case WM_EXITMENULOOP:
         {
             if (window->win32.frameAction)
@@ -1040,6 +1042,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                 window->win32.width = width;
                 window->win32.height = height;
 
+                //printf("window resize: (%i,%i)\n", width, height);
+
                 _glfwInputFramebufferSize(window, width, height);
                 _glfwInputWindowSize(window, width, height);
             }
@@ -1065,24 +1069,49 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             if (_glfw.win32.capturedCursorWindow == window)
                 captureCursor(window);
 
+            //printf("window move: (%i,%i)\n", GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
             // NOTE: This cannot use LOWORD/HIWORD recommended by MSDN, as
             // those macros do not handle negative window positions correctly
             _glfwInputWindowPos(window,
                                 GET_X_LPARAM(lParam),
                                 GET_Y_LPARAM(lParam));
+
             return 0;
         }
 
         case WM_SIZING:
         {
-            if (window->numer == GLFW_DONT_CARE ||
-                window->denom == GLFW_DONT_CARE)
-            {
-                break;
-            }
+            RECT* rc = (RECT*)lParam;
+            
+            RECT clientArea;
+            GetClientRect(window->win32.handle, &clientArea);
 
-            applyAspectRatio(window, (int) wParam, (RECT*) lParam);
-            return TRUE;
+            RECT windowArea;
+            GetWindowRect(window->win32.handle, &windowArea);
+            
+            //printf("window sizing: (%i,%i,%i,%i) / (%i,%i,%i,%i) / (%i,%i,%i,%i)\n", rc->left, rc->top, rc->right, rc->bottom, windowArea.left, windowArea.top, windowArea.right, windowArea.bottom, clientArea.left, clientArea.top, clientArea.right, clientArea.bottom);
+
+            // notify of desired size change
+            int windowWidth = windowArea.right - windowArea.left;
+            int windowHeight = windowArea.bottom - windowArea.top;
+            int newWidth = rc->right - rc->left - (windowWidth - clientArea.right);
+            int newHeight = rc->bottom - rc->top - (windowHeight - clientArea.bottom);
+            int handled = _glfwInputWindowSize(window, newWidth, newHeight);
+
+            if (handled > 0) 
+            {
+                *rc = windowArea;
+                return 0;
+            } else {
+                if (window->numer == GLFW_DONT_CARE || window->denom == GLFW_DONT_CARE) 
+                {
+                    break;
+                }
+
+                applyAspectRatio(window, (int) wParam, (RECT*) lParam);
+                return TRUE;
+            }
         }
 
         case WM_GETMINMAXINFO:

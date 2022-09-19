@@ -1588,7 +1588,11 @@ typedef void (* GLFWwindowposfun)(GLFWwindow* window, int xpos, int ypos);
  *
  *  @ingroup window
  */
-typedef void (* GLFWwindowsizefun)(GLFWwindow* window, int width, int height);
+typedef int (* GLFWwindowsizefun)(GLFWwindow* window, int width, int height);
+
+typedef void (* GLFWwindowsizebeginfun)(GLFWwindow* window);
+
+typedef void (* GLFWwindowsizeendfun)(GLFWwindow* window);
 
 /*! @brief The function pointer type for window close callbacks.
  *
@@ -4158,6 +4162,10 @@ GLFWAPI GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow* window, GLFWwindow
  *  @ingroup window
  */
 GLFWAPI GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* window, GLFWwindowsizefun callback);
+
+GLFWAPI GLFWwindowsizebeginfun glfwSetWindowSizeBeginCallback(GLFWwindow* window, GLFWwindowsizebeginfun callback);
+
+GLFWAPI GLFWwindowsizeendfun glfwSetWindowSizeEndCallback(GLFWwindow* window, GLFWwindowsizeendfun callback);
 
 /*! @brief Sets the close callback for the specified window.
  *

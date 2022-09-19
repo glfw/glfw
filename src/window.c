@@ -85,14 +85,36 @@ void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
 // Notifies shared code that a window has been resized
 // The size is specified in screen coordinates
 //
-void _glfwInputWindowSize(_GLFWwindow* window, int width, int height)
+int _glfwInputWindowSize(_GLFWwindow* window, int width, int height)
 {
     assert(window != NULL);
     assert(width >= 0);
     assert(height >= 0);
 
     if (window->callbacks.size)
-        window->callbacks.size((GLFWwindow*) window, width, height);
+        return window->callbacks.size((GLFWwindow*) window, width, height);
+    
+    return 0;
+}
+
+// Notifies shared code that a window resizing has started
+//
+void _glfwInputWindowSizeBegin(_GLFWwindow* window)
+{
+    assert(window != NULL);
+
+    if (window->callbacks.sizeBegin)
+        window->callbacks.sizeBegin((GLFWwindow*) window);
+}
+
+// Notifies shared code that a window resizing has finished
+//
+void _glfwInputWindowSizeEnd(_GLFWwindow* window)
+{
+    assert(window != NULL);
+
+    if (window->callbacks.sizeEnd)
+        window->callbacks.sizeEnd((GLFWwindow*) window);
 }
 
 // Notifies shared code that a window has been iconified or restored
@@ -1039,6 +1061,28 @@ GLFWAPI GLFWwindowsizefun glfwSetWindowSizeCallback(GLFWwindow* handle,
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     _GLFW_SWAP(GLFWwindowsizefun, window->callbacks.size, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWwindowsizebeginfun glfwSetWindowSizeBeginCallback(GLFWwindow* handle,
+                                                              GLFWwindowsizebeginfun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP(GLFWwindowsizebeginfun, window->callbacks.sizeBegin, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWwindowsizeendfun glfwSetWindowSizeEndCallback(GLFWwindow* handle,
+                                                          GLFWwindowsizeendfun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP(GLFWwindowsizeendfun, window->callbacks.sizeEnd, cbfun);
     return cbfun;
 }
 

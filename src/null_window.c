@@ -470,14 +470,6 @@ void _glfwFocusWindowNull(_GLFWwindow* window)
     _glfwInputWindowFocus(window, GLFW_TRUE);
 }
 
-void _glfwPlatformDragWindow(_GLFWwindow* window)
-{
-}
-
-void _glfwPlatformResizeWindow(_GLFWwindow* window, int border)
-{
-}
-
 int _glfwPlatformWindowFocused(_GLFWwindow* window)
 {
     return _glfw.null.focusedWindow == window;

@@ -1,6 +1,6 @@
 # GLFW
 
-[![Build status](https://travis-ci.org/glfw/glfw.svg?branch=master)](https://travis-ci.org/glfw/glfw)
+[![Build status](https://github.com/glfw/glfw/actions/workflows/build.yml/badge.svg)](https://github.com/glfw/glfw/actions)
 [![Build status](https://ci.appveyor.com/api/projects/status/0kf0ct9831i5l6sp/branch/master?svg=true)](https://ci.appveyor.com/project/elmindreda/glfw)
 [![Coverity Scan](https://scan.coverity.com/projects/4884/badge.svg)](https://scan.coverity.com/projects/glfw-glfw)
 
@@ -11,21 +11,21 @@ application development.  It provides a simple, platform-independent API for
 creating windows, contexts and surfaces, reading input, handling events, etc.
 
 GLFW natively supports Windows, macOS and Linux and other Unix-like systems.  On
-Linux both X11 and Wayland is supported.
+Linux both X11 and Wayland are supported.
 
 GLFW is licensed under the [zlib/libpng
-license](http://www.glfw.org/license.html).
+license](https://www.glfw.org/license.html).
 
-You can [download](http://www.glfw.org/download.html) the latest stable release
+You can [download](https://www.glfw.org/download.html) the latest stable release
 as source or Windows binaries, or fetch the `latest` branch from GitHub.  Each
 release starting with 3.0 also has a corresponding [annotated
 tag](https://github.com/glfw/glfw/releases) with source and binary archives.
 
-The [documentation](http://www.glfw.org/docs/latest/) is available online and is
+The [documentation](https://www.glfw.org/docs/latest/) is available online and is
 included in all source and binary archives.  See the [release
 notes](https://www.glfw.org/docs/latest/news.html) for new features, caveats and
 deprecations in the latest release.  For more details see the [version
-history](http://www.glfw.org/changelog.html).
+history](https://www.glfw.org/changelog.html).
 
 The `master` branch is the stable integration branch and _should_ always compile
 and run on all supported platforms, although details of newly added features may
@@ -34,10 +34,15 @@ fixes live in [other branches](https://github.com/glfw/glfw/branches/all) until
 they are stable enough to merge.
 
 If you are new to GLFW, you may find the
-[tutorial](http://www.glfw.org/docs/latest/quick.html) for GLFW 3 useful.  If
+[tutorial](https://www.glfw.org/docs/latest/quick.html) for GLFW 3 useful.  If
 you have used GLFW 2 in the past, there is a [transition
-guide](http://www.glfw.org/docs/latest/moving.html) for moving to the GLFW
+guide](https://www.glfw.org/docs/latest/moving.html) for moving to the GLFW
 3 API.
+
+GLFW exists because of the contributions of [many people](CONTRIBUTORS.md)
+around the world, whether by reporting bugs, providing community support, adding
+features, reviewing or testing code, debugging, proofreading docs, suggesting
+features or fixing bugs.
 
 
 ## Compiling GLFW
@@ -52,16 +57,16 @@ MinGW-w64, on macOS with Clang and on Linux and other Unix-like systems with GCC
 and Clang.  It will likely compile in other environments as well, but this is
 not regularly tested.
 
-There are [pre-compiled Windows binaries](http://www.glfw.org/download.html)
+There are [pre-compiled Windows binaries](https://www.glfw.org/download.html)
 available for all supported compilers.
 
-See the [compilation guide](http://www.glfw.org/docs/latest/compile.html) for
+See the [compilation guide](https://www.glfw.org/docs/latest/compile.html) for
 more information about how to compile GLFW yourself.
 
 
 ## Using GLFW
 
-See the [documentation](http://www.glfw.org/docs/latest/) for tutorials, guides
+See the [documentation](https://www.glfw.org/docs/latest/) for tutorials, guides
 and the API reference.
 
 
@@ -79,16 +84,14 @@ Unix-like systems running the X Window System are supported even without
 a desktop environment or modern extensions, although some features require
 a running window or clipboard manager.  The OSMesa backend requires Mesa 6.3.
 
-See the [compatibility guide](http://www.glfw.org/docs/latest/compat.html)
+See the [compatibility guide](https://www.glfw.org/docs/latest/compat.html)
 in the documentation for more information.
 
 
 ## Dependencies
 
-GLFW itself depends only on the headers and libraries for your window system.
-
-The (experimental) Wayland backend also depends on the `extra-cmake-modules`
-package, which is used to generated Wayland protocol headers.
+GLFW itself needs only CMake 3.1 or later and the headers and libraries for your
+OS and window system.
 
 The examples and test programs depend on a number of tiny libraries.  These are
 located in the `deps/` directory.
@@ -101,10 +104,10 @@ located in the `deps/` directory.
    functions
  - [linmath.h](https://github.com/datenwolf/linmath.h) for linear algebra in
    examples
- - [Nuklear](https://github.com/vurtun/nuklear) for test and example UI
+ - [Nuklear](https://github.com/Immediate-Mode-UI/Nuklear) for test and example UI
  - [stb\_image\_write](https://github.com/nothings/stb) for writing images to disk
 
-The documentation is generated with [Doxygen](http://doxygen.org/) if CMake can
+The documentation is generated with [Doxygen](https://doxygen.org/) if CMake can
 find that tool.
 
 
@@ -118,189 +121,295 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
-- Added `glfwGetError` function for querying the last error code and its
-  description (#970)
-- Added `glfwUpdateGamepadMappings` function for importing gamepad mappings in
-  SDL\_GameControllerDB format (#900)
-- Added `glfwJoystickIsGamepad` function for querying whether a joystick has
-  a gamepad mapping (#900)
-- Added `glfwGetJoystickGUID` function for querying the SDL compatible GUID of
-  a joystick (#900)
-- Added `glfwGetGamepadName` function for querying the name provided by the
-  gamepad mapping (#900)
-- Added `glfwGetGamepadState` function, `GLFW_GAMEPAD_*` and `GLFWgamepadstate`
-  for retrieving gamepad input state (#900)
-- Added `glfwGetWindowContentScale`, `glfwGetMonitorContentScale` and
-  `glfwSetWindowContentScaleCallback` for DPI-aware rendering
-  (#235,#439,#677,#845,#898)
-- Added `glfwRequestWindowAttention` function for requesting attention from the
-  user (#732,#988)
-- Added `glfwDragWindow` function for starting a drag operation on a window
-  (#987)
-- Added `glfwResizeWindow` function for starting a resize operation on a window
-  (#923)
-- Added `glfwGetKeyScancode` function that allows retrieving platform dependent
-  scancodes for keys (#830)
-- Added `glfwSetWindowMaximizeCallback` and `GLFWwindowmaximizefun` for
-  receiving window maximization events (#778)
-- Added `glfwSetWindowAttrib` function for changing window attributes (#537)
-- Added `glfwGetJoystickHats` function for querying joystick hats
-  (#889,#906,#934)
-- Added `glfwInitHint` for setting initialization hints
-- Added `glfwWindowHintString` for setting string type window hints (#893,#1139)
-- Added `glfwGetWindowOpacity` and `glfwSetWindowOpacity` for controlling whole
-  window transparency (#1089)
-- Added `glfwSetMonitorUserPointer` and `glfwGetMonitorUserPointer` for
-  per-monitor user pointers
-- Added `glfwSetJoystickUserPointer` and `glfwGetJoystickUserPointer` for
-  per-joystick user pointers
-- Added `glfwGetX11SelectionString` and `glfwSetX11SelectionString`
-  functions for accessing X11 primary selection (#894,#1056)
-- Added headless [OSMesa](http://mesa3d.org/osmesa.html) backend (#850)
-- Added definition of `GLAPIENTRY` to public header
-- Added `GLFW_TRANSPARENT_FRAMEBUFFER` window hint and attribute for controlling
-  per-pixel framebuffer transparency (#197,#663,#715,#723,#1078)
-- Added `GLFW_HOVERED` window attribute for polling cursor hover state (#1166)
-- Added `GLFW_CENTER_CURSOR` window hint for controlling cursor centering
-  (#749,#842)
-- Added `GLFW_FOCUS_ON_SHOW` window hint and attribute to control input focus
-  on calling show window (#1189)
-- Added `GLFW_SCALE_TO_MONITOR` window hint for automatic window resizing
-  (#676,#1115)
-- Added `GLFW_JOYSTICK_HAT_BUTTONS` init hint (#889)
-- Added `GLFW_LOCK_KEY_MODS` input mode and `GLFW_MOD_*_LOCK` mod bits (#946)
-- Added macOS specific `GLFW_COCOA_RETINA_FRAMEBUFFER` window hint
-- Added macOS specific `GLFW_COCOA_FRAME_NAME` window hint (#195)
-- Added macOS specific `GLFW_COCOA_GRAPHICS_SWITCHING` window hint (#377,#935)
-- Added macOS specific `GLFW_COCOA_CHDIR_RESOURCES` init hint
-- Added macOS specific `GLFW_COCOA_MENUBAR` init hint
-- Added X11 specific `GLFW_X11_CLASS_NAME` and `GLFW_X11_INSTANCE_NAME` window
-  hints (#893,#1139)
-- Added `GLFW_INCLUDE_ES32` for including the OpenGL ES 3.2 header
-- Added `GLFW_OSMESA_CONTEXT_API` for creating OpenGL contexts with
-  [OSMesa](https://www.mesa3d.org/osmesa.html) (#281)
-- Added `GenerateMappings.cmake` script for updating gamepad mappings
-- Made `glfwCreateWindowSurface` emit an error when the window has a context
-  (#1194,#1205)
-- Deprecated window parameter of clipboard string functions
-- Deprecated charmods callback
-- Removed `GLFW_USE_RETINA` compile-time option
-- Removed `GLFW_USE_CHDIR` compile-time option
-- Removed `GLFW_USE_MENUBAR` compile-time option
-- Removed requirement of at least one window for `glfwWaitEvents` and
-  `glfwPostEmptyEvent` (#1317)
-- Bugfix: Calling `glfwMaximizeWindow` on a full screen window was not ignored
-- Bugfix: `GLFW_INCLUDE_VULKAN` could not be combined with the corresponding
-          OpenGL and OpenGL ES header macros
-- Bugfix: `glfwGetInstanceProcAddress` returned `NULL` for
-          `vkGetInstanceProcAddr` when `_GLFW_VULKAN_STATIC` was enabled
-- Bugfix: Invalid library paths were used in test and example CMake files (#930)
-- Bugfix: The scancode for synthetic key release events was always zero
-- Bugfix: The generated Doxyfile did not handle paths with spaces (#1081)
-- Bugfix: The gamma ramp generated by `glfwSetGamma` did not use the monitor
-          ramp size (#1387,#1388)
-- [Win32] Added system error strings to relevant GLFW error descriptions (#733)
-- [Win32] Moved to `WM_INPUT` for disabled cursor mode motion input (#125)
-- [Win32] Removed XInput circular deadzone from joystick axis data (#1045)
-- [Win32] Bugfix: Undecorated windows could not be iconified by the user (#861)
-- [Win32] Bugfix: Deadzone logic could underflow with some controllers (#910)
-- [Win32] Bugfix: Bitness test in `FindVulkan.cmake` was VS specific (#928)
-- [Win32] Bugfix: `glfwVulkanSupported` emitted an error on systems with
-                  a loader but no ICD (#916)
-- [Win32] Bugfix: Non-iconified full sreeen windows did not prevent screen
-                  blanking or password enabled screensavers (#851)
-- [Win32] Bugfix: Mouse capture logic lost secondary release messages (#954)
-- [Win32] Bugfix: The 32-bit Vulkan loader library static was not searched for
-- [Win32] Bugfix: Vulkan libraries have a new path as of SDK 1.0.42.0 (#956)
-- [Win32] Bugfix: Monitors with no display devices were not enumerated (#960)
-- [Win32] Bugfix: Monitor events were not emitted (#784)
-- [Win32] Bugfix: The Cygwin DLL was installed to the wrong directory (#1035)
-- [Win32] Bugfix: Normalization of axis data via XInput was incorrect (#1045)
-- [Win32] Bugfix: `glfw3native.h` would undefine a foreign `APIENTRY` (#1062)
-- [Win32] Bugfix: Disabled cursor mode prevented use of caption buttons
-                  (#650,#1071)
-- [Win32] Bugfix: Returned key names did not match other platforms (#943)
-- [Win32] Bugfix: Undecorated windows did not maximize to workarea (#899)
-- [Win32] Bugfix: Window was resized twice when entering full screen (#1085)
-- [Win32] Bugfix: The HID device notification was not unregistered (#1170)
-- [Win32] Bugfix: `glfwCreateWindow` activated window even with `GLFW_FOCUSED`
-                  hint set to false (#1179,#1180)
-- [Win32] Bugfix: The keypad equals key was reported as `GLFW_KEY_UNKNOWN`
-                  (#1315,#1316)
-- [Win32] Bugfix: A title bar would be drawn over undecorated windows in some
-                  circumstances (#1383)
-- [X11] Moved to XI2 `XI_RawMotion` for disable cursor mode motion input (#125)
-- [X11] Replaced `_GLFW_HAS_XF86VM` compile-time option with dynamic loading
-- [X11] Bugfix: `glfwGetVideoMode` would segfault on Cygwin/X
-- [X11] Bugfix: Dynamic X11 library loading did not use full sonames (#941)
-- [X11] Bugfix: Window creation on 64-bit would read past top of stack (#951)
-- [X11] Bugfix: XDND support had multiple non-conformance issues (#968)
-- [X11] Bugfix: The RandR monitor path was disabled despite working RandR (#972)
-- [X11] Bugfix: IM-duplicated key events would leak at low polling rates (#747)
-- [X11] Bugfix: Gamma ramp setting via RandR did not validate ramp size
-- [X11] Bugfix: Key name string encoding depended on current locale (#981,#983)
-- [X11] Bugfix: Incremental reading of selections was not supported (#275)
-- [X11] Bugfix: Selection I/O reported but did not support `COMPOUND_TEXT`
-- [X11] Bugfix: Latin-1 text read from selections was not converted to UTF-8
-- [X11] Bugfix: NVidia EGL would segfault if unloaded before closing the display
-- [X11] Bugfix: Checking window maximized attrib could crash some WMs (#1356)
-- [X11] Bugfix: Update cursor position on enter event (#1366)
-- [X11] Bugfix: `glfwSetWindowMonitor` did not update hints when resizing
-                non-user-resizable windows
-- [X11] Bugfix: `glfwSetWindowMonitor` did not flush output buffer in some cases
-- [Linux] Added workaround for missing `SYN_DROPPED` in pre-2.6.39 kernel
-          headers (#1196)
-- [Linux] Moved to evdev for joystick input (#906,#1005)
-- [Linux] Bugfix: Event processing did not detect joystick disconnection (#932)
-- [Linux] Bugfix: The joystick device path could be truncated (#1025)
-- [Linux] Bugfix: `glfwInit` would fail if inotify creation failed (#833)
-- [Linux] Bugfix: `strdup` was used without any required feature macro (#1055)
-- [Cocoa] Added support for Vulkan window surface creation via
-          [MoltenVK](https://moltengl.com/moltenvk/) (#870)
-- [Cocoa] Added support for loading a `MainMenu.nib` when available
-- [Cocoa] Bugfix: Disabling window aspect ratio would assert (#852)
-- [Cocoa] Bugfix: Window creation failed to set first responder (#876,#883)
-- [Cocoa] Bugfix: Removed use of deprecated `CGDisplayIOServicePort` function
-                  (#165,#192,#508,#511)
-- [Cocoa] Bugfix: Disabled use of deprecated `CGDisplayModeCopyPixelEncoding`
-                  function on macOS 10.12+
-- [Cocoa] Bugfix: Running in AppSandbox would emit warnings (#816,#882)
-- [Cocoa] Bugfix: Windows created after the first were not cascaded (#195)
-- [Cocoa] Bugfix: Leaving video mode with `glfwSetWindowMonitor` would set
-                  incorrect position and size (#748)
-- [Cocoa] Bugfix: Iconified full screen windows could not be restored (#848)
-- [Cocoa] Bugfix: Value range was ignored for joystick hats and buttons (#888)
-- [Cocoa] Bugfix: Full screen framebuffer was incorrectly sized for some video
-                  modes (#682)
-- [Cocoa] Bugfix: A string object for IME was updated non-idiomatically (#1050)
-- [Cocoa] Bugfix: A hidden or disabled cursor would become visible when a user
-                  notification was shown (#971,#1028)
-- [Cocoa] Bugfix: Some characters did not repeat due to Press and Hold (#1010)
-- [Cocoa] Bugfix: Window title was lost when full screen or undecorated (#1082)
-- [Cocoa] Bugfix: Window was resized twice when entering full screen (#1085)
-- [Cocoa] Bugfix: Duplicate size events were not filtered (#1085)
-- [Cocoa] Bugfix: Event polling did not initialize AppKit if necessary (#1218)
-- [Cocoa] Bugfix: OpenGL rendering was not initially visible on 10.14
-                  (#1334,#1346)
-- [Cocoa] Bugfix: Caps Lock did not generate any key events (#1368,#1373)
-- [WGL] Added support for `WGL_EXT_colorspace` for OpenGL ES contexts
-- [WGL] Added support for `WGL_ARB_create_context_no_error`
-- [GLX] Added support for `GLX_ARB_create_context_no_error`
-- [GLX] Bugfix: Context creation could segfault if no GLXFBConfigs were
-                available (#1040)
-- [EGL] Added support for `EGL_KHR_get_all_proc_addresses` (#871)
-- [EGL] Added support for `EGL_KHR_context_flush_control`
-- [EGL] Bugfix: The test for `EGL_RGB_BUFFER` was invalid
 User-visible changes since the last release.
+ - Added `GLFW_PLATFORM` init hint for runtime platform selection (#1958)
+ - Added `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`,
+   `GLFW_PLATFORM_WAYLAND`, `GLFW_PLATFORM_X11` and `GLFW_PLATFORM_NULL` symbols to
+   specify the desired platform (#1958)
+ - Added `glfwGetPlatform` function to query what platform was selected (#1655,#1958)
+ - Added `glfwPlatformSupported` function to query if a platform is supported
+   (#1655,#1958)
+ - Added `glfwInitAllocator` for setting a custom memory allocator (#544,#1628,#1947)
+ - Added `GLFWallocator` struct and `GLFWallocatefun`, `GLFWreallocatefun` and
+   `GLFWdeallocatefun` types (#544,#1628,#1947)
+ - Added `glfwInitVulkanLoader` for using a non-default Vulkan loader (#1374,#1890)
+ - Added `GLFW_RESIZE_NWSE_CURSOR`, `GLFW_RESIZE_NESW_CURSOR`,
+   `GLFW_RESIZE_ALL_CURSOR` and `GLFW_NOT_ALLOWED_CURSOR` cursor shapes (#427)
+ - Added `GLFW_RESIZE_EW_CURSOR` alias for `GLFW_HRESIZE_CURSOR` (#427)
+ - Added `GLFW_RESIZE_NS_CURSOR` alias for `GLFW_VRESIZE_CURSOR` (#427)
+ - Added `GLFW_POINTING_HAND_CURSOR` alias for `GLFW_HAND_CURSOR` (#427)
+ - Added `GLFW_MOUSE_PASSTHROUGH` window hint for letting mouse input pass
+   through the window (#1236,#1568)
+ - Added `GLFW_CURSOR_CAPTURED` cursor mode to confine the cursor to the window
+   content area (#58)
+ - Added `GLFW_POSITION_X` and `GLFW_POSITION_Y` window hints for initial position
+   (#1603,#1747)
+ - Added `GLFW_ANY_POSITION` hint value for letting the window manager choose (#1603,#1747)
+ - Added `GLFW_PLATFORM_UNAVAILABLE` error for platform detection failures (#1958)
+ - Added `GLFW_FEATURE_UNAVAILABLE` error for platform limitations (#1692)
+ - Added `GLFW_FEATURE_UNIMPLEMENTED` error for incomplete backends (#1692)
+ - Added `GLFW_WAYLAND_APP_ID` window hint string for Wayland app\_id selection
+   (#2121,#2122)
+ - Added `GLFW_ANGLE_PLATFORM_TYPE` init hint and `GLFW_ANGLE_PLATFORM_TYPE_*`
+   values to select ANGLE backend (#1380)
+ - Added `GLFW_X11_XCB_VULKAN_SURFACE` init hint for selecting X11 Vulkan
+   surface extension (#1793)
+ - Added `GLFW_NATIVE_INCLUDE_NONE` for disabling inclusion of native headers (#1348)
+ - Added `GLFW_BUILD_WIN32` CMake option for enabling Win32 support (#1958)
+ - Added `GLFW_BUILD_COCOA` CMake option for enabling Cocoa support (#1958)
+ - Added `GLFW_BUILD_X11` CMake option for enabling X11 support (#1958)
+ - Added `GLFW_LIBRARY_TYPE` CMake variable for overriding the library type
+   (#279,#1307,#1497,#1574,#1928)
+ - Added `GLFW_PKG_CONFIG_REQUIRES_PRIVATE` and `GLFW_PKG_CONFIG_LIBS_PRIVATE` CMake
+   variables exposing pkg-config dependencies (#1307)
+ - Made joystick subsystem initialize at first use (#1284,#1646)
+ - Made `GLFW_DOUBLEBUFFER` a read-only window attribute
+ - Updated the minimum required CMake version to 3.1
+ - Updated gamepad mappings from upstream
+ - Disabled tests and examples by default when built as a CMake subdirectory
+ - Renamed `GLFW_USE_WAYLAND` CMake option to `GLFW_BUILD_WAYLAND` (#1958)
+ - Removed `GLFW_USE_OSMESA` CMake option enabling the Null platform (#1958)
+ - Removed CMake generated configuration header
+ - Bugfix: The CMake config-file package used an absolute path and was not
+   relocatable (#1470)
+ - Bugfix: Video modes with a duplicate screen area were discarded (#1555,#1556)
+ - Bugfix: Compiling with -Wextra-semi caused warnings (#1440)
+ - Bugfix: Built-in mappings failed because some OEMs re-used VID/PID (#1583)
+ - Bugfix: Some extension loader headers did not prevent default OpenGL header
+   inclusion (#1695)
+ - Bugfix: Buffers were swapped at creation on single-buffered windows (#1873)
+ - Bugfix: Gamepad mapping updates could spam `GLFW_INVALID_VALUE` due to
+   incompatible controllers sharing hardware ID (#1763)
+ - Bugfix: Native access functions for context handles did not check that the API matched
+ - Bugfix: `glfwMakeContextCurrent` would access TLS slot before initialization
+ - Bugfix: `glfwSetGammaRamp` could emit `GLFW_INVALID_VALUE` before initialization
+ - Bugfix: `glfwGetJoystickUserPointer` returned `NULL` during disconnection (#2092)
+ - [Win32] Added the `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access
+           to the window menu
+ - [Win32] Added a version info resource to the GLFW DLL
+ - [Win32] Made hidden helper window use its own window class
+ - [Win32] Disabled framebuffer transparency on Windows 7 when DWM windows are
+   opaque (#1512)
+ - [Win32] Bugfix: `GLFW_INCLUDE_VULKAN` plus `VK_USE_PLATFORM_WIN32_KHR` caused
+   symbol redefinition (#1524)
+ - [Win32] Bugfix: The cursor position event was emitted before its cursor enter
+   event (#1490)
+ - [Win32] Bugfix: The window hint `GLFW_MAXIMIZED` did not move or resize the
+   window (#1499)
+ - [Win32] Bugfix: Disabled cursor mode interfered with some non-client actions
+ - [Win32] Bugfix: Super key was not released after Win+V hotkey (#1622)
+ - [Win32] Bugfix: `glfwGetKeyName` could access out of bounds and return an
+   invalid pointer
+ - [Win32] Bugfix: Some synthetic key events were reported as `GLFW_KEY_UNKNOWN`
+   (#1623)
+ - [Win32] Bugfix: Non-BMP Unicode codepoint input was reported as UTF-16
+ - [Win32] Bugfix: Monitor functions could return invalid values after
+   configuration change (#1761)
+ - [Win32] Bugfix: Initialization would segfault on Windows 8 (not 8.1) (#1775)
+ - [Win32] Bugfix: Duplicate size events were not filtered (#1610)
+ - [Win32] Bugfix: Full screen windows were incorrectly resized by DPI changes
+   (#1582)
+ - [Win32] Bugfix: `GLFW_SCALE_TO_MONITOR` had no effect on systems older than
+   Windows 10 version 1703 (#1511)
+ - [Win32] Bugfix: `USE_MSVC_RUNTIME_LIBRARY_DLL` had no effect on CMake 3.15 or
+   later (#1783,#1796)
+ - [Win32] Bugfix: Compilation with LLVM for Windows failed (#1807,#1824,#1874)
+ - [Win32] Bugfix: The foreground lock timeout was overridden, ignoring the user
+ - [Win32] Bugfix: Content scale queries could fail silently (#1615)
+ - [Win32] Bugfix: Content scales could have garbage values if monitor was recently
+   disconnected (#1615)
+ - [Win32] Bugfix: A window created maximized and undecorated would cover the whole
+   monitor (#1806)
+ - [Win32] Bugfix: The default restored window position was lost when creating a maximized
+   window
+ - [Win32] Bugfix: `glfwMaximizeWindow` would make a hidden window visible
+ - [Win32] Bugfix: `Alt+PrtSc` would emit `GLFW_KEY_UNKNOWN` and a different
+   scancode than `PrtSc` (#1993)
+ - [Win32] Bugfix: `GLFW_KEY_PAUSE` scancode from `glfwGetKeyScancode` did not
+   match event scancode (#1993)
+ - [Win32] Bugfix: Instance-local operations used executable instance (#469,#1296,#1395)
+ - [Win32] Bugfix: The OSMesa library was not unloaded on termination
+ - [Win32] Bugfix: Right shift emitted `GLFW_KEY_UNKNOWN` when using a CJK IME (#2050)
+ - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
+ - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
+ - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)
+ - [Cocoa] Changed `EGLNativeWindowType` from `NSView` to `CALayer` (#1169)
+ - [Cocoa] Changed F13 key to report Print Screen for cross-platform consistency
+   (#1786)
+ - [Cocoa] Disabled macOS fullscreen when `GLFW_RESIZABLE` is false
+ - [Cocoa] Removed dependency on the CoreVideo framework
+ - [Cocoa] Bugfix: `glfwSetWindowSize` used a bottom-left anchor point (#1553)
+ - [Cocoa] Bugfix: Window remained on screen after destruction until event poll
+   (#1412)
+ - [Cocoa] Bugfix: Event processing before window creation would assert (#1543)
+ - [Cocoa] Bugfix: Undecorated windows could not be iconified on recent macOS
+ - [Cocoa] Bugfix: Touching event queue from secondary thread before main thread
+   would abort (#1649)
+ - [Cocoa] Bugfix: Non-BMP Unicode codepoint input was reported as UTF-16
+   (#1635)
+ - [Cocoa] Bugfix: Failing to retrieve the refresh rate of built-in displays
+   could leak memory
+ - [Cocoa] Bugfix: Objective-C files were compiled as C with CMake 3.19 (#1787)
+ - [Cocoa] Bugfix: Duplicate video modes were not filtered out (#1830)
+ - [Cocoa] Bugfix: Menu bar was not clickable on macOS 10.15+ until it lost and
+   regained focus (#1648,#1802)
+ - [Cocoa] Bugfix: Monitor name query could segfault on macOS 11 (#1809,#1833)
+ - [Cocoa] Bugfix: The install name of the installed dylib was relative (#1504)
+ - [Cocoa] Bugfix: The MoltenVK layer contents scale was updated only after
+   related events were emitted
+ - [Cocoa] Bugfix: Moving the cursor programmatically would freeze it for
+   a fraction of a second (#1962)
+ - [Cocoa] Bugfix: `kIOMasterPortDefault` was deprecated in macOS 12.0 (#1980)
+ - [Cocoa] Bugfix: `kUTTypeURL` was deprecated in macOS 12.0 (#2003)
+ - [Cocoa] Bugfix: A connected Apple AirPlay would emit a useless error (#1791)
+ - [Cocoa] Bugfix: The EGL and OSMesa libraries were not unloaded on termination
+ - [Cocoa] Bugfix: `GLFW_MAXIMIZED` was always true when `GLFW_RESIZABLE` was false
+ - [Cocoa] Bugfix: Changing `GLFW_DECORATED` in macOS fullscreen would abort
+   application (#1886)
+ - [Cocoa] Bugfix: Setting a monitor from macOS fullscreen would abort
+   application (#2110)
+ - [Cocoa] Bugfix: The Vulkan loader was not loaded from the `Frameworks` bundle
+   subdirectory (#2113,#2120)
+ - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
+ - [X11] Bugfix: Key names were not updated when the keyboard layout changed
+   (#1462,#1528)
+ - [X11] Bugfix: Decorations could not be enabled after window creation (#1566)
+ - [X11] Bugfix: Content scale fallback value could be inconsistent (#1578)
+ - [X11] Bugfix: `glfwMaximizeWindow` had no effect on hidden windows
+ - [X11] Bugfix: Clearing `GLFW_FLOATING` on a hidden window caused invalid read
+ - [X11] Bugfix: Changing `GLFW_FLOATING` on a hidden window could silently fail
+ - [X11] Bugfix: Disabled cursor mode was interrupted by indicator windows
+ - [X11] Bugfix: Monitor physical dimensions could be reported as zero mm
+ - [X11] Bugfix: Window position events were not emitted during resizing (#1613)
+ - [X11] Bugfix: `glfwFocusWindow` could terminate on older WMs or without a WM
+ - [X11] Bugfix: Querying a disconnected monitor could segfault (#1602)
+ - [X11] Bugfix: IME input of CJK was broken for "C" locale (#1587,#1636)
+ - [X11] Bugfix: Termination would segfault if the IM had been destroyed
+ - [X11] Bugfix: Any IM started after initialization would not be detected
+ - [X11] Bugfix: Xlib errors caused by other parts of the application could be
+   reported as GLFW errors
+ - [X11] Bugfix: A handle race condition could cause a `BadWindow` error (#1633)
+ - [X11] Bugfix: XKB path used keysyms instead of physical locations for
+   non-printable keys (#1598)
+ - [X11] Bugfix: Function keys were mapped to `GLFW_KEY_UNKNOWN` for some layout
+   combinations (#1598)
+ - [X11] Bugfix: Keys pressed simultaneously with others were not always
+   reported (#1112,#1415,#1472,#1616)
+ - [X11] Bugfix: Some window attributes were not applied on leaving fullscreen
+   (#1863)
+ - [X11] Bugfix: Changing `GLFW_FLOATING` could leak memory
+ - [X11] Bugfix: Icon pixel format conversion worked only by accident, relying on
+   undefined behavior (#1986)
+ - [X11] Bugfix: Dynamic loading on OpenBSD failed due to soname differences
+ - [X11] Bugfix: Waiting for events would fail if file descriptor was too large
+   (#2024)
+ - [X11] Bugfix: Joystick events could lead to busy-waiting (#1872)
+ - [X11] Bugfix: `glfwWaitEvents*` did not continue for joystick events
+ - [X11] Bugfix: `glfwPostEmptyEvent` could be ignored due to race condition
+   (#379,#1281,#1285,#2033)
+ - [X11] Bugfix: Dynamic loading on NetBSD failed due to soname differences
+ - [X11] Bugfix: Left shift of int constant relied on undefined behavior (#1951)
+ - [X11] Bugfix: The OSMesa libray was not unloaded on termination
+ - [X11] Bugfix: A malformed response during selection transfer could cause a segfault
+ - [X11] Bugfix: Some calls would reset Xlib to the default error handler (#2108)
+ - [Wayland] Added dynamic loading of all Wayland libraries
+ - [Wayland] Added support for key names via xkbcommon
+ - [Wayland] Added support for file path drop events (#2040)
+ - [Wayland] Added support for more human-readable monitor names where available
+ - [Wayland] Disabled alpha channel for opaque windows on systems lacking
+   `EGL_EXT_present_opaque` (#1895)
+ - [Wayland] Removed support for `wl_shell` (#1443)
+ - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
+ - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
+ - [Wayland] Bugfix: Repeated keys could be reported with `NULL` window (#1704)
+ - [Wayland] Bugfix: Retrieving partial framebuffer size would segfault
+ - [Wayland] Bugfix: Scrolling offsets were inverted compared to other platforms
+   (#1463)
+ - [Wayland] Bugfix: Client-Side Decorations were destroyed in the wrong order
+   (#1798)
+ - [Wayland] Bugfix: Monitors physical size could report zero (#1784,#1792)
+ - [Wayland] Bugfix: Some keys were not repeating in Wayland (#1908)
+ - [Wayland] Bugfix: Non-arrow cursors are offset from the hotspot (#1706,#1899)
+ - [Wayland] Bugfix: The `O_CLOEXEC` flag was not defined on FreeBSD
+ - [Wayland] Bugfix: Key repeat could lead to a race condition (#1710)
+ - [Wayland] Bugfix: Activating a window would emit two input focus events
+ - [Wayland] Bugfix: Disable key repeat mechanism when window loses input focus
+ - [Wayland] Bugfix: Window hiding and showing did not work (#1492,#1731)
+ - [Wayland] Bugfix: A key being repeated was not released when window lost focus
+ - [Wayland] Bugfix: Showing a hidden window did not emit a window refresh event
+ - [Wayland] Bugfix: Full screen window creation did not ignore `GLFW_VISIBLE`
+ - [Wayland] Bugfix: Some keys were reported as wrong key or `GLFW_KEY_UNKNOWN`
+ - [Wayland] Bugfix: Text input did not repeat along with key repeat
+ - [Wayland] Bugfix: `glfwPostEmptyEvent` sometimes had no effect (#1520,#1521)
+ - [Wayland] Bugfix: `glfwSetClipboardString` would fail if set to result of
+   `glfwGetClipboardString`
+ - [Wayland] Bugfix: Data source creation error would cause double free at termination
+ - [Wayland] Bugfix: Partial writes of clipboard string would cause beginning to repeat
+ - [Wayland] Bugfix: Some errors would cause clipboard string transfer to hang
+ - [Wayland] Bugfix: Drag and drop data was misinterpreted as clipboard string
+ - [Wayland] Bugfix: MIME type matching was not performed for clipboard string
+ - [Wayland] Bugfix: The OSMesa library was not unloaded on termination
+ - [Wayland] Bugfix: `glfwCreateWindow` could emit `GLFW_FEATURE_UNAVAILABLE`
+ - [Wayland] Bugfix: Lock key modifier bits were only set when lock keys were pressed
+ - [Wayland] Bugfix: A window leaving full screen mode would be iconified (#1995)
+ - [Wayland] Bugfix: A window leaving full screen mode ignored its desired size
+ - [Wayland] Bugfix: `glfwSetWindowMonitor` did not update windowed mode size
+ - [Wayland] Bugfix: `glfwRestoreWindow` would make a full screen window windowed
+ - [Wayland] Bugfix: A window maximized or restored by the user would enter an
+   inconsistent state
+ - [Wayland] Bugfix: Window maximization events were not emitted
+ - [Wayland] Bugfix: `glfwRestoreWindow` assumed it was always in windowed mode
+ - [Wayland] Bugfix: `glfwSetWindowSize` would resize a full screen window
+ - [Wayland] Bugfix: A window content scale event would be emitted every time
+   the window resized
+ - [Wayland] Bugfix: If `glfwInit` failed it would close stdin
+ - [Wayland] Bugfix: Manual resizing with fallback decorations behaved erratically
+   (#1991,#2115,#2127)
+ - [Wayland] Bugfix: Size limits included frame size for fallback decorations
+ - [Wayland] Bugfix: Updating `GLFW_DECORATED` had no effect on server-side
+   decorations
+ - [Wayland] Bugfix: A monitor would be reported as connected again if its scale
+   changed
+ - [Wayland] Bugfix: `glfwTerminate` would segfault if any monitor had changed
+   scale
+ - [Wayland] Bugfix: Window content scale events were not emitted when monitor
+   scale changed
+ - [Wayland] Bugfix: `glfwSetWindowAspectRatio` reported an error instead of
+   applying the specified ratio
+ - [Wayland] Bugfix: `GLFW_MAXIMIZED` window hint had no effect
+ - [Wayland] Bugfix: `glfwRestoreWindow` had no effect before first show
+ - [Wayland] Bugfix: Hiding and then showing a window caused program abort on
+   wlroots compositors (#1268)
+ - [Wayland] Bugfix: `GLFW_DECORATED` was ignored when showing a window with XDG
+   decorations
+ - [Wayland] Bugfix: Connecting a mouse after `glfwInit` would segfault (#1450)
+ - [POSIX] Removed use of deprecated function `gettimeofday`
+ - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
+ - [Linux] Bugfix: Joysticks without buttons were ignored (#2042,#2043)
+ - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)
+ - [NSGL] Removed enforcement of forward-compatible flag for core contexts
+ - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
+   macOS versions (#1442)
+ - [NSGL] Bugfix: Workaround for swap interval on 10.14 broke on 10.12 (#1483)
+ - [NSGL] Bugfix: Defining `GL_SILENCE_DEPRECATION` externally caused
+   a duplicate definition warning (#1840)
+ - [EGL] Added platform selection via the `EGL_EXT_platform_base` extension
+   (#442)
+ - [EGL] Added ANGLE backend selection via `EGL_ANGLE_platform_angle` extension
+   (#1380)
+   [EGL] Added loading of glvnd `libOpenGL.so.0` where available for OpenGL
+ - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
+ - [GLX] Added loading of glvnd `libGLX.so.0` where available
+ - [GLX] Bugfix: Context creation failed if GLX 1.4 was not exported by GLX library
 
 ## Contact
 
-On [glfw.org](http://www.glfw.org/) you can find the latest version of GLFW, as
+On [glfw.org](https://www.glfw.org/) you can find the latest version of GLFW, as
 well as news, documentation and other information about the project.
 
 If you have questions related to the use of GLFW, we have a
-[forum](http://discourse.glfw.org/), and the `#glfw` IRC channel on
-[Freenode](http://freenode.net/).
+[forum](https://discourse.glfw.org/), and the `#glfw` IRC channel on
+[Libera.Chat](https://libera.chat/).
 
 If you have a bug to report, a patch to submit or a feature you'd like to
 request, please file it in the
@@ -308,183 +417,4 @@ request, please file it in the
 
 Finally, if you're interested in helping out with the development of GLFW or
 porting it to your favorite platform, join us on the forum, GitHub or IRC.
-
-
-## Acknowledgements
-
-GLFW exists because people around the world donated their time and lent their
-skills.
-
- - Bobyshev Alexander
- - Matt Arsenault
- - David Avedissian
- - Keith Bauer
- - John Bartholomew
- - Coşku Baş
- - Niklas Behrens
- - Andrew Belt
- - Niklas Bergström
- - Denis Bernard
- - Doug Binks
- - blanco
- - Kyle Brenneman
- - Rok Breulj
- - Martin Capitanio
- - David Carlier
- - Arturo Castro
- - Chi-kwan Chan
- - Ian Clarkson
- - Michał Cichoń
- - Lambert Clara
- - Anna Clarke
- - Yaron Cohen-Tal
- - Omar Cornut
- - Andrew Corrigan
- - Bailey Cosier
- - Noel Cower
- - Jason Daly
- - Jarrod Davis
- - Olivier Delannoy
- - Paul R. Deppe
- - Michael Dickens
- - Роман Донченко
- - Mario Dorn
- - Wolfgang Draxinger
- - Jonathan Dummer
- - Ralph Eastwood
- - Fredrik Ehnbom
- - Robin Eklind
- - Siavash Eliasi
- - Felipe Ferreira
- - Michael Fogleman
- - Gerald Franz
- - Mário Freitas
- - GeO4d
- - Marcus Geelnard
- - Stephen Gowen
- - Kovid Goyal
- - Eloi Marín Gratacós
- - Stefan Gustavson
- - Jonathan Hale
- - Sylvain Hellegouarch
- - Matthew Henry
- - heromyth
- - Lucas Hinderberger
- - Paul Holden
- - Warren Hu
- - IntellectualKitty
- - Aaron Jacobs
- - Erik S. V. Jansson
- - Toni Jovanoski
- - Arseny Kapoulkine
- - Cem Karan
- - Osman Keskin
- - Josh Kilmer
- - Cameron King
- - Peter Knut
- - Christoph Kubisch
- - Yuri Kunde Schlesner
- - Konstantin Käfer
- - Eric Larson
- - Robin Leffmann
- - Glenn Lewis
- - Shane Liesegang
- - Eyal Lotem
- - Aaron Loucks
- - Tristam MacDonald
- - Hans Mackowiak
- - Дмитри Малышев
- - Zbigniew Mandziejewicz
- - Adam Marcus
- - Célestin Marot
- - Kyle McDonald
- - David Medlock
- - Bryce Mehring
- - Jonathan Mercier
- - Marcel Metz
- - Liam Middlebrook
- - Jonathan Miller
- - Kenneth Miller
- - Bruce Mitchener
- - Jack Moffitt
- - Jeff Molofee
- - Alexander Monakov
- - Pierre Morel
- - Jon Morton
- - Pierre Moulon
- - Martins Mozeiko
- - Julian Møller
- - ndogxj
- - Kristian Nielsen
- - Kamil Nowakowski
- - Denis Ovod
- - Ozzy
- - Andri Pálsson
- - Peoro
- - Braden Pellett
- - Christopher Pelloux
- - Arturo J. Pérez
- - Anthony Pesch
- - Orson Peters
- - Emmanuel Gil Peyrot
- - Cyril Pichard
- - Keith Pitt
- - Stanislav Podgorskiy
- - Nathan Poirier
- - Alexandre Pretyman
- - przemekmirek
- - Philip Rideout
- - Eddie Ringle
- - Max Risuhin
- - Jorge Rodriguez
- - Ed Ropple
- - Aleksey Rybalkin
- - Riku Salminen
- - Brandon Schaefer
- - Sebastian Schuberth
- - Christian Sdunek
- - Matt Sealey
- - Steve Sexton
- - Arkady Shapkin
- - Yoshiki Shibukawa
- - Dmitri Shuralyov
- - Daniel Skorupski
- - Bradley Smith
- - Cliff Smolinsky
- - Patrick Snape
- - Erlend Sogge Heggen
- - Julian Squires
- - Johannes Stein
- - Pontus Stenetorp
- - Michael Stocker
- - Justin Stoecker
- - Elviss Strazdins
- - Paul Sultana
- - Nathan Sweet
- - TTK-Bandit
- - Sergey Tikhomirov
- - Arthur Tombs
- - Ioannis Tsakpinis
- - Samuli Tuomola
- - Matthew Turner
- - urraka
- - Elias Vanderstuyft
- - Stef Velzel
- - Jari Vetoniemi
- - Ricardo Vieira
- - Nicholas Vitovitch
- - Simon Voordouw
- - Corentin Wallez
- - Torsten Walluhn
- - Patrick Walton
- - Xo Wang
- - Jay Weisskopf
- - Frank Wille
- - Ryogo Yoshimura
- - Andrey Zholos
- - Santi Zupancic
- - Jonas Ådahl
- - Lasse Öörni
- - All the unmentioned and anonymous contributors in the GLFW community, for bug
-   reports, patches, feedback, testing and encouragement
 

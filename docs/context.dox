@@ -61,7 +61,7 @@ information.  The name and number of this chapter unfortunately varies between
 versions and APIs, but has at times been named _Shared Objects and Multiple
 Contexts_.
 
-GLFW comes with a barebones object sharing example program called `sharing`.
+GLFW comes with a bare-bones object sharing example program called `sharing`.
 
 
 @subsection context_offscreen Offscreen contexts
@@ -83,10 +83,6 @@ objects are recommended for rendering with such contexts.
 
 You should still [process events](@ref events) as long as you have at least one
 window, even if none of them are visible.
-
-@macos The first time a window is created the menu bar is created.  This is not
-desirable for example when writing a command-line only application.  Menu bar
-creation can be disabled with the @ref GLFW_COCOA_MENUBAR init hint.
 
 
 @subsection context_less Windows without contexts
@@ -142,9 +138,9 @@ as extensions until they become obsolete.
 
 An extension is defined by:
 
-- An extension name (e.g. `GL_ARB_debug_output`)
-- New OpenGL tokens (e.g. `GL_DEBUG_SEVERITY_HIGH_ARB`)
-- New OpenGL functions (e.g. `glGetDebugMessageLogARB`)
+- An extension name (e.g. `GL_ARB_gl_spirv`)
+- New OpenGL tokens (e.g. `GL_SPIR_V_BINARY_ARB`)
+- New OpenGL functions (e.g. `glSpecializeShaderARB`)
 
 Note the `ARB` affix, which stands for Architecture Review Board and is used
 for official extensions.  The extension above was created by the ARB, but there
@@ -193,7 +189,7 @@ it suppresses the development environment's OpenGL or OpenGL ES header.
 #include <GLFW/glfw3.h>
 @endcode
 
-Finally you need to initialize glad once you have a suitable current context.
+Finally, you need to initialize glad once you have a suitable current context.
 
 @code
 window = glfwCreateWindow(640, 480, "My Window", NULL, NULL);
@@ -209,7 +205,7 @@ gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 
 Once glad has been loaded, you have access to all OpenGL core and extension
 functions supported by both the context you created and the glad loader you
-generated and you are ready to start rendering.
+generated. After that, you are ready to start rendering.
 
 You can specify a minimum required OpenGL or OpenGL ES version with
 [context hints](@ref window_hints_ctx).  If your needs are more complex, you can
@@ -229,9 +225,9 @@ To check whether a specific extension is supported, use the `GLAD_GL_xxx`
 booleans.
 
 @code
-if (GLAD_GL_ARB_debug_output)
+if (GLAD_GL_ARB_gl_spirv)
 {
-    // Use GL_ARB_debug_output
+    // Use GL_ARB_gl_spirv
 }
 @endcode
 
@@ -263,8 +259,8 @@ included in your development environment may be several years out of date and
 may not include the extensions you wish to use.
 
 The header defines function pointer types for all functions of all extensions it
-supports.  These have names like `PFNGLGETDEBUGMESSAGELOGARBPROC` (for
-`glGetDebugMessageLogARB`), i.e. the name is made uppercase and `PFN` (pointer
+supports.  These have names like `PFNGLSPECIALIZESHADERARBPROC` (for
+`glSpecializeShaderARB`), i.e. the name is made uppercase and `PFN` (pointer
 to function) and `PROC` (procedure) are added to the ends.
 
 To include the extension header, define @ref GLFW_INCLUDE_GLEXT before including
@@ -284,7 +280,7 @@ is necessary to check at run-time whether the context supports the extension.
 This is done with @ref glfwExtensionSupported.
 
 @code
-if (glfwExtensionSupported("GL_ARB_debug_output"))
+if (glfwExtensionSupported("GL_ARB_gl_spirv"))
 {
     // The extension is supported by the current context
 }
@@ -303,7 +299,7 @@ your operating system, making it necessary to fetch them at run time.  You can
 retrieve pointers to these functions with @ref glfwGetProcAddress.
 
 @code
-PFNGLGETDEBUGMESSAGELOGARBPROC pfnGetDebugMessageLog = glfwGetProcAddress("glGetDebugMessageLogARB");
+PFNGLSPECIALIZESHADERARBPROC pfnSpecializeShaderARB = glfwGetProcAddress("glSpecializeShaderARB");
 @endcode
 
 In general, you should avoid giving the function pointer variables the (exact)
@@ -317,28 +313,28 @@ when used together.
 #define GLFW_INCLUDE_GLEXT
 #include <GLFW/glfw3.h>
 
-#define glGetDebugMessageLogARB pfnGetDebugMessageLog
-PFNGLGETDEBUGMESSAGELOGARBPROC pfnGetDebugMessageLog;
+#define glSpecializeShaderARB pfnSpecializeShaderARB
+PFNGLSPECIALIZESHADERARBPROC pfnSpecializeShaderARB;
 
 // Flag indicating whether the extension is supported
-int has_ARB_debug_output = 0;
+int has_ARB_gl_spirv = 0;
 
 void load_extensions(void)
 {
-    if (glfwExtensionSupported("GL_ARB_debug_output"))
+    if (glfwExtensionSupported("GL_ARB_gl_spirv"))
     {
-        pfnGetDebugMessageLog = (PFNGLGETDEBUGMESSAGELOGARBPROC)
-            glfwGetProcAddress("glGetDebugMessageLogARB");
-        has_ARB_debug_output = 1;
+        pfnSpecializeShaderARB = (PFNGLSPECIALIZESHADERARBPROC)
+            glfwGetProcAddress("glSpecializeShaderARB");
+        has_ARB_gl_spirv = 1;
     }
 }
 
 void some_function(void)
 {
-    if (has_ARB_debug_output)
+    if (has_ARB_gl_spirv)
     {
         // Now the extension function can be called as usual
-        glGetDebugMessageLogARB(...);
+        glSpecializeShaderARB(...);
     }
 }
 @endcode

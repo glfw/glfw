@@ -22,17 +22,20 @@ There are also guides for the other areas of GLFW.
 
 Before most GLFW functions may be called, the library must be initialized.
 This initialization checks what features are available on the machine,
-enumerates monitors and joysticks, initializes the timer and performs any
-required platform-specific initialization.
+enumerates monitors, initializes the timer and performs any required
+platform-specific initialization.
 
 Only the following functions may be called before the library has been
 successfully initialized, and only from the main thread.
 
  - @ref glfwGetVersion
  - @ref glfwGetVersionString
+ - @ref glfwPlatformSupported
  - @ref glfwGetError
  - @ref glfwSetErrorCallback
  - @ref glfwInitHint
+ - @ref glfwInitAllocator
+ - @ref glfwInitVulkanLoader
  - @ref glfwInit
  - @ref glfwTerminate
 
@@ -62,6 +65,11 @@ before the application exits.  Modern systems are very good at freeing resources
 allocated by programs that exit, but GLFW sometimes has to change global system
 settings and these might not be restored without termination.
 
+@macos When the library is initialized the main menu and dock icon are created.
+These are not desirable for a command-line only program.  The creation of the
+main menu and dock icon can be disabled with the @ref GLFW_COCOA_MENUBAR init
+hint.
+
 
 @subsection init_hints Initialization hints
 
@@ -83,10 +91,33 @@ Setting these hints requires no platform specific headers or functions.
 
 @subsubsection init_hints_shared Shared init hints
 
+@anchor GLFW_PLATFORM
+__GLFW_PLATFORM__ specifies the platform to use for windowing and input.
+Possible values are `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`,
+`GLFW_PLATFORM_COCOA`, `GLFW_PLATFORM_X11`, `GLFW_PLATFORM_WAYLAND` and
+`GLFW_PLATFORM_NULL`.  The default value is `GLFW_ANY_PLATFORM`, which will
+choose any platform the library includes support for except for the Null
+backend.
+
+
 @anchor GLFW_JOYSTICK_HAT_BUTTONS
 __GLFW_JOYSTICK_HAT_BUTTONS__ specifies whether to also expose joystick hats as
 buttons, for compatibility with earlier versions of GLFW that did not have @ref
-glfwGetJoystickHats.  Set this with @ref glfwInitHint.
+glfwGetJoystickHats.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+
+@anchor GLFW_ANGLE_PLATFORM_TYPE_hint
+__GLFW_ANGLE_PLATFORM_TYPE__ specifies the platform type (rendering backend) to
+request when using OpenGL ES and EGL via
+[ANGLE](https://chromium.googlesource.com/angle/angle/).  If the requested
+platform type is unavailable, ANGLE will use its default. Possible values are
+one of `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`,
+`GLFW_ANGLE_PLATFORM_TYPE_OPENGLES`, `GLFW_ANGLE_PLATFORM_TYPE_D3D9`,
+`GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` and
+`GLFW_ANGLE_PLATFORM_TYPE_METAL`.
+
+The ANGLE platform type is specified via the `EGL_ANGLE_platform_angle`
+extension.  This extension is not used if this hint is
+`GLFW_ANGLE_PLATFORM_TYPE_NONE`, which is the default value.
 
 
 @subsubsection init_hints_osx macOS specific init hints
@@ -94,21 +125,135 @@ glfwGetJoystickHats.  Set this with @ref glfwInitHint.
 @anchor GLFW_COCOA_CHDIR_RESOURCES_hint
 __GLFW_COCOA_CHDIR_RESOURCES__ specifies whether to set the current directory to
 the application to the `Contents/Resources` subdirectory of the application's
-bundle, if present.  Set this with @ref glfwInitHint.
+bundle, if present.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.  This is
+ignored on other platforms.
 
 @anchor GLFW_COCOA_MENUBAR_hint
-__GLFW_COCOA_MENUBAR__ specifies whether to create a basic menu bar, either from
-a nib or manually, when the first window is created, which is when AppKit is
-initialized.  Set this with @ref glfwInitHint.
+__GLFW_COCOA_MENUBAR__ specifies whether to create the menu bar and dock icon
+when GLFW is initialized.  This applies whether the menu bar is created from
+a nib or manually by GLFW.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+This is ignored on other platforms.
+
+
+@subsubsection init_hints_x11 X11 specific init hints
+
+@anchor GLFW_X11_XCB_VULKAN_SURFACE_hint
+__GLFW_X11_XCB_VULKAN_SURFACE__ specifies whether to prefer the
+`VK_KHR_xcb_surface` extension for creating Vulkan surfaces, or whether to use
+the `VK_KHR_xlib_surface` extension.  Possible values are `GLFW_TRUE` and
+`GLFW_FALSE`.  This is ignored on other platforms.
 
 
 @subsubsection init_hints_values Supported and default values
 
-Initialization hint             | Default value | Supported values
-------------------------------- | ------------- | ----------------
-@ref GLFW_JOYSTICK_HAT_BUTTONS  | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_COCOA_CHDIR_RESOURCES | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_COCOA_MENUBAR         | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
+Initialization hint              | Default value                   | Supported values
+-------------------------------- | ------------------------------- | ----------------
+@ref GLFW_PLATFORM               | `GLFW_ANY_PLATFORM`             | `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`, `GLFW_PLATFORM_X11`, `GLFW_PLATFORM_WAYLAND` or `GLFW_PLATFORM_NULL`
+@ref GLFW_JOYSTICK_HAT_BUTTONS   | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_ANGLE_PLATFORM_TYPE    | `GLFW_ANGLE_PLATFORM_TYPE_NONE` | `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGLES`, `GLFW_ANGLE_PLATFORM_TYPE_D3D9`, `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` or `GLFW_ANGLE_PLATFORM_TYPE_METAL`
+@ref GLFW_COCOA_CHDIR_RESOURCES  | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_COCOA_MENUBAR          | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_X11_XCB_VULKAN_SURFACE | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+
+
+@subsection platform Runtime platform selection
+
+GLFW can be compiled for more than one platform (window system) at once.  This lets
+a single library binary support both X11 and Wayland on Linux and other Unix-like systems.
+
+You can control platform selection via the @ref GLFW_PLATFORM initialization hint.  By
+default, this is set to @ref GLFW_ANY_PLATFORM, which will look for supported window
+systems in order of priority and select the first one it finds.  It can also be set to any
+specific platform to have GLFW only look for that one.
+
+@code
+glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
+@endcode
+
+This mechanism also provides the Null platform, which is always supported but needs to be
+explicitly requested.  This platform is effectively a stub, emulating a window system on
+a single 1080p monitor, but will not interact with any actual window system.
+
+@code
+glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_NULL);
+@endcode
+
+You can test whether a library binary was compiled with support for a specific platform
+with @ref glfwPlatformSupported.
+
+@code
+if (glfwPlatformSupported(GLFW_PLATFORM_WAYLAND))
+    glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_WAYLAND);
+@endcode
+
+Once GLFW has been initialized, you can query which platform was selected with @ref
+glfwGetPlatform.
+
+@code
+int platform = glfwGetPlatform();
+@endcode
+
+If you are using any [native access functions](@ref native), especially on Linux and other
+Unix-like systems, then you may need to check that you are calling the ones matching the
+selected platform.
+
+
+@subsection init_allocator Custom heap memory allocator
+
+The heap memory allocator can be customized before initialization with @ref
+glfwInitAllocator.
+
+@code
+GLFWallocator allocator;
+allocator.allocate = my_malloc;
+allocator.reallocate = my_realloc;
+allocator.deallocate = my_free;
+allocator.user = NULL;
+
+glfwInitAllocator(&allocator);
+@endcode
+
+The allocator will be picked up at the beginning of initialization and will be
+used until GLFW has been fully terminated.  Any allocator set after
+initialization will be picked up only at the next initialization.
+
+The allocator will only be used for allocations that would have been made with
+the C standard library.  Memory allocations that must be made with platform
+specific APIs will still use those.
+
+The allocation function must have a signature matching @ref GLFWallocatefun.  It receives
+the desired size, in bytes, and the user pointer passed to @ref glfwInitAllocator and
+returns the address to the allocated memory block.
+
+@code
+void* my_malloc(size_t size, void* user)
+{
+    ...
+}
+@endcode
+
+The reallocation function must have a function signature matching @ref GLFWreallocatefun.
+It receives the memory block to be reallocated, the new desired size, in bytes, and the user
+pointer passed to @ref glfwInitAllocator and returns the address to the resized memory
+block.
+
+@code
+void* my_realloc(void* block, size_t size, void* user)
+{
+    ...
+}
+@endcode
+
+The deallocation function must have a function signature matching @ref GLFWdeallocatefun.
+It receives the memory block to be deallocated and the user pointer passed to @ref
+glfwInitAllocator.
+
+@code
+void my_free(void* block, void* user)
+{
+    ...
+}
+@endcode
 
 
 @subsection intro_init_terminate Terminating GLFW
@@ -124,9 +269,9 @@ This will destroy any remaining window, monitor and cursor objects, restore any
 modified gamma ramps, re-enable the screensaver if it had been disabled and free
 any other resources allocated by GLFW.
 
-Once the library is terminated, it is as if it had never been initialized and
+Once the library is terminated, it is as if it had never been initialized, therefore
 you will need to initialize it again before being able to use GLFW.  If the
-library was not initialized or had already been terminated, it return
+library was not initialized or had already been terminated, it returns
 immediately.
 
 
@@ -246,14 +391,14 @@ which monitor the window is currently considered to be on.
 
 This section describes the conditions under which GLFW can be expected to
 function, barring bugs in the operating system or drivers.  Use of GLFW outside
-of these limits may work on some platforms, or on some machines, or some of the
+these limits may work on some platforms, or on some machines, or some of the
 time, or on some versions of GLFW, but it may break at any time and this will
 not be considered a bug.
 
 
 @subsection lifetime Pointer lifetimes
 
-GLFW will never free any pointer you provide to it and you must never free any
+GLFW will never free any pointer you provide to it, and you must never free any
 pointer it provides to you.
 
 Many GLFW functions return pointers to dynamically allocated structures, strings
@@ -345,6 +490,11 @@ Library version information may be queried from any thread.
 
  - @ref glfwGetVersion
  - @ref glfwGetVersionString
+
+Platform information may be queried from any thread.
+
+ - @ref glfwPlatformSupported
+ - @ref glfwGetPlatform
 
 All Vulkan related functions may be called from any thread.
 
@@ -438,17 +588,32 @@ __Do not use the version string__ to parse the GLFW library version.  The @ref
 glfwGetVersion function already provides the version of the running library
 binary.
 
+__Do not use the version string__ to parse what platforms are supported.  The @ref
+glfwPlatformSupported function lets you query platform support.
+
+__GLFW 3.4:__ The format of this string was changed to support the addition of
+[runtime platform selection](@ref platform).
+
 The format of the string is as follows:
  - The version of GLFW
- - The name of the window system API
- - The name of the context creation API
- - Any additional options or APIs
+ - For each supported platform:
+   - The name of the window system API
+   - The name of the window system specific context creation API, if applicable
+ - The names of the always supported context creation APIs EGL and OSMesa
+ - Any additional compile-time options, APIs and (on Windows) what compiler was used
 
-For example, when compiling GLFW 3.0 with MinGW using the Win32 and WGL
-back ends, the version string may look something like this:
+For example, compiling GLFW 3.4 with MinGW as a DLL for Windows, may result in a version string
+like this:
 
 @code
-3.0.0 Win32 WGL MinGW
+3.4.0 Win32 WGL Null EGL OSMesa MinGW DLL
+@endcode
+
+Compiling GLFW as a static library for Linux, with both Wayland and X11 enabled, may
+result in a version string like this:
+
+@code
+3.4.0 Wayland X11 GLX Null EGL OSMesa monotonic
 @endcode
 
 */

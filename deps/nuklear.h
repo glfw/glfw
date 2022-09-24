@@ -105,6 +105,8 @@
 /// NK_INCLUDE_COMMAND_USERDATA     | Defining this adds a userdata pointer into each command. Can be useful for example if you want to provide custom shaders depending on the used widget. Can be combined with the style structures.
 /// NK_BUTTON_TRIGGER_ON_RELEASE    | Different platforms require button clicks occurring either on buttons being pressed (up to down) or released (down to up). By default this library will react on buttons being pressed, but if you define this it will only trigger if a button is released.
 /// NK_ZERO_COMMAND_MEMORY          | Defining this will zero out memory for each drawing command added to a drawing queue (inside nk_command_buffer_push). Zeroing command memory is very useful for fast checking (using memcmp) if command buffers are equal and avoid drawing frames when nothing on screen has changed since previous frame.
+/// NK_UINT_DRAW_INDEX              | Defining this will set the size of vertex index elements when using NK_VERTEX_BUFFER_OUTPUT to 32bit instead of the default of 16bit
+/// NK_KEYSTATE_BASED_INPUT         | Define this if your backend uses key state for each frame rather than key press/release events
 ///
 /// !!! WARNING
 ///     The following flags will pull in the standard C library:
@@ -122,6 +124,7 @@
 ///     - NK_INCLUDE_DEFAULT_FONT
 ///     - NK_INCLUDE_STANDARD_VARARGS
 ///     - NK_INCLUDE_COMMAND_USERDATA
+///     - NK_UINT_DRAW_INDEX
 ///
 /// ### Constants
 /// Define                          | Description
@@ -301,6 +304,7 @@ extern "C" {
 #define NK_CLAMP(i,v,x) (NK_MAX(NK_MIN(v,x), i))
 
 #ifdef NK_INCLUDE_STANDARD_VARARGS
+  #include <stdarg.h> /* valist, va_start, va_end, ... */
   #if defined(_MSC_VER) && (_MSC_VER >= 1600) /* VS 2010 and above */
     #include <sal.h>
     #define NK_PRINTF_FORMAT_STRING _Printf_format_string_
@@ -314,7 +318,6 @@ extern "C" {
     #define NK_PRINTF_VARARG_FUNC(fmtargnumber)
     #define NK_PRINTF_VALIST_FUNC(fmtargnumber)
   #endif
-  #include <stdarg.h> /* valist, va_start, va_end, ... */
 #endif
 
 /*
@@ -336,7 +339,7 @@ extern "C" {
  #define NK_POINTER_TYPE uintptr_t
 #else
   #ifndef NK_INT8
-    #define NK_INT8 char
+    #define NK_INT8 signed char
   #endif
   #ifndef NK_UINT8
     #define NK_UINT8 unsigned char
@@ -1084,6 +1087,12 @@ NK_API void nk_input_end(struct nk_context*);
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~c
 /// // fill configuration
+/// struct your_vertex
+/// {
+///     float pos[2]; // important to keep it to 2 floats
+///     float uv[2];
+///     unsigned char col[4];
+/// };
 /// struct nk_convert_config cfg = {};
 /// static const struct nk_draw_vertex_layout_element vertex_layout[] = {
 ///     {NK_VERTEX_POSITION, NK_FORMAT_FLOAT, NK_OFFSETOF(struct your_vertex, pos)},
@@ -1209,7 +1218,7 @@ NK_API const struct nk_command* nk__next(struct nk_context*, const struct nk_com
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~c
 /// nk_flags nk_convert(struct nk_context *ctx, struct nk_buffer *cmds,
-//      struct nk_buffer *vertices, struct nk_buffer *elements, const struct nk_convert_config*);
+///     struct nk_buffer *vertices, struct nk_buffer *elements, const struct nk_convert_config*);
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ///
 /// Parameter   | Description
@@ -1394,6 +1403,7 @@ NK_API const struct nk_draw_command* nk__draw_next(const struct nk_draw_command*
 /// nk_window_get_content_region_max    | Returns the upper rectangle position of the currently visible and non-clipped space inside the currently processed window
 /// nk_window_get_content_region_size   | Returns the size of the currently visible and non-clipped space inside the currently processed window
 /// nk_window_get_canvas                | Returns the draw command buffer. Can be used to draw custom widgets
+/// nk_window_get_scroll                | Gets the scroll offset of the current window
 /// nk_window_has_focus                 | Returns if the currently processed window is currently active
 /// nk_window_is_collapsed              | Returns if the window with given name is currently minimized/collapsed
 /// nk_window_is_closed                 | Returns if the currently processed window was closed
@@ -1407,6 +1417,7 @@ NK_API const struct nk_draw_command* nk__draw_next(const struct nk_draw_command*
 /// nk_window_set_position              | Updates position of the currently process window
 /// nk_window_set_size                  | Updates the size of the currently processed window
 /// nk_window_set_focus                 | Set the currently processed window as active window
+/// nk_window_set_scroll                | Sets the scroll offset of the current window
 //
 /// nk_window_close                     | Closes the window with given window name which deletes the window at the end of the frame
 /// nk_window_collapse                  | Collapses the window with given window name
@@ -1427,7 +1438,7 @@ NK_API const struct nk_draw_command* nk__draw_next(const struct nk_draw_command*
 /// NK_WINDOW_TITLE             | Forces a header at the top at the window showing the title
 /// NK_WINDOW_SCROLL_AUTO_HIDE  | Automatically hides the window scrollbar if no user interaction: also requires delta time in `nk_context` to be set each frame
 /// NK_WINDOW_BACKGROUND        | Always keep window in the background
-/// NK_WINDOW_SCALE_LEFT        | Puts window scaler in the left-ottom corner instead right-bottom
+/// NK_WINDOW_SCALE_LEFT        | Puts window scaler in the left-bottom corner instead right-bottom
 /// NK_WINDOW_NO_INPUT          | Prevents window of scaling, moving or getting focus
 ///
 /// #### nk_collapse_states
@@ -1506,7 +1517,7 @@ NK_API void nk_end(struct nk_context *ctx);
 /// Finds and returns a window from passed name
 ///
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~c
-/// void nk_end(struct nk_context *ctx);
+/// struct nk_window *nk_window_find(struct nk_context *ctx, const char *name);
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ///
 /// Parameter   | Description
@@ -1710,6 +1721,22 @@ NK_API struct nk_vec2 nk_window_get_content_region_size(struct nk_context*);
 /// drawing canvas. Can be used to do custom drawing.
 */
 NK_API struct nk_command_buffer* nk_window_get_canvas(struct nk_context*);
+/*/// #### nk_window_get_scroll
+/// Gets the scroll offset for the current window
+/// !!! WARNING
+///     Only call this function between calls `nk_begin_xxx` and `nk_end`
+///
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~c
+/// void nk_window_get_scroll(struct nk_context *ctx, nk_uint *offset_x, nk_uint *offset_y);
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+///
+/// Parameter    | Description
+/// -------------|-----------------------------------------------------------
+/// __ctx__      | Must point to an previously initialized `nk_context` struct
+/// __offset_x__ | A pointer to the x offset output (or NULL to ignore)
+/// __offset_y__ | A pointer to the y offset output (or NULL to ignore)
+*/
+NK_API void nk_window_get_scroll(struct nk_context*, nk_uint *offset_x, nk_uint *offset_y);
 /*/// #### nk_window_has_focus
 /// Returns if the currently processed window is currently active
 /// !!! WARNING
@@ -1876,6 +1903,22 @@ NK_API void nk_window_set_size(struct nk_context*, const char *name, struct nk_v
 /// __name__    | Identifier of the window to set focus on
 */
 NK_API void nk_window_set_focus(struct nk_context*, const char *name);
+/*/// #### nk_window_set_scroll
+/// Sets the scroll offset for the current window
+/// !!! WARNING
+///     Only call this function between calls `nk_begin_xxx` and `nk_end`
+///
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~c
+/// void nk_window_set_scroll(struct nk_context *ctx, nk_uint offset_x, nk_uint offset_y);
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+///
+/// Parameter    | Description
+/// -------------|-----------------------------------------------------------
+/// __ctx__      | Must point to an previously initialized `nk_context` struct
+/// __offset_x__ | The x offset to scroll to
+/// __offset_y__ | The y offset to scroll to
+*/
+NK_API void nk_window_set_scroll(struct nk_context*, nk_uint offset_x, nk_uint offset_y);
 /*/// #### nk_window_close
 /// Closes a window and marks it for being freed at the end of the frame
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~c
@@ -2588,7 +2631,7 @@ NK_API struct nk_rect nk_layout_space_rect_to_local(struct nk_context*, struct n
 ///     case ...:
 ///         // [...]
 ///     }
-//      nk_clear(&ctx);
+///     nk_clear(&ctx);
 /// }
 /// nk_free(&ctx);
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2601,6 +2644,8 @@ NK_API struct nk_rect nk_layout_space_rect_to_local(struct nk_context*, struct n
 /// nk_group_scrolled_offset_begin  | Start a new group with manual separated handling of scrollbar x- and y-offset
 /// nk_group_scrolled_begin         | Start a new group with manual scrollbar handling
 /// nk_group_scrolled_end           | Ends a group with manual scrollbar handling. Should only be called if nk_group_begin returned non-zero
+/// nk_group_get_scroll             | Gets the scroll offset for the given group
+/// nk_group_set_scroll             | Sets the scroll offset for the given group
 */
 /*/// #### nk_group_begin
 /// Starts a new widget group. Requires a previous layouting function to specify a pos/size.
@@ -2690,11 +2735,39 @@ NK_API int nk_group_scrolled_begin(struct nk_context*, struct nk_scroll *off, co
 /// __ctx__     | Must point to an previously initialized `nk_context` struct
 */
 NK_API void nk_group_scrolled_end(struct nk_context*);
+/*/// #### nk_group_get_scroll
+/// Gets the scroll position of the given group.
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~c
+/// void nk_group_get_scroll(struct nk_context*, const char *id, nk_uint *x_offset, nk_uint *y_offset);
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+///
+/// Parameter    | Description
+/// -------------|-----------------------------------------------------------
+/// __ctx__      | Must point to an previously initialized `nk_context` struct
+/// __id__       | The id of the group to get the scroll position of
+/// __x_offset__ | A pointer to the x offset output (or NULL to ignore)
+/// __y_offset__ | A pointer to the y offset output (or NULL to ignore)
+*/
+NK_API void nk_group_get_scroll(struct nk_context*, const char *id, nk_uint *x_offset, nk_uint *y_offset);
+/*/// #### nk_group_set_scroll
+/// Sets the scroll position of the given group.
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~c
+/// void nk_group_set_scroll(struct nk_context*, const char *id, nk_uint x_offset, nk_uint y_offset);
+/// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+///
+/// Parameter    | Description
+/// -------------|-----------------------------------------------------------
+/// __ctx__      | Must point to an previously initialized `nk_context` struct
+/// __id__       | The id of the group to scroll
+/// __x_offset__ | The x offset to scroll to
+/// __y_offset__ | The y offset to scroll to
+*/
+NK_API void nk_group_set_scroll(struct nk_context*, const char *id, nk_uint x_offset, nk_uint y_offset);
 /* =============================================================================
  *
  *                                  TREE
  *
- * ============================================================================= 
+ * =============================================================================
 /// ### Tree
 /// Trees represent two different concept. First the concept of a collapsable
 /// UI section that can be either in a hidden or visibile state. They allow the UI
@@ -3187,7 +3260,7 @@ NK_API int nk_color_pick(struct nk_context*, struct nk_colorf*, enum nk_color_fo
 ///     case ...:
 ///         // [...]
 ///     }
-//      nk_clear(&ctx);
+///     nk_clear(&ctx);
 /// }
 /// nk_free(&ctx);
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3395,6 +3468,8 @@ NK_API void nk_plot_function(struct nk_context*, enum nk_chart_type, void *userd
 NK_API int nk_popup_begin(struct nk_context*, enum nk_popup_type, const char*, nk_flags, struct nk_rect bounds);
 NK_API void nk_popup_close(struct nk_context*);
 NK_API void nk_popup_end(struct nk_context*);
+NK_API void nk_popup_get_scroll(struct nk_context*, nk_uint *offset_x, nk_uint *offset_y);
+NK_API void nk_popup_set_scroll(struct nk_context*, nk_uint offset_x, nk_uint offset_y);
 /* =============================================================================
  *
  *                                  COMBOBOX
@@ -4588,7 +4663,11 @@ NK_API int nk_input_is_key_down(const struct nk_input*, enum nk_keys);
     In fact it is probably more powerful than needed but allows even more crazy
     things than this library provides by default.
 */
+#ifdef NK_UINT_DRAW_INDEX
+typedef nk_uint nk_draw_index;
+#else
 typedef nk_ushort nk_draw_index;
+#endif
 enum nk_draw_list_stroke {
     NK_STROKE_OPEN = nk_false,
     /* build up path has no connection back to the beginning */
@@ -5603,7 +5682,6 @@ template<typename T> struct nk_alignof{struct Big {T x; char c;}; enum {
 
 #endif /* NK_NUKLEAR_H_ */
 
-
 #ifdef NK_IMPLEMENTATION
 
 #ifndef NK_INTERNAL_H
@@ -6007,15 +6085,18 @@ nk_sin(float x)
 NK_LIB float
 nk_cos(float x)
 {
-    NK_STORAGE const float a0 = +1.00238601909309722f;
-    NK_STORAGE const float a1 = -3.81919947353040024e-2f;
-    NK_STORAGE const float a2 = -3.94382342128062756e-1f;
-    NK_STORAGE const float a3 = -1.18134036025221444e-1f;
-    NK_STORAGE const float a4 = +1.07123798512170878e-1f;
-    NK_STORAGE const float a5 = -1.86637164165180873e-2f;
-    NK_STORAGE const float a6 = +9.90140908664079833e-4f;
-    NK_STORAGE const float a7 = -5.23022132118824778e-14f;
-    return a0 + x*(a1 + x*(a2 + x*(a3 + x*(a4 + x*(a5 + x*(a6 + x*a7))))));
+    /* New implementation. Also generated using lolremez. */
+    /* Old version significantly deviated from expected results. */
+    NK_STORAGE const float a0 = 9.9995999154986614e-1f;
+    NK_STORAGE const float a1 = 1.2548995793001028e-3f;
+    NK_STORAGE const float a2 = -5.0648546280678015e-1f;
+    NK_STORAGE const float a3 = 1.2942246466519995e-2f;
+    NK_STORAGE const float a4 = 2.8668384702547972e-2f;
+    NK_STORAGE const float a5 = 7.3726485210586547e-3f;
+    NK_STORAGE const float a6 = -3.8510875386947414e-3f;
+    NK_STORAGE const float a7 = 4.7196604604366623e-4f;
+    NK_STORAGE const float a8 = -1.8776444013090451e-5f;
+    return a0 + x*(a1 + x*(a2 + x*(a3 + x*(a4 + x*(a5 + x*(a6 + x*(a7 + x*a8)))))));
 }
 NK_LIB nk_uint
 nk_round_up_pow2(nk_uint v)
@@ -7151,23 +7232,29 @@ nk_murmur_hash(const void * key, int len, nk_hash seed)
 {
     /* 32-Bit MurmurHash3: https://code.google.com/p/smhasher/wiki/MurmurHash3*/
     #define NK_ROTL(x,r) ((x) << (r) | ((x) >> (32 - r)))
-    union {const nk_uint *i; const nk_byte *b;} conv = {0};
-    const nk_byte *data = (const nk_byte*)key;
-    const int nblocks = len/4;
+
     nk_uint h1 = seed;
+    nk_uint k1;
+    const nk_byte *data = (const nk_byte*)key;
+    const nk_byte *keyptr = data;
+    nk_byte *k1ptr;
+    const int bsize = sizeof(k1);
+    const int nblocks = len/4;
+
     const nk_uint c1 = 0xcc9e2d51;
     const nk_uint c2 = 0x1b873593;
     const nk_byte *tail;
-    const nk_uint *blocks;
-    nk_uint k1;
     int i;
 
     /* body */
     if (!key) return 0;
-    conv.b = (data + nblocks*4);
-    blocks = (const nk_uint*)conv.i;
-    for (i = -nblocks; i; ++i) {
-        k1 = blocks[i];
+    for (i = 0; i < nblocks; ++i, keyptr += bsize) {
+        k1ptr = (nk_byte*)&k1;
+        k1ptr[0] = keyptr[0];
+        k1ptr[1] = keyptr[1];
+        k1ptr[2] = keyptr[2];
+        k1ptr[3] = keyptr[3];
+
         k1 *= c1;
         k1 = NK_ROTL(k1,15);
         k1 *= c2;
@@ -7181,15 +7268,15 @@ nk_murmur_hash(const void * key, int len, nk_hash seed)
     tail = (const nk_byte*)(data + nblocks*4);
     k1 = 0;
     switch (len & 3) {
-    case 3: k1 ^= (nk_uint)(tail[2] << 16); /* fallthrough */
-    case 2: k1 ^= (nk_uint)(tail[1] << 8u); /* fallthrough */
-    case 1: k1 ^= tail[0];
+        case 3: k1 ^= (nk_uint)(tail[2] << 16); /* fallthrough */
+        case 2: k1 ^= (nk_uint)(tail[1] << 8u); /* fallthrough */
+        case 1: k1 ^= tail[0];
             k1 *= c1;
             k1 = NK_ROTL(k1,15);
             k1 *= c2;
             h1 ^= k1;
             break;
-    default: break;
+        default: break;
     }
 
     /* finalization */
@@ -9356,7 +9443,7 @@ nk_draw_list_alloc_vertices(struct nk_draw_list *list, nk_size count)
      * backend (OpenGL, DirectX, ...). For example in OpenGL for `glDrawElements`
      * instead of specifing `GL_UNSIGNED_SHORT` you have to define `GL_UNSIGNED_INT`.
      * Sorry for the inconvenience. */
-    NK_ASSERT((sizeof(nk_draw_index) == 2 && list->vertex_count < NK_USHORT_MAX &&
+    if(sizeof(nk_draw_index)==2) NK_ASSERT((list->vertex_count < NK_USHORT_MAX &&
         "To many verticies for 16-bit vertex indicies. Please read comment above on how to solve this problem"));
     return vtx;
 }
@@ -12809,6 +12896,9 @@ nk_font_bake(struct nk_font_baker *baker, void *image_memory, int width, int hei
                 dst_font->ascent = ((float)unscaled_ascent * font_scale);
                 dst_font->descent = ((float)unscaled_descent * font_scale);
                 dst_font->glyph_offset = glyph_n;
+                // Need to zero this, or it will carry over from a previous
+                // bake, and cause a segfault when accessing glyphs[].
+                dst_font->glyph_count = 0;
             }
 
             /* fill own baked font glyph array */
@@ -13903,8 +13993,12 @@ nk_input_key(struct nk_context *ctx, enum nk_keys key, int down)
     NK_ASSERT(ctx);
     if (!ctx) return;
     in = &ctx->input;
+#ifdef NK_KEYSTATE_BASED_INPUT
     if (in->keyboard.keys[key].down != down)
         in->keyboard.keys[key].clicked++;
+#else
+    in->keyboard.keys[key].clicked++;
+#endif
     in->keyboard.keys[key].down = down;
 }
 NK_API void
@@ -15788,7 +15882,7 @@ nk_panel_end(struct nk_context *ctx)
         nk_fill_rect(out, empty_space, 0, style->window.background);
 
         /* fill right empty space */
-        empty_space.x = layout->bounds.x + layout->bounds.w - layout->border;
+        empty_space.x = layout->bounds.x + layout->bounds.w;
         empty_space.y = layout->bounds.y;
         empty_space.w = panel_padding.x + layout->border;
         empty_space.h = layout->bounds.h;
@@ -15797,11 +15891,11 @@ nk_panel_end(struct nk_context *ctx)
         nk_fill_rect(out, empty_space, 0, style->window.background);
 
         /* fill bottom empty space */
-        if (*layout->offset_x != 0 && !(layout->flags & NK_WINDOW_NO_SCROLLBAR)) {
+        if (layout->footer_height > 0) {
             empty_space.x = window->bounds.x;
             empty_space.y = layout->bounds.y + layout->bounds.h;
             empty_space.w = window->bounds.w;
-            empty_space.h = scrollbar_size.y;
+            empty_space.h = layout->footer_height;
             nk_fill_rect(out, empty_space, 0, style->window.background);
         }
     }
@@ -16175,8 +16269,8 @@ nk_begin_titled(struct nk_context *ctx, const char *name, const char *title,
 {
     struct nk_window *win;
     struct nk_style *style;
-    nk_hash title_hash;
-    int title_len;
+    nk_hash name_hash;
+    int name_len;
     int ret = 0;
 
     NK_ASSERT(ctx);
@@ -16189,12 +16283,12 @@ nk_begin_titled(struct nk_context *ctx, const char *name, const char *title,
 
     /* find or create window */
     style = &ctx->style;
-    title_len = (int)nk_strlen(name);
-    title_hash = nk_murmur_hash(name, (int)title_len, NK_WINDOW_TITLE);
-    win = nk_find_window(ctx, title_hash, name);
+    name_len = (int)nk_strlen(name);
+    name_hash = nk_murmur_hash(name, (int)name_len, NK_WINDOW_TITLE);
+    win = nk_find_window(ctx, name_hash, name);
     if (!win) {
         /* create new window */
-        nk_size name_length = (nk_size)nk_strlen(name);
+        nk_size name_length = (nk_size)name_len;
         win = (struct nk_window*)nk_create_window(ctx);
         NK_ASSERT(win);
         if (!win) return 0;
@@ -16206,7 +16300,7 @@ nk_begin_titled(struct nk_context *ctx, const char *name, const char *title,
 
         win->flags = flags;
         win->bounds = bounds;
-        win->name = title_hash;
+        win->name = name_hash;
         name_length = NK_MIN(name_length, NK_WINDOW_MAX_NAME-1);
         NK_MEMCPY(win->name_string, name, name_length);
         win->name_string[name_length] = 0;
@@ -16434,6 +16528,20 @@ nk_window_get_panel(struct nk_context *ctx)
     if (!ctx || !ctx->current) return 0;
     return ctx->current->layout;
 }
+NK_API void
+nk_window_get_scroll(struct nk_context *ctx, nk_uint *offset_x, nk_uint *offset_y)
+{
+    struct nk_window *win;
+    NK_ASSERT(ctx);
+    NK_ASSERT(ctx->current);
+    if (!ctx || !ctx->current)
+        return ;
+    win = ctx->current;
+    if (offset_x)
+      *offset_x = win->scrollbar.x;
+    if (offset_y)
+      *offset_y = win->scrollbar.y;
+}
 NK_API int
 nk_window_has_focus(const struct nk_context *ctx)
 {
@@ -16600,6 +16708,18 @@ nk_window_set_size(struct nk_context *ctx,
     win->bounds.h = size.y;
 }
 NK_API void
+nk_window_set_scroll(struct nk_context *ctx, nk_uint offset_x, nk_uint offset_y)
+{
+    struct nk_window *win;
+    NK_ASSERT(ctx);
+    NK_ASSERT(ctx->current);
+    if (!ctx || !ctx->current)
+        return;
+    win = ctx->current;
+    win->scrollbar.x = offset_x;
+    win->scrollbar.y = offset_y;
+}
+NK_API void
 nk_window_collapse(struct nk_context *ctx, const char *name,
                     enum nk_collapse_states c)
 {
@@ -16669,7 +16789,6 @@ nk_window_set_focus(struct nk_context *ctx, const char *name)
     }
     ctx->active = win;
 }
-
 
 
 
@@ -16807,7 +16926,11 @@ nk_nonblock_begin(struct nk_context *ctx,
     } else {
         /* close the popup if user pressed outside or in the header */
         int pressed, in_body, in_header;
+#ifdef NK_BUTTON_TRIGGER_ON_RELEASE
+        pressed = nk_input_is_mouse_released(&ctx->input, NK_BUTTON_LEFT);
+#else
         pressed = nk_input_is_mouse_pressed(&ctx->input, NK_BUTTON_LEFT);
+#endif
         in_body = nk_input_is_mouse_hovering_rect(&ctx->input, body);
         in_header = nk_input_is_mouse_hovering_rect(&ctx->input, header);
         if (pressed && (!in_body || in_header))
@@ -16898,7 +17021,38 @@ nk_popup_end(struct nk_context *ctx)
     ctx->current = win;
     nk_push_scissor(&win->buffer, win->layout->clip);
 }
+NK_API void
+nk_popup_get_scroll(struct nk_context *ctx, nk_uint *offset_x, nk_uint *offset_y)
+{
+    struct nk_window *popup;
 
+    NK_ASSERT(ctx);
+    NK_ASSERT(ctx->current);
+    NK_ASSERT(ctx->current->layout);
+    if (!ctx || !ctx->current || !ctx->current->layout)
+        return;
+
+    popup = ctx->current;
+    if (offset_x)
+      *offset_x = popup->scrollbar.x;
+    if (offset_y)
+      *offset_y = popup->scrollbar.y;
+}
+NK_API void
+nk_popup_set_scroll(struct nk_context *ctx, nk_uint offset_x, nk_uint offset_y)
+{
+    struct nk_window *popup;
+
+    NK_ASSERT(ctx);
+    NK_ASSERT(ctx->current);
+    NK_ASSERT(ctx->current->layout);
+    if (!ctx || !ctx->current || !ctx->current->layout)
+        return;
+
+    popup = ctx->current;
+    popup->scrollbar.x = offset_x;
+    popup->scrollbar.y = offset_y;
+}
 
 
 
@@ -18025,22 +18179,25 @@ nk_layout_widget_space(struct nk_rect *bounds, const struct nk_context *ctx,
     panel_space = nk_layout_row_calculate_usable_space(&ctx->style, layout->type,
                                             layout->bounds.w, layout->row.columns);
 
+    #define NK_FRAC(x) (x - (int)x) /* will be used to remove fookin gaps */
     /* calculate the width of one item inside the current layout space */
     switch (layout->row.type) {
     case NK_LAYOUT_DYNAMIC_FIXED: {
         /* scaling fixed size widgets item width */
-        item_width = NK_MAX(1.0f,panel_space) / (float)layout->row.columns;
-        item_offset = (float)layout->row.index * item_width;
+        float w = NK_MAX(1.0f,panel_space) / (float)layout->row.columns;
+        item_offset = (float)layout->row.index * w;
+        item_width = w + NK_FRAC(item_offset);
         item_spacing = (float)layout->row.index * spacing.x;
     } break;
     case NK_LAYOUT_DYNAMIC_ROW: {
         /* scaling single ratio widget width */
-        item_width = layout->row.item_width * panel_space;
+        float w = layout->row.item_width * panel_space;
         item_offset = layout->row.item_offset;
+        item_width = w + NK_FRAC(item_offset);
         item_spacing = 0;
 
         if (modify) {
-            layout->row.item_offset += item_width + spacing.x;
+            layout->row.item_offset += w + spacing.x;
             layout->row.filled += layout->row.item_width;
             layout->row.index = 0;
         }
@@ -18051,23 +18208,24 @@ nk_layout_widget_space(struct nk_rect *bounds, const struct nk_context *ctx,
         bounds->x -= (float)*layout->offset_x;
         bounds->y = layout->at_y + (layout->row.height * layout->row.item.y);
         bounds->y -= (float)*layout->offset_y;
-        bounds->w = layout->bounds.w  * layout->row.item.w;
-        bounds->h = layout->row.height * layout->row.item.h;
+        bounds->w = layout->bounds.w  * layout->row.item.w + NK_FRAC(bounds->x);
+        bounds->h = layout->row.height * layout->row.item.h + NK_FRAC(bounds->y);
         return;
     }
     case NK_LAYOUT_DYNAMIC: {
         /* scaling arrays of panel width ratios for every widget */
-        float ratio;
+        float ratio, w;
         NK_ASSERT(layout->row.ratio);
         ratio = (layout->row.ratio[layout->row.index] < 0) ?
             layout->row.item_width : layout->row.ratio[layout->row.index];
 
+        w = (ratio * panel_space);
         item_spacing = (float)layout->row.index * spacing.x;
-        item_width = (ratio * panel_space);
         item_offset = layout->row.item_offset;
+        item_width = w + NK_FRAC(item_offset);
 
         if (modify) {
-            layout->row.item_offset += item_width;
+            layout->row.item_offset += w;
             layout->row.filled += ratio;
         }
     } break;
@@ -18105,13 +18263,16 @@ nk_layout_widget_space(struct nk_rect *bounds, const struct nk_context *ctx,
     } break;
     case NK_LAYOUT_TEMPLATE: {
         /* stretchy row layout with combined dynamic/static widget width*/
+        float w;
         NK_ASSERT(layout->row.index < layout->row.columns);
         NK_ASSERT(layout->row.index < NK_MAX_LAYOUT_ROW_TEMPLATE_COLUMNS);
-        item_width = layout->row.templates[layout->row.index];
+        w = layout->row.templates[layout->row.index];
         item_offset = layout->row.item_offset;
+        item_width = w + NK_FRAC(item_offset);
         item_spacing = (float)layout->row.index * spacing.x;
-        if (modify) layout->row.item_offset += item_width;
+        if (modify) layout->row.item_offset += w;
     } break;
+    #undef NK_FRAC
     default: NK_ASSERT(0); break;
     };
 
@@ -18687,7 +18848,74 @@ nk_group_end(struct nk_context *ctx)
 {
     nk_group_scrolled_end(ctx);
 }
+NK_API void
+nk_group_get_scroll(struct nk_context *ctx, const char *id, nk_uint *x_offset, nk_uint *y_offset)
+{
+    int id_len;
+    nk_hash id_hash;
+    struct nk_window *win;
+    nk_uint *x_offset_ptr;
+    nk_uint *y_offset_ptr;
 
+    NK_ASSERT(ctx);
+    NK_ASSERT(id);
+    NK_ASSERT(ctx->current);
+    NK_ASSERT(ctx->current->layout);
+    if (!ctx || !ctx->current || !ctx->current->layout || !id)
+        return;
+
+    /* find persistent group scrollbar value */
+    win = ctx->current;
+    id_len = (int)nk_strlen(id);
+    id_hash = nk_murmur_hash(id, (int)id_len, NK_PANEL_GROUP);
+    x_offset_ptr = nk_find_value(win, id_hash);
+    if (!x_offset_ptr) {
+        x_offset_ptr = nk_add_value(ctx, win, id_hash, 0);
+        y_offset_ptr = nk_add_value(ctx, win, id_hash+1, 0);
+
+        NK_ASSERT(x_offset_ptr);
+        NK_ASSERT(y_offset_ptr);
+        if (!x_offset_ptr || !y_offset_ptr) return;
+        *x_offset_ptr = *y_offset_ptr = 0;
+    } else y_offset_ptr = nk_find_value(win, id_hash+1);
+    if (x_offset)
+      *x_offset = *x_offset_ptr;
+    if (y_offset)
+      *y_offset = *y_offset_ptr;
+}
+NK_API void
+nk_group_set_scroll(struct nk_context *ctx, const char *id, nk_uint x_offset, nk_uint y_offset)
+{
+    int id_len;
+    nk_hash id_hash;
+    struct nk_window *win;
+    nk_uint *x_offset_ptr;
+    nk_uint *y_offset_ptr;
+
+    NK_ASSERT(ctx);
+    NK_ASSERT(id);
+    NK_ASSERT(ctx->current);
+    NK_ASSERT(ctx->current->layout);
+    if (!ctx || !ctx->current || !ctx->current->layout || !id)
+        return;
+
+    /* find persistent group scrollbar value */
+    win = ctx->current;
+    id_len = (int)nk_strlen(id);
+    id_hash = nk_murmur_hash(id, (int)id_len, NK_PANEL_GROUP);
+    x_offset_ptr = nk_find_value(win, id_hash);
+    if (!x_offset_ptr) {
+        x_offset_ptr = nk_add_value(ctx, win, id_hash, 0);
+        y_offset_ptr = nk_add_value(ctx, win, id_hash+1, 0);
+
+        NK_ASSERT(x_offset_ptr);
+        NK_ASSERT(y_offset_ptr);
+        if (!x_offset_ptr || !y_offset_ptr) return;
+        *x_offset_ptr = *y_offset_ptr = 0;
+    } else y_offset_ptr = nk_find_value(win, id_hash+1);
+    *x_offset_ptr = x_offset;
+    *y_offset_ptr = y_offset;
+}
 
 
 
@@ -21179,6 +21407,7 @@ nk_scrollbar_behavior(nk_flags *state, struct nk_input *in,
 {
     nk_flags ws = 0;
     int left_mouse_down;
+    int left_mouse_clicked;
     int left_mouse_click_in_cursor;
     float scroll_delta;
 
@@ -21186,13 +21415,14 @@ nk_scrollbar_behavior(nk_flags *state, struct nk_input *in,
     if (!in) return scroll_offset;
 
     left_mouse_down = in->mouse.buttons[NK_BUTTON_LEFT].down;
+    left_mouse_clicked = in->mouse.buttons[NK_BUTTON_LEFT].clicked;
     left_mouse_click_in_cursor = nk_input_has_mouse_click_down_in_rect(in,
         NK_BUTTON_LEFT, *cursor, nk_true);
     if (nk_input_is_mouse_hovering_rect(in, *scroll))
         *state = NK_WIDGET_STATE_HOVERED;
 
     scroll_delta = (o == NK_VERTICAL) ? in->mouse.scroll_delta.y: in->mouse.scroll_delta.x;
-    if (left_mouse_down && left_mouse_click_in_cursor) {
+    if (left_mouse_down && left_mouse_click_in_cursor && !left_mouse_clicked) {
         /* update cursor by mouse dragging */
         float pixel, delta;
         *state = NK_WIDGET_STATE_ACTIVE;
@@ -25243,172 +25473,182 @@ nk_tooltipfv(struct nk_context *ctx, const char *fmt, va_list args)
 ///    - [yy]: Minor version with non-breaking API and library changes
 ///    - [zz]: Bug fix version with no direct changes to API
 ///
-/// - 2018/04/01 (4.00.1) - Fixed calling `nk_convert` multiple time per single frame
+/// - 2019/09/20 (4.01.3) - Fixed a bug wherein combobox cannot be closed by clicking the header
+///                        when NK_BUTTON_TRIGGER_ON_RELEASE is defined.
+/// - 2019/09/10 (4.01.2) - Fixed the nk_cos function, which deviated significantly.
+/// - 2019/09/08 (4.01.1) - Fixed a bug wherein re-baking of fonts caused a segmentation
+///                        fault due to dst_font->glyph_count not being zeroed on subsequent
+///                        bakes of the same set of fonts.
+/// - 2019/06/23 (4.01.0) - Added nk_***_get_scroll and nk_***_set_scroll for groups, windows, and popups.
+/// - 2019/06/12 (4.00.3) - Fix panel background drawing bug.
+/// - 2018/10/31 (4.00.2) - Added NK_KEYSTATE_BASED_INPUT to "fix" state based backends
+///                        like GLFW without breaking key repeat behavior on event based.
+/// - 2018/04/01 (4.00.1) - Fixed calling `nk_convert` multiple time per single frame.
 /// - 2018/04/01 (4.00.0) - BREAKING CHANGE: nk_draw_list_clear no longer tries to
-///                         clear provided buffers. So make sure to either free
-///                         or clear each passed buffer after calling nk_convert.
-/// - 2018/02/23 (3.00.6) - Fixed slider dragging behavior
-/// - 2018/01/31 (3.00.5) - Fixed overcalculation of cursor data in font baking process
-/// - 2018/01/31 (3.00.4) - Removed name collision with stb_truetype
-/// - 2018/01/28 (3.00.3) - Fixed panel window border drawing bug
-/// - 2018/01/12 (3.00.2) - Added `nk_group_begin_titled` for separed group identifier and title
-/// - 2018/01/07 (3.00.1) - Started to change documentation style
+///                        clear provided buffers. So make sure to either free
+///                        or clear each passed buffer after calling nk_convert.
+/// - 2018/02/23 (3.00.6) - Fixed slider dragging behavior.
+/// - 2018/01/31 (3.00.5) - Fixed overcalculation of cursor data in font baking process.
+/// - 2018/01/31 (3.00.4) - Removed name collision with stb_truetype.
+/// - 2018/01/28 (3.00.3) - Fixed panel window border drawing bug.
+/// - 2018/01/12 (3.00.2) - Added `nk_group_begin_titled` for separed group identifier and title.
+/// - 2018/01/07 (3.00.1) - Started to change documentation style.
 /// - 2018/01/05 (3.00.0) - BREAKING CHANGE: The previous color picker API was broken
 ///                        because of conversions between float and byte color representation.
 ///                        Color pickers now use floating point values to represent
 ///                        HSV values. To get back the old behavior I added some additional
 ///                        color conversion functions to cast between nk_color and
 ///                        nk_colorf.
-/// - 2017/12/23 (2.00.7) - Fixed small warning
-/// - 2017/12/23 (2.00.7) - Fixed nk_edit_buffer behavior if activated to allow input
-/// - 2017/12/23 (2.00.7) - Fixed modifyable progressbar dragging visuals and input behavior
-/// - 2017/12/04 (2.00.6) - Added formated string tooltip widget
-/// - 2017/11/18 (2.00.5) - Fixed window becoming hidden with flag NK_WINDOW_NO_INPUT
-/// - 2017/11/15 (2.00.4) - Fixed font merging
-/// - 2017/11/07 (2.00.3) - Fixed window size and position modifier functions
-/// - 2017/09/14 (2.00.2) - Fixed nk_edit_buffer and nk_edit_focus behavior
-/// - 2017/09/14 (2.00.1) - Fixed window closing behavior
+/// - 2017/12/23 (2.00.7) - Fixed small warning.
+/// - 2017/12/23 (2.00.7) - Fixed `nk_edit_buffer` behavior if activated to allow input.
+/// - 2017/12/23 (2.00.7) - Fixed modifyable progressbar dragging visuals and input behavior.
+/// - 2017/12/04 (2.00.6) - Added formated string tooltip widget.
+/// - 2017/11/18 (2.00.5) - Fixed window becoming hidden with flag `NK_WINDOW_NO_INPUT`.
+/// - 2017/11/15 (2.00.4) - Fixed font merging.
+/// - 2017/11/07 (2.00.3) - Fixed window size and position modifier functions.
+/// - 2017/09/14 (2.00.2) - Fixed `nk_edit_buffer` and `nk_edit_focus` behavior.
+/// - 2017/09/14 (2.00.1) - Fixed window closing behavior.
 /// - 2017/09/14 (2.00.0) - BREAKING CHANGE: Modifing window position and size funtions now
 ///                        require the name of the window and must happen outside the window
 ///                        building process (between function call nk_begin and nk_end).
-/// - 2017/09/11 (1.40.9) - Fixed window background flag if background window is declared last
-/// - 2017/08/27 (1.40.8) - Fixed `nk_item_is_any_active` for hidden windows
-/// - 2017/08/27 (1.40.7) - Fixed window background flag
+/// - 2017/09/11 (1.40.9) - Fixed window background flag if background window is declared last.
+/// - 2017/08/27 (1.40.8) - Fixed `nk_item_is_any_active` for hidden windows.
+/// - 2017/08/27 (1.40.7) - Fixed window background flag.
 /// - 2017/07/07 (1.40.6) - Fixed missing clipping rect check for hovering/clicked
-///                        query for widgets
+///                        query for widgets.
 /// - 2017/07/07 (1.40.5) - Fixed drawing bug for vertex output for lines and stroked
-///                        and filled rectangles
+///                        and filled rectangles.
 /// - 2017/07/07 (1.40.4) - Fixed bug in nk_convert trying to add windows that are in
 ///                        process of being destroyed.
 /// - 2017/07/07 (1.40.3) - Fixed table internal bug caused by storing table size in
 ///                        window instead of directly in table.
-/// - 2017/06/30 (1.40.2) - Removed unneeded semicolon in C++ NK_ALIGNOF macro
-/// - 2017/06/30 (1.40.1) - Fixed drawing lines smaller or equal zero
+/// - 2017/06/30 (1.40.2) - Removed unneeded semicolon in C++ NK_ALIGNOF macro.
+/// - 2017/06/30 (1.40.1) - Fixed drawing lines smaller or equal zero.
 /// - 2017/06/08 (1.40.0) - Removed the breaking part of last commit. Auto layout now only
-///                        comes in effect if you pass in zero was row height argument
+///                        comes in effect if you pass in zero was row height argument.
 /// - 2017/06/08 (1.40.0) - BREAKING CHANGE: while not directly API breaking it will change
 ///                        how layouting works. From now there will be an internal minimum
 ///                        row height derived from font height. If you need a row smaller than
 ///                        that you can directly set it by `nk_layout_set_min_row_height` and
 ///                        reset the value back by calling `nk_layout_reset_min_row_height.
-/// - 2017/06/08 (1.39.1) - Fixed property text edit handling bug caused by past `nk_widget` fix
-/// - 2017/06/08 (1.39.0) - Added function to retrieve window space without calling a nk_layout_xxx function
-/// - 2017/06/06 (1.38.5) - Fixed `nk_convert` return flag for command buffer
-/// - 2017/05/23 (1.38.4) - Fixed activation behavior for widgets partially clipped
-/// - 2017/05/10 (1.38.3) - Fixed wrong min window size mouse scaling over boundries
-/// - 2017/05/09 (1.38.2) - Fixed vertical scrollbar drawing with not enough space
-/// - 2017/05/09 (1.38.1) - Fixed scaler dragging behavior if window size hits minimum size
-/// - 2017/05/06 (1.38.0) - Added platform double-click support
-/// - 2017/04/20 (1.37.1) - Fixed key repeat found inside glfw demo backends
-/// - 2017/04/20 (1.37.0) - Extended properties with selection and clipbard support
-/// - 2017/04/20 (1.36.2) - Fixed #405 overlapping rows with zero padding and spacing
-/// - 2017/04/09 (1.36.1) - Fixed #403 with another widget float error
-/// - 2017/04/09 (1.36.0) - Added window `NK_WINDOW_NO_INPUT` and `NK_WINDOW_NOT_INTERACTIVE` flags
-/// - 2017/04/09 (1.35.3) - Fixed buffer heap corruption
-/// - 2017/03/25 (1.35.2) - Fixed popup overlapping for `NK_WINDOW_BACKGROUND` windows
-/// - 2017/03/25 (1.35.1) - Fixed windows closing behavior
-/// - 2017/03/18 (1.35.0) - Added horizontal scroll requested in #377
-/// - 2017/03/18 (1.34.3) - Fixed long window header titles
-/// - 2017/03/04 (1.34.2) - Fixed text edit filtering
-/// - 2017/03/04 (1.34.1) - Fixed group closable flag
-/// - 2017/02/25 (1.34.0) - Added custom draw command for better language binding support
-/// - 2017/01/24 (1.33.0) - Added programatic way of remove edit focus
-/// - 2017/01/24 (1.32.3) - Fixed wrong define for basic type definitions for windows
-/// - 2017/01/21 (1.32.2) - Fixed input capture from hidden or closed windows
-/// - 2017/01/21 (1.32.1) - Fixed slider behavior and drawing
-/// - 2017/01/13 (1.32.0) - Added flag to put scaler into the bottom left corner
+/// - 2017/06/08 (1.39.1) - Fixed property text edit handling bug caused by past `nk_widget` fix.
+/// - 2017/06/08 (1.39.0) - Added function to retrieve window space without calling a `nk_layout_xxx` function.
+/// - 2017/06/06 (1.38.5) - Fixed `nk_convert` return flag for command buffer.
+/// - 2017/05/23 (1.38.4) - Fixed activation behavior for widgets partially clipped.
+/// - 2017/05/10 (1.38.3) - Fixed wrong min window size mouse scaling over boundries.
+/// - 2017/05/09 (1.38.2) - Fixed vertical scrollbar drawing with not enough space.
+/// - 2017/05/09 (1.38.1) - Fixed scaler dragging behavior if window size hits minimum size.
+/// - 2017/05/06 (1.38.0) - Added platform double-click support.
+/// - 2017/04/20 (1.37.1) - Fixed key repeat found inside glfw demo backends.
+/// - 2017/04/20 (1.37.0) - Extended properties with selection and clipboard support.
+/// - 2017/04/20 (1.36.2) - Fixed #405 overlapping rows with zero padding and spacing.
+/// - 2017/04/09 (1.36.1) - Fixed #403 with another widget float error.
+/// - 2017/04/09 (1.36.0) - Added window `NK_WINDOW_NO_INPUT` and `NK_WINDOW_NOT_INTERACTIVE` flags.
+/// - 2017/04/09 (1.35.3) - Fixed buffer heap corruption.
+/// - 2017/03/25 (1.35.2) - Fixed popup overlapping for `NK_WINDOW_BACKGROUND` windows.
+/// - 2017/03/25 (1.35.1) - Fixed windows closing behavior.
+/// - 2017/03/18 (1.35.0) - Added horizontal scroll requested in #377.
+/// - 2017/03/18 (1.34.3) - Fixed long window header titles.
+/// - 2017/03/04 (1.34.2) - Fixed text edit filtering.
+/// - 2017/03/04 (1.34.1) - Fixed group closable flag.
+/// - 2017/02/25 (1.34.0) - Added custom draw command for better language binding support.
+/// - 2017/01/24 (1.33.0) - Added programatic way of remove edit focus.
+/// - 2017/01/24 (1.32.3) - Fixed wrong define for basic type definitions for windows.
+/// - 2017/01/21 (1.32.2) - Fixed input capture from hidden or closed windows.
+/// - 2017/01/21 (1.32.1) - Fixed slider behavior and drawing.
+/// - 2017/01/13 (1.32.0) - Added flag to put scaler into the bottom left corner.
 /// - 2017/01/13 (1.31.0) - Added additional row layouting method to combine both
 ///                        dynamic and static widgets.
-/// - 2016/12/31 (1.30.0) - Extended scrollbar offset from 16-bit to 32-bit
-/// - 2016/12/31 (1.29.2)- Fixed closing window bug of minimized windows
-/// - 2016/12/03 (1.29.1)- Fixed wrapped text with no seperator and C89 error
-/// - 2016/12/03 (1.29.0) - Changed text wrapping to process words not characters
-/// - 2016/11/22 (1.28.6)- Fixed window minimized closing bug
-/// - 2016/11/19 (1.28.5)- Fixed abstract combo box closing behavior
-/// - 2016/11/19 (1.28.4)- Fixed tooltip flickering
-/// - 2016/11/19 (1.28.3)- Fixed memory leak caused by popup repeated closing
-/// - 2016/11/18 (1.28.2)- Fixed memory leak caused by popup panel allocation
-/// - 2016/11/10 (1.28.1)- Fixed some warnings and C++ error
-/// - 2016/11/10 (1.28.0)- Added additional `nk_button` versions which allows to directly
+/// - 2016/12/31 (1.30.0) - Extended scrollbar offset from 16-bit to 32-bit.
+/// - 2016/12/31 (1.29.2) - Fixed closing window bug of minimized windows.
+/// - 2016/12/03 (1.29.1) - Fixed wrapped text with no seperator and C89 error.
+/// - 2016/12/03 (1.29.0) - Changed text wrapping to process words not characters.
+/// - 2016/11/22 (1.28.6) - Fixed window minimized closing bug.
+/// - 2016/11/19 (1.28.5) - Fixed abstract combo box closing behavior.
+/// - 2016/11/19 (1.28.4) - Fixed tooltip flickering.
+/// - 2016/11/19 (1.28.3) - Fixed memory leak caused by popup repeated closing.
+/// - 2016/11/18 (1.28.2) - Fixed memory leak caused by popup panel allocation.
+/// - 2016/11/10 (1.28.1) - Fixed some warnings and C++ error.
+/// - 2016/11/10 (1.28.0) - Added additional `nk_button` versions which allows to directly
 ///                        pass in a style struct to change buttons visual.
-/// - 2016/11/10 (1.27.0)- Added additional 'nk_tree' versions to support external state
+/// - 2016/11/10 (1.27.0) - Added additional `nk_tree` versions to support external state
 ///                        storage. Just like last the `nk_group` commit the main
 ///                        advantage is that you optionally can minimize nuklears runtime
 ///                        memory consumption or handle hash collisions.
-/// - 2016/11/09 (1.26.0)- Added additional `nk_group` version to support external scrollbar
+/// - 2016/11/09 (1.26.0) - Added additional `nk_group` version to support external scrollbar
 ///                        offset storage. Main advantage is that you can externalize
 ///                        the memory management for the offset. It could also be helpful
 ///                        if you have a hash collision in `nk_group_begin` but really
 ///                        want the name. In addition I added `nk_list_view` which allows
 ///                        to draw big lists inside a group without actually having to
 ///                        commit the whole list to nuklear (issue #269).
-/// - 2016/10/30 (1.25.1)- Fixed clipping rectangle bug inside `nk_draw_list`
-/// - 2016/10/29 (1.25.0)- Pulled `nk_panel` memory management into nuklear and out of
+/// - 2016/10/30 (1.25.1) - Fixed clipping rectangle bug inside `nk_draw_list`.
+/// - 2016/10/29 (1.25.0) - Pulled `nk_panel` memory management into nuklear and out of
 ///                        the hands of the user. From now on users don't have to care
 ///                        about panels unless they care about some information. If you
 ///                        still need the panel just call `nk_window_get_panel`.
-/// - 2016/10/21 (1.24.0)- Changed widget border drawing to stroked rectangle from filled
+/// - 2016/10/21 (1.24.0) - Changed widget border drawing to stroked rectangle from filled
 ///                        rectangle for less overdraw and widget background transparency.
-/// - 2016/10/18 (1.23.0)- Added `nk_edit_focus` for manually edit widget focus control
-/// - 2016/09/29 (1.22.7)- Fixed deduction of basic type in non `<stdint.h>` compilation
-/// - 2016/09/29 (1.22.6)- Fixed edit widget UTF-8 text cursor drawing bug
-/// - 2016/09/28 (1.22.5)- Fixed edit widget UTF-8 text appending/inserting/removing
-/// - 2016/09/28 (1.22.4)- Fixed drawing bug inside edit widgets which offset all text
+/// - 2016/10/18 (1.23.0) - Added `nk_edit_focus` for manually edit widget focus control.
+/// - 2016/09/29 (1.22.7) - Fixed deduction of basic type in non `<stdint.h>` compilation.
+/// - 2016/09/29 (1.22.6) - Fixed edit widget UTF-8 text cursor drawing bug.
+/// - 2016/09/28 (1.22.5) - Fixed edit widget UTF-8 text appending/inserting/removing.
+/// - 2016/09/28 (1.22.4) - Fixed drawing bug inside edit widgets which offset all text
 ///                        text in every edit widget if one of them is scrolled.
-/// - 2016/09/28 (1.22.3)- Fixed small bug in edit widgets if not active. The wrong
+/// - 2016/09/28 (1.22.3) - Fixed small bug in edit widgets if not active. The wrong
 ///                        text length is passed. It should have been in bytes but
 ///                        was passed as glyphes.
-/// - 2016/09/20 (1.22.2)- Fixed color button size calculation
-/// - 2016/09/20 (1.22.1)- Fixed some `nk_vsnprintf` behavior bugs and removed
-///                        `<stdio.h>` again from `NK_INCLUDE_STANDARD_VARARGS`.
-/// - 2016/09/18 (1.22.0)- C89 does not support vsnprintf only C99 and newer as well
+/// - 2016/09/20 (1.22.2) - Fixed color button size calculation.
+/// - 2016/09/20 (1.22.1) - Fixed some `nk_vsnprintf` behavior bugs and removed `<stdio.h>`
+///                        again from `NK_INCLUDE_STANDARD_VARARGS`.
+/// - 2016/09/18 (1.22.0) - C89 does not support vsnprintf only C99 and newer as well
 ///                        as C++11 and newer. In addition to use vsnprintf you have
 ///                        to include <stdio.h>. So just defining `NK_INCLUDE_STD_VAR_ARGS`
 ///                        is not enough. That behavior is now fixed. By default if
 ///                        both varargs as well as stdio is selected I try to use
 ///                        vsnprintf if not possible I will revert to vsprintf. If
 ///                        varargs but not stdio was defined I will use my own function.
-/// - 2016/09/15 (1.21.2)- Fixed panel `close` behavior for deeper panel levels
-/// - 2016/09/15 (1.21.1)- Fixed C++ errors and wrong argument to `nk_panel_get_xxxx`
+/// - 2016/09/15 (1.21.2) - Fixed panel `close` behavior for deeper panel levels.
+/// - 2016/09/15 (1.21.1) - Fixed C++ errors and wrong argument to `nk_panel_get_xxxx`.
 /// - 2016/09/13 (1.21.0) - !BREAKING! Fixed nonblocking popup behavior in menu, combo,
 ///                        and contextual which prevented closing in y-direction if
 ///                        popup did not reach max height.
 ///                        In addition the height parameter was changed into vec2
 ///                        for width and height to have more control over the popup size.
-/// - 2016/09/13 (1.20.3) - Cleaned up and extended type selection
-/// - 2016/09/13 (1.20.2)- Fixed slider behavior hopefully for the last time. This time
+/// - 2016/09/13 (1.20.3) - Cleaned up and extended type selection.
+/// - 2016/09/13 (1.20.2) - Fixed slider behavior hopefully for the last time. This time
 ///                        all calculation are correct so no more hackery.
-/// - 2016/09/13 (1.20.1)- Internal change to divide window/panel flags into panel flags and types.
+/// - 2016/09/13 (1.20.1) - Internal change to divide window/panel flags into panel flags and types.
 ///                        Suprisinly spend years in C and still happened to confuse types
 ///                        with flags. Probably something to take note.
-/// - 2016/09/08 (1.20.0)- Added additional helper function to make it easier to just
+/// - 2016/09/08 (1.20.0) - Added additional helper function to make it easier to just
 ///                        take the produced buffers from `nk_convert` and unplug the
 ///                        iteration process from `nk_context`. So now you can
 ///                        just use the vertex,element and command buffer + two pointer
 ///                        inside the command buffer retrieved by calls `nk__draw_begin`
 ///                        and `nk__draw_end` and macro `nk_draw_foreach_bounded`.
-/// - 2016/09/08 (1.19.0)- Added additional asserts to make sure every `nk_xxx_begin` call
+/// - 2016/09/08 (1.19.0) - Added additional asserts to make sure every `nk_xxx_begin` call
 ///                        for windows, popups, combobox, menu and contextual is guarded by
 ///                        `if` condition and does not produce false drawing output.
-/// - 2016/09/08 (1.18.0)- Changed confusing name for `NK_SYMBOL_RECT_FILLED`, `NK_SYMBOL_RECT`
+/// - 2016/09/08 (1.18.0) - Changed confusing name for `NK_SYMBOL_RECT_FILLED`, `NK_SYMBOL_RECT`
 ///                        to hopefully easier to understand `NK_SYMBOL_RECT_FILLED` and
 ///                        `NK_SYMBOL_RECT_OUTLINE`.
-/// - 2016/09/08 (1.17.0)- Changed confusing name for `NK_SYMBOL_CIRLCE_FILLED`, `NK_SYMBOL_CIRCLE`
+/// - 2016/09/08 (1.17.0) - Changed confusing name for `NK_SYMBOL_CIRLCE_FILLED`, `NK_SYMBOL_CIRCLE`
 ///                        to hopefully easier to understand `NK_SYMBOL_CIRCLE_FILLED` and
 ///                        `NK_SYMBOL_CIRCLE_OUTLINE`.
-/// - 2016/09/08 (1.16.0)- Added additional checks to select correct types if `NK_INCLUDE_FIXED_TYPES`
+/// - 2016/09/08 (1.16.0) - Added additional checks to select correct types if `NK_INCLUDE_FIXED_TYPES`
 ///                        is not defined by supporting the biggest compiler GCC, clang and MSVC.
-/// - 2016/09/07 (1.15.3)- Fixed `NK_INCLUDE_COMMAND_USERDATA` define to not cause an error
-/// - 2016/09/04 (1.15.2)- Fixed wrong combobox height calculation
-/// - 2016/09/03 (1.15.1)- Fixed gaps inside combo boxes in OpenGL
+/// - 2016/09/07 (1.15.3) - Fixed `NK_INCLUDE_COMMAND_USERDATA` define to not cause an error.
+/// - 2016/09/04 (1.15.2) - Fixed wrong combobox height calculation.
+/// - 2016/09/03 (1.15.1) - Fixed gaps inside combo boxes in OpenGL.
 /// - 2016/09/02 (1.15.0) - Changed nuklear to not have any default vertex layout and
 ///                        instead made it user provided. The range of types to convert
 ///                        to is quite limited at the moment, but I would be more than
 ///                        happy to accept PRs to add additional.
-/// - 2016/08/30 (1.14.2) - Removed unused variables
-/// - 2016/08/30 (1.14.1) - Fixed C++ build errors
-/// - 2016/08/30 (1.14.0) - Removed mouse dragging from SDL demo since it does not work correctly
-/// - 2016/08/30 (1.13.4) - Tweaked some default styling variables
+/// - 2016/08/30 (1.14.2) - Removed unused variables.
+/// - 2016/08/30 (1.14.1) - Fixed C++ build errors.
+/// - 2016/08/30 (1.14.0) - Removed mouse dragging from SDL demo since it does not work correctly.
+/// - 2016/08/30 (1.13.4) - Tweaked some default styling variables.
 /// - 2016/08/30 (1.13.3) - Hopefully fixed drawing bug in slider, in general I would
 ///                        refrain from using slider with a big number of steps.
 /// - 2016/08/30 (1.13.2) - Fixed close and minimize button which would fire even if the
@@ -25418,36 +25658,36 @@ nk_tooltipfv(struct nk_context *ctx, const char *fmt, va_list args)
 /// - 2016/08/30 (1.13.0) - Removed `NK_WINDOW_DYNAMIC` flag from public API since
 ///                        it is bugged and causes issues in window selection.
 /// - 2016/08/30 (1.12.0) - Removed scaler size. The size of the scaler is now
-///                        determined by the scrollbar size
-/// - 2016/08/30 (1.11.2) - Fixed some drawing bugs caused by changes from 1.11
-/// - 2016/08/30 (1.11.1) - Fixed overlapping minimized window selection
+///                        determined by the scrollbar size.
+/// - 2016/08/30 (1.11.2) - Fixed some drawing bugs caused by changes from 1.11.0.
+/// - 2016/08/30 (1.11.1) - Fixed overlapping minimized window selection.
 /// - 2016/08/30 (1.11.0) - Removed some internal complexity and overly complex code
 ///                        handling panel padding and panel border.
-/// - 2016/08/29 (1.10.0) - Added additional height parameter to `nk_combobox_xxx`
-/// - 2016/08/29 (1.10.0) - Fixed drawing bug in dynamic popups
-/// - 2016/08/29 (1.10.0) - Added experimental mouse scrolling to popups, menus and comboboxes
+/// - 2016/08/29 (1.10.0) - Added additional height parameter to `nk_combobox_xxx`.
+/// - 2016/08/29 (1.10.0) - Fixed drawing bug in dynamic popups.
+/// - 2016/08/29 (1.10.0) - Added experimental mouse scrolling to popups, menus and comboboxes.
 /// - 2016/08/26 (1.10.0) - Added window name string prepresentation to account for
-///                        hash collisions. Currently limited to NK_WINDOW_MAX_NAME
+///                        hash collisions. Currently limited to `NK_WINDOW_MAX_NAME`
 ///                        which in term can be redefined if not big enough.
-/// - 2016/08/26 (1.10.0) - Added stacks for temporary style/UI changes in code
+/// - 2016/08/26 (1.10.0) - Added stacks for temporary style/UI changes in code.
 /// - 2016/08/25 (1.10.0) - Changed `nk_input_is_key_pressed` and 'nk_input_is_key_released'
 ///                        to account for key press and release happening in one frame.
-/// - 2016/08/25 (1.10.0) - Added additional nk_edit flag to directly jump to the end on activate
-/// - 2016/08/17 (1.09.6)- Removed invalid check for value zero in nk_propertyx
-/// - 2016/08/16 (1.09.5)- Fixed ROM mode for deeper levels of popup windows parents.
-/// - 2016/08/15 (1.09.4)- Editbox are now still active if enter was pressed with flag
+/// - 2016/08/25 (1.10.0) - Added additional nk_edit flag to directly jump to the end on activate.
+/// - 2016/08/17 (1.09.6) - Removed invalid check for value zero in `nk_propertyx`.
+/// - 2016/08/16 (1.09.5) - Fixed ROM mode for deeper levels of popup windows parents.
+/// - 2016/08/15 (1.09.4) - Editbox are now still active if enter was pressed with flag
 ///                        `NK_EDIT_SIG_ENTER`. Main reasoning is to be able to keep
 ///                        typing after commiting.
-/// - 2016/08/15 (1.09.4)- Removed redundant code
-/// - 2016/08/15 (1.09.4)- Fixed negative numbers in `nk_strtoi` and remove unused variable
-/// - 2016/08/15 (1.09.3)- Fixed `NK_WINDOW_BACKGROUND` flag behavior to select a background
+/// - 2016/08/15 (1.09.4) - Removed redundant code.
+/// - 2016/08/15 (1.09.4) - Fixed negative numbers in `nk_strtoi` and remove unused variable.
+/// - 2016/08/15 (1.09.3) - Fixed `NK_WINDOW_BACKGROUND` flag behavior to select a background
 ///                        window only as selected by hovering and not by clicking.
-/// - 2016/08/14 (1.09.2)- Fixed a bug in font atlas which caused wrong loading
+/// - 2016/08/14 (1.09.2) - Fixed a bug in font atlas which caused wrong loading
 ///                        of glyphes for font with multiple ranges.
-/// - 2016/08/12 (1.09.1)- Added additional function to check if window is currently
+/// - 2016/08/12 (1.09.1) - Added additional function to check if window is currently
 ///                        hidden and therefore not visible.
-/// - 2016/08/12 (1.09.1)- nk_window_is_closed now queries the correct flag `NK_WINDOW_CLOSED`
-///                        instead of the old flag `NK_WINDOW_HIDDEN`
+/// - 2016/08/12 (1.09.1) - nk_window_is_closed now queries the correct flag `NK_WINDOW_CLOSED`
+///                        instead of the old flag `NK_WINDOW_HIDDEN`.
 /// - 2016/08/09 (1.09.0) - Added additional double version to nk_property and changed
 ///                        the underlying implementation to not cast to float and instead
 ///                        work directly on the given values.
@@ -25457,8 +25697,8 @@ nk_tooltipfv(struct nk_context *ctx, const char *fmt, va_list args)
 /// - 2016/08/09 (1.08.0) - Added additional define to overwrite library internal
 ///                        string to floating point number conversion for additional
 ///                        precision.
-/// - 2016/08/08 (1.07.2)- Fixed compiling error without define NK_INCLUDE_FIXED_TYPE
-/// - 2016/08/08 (1.07.1)- Fixed possible floating point error inside `nk_widget` leading
+/// - 2016/08/08 (1.07.2) - Fixed compiling error without define `NK_INCLUDE_FIXED_TYPE`.
+/// - 2016/08/08 (1.07.1) - Fixed possible floating point error inside `nk_widget` leading
 ///                        to wrong wiget width calculation which results in widgets falsly
 ///                        becomming tagged as not inside window and cannot be accessed.
 /// - 2016/08/08 (1.07.0) - Nuklear now differentiates between hiding a window (NK_WINDOW_HIDDEN) and
@@ -25469,31 +25709,31 @@ nk_tooltipfv(struct nk_context *ctx, const char *fmt, va_list args)
 ///                        remain.
 /// - 2016/08/08 (1.06.0) - Added `nk_edit_string_zero_terminated` as a second option to
 ///                        `nk_edit_string` which takes, edits and outputs a '\0' terminated string.
-/// - 2016/08/08 (1.05.4)- Fixed scrollbar auto hiding behavior
-/// - 2016/08/08 (1.05.3)- Fixed wrong panel padding selection in `nk_layout_widget_space`
-/// - 2016/08/07 (1.05.2)- Fixed old bug in dynamic immediate mode layout API, calculating
+/// - 2016/08/08 (1.05.4) - Fixed scrollbar auto hiding behavior.
+/// - 2016/08/08 (1.05.3) - Fixed wrong panel padding selection in `nk_layout_widget_space`.
+/// - 2016/08/07 (1.05.2) - Fixed old bug in dynamic immediate mode layout API, calculating
 ///                        wrong item spacing and panel width.
-///- 2016/08/07 (1.05.1)- Hopefully finally fixed combobox popup drawing bug
-///- 2016/08/07 (1.05.0) - Split varargs away from NK_INCLUDE_STANDARD_IO into own
-///                        define NK_INCLUDE_STANDARD_VARARGS to allow more fine
+/// - 2016/08/07 (1.05.1) - Hopefully finally fixed combobox popup drawing bug.
+/// - 2016/08/07 (1.05.0) - Split varargs away from `NK_INCLUDE_STANDARD_IO` into own
+///                        define `NK_INCLUDE_STANDARD_VARARGS` to allow more fine
 ///                        grained controlled over library includes.
-/// - 2016/08/06 (1.04.5)- Changed memset calls to NK_MEMSET
-/// - 2016/08/04 (1.04.4)- Fixed fast window scaling behavior
-/// - 2016/08/04 (1.04.3)- Fixed window scaling, movement bug which appears if you
+/// - 2016/08/06 (1.04.5) - Changed memset calls to `NK_MEMSET`.
+/// - 2016/08/04 (1.04.4) - Fixed fast window scaling behavior.
+/// - 2016/08/04 (1.04.3) - Fixed window scaling, movement bug which appears if you
 ///                        move/scale a window and another window is behind it.
 ///                        If you are fast enough then the window behind gets activated
 ///                        and the operation is blocked. I now require activating
 ///                        by hovering only if mouse is not pressed.
-/// - 2016/08/04 (1.04.2)- Fixed changing fonts
-/// - 2016/08/03 (1.04.1)- Fixed `NK_WINDOW_BACKGROUND` behavior
-/// - 2016/08/03 (1.04.0) - Added color parameter to `nk_draw_image`
+/// - 2016/08/04 (1.04.2) - Fixed changing fonts.
+/// - 2016/08/03 (1.04.1) - Fixed `NK_WINDOW_BACKGROUND` behavior.
+/// - 2016/08/03 (1.04.0) - Added color parameter to `nk_draw_image`.
 /// - 2016/08/03 (1.04.0) - Added additional window padding style attributes for
-///                        sub windows (combo, menu, ...)
-/// - 2016/08/03 (1.04.0) - Added functions to show/hide software cursor
+///                        sub windows (combo, menu, ...).
+/// - 2016/08/03 (1.04.0) - Added functions to show/hide software cursor.
 /// - 2016/08/03 (1.04.0) - Added `NK_WINDOW_BACKGROUND` flag to force a window
-///                        to be always in the background of the screen
-/// - 2016/08/03 (1.03.2)- Removed invalid assert macro for NK_RGB color picker
-/// - 2016/08/01 (1.03.1)- Added helper macros into header include guard
+///                        to be always in the background of the screen.
+/// - 2016/08/03 (1.03.2) - Removed invalid assert macro for NK_RGB color picker.
+/// - 2016/08/01 (1.03.1) - Added helper macros into header include guard.
 /// - 2016/07/29 (1.03.0) - Moved the window/table pool into the header part to
 ///                        simplify memory management by removing the need to
 ///                        allocate the pool.
@@ -25501,16 +25741,15 @@ nk_tooltipfv(struct nk_context *ctx, const char *fmt, va_list args)
 ///                        will hide the window scrollbar after NK_SCROLLBAR_HIDING_TIMEOUT
 ///                        seconds without window interaction. To make it work
 ///                        you have to also set a delta time inside the `nk_context`.
-/// - 2016/07/25 (1.01.1) - Fixed small panel and panel border drawing bugs
-/// - 2016/07/15 (1.01.0) - Added software cursor to `nk_style` and `nk_context`
-/// - 2016/07/15 (1.01.0) - Added const correctness to `nk_buffer_push' data argument
+/// - 2016/07/25 (1.01.1) - Fixed small panel and panel border drawing bugs.
+/// - 2016/07/15 (1.01.0) - Added software cursor to `nk_style` and `nk_context`.
+/// - 2016/07/15 (1.01.0) - Added const correctness to `nk_buffer_push' data argument.
 /// - 2016/07/15 (1.01.0) - Removed internal font baking API and simplified
 ///                        font atlas memory management by converting pointer
 ///                        arrays for fonts and font configurations to lists.
 /// - 2016/07/15 (1.00.0) - Changed button API to use context dependend button
 ///                        behavior instead of passing it for every function call.
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 /// ## Gallery
 /// ![Figure [blue]: Feature overview with blue color styling](https://cloud.githubusercontent.com/assets/8057201/13538240/acd96876-e249-11e5-9547-5ac0b19667a0.png)
 /// ![Figure [red]: Feature overview with red color styling](https://cloud.githubusercontent.com/assets/8057201/13538243/b04acd4c-e249-11e5-8fd2-ad7744a5b446.png)

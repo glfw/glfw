@@ -1245,11 +1245,6 @@ void _glfwPlatformResizeWindow(_GLFWwindow* window, int border)
 {
 }
 
-void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
-                                   _GLFWmonitor* monitor,
-                                   int xpos, int ypos,
-                                   int width, int height,
-                                   int refreshRate)
 void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
                                 _GLFWmonitor* monitor,
                                 int xpos, int ypos,

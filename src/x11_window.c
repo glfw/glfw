@@ -2483,8 +2483,8 @@ void _glfwPlatformDragWindow(_GLFWwindow* window)
     memset(&xclient, 0, sizeof(XClientMessageEvent));
     XUngrabPointer(_glfw.x11.display, 0);
     XFlush(_glfw.x11.display);
-    _glfwPlatformGetCursorPos(window, &curXpos, &curYpos);
-    _glfwPlatformGetWindowPos(window, &winXpos, &winYpos);
+    _glfwGetCursorPosX11(window, &curXpos, &curYpos);
+    _glfwGetWindowPosX11(window, &winXpos, &winYpos);
     xclient.type = ClientMessage;
     xclient.window = window->x11.handle;
     xclient.message_type = XInternAtom(_glfw.x11.display, "_NET_WM_MOVERESIZE", False);
@@ -2505,8 +2505,8 @@ void _glfwPlatformResizeWindow(_GLFWwindow* window, int border)
     memset(&xclient, 0, sizeof(XClientMessageEvent));
     XUngrabPointer(_glfw.x11.display, 0);
     XFlush(_glfw.x11.display);
-    _glfwPlatformGetCursorPos(window, &curXpos, &curYpos);
-    _glfwPlatformGetWindowPos(window, &winXpos, &winYpos);
+    _glfwGetCursorPosX11(window, &curXpos, &curYpos);
+    _glfwGetWindowPosX11(window, &winXpos, &winYpos);
     xclient.type = ClientMessage;
     xclient.window = window->x11.handle;
     xclient.message_type = XInternAtom(_glfw.x11.display, "_NET_WM_MOVERESIZE", False);

@@ -3884,7 +3884,7 @@ GLFWAPI void glfwFocusWindow(GLFWwindow* window);
  *
  *  @ingroup window
  */
-GLFWAPI void glfwDragWindow(GLFWwindow* handle);
+GLFWAPI void glfwDragWindow(GLFWwindow* window);
 
 /*! @brief Starts a resize operation with the specified window.
  *
@@ -3918,6 +3918,41 @@ GLFWAPI void glfwDragWindow(GLFWwindow* handle);
  *  @ingroup window
  */
 GLFWAPI void glfwResizeWindow(GLFWwindow* window, int border);
+
+/*! @brief Sets the caption area for the specified window.
+ *
+ *  This function sets the rectangle for the caption to drag the undecorated window.
+ *
+ *  @param[in] window The window to set the caption area for.
+ *  @param[in] offsetX The x offset from the top left of the window.
+ *  @param[in] offsetY The y offset from the top left of the window.
+ *  @param[in] sizeX The x size of the caption area.
+ *  @param[in] sizeY The y size of the caption area.
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_caption_area
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwWindowSetCaptionArea(GLFWwindow* window, int offsetX, int offsetY, int sizeX, int sizeY);
+
+/*! @brief Sets the resize border size for the specified window.
+ *
+ *  This function sets the size of border where to start the resize operation.
+ *
+ *  @param[in] window The window to set the caption area for.
+ *  @param[in] size The size of the border.
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_border_size
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwWindowSetResizeBorderSize(GLFWwindow* window, int size);
 
 /*! @brief Requests user attention to the specified window.
  *

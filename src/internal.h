@@ -539,6 +539,11 @@ struct _GLFWwindow
     int                 maxwidth, maxheight;
     int                 numer, denom;
 
+    // Caption for undecorated window dragging functionality
+    int                 captionOffsetX, captionOffsetY;
+    int                 captionSizeX, captionSizeY;
+    int                 resizeBorderSize;
+
     GLFWbool            stickyKeys;
     GLFWbool            stickyMouseButtons;
     GLFWbool            lockKeyMods;

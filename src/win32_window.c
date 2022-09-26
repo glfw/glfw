@@ -531,6 +531,54 @@ static void maximizeWindowManually(_GLFWwindow* window)
                  SWP_NOACTIVATE | SWP_NOZORDER | SWP_FRAMECHANGED);
 }
 
+static int HitTest(_GLFWwindow* window, RECT windowRect, POINT cursor, POINT border)
+{
+    const int captionOffsetX = window->captionOffsetX != GLFW_DONT_CARE ? window->captionOffsetX : 0;
+    const int captionOffsetY = window->captionOffsetY != GLFW_DONT_CARE ? window->captionOffsetY : 0;
+    const int captionSizeX = window->captionSizeX != GLFW_DONT_CARE ? window->captionSizeX : windowRect.right - windowRect.left;
+    const int captionSizeY = window->captionSizeY;
+
+    const int clientAreaLeft = windowRect.left + border.x;
+    const int clientAreaRight = windowRect.right - border.x;
+    const int clientAreaTop = windowRect.top + border.y;
+    const int clientAreaBottom = windowRect.bottom - border.y;
+
+    const int cursorInCaption =
+        cursor.x > clientAreaLeft + captionOffsetX &&
+        cursor.x < clientAreaLeft + captionOffsetX + captionSizeX &&
+        cursor.y > clientAreaTop + captionOffsetY &&
+        cursor.y < clientAreaTop + captionOffsetY + captionSizeY;
+
+    enum region_mask
+    {
+        client = 0,
+        left = 1,
+        right = 2,
+        top = 4,
+        bottom = 8,
+    };
+
+    const int result =
+        left * (cursor.x < clientAreaLeft) |
+        right * (cursor.x >= clientAreaRight) |
+        top * (cursor.y < clientAreaTop) |
+        bottom * (cursor.y >= clientAreaBottom);
+
+    switch (result)
+    {
+    case left: return HTLEFT;
+    case right: return HTRIGHT;
+    case top: return HTTOP;
+    case bottom: return HTBOTTOM;
+    case top | left: return HTTOPLEFT;
+    case top | right: return HTTOPRIGHT;
+    case bottom | left: return HTBOTTOMLEFT;
+    case bottom | right: return HTBOTTOMRIGHT;
+    case client: return cursorInCaption ? HTCAPTION : HTCLIENT;
+    default: return HTNOWHERE;
+    }
+}
+
 // Window procedure for user-created windows
 //
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -1261,64 +1309,22 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         {
             if (!window->decorated) 
             {
-                POINT cursor;
-                cursor.x = GET_X_LPARAM(lParam);
-                cursor.y = GET_Y_LPARAM(lParam);
+                POINT cursor = 
+                { 
+                    GET_X_LPARAM(lParam),
+                    GET_Y_LPARAM(lParam)
+                };
+                POINT border = 
+                { 
+                    window->resizable ? window->resizeBorderSize : 0,
+                    window->resizable ? window->resizeBorderSize : 0,
+                };
 
                 RECT rect;
                 if (!GetWindowRect(hWnd, &rect))
                     return HTNOWHERE;
 
-                POINT border = { 0, 0 };
-                if (window->resizable)
-                {
-                    border.x = window->resizeBorderSize;
-                    border.y = window->resizeBorderSize;
-                }
-
-                const int captionOffsetX    = window->captionOffsetX != GLFW_DONT_CARE ? window->captionOffsetX : 0;
-                const int captionOffsetY    = window->captionOffsetY != GLFW_DONT_CARE ? window->captionOffsetY : 0;
-                const int captionSizeX      = window->captionSizeX != GLFW_DONT_CARE ? window->captionSizeX : rect.right - rect.left;
-                const int captionSizeY      = window->captionSizeY;
-
-                const int clientAreaLeft    = rect.left + border.x;
-                const int clientAreaRight   = rect.right - border.x;
-                const int clientAreaTop     = rect.top + border.y;
-                const int clientAreaBottom  = rect.bottom - border.y;
-
-                const int cursorInCaption =
-                    cursor.x > clientAreaLeft + captionOffsetX &&
-                    cursor.x < clientAreaLeft + captionOffsetX + captionSizeX &&
-                    cursor.y > clientAreaTop  + captionOffsetY &&
-                    cursor.y < clientAreaTop  + captionOffsetY + captionSizeY;
-
-                enum region_mask {
-                    client = 0b0000,
-                    left = 0b0001,
-                    right = 0b0010,
-                    top = 0b0100,
-                    bottom = 0b1000,
-                };
-
-                const int result =
-                    left *      (cursor.x <  clientAreaLeft) |
-                    right *     (cursor.x >= clientAreaRight)|
-                    top *       (cursor.y <  clientAreaTop)  |
-                    bottom *    (cursor.y >= clientAreaBottom);
-
-                switch (result) 
-                {
-                    case left: return HTLEFT;
-                    case right: return HTRIGHT;
-                    case top: return HTTOP;
-                    case bottom: return HTBOTTOM;
-                    case top | left: return HTTOPLEFT;
-                    case top | right: return HTTOPRIGHT;
-                    case bottom | left: return HTBOTTOMLEFT;
-                    case bottom | right: return HTBOTTOMRIGHT;
-                    case client: return cursorInCaption ? HTCAPTION : HTCLIENT;
-                    default: return HTNOWHERE;
-                }
+                return HitTest(window, rect, cursor, border);
             }
             break;
         }

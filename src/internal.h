@@ -722,6 +722,8 @@ struct _GLFWplatform
     void (*hideWindow)(_GLFWwindow*);
     void (*requestWindowAttention)(_GLFWwindow*);
     void (*focusWindow)(_GLFWwindow*);
+    void (*dragWindow)(_GLFWwindow*);
+    void (*resizeWindow)(_GLFWwindow*,int);
     void (*setWindowMonitor)(_GLFWwindow*,_GLFWmonitor*,int,int,int,int,int);
     GLFWbool (*windowFocused)(_GLFWwindow*);
     GLFWbool (*windowIconified)(_GLFWwindow*);
@@ -883,66 +885,6 @@ extern _GLFWlibrary _glfw;
 void _glfwPlatformInitTimer(void);
 uint64_t _glfwPlatformGetTimerValue(void);
 uint64_t _glfwPlatformGetTimerFrequency(void);
-
-int _glfwPlatformCreateWindow(_GLFWwindow* window,
-                              const _GLFWwndconfig* wndconfig,
-                              const _GLFWctxconfig* ctxconfig,
-                              const _GLFWfbconfig* fbconfig);
-void _glfwPlatformDestroyWindow(_GLFWwindow* window);
-void _glfwPlatformSetWindowTitle(_GLFWwindow* window, const char* title);
-void _glfwPlatformSetWindowIcon(_GLFWwindow* window,
-                                int count, const GLFWimage* images);
-void _glfwPlatformGetWindowPos(_GLFWwindow* window, int* xpos, int* ypos);
-void _glfwPlatformSetWindowPos(_GLFWwindow* window, int xpos, int ypos);
-void _glfwPlatformGetWindowSize(_GLFWwindow* window, int* width, int* height);
-void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height);
-void _glfwPlatformSetWindowSizeLimits(_GLFWwindow* window,
-                                      int minwidth, int minheight,
-                                      int maxwidth, int maxheight);
-void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window, int numer, int denom);
-void _glfwPlatformGetFramebufferSize(_GLFWwindow* window, int* width, int* height);
-void _glfwPlatformGetWindowFrameSize(_GLFWwindow* window,
-                                     int* left, int* top,
-                                     int* right, int* bottom);
-void _glfwPlatformGetWindowContentScale(_GLFWwindow* window,
-                                        float* xscale, float* yscale);
-void _glfwPlatformIconifyWindow(_GLFWwindow* window);
-void _glfwPlatformRestoreWindow(_GLFWwindow* window);
-void _glfwPlatformMaximizeWindow(_GLFWwindow* window);
-void _glfwPlatformShowWindow(_GLFWwindow* window);
-void _glfwPlatformHideWindow(_GLFWwindow* window);
-void _glfwPlatformRequestWindowAttention(_GLFWwindow* window);
-void _glfwPlatformFocusWindow(_GLFWwindow* window);
-void _glfwPlatformSetWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor,
-                                   int xpos, int ypos, int width, int height,
-                                   int refreshRate);
-void _glfwPlatformDragWindow(_GLFWwindow* window);
-void _glfwPlatformResizeWindow(_GLFWwindow* window, int border);
-int _glfwPlatformWindowFocused(_GLFWwindow* window);
-int _glfwPlatformWindowIconified(_GLFWwindow* window);
-int _glfwPlatformWindowVisible(_GLFWwindow* window);
-int _glfwPlatformWindowMaximized(_GLFWwindow* window);
-int _glfwPlatformWindowHovered(_GLFWwindow* window);
-int _glfwPlatformFramebufferTransparent(_GLFWwindow* window);
-float _glfwPlatformGetWindowOpacity(_GLFWwindow* window);
-void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled);
-void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled);
-void _glfwPlatformSetWindowFloating(_GLFWwindow* window, GLFWbool enabled);
-void _glfwPlatformSetWindowOpacity(_GLFWwindow* window, float opacity);
-
-void _glfwPlatformPollEvents(void);
-void _glfwPlatformWaitEvents(void);
-void _glfwPlatformWaitEventsTimeout(double timeout);
-void _glfwPlatformPostEmptyEvent(void);
-
-void _glfwPlatformGetRequiredInstanceExtensions(char** extensions);
-int _glfwPlatformGetPhysicalDevicePresentationSupport(VkInstance instance,
-                                                      VkPhysicalDevice device,
-                                                      uint32_t queuefamily);
-VkResult _glfwPlatformCreateWindowSurface(VkInstance instance,
-                                          _GLFWwindow* window,
-                                          const VkAllocationCallbacks* allocator,
-                                          VkSurfaceKHR* surface);
 
 GLFWbool _glfwPlatformCreateTls(_GLFWtls* tls);
 void _glfwPlatformDestroyTls(_GLFWtls* tls);

@@ -1775,7 +1775,7 @@ void _glfwFocusWindowWin32(_GLFWwindow* window)
     SetFocus(window->win32.handle);
 }
 
-void _glfwPlatformDragWindow(_GLFWwindow* window)
+void _glfwDragWindowWin32(_GLFWwindow* window)
 {
     ReleaseCapture();
     SendMessage(window->win32.handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
@@ -1784,7 +1784,7 @@ void _glfwPlatformDragWindow(_GLFWwindow* window)
     _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_1, GLFW_RELEASE, 0);
 }
 
-void _glfwPlatformResizeWindow(_GLFWwindow* window, int border)
+void _glfwResizeWindowWin32(_GLFWwindow* window, int border)
 {
     WPARAM wBorder;
     switch (border)

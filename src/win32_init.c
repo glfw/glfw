@@ -654,6 +654,8 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         _glfwHideWindowWin32,
         _glfwRequestWindowAttentionWin32,
         _glfwFocusWindowWin32,
+        _glfwDragWindowWin32,
+        _glfwResizeWindowWin32,
         _glfwSetWindowMonitorWin32,
         _glfwWindowFocusedWin32,
         _glfwWindowIconifiedWin32,

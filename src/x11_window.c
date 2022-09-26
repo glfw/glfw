@@ -2475,7 +2475,7 @@ void _glfwFocusWindowX11(_GLFWwindow* window)
     XFlush(_glfw.x11.display);
 }
 
-void _glfwPlatformDragWindow(_GLFWwindow* window)
+void _glfwDragWindowX11(_GLFWwindow* window)
 {
     int winXpos, winYpos;
     double curXpos, curYpos;
@@ -2497,7 +2497,7 @@ void _glfwPlatformDragWindow(_GLFWwindow* window)
     XSendEvent(_glfw.x11.display, _glfw.x11.root, False, SubstructureRedirectMask | SubstructureNotifyMask, (XEvent *)&xclient);
 }
 
-void _glfwPlatformResizeWindow(_GLFWwindow* window, int border)
+void _glfwResizeWindowX11(_GLFWwindow* window, int border)
 {
     int winXpos, winYpos;
     double curXpos, curYpos;

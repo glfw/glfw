@@ -1779,6 +1779,9 @@ void _glfwPlatformDragWindow(_GLFWwindow* window)
 {
     ReleaseCapture();
     SendMessage(window->win32.handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+
+    // Mouse button will be released after drag, so prepare released state here already
+    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_1, GLFW_RELEASE, 0);
 }
 
 void _glfwPlatformResizeWindow(_GLFWwindow* window, int border)
@@ -1815,6 +1818,9 @@ void _glfwPlatformResizeWindow(_GLFWwindow* window, int border)
     }
     ReleaseCapture();
     SendMessage(window->win32.handle, WM_NCLBUTTONDOWN, wBorder, 0);
+
+    // Mouse button will be released after drag, so prepare released state here already
+    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_1, GLFW_RELEASE, 0);
 }
 
 void _glfwSetWindowMonitorWin32(_GLFWwindow* window,

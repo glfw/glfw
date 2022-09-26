@@ -2100,7 +2100,7 @@ void _glfwFocusWindowWayland(_GLFWwindow* window)
 
 void _glfwPlatformDragWindow(_GLFWwindow* window)
 {
-    wl_shell_surface_move(window->wl.surface, _glfw.wl.seat, _glfw.wl.serial);
+    xdg_toplevel_move(window->wl.xdg.toplevel, _glfw.wl.seat, _glfw.wl.serial);
 }
 
 void _glfwPlatformResizeWindow(_GLFWwindow* window, int border)
@@ -2135,10 +2135,10 @@ void _glfwPlatformResizeWindow(_GLFWwindow* window, int border)
 		default:
 			assert(GLFW_FALSE);
     }
-    wl_shell_surface_resize(window->wl.surface,
-                            _glfw.wl.seat,
-                            _glfw.wl.serial,
-                            wlBorder);
+    xdg_toplevel_resize(window->wl.xdg.toplevel,
+                        _glfw.wl.seat,
+                        _glfw.wl.serial,
+                        wlBorder);
 }
 
 void _glfwSetWindowMonitorWayland(_GLFWwindow* window,

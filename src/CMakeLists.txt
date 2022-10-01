@@ -398,3 +398,16 @@ if (GLFW_INSTALL)
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 endif()
 
+#--------------------------------------------------------------------
+# Link Time Optimization
+#--------------------------------------------------------------------
+if (BUILD_SHARED_LIBS AND ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.9.0")
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT result OUTPUT output)
+    if(result)
+        message(STATUS "glfw: Using IPO")
+        set_property(TARGET glfw PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    else()
+        message(WARNING "IPO is not supported: ${output}")
+    endif ()
+endif ()

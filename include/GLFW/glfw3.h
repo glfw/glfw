@@ -2835,11 +2835,11 @@ GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor);
  *  @param[in] monitor The monitor whose gamma ramp to set.
  *  @param[in] gamma The desired exponent.
  *
- *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
- *  GLFW_INVALID_VALUE and @ref GLFW_PLATFORM_ERROR.
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref GLFW_INVALID_VALUE,
+ *  @ref GLFW_PLATFORM_ERROR and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
  *
  *  @remark @wayland Gamma handling is a privileged protocol, this function
- *  will thus never be implemented and emits @ref GLFW_PLATFORM_ERROR.
+ *  will thus never be implemented and emits @ref GLFW_FEATURE_UNAVAILABLE.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -2859,11 +2859,11 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* monitor, float gamma);
  *  @return The current gamma ramp, or `NULL` if an
  *  [error](@ref error_handling) occurred.
  *
- *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
- *  GLFW_PLATFORM_ERROR.
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref GLFW_PLATFORM_ERROR
+ *  and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
  *
  *  @remark @wayland Gamma handling is a privileged protocol, this function
- *  will thus never be implemented and emits @ref GLFW_PLATFORM_ERROR while
+ *  will thus never be implemented and emits @ref GLFW_FEATURE_UNAVAILABLE while
  *  returning `NULL`.
  *
  *  @pointer_lifetime The returned structure and its arrays are allocated and
@@ -2898,8 +2898,8 @@ GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
  *  @param[in] monitor The monitor whose gamma ramp to set.
  *  @param[in] ramp The gamma ramp to use.
  *
- *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
- *  GLFW_PLATFORM_ERROR.
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref GLFW_PLATFORM_ERROR
+ *  and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
  *
  *  @remark The size of the specified gamma ramp should match the size of the
  *  current ramp for that monitor.
@@ -2907,7 +2907,7 @@ GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
  *  @remark @win32 The gamma ramp size must be 256.
  *
  *  @remark @wayland Gamma handling is a privileged protocol, this function
- *  will thus never be implemented and emits @ref GLFW_PLATFORM_ERROR.
+ *  will thus never be implemented and emits @ref GLFW_FEATURE_UNAVAILABLE.
  *
  *  @pointer_lifetime The specified gamma ramp is copied before this function
  *  returns.
@@ -4047,7 +4047,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* window, int attrib);
  *  @param[in] value `GLFW_TRUE` or `GLFW_FALSE`.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
- *  GLFW_INVALID_ENUM, @ref GLFW_INVALID_VALUE and @ref GLFW_PLATFORM_ERROR.
+ *  GLFW_INVALID_ENUM, @ref GLFW_INVALID_VALUE, @ref GLFW_PLATFORM_ERROR and @ref
+ *  GLFW_FEATURE_UNAVAILABLE.
  *
  *  @remark Calling @ref glfwGetWindowAttrib will always return the latest
  *  value, even if that value is ignored by the current mode of the window.
@@ -4898,11 +4899,11 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  *  @param[in] ypos The desired y-coordinate, relative to the top edge of the
  *  content area.
  *
- *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
- *  GLFW_PLATFORM_ERROR.
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_PLATFORM_ERROR and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
  *
  *  @remark @wayland This function will only work when the cursor mode is
- *  `GLFW_CURSOR_DISABLED`, otherwise it will do nothing.
+ *  `GLFW_CURSOR_DISABLED`, otherwise it will emit @ref GLFW_FEATURE_UNAVAILABLE.
  *
  *  @thread_safety This function must only be called from the main thread.
  *

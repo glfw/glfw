@@ -1127,6 +1127,10 @@ static void inputText(_GLFWwindow* window, uint32_t scancode)
 
 static void handleEvents(double* timeout)
 {
+#if defined(__linux__)
+    _glfwDetectJoystickConnectionLinux();
+#endif
+
     GLFWbool event = GLFW_FALSE;
     struct pollfd fds[4] =
     {

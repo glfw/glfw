@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_WIN32)
+
 #include <stdlib.h>
 #include <assert.h>
 
@@ -775,4 +777,6 @@ GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* handle)
 
     return window->context.wgl.handle;
 }
+
+#endif // _GLFW_WIN32
 

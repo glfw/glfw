@@ -28,6 +28,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_WAYLAND)
+
 #include <errno.h>
 #include <limits.h>
 #include <linux/input.h>
@@ -392,7 +394,7 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         _glfwGetKeyScancodeWayland,
         _glfwSetClipboardStringWayland,
         _glfwGetClipboardStringWayland,
-#if defined(__linux__)
+#if defined(_GLFW_LINUX_JOYSTICK)
         _glfwInitJoysticksLinux,
         _glfwTerminateJoysticksLinux,
         _glfwPollJoystickLinux,
@@ -795,4 +797,6 @@ void _glfwTerminateWayland(void)
 
     _glfwTerminateDBusPOSIX();
 }
+
+#endif // _GLFW_WAYLAND
 

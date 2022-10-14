@@ -33,6 +33,7 @@ video tutorials.
  - Arturo Castro
  - Chi-kwan Chan
  - TheChocolateOre
+ - Ali Chraghi
  - Joseph Chua
  - Ian Clarkson
  - Michał Cichoń
@@ -126,6 +127,7 @@ video tutorials.
  - lukect
  - Tristam MacDonald
  - Hans Mackowiak
+ - Ramiro Magno
  - Дмитри Малышев
  - Zbigniew Mandziejewicz
  - Adam Marcus
@@ -243,6 +245,7 @@ video tutorials.
  - Torsten Walluhn
  - Patrick Walton
  - Xo Wang
+ - Andre Weissflog
  - Jay Weisskopf
  - Frank Wille
  - Andy Williams

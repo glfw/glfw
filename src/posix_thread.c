@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(GLFW_BUILD_POSIX_THREAD)
+
 #include <assert.h>
 #include <string.h>
 
@@ -102,4 +104,6 @@ void _glfwPlatformUnlockMutex(_GLFWmutex* mutex)
     assert(mutex->posix.allocated == GLFW_TRUE);
     pthread_mutex_unlock(&mutex->posix.handle);
 }
+
+#endif // GLFW_BUILD_POSIX_THREAD
 

@@ -30,6 +30,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_WAYLAND)
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -2978,4 +2980,6 @@ GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* handle)
 
     return window->wl.surface;
 }
+
+#endif // _GLFW_WAYLAND
 

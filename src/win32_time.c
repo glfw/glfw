@@ -29,6 +29,7 @@
 
 #include "internal.h"
 
+#if defined(GLFW_BUILD_WIN32_TIMER)
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -50,4 +51,6 @@ uint64_t _glfwPlatformGetTimerFrequency(void)
 {
     return _glfw.timer.win32.frequency;
 }
+
+#endif // GLFW_BUILD_WIN32_TIMER
 

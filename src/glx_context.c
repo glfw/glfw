@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_X11)
+
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -713,4 +715,6 @@ GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* handle)
 
     return window->context.glx.window;
 }
+
+#endif // _GLFW_X11
 

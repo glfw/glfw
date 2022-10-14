@@ -28,6 +28,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_COCOA)
+
 #include <float.h>
 #include <string.h>
 
@@ -2052,4 +2054,6 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
 
     return window->ns.object;
 }
+
+#endif // _GLFW_COCOA
 

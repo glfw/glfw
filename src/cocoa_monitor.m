@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_COCOA)
+
 #include <stdlib.h>
 #include <limits.h>
 #include <math.h>
@@ -624,4 +626,6 @@ GLFWAPI CGDirectDisplayID glfwGetCocoaMonitor(GLFWmonitor* handle)
     _GLFW_REQUIRE_INIT_OR_RETURN(kCGNullDirectDisplay);
     return monitor->ns.displayID;
 }
+
+#endif // _GLFW_COCOA
 

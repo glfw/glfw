@@ -14,13 +14,14 @@ project "glfw"
 		"src/init.c",
 		"src/input.c",
 		"src/monitor.c",
-		"src/window.c"
+		"src/window.c",
+		"src/vulkan.c"
 	}
 	filter "system:linux"
 		pic "On"
 
 		systemversion "latest"
-		staticruntime "On"
+		staticruntime "off"
 
 		files
 		{
@@ -34,7 +35,6 @@ project "glfw"
 			"src/egl_context.c",
 			"src/osmesa_context.c",
 			"src/linux_joystick.c",
-			"src/vulkan.c"
 		}
 
 		defines
@@ -45,7 +45,7 @@ project "glfw"
 
 	filter "system:windows"
 		systemversion "latest"
-		staticruntime "On"
+		staticruntime "off"
 
 		files
 		{

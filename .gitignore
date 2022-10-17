@@ -1,103 +1,28 @@
-# The canonical out-of-tree build subdirectory
-build
+**/bin/
+!3rdparty
+bin-int/
 
-# Visual Studio clutter
-_ReSharper*
-*.sdf
-*.suo
-*.dir
-*.vcxproj*
-*.sln
-.vs
-CMakeSettings.json
-Win32
-x64
-Debug
-Release
-MinSizeRel
-RelWithDebInfo
-*.opensdf
+.vs/
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
+**.csproj
+**.csproj.filters
+**.csproj.user
+**/Makefile
 
-# Xcode clutter
-GLFW.build
-GLFW.xcodeproj
+.vscode/c_cpp_properties.json
 
-# macOS clutter
-.DS_Store
+.vscode/
+examples/
+PVS-Studio.log
 
-# Makefile generator clutter
-Makefile
+report.html
 
-# Ninja generator clutter
-build.ninja
-rules.ninja
-.ninja_deps
-.ninja_log
+report.tasks
 
-# CMake clutter
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-CMakeDoxyfile.in
-CMakeDoxygenDefaults.cmake
-cmake_install.cmake
-cmake_uninstall.cmake
+strace_out
 
-# Generated files
-docs/Doxyfile
-docs/html
-docs/warnings.txt
-docs/doxygen_sqlite3.db
-src/glfw_config.h
-src/glfw3.pc
-src/glfw3Config.cmake
-src/glfw3ConfigVersion.cmake
-
-# Compiled binaries
-src/libglfw.so
-src/libglfw.so.3
-src/libglfw.so.3.4
-src/libglfw.dylib
-src/libglfw.dylib
-src/libglfw.3.dylib
-src/libglfw.3.4.dylib
-src/libglfw3.a
-src/glfw3.lib
-src/glfw3.dll
-src/glfw3dll.lib
-src/libglfw3dll.a
-examples/*.app
-examples/*.exe
-examples/boing
-examples/gears
-examples/heightmap
-examples/offscreen
-examples/particles
-examples/splitview
-examples/sharing
-examples/triangle-opengl
-examples/wave
-examples/windows
-tests/*.app
-tests/*.exe
-tests/clipboard
-tests/cursor
-tests/empty
-tests/events
-tests/gamma
-tests/glfwinfo
-tests/icon
-tests/iconify
-tests/inputlag
-tests/joysticks
-tests/monitors
-tests/msaa
-tests/reopen
-tests/tearing
-tests/threads
-tests/timeout
-tests/title
-tests/triangle-vulkan
-tests/window
-tests/windows
-
+*.log
+bin/imgui.ini

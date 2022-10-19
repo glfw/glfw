@@ -256,6 +256,14 @@ This is only supported for undecorated windows.  Decorated windows with this
 enabled will behave differently between platforms.  Possible values are
 `GLFW_TRUE` and `GLFW_FALSE`.
 
+@anchor GLFW_POSITION_X
+@anchor GLFW_POSITION_Y
+__GLFW_POSITION_X__ and __GLFW_POSITION_Y__ specify the desired initial position
+of the window.  The window manager may modify or ignore these coordinates.  If
+either or both of these hints are set to `GLFW_ANY_POSITION` then the window
+manager will position the window where it thinks the user will prefer it.
+Possible values are any valid screen coordinates and `GLFW_ANY_POSITION`.
+
 
 @subsubsection window_hints_fb Framebuffer related hints
 
@@ -447,7 +455,7 @@ The no error mode for OpenGL and OpenGL ES is described in detail by the
 extension.
 
 
-@subsubsection window_hints_win32 Windows specific window hints
+@subsubsection window_hints_win32 Win32 specific hints
 
 @anchor GLFW_WIN32_KEYBOARD_MENU_hint
 __GLFW_WIN32_KEYBOARD_MENU__ specifies whether to allow access to the window
@@ -455,7 +463,7 @@ menu via the Alt+Space and Alt-and-then-Space keyboard shortcuts.  This is
 ignored on other platforms.
 
 
-@subsubsection window_hints_osx macOS specific window hints
+@subsubsection window_hints_osx macOS specific hints
 
 @anchor GLFW_COCOA_RETINA_FRAMEBUFFER_hint
 __GLFW_COCOA_RETINA_FRAMEBUFFER__ specifies whether to use full resolution
@@ -489,8 +497,16 @@ should also declare this in its `Info.plist` by setting the
 @anchor GLFW_X11_CLASS_NAME_hint
 @anchor GLFW_X11_INSTANCE_NAME_hint
 __GLFW_X11_CLASS_NAME__ and __GLFW_X11_INSTANCE_NAME__ specifies the desired
-ASCII encoded class and instance parts of the ICCCM `WM_CLASS` window property.
+ASCII encoded class and instance parts of the ICCCM `WM_CLASS` window property.  Both
+hints need to be set to something other than an empty string for them to take effect.
 These are set with @ref glfwWindowHintString.
+
+@subsubsection window_hints_wayland Wayland specific window hints
+
+@anchor GLFW_WAYLAND_APP_ID_hint
+__GLFW_WAYLAND_APP_ID__ specifies the Wayland app_id for a window, used
+by window managers to identify types of windows. This is set with
+@ref glfwWindowHintString.
 
 
 @subsubsection window_hints_values Supported and default values
@@ -509,6 +525,8 @@ GLFW_TRANSPARENT_FRAMEBUFFER  | `GLFW_FALSE`                | `GLFW_TRUE` or `GL
 GLFW_FOCUS_ON_SHOW            | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_SCALE_TO_MONITOR         | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_MOUSE_PASSTHROUGH        | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_POSITION_X               | `GLFW_ANY_POSITION`         | Any valid screen x-coordinate or `GLFW_ANY_POSITION`
+GLFW_POSITION_Y               | `GLFW_ANY_POSITION`         | Any valid screen y-coordinate or `GLFW_ANY_POSITION`
 GLFW_RED_BITS                 | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 GLFW_GREEN_BITS               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 GLFW_BLUE_BITS                | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
@@ -540,6 +558,7 @@ GLFW_COCOA_FRAME_NAME         | `""`                        | A UTF-8 encoded fr
 GLFW_COCOA_GRAPHICS_SWITCHING | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_X11_CLASS_NAME           | `""`                        | An ASCII encoded `WM_CLASS` class name
 GLFW_X11_INSTANCE_NAME        | `""`                        | An ASCII encoded `WM_CLASS` instance name
+GLFW_WAYLAND_APP_ID           | `""`                        | An ASCII encoded Wayland `app_id` name
 
 
 @section window_events Window event processing
@@ -790,7 +809,20 @@ are undefined if they conflict.
 
 @subsection window_pos Window position
 
-The position of a windowed-mode window can be changed with @ref
+By default, the window manager chooses the position of new windowed mode
+windows, based on its size and which monitor the user appears to be working on.
+This is most often the right choice.  If you need to create a window at
+a specific position, you can set the desired position with the @ref
+GLFW_POSITION_X and @ref GLFW_POSITION_Y window hints.
+
+@code
+glfwWindowHint(GLFW_POSITION_X, 70);
+glfwWindowHint(GLFW_POSITION_Y, 83);
+@endcode
+
+To restore the previous behavior, set these hints to `GLFW_ANY_POSITION`.
+
+The position of a windowed mode window can be changed with @ref
 glfwSetWindowPos.  This moves the window so that the upper-left corner of its
 content area has the specified [screen coordinates](@ref coordinate_systems).
 The window system may put limitations on window placement.

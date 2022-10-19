@@ -29,17 +29,17 @@
 
 #include "internal.h"
 
+#if defined(GLFW_BUILD_POSIX_TIMER)
+
 #include <unistd.h>
 #include <sys/time.h>
 
 
 //////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
+//////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-// Initialise timer
-//
-void _glfwInitTimerPOSIX(void)
+void _glfwPlatformInitTimer(void)
 {
     _glfw.timer.posix.clock = CLOCK_REALTIME;
     _glfw.timer.posix.frequency = 1000000000;
@@ -50,11 +50,6 @@ void _glfwInitTimerPOSIX(void)
         _glfw.timer.posix.clock = CLOCK_MONOTONIC;
 #endif
 }
-
-
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW platform API                      //////
-//////////////////////////////////////////////////////////////////////////
 
 uint64_t _glfwPlatformGetTimerValue(void)
 {
@@ -67,4 +62,6 @@ uint64_t _glfwPlatformGetTimerFrequency(void)
 {
     return _glfw.timer.posix.frequency;
 }
+
+#endif // GLFW_BUILD_POSIX_TIMER
 

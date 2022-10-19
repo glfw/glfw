@@ -104,9 +104,8 @@ integration by libwayland-egl, and keyboard handling by
 from wayland-protocols to provide additional features if the compositor
 supports them.
 
-GLFW uses xkbcommon 0.5.0 to provide compose key support.  When it has been
-built against an older xkbcommon, the compose key will be disabled even if it
-has been configured in the compositor.
+GLFW uses xkbcommon 0.5.0 to provide key and text input support.  Earlier
+versions are not supported.
 
 GLFW uses the [xdg-shell
 protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/stable/xdg-shell/xdg-shell.xml)
@@ -153,7 +152,7 @@ formats.  If GLX 1.3 is not supported, @ref glfwInit will fail.
 
 GLFW uses the `GLX_MESA_swap_control,` `GLX_EXT_swap_control` and
 `GLX_SGI_swap_control` extensions to provide vertical retrace synchronization
-(or _vsync_), in that order of preference.  Where none of these extension are
+(or _vsync_), in that order of preference.  When none of these extensions are
 available, calling @ref glfwSwapInterval will have no effect.
 
 GLFW uses the `GLX_ARB_multisample` extension to create contexts with
@@ -220,8 +219,8 @@ extension is unavailable, the `GLFW_CONTEXT_RELEASE_BEHAVIOR` hint will have no
 effect and the context will always be flushed when released.
 
 GLFW uses the `WGL_ARB_framebuffer_sRGB` and `WGL_EXT_framebuffer_sRGB`
-extensions to provide support for sRGB framebuffers.  Where both of these
-extension are unavailable, the `GLFW_SRGB_CAPABLE` hint will have no effect.
+extensions to provide support for sRGB framebuffers.  When both of these
+extensions are unavailable, the `GLFW_SRGB_CAPABLE` hint will have no effect.
 
 
 @section compat_osx OpenGL on macOS

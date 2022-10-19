@@ -875,7 +875,7 @@ GLFWAPI void glfwResizeWindow(GLFWwindow* handle, int border)
     _glfw.platform.resizeWindow(window, border);
 }
 
-GLFWAPI void glfwWindowSetCaptionArea(GLFWwindow* handle, int offsetX, int offsetY, int sizeX, int sizeY)
+GLFWAPI void glfwSetWindowCaptionArea(GLFWwindow* handle, int offsetX, int offsetY, int sizeX, int sizeY)
 {
     _GLFWwindow* window = (_GLFWwindow*)handle;
     assert(window != NULL);
@@ -891,7 +891,7 @@ GLFWAPI void glfwWindowSetCaptionArea(GLFWwindow* handle, int offsetX, int offse
     window->captionSizeY = sizeY;
 }
 
-GLFWAPI void glfwWindowSetResizeBorderSize(GLFWwindow* handle, int size)
+GLFWAPI void glfwSetWindowResizeBorderSize(GLFWwindow* handle, int size)
 {
     _GLFWwindow* window = (_GLFWwindow*)handle;
     assert(window != NULL);

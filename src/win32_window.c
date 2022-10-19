@@ -1894,7 +1894,8 @@ void _glfwResizeWindowWin32(_GLFWwindow* window, int border)
             wBorder = HTBOTTOMRIGHT;
 			break;
 		default:
-			assert(GLFW_FALSE);
+            assert(GLFW_FALSE);
+            return;
     }
     ReleaseCapture();
     SendMessage(window->win32.handle, WM_NCLBUTTONDOWN, wBorder, 0);

@@ -3936,7 +3936,7 @@ GLFWAPI void glfwResizeWindow(GLFWwindow* window, int border);
  *
  *  @ingroup window
  */
-GLFWAPI void glfwWindowSetCaptionArea(GLFWwindow* window, int offsetX, int offsetY, int sizeX, int sizeY);
+GLFWAPI void glfwSetWindowCaptionArea(GLFWwindow* window, int offsetX, int offsetY, int sizeX, int sizeY);
 
 /*! @brief Sets the resize border size for the specified window.
  *
@@ -3952,7 +3952,7 @@ GLFWAPI void glfwWindowSetCaptionArea(GLFWwindow* window, int offsetX, int offse
  *
  *  @ingroup window
  */
-GLFWAPI void glfwWindowSetResizeBorderSize(GLFWwindow* window, int size);
+GLFWAPI void glfwSetWindowResizeBorderSize(GLFWwindow* window, int size);
 
 /*! @brief Requests user attention to the specified window.
  *

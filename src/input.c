@@ -427,7 +427,7 @@ void _glfwInputGamepad(_GLFWjoystick *js)
         GLFWgamepadstate state;
         if (glfwGetGamepadState(jid, &state))
         {
-            _glfw.callbacks.gamepad_state(jid, state.buttons, state.axes);
+            _glfw.callbacks.gamepad_state(jid, state);
         }
     }
 }
@@ -464,9 +464,7 @@ void _glfwInputJoystickAxis(_GLFWjoystick *js, int axis, float value)
         if (_glfw.callbacks.joystick_axis)
             _glfw.callbacks.joystick_axis(jid, axis, value);
         _glfwInputGamepad(js);
-    }
-    else
-    {
+    } else {
         js->axes[axis] = value;
     }
 }
@@ -479,17 +477,15 @@ void _glfwInputJoystickButton(_GLFWjoystick *js, int button, char value)
     assert(button >= 0);
     assert(button < js->buttonCount);
     assert(value == GLFW_PRESS || value == GLFW_RELEASE);
-    if (js->buttons[button] != value)
-    {
+    
+    if (js->buttons[button] != value) {
         const int jid = (int)(js - _glfw.joysticks);
 
         js->buttons[button] = value;
         if (_glfw.callbacks.joystick_button)
             _glfw.callbacks.joystick_button(jid, button, value);
         _glfwInputGamepad(js);
-    }
-    else
-    {
+    } else {
         js->buttons[button] = value;
     }
 }
@@ -610,7 +606,8 @@ void _glfwPollAllJoysticks()
     {
         if (_glfw.joysticks[jid].connected == GLFW_TRUE)
         {
-            _glfwPlatformPollJoystick(_glfw.joysticks + jid, _GLFW_POLL_ALL);
+            _glfw.platform.pollJoystick(_glfw.joysticks + jid, _GLFW_POLL_ALL);
+            glfwPostEmptyEvent();
         }
     }
 }
@@ -1310,28 +1307,28 @@ GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun cbfun)
 GLFWAPI GLFWgamepadstatefun glfwSetGamepadStateCallback(GLFWgamepadstatefun cbfun)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(_glfw.callbacks.gamepad_state, cbfun);
+    _GLFW_SWAP(GLFWgamepadstatefun, _glfw.callbacks.gamepad_state, cbfun);
     return cbfun;
 }
 
 GLFWAPI GLFWjoystickbuttonfun glfwSetJoystickButtonCallback(GLFWjoystickbuttonfun cbfun)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(_glfw.callbacks.joystick_button, cbfun);
+    _GLFW_SWAP(GLFWjoystickbuttonfun, _glfw.callbacks.joystick_button, cbfun);
     return cbfun;
 }
 
 GLFWAPI GLFWjoystickaxisfun glfwSetJoystickAxisCallback(GLFWjoystickaxisfun cbfun)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(_glfw.callbacks.joystick_axis, cbfun);
+    _GLFW_SWAP(GLFWjoystickaxisfun, _glfw.callbacks.joystick_axis, cbfun);
     return cbfun;
 }
 
 GLFWAPI GLFWjoystickhatfun glfwSetJoystickHatCallback(GLFWjoystickhatfun cbfun)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    _GLFW_SWAP_POINTERS(_glfw.callbacks.joystick_hat, cbfun);
+    _GLFW_SWAP(GLFWjoystickhatfun, _glfw.callbacks.joystick_hat, cbfun);
     return cbfun;
 }
 

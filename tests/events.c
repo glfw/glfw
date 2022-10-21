@@ -558,7 +558,7 @@ static void joystick_hat_callback(int jid, int hat, int value) {
                value);
 }
 
-static void gamepad_state_callback(int jid, unsigned char buttons[15], float axes[6]) {
+static void gamepad_state_callback(int jid, GLFWgamepadstate state) {
     int i = 0;
     printf("%08x at %0.3f: Gamepad %i (%s) state:",
                counter++, glfwGetTime(),
@@ -567,11 +567,11 @@ static void gamepad_state_callback(int jid, unsigned char buttons[15], float axe
 
     printf("Buttons: ");
     for (i= 0 ; i < 15; i++) {
-      printf(" %d:%d", i, buttons[i]);
+      printf(" %d:%d", i, state.buttons[i]);
     }
     printf("Axes: ");
     for (i= 0 ; i < 6; i++) {
-      printf(" %d:%0.4f", i, axes[i]);
+      printf(" %d:%0.4f", i, state.axes[i]);
     }
     printf("\n");
 

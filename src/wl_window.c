@@ -733,8 +733,6 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
                             &surfaceListener,
                             window);
 
-    wl_surface_set_user_data(window->wl.surface, window);
-
     window->wl.width = wndconfig->width;
     window->wl.height = wndconfig->height;
     window->wl.scale = 1;

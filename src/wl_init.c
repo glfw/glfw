@@ -102,10 +102,9 @@ static void registryHandleGlobal(void* userData,
 {
     if (strcmp(interface, "wl_compositor") == 0)
     {
-        _glfw.wl.compositorVersion = _glfw_min(3, version);
         _glfw.wl.compositor =
             wl_registry_bind(registry, name, &wl_compositor_interface,
-                             _glfw.wl.compositorVersion);
+                             _glfw_min(3, version));
     }
     else if (strcmp(interface, "wl_subcompositor") == 0)
     {
@@ -125,10 +124,9 @@ static void registryHandleGlobal(void* userData,
     {
         if (!_glfw.wl.seat)
         {
-            _glfw.wl.seatVersion = _glfw_min(4, version);
             _glfw.wl.seat =
                 wl_registry_bind(registry, name, &wl_seat_interface,
-                                 _glfw.wl.seatVersion);
+                                 _glfw_min(4, version));
             _glfwAddSeatListenerWayland(_glfw.wl.seat);
         }
     }
@@ -666,7 +664,7 @@ int _glfwInitWayland(void)
     wl_display_roundtrip(_glfw.wl.display);
 
 #ifdef WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION
-    if (_glfw.wl.seatVersion >= WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION)
+    if (wl_seat_get_version(_glfw.wl.seat) >= WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION)
     {
         _glfw.wl.keyRepeatTimerfd =
             timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);

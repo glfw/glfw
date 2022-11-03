@@ -341,6 +341,8 @@ int _glfwPlatformInit(void)
     _glfw.wl.keyRepeatTimerfd = -1;
     _glfw.wl.cursorTimerfd = -1;
 
+    _glfw.wl.tag = glfwGetVersionString();
+
     _glfw.wl.cursor.handle = _glfw_dlopen("libwayland-cursor.so.0");
     if (!_glfw.wl.cursor.handle)
     {

@@ -238,6 +238,7 @@ static void createFallbackDecoration(_GLFWdecorationWayland* decoration,
                                      int width, int height)
 {
     decoration->surface = wl_compositor_create_surface(_glfw.wl.compositor);
+    wl_proxy_set_tag((struct wl_proxy*) decoration->surface, &_glfw.wl.tag);
     decoration->subsurface =
         wl_subcompositor_get_subsurface(_glfw.wl.subcompositor,
                                         decoration->surface, parent);
@@ -410,6 +411,9 @@ static void surfaceHandleEnter(void* userData,
                                struct wl_surface* surface,
                                struct wl_output* output)
 {
+    if (wl_proxy_get_tag((struct wl_proxy*) output) != &_glfw.wl.tag)
+        return;
+
     _GLFWwindow* window = userData;
     _GLFWmonitor* monitor = wl_output_get_user_data(output);
 
@@ -430,6 +434,9 @@ static void surfaceHandleLeave(void* userData,
                                struct wl_surface* surface,
                                struct wl_output* output)
 {
+    if (wl_proxy_get_tag((struct wl_proxy*) output) != &_glfw.wl.tag)
+        return;
+
     _GLFWwindow* window = userData;
     _GLFWmonitor* monitor = wl_output_get_user_data(output);
     GLFWbool found;
@@ -766,6 +773,7 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
+    wl_proxy_set_tag((struct wl_proxy*) window->wl.surface, &_glfw.wl.tag);
     wl_surface_add_listener(window->wl.surface,
                             &surfaceListener,
                             window);
@@ -1099,6 +1107,9 @@ static void pointerHandleEnter(void* userData,
     if (!surface)
         return;
 
+    if (wl_proxy_get_tag((struct wl_proxy*) surface) != &_glfw.wl.tag)
+        return;
+
     _GLFWdecorationSideWayland focus = mainWindow;
     _GLFWwindow* window = wl_surface_get_user_data(surface);
     if (!window)
@@ -1124,8 +1135,13 @@ static void pointerHandleLeave(void* userData,
                                uint32_t serial,
                                struct wl_surface* surface)
 {
-    _GLFWwindow* window = _glfw.wl.pointerFocus;
+    if (!surface)
+        return;
 
+    if (wl_proxy_get_tag((struct wl_proxy*) surface) != &_glfw.wl.tag)
+        return;
+
+    _GLFWwindow* window = _glfw.wl.pointerFocus;
     if (!window)
         return;
 
@@ -1719,7 +1735,10 @@ static void dataDeviceHandleEnter(void* userData,
             _GLFWwindow* window = NULL;
 
             if (surface)
-                window = wl_surface_get_user_data(surface);
+            {
+                if (wl_proxy_get_tag((struct wl_proxy*) surface) == &_glfw.wl.tag)
+                    window = wl_surface_get_user_data(surface);
+            }
 
             if (window && _glfw.wl.offers[i].text_uri_list)
             {
@@ -1733,6 +1752,9 @@ static void dataDeviceHandleEnter(void* userData,
             break;
         }
     }
+
+    if (wl_proxy_get_tag((struct wl_proxy*) surface) != &_glfw.wl.tag)
+        return;
 
     if (_glfw.wl.dragOffer)
         wl_data_offer_accept(offer, serial, "text/uri-list");

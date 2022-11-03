@@ -187,6 +187,7 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
     monitor->wl.output = output;
     monitor->wl.name = name;
 
+    wl_proxy_set_tag((struct wl_proxy*) output, &_glfw.wl.tag);
     wl_output_add_listener(output, &outputListener, monitor);
 }
 

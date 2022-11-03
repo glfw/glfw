@@ -257,9 +257,6 @@ typedef struct _GLFWlibraryWayland
     _GLFWwindow*                dragFocus;
     uint32_t                    dragSerial;
 
-    int                         compositorVersion;
-    int                         seatVersion;
-
     struct wl_cursor_theme*     cursorTheme;
     struct wl_cursor_theme*     cursorThemeHiDPI;
     struct wl_surface*          cursorSurface;

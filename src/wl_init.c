@@ -507,6 +507,8 @@ int _glfwInitWayland(void)
     _glfw.wl.keyRepeatTimerfd = -1;
     _glfw.wl.cursorTimerfd = -1;
 
+    _glfw.wl.tag = glfwGetVersionString();
+
     _glfw.wl.client.display_flush = (PFN_wl_display_flush)
         _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_display_flush");
     _glfw.wl.client.display_cancel_read = (PFN_wl_display_cancel_read)
@@ -537,6 +539,10 @@ int _glfwInitWayland(void)
         _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_proxy_get_user_data");
     _glfw.wl.client.proxy_set_user_data = (PFN_wl_proxy_set_user_data)
         _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_proxy_set_user_data");
+    _glfw.wl.client.proxy_get_tag = (PFN_wl_proxy_get_tag)
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_proxy_get_tag");
+    _glfw.wl.client.proxy_set_tag = (PFN_wl_proxy_set_tag)
+        _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_proxy_set_tag");
     _glfw.wl.client.proxy_get_version = (PFN_wl_proxy_get_version)
         _glfwPlatformGetModuleSymbol(_glfw.wl.client.handle, "wl_proxy_get_version");
     _glfw.wl.client.proxy_marshal_flags = (PFN_wl_proxy_marshal_flags)
@@ -556,7 +562,9 @@ int _glfwInitWayland(void)
         !_glfw.wl.client.proxy_marshal_constructor ||
         !_glfw.wl.client.proxy_marshal_constructor_versioned ||
         !_glfw.wl.client.proxy_get_user_data ||
-        !_glfw.wl.client.proxy_set_user_data)
+        !_glfw.wl.client.proxy_set_user_data ||
+        !_glfw.wl.client.proxy_get_tag ||
+        !_glfw.wl.client.proxy_set_tag)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Failed to load libwayland-client entry point");

@@ -61,6 +61,8 @@ typedef struct wl_proxy* (* PFN_wl_proxy_marshal_constructor)(struct wl_proxy*,u
 typedef struct wl_proxy* (* PFN_wl_proxy_marshal_constructor_versioned)(struct wl_proxy*,uint32_t,const struct wl_interface*,uint32_t,...);
 typedef void* (* PFN_wl_proxy_get_user_data)(struct wl_proxy*);
 typedef void (* PFN_wl_proxy_set_user_data)(struct wl_proxy*,void*);
+typedef void (* PFN_wl_proxy_set_tag)(struct wl_proxy*,const char*const*);
+typedef const char* const* (* PFN_wl_proxy_get_tag)(struct wl_proxy*);
 typedef uint32_t (* PFN_wl_proxy_get_version)(struct wl_proxy*);
 typedef struct wl_proxy* (* PFN_wl_proxy_marshal_flags)(struct wl_proxy*,uint32_t,const struct wl_interface*,uint32_t,uint32_t,...);
 #define wl_display_flush _glfw.wl.client.display_flush
@@ -78,6 +80,8 @@ typedef struct wl_proxy* (* PFN_wl_proxy_marshal_flags)(struct wl_proxy*,uint32_
 #define wl_proxy_marshal_constructor_versioned _glfw.wl.client.proxy_marshal_constructor_versioned
 #define wl_proxy_get_user_data _glfw.wl.client.proxy_get_user_data
 #define wl_proxy_set_user_data _glfw.wl.client.proxy_set_user_data
+#define wl_proxy_get_tag _glfw.wl.client.proxy_get_tag
+#define wl_proxy_set_tag _glfw.wl.client.proxy_set_tag
 #define wl_proxy_get_version _glfw.wl.client.proxy_get_version
 #define wl_proxy_marshal_flags _glfw.wl.client.proxy_marshal_flags
 
@@ -311,6 +315,8 @@ typedef struct _GLFWlibraryWayland
     _GLFWwindow*                dragFocus;
     uint32_t                    dragSerial;
 
+    const char*                 tag;
+
     struct wl_cursor_theme*     cursorTheme;
     struct wl_cursor_theme*     cursorThemeHiDPI;
     struct wl_surface*          cursorSurface;
@@ -388,6 +394,8 @@ typedef struct _GLFWlibraryWayland
         PFN_wl_proxy_marshal_constructor_versioned  proxy_marshal_constructor_versioned;
         PFN_wl_proxy_get_user_data                  proxy_get_user_data;
         PFN_wl_proxy_set_user_data                  proxy_set_user_data;
+        PFN_wl_proxy_get_tag                        proxy_get_tag;
+        PFN_wl_proxy_set_tag                        proxy_set_tag;
         PFN_wl_proxy_get_version                    proxy_get_version;
         PFN_wl_proxy_marshal_flags                  proxy_marshal_flags;
     } client;

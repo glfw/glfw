@@ -342,8 +342,11 @@ static void resizeWindow(_GLFWwindow* window)
 
 void _glfwUpdateContentScaleWayland(_GLFWwindow* window)
 {
-    if (_glfw.wl.compositorVersion < WL_SURFACE_SET_BUFFER_SCALE_SINCE_VERSION)
+    if (wl_compositor_get_version(_glfw.wl.compositor) <
+        WL_SURFACE_SET_BUFFER_SCALE_SINCE_VERSION)
+    {
         return;
+    }
 
     // Get the scale factor from the highest scale monitor.
     int maxScale = 1;

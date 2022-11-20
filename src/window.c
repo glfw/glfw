@@ -974,15 +974,30 @@ static _rect _get_intersection(_rect* ra, _rect* rb)
 }
 
 GLFWAPI GLFWmonitor* glfwGetMonitorFromWindow(GLFWwindow* window)
-{
+{  
+  GLFWmonitor* result = NULL;
+
+  int monitorCount;
+  GLFWmonitor** monitors;
+  const GLFWvidmode* vidmode;
+
+  int windowWidth, windowHeight;
+  int windowFrameLeft, windowFrameTop, windowFrameRight, windowFrameBottom;
+
+  unsigned int currentDim, overlapDim;
+  int overlapMonitor;
+  int i;
+
+  _rect windowRect;
+  _rect monitorRect;
+  _rect currentRect = { 0, 0, 0, 0 };
+  _rect overlapRect = { 0, 0, 0, 0 };
+
   assert(window != NULL);
 
   _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
-  GLFWmonitor* result = NULL;
-
-  int monitorCount;
-  GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);
+  monitors = glfwGetMonitors(&monitorCount);
 
   if (monitorCount == 1)
   {
@@ -990,14 +1005,11 @@ GLFWAPI GLFWmonitor* glfwGetMonitorFromWindow(GLFWwindow* window)
   }
   else if (monitorCount > 1)
   {
-    _rect windowRect;
     glfwGetWindowPos(window, &windowRect.x, &windowRect.y);
-    int windowWidth, windowHeight;
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
     windowRect.w = windowWidth;
     windowRect.h = windowHeight;
 
-    int windowFrameLeft, windowFrameTop, windowFrameRight, windowFrameBottom;
     glfwGetWindowFrameSize(window, &windowFrameLeft, &windowFrameTop,
       &windowFrameRight, &windowFrameBottom);
 
@@ -1006,18 +1018,13 @@ GLFWAPI GLFWmonitor* glfwGetMonitorFromWindow(GLFWwindow* window)
     windowRect.w += windowFrameLeft + windowFrameRight;
     windowRect.h += windowFrameTop + windowFrameBottom;
 
-    _rect currentRect = { 0, 0, 0, 0 };
-    _rect overlapRect = { 0, 0, 0, 0 };
-    unsigned int currentDim, overlapDim;
-    int overlapMonitor = -1;
+    overlapMonitor = -1;
 
-    int i;
     for (i = 0; i < monitorCount; i++)
     {
-      _rect monitorRect;
       glfwGetMonitorPos(monitors[i], &monitorRect.x, &monitorRect.y);
 
-      const GLFWvidmode* vidmode = glfwGetVideoMode(monitors[i]);
+      vidmode = glfwGetVideoMode(monitors[i]);
       monitorRect.w = vidmode->width;
       monitorRect.h = vidmode->height;
 

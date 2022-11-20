@@ -954,6 +954,94 @@ GLFWAPI void glfwSetWindowAttrib(GLFWwindow* handle, int attrib, int value)
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute 0x%08X", attrib);
 }
 
+typedef struct _rect { int x, y; int w, h; } _rect;
+
+#define RECT_INTERSECTS(ra, rb) \
+  ((ra)->x <= ((rb)->x + (rb)->w) && ((ra)->x + (ra)->w) >= (rb)->x && \
+  (ra)->y <= ((rb)->y + (rb)->h) && ((ra)->y + (ra)->h) >= (rb)->y)
+
+static _rect _get_intersection(_rect* ra, _rect* rb)
+{
+  _rect result = { 0, 0, 0, 0 };
+  if (RECT_INTERSECTS(ra, rb))
+  {
+    result.x = _glfw_max(ra->x, rb->x);
+    result.w = _glfw_min((ra->x + ra->w), (rb->x + rb->w)) - result.x;
+    result.y = _glfw_max(ra->y, rb->y);
+    result.h = _glfw_min((ra->y + ra->h), (rb->y + rb->h)) - result.y;
+  }
+  return result;
+}
+
+GLFWAPI GLFWmonitor* glfwGetMonitorFromWindow(GLFWwindow* window)
+{
+  assert(window != NULL);
+
+  _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+  GLFWmonitor* result = NULL;
+
+  int monitorCount;
+  GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);
+
+  if (monitorCount == 1)
+  {
+    result = monitors[0];
+  }
+  else if (monitorCount > 1)
+  {
+    _rect windowRect;
+    glfwGetWindowPos(window, &windowRect.x, &windowRect.y);
+    int windowWidth, windowHeight;
+    glfwGetWindowSize(window, &windowWidth, &windowHeight);
+    windowRect.w = windowWidth;
+    windowRect.h = windowHeight;
+
+    int windowFrameLeft, windowFrameTop, windowFrameRight, windowFrameBottom;
+    glfwGetWindowFrameSize(window, &windowFrameLeft, &windowFrameTop,
+      &windowFrameRight, &windowFrameBottom);
+
+    windowRect.x -= windowFrameLeft;
+    windowRect.y -= windowFrameTop;
+    windowRect.w += windowFrameLeft + windowFrameRight;
+    windowRect.h += windowFrameTop + windowFrameBottom;
+
+    _rect currentRect = { 0, 0, 0, 0 };
+    _rect overlapRect = { 0, 0, 0, 0 };
+    unsigned int currentDim, overlapDim;
+    int overlapMonitor = -1;
+
+    int i;
+    for (i = 0; i < monitorCount; i++)
+    {
+      _rect monitorRect;
+      glfwGetMonitorPos(monitors[i], &monitorRect.x, &monitorRect.y);
+
+      const GLFWvidmode* vidmode = glfwGetVideoMode(monitors[i]);
+      monitorRect.w = vidmode->width;
+      monitorRect.h = vidmode->height;
+
+      currentRect = _get_intersection(&windowRect, &monitorRect);
+
+      currentDim = currentRect.w * currentRect.h;
+      overlapDim = overlapRect.w * overlapRect.h;
+
+      if (currentDim > 0 && currentDim > overlapDim)
+      {
+        overlapRect = currentRect;
+        overlapMonitor = i;
+      }
+    }
+
+    if (overlapMonitor >= 0)
+    {
+      result = monitors[overlapMonitor];
+    }
+  }
+  
+  return result;
+}
+
 GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;

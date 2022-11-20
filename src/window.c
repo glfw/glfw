@@ -76,10 +76,35 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused)
 //
 void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
 {
-    assert(window != NULL);
+  GLFWmonitor* windowMon;
+  GLFWmonitor* detectedMon;
+  const GLFWvidmode* vidmode;
+  
+  assert(window != NULL);
 
-    if (window->callbacks.pos)
-        window->callbacks.pos((GLFWwindow*) window, x, y);
+  windowMon = glfwGetWindowMonitor((GLFWwindow *) window);
+  if (windowMon != NULL)
+  {
+    // When windowMon != NULL, this is a fullscreen window.
+    // We then check if windowMon is really the monitor where
+    // the window is located and if not we set the monitor for
+    // that window to the other monitor including width, height
+    // and refreshrate. At last we simply set the position vars
+    // to 0, because the relative position of a fullscreen window
+    // content area moving from one monitor to another is always 0, 0
+    detectedMon = glfwGetMonitorFromWindow((GLFWwindow*) window);
+    if (detectedMon != NULL && windowMon != detectedMon)
+    {
+      vidmode = glfwGetVideoMode(detectedMon);
+      if (vidmode != NULL)
+      {
+        glfwSetWindowMonitor((GLFWwindow*) window, detectedMon, x = 0, y = 0, vidmode->width, vidmode->height, vidmode->refreshRate);
+      }
+    }
+  }
+
+  if (window->callbacks.pos)
+    window->callbacks.pos((GLFWwindow*) window, x, y);
 }
 
 // Notifies shared code that a window has been resized

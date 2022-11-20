@@ -981,16 +981,12 @@ GLFWAPI GLFWmonitor* glfwGetMonitorFromWindow(GLFWwindow* window)
   GLFWmonitor** monitors;
   const GLFWvidmode* vidmode;
 
-  int windowWidth, windowHeight;
-  int windowFrameLeft, windowFrameTop, windowFrameRight, windowFrameBottom;
-
   unsigned int currentDim, overlapDim;
-  int overlapMonitor;
-  int i;
+  int overlapMonitor, i;
 
   _rect windowRect;
   _rect monitorRect;
-  _rect currentRect = { 0, 0, 0, 0 };
+  _rect scratchRect = { 0, 0, 0, 0 };
   _rect overlapRect = { 0, 0, 0, 0 };
 
   assert(window != NULL);
@@ -1006,17 +1002,15 @@ GLFWAPI GLFWmonitor* glfwGetMonitorFromWindow(GLFWwindow* window)
   else if (monitorCount > 1)
   {
     glfwGetWindowPos(window, &windowRect.x, &windowRect.y);
-    glfwGetWindowSize(window, &windowWidth, &windowHeight);
-    windowRect.w = windowWidth;
-    windowRect.h = windowHeight;
+    glfwGetWindowSize(window, &windowRect.w, &windowRect.h);
 
-    glfwGetWindowFrameSize(window, &windowFrameLeft, &windowFrameTop,
-      &windowFrameRight, &windowFrameBottom);
+    glfwGetWindowFrameSize(window, &scratchRect.x, &scratchRect.y, 
+      &scratchRect.w, &scratchRect.h);
 
-    windowRect.x -= windowFrameLeft;
-    windowRect.y -= windowFrameTop;
-    windowRect.w += windowFrameLeft + windowFrameRight;
-    windowRect.h += windowFrameTop + windowFrameBottom;
+    windowRect.x -= scratchRect.x;
+    windowRect.y -= scratchRect.y;
+    windowRect.w += scratchRect.x + scratchRect.w;
+    windowRect.h += scratchRect.y + scratchRect.h;
 
     overlapMonitor = -1;
 
@@ -1028,14 +1022,14 @@ GLFWAPI GLFWmonitor* glfwGetMonitorFromWindow(GLFWwindow* window)
       monitorRect.w = vidmode->width;
       monitorRect.h = vidmode->height;
 
-      currentRect = _get_intersection(&windowRect, &monitorRect);
+      scratchRect = _get_intersection(&windowRect, &monitorRect);
 
-      currentDim = currentRect.w * currentRect.h;
+      currentDim = scratchRect.w * scratchRect.h;
       overlapDim = overlapRect.w * overlapRect.h;
 
       if (currentDim > 0 && currentDim > overlapDim)
       {
-        overlapRect = currentRect;
+        overlapRect = scratchRect;
         overlapMonitor = i;
       }
     }

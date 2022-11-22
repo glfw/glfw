@@ -553,12 +553,197 @@ static void enableCursor(_GLFWwindow* window)
     updateCursorImage(window);
 }
 
+// TODO This callback is replaced by _createXIMPreeditCallbacks. Is there a possibility that this clearing process is necessary?
 // Clear its handle when the input context has been destroyed
-//
-static void inputContextDestroyCallback(XIC ic, XPointer clientData, XPointer callData)
+// static void inputContextDestroyCallback(XIC ic, XPointer clientData, XPointer callData)
+// {
+//     _GLFWwindow* window = (_GLFWwindow*) clientData;
+//     window->x11.ic = NULL;
+// }
+
+// Update cursor position to decide candidate window
+static void _ximChangeCursorPosition(XIC xic, _GLFWwindow* window)
 {
-    _GLFWwindow* window = (_GLFWwindow*) clientData;
-    window->x11.ic = NULL;
+    XVaNestedList preedit_attr;
+    XPoint        spot;
+
+    spot.x = window->preeditCursorPosX;
+    spot.y = window->preeditCursorPosY + window->preeditCursorHeight;
+    preedit_attr = XVaCreateNestedList(0, XNSpotLocation, &spot, NULL);
+    XSetICValues(xic, XNPreeditAttributes, preedit_attr, NULL);
+    XFree(preedit_attr);
+}
+
+// IME Start callback (do nothing)
+static void _ximPreeditStartCallback(XIC xic, XPointer clientData, XPointer callData)
+{
+}
+
+// IME Done callback (do nothing)
+static void _ximPreeditDoneCallback(XIC xic, XPointer clientData, XPointer callData)
+{
+}
+
+// IME Draw callback
+static void _ximPreeditDrawCallback(XIC xic, XPointer clientData, XIMPreeditDrawCallbackStruct *callData)
+{
+    int i, j, length, ctext, rstart, rend;
+    XIMText* text;
+    const char* src;
+    unsigned int codePoint;
+    unsigned int* preeditText;
+    XIMFeedback f;
+    _GLFWwindow* window = (_GLFWwindow*)clientData;
+
+    // keep cursor position to reduce API call
+    int cursorX = window->preeditCursorPosX;
+    int cursorY = window->preeditCursorPosY;
+    int cursorHeight = window->preeditCursorHeight;
+
+    if (!callData->text) {
+        // preedit text is empty
+        window->ntext = 0;
+        window->nblocks = 0;
+        _glfwInputPreedit(window, 0);
+        return;
+    } else {
+        text = callData->text;
+        length = callData->chg_length;
+        if (text->encoding_is_wchar) {
+            // wchar is not supported
+            return;
+        }
+        ctext = window->ctext;
+        while (ctext < length+1) {
+            ctext = (ctext == 0) ? 1 : ctext * 2;
+        }
+        if (ctext != window->ctext) {
+            preeditText = _glfw_realloc(window->preeditText, sizeof(unsigned int)*ctext);
+            if (preeditText == NULL) {
+                return;
+            }
+            window->preeditText = preeditText;
+            window->ctext = ctext;
+        }
+        window->ntext = length;
+        window->preeditText[length] = 0;
+        if (window->cblocks == 0) {
+            window->preeditAttributeBlocks = _glfw_calloc(4, sizeof(int));
+            window->cblocks = 4;
+        }
+        src = text->string.multi_byte;
+        rend = 0;
+        rstart = length;
+        for (i = 0, j = 0; i < text->length; i++) {
+            codePoint = decodeUTF8(&src);
+            if (i < callData->chg_first || callData->chg_first+length < i) {
+                continue;
+            }
+            window->preeditText[j++] = codePoint;
+            f = text->feedback[i];
+            if ((f & XIMReverse) || (f & XIMHighlight)) {
+                rend = i;
+                if (i < rstart) {
+                    rstart = i;
+                }
+            }
+        }
+        if (rstart == length) {
+            window->nblocks = 1;
+            window->preeditAttributeBlocks[0] = length;
+            window->preeditAttributeBlocks[1] = 0;
+            _glfwInputPreedit(window, 0);
+        } else if (rstart == 0) {
+            if (rend == length -1) {
+                window->nblocks = 1;
+                window->preeditAttributeBlocks[0] = length;
+                window->preeditAttributeBlocks[1] = 0;
+                _glfwInputPreedit(window, 0);
+            } else {
+                window->nblocks = 2;
+                window->preeditAttributeBlocks[0] = rend + 1;
+                window->preeditAttributeBlocks[1] = length - rend - 1;
+                window->preeditAttributeBlocks[2] = 0;
+                _glfwInputPreedit(window, 0);
+            }
+        } else if (rend == length -1) {
+            window->nblocks = 2;
+            window->preeditAttributeBlocks[0] = rstart;
+            window->preeditAttributeBlocks[1] = length - rstart;
+            window->preeditAttributeBlocks[2] = 0;
+            _glfwInputPreedit(window, 1);
+        } else {
+            window->nblocks = 3;
+            window->preeditAttributeBlocks[0] = rstart;
+            window->preeditAttributeBlocks[1] = rend - rstart + 1;
+            window->preeditAttributeBlocks[2] = length - rend - 1;
+            window->preeditAttributeBlocks[3] = 0;
+            _glfwInputPreedit(window, 1);
+        }
+        if ((cursorX != window->preeditCursorPosX)
+                || (cursorY != window->preeditCursorPosY)
+                || (cursorHeight != window->preeditCursorHeight)) {
+            _ximChangeCursorPosition(xic, window);
+        }
+    }
+}
+
+// IME Caret callback (do nothing)
+static void _ximPreeditCaretCallback(XIC xic, XPointer clientData, XPointer callData)
+{
+}
+
+static void _ximStatusStartCallback(XIC xic, XPointer clientData, XPointer callData)
+{
+    _GLFWwindow* window = (_GLFWwindow*)clientData;
+    window->x11.imeFocus = GLFW_TRUE;
+}
+
+static void _ximStatusDoneCallback(XIC xic, XPointer clientData, XPointer callData)
+{
+    _GLFWwindow* window = (_GLFWwindow*)clientData;
+    window->x11.imeFocus = GLFW_FALSE;
+}
+
+static void _ximStatusDrawCallback(XIC xic, XPointer clientData, XIMStatusDrawCallbackStruct* callData)
+{
+    _GLFWwindow* window = (_GLFWwindow*)clientData;
+    _glfwInputIMEStatus(window);
+}
+
+// Create XIM Preedit callback
+static XVaNestedList _createXIMPreeditCallbacks(_GLFWwindow* window)
+{
+    window->x11.preeditStartCallback.client_data = (XPointer)window;
+    window->x11.preeditStartCallback.callback = (XIMProc)_ximPreeditStartCallback;
+    window->x11.preeditDoneCallback.client_data = (XPointer)window;
+    window->x11.preeditDoneCallback.callback = (XIMProc)_ximPreeditDoneCallback;
+    window->x11.preeditDrawCallback.client_data = (XPointer)window;
+    window->x11.preeditDrawCallback.callback = (XIMProc)_ximPreeditDrawCallback;
+    window->x11.preeditCaretCallback.client_data = (XPointer)window;
+    window->x11.preeditCaretCallback.callback = (XIMProc)_ximPreeditCaretCallback;
+    return XVaCreateNestedList (0,
+        XNPreeditStartCallback, &window->x11.preeditStartCallback.client_data,
+        XNPreeditDoneCallback, &window->x11.preeditDoneCallback.client_data,
+        XNPreeditDrawCallback, &window->x11.preeditDrawCallback.client_data,
+        XNPreeditCaretCallback, &window->x11.preeditCaretCallback.client_data,
+        NULL);
+}
+
+// Create XIM status callback
+static XVaNestedList _createXIMStatusCallbacks(_GLFWwindow* window)
+{
+    window->x11.statusStartCallback.client_data = (XPointer)window;
+    window->x11.statusStartCallback.callback = (XIMProc)_ximStatusStartCallback;
+    window->x11.statusDoneCallback.client_data = (XPointer)window;
+    window->x11.statusDoneCallback.callback = (XIMProc)_ximStatusDoneCallback;
+    window->x11.statusDrawCallback.client_data = (XPointer)window;
+    window->x11.statusDrawCallback.callback = (XIMProc)_ximStatusDrawCallback;
+    return XVaCreateNestedList (0,
+        XNStatusStartCallback, &window->x11.statusStartCallback.client_data,
+        XNStatusDoneCallback, &window->x11.statusDoneCallback.client_data,
+        XNStatusDrawCallback, &window->x11.statusDrawCallback.client_data,
+        NULL);
 }
 
 // Create the X11 window (and its colormap)
@@ -1921,20 +2106,25 @@ void _glfwPushSelectionToManagerX11(void)
 
 void _glfwCreateInputContextX11(_GLFWwindow* window)
 {
-    XIMCallback callback;
-    callback.callback = (XIMProc) inputContextDestroyCallback;
-    callback.client_data = (XPointer) window;
+    XVaNestedList preeditList = _createXIMPreeditCallbacks(window);
+    XVaNestedList statusList = _createXIMStatusCallbacks(window);
 
     window->x11.ic = XCreateIC(_glfw.x11.im,
                                XNInputStyle,
-                               XIMPreeditNothing | XIMStatusNothing,
+                               XIMPreeditCallbacks | XIMStatusCallbacks,
                                XNClientWindow,
                                window->x11.handle,
                                XNFocusWindow,
                                window->x11.handle,
-                               XNDestroyCallback,
-                               &callback,
+                               XNPreeditAttributes,
+                               preeditList,
+                               XNStatusAttributes,
+                               statusList,
                                NULL);
+
+    XFree(preeditList);
+    XFree(statusList);
+    window->x11.imeFocus = GLFW_FALSE;
 
     if (window->x11.ic)
     {
@@ -3299,6 +3489,46 @@ VkResult _glfwCreateWindowSurfaceX11(VkInstance instance,
     }
 }
 
+void _glfwPlatformResetPreeditText(_GLFWwindow* window) {
+    XIC ic = window->x11.ic;
+
+    /* restore conversion state after resetting ic later */
+    XIMPreeditState preedit_state = XIMPreeditUnKnown;
+    XVaNestedList preedit_attr;
+    char* result;
+
+    if (window->ntext == 0)
+        return;
+
+    preedit_attr = XVaCreateNestedList(0, XNPreeditState, &preedit_state, NULL);
+    XGetICValues(ic, XNPreeditAttributes, preedit_attr, NULL);
+    XFree(preedit_attr);
+
+    result = XmbResetIC(ic);
+
+    preedit_attr = XVaCreateNestedList(0, XNPreeditState, preedit_state, NULL);
+    XSetICValues(ic, XNPreeditAttributes, preedit_attr, NULL);
+    XFree(preedit_attr);
+
+    window->ntext = 0;
+    window->nblocks = 0;
+    _glfwInputPreedit(window, 0);
+
+    XFree (result);
+}
+
+void _glfwPlatformSetIMEStatus(_GLFWwindow* window, int active) {
+    XIC ic = window->x11.ic;
+    if (active) {
+        XSetICFocus(ic);
+    } else {
+        XUnsetICFocus(ic);
+    }
+}
+
+int  _glfwPlatformGetIMEStatus(_GLFWwindow* window) {
+    return window->x11.imeFocus;
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

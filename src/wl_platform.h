@@ -148,11 +148,11 @@ typedef xkb_keysym_t (* PFN_xkb_compose_state_get_one_sym)(struct xkb_compose_st
 
 typedef enum _GLFWdecorationSideWayland
 {
-    mainWindow,
-    topDecoration,
-    leftDecoration,
-    rightDecoration,
-    bottomDecoration,
+    GLFW_MAIN_WINDOW,
+    GLFW_TOP_DECORATION,
+    GLFW_LEFT_DECORATION,
+    GLFW_RIGHT_DECORATION,
+    GLFW_BOTTOM_DECORATION
 } _GLFWdecorationSideWayland;
 
 typedef struct _GLFWdecorationWayland

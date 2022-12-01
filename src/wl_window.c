@@ -844,7 +844,7 @@ static void incrementCursorImage(_GLFWwindow* window)
 {
     _GLFWcursor* cursor;
 
-    if (!window || window->wl.decorations.focus != mainWindow)
+    if (!window || window->wl.decorations.focus != GLFW_MAIN_WINDOW)
         return;
 
     cursor = window->wl.currentCursor;
@@ -1075,22 +1075,22 @@ static _GLFWwindow* findWindowFromDecorationSurface(struct wl_surface* surface,
     {
         if (surface == window->wl.decorations.top.surface)
         {
-            *which = topDecoration;
+            *which = GLFW_TOP_DECORATION;
             break;
         }
         if (surface == window->wl.decorations.left.surface)
         {
-            *which = leftDecoration;
+            *which = GLFW_LEFT_DECORATION;
             break;
         }
         if (surface == window->wl.decorations.right.surface)
         {
-            *which = rightDecoration;
+            *which = GLFW_RIGHT_DECORATION;
             break;
         }
         if (surface == window->wl.decorations.bottom.surface)
         {
-            *which = bottomDecoration;
+            *which = GLFW_BOTTOM_DECORATION;
             break;
         }
         window = window->next;
@@ -1112,7 +1112,7 @@ static void pointerHandleEnter(void* userData,
     if (wl_proxy_get_tag((struct wl_proxy*) surface) != &_glfw.wl.tag)
         return;
 
-    _GLFWdecorationSideWayland focus = mainWindow;
+    _GLFWdecorationSideWayland focus = GLFW_MAIN_WINDOW;
     _GLFWwindow* window = wl_surface_get_user_data(surface);
     if (!window)
     {
@@ -1222,29 +1222,29 @@ static void pointerHandleMotion(void* userData,
 
     switch (window->wl.decorations.focus)
     {
-        case mainWindow:
+        case GLFW_MAIN_WINDOW:
             _glfw.wl.cursorPreviousName = NULL;
             _glfwInputCursorPos(window, x, y);
             return;
-        case topDecoration:
+        case GLFW_TOP_DECORATION:
             if (y < GLFW_BORDER_SIZE)
                 cursorName = "n-resize";
             else
                 cursorName = "left_ptr";
             break;
-        case leftDecoration:
+        case GLFW_LEFT_DECORATION:
             if (y < GLFW_BORDER_SIZE)
                 cursorName = "nw-resize";
             else
                 cursorName = "w-resize";
             break;
-        case rightDecoration:
+        case GLFW_RIGHT_DECORATION:
             if (y < GLFW_BORDER_SIZE)
                 cursorName = "ne-resize";
             else
                 cursorName = "e-resize";
             break;
-        case bottomDecoration:
+        case GLFW_BOTTOM_DECORATION:
             if (x < GLFW_BORDER_SIZE)
                 cursorName = "sw-resize";
             else if (x > window->wl.width + GLFW_BORDER_SIZE)
@@ -1277,9 +1277,9 @@ static void pointerHandleButton(void* userData,
     {
         switch (window->wl.decorations.focus)
         {
-            case mainWindow:
+            case GLFW_MAIN_WINDOW:
                 break;
-            case topDecoration:
+            case GLFW_TOP_DECORATION:
                 if (window->wl.cursorPosY < GLFW_BORDER_SIZE)
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP;
                 else
@@ -1287,19 +1287,19 @@ static void pointerHandleButton(void* userData,
                     xdg_toplevel_move(window->wl.xdg.toplevel, _glfw.wl.seat, serial);
                 }
                 break;
-            case leftDecoration:
+            case GLFW_LEFT_DECORATION:
                 if (window->wl.cursorPosY < GLFW_BORDER_SIZE)
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT;
                 else
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_LEFT;
                 break;
-            case rightDecoration:
+            case GLFW_RIGHT_DECORATION:
                 if (window->wl.cursorPosY < GLFW_BORDER_SIZE)
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT;
                 else
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_RIGHT;
                 break;
-            case bottomDecoration:
+            case GLFW_BOTTOM_DECORATION:
                 if (window->wl.cursorPosX < GLFW_BORDER_SIZE)
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT;
                 else if (window->wl.cursorPosX > window->wl.width + GLFW_BORDER_SIZE)
@@ -1319,7 +1319,8 @@ static void pointerHandleButton(void* userData,
     }
     else if (button == BTN_RIGHT)
     {
-        if (window->wl.decorations.focus != mainWindow && window->wl.xdg.toplevel)
+        if (window->wl.decorations.focus != GLFW_MAIN_WINDOW &&
+            window->wl.xdg.toplevel)
         {
             xdg_toplevel_show_window_menu(window->wl.xdg.toplevel,
                                           _glfw.wl.seat, serial,
@@ -1330,7 +1331,7 @@ static void pointerHandleButton(void* userData,
     }
 
     // Don’t pass the button to the user if it was related to a decoration.
-    if (window->wl.decorations.focus != mainWindow)
+    if (window->wl.decorations.focus != GLFW_MAIN_WINDOW)
         return;
 
     _glfw.wl.serial = serial;
@@ -2555,8 +2556,11 @@ void _glfwPlatformSetCursor(_GLFWwindow* window, _GLFWcursor* cursor)
 
     // If we're not in the correct window just save the cursor
     // the next time the pointer enters the window the cursor will change
-    if (window != _glfw.wl.pointerFocus || window->wl.decorations.focus != mainWindow)
+    if (window != _glfw.wl.pointerFocus ||
+        window->wl.decorations.focus != GLFW_MAIN_WINDOW)
+    {
         return;
+    }
 
     // Update pointer lock to match cursor mode
     if (window->cursorMode == GLFW_CURSOR_DISABLED)

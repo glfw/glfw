@@ -386,6 +386,7 @@ struct _GLFWinitconfig
     } ns;
     struct {
         bool      xcbVulkanSurface;
+        bool      onTheSpotIMStyle;
     } x11;
     struct {
         int       libdecorMode;
@@ -1037,6 +1038,7 @@ void _glfwTerminateVulkan(void);
 const char* _glfwGetVulkanResultString(VkResult result);
 
 size_t _glfwEncodeUTF8(char* s, uint32_t codepoint);
+uint32_t _glfwDecodeUTF8(const char** s);
 char** _glfwParseUriList(char* text, int* count);
 
 char* _glfw_strdup(const char* source);

@@ -167,6 +167,29 @@ static GLFWbool loadLibraries(void)
             _glfwPlatformGetModuleSymbol(_glfw.win32.ntdll.instance, "RtlVerifyVersionInfo");
     }
 
+    _glfw.win32.imm32.instance = _glfwPlatformLoadModule("imm32.dll");
+    if (_glfw.win32.imm32.instance)
+    {
+        _glfw.win32.imm32.ImmGetCompositionStringW_ = (PFN_ImmGetCompositionStringW)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.imm32.instance, "ImmGetCompositionStringW");
+        _glfw.win32.imm32.ImmGetContext_ = (PFN_ImmGetContext)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.imm32.instance, "ImmGetContext");
+        _glfw.win32.imm32.ImmGetConversionStatus_ = (PFN_ImmGetConversionStatus)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.imm32.instance, "ImmGetConversionStatus");
+        _glfw.win32.imm32.ImmGetDescriptionW_ = (PFN_ImmGetDescriptionW)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.imm32.instance, "ImmGetDescriptionW");
+        _glfw.win32.imm32.ImmGetOpenStatus_ = (PFN_ImmGetOpenStatus)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.imm32.instance, "ImmGetOpenStatus");
+        _glfw.win32.imm32.ImmNotifyIME_ = (PFN_ImmNotifyIME)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.imm32.instance, "ImmNotifyIME");
+        _glfw.win32.imm32.ImmReleaseContext_ = (PFN_ImmReleaseContext)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.imm32.instance, "ImmReleaseContext");
+        _glfw.win32.imm32.ImmSetCandidateWindow_ = (PFN_ImmSetCandidateWindow)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.imm32.instance, "ImmSetCandidateWindow");
+        _glfw.win32.imm32.ImmSetOpenStatus_ = (PFN_ImmSetOpenStatus)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.imm32.instance, "ImmSetOpenStatus");
+    }
+
     return GLFW_TRUE;
 }
 
@@ -191,6 +214,9 @@ static void freeLibraries(void)
 
     if (_glfw.win32.ntdll.instance)
         _glfwPlatformFreeModule(_glfw.win32.ntdll.instance);
+
+    if (_glfw.win32.imm32.instance)
+        _glfwPlatformFreeModule(_glfw.win32.imm32.instance);
 }
 
 // Create key code translation tables
@@ -618,6 +644,10 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         .getKeyScancode = _glfwGetKeyScancodeWin32,
         .setClipboardString = _glfwSetClipboardStringWin32,
         .getClipboardString = _glfwGetClipboardStringWin32,
+        .updatePreeditCursorRectangle = _glfwUpdatePreeditCursorRectangleWin32,
+        .resetPreeditText = _glfwResetPreeditTextWin32,
+        .setIMEStatus = _glfwSetIMEStatusWin32,
+        .getIMEStatus = _glfwGetIMEStatusWin32,
         .initJoysticks = _glfwInitJoysticksWin32,
         .terminateJoysticks = _glfwTerminateJoysticksWin32,
         .pollJoystick = _glfwPollJoystickWin32,

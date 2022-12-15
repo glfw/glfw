@@ -69,6 +69,7 @@ typedef struct _GLFWwndconfig   _GLFWwndconfig;
 typedef struct _GLFWctxconfig   _GLFWctxconfig;
 typedef struct _GLFWfbconfig    _GLFWfbconfig;
 typedef struct _GLFWcontext     _GLFWcontext;
+typedef struct _GLFWpreedit     _GLFWpreedit;
 typedef struct _GLFWwindow      _GLFWwindow;
 typedef struct _GLFWplatform    _GLFWplatform;
 typedef struct _GLFWlibrary     _GLFWlibrary;
@@ -525,6 +526,21 @@ struct _GLFWcontext
     GLFW_PLATFORM_CONTEXT_STATE
 };
 
+// Preedit structure for Input Method Editor/Engine
+//
+struct _GLFWpreedit
+{
+    unsigned int*       text;
+    int                 textCount;
+    int                 textBufferCount;
+    int*                blockSizes;
+    int                 blockSizesCount;
+    int                 blockSizesBufferCount;
+    int                 focusedBlockIndex;
+    int                 caretIndex;
+    int                 cursorPosX, cursorPosY, cursorWidth, cursorHeight;
+};
+
 // Window and context structure
 //
 struct _GLFWwindow
@@ -561,16 +577,9 @@ struct _GLFWwindow
     double              virtualCursorPosX, virtualCursorPosY;
     GLFWbool            rawMouseMotion;
 
-    // Preedit texts
-    unsigned int*       preeditText;
-    int                 ntext;
-    int                 ctext;
-    int*                preeditAttributeBlocks;
-    int                 nblocks;
-    int                 cblocks;
-    int                 preeditCursorPosX, preeditCursorPosY, preeditCursorHeight;
-
     _GLFWcontext        context;
+
+    _GLFWpreedit        preedit;
 
     struct {
         GLFWwindowposfun          pos;
@@ -710,6 +719,10 @@ struct _GLFWplatform
     int (*getKeyScancode)(int);
     void (*setClipboardString)(const char*);
     const char* (*getClipboardString)(void);
+    void (*updatePreeditCursorRectangle)(_GLFWwindow*);
+    void (*resetPreeditText)(_GLFWwindow*);
+    void (*setIMEStatus)(_GLFWwindow*,int);
+    int  (*getIMEStatus)(_GLFWwindow*);
     GLFWbool (*initJoysticks)(void);
     void (*terminateJoysticks)(void);
     GLFWbool (*pollJoystick)(_GLFWjoystick*,int);
@@ -945,7 +958,7 @@ void _glfwInputKey(_GLFWwindow* window,
                    int key, int scancode, int action, int mods);
 void _glfwInputChar(_GLFWwindow* window,
                     uint32_t codepoint, int mods, GLFWbool plain);
-void _glfwInputPreedit(_GLFWwindow* window, int focusedBlock);
+void _glfwInputPreedit(_GLFWwindow* window);
 void _glfwInputIMEStatus(_GLFWwindow* window);
 void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset);
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods);
@@ -967,9 +980,6 @@ void _glfwInputError(int code, const char* format, ...)
 void _glfwInputError(int code, const char* format, ...);
 #endif
 
-void _glfwPlatformResetPreeditText(_GLFWwindow* window);
-void _glfwPlatformSetIMEStatus(_GLFWwindow* window, int active);
-int  _glfwPlatformGetIMEStatus(_GLFWwindow* window);
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////

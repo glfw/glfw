@@ -3084,6 +3084,23 @@ const char* _glfwGetClipboardStringX11(void)
     return getSelectionString(_glfw.x11.CLIPBOARD);
 }
 
+void _glfwUpdatePreeditCursorRectangleX11(_GLFWwindow* window)
+{
+}
+
+void _glfwResetPreeditTextX11(_GLFWwindow* window)
+{
+}
+
+void _glfwSetIMEStatusX11(_GLFWwindow* window, int active)
+{
+}
+
+int _glfwGetIMEStatusX11(_GLFWwindow* window)
+{
+    return GLFW_FALSE;
+}
+
 EGLenum _glfwGetEGLPlatformX11(EGLint** attribs)
 {
     if (_glfw.egl.ANGLE_platform_angle)

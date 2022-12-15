@@ -3189,6 +3189,23 @@ const char* _glfwGetClipboardStringWayland(void)
     return _glfw.wl.clipboardString;
 }
 
+void _glfwUpdatePreeditCursorRectangleWayland(_GLFWwindow* window)
+{
+}
+
+void _glfwResetPreeditTextWayland(_GLFWwindow* window)
+{
+}
+
+void _glfwSetIMEStatusWayland(_GLFWwindow* window, int active)
+{
+}
+
+int _glfwGetIMEStatusWayland(_GLFWwindow* window)
+{
+    return GLFW_FALSE;
+}
+
 EGLenum _glfwGetEGLPlatformWayland(EGLint** attribs)
 {
     if (_glfw.egl.EXT_platform_base && _glfw.egl.EXT_platform_wayland)

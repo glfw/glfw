@@ -1880,6 +1880,23 @@ const char* _glfwGetClipboardStringCocoa(void)
     } // autoreleasepool
 }
 
+void _glfwUpdatePreeditCursorRectangleCocoa(_GLFWwindow* window)
+{
+}
+
+void _glfwResetPreeditTextCocoa(_GLFWwindow* window)
+{
+}
+
+void _glfwSetIMEStatusCocoa(_GLFWwindow* window, int active)
+{
+}
+
+int _glfwGetIMEStatusCocoa(_GLFWwindow* window)
+{
+    return GLFW_FALSE;
+}
+
 EGLenum _glfwGetEGLPlatformCocoa(EGLint** attribs)
 {
     if (_glfw.egl.ANGLE_platform_angle)

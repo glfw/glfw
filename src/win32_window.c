@@ -37,6 +37,23 @@
 #include <windowsx.h>
 #include <shellapi.h>
 
+// Ref: https://docs.microsoft.com/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
+#ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
+#define DWMWA_USE_IMMERSIVE_DARK_MODE 20
+#endif
+
+// Update window theme (light/dark)
+//
+static void updateTheme(HWND hWnd) {
+    if (_glfw.win32.uxtheme.uxThemeAvailable && _glfw.win32.uxtheme.darkTitleAvailable) {
+        BOOL value = _glfw.win32.uxtheme.ShouldAppsUseDarkMode() & 0x1;
+        DwmSetWindowAttribute(hWnd,
+                              DWMWA_USE_IMMERSIVE_DARK_MODE,
+                              &value,
+                              sizeof(value));
+    }
+}
+
 // Returns the window style for the specified window
 //
 static DWORD getWindowStyle(const _GLFWwindow* window)
@@ -1146,6 +1163,11 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             return 0;
         }
 
+        case WM_THEMECHANGED:
+        case WM_SETTINGCHANGE: {
+            updateTheme(window->win32.handle);
+        } break;
+
         case WM_GETDPISCALEDSIZE:
         {
             if (window->win32.scaleToMonitor)
@@ -1435,6 +1457,8 @@ static int createNativeWindow(_GLFWwindow* window,
     }
 
     _glfwGetWindowSizeWin32(window, &window->win32.width, &window->win32.height);
+
+    updateTheme(window->win32.handle);
 
     return GLFW_TRUE;
 }

@@ -1678,7 +1678,8 @@ static void dataDeviceHandleDataOffer(void* userData,
                                       struct wl_data_offer* offer)
 {
     _GLFWofferWayland* offers =
-        realloc(_glfw.wl.offers, _glfw.wl.offerCount + 1);
+        realloc(_glfw.wl.offers,
+                sizeof(_GLFWofferWayland) * (_glfw.wl.offerCount + 1));
     if (!offers)
     {
         _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);

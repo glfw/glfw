@@ -277,12 +277,11 @@ void _glfwDetectJoystickConnectionLinux(void)
 
     while (size > offset)
     {
-        regmatch_t match;
         const struct inotify_event* e = (struct inotify_event*) (buffer + offset);
 
         offset += sizeof(struct inotify_event) + e->len;
 
-        if (regexec(&_glfw.linjs.regex, e->name, 1, &match, 0) != 0)
+        if (regexec(&_glfw.linjs.regex, e->name, 0, NULL, 0) != 0)
             continue;
 
         char path[PATH_MAX];
@@ -326,7 +325,7 @@ GLFWbool _glfwInitJoysticksLinux(void)
 
     // Continue without device connection notifications if inotify fails
 
-    if (regcomp(&_glfw.linjs.regex, "^event[0-9]\\+$", 0) != 0)
+    if (regcomp(&_glfw.linjs.regex, "^event[0-9]\\+$", REG_NOSUB) != 0)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Linux: Failed to compile regex");
         return GLFW_FALSE;
@@ -341,9 +340,7 @@ GLFWbool _glfwInitJoysticksLinux(void)
 
         while ((entry = readdir(dir)))
         {
-            regmatch_t match;
-
-            if (regexec(&_glfw.linjs.regex, entry->d_name, 1, &match, 0) != 0)
+            if (regexec(&_glfw.linjs.regex, entry->d_name, 0, NULL, 0) != 0)
                 continue;
 
             char path[PATH_MAX];

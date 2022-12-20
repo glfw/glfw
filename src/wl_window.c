@@ -633,30 +633,30 @@ static GLFWbool createShellObjects(_GLFWwindow* window)
             xdg_toplevel_set_maximized(window->wl.xdg.toplevel);
 
         setIdleInhibitor(window, GLFW_FALSE);
+    }
 
-        if (_glfw.wl.decorationManager)
-        {
-            window->wl.xdg.decoration =
-                zxdg_decoration_manager_v1_get_toplevel_decoration(
-                    _glfw.wl.decorationManager, window->wl.xdg.toplevel);
-            zxdg_toplevel_decoration_v1_add_listener(window->wl.xdg.decoration,
-                                                     &xdgDecorationListener,
-                                                     window);
+    if (_glfw.wl.decorationManager)
+    {
+        window->wl.xdg.decoration =
+            zxdg_decoration_manager_v1_get_toplevel_decoration(
+                _glfw.wl.decorationManager, window->wl.xdg.toplevel);
+        zxdg_toplevel_decoration_v1_add_listener(window->wl.xdg.decoration,
+                                                 &xdgDecorationListener,
+                                                 window);
 
-            uint32_t mode;
+        uint32_t mode;
 
-            if (window->decorated)
-                mode = ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE;
-            else
-                mode = ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE;
-
-            zxdg_toplevel_decoration_v1_set_mode(window->wl.xdg.decoration, mode);
-        }
+        if (window->decorated)
+            mode = ZXDG_TOPLEVEL_DECORATION_V1_MODE_SERVER_SIDE;
         else
-        {
-            if (window->decorated)
-                createFallbackDecorations(window);
-        }
+            mode = ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE;
+
+        zxdg_toplevel_decoration_v1_set_mode(window->wl.xdg.decoration, mode);
+    }
+    else
+    {
+        if (window->decorated && !window->monitor)
+            createFallbackDecorations(window);
     }
 
     if (window->minwidth != GLFW_DONT_CARE && window->minheight != GLFW_DONT_CARE)

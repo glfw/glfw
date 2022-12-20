@@ -143,9 +143,16 @@ information on what to include when reporting a bug.
  - Added `GLFW_POINTING_HAND_CURSOR` alias for `GLFW_HAND_CURSOR` (#427)
  - Added `GLFW_MOUSE_PASSTHROUGH` window hint for letting mouse input pass
    through the window (#1236,#1568)
+ - Added `GLFW_CURSOR_CAPTURED` cursor mode to confine the cursor to the window
+   content area (#58)
+ - Added `GLFW_POSITION_X` and `GLFW_POSITION_Y` window hints for initial position
+   (#1603,#1747)
+ - Added `GLFW_ANY_POSITION` hint value for letting the window manager choose (#1603,#1747)
  - Added `GLFW_PLATFORM_UNAVAILABLE` error for platform detection failures (#1958)
  - Added `GLFW_FEATURE_UNAVAILABLE` error for platform limitations (#1692)
  - Added `GLFW_FEATURE_UNIMPLEMENTED` error for incomplete backends (#1692)
+ - Added `GLFW_WAYLAND_APP_ID` window hint string for Wayland app\_id selection
+   (#2121,#2122)
  - Added `GLFW_ANGLE_PLATFORM_TYPE` init hint and `GLFW_ANGLE_PLATFORM_TYPE_*`
    values to select ANGLE backend (#1380)
  - Added `GLFW_X11_XCB_VULKAN_SURFACE` init hint for selecting X11 Vulkan
@@ -225,12 +232,14 @@ information on what to include when reporting a bug.
    match event scancode (#1993)
  - [Win32] Bugfix: Instance-local operations used executable instance (#469,#1296,#1395)
  - [Win32] Bugfix: The OSMesa library was not unloaded on termination
+ - [Win32] Bugfix: Right shift emitted `GLFW_KEY_UNKNOWN` when using a CJK IME (#2050)
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)
  - [Cocoa] Changed `EGLNativeWindowType` from `NSView` to `CALayer` (#1169)
  - [Cocoa] Changed F13 key to report Print Screen for cross-platform consistency
    (#1786)
+ - [Cocoa] Disabled macOS fullscreen when `GLFW_RESIZABLE` is false
  - [Cocoa] Removed dependency on the CoreVideo framework
  - [Cocoa] Bugfix: `glfwSetWindowSize` used a bottom-left anchor point (#1553)
  - [Cocoa] Bugfix: Window remained on screen after destruction until event poll
@@ -257,6 +266,13 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: `kUTTypeURL` was deprecated in macOS 12.0 (#2003)
  - [Cocoa] Bugfix: A connected Apple AirPlay would emit a useless error (#1791)
  - [Cocoa] Bugfix: The EGL and OSMesa libraries were not unloaded on termination
+ - [Cocoa] Bugfix: `GLFW_MAXIMIZED` was always true when `GLFW_RESIZABLE` was false
+ - [Cocoa] Bugfix: Changing `GLFW_DECORATED` in macOS fullscreen would abort
+   application (#1886)
+ - [Cocoa] Bugfix: Setting a monitor from macOS fullscreen would abort
+   application (#2110)
+ - [Cocoa] Bugfix: The Vulkan loader was not loaded from the `Frameworks` bundle
+   subdirectory (#2113,#2120)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -303,6 +319,8 @@ information on what to include when reporting a bug.
  - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Added support for file path drop events (#2040)
  - [Wayland] Added support for more human-readable monitor names where available
+ - [Wayland] Disabled alpha channel for opaque windows on systems lacking
+   `EGL_EXT_present_opaque` (#1895)
  - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
@@ -367,8 +385,10 @@ information on what to include when reporting a bug.
    wlroots compositors (#1268)
  - [Wayland] Bugfix: `GLFW_DECORATED` was ignored when showing a window with XDG
    decorations
+ - [Wayland] Bugfix: Connecting a mouse after `glfwInit` would segfault (#1450)
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
+ - [Linux] Bugfix: Joysticks without buttons were ignored (#2042,#2043)
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
  - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
@@ -380,7 +400,9 @@ information on what to include when reporting a bug.
    (#442)
  - [EGL] Added ANGLE backend selection via `EGL_ANGLE_platform_angle` extension
    (#1380)
+   [EGL] Added loading of glvnd `libOpenGL.so.0` where available for OpenGL
  - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
+ - [GLX] Added loading of glvnd `libGLX.so.0` where available
  - [GLX] Bugfix: Context creation failed if GLX 1.4 was not exported by GLX library
 
 

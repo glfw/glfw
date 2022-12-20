@@ -28,6 +28,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_COCOA)
+
 #include <unistd.h>
 #include <math.h>
 
@@ -418,4 +420,6 @@ GLFWAPI id glfwGetNSGLContext(GLFWwindow* handle)
 
     return window->context.nsgl.object;
 }
+
+#endif // _GLFW_COCOA
 

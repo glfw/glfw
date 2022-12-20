@@ -82,8 +82,17 @@ static int createNativeWindow(_GLFWwindow* window,
         fitToMonitor(window);
     else
     {
-        window->null.xpos = 17;
-        window->null.ypos = 17;
+        if (wndconfig->xpos == GLFW_ANY_POSITION && wndconfig->ypos == GLFW_ANY_POSITION)
+        {
+            window->null.xpos = 17;
+            window->null.ypos = 17;
+        }
+        else
+        {
+            window->null.xpos = wndconfig->xpos;
+            window->null.ypos = wndconfig->ypos;
+        }
+
         window->null.width = wndconfig->width;
         window->null.height = wndconfig->height;
     }

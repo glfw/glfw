@@ -258,6 +258,7 @@ typedef struct _GLFWwindowWayland
     double                      cursorPosX, cursorPosY;
 
     char*                       title;
+    char*                       appId;
 
     // We need to track the monitors the window spans on to calculate the
     // optimal scaling factor.
@@ -266,10 +267,9 @@ typedef struct _GLFWwindowWayland
     int                         monitorsCount;
     int                         monitorsSize;
 
-    struct {
-        struct zwp_relative_pointer_v1*    relativePointer;
-        struct zwp_locked_pointer_v1*      lockedPointer;
-    } pointerLock;
+    struct zwp_relative_pointer_v1* relativePointer;
+    struct zwp_locked_pointer_v1*   lockedPointer;
+    struct zwp_confined_pointer_v1* confinedPointer;
 
     struct zwp_idle_inhibitor_v1*          idleInhibitor;
 
@@ -322,12 +322,12 @@ typedef struct _GLFWlibraryWayland
     uint32_t                    serial;
     uint32_t                    pointerEnterSerial;
 
-    int32_t                     keyboardRepeatRate;
-    int32_t                     keyboardRepeatDelay;
-    int                         keyboardLastKey;
-    int                         keyboardLastScancode;
+    int                         keyRepeatTimerfd;
+    int32_t                     keyRepeatRate;
+    int32_t                     keyRepeatDelay;
+    int                         keyRepeatScancode;
+
     char*                       clipboardString;
-    int                         timerfd;
     short int                   keycodes[256];
     short int                   scancodes[GLFW_KEY_LAST + 1];
     char                        keynames[GLFW_KEY_LAST + 1][5];
@@ -515,7 +515,6 @@ void _glfwSetGammaRampWayland(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
 void _glfwAddOutputWayland(uint32_t name, uint32_t version);
 void _glfwUpdateContentScaleWayland(_GLFWwindow* window);
-GLFWbool _glfwInputTextWayland(_GLFWwindow* window, uint32_t scancode);
 
 _GLFWusercontext* _glfwCreateUserContextWayland(_GLFWwindow* window);
 

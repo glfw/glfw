@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_WIN32)
+
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
@@ -544,4 +546,6 @@ GLFWAPI const char* glfwGetWin32Monitor(GLFWmonitor* handle)
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     return monitor->win32.publicDisplayName;
 }
+
+#endif // _GLFW_WIN32
 

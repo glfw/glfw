@@ -162,7 +162,7 @@ GLFW can be compiled for more than one platform (window system) at once.  This l
 a single library binary support both X11 and Wayland on Linux and other Unix-like systems.
 
 You can control platform selection via the @ref GLFW_PLATFORM initialization hint.  By
-default this is set to @ref GLFW_ANY_PLATFORM, which will look for supported window
+default, this is set to @ref GLFW_ANY_PLATFORM, which will look for supported window
 systems in order of priority and select the first one it finds.  It can also be set to any
 specific platform to have GLFW only look for that one.
 
@@ -269,9 +269,9 @@ This will destroy any remaining window, monitor and cursor objects, restore any
 modified gamma ramps, re-enable the screensaver if it had been disabled and free
 any other resources allocated by GLFW.
 
-Once the library is terminated, it is as if it had never been initialized and
+Once the library is terminated, it is as if it had never been initialized, therefore
 you will need to initialize it again before being able to use GLFW.  If the
-library was not initialized or had already been terminated, it return
+library was not initialized or had already been terminated, it returns
 immediately.
 
 
@@ -391,14 +391,14 @@ which monitor the window is currently considered to be on.
 
 This section describes the conditions under which GLFW can be expected to
 function, barring bugs in the operating system or drivers.  Use of GLFW outside
-of these limits may work on some platforms, or on some machines, or some of the
+these limits may work on some platforms, or on some machines, or some of the
 time, or on some versions of GLFW, but it may break at any time and this will
 not be considered a bug.
 
 
 @subsection lifetime Pointer lifetimes
 
-GLFW will never free any pointer you provide to it and you must never free any
+GLFW will never free any pointer you provide to it, and you must never free any
 pointer it provides to you.
 
 Many GLFW functions return pointers to dynamically allocated structures, strings
@@ -602,15 +602,15 @@ The format of the string is as follows:
  - The names of the always supported context creation APIs EGL and OSMesa
  - Any additional compile-time options, APIs and (on Windows) what compiler was used
 
-For example, GLFW 3.4 compiled as a DLL for Windows with MinGW may have a version string
+For example, compiling GLFW 3.4 with MinGW as a DLL for Windows, may result in a version string
 like this:
 
 @code
 3.4.0 Win32 WGL Null EGL OSMesa MinGW DLL
 @endcode
 
-While GLFW compiled as as static library for Linux with both Wayland and X11 enabled may
-have a version string like this:
+Compiling GLFW as a static library for Linux, with both Wayland and X11 enabled, may
+result in a version string like this:
 
 @code
 3.4.0 Wayland X11 GLX Null EGL OSMesa monotonic

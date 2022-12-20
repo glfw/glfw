@@ -24,7 +24,7 @@ All input callbacks receive a window handle.  By using the
 or objects from your callbacks.
 
 To get a better feel for how the various events callbacks behave, run the
-`events` test program.  It register every callback supported by GLFW and prints
+`events` test program.  It registers every callback supported by GLFW and prints
 out all arguments provided for every event, along with time and sequence
 information.
 
@@ -123,9 +123,21 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 @endcode
 
-The action is one of `GLFW_PRESS`, `GLFW_REPEAT` or `GLFW_RELEASE`.  The key
-will be `GLFW_KEY_UNKNOWN` if GLFW lacks a key token for it, for example
-_E-mail_ and _Play_ keys.
+The action is one of `GLFW_PRESS`, `GLFW_REPEAT` or `GLFW_RELEASE`.  Events with
+`GLFW_PRESS` and `GLFW_RELEASE` actions are emitted for every key press.  Most
+keys will also emit events with `GLFW_REPEAT` actions while a key is held down.
+
+Key events with `GLFW_REPEAT` actions are intended for text input.  They are
+emitted at the rate set in the user's keyboard settings.  At most one key is
+repeated even if several keys are held down.  `GLFW_REPEAT` actions should not
+be relied on to know which keys are being held down or to drive animation.
+Instead you should either save the state of relevant keys based on `GLFW_PRESS`
+and `GLFW_RELEASE` actions, or call @ref glfwGetKey, which provides basic cached
+key state.
+
+The key will be one of the existing [key tokens](@ref keys), or
+`GLFW_KEY_UNKNOWN` if GLFW lacks a token for it, for example _E-mail_ and _Play_
+keys.
 
 The scancode is unique for every key, regardless of whether it has a key token.
 Scancodes are platform-specific but consistent over time, so keys will have
@@ -300,12 +312,24 @@ glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
 This mode puts no limit on the motion of the cursor.
 
+If you wish the cursor to be visible but confined to the content area of the
+window, set the cursor mode to `GLFW_CURSOR_CAPTURED`.
+
+@code
+glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_CAPTURED);
+@endcode
+
+The cursor will behave normally inside the content area but will not be able to
+leave unless the window loses focus.
+
 To exit out of either of these special modes, restore the `GLFW_CURSOR_NORMAL`
 cursor mode.
 
 @code
 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 @endcode
+
+If the cursor was disabled, this will move it back to its last visible position.
 
 
 @anchor GLFW_RAW_MOUSE_MOTION
@@ -370,7 +394,7 @@ sequential rows, starting from the top-left corner.
 @subsubsection cursor_standard Standard cursor creation
 
 A cursor with a [standard shape](@ref shapes) from the current system cursor
-theme can be can be created with @ref glfwCreateStandardCursor.
+theme can be created with @ref glfwCreateStandardCursor.
 
 @code
 GLFWcursor* url_cursor = glfwCreateStandardCursor(GLFW_POINTING_HAND_CURSOR);

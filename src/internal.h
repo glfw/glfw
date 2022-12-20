@@ -338,13 +338,6 @@ typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const c
 
 #include "platform.h"
 
-// Constructs a version number string from the public header macros
-#define _GLFW_CONCAT_VERSION(m, n, r) #m "." #n "." #r
-#define _GLFW_MAKE_VERSION(m, n, r) _GLFW_CONCAT_VERSION(m, n, r)
-#define _GLFW_VERSION_NUMBER _GLFW_MAKE_VERSION(GLFW_VERSION_MAJOR, \
-                                                GLFW_VERSION_MINOR, \
-                                                GLFW_VERSION_REVISION)
-
 // Checks for whether the library has been initialized
 #define _GLFW_REQUIRE_INIT()                         \
     if (!_glfw.initialized)                          \
@@ -404,6 +397,8 @@ struct _GLFWinitconfig
 //
 struct _GLFWwndconfig
 {
+    int           xpos;
+    int           ypos;
     int           width;
     int           height;
     const char*   title;
@@ -429,6 +424,9 @@ struct _GLFWwndconfig
     struct {
         GLFWbool  keymenu;
     } win32;
+    struct {
+        char      appId[256];
+    } wl;
 };
 
 // Context configuration

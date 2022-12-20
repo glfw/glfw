@@ -596,7 +596,8 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
         {
             if (value != GLFW_CURSOR_NORMAL &&
                 value != GLFW_CURSOR_HIDDEN &&
-                value != GLFW_CURSOR_DISABLED)
+                value != GLFW_CURSOR_DISABLED &&
+                value != GLFW_CURSOR_CAPTURED)
             {
                 _glfwInputError(GLFW_INVALID_ENUM,
                                 "Invalid cursor mode 0x%08X",

@@ -255,21 +255,6 @@ static void list_context_extensions(int client, int major, int minor)
     }
 }
 
-static void list_vulkan_instance_extensions(void)
-{
-    printf("Vulkan instance extensions:\n");
-
-    uint32_t ep_count;
-    vkEnumerateInstanceExtensionProperties(NULL, &ep_count, NULL);
-    VkExtensionProperties* ep = calloc(ep_count, sizeof(VkExtensionProperties));
-    vkEnumerateInstanceExtensionProperties(NULL, &ep_count, ep);
-
-    for (uint32_t i = 0;  i < ep_count;  i++)
-        printf(" %s (spec version %u)\n", ep[i].extensionName, ep[i].specVersion);
-
-    free(ep);
-}
-
 static void list_vulkan_instance_layers(void)
 {
     printf("Vulkan instance layers:\n");
@@ -288,21 +273,6 @@ static void list_vulkan_instance_layers(void)
     }
 
     free(lp);
-}
-
-static void list_vulkan_device_extensions(VkInstance instance, VkPhysicalDevice device)
-{
-    printf("Vulkan device extensions:\n");
-
-    uint32_t ep_count;
-    vkEnumerateDeviceExtensionProperties(device, NULL, &ep_count, NULL);
-    VkExtensionProperties* ep = calloc(ep_count, sizeof(VkExtensionProperties));
-    vkEnumerateDeviceExtensionProperties(device, NULL, &ep_count, ep);
-
-    for (uint32_t i = 0;  i < ep_count;  i++)
-        printf(" %s (spec version %u)\n", ep[i].extensionName, ep[i].specVersion);
-
-    free(ep);
 }
 
 static void list_vulkan_device_layers(VkInstance instance, VkPhysicalDevice device)
@@ -953,20 +923,51 @@ int main(int argc, char** argv)
                VK_VERSION_MAJOR(loader_version),
                VK_VERSION_MINOR(loader_version));
 
-        uint32_t re_count;
-        const char** re = glfwGetRequiredInstanceExtensions(&re_count);
+        uint32_t glfw_re_count;
+        const char** glfw_re = glfwGetRequiredInstanceExtensions(&glfw_re_count);
 
-        if (re)
+        uint32_t re_count = glfw_re_count;
+        const char** re = calloc(glfw_re_count, sizeof(char*));
+
+        if (glfw_re)
         {
             printf("Vulkan window surface required instance extensions:\n");
-            for (uint32_t i = 0;  i < re_count;  i++)
-                printf(" %s\n", re[i]);
+            for (uint32_t i = 0;  i < glfw_re_count;  i++)
+            {
+                printf(" %s\n", glfw_re[i]);
+                re[i] = glfw_re[i];
+            }
         }
         else
             printf("Vulkan window surface extensions missing\n");
 
+        uint32_t ep_count;
+        vkEnumerateInstanceExtensionProperties(NULL, &ep_count, NULL);
+        VkExtensionProperties* ep = calloc(ep_count, sizeof(VkExtensionProperties));
+        vkEnumerateInstanceExtensionProperties(NULL, &ep_count, ep);
+
         if (list_extensions)
-            list_vulkan_instance_extensions();
+        {
+            printf("Vulkan instance extensions:\n");
+
+            for (uint32_t i = 0;  i < ep_count;  i++)
+                printf(" %s (spec version %u)\n", ep[i].extensionName, ep[i].specVersion);
+        }
+
+        bool portability_enumeration = false;
+
+        for (uint32_t i = 0;  i < ep_count;  i++)
+        {
+            if (strcmp(ep[i].extensionName, "VK_KHR_portability_enumeration") != 0)
+                continue;
+
+            re_count++;
+            re = realloc((void*) re, sizeof(char*) * re_count);
+            re[re_count - 1] = "VK_KHR_portability_enumeration";
+            portability_enumeration = true;
+        }
+
+        free(ep);
 
         if (list_layers)
             list_vulkan_instance_layers();
@@ -987,6 +988,9 @@ int main(int argc, char** argv)
         ici.enabledExtensionCount = re_count;
         ici.ppEnabledExtensionNames = re;
 
+        if (portability_enumeration)
+            ici.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+
         VkInstance instance = VK_NULL_HANDLE;
 
         if (vkCreateInstance(&ici, NULL, &instance) != VK_SUCCESS)
@@ -995,9 +999,11 @@ int main(int argc, char** argv)
             exit(EXIT_FAILURE);
         }
 
+        free((void*) re);
+
         gladLoadVulkanUserPtr(NULL, (GLADuserptrloadfunc) glfwGetInstanceProcAddress, instance);
 
-        if (re)
+        if (glfw_re_count)
         {
             VkSurfaceKHR surface = VK_NULL_HANDLE;
 
@@ -1020,16 +1026,44 @@ int main(int argc, char** argv)
             VkPhysicalDeviceProperties pdp;
             vkGetPhysicalDeviceProperties(pd[i], &pdp);
 
-            printf("Vulkan %s device: \"%s\" (API version %i.%i)\n",
-                   get_device_type_name(pdp.deviceType),
-                   pdp.deviceName,
-                   VK_VERSION_MAJOR(pdp.apiVersion),
-                   VK_VERSION_MINOR(pdp.apiVersion));
-
             uint32_t qfp_count;
             vkGetPhysicalDeviceQueueFamilyProperties(pd[i], &qfp_count, NULL);
 
-            if (re)
+            uint32_t ep_count;
+            vkEnumerateDeviceExtensionProperties(pd[i], NULL, &ep_count, NULL);
+            VkExtensionProperties* ep = calloc(ep_count, sizeof(VkExtensionProperties));
+            vkEnumerateDeviceExtensionProperties(pd[i], NULL, &ep_count, ep);
+
+            if (portability_enumeration)
+            {
+                bool conformant = true;
+
+                for (uint32_t j = 0; j < ep_count; j++)
+                {
+                    if (strcmp(ep[j].extensionName, "VK_KHR_portability_subset") == 0)
+                    {
+                        conformant = false;
+                        break;
+                    }
+                }
+
+                printf("Vulkan %s %s device: \"%s\" (API version %i.%i)\n",
+                       conformant ? "conformant" : "non-conformant",
+                       get_device_type_name(pdp.deviceType),
+                       pdp.deviceName,
+                       VK_VERSION_MAJOR(pdp.apiVersion),
+                       VK_VERSION_MINOR(pdp.apiVersion));
+            }
+            else
+            {
+                printf("Vulkan %s device: \"%s\" (API version %i.%i)\n",
+                       get_device_type_name(pdp.deviceType),
+                       pdp.deviceName,
+                       VK_VERSION_MAJOR(pdp.apiVersion),
+                       VK_VERSION_MINOR(pdp.apiVersion));
+            }
+
+            if (glfw_re_count)
             {
                 printf("Vulkan device queue family presentation support:\n");
                 for (uint32_t j = 0;  j < qfp_count;  j++)
@@ -1043,7 +1077,13 @@ int main(int argc, char** argv)
             }
 
             if (list_extensions)
-                list_vulkan_device_extensions(instance, pd[i]);
+            {
+                printf("Vulkan device extensions:\n");
+                for (uint32_t j = 0;  j < ep_count;  j++)
+                    printf(" %s (spec version %u)\n", ep[j].extensionName, ep[j].specVersion);
+            }
+
+            free(ep);
 
             if (list_layers)
                 list_vulkan_device_layers(instance, pd[i]);

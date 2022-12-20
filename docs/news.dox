@@ -32,7 +32,7 @@ support for a given platform is compiled in with @ref glfwPlatformSupported.
 
 GLFW now provides the standard cursor shapes @ref GLFW_RESIZE_NWSE_CURSOR and
 @ref GLFW_RESIZE_NESW_CURSOR for diagonal resizing, @ref GLFW_RESIZE_ALL_CURSOR
-for omni-directional resizing and @ref GLFW_NOT_ALLOWED_CURSOR for showing an
+for omnidirectional resizing and @ref GLFW_NOT_ALLOWED_CURSOR for showing an
 action is not allowed.
 
 Unlike the original set, these shapes may not be available everywhere and
@@ -54,6 +54,12 @@ to whatever window is behind it.  This can also be changed after window
 creation with the matching [window attribute](@ref GLFW_MOUSE_PASSTHROUGH_attrib).
 
 
+@subsubsection wayland_app_id_34 Wayland app_id specification
+
+GLFW now supports specifying the app_id for a Wayland window using the
+[GLFW_WAYLAND_APP_ID](@ref GLFW_WAYLAND_APP_ID_hint) window hint string.
+
+
 @subsubsection features_34_angle_backend Support for ANGLE rendering backend selection
 
 GLFW now provides the
@@ -61,6 +67,14 @@ GLFW now provides the
 requesting a specific rendering backend when using
 [ANGLE](https://chromium.googlesource.com/angle/angle/) to create OpenGL ES
 contexts.
+
+
+@subsubsection captured_cursor_34 Captured cursor mode
+
+GLFW now supports confining the cursor to the window content area with the @ref
+GLFW_CURSOR_CAPTURED cursor mode.
+
+For more information see @ref cursor_mode.
 
 
 @subsubsection features_34_init_allocator Support for custom memory allocator
@@ -71,6 +85,14 @@ function pointers corresponding to the standard library functions `malloc`,
 `realloc` and `free`.
 
 For more information see @ref init_allocator.
+
+
+@subsubsection features_34_position_hint Window hints for initial position
+
+GLFW now provides the @ref GLFW_POSITION_X and @ref GLFW_POSITION_Y window hints for
+specifying the initial position of the window.  This removes the need to create a hidden
+window, move it and then show it.  The default value of these hints is
+`GLFW_ANY_POSITION`, which selects the previous behavior.
 
 
 @subsubsection features_34_win32_keymenu Support for keyboard access to Windows window menu
@@ -89,7 +111,7 @@ applications.
 Because GLFW now supports runtime selection of platform (window system), a library binary
 may export native access functions for multiple platforms.  Starting with version 3.4 you
 must not assume that GLFW is running on a platform just because it exports native access
-functions for it.  After initialization you can query the selected platform with @ref
+functions for it.  After initialization, you can query the selected platform with @ref
 glfwGetPlatform.
 
 
@@ -115,7 +137,20 @@ To work around this, call any joystick function before waiting for events, for
 example by setting a [joystick callback](@ref joystick_event).
 
 
-@subsubsection standalone_34 Tests and examples are disabled when built as a sub-project
+@subsubsection wayland_alpha_34 Frambuffer may lack alpha channel on older Wayland systems
+
+On Wayland, when creating an EGL context on a machine lacking the new
+`EGL_EXT_present_opaque` extension, the @ref GLFW_ALPHA_BITS window hint will be
+ignored and the framebuffer will have no alpha channel.  This is because some
+Wayland compositors treat any buffer with an alpha channel as per-pixel
+transparent.
+
+If you want a per-pixel transparent window, see the
+[GLFW_TRANSPARENT_FRAMEBUFFER](@ref GLFW_TRANSPARENT_FRAMEBUFFER_hint) window
+hint.
+
+
+@subsubsection standalone_34 Tests and examples are disabled when built as a subproject
 
 GLFW now does not build the tests and examples when it is added as
 a subdirectory of another CMake project.  To enable these, set the @ref
@@ -149,7 +184,7 @@ GLFW_TRANSPARENT_FRAMEBUFFER on Windows 7 if DWM transparency is off
 (the Transparency setting under Personalization > Window Color).
 
 
-@subsubsection emptyevents_34 Empty events on X11 no longer roundtrip to server
+@subsubsection emptyevents_34 Empty events on X11 no longer round-trip to server
 
 Events posted with @ref glfwPostEmptyEvent now use a separate unnamed pipe
 instead of sending an X11 client event to the helper window.
@@ -239,6 +274,10 @@ then GLFW will fail to initialize.
  - @ref GLFW_ANGLE_PLATFORM_TYPE_VULKAN
  - @ref GLFW_ANGLE_PLATFORM_TYPE_METAL
  - @ref GLFW_X11_XCB_VULKAN_SURFACE
+ - @ref GLFW_CURSOR_CAPTURED
+ - @ref GLFW_POSITION_X
+ - @ref GLFW_POSITION_Y
+ - @ref GLFW_ANY_POSITION
 
 
 @section news_archive Release notes for earlier versions

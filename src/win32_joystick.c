@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_WIN32)
+
 #include <stdio.h>
 #include <math.h>
 
@@ -755,4 +757,6 @@ void _glfwUpdateGamepadGUIDWin32(char* guid)
                 original, original + 4);
     }
 }
+
+#endif // _GLFW_WIN32
 

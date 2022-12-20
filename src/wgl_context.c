@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_WIN32)
+
 #include <stdlib.h>
 #include <assert.h>
 
@@ -72,18 +74,13 @@ static int choosePixelFormatWGL(_GLFWwindow* window,
     int attribs[40];
     int values[sizeof(attribs) / sizeof(attribs[0])];
 
+    nativeCount = DescribePixelFormat(window->context.wgl.dc,
+                                      1,
+                                      sizeof(PIXELFORMATDESCRIPTOR),
+                                      NULL);
+
     if (_glfw.wgl.ARB_pixel_format)
     {
-        const int attrib = WGL_NUMBER_PIXEL_FORMATS_ARB;
-
-        if (!wglGetPixelFormatAttribivARB(window->context.wgl.dc,
-                                          1, 0, 1, &attrib, &nativeCount))
-        {
-            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                                 "WGL: Failed to retrieve pixel format attribute");
-            return 0;
-        }
-
         ADD_ATTRIB(WGL_SUPPORT_OPENGL_ARB);
         ADD_ATTRIB(WGL_DRAW_TO_WINDOW_ARB);
         ADD_ATTRIB(WGL_PIXEL_TYPE_ARB);
@@ -120,13 +117,6 @@ static int choosePixelFormatWGL(_GLFWwindow* window,
             if (_glfw.wgl.EXT_colorspace)
                 ADD_ATTRIB(WGL_COLORSPACE_EXT);
         }
-    }
-    else
-    {
-        nativeCount = DescribePixelFormat(window->context.wgl.dc,
-                                          1,
-                                          sizeof(PIXELFORMATDESCRIPTOR),
-                                          NULL);
     }
 
     usableConfigs = _glfw_calloc(nativeCount, sizeof(_GLFWfbconfig));
@@ -848,4 +838,6 @@ GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* handle)
 
     return window->context.wgl.handle;
 }
+
+#endif // _GLFW_WIN32
 

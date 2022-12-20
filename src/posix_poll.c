@@ -30,6 +30,8 @@
 
 #include "internal.h"
 
+#if defined(GLFW_BUILD_POSIX_POLL)
+
 #include <signal.h>
 #include <time.h>
 #include <errno.h>
@@ -78,4 +80,6 @@ GLFWbool _glfwPollPOSIX(struct pollfd* fds, nfds_t count, double* timeout)
         }
     }
 }
+
+#endif // GLFW_BUILD_POSIX_POLL
 

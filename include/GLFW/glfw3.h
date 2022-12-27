@@ -1164,6 +1164,9 @@ extern "C" {
 #define GLFW_ANGLE_PLATFORM_TYPE_VULKAN  0x00037007
 #define GLFW_ANGLE_PLATFORM_TYPE_METAL   0x00037008
 
+#define GLFW_WAYLAND_PREFER_LIBDECOR    0x00038001
+#define GLFW_WAYLAND_DISABLE_LIBDECOR   0x00038002
+
 #define GLFW_ANY_POSITION           0x80000000
 
 /*! @defgroup shapes Standard cursor shapes
@@ -1307,6 +1310,11 @@ extern "C" {
  *  X11 specific [init hint](@ref GLFW_X11_XCB_VULKAN_SURFACE_hint).
  */
 #define GLFW_X11_XCB_VULKAN_SURFACE 0x00052001
+/*! @brief Wayland specific init hint.
+ *
+ *  Wayland specific [init hint](@ref GLFW_WAYLAND_LIBDECOR_hint).
+ */
+#define GLFW_WAYLAND_LIBDECOR       0x00053001
 /*! @} */
 
 /*! @addtogroup init

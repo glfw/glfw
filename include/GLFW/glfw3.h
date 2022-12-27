@@ -1063,6 +1063,9 @@ extern "C" {
 #define GLFW_EGL_CONTEXT_API        0x00036002
 #define GLFW_OSMESA_CONTEXT_API     0x00036003
 
+#define GLFW_WAYLAND_PREFER_LIBDECOR    0x00038001
+#define GLFW_WAYLAND_DISABLE_LIBDECOR   0x00038002
+
 /*! @defgroup shapes Standard cursor shapes
  *  @brief Standard system cursor shapes.
  *
@@ -1123,6 +1126,11 @@ extern "C" {
  *  macOS specific [init hint](@ref GLFW_COCOA_MENUBAR_hint).
  */
 #define GLFW_COCOA_MENUBAR          0x00051002
+/*! @brief Wayland specific init hint.
+ *
+ *  Wayland specific [init hint](@ref GLFW_WAYLAND_LIBDECOR_hint).
+ */
+#define GLFW_WAYLAND_LIBDECOR       0x00053001
 /*! @} */
 
 #define GLFW_DONT_CARE              -1

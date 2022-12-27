@@ -244,6 +244,9 @@ struct _GLFWinitconfig
         GLFWbool  menubar;
         GLFWbool  chdir;
     } ns;
+    struct {
+        int       libdecorMode;
+    } wl;
 };
 
 // Window configuration

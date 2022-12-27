@@ -163,6 +163,20 @@ static const struct wl_registry_listener registryListener =
     registryHandleGlobalRemove
 };
 
+void libdecorHandleError(struct libdecor* context,
+                         enum libdecor_error error,
+                         const char* message)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Wayland: libdecor error %u: %s",
+                    error, message);
+}
+
+static const struct libdecor_interface libdecorInterface =
+{
+    libdecorHandleError
+};
+
 // Create key code translation tables
 //
 static void createKeyTables(void)
@@ -433,6 +447,93 @@ int _glfwPlatformInit(void)
         return GLFW_FALSE;
     }
 
+    if (_glfw.hints.init.wl.libdecorMode == GLFW_WAYLAND_PREFER_LIBDECOR)
+        _glfw.wl.libdecor.handle = _glfw_dlopen("libdecor-0.so.0");
+
+    if (_glfw.wl.libdecor.handle)
+    {
+        _glfw.wl.libdecor.libdecor_new_ = (PFN_libdecor_new)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_new");
+        _glfw.wl.libdecor.libdecor_unref_ = (PFN_libdecor_unref)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_unref");
+        _glfw.wl.libdecor.libdecor_get_fd_ = (PFN_libdecor_get_fd)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_get_fd");
+        _glfw.wl.libdecor.libdecor_dispatch_ = (PFN_libdecor_dispatch)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_dispatch");
+        _glfw.wl.libdecor.libdecor_decorate_ = (PFN_libdecor_decorate)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_decorate");
+        _glfw.wl.libdecor.libdecor_frame_unref_ = (PFN_libdecor_frame_unref)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_frame_unref");
+        _glfw.wl.libdecor.libdecor_frame_set_app_id_ = (PFN_libdecor_frame_set_app_id)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_frame_set_app_id");
+        _glfw.wl.libdecor.libdecor_frame_set_title_ = (PFN_libdecor_frame_set_title)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_frame_set_title");
+        _glfw.wl.libdecor.libdecor_frame_set_minimized_ = (PFN_libdecor_frame_set_minimized)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_frame_set_minimized");
+        _glfw.wl.libdecor.libdecor_frame_set_fullscreen_ = (PFN_libdecor_frame_set_fullscreen)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_frame_set_fullscreen");
+        _glfw.wl.libdecor.libdecor_frame_unset_fullscreen_ = (PFN_libdecor_frame_unset_fullscreen)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_frame_unset_fullscreen");
+        _glfw.wl.libdecor.libdecor_frame_map_ = (PFN_libdecor_frame_map)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_frame_map");
+        _glfw.wl.libdecor.libdecor_frame_commit_ = (PFN_libdecor_frame_commit)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_frame_commit");
+        _glfw.wl.libdecor.libdecor_frame_set_min_content_size_ = (PFN_libdecor_frame_set_min_content_size)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_frame_set_min_content_size");
+        _glfw.wl.libdecor.libdecor_frame_set_max_content_size_ = (PFN_libdecor_frame_set_max_content_size)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_frame_set_max_content_size");
+        _glfw.wl.libdecor.libdecor_frame_set_maximized_ = (PFN_libdecor_frame_set_maximized)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_frame_set_maximized");
+        _glfw.wl.libdecor.libdecor_frame_unset_maximized_ = (PFN_libdecor_frame_unset_maximized)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_frame_unset_maximized");
+        _glfw.wl.libdecor.libdecor_frame_set_capabilities_ = (PFN_libdecor_frame_set_capabilities)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_frame_set_capabilities");
+        _glfw.wl.libdecor.libdecor_frame_unset_capabilities_ = (PFN_libdecor_frame_unset_capabilities)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_frame_unset_capabilities");
+        _glfw.wl.libdecor.libdecor_frame_set_visibility_ = (PFN_libdecor_frame_set_visibility)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_frame_set_visibility");
+        _glfw.wl.libdecor.libdecor_frame_get_xdg_toplevel_ = (PFN_libdecor_frame_get_xdg_toplevel)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_frame_get_xdg_toplevel");
+        _glfw.wl.libdecor.libdecor_configuration_get_content_size_ = (PFN_libdecor_configuration_get_content_size)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_configuration_get_content_size");
+        _glfw.wl.libdecor.libdecor_configuration_get_window_state_ = (PFN_libdecor_configuration_get_window_state)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_configuration_get_window_state");
+        _glfw.wl.libdecor.libdecor_state_new_ = (PFN_libdecor_state_new)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_state_new");
+        _glfw.wl.libdecor.libdecor_state_free_ = (PFN_libdecor_state_free)
+            _glfw_dlsym(_glfw.wl.libdecor.handle, "libdecor_state_free");
+
+        if (!_glfw.wl.libdecor.libdecor_new_ ||
+            !_glfw.wl.libdecor.libdecor_unref_ ||
+            !_glfw.wl.libdecor.libdecor_get_fd_ ||
+            !_glfw.wl.libdecor.libdecor_dispatch_ ||
+            !_glfw.wl.libdecor.libdecor_decorate_ ||
+            !_glfw.wl.libdecor.libdecor_frame_unref_ ||
+            !_glfw.wl.libdecor.libdecor_frame_set_app_id_ ||
+            !_glfw.wl.libdecor.libdecor_frame_set_title_ ||
+            !_glfw.wl.libdecor.libdecor_frame_set_minimized_ ||
+            !_glfw.wl.libdecor.libdecor_frame_set_fullscreen_ ||
+            !_glfw.wl.libdecor.libdecor_frame_unset_fullscreen_ ||
+            !_glfw.wl.libdecor.libdecor_frame_map_ ||
+            !_glfw.wl.libdecor.libdecor_frame_commit_ ||
+            !_glfw.wl.libdecor.libdecor_frame_set_min_content_size_ ||
+            !_glfw.wl.libdecor.libdecor_frame_set_max_content_size_ ||
+            !_glfw.wl.libdecor.libdecor_frame_set_maximized_ ||
+            !_glfw.wl.libdecor.libdecor_frame_unset_maximized_ ||
+            !_glfw.wl.libdecor.libdecor_frame_set_capabilities_ ||
+            !_glfw.wl.libdecor.libdecor_frame_unset_capabilities_ ||
+            !_glfw.wl.libdecor.libdecor_frame_set_visibility_ ||
+            !_glfw.wl.libdecor.libdecor_frame_get_xdg_toplevel_ ||
+            !_glfw.wl.libdecor.libdecor_configuration_get_content_size_ ||
+            !_glfw.wl.libdecor.libdecor_configuration_get_window_state_ ||
+            !_glfw.wl.libdecor.libdecor_state_new_ ||
+            !_glfw.wl.libdecor.libdecor_state_free_)
+        {
+            _glfw_dlclose(_glfw.wl.libdecor.handle);
+            memset(&_glfw.wl.libdecor, 0, sizeof(_glfw.wl.libdecor));
+        }
+    }
+
     _glfw.wl.registry = wl_display_get_registry(_glfw.wl.display);
     wl_registry_add_listener(_glfw.wl.registry, &registryListener, NULL);
 
@@ -458,6 +559,15 @@ int _glfwPlatformInit(void)
 #endif
 
     _glfwInitTimerPOSIX();
+
+    if (_glfw.wl.libdecor.handle)
+    {
+        _glfw.wl.libdecor.context = libdecor_new(_glfw.wl.display, &libdecorInterface);
+
+        // Allow libdecor to receive its globals before proceeding
+        if (_glfw.wl.libdecor.context)
+            libdecor_dispatch(_glfw.wl.libdecor.context, 1);
+    }
 
 #ifdef WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION
     if (wl_seat_get_version(_glfw.wl.seat) >= WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION)
@@ -502,6 +612,15 @@ void _glfwPlatformTerminate(void)
 #endif
     _glfwTerminateEGL();
     _glfwTerminateOSMesa();
+
+    if (_glfw.wl.libdecor.context)
+        libdecor_unref(_glfw.wl.libdecor.context);
+
+    if (_glfw.wl.libdecor.handle)
+    {
+        _glfw_dlclose(_glfw.wl.libdecor.handle);
+        _glfw.wl.libdecor.handle = NULL;
+    }
 
     if (_glfw.wl.egl.handle)
     {

@@ -102,6 +102,30 @@ a nib or manually, when the first window is created, which is when AppKit is
 initialized.  Set this with @ref glfwInitHint.
 
 
+@subsubsection init_hints_wayland Wayland specific init hints
+
+@anchor GLFW_WAYLAND_LIBDECOR_hint
+__GLFW_WAYLAND_LIBDECOR__ specifies whether to use
+[libdecor](https://gitlab.freedesktop.org/libdecor/libdecor) for window
+decorations where available.  Possible values are `GLFW_WAYLAND_PREFER_LIBDECOR`
+and `GLFW_WAYLAND_DISABLE_LIBDECOR`.  This is ignored on other platforms.
+
+@note This init hint was added in 3.3.9 and is not present in earlier patch releases.  It
+is safe to attempt to set this hint on earlier versions of GLFW 3.3 but it will emit
+a harmless @ref GLFW_INVALID_ENUM error.  If you need to avoid causing any errors, you can
+check the library version first with @ref glfwGetVersion.
+
+@note To set this hint while also building against earlier versions of GLFW 3.3, you can
+use the numerical constants directly.
+
+@note @code
+int minor, patch;
+glfwGetVersion(NULL, &minor, &patch);
+if (minor > 3 || (minor == 3 && patch >= 9))
+    glfwInitHint(0x00053001 /*GLFW_WAYLAND_LIBDECOR*/, 0x00038002 /*GLFW_WAYLAND_DISABLE_LIBDECOR*/);
+@endcode
+
+
 @subsubsection init_hints_values Supported and default values
 
 Initialization hint             | Default value | Supported values
@@ -109,6 +133,7 @@ Initialization hint             | Default value | Supported values
 @ref GLFW_JOYSTICK_HAT_BUTTONS  | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_COCOA_CHDIR_RESOURCES | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_COCOA_MENUBAR         | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_WAYLAND_LIBDECOR      | `GLFW_WAYLAND_PREFER_LIBDECOR`  | `GLFW_WAYLAND_PREFER_LIBDECOR` or `GLFW_WAYLAND_DISABLE_LIBDECOR`
 
 
 @subsection intro_init_terminate Terminating GLFW

@@ -29,6 +29,8 @@
 #include <xkbcommon/xkbcommon-compose.h>
 #include <dlfcn.h>
 
+#include <stdbool.h>
+
 typedef VkFlags VkWaylandSurfaceCreateFlagsKHR;
 
 typedef struct VkWaylandSurfaceCreateInfoKHR
@@ -146,6 +148,122 @@ typedef xkb_keysym_t (* PFN_xkb_compose_state_get_one_sym)(struct xkb_compose_st
 #define xkb_compose_state_get_status _glfw.wl.xkb.compose_state_get_status
 #define xkb_compose_state_get_one_sym _glfw.wl.xkb.compose_state_get_one_sym
 
+struct libdecor;
+struct libdecor_frame;
+struct libdecor_state;
+struct libdecor_configuration;
+
+enum libdecor_error
+{
+	LIBDECOR_ERROR_COMPOSITOR_INCOMPATIBLE,
+	LIBDECOR_ERROR_INVALID_FRAME_CONFIGURATION,
+};
+
+enum libdecor_window_state
+{
+	LIBDECOR_WINDOW_STATE_NONE = 0,
+	LIBDECOR_WINDOW_STATE_ACTIVE = 1,
+	LIBDECOR_WINDOW_STATE_MAXIMIZED = 2,
+	LIBDECOR_WINDOW_STATE_FULLSCREEN = 4,
+	LIBDECOR_WINDOW_STATE_TILED_LEFT = 8,
+	LIBDECOR_WINDOW_STATE_TILED_RIGHT = 16,
+	LIBDECOR_WINDOW_STATE_TILED_TOP = 32,
+	LIBDECOR_WINDOW_STATE_TILED_BOTTOM = 64
+};
+
+enum libdecor_capabilities
+{
+	LIBDECOR_ACTION_MOVE = 1,
+	LIBDECOR_ACTION_RESIZE = 2,
+	LIBDECOR_ACTION_MINIMIZE = 4,
+	LIBDECOR_ACTION_FULLSCREEN = 8,
+	LIBDECOR_ACTION_CLOSE = 16
+};
+
+struct libdecor_interface
+{
+	void (* error)(struct libdecor*,enum libdecor_error,const char*);
+	void (* reserved0)(void);
+	void (* reserved1)(void);
+	void (* reserved2)(void);
+	void (* reserved3)(void);
+	void (* reserved4)(void);
+	void (* reserved5)(void);
+	void (* reserved6)(void);
+	void (* reserved7)(void);
+	void (* reserved8)(void);
+	void (* reserved9)(void);
+};
+
+struct libdecor_frame_interface
+{
+	void (* configure)(struct libdecor_frame*,struct libdecor_configuration*,void*);
+	void (* close)(struct libdecor_frame*,void*);
+	void (* commit)(struct libdecor_frame*,void*);
+	void (* dismiss_popup)(struct libdecor_frame*,const char*,void*);
+	void (* reserved0)(void);
+	void (* reserved1)(void);
+	void (* reserved2)(void);
+	void (* reserved3)(void);
+	void (* reserved4)(void);
+	void (* reserved5)(void);
+	void (* reserved6)(void);
+	void (* reserved7)(void);
+	void (* reserved8)(void);
+	void (* reserved9)(void);
+};
+
+typedef struct libdecor* (* PFN_libdecor_new)(struct wl_display*,const struct libdecor_interface*);
+typedef void (* PFN_libdecor_unref)(struct libdecor*);
+typedef int (* PFN_libdecor_get_fd)(struct libdecor*);
+typedef int (* PFN_libdecor_dispatch)(struct libdecor*,int);
+typedef struct libdecor_frame* (* PFN_libdecor_decorate)(struct libdecor*,struct wl_surface*,const struct libdecor_frame_interface*,void*);
+typedef void (* PFN_libdecor_frame_unref)(struct libdecor_frame*);
+typedef void (* PFN_libdecor_frame_set_app_id)(struct libdecor_frame*,const char*);
+typedef void (* PFN_libdecor_frame_set_title)(struct libdecor_frame*,const char*);
+typedef void (* PFN_libdecor_frame_set_minimized)(struct libdecor_frame*);
+typedef void (* PFN_libdecor_frame_set_fullscreen)(struct libdecor_frame*,struct wl_output*);
+typedef void (* PFN_libdecor_frame_unset_fullscreen)(struct libdecor_frame*);
+typedef void (* PFN_libdecor_frame_map)(struct libdecor_frame*);
+typedef void (* PFN_libdecor_frame_commit)(struct libdecor_frame*,struct libdecor_state*,struct libdecor_configuration*);
+typedef void (* PFN_libdecor_frame_set_min_content_size)(struct libdecor_frame*,int,int);
+typedef void (* PFN_libdecor_frame_set_max_content_size)(struct libdecor_frame*,int,int);
+typedef void (* PFN_libdecor_frame_set_maximized)(struct libdecor_frame*);
+typedef void (* PFN_libdecor_frame_unset_maximized)(struct libdecor_frame*);
+typedef void (* PFN_libdecor_frame_set_capabilities)(struct libdecor_frame*,enum libdecor_capabilities);
+typedef void (* PFN_libdecor_frame_unset_capabilities)(struct libdecor_frame*,enum libdecor_capabilities);
+typedef void (* PFN_libdecor_frame_set_visibility)(struct libdecor_frame*,bool visible);
+typedef struct xdg_toplevel* (* PFN_libdecor_frame_get_xdg_toplevel)(struct libdecor_frame*);
+typedef bool (* PFN_libdecor_configuration_get_content_size)(struct libdecor_configuration*,struct libdecor_frame*,int*,int*);
+typedef bool (* PFN_libdecor_configuration_get_window_state)(struct libdecor_configuration*,enum libdecor_window_state*);
+typedef struct libdecor_state* (* PFN_libdecor_state_new)(int,int);
+typedef void (* PFN_libdecor_state_free)(struct libdecor_state*);
+#define libdecor_new _glfw.wl.libdecor.libdecor_new_
+#define libdecor_unref _glfw.wl.libdecor.libdecor_unref_
+#define libdecor_get_fd _glfw.wl.libdecor.libdecor_get_fd_
+#define libdecor_dispatch _glfw.wl.libdecor.libdecor_dispatch_
+#define libdecor_decorate _glfw.wl.libdecor.libdecor_decorate_
+#define libdecor_frame_unref _glfw.wl.libdecor.libdecor_frame_unref_
+#define libdecor_frame_set_app_id _glfw.wl.libdecor.libdecor_frame_set_app_id_
+#define libdecor_frame_set_title _glfw.wl.libdecor.libdecor_frame_set_title_
+#define libdecor_frame_set_minimized _glfw.wl.libdecor.libdecor_frame_set_minimized_
+#define libdecor_frame_set_fullscreen _glfw.wl.libdecor.libdecor_frame_set_fullscreen_
+#define libdecor_frame_unset_fullscreen _glfw.wl.libdecor.libdecor_frame_unset_fullscreen_
+#define libdecor_frame_map _glfw.wl.libdecor.libdecor_frame_map_
+#define libdecor_frame_commit _glfw.wl.libdecor.libdecor_frame_commit_
+#define libdecor_frame_set_min_content_size _glfw.wl.libdecor.libdecor_frame_set_min_content_size_
+#define libdecor_frame_set_max_content_size _glfw.wl.libdecor.libdecor_frame_set_max_content_size_
+#define libdecor_frame_set_maximized _glfw.wl.libdecor.libdecor_frame_set_maximized_
+#define libdecor_frame_unset_maximized _glfw.wl.libdecor.libdecor_frame_unset_maximized_
+#define libdecor_frame_set_capabilities _glfw.wl.libdecor.libdecor_frame_set_capabilities_
+#define libdecor_frame_unset_capabilities _glfw.wl.libdecor.libdecor_frame_unset_capabilities_
+#define libdecor_frame_set_visibility _glfw.wl.libdecor.libdecor_frame_set_visibility_
+#define libdecor_frame_get_xdg_toplevel _glfw.wl.libdecor.libdecor_frame_get_xdg_toplevel_
+#define libdecor_configuration_get_content_size _glfw.wl.libdecor.libdecor_configuration_get_content_size_
+#define libdecor_configuration_get_window_state _glfw.wl.libdecor.libdecor_configuration_get_window_state_
+#define libdecor_state_new _glfw.wl.libdecor.libdecor_state_new_
+#define libdecor_state_free _glfw.wl.libdecor.libdecor_state_free_
+
 typedef enum _GLFWdecorationSideWayland
 {
     GLFW_MAIN_WINDOW,
@@ -207,6 +325,11 @@ typedef struct _GLFWwindowWayland
         struct zxdg_toplevel_decoration_v1* decoration;
         uint32_t                decorationMode;
     } xdg;
+
+    struct {
+        struct libdecor_frame*  frame;
+        int                     mode;
+    } libdecor;
 
     _GLFWcursor*                currentCursor;
     double                      cursorPosX, cursorPosY;
@@ -340,6 +463,36 @@ typedef struct _GLFWlibraryWayland
         PFN_wl_egl_window_destroy window_destroy;
         PFN_wl_egl_window_resize window_resize;
     } egl;
+
+    struct {
+        void*                   handle;
+        struct libdecor*        context;
+        PFN_libdecor_new        libdecor_new_;
+        PFN_libdecor_unref      libdecor_unref_;
+        PFN_libdecor_get_fd     libdecor_get_fd_;
+        PFN_libdecor_dispatch   libdecor_dispatch_;
+        PFN_libdecor_decorate   libdecor_decorate_;
+        PFN_libdecor_frame_unref libdecor_frame_unref_;
+        PFN_libdecor_frame_set_app_id libdecor_frame_set_app_id_;
+        PFN_libdecor_frame_set_title libdecor_frame_set_title_;
+        PFN_libdecor_frame_set_minimized libdecor_frame_set_minimized_;
+        PFN_libdecor_frame_set_fullscreen libdecor_frame_set_fullscreen_;
+        PFN_libdecor_frame_unset_fullscreen libdecor_frame_unset_fullscreen_;
+        PFN_libdecor_frame_map libdecor_frame_map_;
+        PFN_libdecor_frame_commit libdecor_frame_commit_;
+        PFN_libdecor_frame_set_min_content_size libdecor_frame_set_min_content_size_;
+        PFN_libdecor_frame_set_max_content_size libdecor_frame_set_max_content_size_;
+        PFN_libdecor_frame_set_maximized libdecor_frame_set_maximized_;
+        PFN_libdecor_frame_unset_maximized libdecor_frame_unset_maximized_;
+        PFN_libdecor_frame_set_capabilities libdecor_frame_set_capabilities_;
+        PFN_libdecor_frame_unset_capabilities libdecor_frame_unset_capabilities_;
+        PFN_libdecor_frame_set_visibility libdecor_frame_set_visibility_;
+        PFN_libdecor_frame_get_xdg_toplevel libdecor_frame_get_xdg_toplevel_;
+        PFN_libdecor_configuration_get_content_size libdecor_configuration_get_content_size_;
+        PFN_libdecor_configuration_get_window_state libdecor_configuration_get_window_state_;
+        PFN_libdecor_state_new libdecor_state_new_;
+        PFN_libdecor_state_free libdecor_state_free_;
+    } libdecor;
 } _GLFWlibraryWayland;
 
 // Wayland-specific per-monitor data

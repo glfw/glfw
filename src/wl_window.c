@@ -2006,7 +2006,7 @@ void _glfwGetWindowFrameSizeWayland(_GLFWwindow* window,
                                     int* left, int* top,
                                     int* right, int* bottom)
 {
-    if (window->decorated && !window->monitor && window->wl.decorations.top.surface)
+    if (window->wl.decorations.top.surface)
     {
         if (top)
             *top = GLFW_CAPTION_HEIGHT;

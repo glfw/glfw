@@ -231,13 +231,15 @@ static GLFWbool waitForData(struct pollfd* fds, nfds_t count, double* timeout)
     }
 }
 
-static void createFallbackDecoration(_GLFWdecorationWayland* decoration,
+static void createFallbackDecoration(_GLFWwindow* window,
+                                     _GLFWdecorationWayland* decoration,
                                      struct wl_surface* parent,
                                      struct wl_buffer* buffer,
                                      int x, int y,
                                      int width, int height)
 {
     decoration->surface = wl_compositor_create_surface(_glfw.wl.compositor);
+    wl_surface_set_user_data(decoration->surface, window);
     wl_proxy_set_tag((struct wl_proxy*) decoration->surface, &_glfw.wl.tag);
     decoration->subsurface =
         wl_subcompositor_get_subsurface(_glfw.wl.subcompositor,
@@ -268,19 +270,19 @@ static void createFallbackDecorations(_GLFWwindow* window)
     if (!window->wl.decorations.buffer)
         return;
 
-    createFallbackDecoration(&window->wl.decorations.top, window->wl.surface,
+    createFallbackDecoration(window, &window->wl.decorations.top, window->wl.surface,
                              window->wl.decorations.buffer,
                              0, -GLFW_CAPTION_HEIGHT,
                              window->wl.width, GLFW_CAPTION_HEIGHT);
-    createFallbackDecoration(&window->wl.decorations.left, window->wl.surface,
+    createFallbackDecoration(window, &window->wl.decorations.left, window->wl.surface,
                              window->wl.decorations.buffer,
                              -GLFW_BORDER_SIZE, -GLFW_CAPTION_HEIGHT,
                              GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
-    createFallbackDecoration(&window->wl.decorations.right, window->wl.surface,
+    createFallbackDecoration(window, &window->wl.decorations.right, window->wl.surface,
                              window->wl.decorations.buffer,
                              window->wl.width, -GLFW_CAPTION_HEIGHT,
                              GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
-    createFallbackDecoration(&window->wl.decorations.bottom, window->wl.surface,
+    createFallbackDecoration(window, &window->wl.decorations.bottom, window->wl.surface,
                              window->wl.decorations.buffer,
                              -GLFW_BORDER_SIZE, window->wl.height,
                              window->wl.width + GLFW_BORDER_SIZE * 2, GLFW_BORDER_SIZE);
@@ -1064,40 +1066,6 @@ static char* readDataOfferAsString(struct wl_data_offer* offer, const char* mime
     return string;
 }
 
-static _GLFWwindow* findWindowFromDecorationSurface(struct wl_surface* surface,
-                                                    _GLFWdecorationSideWayland* which)
-{
-    _GLFWdecorationSideWayland focus;
-    _GLFWwindow* window = _glfw.windowListHead;
-    if (!which)
-        which = &focus;
-    while (window)
-    {
-        if (surface == window->wl.decorations.top.surface)
-        {
-            *which = GLFW_TOP_DECORATION;
-            break;
-        }
-        if (surface == window->wl.decorations.left.surface)
-        {
-            *which = GLFW_LEFT_DECORATION;
-            break;
-        }
-        if (surface == window->wl.decorations.right.surface)
-        {
-            *which = GLFW_RIGHT_DECORATION;
-            break;
-        }
-        if (surface == window->wl.decorations.bottom.surface)
-        {
-            *which = GLFW_BOTTOM_DECORATION;
-            break;
-        }
-        window = window->next;
-    }
-    return window;
-}
-
 static void pointerHandleEnter(void* userData,
                                struct wl_pointer* pointer,
                                uint32_t serial,
@@ -1112,16 +1080,19 @@ static void pointerHandleEnter(void* userData,
     if (wl_proxy_get_tag((struct wl_proxy*) surface) != &_glfw.wl.tag)
         return;
 
-    _GLFWdecorationSideWayland focus = GLFW_MAIN_WINDOW;
     _GLFWwindow* window = wl_surface_get_user_data(surface);
-    if (!window)
-    {
-        window = findWindowFromDecorationSurface(surface, &focus);
-        if (!window)
-            return;
-    }
 
-    window->wl.decorations.focus = focus;
+    if (surface == window->wl.decorations.top.surface)
+        window->wl.decorations.focus = GLFW_TOP_DECORATION;
+    else if (surface == window->wl.decorations.left.surface)
+        window->wl.decorations.focus = GLFW_LEFT_DECORATION;
+    else if (surface == window->wl.decorations.right.surface)
+        window->wl.decorations.focus = GLFW_RIGHT_DECORATION;
+    else if (surface == window->wl.decorations.bottom.surface)
+        window->wl.decorations.focus = GLFW_BOTTOM_DECORATION;
+    else
+        window->wl.decorations.focus = GLFW_MAIN_WINDOW;
+
     _glfw.wl.serial = serial;
     _glfw.wl.pointerEnterSerial = serial;
     _glfw.wl.pointerFocus = window;
@@ -1484,13 +1455,12 @@ static void keyboardHandleEnter(void* userData,
     if (!surface)
         return;
 
+    if (wl_proxy_get_tag((struct wl_proxy*) surface) != &_glfw.wl.tag)
+        return;
+
     _GLFWwindow* window = wl_surface_get_user_data(surface);
-    if (!window)
-    {
-        window = findWindowFromDecorationSurface(surface, NULL);
-        if (!window)
-            return;
-    }
+    if (surface != window->wl.surface)
+        return;
 
     _glfw.wl.serial = serial;
     _glfw.wl.keyboardFocus = window;
@@ -1743,7 +1713,7 @@ static void dataDeviceHandleEnter(void* userData,
                     window = wl_surface_get_user_data(surface);
             }
 
-            if (window && _glfw.wl.offers[i].text_uri_list)
+            if (surface == window->wl.surface && _glfw.wl.offers[i].text_uri_list)
             {
                 _glfw.wl.dragOffer = offer;
                 _glfw.wl.dragFocus = window;

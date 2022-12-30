@@ -241,12 +241,14 @@ GLFWbool _glfwWindowVisibleCocoa(_GLFWwindow* window);
 GLFWbool _glfwWindowMaximizedCocoa(_GLFWwindow* window);
 GLFWbool _glfwWindowHoveredCocoa(_GLFWwindow* window);
 GLFWbool _glfwFramebufferTransparentCocoa(_GLFWwindow* window);
+char _glfwWindowTabbingModeCocoa(_GLFWwindow* window);
 void _glfwSetWindowResizableCocoa(_GLFWwindow* window, GLFWbool enabled);
 void _glfwSetWindowDecoratedCocoa(_GLFWwindow* window, GLFWbool enabled);
 void _glfwSetWindowFloatingCocoa(_GLFWwindow* window, GLFWbool enabled);
 float _glfwGetWindowOpacityCocoa(_GLFWwindow* window);
 void _glfwSetWindowOpacityCocoa(_GLFWwindow* window, float opacity);
 void _glfwSetWindowMousePassthroughCocoa(_GLFWwindow* window, GLFWbool enabled);
+void _glfwSetWindowTabbingModeCocoa(_GLFWwindow* window, char value);
 
 void _glfwSetRawMouseMotionCocoa(_GLFWwindow *window, GLFWbool enabled);
 GLFWbool _glfwRawMouseMotionSupportedCocoa(void);

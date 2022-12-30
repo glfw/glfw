@@ -3082,6 +3082,16 @@ const char* _glfwGetClipboardStringX11(void)
     return getSelectionString(_glfw.x11.CLIPBOARD);
 }
 
+void _glfwSetWindowTabbingModeX11(_GLFWwindow* window, const char mode)
+{
+    // Silently ignore
+}
+
+char _glfwWindowTabbingModeX11(_GLFWwindow* window)
+{
+    return GLFW_NEVER;
+}
+
 EGLenum _glfwGetEGLPlatformX11(EGLint** attribs)
 {
     if (_glfw.egl.ANGLE_platform_angle)

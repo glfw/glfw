@@ -320,6 +320,30 @@ extern "C" {
  */
 #define GLFW_FALSE                  0
 
+
+/*! @brief Zero.
+ *
+ *  This is only semantic sugar for the number 0.
+ *
+ *  @ingroup init
+ */
+#define GLFW_NEVER 0
+/*! @brief One.
+ *
+ *  This is only semantic sugar for the number 1.
+ *
+ *  @ingroup init
+ */
+#define GLFW_AUTO 1
+/*! @brief Two.
+ *
+ *  This is only semantic sugar for the number 2.
+ *
+ *  @ingroup init
+ */
+#define GLFW_ALWAYS 2
+
+
 /*! @name Key and button actions
  *  @{ */
 /*! @brief The key or mouse button was released.
@@ -1108,6 +1132,11 @@ extern "C" {
  *  [window hint](@ref GLFW_COCOA_GRAPHICS_SWITCHING_hint).
  */
 #define GLFW_COCOA_GRAPHICS_SWITCHING 0x00023003
+/*! @brief macOS specific
+ *  [window hint](@ref GLFW_COCOA_TABBING_MODE_hint).
+ *  [attribute](@ref GLFW_COCOA_TABBING_MODE_attrib).
+ */
+#define GLFW_COCOA_TABBING_MODE 0x00023004
 /*! @brief X11 specific
  *  [window hint](@ref GLFW_X11_CLASS_NAME_hint).
  */
@@ -1302,6 +1331,11 @@ extern "C" {
  *  macOS specific [init hint](@ref GLFW_COCOA_MENUBAR_hint).
  */
 #define GLFW_COCOA_MENUBAR          0x00051002
+/*! @brief macOS specific init hint.
+ *
+ *  macOS specific [init hint](@ref GLFW_COCOA_ALLOW_AUTO_TABBING_hint).
+ */
+#define GLFW_COCOA_ALLOW_AUTO_TABBING 0x00051003
 /*! @brief X11 specific init hint.
  *
  *  X11 specific [init hint](@ref GLFW_X11_XCB_VULKAN_SURFACE_hint).
@@ -4015,9 +4049,10 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* window, int attrib);
  *  The supported attributes are [GLFW_DECORATED](@ref GLFW_DECORATED_attrib),
  *  [GLFW_RESIZABLE](@ref GLFW_RESIZABLE_attrib),
  *  [GLFW_FLOATING](@ref GLFW_FLOATING_attrib),
- *  [GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib) and
- *  [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_attrib).
- *  [GLFW_MOUSE_PASSTHROUGH](@ref GLFW_MOUSE_PASSTHROUGH_attrib)
+ *  [GLFW_AUTO_ICONIFY](@ref GLFW_AUTO_ICONIFY_attrib),
+ *  [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_attrib),
+ *  [GLFW_MOUSE_PASSTHROUGH](@ref GLFW_MOUSE_PASSTHROUGH_attrib) and
+ *  [GLFW_COCOA_TABBING_MODE](@ref GLFW_COCOA_TABBING_MODE_attrib).
  *
  *  Some of these attributes are ignored for full screen windows.  The new
  *  value will take effect if the window is later made windowed.
@@ -4027,7 +4062,7 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* window, int attrib);
  *
  *  @param[in] window The window to set the attribute for.
  *  @param[in] attrib A supported window attribute.
- *  @param[in] value `GLFW_TRUE` or `GLFW_FALSE`.
+ *  @param[in] value `GLFW_TRUE`, `GLFW_FALSE` `GLFW_NEVER`, `GLFW_ALWAYS` or `GLFW_AUTO`.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_INVALID_ENUM, @ref GLFW_INVALID_VALUE, @ref GLFW_PLATFORM_ERROR and @ref

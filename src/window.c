@@ -293,6 +293,8 @@ void glfwDefaultWindowHints(void)
 
     // The default is to use full Retina resolution framebuffers
     _glfw.hints.window.ns.retina = GLFW_TRUE;
+    
+    _glfw.hints.window.ns.tabbingMode = 0;
 }
 
 GLFWAPI void glfwWindowHint(int hint, int value)
@@ -384,6 +386,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             return;
         case GLFW_COCOA_GRAPHICS_SWITCHING:
             _glfw.hints.context.nsgl.offline = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
+        case GLFW_COCOA_TABBING_MODE:
+            _glfw.hints.window.ns.tabbingMode = value;
             return;
         case GLFW_SCALE_TO_MONITOR:
             _glfw.hints.window.scaleToMonitor = value ? GLFW_TRUE : GLFW_FALSE;
@@ -902,6 +907,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->context.release;
         case GLFW_CONTEXT_NO_ERROR:
             return window->context.noerror;
+        case GLFW_COCOA_TABBING_MODE:
+            return _glfw.platform.windowTabbingMode(window);
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid window attribute 0x%08X", attrib);
@@ -948,6 +955,10 @@ GLFWAPI void glfwSetWindowAttrib(GLFWwindow* handle, int attrib, int value)
         case GLFW_MOUSE_PASSTHROUGH:
             window->mousePassthrough = value;
             _glfw.platform.setWindowMousePassthrough(window, value);
+            return;
+        
+        case GLFW_COCOA_TABBING_MODE:
+            _glfw.platform.setWindowTabbingMode(window, value);
             return;
     }
 

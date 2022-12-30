@@ -885,10 +885,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     [window->ns.object setAcceptsMouseMovedEvents:YES];
     [window->ns.object setRestorable:NO];
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101200
-    if ([window->ns.object respondsToSelector:@selector(setTabbingMode:)])
-        [window->ns.object setTabbingMode:NSWindowTabbingModeDisallowed];
-#endif
+    _glfwSetWindowTabbingModeCocoa(window, wndconfig->ns.tabbingMode);
 
     _glfwGetWindowSizeCocoa(window, &window->ns.width, &window->ns.height);
     _glfwGetFramebufferSizeCocoa(window, &window->ns.fbWidth, &window->ns.fbHeight);
@@ -1874,6 +1871,46 @@ const char* _glfwGetClipboardStringCocoa(void)
     return _glfw.ns.clipboardString;
 
     } // autoreleasepool
+}
+
+void _glfwSetWindowTabbingModeCocoa(_GLFWwindow* window, const char mode)
+{
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101200
+    if ([window->ns.object respondsToSelector:@selector(setTabbingMode:)]) {
+        NSWindowTabbingMode tabbingMode;
+        
+        switch (mode) {
+            case GLFW_NEVER:
+                tabbingMode = NSWindowTabbingModeDisallowed;
+                break;
+            case GLFW_AUTO:
+                tabbingMode = NSWindowTabbingModeAutomatic;
+                break;
+            case GLFW_ALWAYS:
+                tabbingMode = NSWindowTabbingModePreferred;
+                break;
+        }
+        
+        [window->ns.object setTabbingMode:tabbingMode];
+    }
+#endif
+}
+
+char _glfwWindowTabbingModeCocoa(_GLFWwindow* window)
+{
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101200
+    if ([window->ns.object respondsToSelector:@selector(tabbingMode:)]) {
+        switch ([window->ns.object tabbingMode]) {
+            case NSWindowTabbingModeDisallowed:
+                return GLFW_NEVER;
+            case NSWindowTabbingModeAutomatic:
+                return GLFW_AUTO;
+            case NSWindowTabbingModePreferred:
+                return GLFW_ALWAYS;
+        }
+    }
+#endif
+    return 0;
 }
 
 EGLenum _glfwGetEGLPlatformCocoa(EGLint** attribs)

@@ -121,6 +121,8 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - Added `GLFW_COCOA_TABBING_MODE` window hint for specifying a window's tabbing mode (#1250)
+ - Added `GLFW_COCOA_ALLOW_AUTO_TABBING` init hint for enabling and disabling application-wide window tabbing (#1250)
  - Added `GLFW_PLATFORM` init hint for runtime platform selection (#1958)
  - Added `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`,
    `GLFW_PLATFORM_WAYLAND`, `GLFW_PLATFORM_X11` and `GLFW_PLATFORM_NULL` symbols to

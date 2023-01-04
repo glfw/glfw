@@ -89,6 +89,7 @@ static void set_icon(GLFWwindow* window, int icon_color)
     }
 
     glfwSetWindowIcon(window, 1, &img);
+    glfwSetApplicationIcon(1, &img);
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -107,13 +108,21 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             break;
         case GLFW_KEY_X:
             glfwSetWindowIcon(window, 0, NULL);
+            glfwSetApplicationIcon(0, NULL);
             break;
     }
+}
+
+static void error_callback(int error_code, const char* description)
+{
+    fprintf(stderr, "Error %i: %s\n", error_code, description);
 }
 
 int main(int argc, char** argv)
 {
     GLFWwindow* window;
+    
+    glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
     {

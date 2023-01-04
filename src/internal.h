@@ -673,6 +673,7 @@ struct _GLFWplatform
     // init
     GLFWbool (*init)(void);
     void (*terminate)(void);
+    void (*setApplicationIcon)(int,const GLFWimage*);
     // input
     void (*getCursorPos)(_GLFWwindow*,double*,double*);
     void (*setCursorPos)(_GLFWwindow*,double,double);

@@ -498,6 +498,7 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         GLFW_PLATFORM_COCOA,
         _glfwInitCocoa,
         _glfwTerminateCocoa,
+        _glfwSetApplicationIconCocoa,
         _glfwGetCursorPosCocoa,
         _glfwSetCursorPosCocoa,
         _glfwSetCursorModeCocoa,
@@ -691,6 +692,63 @@ void _glfwTerminateCocoa(void)
     _glfwTerminateOSMesa();
 
     } // autoreleasepool
+}
+
+void _glfwSetApplicationIconCocoa(int count, const GLFWimage* images)
+{
+    @autoreleasepool {
+    if (count == 0)
+    {
+        NSApp.applicationIconImage = nil;
+        return;
+    }
+    
+    // Selects the largest image. Should probably select the one with the
+    // size most similar to the current NSApp.applicationIconImage.size.
+    int imageIndex = 0;
+    for (int i = 1; i < count; ++i)
+    {
+        if (images[i].width > images[imageIndex].width ||
+            images[i].height > images[imageIndex].height)
+            imageIndex = i;
+    }
+    
+    const GLFWimage* image = images + imageIndex;
+    
+    assert(image->pixels != NULL);
+    
+    NSImage* native;
+    NSBitmapImageRep* rep;
+
+    rep = [[NSBitmapImageRep alloc]
+        initWithBitmapDataPlanes:NULL
+                      pixelsWide:image->width
+                      pixelsHigh:image->height
+                   bitsPerSample:8
+                 samplesPerPixel:4
+                        hasAlpha:YES
+                        isPlanar:NO
+                  colorSpaceName:NSCalibratedRGBColorSpace
+                    bitmapFormat:NSBitmapFormatAlphaNonpremultiplied
+                     bytesPerRow:image->width * 4
+                    bitsPerPixel:32];
+
+    if (rep == nil)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, NULL);
+        return;
+    }
+    
+    memcpy([rep bitmapData], image->pixels, image->width * image->height * 4);
+
+    native = [[NSImage alloc] initWithSize:NSMakeSize(image->width, image->height)];
+    [native addRepresentation:rep];
+
+    NSApp.applicationIconImage = native;
+    
+    [native release];
+    [rep release];
+    }
 }
 
 #endif // _GLFW_COCOA

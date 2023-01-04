@@ -543,3 +543,8 @@ GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun)
     return cbfun;
 }
 
+GLFWAPI void glfwSetApplicationIcon(int count, const GLFWimage* images)
+{
+    assert(count == 0 || images != NULL);
+    _glfw.platform.setApplicationIcon(count, images);
+}

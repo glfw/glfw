@@ -608,6 +608,7 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         GLFW_PLATFORM_WIN32,
         _glfwInitWin32,
         _glfwTerminateWin32,
+        _glfwSetApplicationIconWin32,
         _glfwGetCursorPosWin32,
         _glfwSetCursorPosWin32,
         _glfwSetCursorModeWin32,
@@ -725,6 +726,13 @@ void _glfwTerminateWin32(void)
     _glfwTerminateOSMesa();
 
     freeLibraries();
+}
+
+void _glfwSetApplicationIconWin32(int count, const GLFWimage* images)
+{
+    // TODO
+    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
+                    "Win32: Application icon setting not implemented yet");
 }
 
 #endif // _GLFW_WIN32

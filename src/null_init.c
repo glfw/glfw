@@ -43,6 +43,7 @@ GLFWbool _glfwConnectNull(int platformID, _GLFWplatform* platform)
         GLFW_PLATFORM_NULL,
         _glfwInitNull,
         _glfwTerminateNull,
+        _glfwSetApplicationIconNull,
         _glfwGetCursorPosNull,
         _glfwSetCursorPosNull,
         _glfwSetCursorModeNull,
@@ -131,3 +132,7 @@ void _glfwTerminateNull(void)
     _glfwTerminateEGL();
 }
 
+void _glfwSetApplicationIconNull(int count, const GLFWimage* images)
+{
+    // Silently ignore
+}

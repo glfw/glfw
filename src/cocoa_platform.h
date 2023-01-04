@@ -213,6 +213,7 @@ typedef struct _GLFWcursorNS
 GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform);
 int _glfwInitCocoa(void);
 void _glfwTerminateCocoa(void);
+void _glfwSetApplicationIconCocoa(int count, const GLFWimage* images);
 
 GLFWbool _glfwCreateWindowCocoa(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
 void _glfwDestroyWindowCocoa(_GLFWwindow* window);

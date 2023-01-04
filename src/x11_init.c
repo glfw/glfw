@@ -1171,6 +1171,7 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
         GLFW_PLATFORM_X11,
         _glfwInitX11,
         _glfwTerminateX11,
+        _glfwSetApplicationIconX11,
         _glfwGetCursorPosX11,
         _glfwSetCursorPosX11,
         _glfwSetCursorModeX11,
@@ -1652,6 +1653,13 @@ void _glfwTerminateX11(void)
         close(_glfw.x11.emptyEventPipe[0]);
         close(_glfw.x11.emptyEventPipe[1]);
     }
+}
+
+void _glfwSetApplicationIconX11(int count, const GLFWimage* images)
+{
+    // TODO
+    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
+                    "X11: Application icon setting not implemented yet");
 }
 
 #endif // _GLFW_X11

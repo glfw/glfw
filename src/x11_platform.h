@@ -900,6 +900,7 @@ typedef struct _GLFWcursorX11
 GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform);
 int _glfwInitX11(void);
 void _glfwTerminateX11(void);
+void _glfwSetApplicationIconX11(int count, const GLFWimage* images);
 
 GLFWbool _glfwCreateWindowX11(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
 void _glfwDestroyWindowX11(_GLFWwindow* window);

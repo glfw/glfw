@@ -75,6 +75,7 @@ void _glfwPollMonitorsNull(void);
 GLFWbool _glfwConnectNull(int platformID, _GLFWplatform* platform);
 int _glfwInitNull(void);
 void _glfwTerminateNull(void);
+void _glfwSetApplicationIconNull(int count, const GLFWimage* images);
 
 void _glfwFreeMonitorNull(_GLFWmonitor* monitor);
 void _glfwGetMonitorPosNull(_GLFWmonitor* monitor, int* xpos, int* ypos);

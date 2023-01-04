@@ -2475,6 +2475,51 @@ GLFWAPI int glfwGetPlatform(void);
  */
 GLFWAPI int glfwPlatformSupported(int platform);
 
+/*! @brief Sets the icon for the application.
+ *
+ *  This function sets the run-time icon of the application.  If passed an array of
+ *  candidate images, those of or closest to the sizes desired by the system are
+ *  selected.  If no images are specified, the window reverts to its default
+ *  icon.
+ *
+ *  The pixels are 32-bit, little-endian, non-premultiplied RGBA, i.e. eight
+ *  bits per channel with the red channel first.  They are arranged canonically
+ *  as packed sequential rows, starting from the top-left corner.
+ *
+ *  The desired image sizes varies depending on platform and system settings.
+ *  The selected images will be rescaled as needed.  Good sizes include 16x16,
+ *  32x32 and 48x48.
+ *
+ *  @param[in] count The number of images in the specified array, or zero to
+ *  revert to the default window icon.
+ *  @param[in] images The images to create the icon from.  This is ignored if
+ *  count is zero.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_INVALID_VALUE, @ref GLFW_PLATFORM_ERROR and @ref
+ *  GLFW_FEATURE_UNAVAILABLE (see remarks).
+ *
+ *  @pointer_lifetime The specified image data is copied before this function
+ *  returns.
+ *
+ *  @remark @macos Sets the Dock icon. Currently selects the largest image.
+ *
+ *  @remark @win32 This function will emit @ref GLFW_FEATURE_UNIMPLEMENTED.
+ *
+ *  @remark @x11 This function will emit @ref GLFW_FEATURE_UNIMPLEMENTED.
+ *
+ *  @remark @wayland This function will emit @ref GLFW_FEATURE_UNIMPLEMENTED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_icon
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup init
+ */
+GLFWAPI void glfwSetApplicationIcon(int count, const GLFWimage* images);
+
 /*! @brief Returns the currently connected monitors.
  *
  *  This function returns an array of handles for all currently connected

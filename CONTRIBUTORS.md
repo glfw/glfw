@@ -99,6 +99,7 @@ video tutorials.
  - Aaron Jacobs
  - JannikGM
  - Erik S. V. Jansson
+ - Andreas O. Jansen
  - jjYBdx4IL
  - Toni Jovanoski
  - Arseny Kapoulkine

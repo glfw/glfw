@@ -381,6 +381,7 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         GLFW_PLATFORM_WAYLAND,
         _glfwInitWayland,
         _glfwTerminateWayland,
+        _glfwSetApplicationIconWayland,
         _glfwGetCursorPosWayland,
         _glfwSetCursorPosWayland,
         _glfwSetCursorModeWayland,
@@ -791,6 +792,13 @@ void _glfwTerminateWayland(void)
         close(_glfw.wl.cursorTimerfd);
 
     _glfw_free(_glfw.wl.clipboardString);
+}
+
+void _glfwSetApplicationIconWayland(int count, const GLFWimage* images)
+{
+    // TODO
+    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
+                    "Wayland: Application icon setting not implemented yet");
 }
 
 #endif // _GLFW_WAYLAND

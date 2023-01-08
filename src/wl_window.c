@@ -2039,16 +2039,25 @@ void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window,
     if (window->wl.maximized || window->wl.fullscreen)
         return;
 
+    int width = window->wl.width, height = window->wl.height;
+
     if (numer != GLFW_DONT_CARE && denom != GLFW_DONT_CARE)
     {
-        const float aspectRatio = (float) window->wl.width / (float) window->wl.height;
+        const float aspectRatio = (float) width / (float) height;
         const float targetRatio = (float) numer / (float) denom;
         if (aspectRatio < targetRatio)
-            window->wl.height = window->wl.width / targetRatio;
+            height /= targetRatio;
         else if (aspectRatio > targetRatio)
-            window->wl.width = window->wl.height * targetRatio;
+            width *= targetRatio;
+    }
 
+    if (width != window->wl.width || height != window->wl.height)
+    {
+        window->wl.width = width;
+        window->wl.height = height;
         resizeWindow(window);
+
+        _glfwInputWindowSize(window, width, height);
 
         if (window->wl.visible)
             _glfwInputWindowDamage(window);

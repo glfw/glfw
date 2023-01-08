@@ -397,6 +397,9 @@ void _glfwUpdateContentScaleWayland(_GLFWwindow* window)
         wl_surface_set_buffer_scale(window->wl.surface, maxScale);
         _glfwInputWindowContentScale(window, maxScale, maxScale);
         resizeWindow(window);
+
+        if (window->wl.visible)
+            _glfwInputWindowDamage(window);
     }
 }
 
@@ -1990,6 +1993,9 @@ void _glfwPlatformSetWindowSize(_GLFWwindow* window, int width, int height)
         window->wl.width = width;
         window->wl.height = height;
         resizeWindow(window);
+
+        if (window->wl.visible)
+            _glfwInputWindowDamage(window);
     }
 }
 
@@ -2043,6 +2049,9 @@ void _glfwPlatformSetWindowAspectRatio(_GLFWwindow* window,
             window->wl.width = window->wl.height * targetRatio;
 
         resizeWindow(window);
+
+        if (window->wl.visible)
+            _glfwInputWindowDamage(window);
     }
 }
 

@@ -339,7 +339,7 @@ static void createKeyTables(void)
 
 static GLFWbool loadCursorTheme(void)
 {
-    int cursorSize = 32;
+    int cursorSize = 16;
 
     const char* sizeString = getenv("XCURSOR_SIZE");
     if (sizeString)

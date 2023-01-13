@@ -321,7 +321,8 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     }
 }
 
-- (void)imeStatusChangeNotified:(NSNotification *)notification {
+- (void)imeStatusChangeNotified:(NSNotification *)notification
+{
     _glfwInputIMEStatus(window);
 }
 
@@ -569,7 +570,8 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     const int key = translateKey([event keyCode]);
     const int mods = translateFlags([event modifierFlags]);
 
-    _glfwInputKey(window, key, [event keyCode], GLFW_PRESS, mods);
+    if (![self hasMarkedText])
+        _glfwInputKey(window, key, [event keyCode], GLFW_PRESS, mods);
 
     [self interpretKeyEvents:@[event]];
 }
@@ -662,7 +664,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 - (NSRange)markedRange
 {
     if ([markedText length] > 0)
-        return NSMakeRange(0, [markedText length] - 1);
+        return NSMakeRange(0, [markedText length]);
     else
         return kEmptyRange;
 }
@@ -684,59 +686,92 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
     NSString* markedTextString = markedText.string;
 
-    NSUInteger i, length = [markedTextString length];
-    int ctext = window->ctext;
-    while (ctext < length+1) {
-        ctext = (ctext == 0) ? 1 : ctext*2;
-    }
-    if (ctext != window->ctext) {
-        unsigned int* preeditText = realloc(window->preeditText, sizeof(unsigned int)*ctext);
-        if (preeditText == NULL) {
-            return;
-        }
-        window->preeditText = preeditText;
-        window->ctext = ctext;
-    }
-    window->ntext = length;
-    window->preeditText[length] = 0;
-    for (i = 0;  i < length;  i++)
+    NSUInteger textLen = [markedTextString length];
+    _GLFWpreedit* preedit = &window->preedit;
+    int textBufferCount = preedit->textBufferCount;
+    while (textBufferCount < textLen + 1)
+        textBufferCount = textBufferCount == 0 ? 1 : textBufferCount * 2;
+    if (textBufferCount != preedit->textBufferCount)
     {
-        const unichar codepoint = [markedTextString characterAtIndex:i];
-        window->preeditText[i] = codepoint;
+        unsigned int* preeditText = _glfw_realloc(preedit->text,
+                                                  sizeof(unsigned int) * textBufferCount);
+        if (preeditText == NULL)
+            return;
+        preedit->text = preeditText;
+        preedit->textBufferCount = textBufferCount;
     }
-    int focusedBlock = 0;
-    NSInteger offset = 0;
-    window->nblocks = 0;
-    while (offset < length) {
-        NSRange effectiveRange;
-        NSDictionary *attributes = [markedText attributesAtIndex:offset effectiveRange:&effectiveRange];
 
-        if (window->nblocks == window->cblocks) {
-            int cblocks = window->cblocks * 2;
-            int* blocks = realloc(window->preeditAttributeBlocks, sizeof(int)*cblocks);
-            if (blocks == NULL) {
+    // NSString handles text data in UTF16 by default, so we have to convert them
+    // to UTF32. Not only the encoding, but also the number of characters and
+    // the position of each block.
+    int currentBlockIndex = 0;
+    int currentBlockLength = 0;
+    int currentBlockLocation = 0;
+    int focusedBlockIndex = 0;
+    NSInteger preeditTextLength = 0;
+    NSRange range = NSMakeRange(0, textLen);
+    while (range.length)
+    {
+        uint32_t codepoint = 0;
+        NSRange currentBlockRange;
+        [markedText attributesAtIndex:range.location
+                       effectiveRange:&currentBlockRange];
+
+        if (preedit->blockSizesBufferCount < 1 + currentBlockIndex)
+        {
+            int blockBufferCount = (preedit->blockSizesBufferCount == 0)
+                ? 1 : preedit->blockSizesBufferCount * 2;
+            int* blocks = _glfw_realloc(preedit->blockSizes,
+                                        sizeof(int) * blockBufferCount);
+            if (blocks == NULL)
                 return;
-            }
-            window->preeditAttributeBlocks = blocks;
-            window->cblocks = cblocks;
+            preedit->blockSizes = blocks;
+            preedit->blockSizesBufferCount = blockBufferCount;
         }
-        window->preeditAttributeBlocks[window->nblocks] = effectiveRange.length;
-        offset += effectiveRange.length;
-        if (effectiveRange.length == 0) {
-            break;
+
+        if (currentBlockLocation != currentBlockRange.location)
+        {
+            currentBlockLocation = currentBlockRange.location;
+            preedit->blockSizes[currentBlockIndex++] = currentBlockLength;
+            currentBlockLength = 0;
+            if (selectedRange.location == currentBlockRange.location)
+                focusedBlockIndex = currentBlockIndex;
         }
-        NSNumber* underline = (NSNumber*) [attributes objectForKey:@"NSUnderline"];
-        if ([underline intValue] != 1) {
-            focusedBlock = window->nblocks;
+
+        if ([markedTextString getBytes:&codepoint
+                             maxLength:sizeof(codepoint)
+                            usedLength:NULL
+                              encoding:NSUTF32StringEncoding
+                               options:0
+                                 range:range
+                        remainingRange:&range])
+        {
+            if (codepoint >= 0xf700 && codepoint <= 0xf7ff)
+                continue;
+
+            preedit->text[preeditTextLength++] = codepoint;
+            currentBlockLength++;
         }
-        window->nblocks++;
     }
-    _glfwInputPreedit(window, focusedBlock);
+    preedit->blockSizes[currentBlockIndex] = currentBlockLength;
+    preedit->blockSizesCount = 1 + currentBlockIndex;
+    preedit->textCount = preeditTextLength;
+    preedit->text[preeditTextLength] = 0;
+    preedit->focusedBlockIndex = focusedBlockIndex;
+    // The caret is always at the last of preedit in macOS.
+    preedit->caretIndex = preeditTextLength;
+
+    _glfwInputPreedit(window);
 }
 
 - (void)unmarkText
 {
     [[markedText mutableString] setString:@""];
+    window->preedit.blockSizesCount = 0;
+    window->preedit.textCount = 0;
+    window->preedit.focusedBlockIndex = 0;
+    window->preedit.caretIndex = 0;
+    _glfwInputPreedit(window);
 }
 
 - (NSArray*)validAttributesForMarkedText
@@ -758,8 +793,19 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 - (NSRect)firstRectForCharacterRange:(NSRange)range
                          actualRange:(NSRangePointer)actualRange
 {
-    const NSRect frame = [window->ns.view frame];
-    return NSMakeRect(frame.origin.x, frame.origin.y, 0.0, 0.0);
+    int x = window->preedit.cursorPosX;
+    int y = window->preedit.cursorPosY;
+    int w = window->preedit.cursorWidth;
+    int h = window->preedit.cursorHeight;
+
+    const NSRect frame =
+        [window->ns.object contentRectForFrameRect:[window->ns.object frame]];
+
+    return NSMakeRect(frame.origin.x + x,
+                      // The y-axis is upward on macOS, so this conversion is needed.
+                      frame.origin.y + frame.size.height - y - h,
+                      w,
+                      h);
 }
 
 - (void)insertText:(id)string replacementRange:(NSRange)replacementRange
@@ -793,6 +839,8 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
             _glfwInputChar(window, codepoint, mods, plain);
         }
     }
+
+    [self unmarkText];
 }
 
 - (void)doCommandBySelector:(SEL)selector
@@ -1038,10 +1086,10 @@ GLFWbool _glfwCreateWindowCocoa(_GLFWwindow* window,
     }
 
     [[NSNotificationCenter defaultCenter]
-        addObserver: window->ns.delegate
-        selector:@selector(imeStatusChangeNotified:)
-        name:NSTextInputContextKeyboardSelectionDidChangeNotification
-        object: nil];
+        addObserver:window->ns.delegate
+           selector:@selector(imeStatusChangeNotified:)
+               name:NSTextInputContextKeyboardSelectionDidChangeNotification
+             object:nil];
 
     return GLFW_TRUE;
 
@@ -1055,7 +1103,7 @@ void _glfwDestroyWindowCocoa(_GLFWwindow* window)
     if (_glfw.ns.disabledCursorWindow == window)
         _glfw.ns.disabledCursorWindow = NULL;
 
-    [[NSNotificationCenter defaultCenter] removeObserver: window->ns.delegate];
+    [[NSNotificationCenter defaultCenter] removeObserver:window->ns.delegate];
 
     [window->ns.object orderOut:nil];
 
@@ -1946,19 +1994,114 @@ const char* _glfwGetClipboardStringCocoa(void)
 
 void _glfwUpdatePreeditCursorRectangleCocoa(_GLFWwindow* window)
 {
+    // Do nothing. Instead, implement `firstRectForCharacterRange` callback
+    // to update the position.
 }
 
 void _glfwResetPreeditTextCocoa(_GLFWwindow* window)
 {
+    @autoreleasepool {
+
+    NSTextInputContext* context = [NSTextInputContext currentInputContext];
+    [context discardMarkedText];
+    [window->ns.view unmarkText];
+
+    } // autoreleasepool
 }
 
 void _glfwSetIMEStatusCocoa(_GLFWwindow* window, int active)
 {
+    @autoreleasepool {
+
+    if (active)
+    {
+        NSArray* locales = CFBridgingRelease(CFLocaleCopyPreferredLanguages());
+        // Select the most preferred locale.
+        CFStringRef locale = (__bridge CFStringRef) [locales firstObject];
+        if (locale)
+        {
+            TISInputSourceRef source = TISCopyInputSourceForLanguage(locale);
+            if (source)
+            {
+                CFStringRef sourceType = TISGetInputSourceProperty(source,
+                                                                   kTISPropertyInputSourceType);
+
+                if (sourceType != kTISTypeKeyboardInputMethodModeEnabled)
+                    TISSelectInputSource(source);
+                else
+                {
+                    // Some IMEs return a input-method that has input-method-modes for `TISCopyInputSourceForLanguage()`.
+                    // We can't select these input-methods directly, but need to find
+                    // a input-method-mode of the input-method.
+                    // Example:
+                    //  - Input Method: com.apple.inputmethod.SCIM
+                    //  - Input Mode: com.apple.inputmethod.SCIM.ITABC
+                    NSString* sourceID =
+                        (__bridge NSString *) TISGetInputSourceProperty(source, kTISPropertyInputSourceID);
+                    NSDictionary* properties = @{
+                        (__bridge NSString *) kTISPropertyInputSourceCategory: (__bridge NSString *) kTISCategoryKeyboardInputSource,
+                        (__bridge NSString *) kTISPropertyInputSourceIsSelectCapable: @YES,
+                        };
+                    NSArray* selectableSources =
+                        CFBridgingRelease(TISCreateInputSourceList((__bridge CFDictionaryRef) properties, NO));
+                    for (id sourceCandidate in selectableSources)
+                    {
+                        TISInputSourceRef sourceCandidateRef = (__bridge TISInputSourceRef) sourceCandidate;
+                        NSString* sourceCandidateID =
+                            (__bridge NSString *) TISGetInputSourceProperty(sourceCandidateRef, kTISPropertyInputSourceID);
+                        if ([sourceCandidateID hasPrefix:sourceID])
+                        {
+                            TISSelectInputSource(sourceCandidateRef);
+                            break;
+                        }
+                    }
+                }
+
+                CFRelease(source);
+            }
+        }
+    }
+    else
+    {
+        TISInputSourceRef source = TISCopyCurrentASCIICapableKeyboardInputSource();
+        TISSelectInputSource(source);
+        CFRelease(source);
+    }
+
+    // `NSTextInputContextKeyboardSelectionDidChangeNotification` is sometimes
+    // not called immediately after this, so call the callback here.
+    _glfwInputIMEStatus(window);
+
+    } // autoreleasepool
 }
 
 int _glfwGetIMEStatusCocoa(_GLFWwindow* window)
 {
-    return GLFW_FALSE;
+    @autoreleasepool {
+
+    NSArray* asciiInputSources =
+        CFBridgingRelease(TISCreateASCIICapableInputSourceList());
+
+    TISInputSourceRef currentSource = TISCopyCurrentKeyboardInputSource();
+    NSString* currentSourceID =
+        (__bridge NSString *) TISGetInputSourceProperty(currentSource,
+                                                        kTISPropertyInputSourceID);
+    CFRelease(currentSource);
+
+    for (int i = 0; i < [asciiInputSources count]; i++)
+    {
+        TISInputSourceRef asciiSource =
+            (__bridge TISInputSourceRef) [asciiInputSources objectAtIndex:i];
+        NSString* asciiSourceID =
+            (__bridge NSString *) TISGetInputSourceProperty(asciiSource,
+                                                            kTISPropertyInputSourceID);
+        if ([asciiSourceID compare:currentSourceID] == NSOrderedSame)
+            return GLFW_FALSE;
+    }
+
+    return GLFW_TRUE;
+
+    } // autoreleasepool
 }
 
 EGLenum _glfwGetEGLPlatformCocoa(EGLint** attribs)
@@ -2100,49 +2243,6 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
     } // autoreleasepool
 }
 
-void _glfwPlatformResetPreeditText(_GLFWwindow* window)
-{
-    NSTextInputContext *context = [NSTextInputContext currentInputContext];
-    [context discardMarkedText];
-    [window->ns.view unmarkText];
-}
-
-void _glfwPlatformSetIMEStatus(_GLFWwindow* window, int active)
-{
-    // Mac OS has several input sources.
-    // this code assumes input methods not in ascii capable inputs using IME.
-    NSArray* asciiInputSources = CFBridgingRelease(TISCreateASCIICapableInputSourceList());
-    TISInputSourceRef asciiSource = (__bridge TISInputSourceRef)([asciiInputSources firstObject]);
-    if (active) {
-        NSArray* allInputSources = CFBridgingRelease(TISCreateInputSourceList(NULL, false));
-        NSString* asciiSourceID = (__bridge NSString *)(TISGetInputSourceProperty(asciiSource, kTISPropertyInputSourceID));
-        int i;
-        int count = [allInputSources count];
-        for (i = 0; i < count; i++) {
-            TISInputSourceRef source = (__bridge TISInputSourceRef)([allInputSources objectAtIndex: i]);
-            NSString* sourceID = (__bridge NSString *)(TISGetInputSourceProperty(source, kTISPropertyInputSourceID));
-            if ([asciiSourceID compare: sourceID] != NSOrderedSame) {
-                TISSelectInputSource(source);
-                break;
-            }
-        }
-    } else if (asciiSource) {
-        TISSelectInputSource(asciiSource);
-    }
-}
-
-int _glfwPlatformGetIMEStatus(_GLFWwindow* window)
-{
-    TISInputSourceRef currentSource = TISCopyCurrentKeyboardInputSource();
-    NSString* currentSourceID = (__bridge NSString *)(TISGetInputSourceProperty(currentSource, kTISPropertyInputSourceID));
-    NSArray* asciiInputSources = CFBridgingRelease(TISCreateASCIICapableInputSourceList());
-    TISInputSourceRef asciiSource = (__bridge TISInputSourceRef)([asciiInputSources firstObject]);
-    if (asciiSource) {
-        NSString* asciiSourceID = (__bridge NSString *)(TISGetInputSourceProperty(asciiSource, kTISPropertyInputSourceID));
-        return ([asciiSourceID compare: currentSourceID] == NSOrderedSame) ? GLFW_FALSE : GLFW_TRUE;
-    }
-    return GLFW_FALSE;
-}
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

@@ -1,7 +1,9 @@
 project "GLFW"
 	kind "StaticLib"
+	architecture "x64"
 	language "C"
 
+	location "../../../build"
 	targetdir "../../../lib"
 	objdir "../../../build/GLFW/obj"
 
@@ -13,9 +15,14 @@ project "GLFW"
 		"src/context.c",
 		"src/init.c",
 		"src/input.c",
+		"src/platform.c",
 		"src/monitor.c",
 		"src/vulkan.c",
-		"src/window.c"
+		"src/window.c",
+		"src/null_init.c",
+		"src/null_monitor.c",
+		"src/null_window.c",
+		"src/null_joystick.c"
 	}
 	filter "system:linux"
 		pic "On"
@@ -49,6 +56,7 @@ project "GLFW"
 		files
 		{
 			"src/win32_init.c",
+			"src/win32_module.c",
 			"src/win32_joystick.c",
 			"src/win32_monitor.c",
 			"src/win32_time.c",

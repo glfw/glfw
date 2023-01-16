@@ -269,6 +269,7 @@ information on what to include when reporting a bug.
    application (#2110)
  - [Cocoa] Bugfix: The Vulkan loader was not loaded from the `Frameworks` bundle
    subdirectory (#2113,#2120)
+ - [Cocoa] Bugfix: Patched use of macOS 10.9 window occlusion API for macOS 10.8 compatibility
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)

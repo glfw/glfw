@@ -37,6 +37,12 @@
 //       having been (according to documentation) added in Mac OS X 10.7
 #define NSWindowCollectionBehaviorFullScreenNone (1 << 9)
 
+// HACK: This enum value is only available on Mac OS X 10.9 onwards,
+//       so it needs to be defined on prior versions
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 1090
+#define NSWindowOcclusionStateVisible (1UL << 1)
+#endif
+
 // Returns whether the cursor is in the content area of the specified window
 //
 static GLFWbool cursorInContentArea(_GLFWwindow* window)
@@ -311,7 +317,11 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)windowDidChangeOcclusionState:(NSNotification* )notification
 {
-    if ([window->ns.object occlusionState] & NSWindowOcclusionStateVisible)
+    if (
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 1090
+        [window->ns.object respondsToSelector:@selector(occlusionState)] && (NSUInteger)
+#endif
+        [window->ns.object occlusionState] & NSWindowOcclusionStateVisible)
         window->ns.occluded = GLFW_FALSE;
     else
         window->ns.occluded = GLFW_TRUE;

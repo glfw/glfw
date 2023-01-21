@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.4...3.20 FATAL_ERROR)
 
 project(GLFW VERSION 3.4.0 LANGUAGES C)
 
-set(CMAKE_LEGACY_CYGWIN_WIN32 OFF)
-
 if (POLICY CMP0069)
     cmake_policy(SET CMP0069 NEW)
 endif()

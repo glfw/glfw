@@ -4,10 +4,6 @@ project(GLFW VERSION 3.4.0 LANGUAGES C)
 
 set(CMAKE_LEGACY_CYGWIN_WIN32 OFF)
 
-if (POLICY CMP0054)
-    cmake_policy(SET CMP0054 NEW)
-endif()
-
 if (POLICY CMP0069)
     cmake_policy(SET CMP0069 NEW)
 endif()

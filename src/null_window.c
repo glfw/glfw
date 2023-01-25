@@ -551,6 +551,15 @@ const char* _glfwGetClipboardStringNull(void)
     return _glfw.null.clipboardString;
 }
 
+void _glfwSetThemeNull(_GLFWwindow* window, GLFWtheme* theme)
+{
+}
+
+GLFWtheme* _glfwGetThemeNull(_GLFWwindow* window)
+{
+    return NULL; // TODO: see to-do in _glfwGetSystemDefaultThemeNull
+}
+
 EGLenum _glfwGetEGLPlatformNull(EGLint** attribs)
 {
     return 0;

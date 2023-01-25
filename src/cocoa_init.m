@@ -704,7 +704,8 @@ void _glfwTerminateCocoa(void)
 
 GLFWtheme* _glfwGetSystemDefaultThemeCocoa(void)
 {
-    return NULL;
+    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
+    return NULL; // TODO: implement
 }
 
 #endif // _GLFW_COCOA

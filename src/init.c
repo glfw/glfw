@@ -555,5 +555,7 @@ GLFWAPI GLFWthemefun glfwSetSystemThemeCallback(GLFWthemefun callback)
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     
     //return _glfw.platform.setSystemThemeCallback(callback);
-    return NULL;
+    
+    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
+    return NULL; // TODO: implement
 }

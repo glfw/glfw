@@ -1883,6 +1883,7 @@ void _glfwSetThemeCocoa(_GLFWwindow* window, GLFWtheme* theme)
         [window->ns.object setAppearance:nil];
         return;
     }
+    // TODO: support color
     
     NSAppearanceName name;
     
@@ -1929,6 +1930,8 @@ void _glfwSetThemeCocoa(_GLFWwindow* window, GLFWtheme* theme)
 
 GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window)
 {
+    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL); // TODO: remove
+    
     GLFWtheme theme;
     NSAppearanceName name = [window->ns.object appearance].name;
     
@@ -1972,7 +1975,7 @@ GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window)
     }
     
     //return theme;
-    return NULL;
+    return NULL; // TODO: implement
 }
 
 

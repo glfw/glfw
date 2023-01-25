@@ -300,3 +300,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                 const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContextNSGL(_GLFWwindow* window);
 
+
+GLFWtheme* _glfwGetSystemDefaultThemeCocoa(void);
+void _glfwSetThemeCocoa(_GLFWwindow* window, GLFWtheme* theme);
+GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window);

@@ -1153,3 +1153,21 @@ GLFWAPI void glfwPostEmptyEvent(void)
     _glfw.platform.postEmptyEvent();
 }
 
+GLFWAPI void glfwSetTheme(GLFWwindow* handle, GLFWtheme* theme)
+{
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+    
+    _GLFW_REQUIRE_INIT();
+    _glfw.platform.setTheme(window, theme);
+}
+
+GLFWAPI GLFWtheme* glfwGetTheme(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+    
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    return _glfw.platform.getTheme(window);
+}

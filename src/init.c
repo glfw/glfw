@@ -543,3 +543,17 @@ GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun)
     return cbfun;
 }
 
+GLFWAPI GLFWtheme* glfwGetSystemDefaultTheme()
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    return _glfw.platform.getSystemDefaultTheme();
+}
+
+GLFWAPI GLFWthemefun glfwSetSystemThemeCallback(GLFWthemefun callback)
+{
+    
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    
+    //return _glfw.platform.setSystemThemeCallback(callback);
+    return NULL;
+}

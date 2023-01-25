@@ -1876,6 +1876,106 @@ const char* _glfwGetClipboardStringCocoa(void)
     } // autoreleasepool
 }
 
+void _glfwSetThemeCocoa(_GLFWwindow* window, GLFWtheme* theme)
+{
+    if (!theme || theme->baseTheme == GLFW_BASE_THEME_DEFAULT)
+    {
+        [window->ns.object setAppearance:nil];
+        return;
+    }
+    
+    NSAppearanceName name;
+    
+    if (theme->baseTheme == GLFW_BASE_THEME_LIGHT)
+    {
+        if ((theme->flags & GLFW_THEME_FLAG_VIBRANT) && (theme->flags & GLFW_THEME_FLAG_HIGH_CONTRAST))
+        {
+            name = NSAppearanceNameAccessibilityHighContrastVibrantLight;
+        }
+        else if (theme->flags & GLFW_THEME_FLAG_VIBRANT) {
+            name = NSAppearanceNameVibrantLight;
+        }
+        else if (theme->flags & GLFW_THEME_FLAG_HIGH_CONTRAST)
+        {
+            name = NSAppearanceNameAccessibilityHighContrastAqua;
+        }
+        else
+        {
+            name = NSAppearanceNameAqua;
+        }
+    }
+    else
+    {
+        if ((theme->flags & GLFW_THEME_FLAG_VIBRANT) && (theme->flags & GLFW_THEME_FLAG_HIGH_CONTRAST))
+        {
+            name = NSAppearanceNameAccessibilityHighContrastVibrantDark;
+        }
+        else if (theme->flags & GLFW_THEME_FLAG_VIBRANT) {
+            name = NSAppearanceNameVibrantDark;
+        }
+        else if (theme->flags & GLFW_THEME_FLAG_HIGH_CONTRAST)
+        {
+            name = NSAppearanceNameAccessibilityHighContrastDarkAqua;
+        }
+        else
+        {
+            name = NSAppearanceNameDarkAqua;
+        }
+    }
+    
+    NSAppearance* appearance = [NSAppearance appearanceNamed:name];
+    [window->ns.object setAppearance:appearance];
+}
+
+GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window)
+{
+    GLFWtheme theme;
+    NSAppearanceName name = [window->ns.object appearance].name;
+    
+    if (name == NSAppearanceNameAqua)
+    {
+        theme.baseTheme = GLFW_BASE_THEME_LIGHT;
+    }
+    else if (name == NSAppearanceNameDarkAqua)
+    {
+        theme.baseTheme = GLFW_BASE_THEME_DARK;
+    }
+    else if (name == NSAppearanceNameVibrantLight)
+    {
+        theme.baseTheme = GLFW_BASE_THEME_LIGHT;
+        theme.flags |= GLFW_THEME_FLAG_VIBRANT;
+    }
+    else if (name == NSAppearanceNameVibrantDark)
+    {
+        theme.baseTheme = GLFW_BASE_THEME_DARK;
+        theme.flags |= GLFW_THEME_FLAG_VIBRANT;
+    }
+    if (name == NSAppearanceNameAccessibilityHighContrastAqua)
+    {
+        theme.baseTheme = GLFW_BASE_THEME_LIGHT;
+        theme.flags |= GLFW_THEME_FLAG_HIGH_CONTRAST;
+    }
+    else if (name == NSAppearanceNameAccessibilityHighContrastDarkAqua)
+    {
+        theme.baseTheme = GLFW_BASE_THEME_DARK;
+        theme.flags |= GLFW_THEME_FLAG_HIGH_CONTRAST;
+    }
+    else if (name == NSAppearanceNameAccessibilityHighContrastVibrantLight)
+    {
+        theme.baseTheme = GLFW_BASE_THEME_LIGHT;
+        theme.flags |= GLFW_THEME_FLAG_VIBRANT | GLFW_THEME_FLAG_HIGH_CONTRAST;
+    }
+    else if (name == NSAppearanceNameAccessibilityHighContrastVibrantDark)
+    {
+        theme.baseTheme = GLFW_BASE_THEME_DARK;
+        theme.flags |= GLFW_THEME_FLAG_VIBRANT | GLFW_THEME_FLAG_HIGH_CONTRAST;
+    }
+    
+    //return theme;
+    return NULL;
+}
+
+
 EGLenum _glfwGetEGLPlatformCocoa(EGLint** attribs)
 {
     if (_glfw.egl.ANGLE_platform_angle)

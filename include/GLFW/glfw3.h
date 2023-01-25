@@ -5845,6 +5845,37 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  */
 GLFWAPI const char* glfwGetClipboardString(GLFWwindow* window);
 
+typedef struct GLFWtheme
+{
+    int baseTheme; // light/dark
+    int flags;
+    unsigned char color[4];
+} GLFWtheme;
+
+#define GLFW_BASE_THEME_DEFAULT 0
+#define GLFW_BASE_THEME_LIGHT 1
+#define GLFW_BASE_THEME_DARK 2
+
+#define GLFW_THEME_FLAG_HAS_COLOR 1
+#define GLFW_THEME_FLAG_HIGH_CONTRAST 2
+#define GLFW_THEME_FLAG_VIBRANT 4
+
+typedef void (* GLFWthemefun)(GLFWtheme* theme);
+
+/*! @brief Notifies the application when the system default theme changes.
+ *
+ */
+GLFWAPI GLFWthemefun glfwSetSystemThemeCallback(GLFWthemefun callback);
+
+/*! @brief Sets the theme for a window.
+ *
+ *  @param[in] window The window to set the theme for.
+ *  @param[in] theme The theme to set. Pass `NULL` to set it to the system default.
+ */
+GLFWAPI void glfwSetTheme(GLFWwindow* handle, GLFWtheme* theme);
+GLFWAPI GLFWtheme* glfwGetTheme(GLFWwindow* handle);
+GLFWAPI GLFWtheme* glfwGetSystemDefaultTheme();
+
 /*! @brief Returns the GLFW time.
  *
  *  This function returns the current GLFW time, in seconds.  Unless the time

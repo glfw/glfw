@@ -496,8 +496,11 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
     const _GLFWplatform cocoa =
     {
         GLFW_PLATFORM_COCOA,
+        // Init
         _glfwInitCocoa,
         _glfwTerminateCocoa,
+        _glfwGetSystemDefaultThemeCocoa,
+        // Input
         _glfwGetCursorPosCocoa,
         _glfwSetCursorPosCocoa,
         _glfwSetCursorModeCocoa,
@@ -516,6 +519,7 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         _glfwPollJoystickCocoa,
         _glfwGetMappingNameCocoa,
         _glfwUpdateGamepadGUIDCocoa,
+        // Monitor
         _glfwFreeMonitorCocoa,
         _glfwGetMonitorPosCocoa,
         _glfwGetMonitorContentScaleCocoa,
@@ -524,6 +528,7 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         _glfwGetVideoModeCocoa,
         _glfwGetGammaRampCocoa,
         _glfwSetGammaRampCocoa,
+        // Window
         _glfwCreateWindowCocoa,
         _glfwDestroyWindowCocoa,
         _glfwSetWindowTitleCocoa,
@@ -557,13 +562,17 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         _glfwSetWindowFloatingCocoa,
         _glfwSetWindowOpacityCocoa,
         _glfwSetWindowMousePassthroughCocoa,
+        _glfwGetThemeCocoa,
+        _glfwSetThemeCocoa,
         _glfwPollEventsCocoa,
         _glfwWaitEventsCocoa,
         _glfwWaitEventsTimeoutCocoa,
         _glfwPostEmptyEventCocoa,
+        // EGL
         _glfwGetEGLPlatformCocoa,
         _glfwGetEGLNativeDisplayCocoa,
         _glfwGetEGLNativeWindowCocoa,
+        // Vulkan
         _glfwGetRequiredInstanceExtensionsCocoa,
         _glfwGetPhysicalDevicePresentationSupportCocoa,
         _glfwCreateWindowSurfaceCocoa,
@@ -691,6 +700,11 @@ void _glfwTerminateCocoa(void)
     _glfwTerminateOSMesa();
 
     } // autoreleasepool
+}
+
+GLFWtheme* _glfwGetSystemDefaultThemeCocoa(void)
+{
+    return NULL;
 }
 
 #endif // _GLFW_COCOA

@@ -673,6 +673,7 @@ struct _GLFWplatform
     // init
     GLFWbool (*init)(void);
     void (*terminate)(void);
+    GLFWtheme* (*getSystemDefaultTheme)(void);
     // input
     void (*getCursorPos)(_GLFWwindow*,double*,double*);
     void (*setCursorPos)(_GLFWwindow*,double,double);
@@ -735,6 +736,8 @@ struct _GLFWplatform
     void (*setWindowFloating)(_GLFWwindow*,GLFWbool);
     void (*setWindowOpacity)(_GLFWwindow*,float);
     void (*setWindowMousePassthrough)(_GLFWwindow*,GLFWbool);
+    GLFWtheme* (*getTheme)(_GLFWwindow*);
+    void (*setTheme)(_GLFWwindow*,GLFWtheme*);
     void (*pollEvents)(void);
     void (*waitEvents)(void);
     void (*waitEventsTimeout)(double);

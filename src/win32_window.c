@@ -1122,11 +1122,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             break;
         }
 
-        case WM_ERASEBKGND:
-        {
-            return TRUE;
-        }
-
         case WM_NCACTIVATE:
         case WM_NCPAINT:
         {
@@ -1265,6 +1260,7 @@ static int createNativeWindow(_GLFWwindow* window,
         wc.lpfnWndProc   = windowProc;
         wc.hInstance     = _glfw.win32.instance;
         wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
+        wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 #if defined(_GLFW_WNDCLASSNAME)
         wc.lpszClassName = _GLFW_WNDCLASSNAME;
 #else

@@ -1932,52 +1932,65 @@ GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window)
 {
     _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL); // TODO: remove
     
-    GLFWtheme theme;
+    // TODO: must use KVO to observe NSApplication NSAppearance for theme callback.
+    
+    GLFWtheme* theme = &window->theme;
     NSAppearanceName name = [window->ns.object appearance].name;
+    
+    theme->baseTheme = 0;
+    theme->flags = 0;
     
     if (name == NSAppearanceNameAqua)
     {
-        theme.baseTheme = GLFW_BASE_THEME_LIGHT;
+        theme->baseTheme = GLFW_BASE_THEME_LIGHT;
     }
     else if (name == NSAppearanceNameDarkAqua)
     {
-        theme.baseTheme = GLFW_BASE_THEME_DARK;
+        theme->baseTheme = GLFW_BASE_THEME_DARK;
     }
     else if (name == NSAppearanceNameVibrantLight)
     {
-        theme.baseTheme = GLFW_BASE_THEME_LIGHT;
-        theme.flags |= GLFW_THEME_FLAG_VIBRANT;
+        theme->baseTheme = GLFW_BASE_THEME_LIGHT;
+        theme->flags |= GLFW_THEME_FLAG_VIBRANT;
     }
     else if (name == NSAppearanceNameVibrantDark)
     {
-        theme.baseTheme = GLFW_BASE_THEME_DARK;
-        theme.flags |= GLFW_THEME_FLAG_VIBRANT;
+        theme->baseTheme = GLFW_BASE_THEME_DARK;
+        theme->flags |= GLFW_THEME_FLAG_VIBRANT;
     }
     if (name == NSAppearanceNameAccessibilityHighContrastAqua)
     {
-        theme.baseTheme = GLFW_BASE_THEME_LIGHT;
-        theme.flags |= GLFW_THEME_FLAG_HIGH_CONTRAST;
+        theme->baseTheme = GLFW_BASE_THEME_LIGHT;
+        theme->flags |= GLFW_THEME_FLAG_HIGH_CONTRAST;
     }
     else if (name == NSAppearanceNameAccessibilityHighContrastDarkAqua)
     {
-        theme.baseTheme = GLFW_BASE_THEME_DARK;
-        theme.flags |= GLFW_THEME_FLAG_HIGH_CONTRAST;
+        theme->baseTheme = GLFW_BASE_THEME_DARK;
+        theme->flags |= GLFW_THEME_FLAG_HIGH_CONTRAST;
     }
     else if (name == NSAppearanceNameAccessibilityHighContrastVibrantLight)
     {
-        theme.baseTheme = GLFW_BASE_THEME_LIGHT;
-        theme.flags |= GLFW_THEME_FLAG_VIBRANT | GLFW_THEME_FLAG_HIGH_CONTRAST;
+        theme->baseTheme = GLFW_BASE_THEME_LIGHT;
+        theme->flags |= GLFW_THEME_FLAG_VIBRANT | GLFW_THEME_FLAG_HIGH_CONTRAST;
     }
     else if (name == NSAppearanceNameAccessibilityHighContrastVibrantDark)
     {
-        theme.baseTheme = GLFW_BASE_THEME_DARK;
-        theme.flags |= GLFW_THEME_FLAG_VIBRANT | GLFW_THEME_FLAG_HIGH_CONTRAST;
+        theme->baseTheme = GLFW_BASE_THEME_DARK;
+        theme->flags |= GLFW_THEME_FLAG_VIBRANT | GLFW_THEME_FLAG_HIGH_CONTRAST;
     }
     
-    //return theme;
-    return NULL; // TODO: implement
+    // TODO: this is not settable. Is there any reason in overriding a similar value? Does it apply to menu item highlights? If yes, then it must be overridden.
+    // TODO: must use KVO to observe the controlAccentColor for the theme callback.
+    NSColor* color = [[NSColor controlAccentColor] colorUsingColorSpace:NSColorSpace.genericRGBColorSpace];
+    
+    theme->flags |= GLFW_THEME_FLAG_HAS_COLOR;
+    theme->color[0] = color.redComponent * 255;
+    theme->color[1] = color.greenComponent * 255;
+    theme->color[2] = color.blueComponent * 255;
+    theme->color[3] = color.alphaComponent * 255;
+    
+    return theme;
 }
-
 
 EGLenum _glfwGetEGLPlatformCocoa(EGLint** attribs)
 {

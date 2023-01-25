@@ -570,6 +570,8 @@ struct _GLFWwindow
         GLFWcharmodsfun           charmods;
         GLFWdropfun               drop;
     } callbacks;
+    
+    GLFWtheme theme;
 
     // This is defined in platform.h
     GLFW_PLATFORM_WINDOW_STATE

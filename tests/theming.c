@@ -50,6 +50,33 @@ static int cur_theme_color = 0;
 
 static GLFWtheme theme;
 
+static void print_theme(GLFWtheme* theme, const char* title)
+{
+    int n = 0;
+    
+    printf("%s: {\n", title);
+    printf("    Base: %s\n", theme->baseTheme == GLFW_BASE_THEME_LIGHT ? "light" : "dark");
+    printf("    Flags: [");
+    if (theme->flags & GLFW_THEME_FLAG_HAS_COLOR)
+    {
+        printf(n++ > 0 ? ", %s" : "%s", "HAS_COLOR");
+    }
+    if (theme->flags & GLFW_THEME_FLAG_VIBRANT)
+    {
+        printf(n++ > 0 ? ", %s" : "%s", "VIBRANT");
+    }
+    if (theme->flags & GLFW_THEME_FLAG_HIGH_CONTRAST)
+    {
+        printf(n++ > 0 ? ", %s" : "%s", "HIGH_CONTRAST");
+    }
+    printf("]\n");
+    if (theme->flags & GLFW_THEME_FLAG_HAS_COLOR)
+    {
+        printf("    Color: [%i, %i, %i, %i]\n", theme->color[0], theme->color[1], theme->color[2], theme->color[3]);
+    }
+    printf("}\n");
+}
+
 static void set_theme(GLFWwindow* window, int theme_color)
 {
     memcpy(theme.color, theme_colors[theme_color], 4);
@@ -110,7 +137,15 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             cur_theme_color = (cur_theme_color + 1) % 6;
             set_theme(window, cur_theme_color);
             break;
+        case GLFW_KEY_P:
+            print_theme(glfwGetTheme(window), "Window theme");
+            break;
     }
+}
+
+static void theme_callback(GLFWtheme* theme)
+{
+    print_theme(theme, "System theme changed to");
 }
 
 int main(int argc, char** argv)
@@ -144,6 +179,8 @@ int main(int argc, char** argv)
     theme.color[2] = 0;
     theme.color[3] = 0;
     set_theme(window, cur_theme_color);
+    
+    glfwSetSystemThemeCallback(theme_callback);
 
     while (!glfwWindowShouldClose(window))
     {

@@ -42,6 +42,9 @@ typedef void* id;
 typedef void NSAppearance;
 #endif
 
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 101300
+typedef NSString *NSAppearanceName;
+#endif
 
 // NOTE: Many Cocoa enum values have been renamed and we need to build across
 //       SDK versions where one is unavailable or deprecated.

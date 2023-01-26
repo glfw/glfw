@@ -35,6 +35,19 @@
 // Needed for _NSGetProgname
 #include <crt_externs.h>
 
+
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 101000
+NSAppearanceName const NSAppearanceNameVibrantLight = @"NSAppearanceNameVibrantLight";
+NSAppearanceName const NSAppearanceNameVibrantDark = @"NSAppearanceNameVibrantDark";
+#endif
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 101400
+NSAppearanceName const NSAppearanceNameDarkAqua = @"NSAppearanceNameDarkAqua";
+NSAppearanceName const NSAppearanceNameAccessibilityHighContrastAqua = @"NSAppearanceNameAccessibilityAqua";
+NSAppearanceName const NSAppearanceNameAccessibilityHighContrastDarkAqua = @"NSAppearanceNameAccessibilityDarkAqua";
+NSAppearanceName const NSAppearanceNameAccessibilityHighContrastVibrantLight = @"NSAppearanceNameAccessibilityVibrantLight";
+NSAppearanceName const NSAppearanceNameAccessibilityHighContrastVibrantDark = @"NSAppearanceNameAccessibilityVibrantDark";
+#endif
+
 // Change to our application bundle's resources directory, if present
 //
 static void changeToResourcesDirectory(void)
@@ -177,42 +190,51 @@ static void createMenuBar(void)
 
 void nsAppearanceToGLFWTheme(NSAppearance* appearance, GLFWtheme* theme)
 {
-    NSAppearanceName name = appearance.name;
+    NSAppearanceName name = [appearance bestMatchFromAppearancesWithNames:@[
+        NSAppearanceNameAqua,
+        NSAppearanceNameDarkAqua,
+        NSAppearanceNameVibrantLight,
+        NSAppearanceNameVibrantDark,
+        NSAppearanceNameAccessibilityHighContrastAqua,
+        NSAppearanceNameAccessibilityHighContrastDarkAqua,
+        NSAppearanceNameAccessibilityHighContrastVibrantLight,
+        NSAppearanceNameAccessibilityHighContrastVibrantDark
+    ]];
     
-    if (name == NSAppearanceNameAqua)
+    if ([name isEqualToString:NSAppearanceNameAqua])
     {
         theme->baseTheme = GLFW_BASE_THEME_LIGHT;
     }
-    else if (name == NSAppearanceNameDarkAqua)
+    else if ([name isEqualToString:NSAppearanceNameDarkAqua])
     {
         theme->baseTheme = GLFW_BASE_THEME_DARK;
     }
-    else if (name == NSAppearanceNameVibrantLight)
+    else if ([name isEqualToString:NSAppearanceNameVibrantLight])
     {
         theme->baseTheme = GLFW_BASE_THEME_LIGHT;
         theme->flags |= GLFW_THEME_FLAG_VIBRANT;
     }
-    else if (name == NSAppearanceNameVibrantDark)
+    else if ([name isEqualToString:NSAppearanceNameVibrantDark])
     {
         theme->baseTheme = GLFW_BASE_THEME_DARK;
         theme->flags |= GLFW_THEME_FLAG_VIBRANT;
     }
-    if (name == NSAppearanceNameAccessibilityHighContrastAqua)
+    if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastAqua])
     {
         theme->baseTheme = GLFW_BASE_THEME_LIGHT;
         theme->flags |= GLFW_THEME_FLAG_HIGH_CONTRAST;
     }
-    else if (name == NSAppearanceNameAccessibilityHighContrastDarkAqua)
+    else if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastDarkAqua])
     {
         theme->baseTheme = GLFW_BASE_THEME_DARK;
         theme->flags |= GLFW_THEME_FLAG_HIGH_CONTRAST;
     }
-    else if (name == NSAppearanceNameAccessibilityHighContrastVibrantLight)
+    else if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastVibrantLight])
     {
         theme->baseTheme = GLFW_BASE_THEME_LIGHT;
         theme->flags |= GLFW_THEME_FLAG_VIBRANT | GLFW_THEME_FLAG_HIGH_CONTRAST;
     }
-    else if (name == NSAppearanceNameAccessibilityHighContrastVibrantDark)
+    else if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastVibrantDark])
     {
         theme->baseTheme = GLFW_BASE_THEME_DARK;
         theme->flags |= GLFW_THEME_FLAG_VIBRANT | GLFW_THEME_FLAG_HIGH_CONTRAST;
@@ -455,6 +477,8 @@ static GLFWbool initializeTIS(void)
                        context:(void *)context
 {
     // This class is never subclassed, so it's safe to ignore the context parameter
+    
+    // TODO: FIXME: this method is invoked twice when the high contrast setting is edited in the preferences.
     
     GLFWtheme theme = { 0, 0 };
     nsAppearanceToGLFWTheme(NSApp.effectiveAppearance, &theme);

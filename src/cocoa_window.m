@@ -1884,21 +1884,16 @@ void _glfwSetThemeCocoa(_GLFWwindow* window, GLFWtheme* theme)
         return;
     }
     // TODO: support color
+    // TODO: fix vibrancy
     
+    // As per the Cocoa documentation, passing the high contrast names to
+    // appearanceNamed: will result in nil, so these can not be used.
     NSAppearanceName name;
     
     if (theme->baseTheme == GLFW_BASE_THEME_LIGHT)
     {
-        if ((theme->flags & GLFW_THEME_FLAG_VIBRANT) && (theme->flags & GLFW_THEME_FLAG_HIGH_CONTRAST))
-        {
-            name = NSAppearanceNameAccessibilityHighContrastVibrantLight;
-        }
-        else if (theme->flags & GLFW_THEME_FLAG_VIBRANT) {
+        if (theme->flags & GLFW_THEME_FLAG_VIBRANT) {
             name = NSAppearanceNameVibrantLight;
-        }
-        else if (theme->flags & GLFW_THEME_FLAG_HIGH_CONTRAST)
-        {
-            name = NSAppearanceNameAccessibilityHighContrastAqua;
         }
         else
         {
@@ -1907,16 +1902,8 @@ void _glfwSetThemeCocoa(_GLFWwindow* window, GLFWtheme* theme)
     }
     else
     {
-        if ((theme->flags & GLFW_THEME_FLAG_VIBRANT) && (theme->flags & GLFW_THEME_FLAG_HIGH_CONTRAST))
-        {
-            name = NSAppearanceNameAccessibilityHighContrastVibrantDark;
-        }
-        else if (theme->flags & GLFW_THEME_FLAG_VIBRANT) {
+        if (theme->flags & GLFW_THEME_FLAG_VIBRANT) {
             name = NSAppearanceNameVibrantDark;
-        }
-        else if (theme->flags & GLFW_THEME_FLAG_HIGH_CONTRAST)
-        {
-            name = NSAppearanceNameAccessibilityHighContrastDarkAqua;
         }
         else
         {

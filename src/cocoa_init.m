@@ -448,6 +448,7 @@ static GLFWbool initializeTIS(void)
     _glfwInputSystemTheme(NULL);
 }*/
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101400
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
                         change:(NSDictionary *)change
@@ -472,6 +473,7 @@ static GLFWbool initializeTIS(void)
         [self accentColorChanged];
     }*/
 }
+#endif
 
 @end // GLFWHelper
 
@@ -734,10 +736,12 @@ int _glfwInitCocoa(void)
                  context:nil];
     */
     
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101400
     [NSApp addObserver:_glfw.ns.helper
             forKeyPath:@"effectiveAppearance"
                options:0
                context:nil];
+#endif
 
     if (![[NSRunningApplication currentApplication] isFinishedLaunching])
         [NSApp run];

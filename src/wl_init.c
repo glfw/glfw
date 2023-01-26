@@ -382,7 +382,7 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         // Init
         _glfwInitWayland,
         _glfwTerminateWayland,
-        _glfwGetSystemDefaultThemeWayland
+        _glfwGetSystemDefaultThemeWayland,
         // Input
         _glfwGetCursorPosWayland,
         _glfwSetCursorPosWayland,

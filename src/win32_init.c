@@ -609,7 +609,7 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         // Init
         _glfwInitWin32,
         _glfwTerminateWin32,
-        _glfwGetSystemDefaultThemeWin32
+        _glfwGetSystemDefaultThemeWin32,
         // Input
         _glfwGetCursorPosWin32,
         _glfwSetCursorPosWin32,

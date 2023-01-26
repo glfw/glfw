@@ -1172,7 +1172,7 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
         // Init
         _glfwInitX11,
         _glfwTerminateX11,
-        _glfwGetSystemDefaultThemeX11
+        _glfwGetSystemDefaultThemeX11,
         // Input
         _glfwGetCursorPosX11,
         _glfwSetCursorPosX11,

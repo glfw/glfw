@@ -266,9 +266,10 @@ static void list_vulkan_instance_layers(void)
 
     for (uint32_t i = 0;  i < lp_count;  i++)
     {
-        printf(" %s (spec version %u) \"%s\"\n",
+        printf(" %s (spec version %u.%u) \"%s\"\n",
                lp[i].layerName,
-               lp[i].specVersion >> 22,
+               VK_VERSION_MAJOR(lp[i].specVersion),
+               VK_VERSION_MINOR(lp[i].specVersion),
                lp[i].description);
     }
 
@@ -286,9 +287,10 @@ static void list_vulkan_device_layers(VkInstance instance, VkPhysicalDevice devi
 
     for (uint32_t i = 0;  i < lp_count;  i++)
     {
-        printf(" %s (spec version %u) \"%s\"\n",
+        printf(" %s (spec version %u.%u) \"%s\"\n",
                lp[i].layerName,
-               lp[i].specVersion >> 22,
+               VK_VERSION_MAJOR(lp[i].specVersion),
+               VK_VERSION_MINOR(lp[i].specVersion),
                lp[i].description);
     }
 

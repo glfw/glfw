@@ -190,16 +190,23 @@ static void createMenuBar(void)
 
 void nsAppearanceToGLFWTheme(NSAppearance* appearance, GLFWtheme* theme)
 {
-    NSAppearanceName name = [appearance bestMatchFromAppearancesWithNames:@[
-        NSAppearanceNameAqua,
-        NSAppearanceNameDarkAqua,
-        NSAppearanceNameVibrantLight,
-        NSAppearanceNameVibrantDark,
-        NSAppearanceNameAccessibilityHighContrastAqua,
-        NSAppearanceNameAccessibilityHighContrastDarkAqua,
-        NSAppearanceNameAccessibilityHighContrastVibrantLight,
-        NSAppearanceNameAccessibilityHighContrastVibrantDark
-    ]];
+    NSAppearanceName name;
+    
+    if (@available(macOS 10.14, *))
+    {
+        name = [appearance bestMatchFromAppearancesWithNames:@[
+            NSAppearanceNameAqua,
+            NSAppearanceNameDarkAqua,
+            NSAppearanceNameVibrantLight,
+            NSAppearanceNameVibrantDark,
+            NSAppearanceNameAccessibilityHighContrastAqua,
+            NSAppearanceNameAccessibilityHighContrastDarkAqua,
+            NSAppearanceNameAccessibilityHighContrastVibrantLight,
+            NSAppearanceNameAccessibilityHighContrastVibrantDark
+        ]];
+    } else {
+        name = appearance.name;
+    }
     
     if ([name isEqualToString:NSAppearanceNameAqua])
     {
@@ -480,16 +487,19 @@ static GLFWbool initializeTIS(void)
     
     // TODO: FIXME: this method is invoked twice when the high contrast setting is edited in the preferences.
     
-    GLFWtheme theme = { 0, 0 };
-    nsAppearanceToGLFWTheme(NSApp.effectiveAppearance, &theme);
+    GLFWtheme theme = { GLFW_BASE_THEME_LIGHT, 0 };
     
-    NSColor* color = [[NSColor controlAccentColor] colorUsingColorSpace:NSColorSpace.genericRGBColorSpace];
-    
-    theme.flags |= GLFW_THEME_FLAG_HAS_COLOR;
-    theme.color[0] = color.redComponent * 255;
-    theme.color[1] = color.greenComponent * 255;
-    theme.color[2] = color.blueComponent * 255;
-    theme.color[3] = color.alphaComponent * 255;
+    if (@available(macOS 10.14, *)) {
+        nsAppearanceToGLFWTheme(NSApp.effectiveAppearance, &theme);
+        
+        NSColor* color = [[NSColor controlAccentColor] colorUsingColorSpace:NSColorSpace.genericRGBColorSpace];
+        
+        theme.flags |= GLFW_THEME_FLAG_HAS_COLOR;
+        theme.color[0] = color.redComponent * 255;
+        theme.color[1] = color.greenComponent * 255;
+        theme.color[2] = color.blueComponent * 255;
+        theme.color[3] = color.alphaComponent * 255;
+    }
     
     _glfwInputSystemTheme(&theme);
     

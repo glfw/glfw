@@ -1883,6 +1883,12 @@ void _glfwSetThemeCocoa(_GLFWwindow* window, GLFWtheme* theme)
         [window->ns.object setAppearance:nil];
         return;
     }
+    
+    if (@available(macOS 10.10, *)) {} else
+    {
+        return;
+    }
+    
     // TODO: support color
     // TODO: fix vibrancy
     
@@ -1892,7 +1898,8 @@ void _glfwSetThemeCocoa(_GLFWwindow* window, GLFWtheme* theme)
     
     if (theme->baseTheme == GLFW_BASE_THEME_LIGHT)
     {
-        if (theme->flags & GLFW_THEME_FLAG_VIBRANT) {
+        if (theme->flags & GLFW_THEME_FLAG_VIBRANT)
+        {
             name = NSAppearanceNameVibrantLight;
         }
         else
@@ -1902,12 +1909,16 @@ void _glfwSetThemeCocoa(_GLFWwindow* window, GLFWtheme* theme)
     }
     else
     {
-        if (theme->flags & GLFW_THEME_FLAG_VIBRANT) {
+        if (theme->flags & GLFW_THEME_FLAG_VIBRANT)
+        {
             name = NSAppearanceNameVibrantDark;
         }
-        else
+        else if (@available(macOS 10.14, *))
         {
             name = NSAppearanceNameDarkAqua;
+        } else
+        {
+            name = NSAppearanceNameAqua;
         }
     }
     
@@ -1919,20 +1930,25 @@ GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window)
 {
     GLFWtheme* theme = &window->theme;
     
-    theme->baseTheme = 0;
+    theme->baseTheme = GLFW_BASE_THEME_LIGHT;
     theme->flags = 0;
     
-    nsAppearanceToGLFWTheme([window->ns.object appearance], theme);
+    if (@available(macOS 10.09, *))
+    {
+        nsAppearanceToGLFWTheme([window->ns.object appearance], theme);
+    }
     
-    // TODO: this is not settable. Is there any reason in overriding a similar value? Does it apply to menu item highlights? If yes, then it must be overridden.
-    NSColor* color = [[NSColor controlAccentColor] colorUsingColorSpace:NSColorSpace.genericRGBColorSpace];
-    // TODO: Cannot use the accent color directly, for window themes, because the accent color is never overridden.
-    
-    theme->flags |= GLFW_THEME_FLAG_HAS_COLOR;
-    theme->color[0] = color.redComponent * 255;
-    theme->color[1] = color.greenComponent * 255;
-    theme->color[2] = color.blueComponent * 255;
-    theme->color[3] = color.alphaComponent * 255;
+    if (@available(macOS 10.14, *)) {
+        // TODO: this is not settable. Is there any reason in overriding a similar value? Does it apply to menu item highlights? If yes, then it must be overridden.
+        NSColor* color = [[NSColor controlAccentColor] colorUsingColorSpace:NSColorSpace.genericRGBColorSpace];
+        // TODO: Cannot use the accent color directly, for window themes, because the accent color is never overridden.
+        
+        theme->flags |= GLFW_THEME_FLAG_HAS_COLOR;
+        theme->color[0] = color.redComponent * 255;
+        theme->color[1] = color.greenComponent * 255;
+        theme->color[2] = color.blueComponent * 255;
+        theme->color[3] = color.alphaComponent * 255;
+    }
     
     return theme;
 }

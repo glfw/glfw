@@ -2775,6 +2775,17 @@ const char* _glfwGetClipboardStringWayland(void)
     return _glfw.wl.clipboardString;
 }
 
+void _glfwSetThemeWayland(_GLFWwindow* window, GLFWtheme* theme)
+{
+    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
+}
+
+GLFWtheme* _glfwGetThemeWayland(_GLFWwindow* window)
+{
+    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
+    return NULL; // TODO: implement
+}
+
 EGLenum _glfwGetEGLPlatformWayland(EGLint** attribs)
 {
     if (_glfw.egl.EXT_platform_base && _glfw.egl.EXT_platform_wayland)

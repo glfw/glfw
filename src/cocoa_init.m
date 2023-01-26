@@ -683,6 +683,7 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         _glfwSetWindowMousePassthroughCocoa,
         _glfwGetThemeCocoa,
         _glfwSetThemeCocoa,
+        // Events
         _glfwPollEventsCocoa,
         _glfwWaitEventsCocoa,
         _glfwWaitEventsTimeoutCocoa,

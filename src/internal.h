@@ -672,11 +672,11 @@ struct _GLFWmutex
 struct _GLFWplatform
 {
     int platformID;
-    // init
+    // Init
     GLFWbool (*init)(void);
     void (*terminate)(void);
     GLFWtheme* (*getSystemDefaultTheme)(void);
-    // input
+    // Input
     void (*getCursorPos)(_GLFWwindow*,double*,double*);
     void (*setCursorPos)(_GLFWwindow*,double,double);
     void (*setCursorMode)(_GLFWwindow*,int);
@@ -695,7 +695,7 @@ struct _GLFWplatform
     GLFWbool (*pollJoystick)(_GLFWjoystick*,int);
     const char* (*getMappingName)(void);
     void (*updateGamepadGUID)(char*);
-    // monitor
+    // Monitor
     void (*freeMonitor)(_GLFWmonitor*);
     void (*getMonitorPos)(_GLFWmonitor*,int*,int*);
     void (*getMonitorContentScale)(_GLFWmonitor*,float*,float*);
@@ -704,7 +704,7 @@ struct _GLFWplatform
     void (*getVideoMode)(_GLFWmonitor*,GLFWvidmode*);
     GLFWbool (*getGammaRamp)(_GLFWmonitor*,GLFWgammaramp*);
     void (*setGammaRamp)(_GLFWmonitor*,const GLFWgammaramp*);
-    // window
+    // Window
     GLFWbool (*createWindow)(_GLFWwindow*,const _GLFWwndconfig*,const _GLFWctxconfig*,const _GLFWfbconfig*);
     void (*destroyWindow)(_GLFWwindow*);
     void (*setWindowTitle)(_GLFWwindow*,const char*);
@@ -740,6 +740,7 @@ struct _GLFWplatform
     void (*setWindowMousePassthrough)(_GLFWwindow*,GLFWbool);
     GLFWtheme* (*getTheme)(_GLFWwindow*);
     void (*setTheme)(_GLFWwindow*,GLFWtheme*);
+    // Events
     void (*pollEvents)(void);
     void (*waitEvents)(void);
     void (*waitEventsTimeout)(double);
@@ -748,7 +749,7 @@ struct _GLFWplatform
     EGLenum (*getEGLPlatform)(EGLint**);
     EGLNativeDisplayType (*getEGLNativeDisplay)(void);
     EGLNativeWindowType (*getEGLNativeWindow)(_GLFWwindow*);
-    // vulkan
+    // Vulkan
     void (*getRequiredInstanceExtensions)(char**);
     GLFWbool (*getPhysicalDevicePresentationSupport)(VkInstance,VkPhysicalDevice,uint32_t);
     VkResult (*createWindowSurface)(VkInstance,_GLFWwindow*,const VkAllocationCallbacks*,VkSurfaceKHR*);

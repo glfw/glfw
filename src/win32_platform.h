@@ -622,3 +622,6 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig);
 
+GLFWtheme* _glfwGetSystemDefaultThemeWin32(void);
+void _glfwSetThemeWin32(_GLFWwindow* window, GLFWtheme* theme);
+GLFWtheme* _glfwGetThemeWin32(_GLFWwindow* window);

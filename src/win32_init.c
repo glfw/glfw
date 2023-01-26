@@ -606,8 +606,11 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
     const _GLFWplatform win32 =
     {
         GLFW_PLATFORM_WIN32,
+        // Init
         _glfwInitWin32,
         _glfwTerminateWin32,
+        _glfwGetSystemDefaultThemeWin32
+        // Input
         _glfwGetCursorPosWin32,
         _glfwSetCursorPosWin32,
         _glfwSetCursorModeWin32,
@@ -626,6 +629,7 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         _glfwPollJoystickWin32,
         _glfwGetMappingNameWin32,
         _glfwUpdateGamepadGUIDWin32,
+        // Monitor
         _glfwFreeMonitorWin32,
         _glfwGetMonitorPosWin32,
         _glfwGetMonitorContentScaleWin32,
@@ -634,6 +638,7 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         _glfwGetVideoModeWin32,
         _glfwGetGammaRampWin32,
         _glfwSetGammaRampWin32,
+        // Window
         _glfwCreateWindowWin32,
         _glfwDestroyWindowWin32,
         _glfwSetWindowTitleWin32,
@@ -667,13 +672,18 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         _glfwSetWindowFloatingWin32,
         _glfwSetWindowOpacityWin32,
         _glfwSetWindowMousePassthroughWin32,
+        _glfwGetThemeWin32,
+        _glfwSetThemeWin32,
+        // Events
         _glfwPollEventsWin32,
         _glfwWaitEventsWin32,
         _glfwWaitEventsTimeoutWin32,
         _glfwPostEmptyEventWin32,
+        // EGL
         _glfwGetEGLPlatformWin32,
         _glfwGetEGLNativeDisplayWin32,
         _glfwGetEGLNativeWindowWin32,
+        // Vulkan
         _glfwGetRequiredInstanceExtensionsWin32,
         _glfwGetPhysicalDevicePresentationSupportWin32,
         _glfwCreateWindowSurfaceWin32,
@@ -725,6 +735,12 @@ void _glfwTerminateWin32(void)
     _glfwTerminateOSMesa();
 
     freeLibraries();
+}
+
+GLFWtheme* _glfwGetSystemDefaultThemeWin32(void)
+{
+    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
+    return NULL; // TODO: implement
 }
 
 #endif // _GLFW_WIN32

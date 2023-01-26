@@ -36,11 +36,11 @@
 #include <crt_externs.h>
 
 
-#if MAC_OS_X_VERSION_MIN_REQUIRED < 101000
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 101000
 NSAppearanceName const NSAppearanceNameVibrantLight = @"NSAppearanceNameVibrantLight";
 NSAppearanceName const NSAppearanceNameVibrantDark = @"NSAppearanceNameVibrantDark";
 #endif
-#if MAC_OS_X_VERSION_MIN_REQUIRED < 101400
+#if MAC_OS_X_VERSION_MAX_ALLOWED < 101400
 NSAppearanceName const NSAppearanceNameDarkAqua = @"NSAppearanceNameDarkAqua";
 NSAppearanceName const NSAppearanceNameAccessibilityHighContrastAqua = @"NSAppearanceNameAccessibilityAqua";
 NSAppearanceName const NSAppearanceNameAccessibilityHighContrastDarkAqua = @"NSAppearanceNameAccessibilityDarkAqua";

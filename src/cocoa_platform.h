@@ -40,6 +40,7 @@
 #else
 typedef void* id;
 typedef void NSAppearance;
+typedef id NSString;
 #endif
 
 #if MAC_OS_X_VERSION_MIN_REQUIRED < 101300

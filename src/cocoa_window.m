@@ -1880,7 +1880,7 @@ void _glfwSetThemeCocoa(_GLFWwindow* window, GLFWtheme* theme)
 {
     if (!theme || theme->baseTheme == GLFW_BASE_THEME_DEFAULT)
     {
-        [window->ns.object setAppearance:nil];
+        [(NSWindow*)window->ns.object setAppearance:nil];
         return;
     }
     
@@ -1923,7 +1923,7 @@ void _glfwSetThemeCocoa(_GLFWwindow* window, GLFWtheme* theme)
     }
     
     NSAppearance* appearance = [NSAppearance appearanceNamed:name];
-    [window->ns.object setAppearance:appearance];
+    [(NSWindow*)window->ns.object setAppearance:appearance];
 }
 
 GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window)

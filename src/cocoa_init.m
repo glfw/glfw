@@ -35,19 +35,6 @@
 // Needed for _NSGetProgname
 #include <crt_externs.h>
 
-
-#if MAC_OS_X_VERSION_MAX_ALLOWED < 101000
-NSAppearanceName const NSAppearanceNameVibrantLight = @"NSAppearanceNameVibrantLight";
-NSAppearanceName const NSAppearanceNameVibrantDark = @"NSAppearanceNameVibrantDark";
-#endif
-#if MAC_OS_X_VERSION_MAX_ALLOWED < 101400
-NSAppearanceName const NSAppearanceNameDarkAqua = @"NSAppearanceNameDarkAqua";
-NSAppearanceName const NSAppearanceNameAccessibilityHighContrastAqua = @"NSAppearanceNameAccessibilityAqua";
-NSAppearanceName const NSAppearanceNameAccessibilityHighContrastDarkAqua = @"NSAppearanceNameAccessibilityDarkAqua";
-NSAppearanceName const NSAppearanceNameAccessibilityHighContrastVibrantLight = @"NSAppearanceNameAccessibilityVibrantLight";
-NSAppearanceName const NSAppearanceNameAccessibilityHighContrastVibrantDark = @"NSAppearanceNameAccessibilityVibrantDark";
-#endif
-
 // Change to our application bundle's resources directory, if present
 //
 static void changeToResourcesDirectory(void)
@@ -211,41 +198,58 @@ void nsAppearanceToGLFWTheme(NSAppearance* appearance, GLFWtheme* theme)
     if ([name isEqualToString:NSAppearanceNameAqua])
     {
         theme->baseTheme = GLFW_BASE_THEME_LIGHT;
+        return;
     }
-    else if ([name isEqualToString:NSAppearanceNameDarkAqua])
+    
+    if (@available(macOS 10.10, *)) {
+        if ([name isEqualToString:NSAppearanceNameVibrantLight])
+        {
+            theme->baseTheme = GLFW_BASE_THEME_LIGHT;
+            theme->flags |= GLFW_THEME_FLAG_VIBRANT;
+            return;
+        }
+        if ([name isEqualToString:NSAppearanceNameVibrantDark])
+        {
+            theme->baseTheme = GLFW_BASE_THEME_DARK;
+            theme->flags |= GLFW_THEME_FLAG_VIBRANT;
+            return;
+        }
+    }
+    
+    if (@available(macOS 10.14, *))
     {
-        theme->baseTheme = GLFW_BASE_THEME_DARK;
+        if ([name isEqualToString:NSAppearanceNameDarkAqua])
+        {
+            theme->baseTheme = GLFW_BASE_THEME_DARK;
+            return;
+        }
+        if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastAqua])
+        {
+            theme->baseTheme = GLFW_BASE_THEME_LIGHT;
+            theme->flags |= GLFW_THEME_FLAG_HIGH_CONTRAST;
+            return;
+        }
+        if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastDarkAqua])
+        {
+            theme->baseTheme = GLFW_BASE_THEME_DARK;
+            theme->flags |= GLFW_THEME_FLAG_HIGH_CONTRAST;
+            return;
+        }
+        if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastVibrantLight])
+        {
+            theme->baseTheme = GLFW_BASE_THEME_LIGHT;
+            theme->flags |= GLFW_THEME_FLAG_VIBRANT | GLFW_THEME_FLAG_HIGH_CONTRAST;
+            return;
+        }
+        if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastVibrantDark])
+        {
+            theme->baseTheme = GLFW_BASE_THEME_DARK;
+            theme->flags |= GLFW_THEME_FLAG_VIBRANT | GLFW_THEME_FLAG_HIGH_CONTRAST;
+            return;
+        }
     }
-    else if ([name isEqualToString:NSAppearanceNameVibrantLight])
-    {
-        theme->baseTheme = GLFW_BASE_THEME_LIGHT;
-        theme->flags |= GLFW_THEME_FLAG_VIBRANT;
-    }
-    else if ([name isEqualToString:NSAppearanceNameVibrantDark])
-    {
-        theme->baseTheme = GLFW_BASE_THEME_DARK;
-        theme->flags |= GLFW_THEME_FLAG_VIBRANT;
-    }
-    if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastAqua])
-    {
-        theme->baseTheme = GLFW_BASE_THEME_LIGHT;
-        theme->flags |= GLFW_THEME_FLAG_HIGH_CONTRAST;
-    }
-    else if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastDarkAqua])
-    {
-        theme->baseTheme = GLFW_BASE_THEME_DARK;
-        theme->flags |= GLFW_THEME_FLAG_HIGH_CONTRAST;
-    }
-    else if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastVibrantLight])
-    {
-        theme->baseTheme = GLFW_BASE_THEME_LIGHT;
-        theme->flags |= GLFW_THEME_FLAG_VIBRANT | GLFW_THEME_FLAG_HIGH_CONTRAST;
-    }
-    else if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastVibrantDark])
-    {
-        theme->baseTheme = GLFW_BASE_THEME_DARK;
-        theme->flags |= GLFW_THEME_FLAG_VIBRANT | GLFW_THEME_FLAG_HIGH_CONTRAST;
-    }
+    
+    theme->baseTheme = GLFW_BASE_THEME_LIGHT;
 }
 
 // Create key code translation tables

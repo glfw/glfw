@@ -39,7 +39,9 @@
 #import <Cocoa/Cocoa.h>
 #else
 typedef void* id;
+typedef void NSAppearance;
 #endif
+
 
 // NOTE: Many Cocoa enum values have been renamed and we need to build across
 //       SDK versions where one is unavailable or deprecated.
@@ -290,6 +292,8 @@ void _glfwSetVideoModeCocoa(_GLFWmonitor* monitor, const GLFWvidmode* desired);
 void _glfwRestoreVideoModeCocoa(_GLFWmonitor* monitor);
 
 float _glfwTransformYCocoa(float y);
+
+void nsAppearanceToGLFWTheme(NSAppearance* appearance, GLFWtheme* theme);
 
 void* _glfwLoadLocalVulkanLoaderCocoa(void);
 

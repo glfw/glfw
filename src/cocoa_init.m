@@ -175,6 +175,50 @@ static void createMenuBar(void)
     [NSApp performSelector:setAppleMenuSelector withObject:appMenu];
 }
 
+void nsAppearanceToGLFWTheme(NSAppearance* appearance, GLFWtheme* theme)
+{
+    NSAppearanceName name = appearance.name;
+    
+    if (name == NSAppearanceNameAqua)
+    {
+        theme->baseTheme = GLFW_BASE_THEME_LIGHT;
+    }
+    else if (name == NSAppearanceNameDarkAqua)
+    {
+        theme->baseTheme = GLFW_BASE_THEME_DARK;
+    }
+    else if (name == NSAppearanceNameVibrantLight)
+    {
+        theme->baseTheme = GLFW_BASE_THEME_LIGHT;
+        theme->flags |= GLFW_THEME_FLAG_VIBRANT;
+    }
+    else if (name == NSAppearanceNameVibrantDark)
+    {
+        theme->baseTheme = GLFW_BASE_THEME_DARK;
+        theme->flags |= GLFW_THEME_FLAG_VIBRANT;
+    }
+    if (name == NSAppearanceNameAccessibilityHighContrastAqua)
+    {
+        theme->baseTheme = GLFW_BASE_THEME_LIGHT;
+        theme->flags |= GLFW_THEME_FLAG_HIGH_CONTRAST;
+    }
+    else if (name == NSAppearanceNameAccessibilityHighContrastDarkAqua)
+    {
+        theme->baseTheme = GLFW_BASE_THEME_DARK;
+        theme->flags |= GLFW_THEME_FLAG_HIGH_CONTRAST;
+    }
+    else if (name == NSAppearanceNameAccessibilityHighContrastVibrantLight)
+    {
+        theme->baseTheme = GLFW_BASE_THEME_LIGHT;
+        theme->flags |= GLFW_THEME_FLAG_VIBRANT | GLFW_THEME_FLAG_HIGH_CONTRAST;
+    }
+    else if (name == NSAppearanceNameAccessibilityHighContrastVibrantDark)
+    {
+        theme->baseTheme = GLFW_BASE_THEME_DARK;
+        theme->flags |= GLFW_THEME_FLAG_VIBRANT | GLFW_THEME_FLAG_HIGH_CONTRAST;
+    }
+}
+
 // Create key code translation tables
 //
 static void createKeyTables(void)
@@ -392,6 +436,41 @@ static GLFWbool initializeTIS(void)
 
 - (void)doNothing:(id)object
 {
+}
+/*
+- (void)themeChanged:(NSNotification*)notification
+{
+    _glfwInputSystemTheme(NULL);
+}
+
+- (void)accentColorChanged
+{
+    _glfwInputSystemTheme(NULL);
+}*/
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+    // This class is never subclassed, so it's safe to ignore the context parameter
+    
+    GLFWtheme theme = { 0, 0 };
+    nsAppearanceToGLFWTheme(NSApp.effectiveAppearance, &theme);
+    
+    NSColor* color = [[NSColor controlAccentColor] colorUsingColorSpace:NSColorSpace.genericRGBColorSpace];
+    
+    theme.flags |= GLFW_THEME_FLAG_HAS_COLOR;
+    theme.color[0] = color.redComponent * 255;
+    theme.color[1] = color.greenComponent * 255;
+    theme.color[2] = color.blueComponent * 255;
+    theme.color[3] = color.alphaComponent * 255;
+    
+    _glfwInputSystemTheme(&theme);
+    
+    /*if ([keyPath isEqualToString:@"controlAccentColor"]) {
+        [self accentColorChanged];
+    }*/
 }
 
 @end // GLFWHelper
@@ -641,6 +720,24 @@ int _glfwInitCocoa(void)
         return GLFW_FALSE;
 
     _glfwPollMonitorsCocoa();
+        
+    /*
+    [[NSNotificationCenter defaultCenter]
+        addObserver:_glfw.ns.helper
+           selector:@selector(themeChanged:)
+               name:@"AppleInterfaceThemeChangedNotification"
+             object:nil];
+    
+    [NSColor addObserver:_glfw.ns.helper
+              forKeyPath:@"controlAccentColor"
+                 options:0
+                 context:nil];
+    */
+    
+    [NSApp addObserver:_glfw.ns.helper
+            forKeyPath:@"effectiveAppearance"
+               options:0
+               context:nil];
 
     if (![[NSRunningApplication currentApplication] isFinishedLaunching])
         [NSApp run];

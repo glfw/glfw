@@ -193,10 +193,10 @@ int main(int argc, char** argv)
     while (!glfwWindowShouldClose(window))
     {
         glClearColor(
-                theme_colors[cur_theme_color][0] / 255.0f,
-                theme_colors[cur_theme_color][1] / 255.0f,
-                theme_colors[cur_theme_color][2] / 255.0f,
-                theme_colors[cur_theme_color][3] / 255.0f
+                theme_colors[cur_theme_color][0],
+                theme_colors[cur_theme_color][1],
+                theme_colors[cur_theme_color][2],
+                theme_colors[cur_theme_color][3]
         );
         glClear(GL_COLOR_BUFFER_BIT);
         glfwSwapBuffers(window);

@@ -1153,7 +1153,7 @@ GLFWAPI void glfwPostEmptyEvent(void)
     _glfw.platform.postEmptyEvent();
 }
 
-GLFWAPI void glfwSetTheme(GLFWwindow* handle, GLFWtheme* theme)
+GLFWAPI void glfwSetTheme(GLFWwindow* handle, const GLFWtheme* theme)
 {
 
     _GLFWwindow* window = (_GLFWwindow*) handle;

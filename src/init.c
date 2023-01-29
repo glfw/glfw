@@ -548,7 +548,7 @@ GLFWAPI GLFWtheme* glfwGetSystemDefaultTheme()
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     
     _GLFWtheme* theme = _glfw.platform.getSystemDefaultTheme();
-    assert(theme->variation != GLFW_THEME_DEFAULT); 
+    assert(theme->variation != GLFW_THEME_DEFAULT);
     
     return (GLFWtheme*) theme;
 }

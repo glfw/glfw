@@ -72,6 +72,7 @@ typedef struct _GLFWplatform    _GLFWplatform;
 typedef struct _GLFWlibrary     _GLFWlibrary;
 typedef struct _GLFWmonitor     _GLFWmonitor;
 typedef struct _GLFWcursor      _GLFWcursor;
+typedef struct _GLFWtheme       _GLFWtheme;
 typedef struct _GLFWmapelement  _GLFWmapelement;
 typedef struct _GLFWmapping     _GLFWmapping;
 typedef struct _GLFWjoystick    _GLFWjoystick;
@@ -515,6 +516,20 @@ struct _GLFWcontext
     GLFW_PLATFORM_CONTEXT_STATE
 };
 
+// Theme structure
+//
+struct _GLFWtheme
+{
+    // The light/dark variation. If set to DEFAULT, use the system theme variation.
+    int variation;
+    
+    int flags;
+    
+    // When applying a theme, ignore this color if the HAS_COLOR
+    // flag is unset, and use the system theme color instead.
+    float color[4];
+};
+
 // Window and context structure
 //
 struct _GLFWwindow
@@ -571,7 +586,8 @@ struct _GLFWwindow
         GLFWdropfun               drop;
     } callbacks;
     
-    _GLFWtheme theme; // TODO: This data is mutable by clients, so remove it.
+    // Clients can mutate this theme data at any time
+    _GLFWtheme theme;
 
     // This is defined in platform.h
     GLFW_PLATFORM_WINDOW_STATE

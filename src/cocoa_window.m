@@ -1944,10 +1944,10 @@ _GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window)
         // TODO: Cannot use the accent color directly, for window themes, because the accent color is never overridden.
         
         theme->flags |= GLFW_THEME_FLAG_HAS_COLOR;
-        theme->color[0] = color.redComponent * 255;
-        theme->color[1] = color.greenComponent * 255;
-        theme->color[2] = color.blueComponent * 255;
-        theme->color[3] = color.alphaComponent * 255;
+        theme->color[0] = color.redComponent;
+        theme->color[1] = color.greenComponent;
+        theme->color[2] = color.blueComponent;
+        theme->color[3] = color.alphaComponent;
     }
     
     return theme;

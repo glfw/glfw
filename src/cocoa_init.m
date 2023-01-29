@@ -502,10 +502,10 @@ static GLFWbool initializeTIS(void)
         NSColor* color = [[NSColor controlAccentColor] colorUsingColorSpace:NSColorSpace.genericRGBColorSpace];
         
         theme.flags |= GLFW_THEME_FLAG_HAS_COLOR;
-        theme.color[0] = color.redComponent * 255;
-        theme.color[1] = color.greenComponent * 255;
-        theme.color[2] = color.blueComponent * 255;
-        theme.color[3] = color.alphaComponent * 255;
+        theme.color[0] = color.redComponent;
+        theme.color[1] = color.greenComponent;
+        theme.color[2] = color.blueComponent;
+        theme.color[3] = color.alphaComponent;
     }
     
     _glfwInputSystemTheme(&theme);

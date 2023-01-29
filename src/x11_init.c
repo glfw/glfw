@@ -1664,7 +1664,7 @@ void _glfwTerminateX11(void)
     }
 }
 
-GLFWtheme* _glfwGetSystemDefaultThemeX11(void)
+_GLFWtheme* _glfwGetSystemDefaultThemeX11(void)
 {
     _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
     return NULL; // TODO: implement

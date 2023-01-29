@@ -1876,9 +1876,9 @@ const char* _glfwGetClipboardStringCocoa(void)
     } // autoreleasepool
 }
 
-void _glfwSetThemeCocoa(_GLFWwindow* window, GLFWtheme* theme)
+void _glfwSetThemeCocoa(_GLFWwindow* window, _GLFWtheme* theme)
 {
-    if (!theme || theme->baseTheme == GLFW_BASE_THEME_DEFAULT)
+    if (!theme || theme->variation == GLFW_THEME_DEFAULT)
     {
         [(NSWindow*)window->ns.object setAppearance:nil];
         return;
@@ -1896,7 +1896,7 @@ void _glfwSetThemeCocoa(_GLFWwindow* window, GLFWtheme* theme)
     // appearanceNamed: will result in nil, so these can not be used.
     NSAppearanceName name;
     
-    if (theme->baseTheme == GLFW_BASE_THEME_LIGHT)
+    if (theme->variation == GLFW_THEME_LIGHT)
     {
         if (theme->flags & GLFW_THEME_FLAG_VIBRANT)
         {
@@ -1926,11 +1926,11 @@ void _glfwSetThemeCocoa(_GLFWwindow* window, GLFWtheme* theme)
     [(NSWindow*)window->ns.object setAppearance:appearance];
 }
 
-GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window)
+_GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window)
 {
-    GLFWtheme* theme = &window->theme;
+    _GLFWtheme* theme = &window->theme;
     
-    theme->baseTheme = GLFW_BASE_THEME_LIGHT;
+    theme->variation = GLFW_THEME_LIGHT;
     theme->flags = 0;
     
     if (@available(macOS 10.09, *))

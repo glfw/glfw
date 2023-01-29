@@ -3,7 +3,7 @@ add_library(glfw ${GLFW_LIBRARY_TYPE}
                  "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"
                  "${GLFW_SOURCE_DIR}/include/GLFW/glfw3native.h"
                  internal.h platform.h mappings.h
-                 context.c init.c input.c monitor.c platform.c vulkan.c window.c
+                 context.c init.c input.c monitor.c platform.c theme.c vulkan.c window.c
                  egl_context.c osmesa_context.c null_platform.h null_joystick.h
                  null_init.c null_monitor.c null_window.c null_joystick.c)
 
@@ -248,7 +248,7 @@ endif()
 # Make GCC warn about declarations that VS 2010 and 2012 won't accept for all
 # source files that VS will build (Clang ignores this because we set -std=c99)
 if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
-    set_source_files_properties(context.c init.c input.c monitor.c platform.c vulkan.c
+    set_source_files_properties(context.c init.c input.c monitor.c platform.c theme.c vulkan.c
                                 window.c null_init.c null_joystick.c null_monitor.c
                                 null_window.c win32_init.c win32_joystick.c win32_module.c
                                 win32_monitor.c win32_time.c win32_thread.c win32_window.c

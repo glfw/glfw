@@ -140,7 +140,7 @@ void _glfwTerminateNull(void)
     _glfwTerminateEGL();
 }
 
-GLFWtheme* _glfwGetSystemDefaultThemeNull(void)
+_GLFWtheme* _glfwGetSystemDefaultThemeNull(void)
 {
-    return NULL; // TODO: should probably return a colorless GLFWtheme with baseTheme set to GLFW_BASE_THEME_LIGHT
+    return NULL; // TODO: should probably return a colorless GLFWtheme with baseTheme set to GLFW_THEME_LIGHT
 }

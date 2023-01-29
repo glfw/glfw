@@ -477,12 +477,12 @@ void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value)
     js->hats[hat] = value;
 }
 
-void _glfwInputSystemTheme(GLFWtheme* theme)
+void _glfwInputSystemTheme(_GLFWtheme* theme)
 {
     assert(theme != NULL);
     
     if (_glfw.callbacks.theme)
-        _glfw.callbacks.theme(theme);
+        _glfw.callbacks.theme((GLFWtheme*) theme);
 }
 
 //////////////////////////////////////////////////////////////////////////

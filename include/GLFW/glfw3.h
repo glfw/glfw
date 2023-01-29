@@ -5845,16 +5845,31 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  */
 GLFWAPI const char* glfwGetClipboardString(GLFWwindow* window);
 
-typedef struct GLFWtheme
-{
-    int baseTheme; // light/dark
-    int flags;
-    unsigned char color[4];
-} GLFWtheme;
+typedef struct GLFWtheme GLFWtheme;
 
-#define GLFW_BASE_THEME_DEFAULT 0
-#define GLFW_BASE_THEME_LIGHT 1
-#define GLFW_BASE_THEME_DARK 2
+typedef struct _GLFWtheme
+{
+    int variation; // light/dark
+    int flags;
+    unsigned char color[4]; // TODO: change to 128 bit (4 floats) to support wider gamuts.
+} _GLFWtheme;
+
+GLFWAPI GLFWtheme* glfwCreateTheme(void);
+GLFWAPI void glfwDestroyTheme(GLFWtheme* theme);
+GLFWAPI void glfwCopyTheme(const GLFWtheme* source, GLFWtheme* target);
+
+GLFWAPI int glfwThemeGetVariation(const GLFWtheme* theme);
+GLFWAPI void glfwThemeSetVariation(GLFWtheme* theme, int value);
+
+GLFWAPI int glfwThemeGetFlags(const GLFWtheme* theme);
+GLFWAPI void glfwThemeSetFlags(GLFWtheme* theme, int value);
+
+GLFWAPI void glfwThemeGetColor(const GLFWtheme* theme, float* red, float* green, float* blue, float* alpha);
+GLFWAPI void glfwThemeSetColor(GLFWtheme* theme, float red, float green, float blue, float alpha);
+
+#define GLFW_THEME_DARK -1
+#define GLFW_THEME_DEFAULT 0
+#define GLFW_THEME_LIGHT 1
 
 #define GLFW_THEME_FLAG_HAS_COLOR 1
 #define GLFW_THEME_FLAG_HIGH_CONTRAST 2
@@ -5872,7 +5887,7 @@ GLFWAPI GLFWthemefun glfwSetSystemThemeCallback(GLFWthemefun callback);
  *  @param[in] window The window to set the theme for.
  *  @param[in] theme The theme to set. Pass `NULL` to set it to the system default.
  */
-GLFWAPI void glfwSetTheme(GLFWwindow* handle, GLFWtheme* theme);
+GLFWAPI void glfwSetTheme(GLFWwindow* handle, const GLFWtheme* theme);
 GLFWAPI GLFWtheme* glfwGetTheme(GLFWwindow* handle);
 GLFWAPI GLFWtheme* glfwGetSystemDefaultTheme();
 

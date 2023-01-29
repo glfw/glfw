@@ -737,7 +737,7 @@ void _glfwTerminateWin32(void)
     freeLibraries();
 }
 
-GLFWtheme* _glfwGetSystemDefaultThemeWin32(void)
+_GLFWtheme* _glfwGetSystemDefaultThemeWin32(void)
 {
     _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
     return NULL; // TODO: implement

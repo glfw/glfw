@@ -36,75 +36,84 @@
 #include <stdlib.h>
 #include <string.h>
 
-const unsigned char theme_colors[6][4] =
+const float theme_colors[6][4] =
 {
-    {   0,   0,   0, 255 }, // black
-    { 255,   0,   0, 255 }, // red
-    {   0, 255,   0, 255 }, // green
-    {   0,   0, 255, 255 }, // blue
-    { 255, 255, 255, 255 }, // white
-    { 128, 128, 128, 255 }  // gray (no theme color)
+    {   0,   0,   0, 1.0 }, // black
+    { 1.0,   0,   0, 1.0 }, // red
+    {   0, 1.0,   0, 1.0 }, // green
+    {   0,   0, 1.0, 1.0 }, // blue
+    { 1.0, 1.0, 1.0, 1.0 }, // white
+    { 0.5, 0.5, 0.5, 1.0 }  // gray (no theme color)
 };
 
 static int cur_theme_color = 0;
 
-static GLFWtheme theme;
+static GLFWtheme* theme;
 
 static void print_theme(GLFWtheme* theme, const char* title)
 {
+    const int flags = glfwThemeGetFlags(theme);
     int n = 0;
     
     printf("%s: {\n", title);
-    printf("    Base: %s\n", theme->baseTheme == GLFW_BASE_THEME_LIGHT ? "light" : "dark");
+    printf("    Base: %s\n", glfwThemeGetVariation(theme) == GLFW_THEME_LIGHT ? "light" : "dark");
     printf("    Flags: [");
-    if (theme->flags & GLFW_THEME_FLAG_HAS_COLOR)
+    if (flags & GLFW_THEME_FLAG_HAS_COLOR)
     {
         printf(n++ > 0 ? ", %s" : "%s", "HAS_COLOR");
     }
-    if (theme->flags & GLFW_THEME_FLAG_VIBRANT)
+    if (flags & GLFW_THEME_FLAG_VIBRANT)
     {
         printf(n++ > 0 ? ", %s" : "%s", "VIBRANT");
     }
-    if (theme->flags & GLFW_THEME_FLAG_HIGH_CONTRAST)
+    if (flags & GLFW_THEME_FLAG_HIGH_CONTRAST)
     {
         printf(n++ > 0 ? ", %s" : "%s", "HIGH_CONTRAST");
     }
     printf("]\n");
-    if (theme->flags & GLFW_THEME_FLAG_HAS_COLOR)
+    if (flags & GLFW_THEME_FLAG_HAS_COLOR)
     {
-        printf("    Color: [%i, %i, %i, %i]\n", theme->color[0], theme->color[1], theme->color[2], theme->color[3]);
+        float r, g, b, a;
+        glfwThemeGetColor(theme, &r, &g, &b, &a);
+        printf("    Color: [%f, %f, %f, %f]\n", r, g, b, a);
     }
     printf("}\n");
 }
 
 static void set_theme(GLFWwindow* window, int theme_color)
 {
-    memcpy(theme.color, theme_colors[theme_color], 4);
+    glfwThemeSetColor(
+            theme,
+            theme_colors[theme_color][0],
+            theme_colors[theme_color][1],
+            theme_colors[theme_color][2],
+            theme_colors[theme_color][3]
+    );
     
     if (theme_color == 6)
     {
-        theme.flags &= ~GLFW_THEME_FLAG_HAS_COLOR;
+        glfwThemeSetFlags(theme, glfwThemeGetFlags(theme) & ~GLFW_THEME_FLAG_HAS_COLOR);
     } else
     {
-        theme.flags |= GLFW_THEME_FLAG_HAS_COLOR;
+        glfwThemeSetFlags(theme, glfwThemeGetFlags(theme) | GLFW_THEME_FLAG_HAS_COLOR);
     }
 
     const char* title;
     
-    switch (theme.baseTheme) {
-        case GLFW_BASE_THEME_DEFAULT:
+    switch (glfwThemeGetVariation(theme)) {
+        case GLFW_THEME_DEFAULT:
             title = "Default theme";
             break;
-        case GLFW_BASE_THEME_LIGHT:
+        case GLFW_THEME_LIGHT:
             title = "Light theme";
             break;
-        case GLFW_BASE_THEME_DARK:
+        case GLFW_THEME_DARK:
             title = "Dark theme";
             break;
     }
     
     glfwSetWindowTitle(window, title);
-    glfwSetTheme(window, &theme);
+    glfwSetTheme(window, theme);
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -119,15 +128,15 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             glfwSetTheme(window, NULL);
             break;
         case GLFW_KEY_1:
-            theme.baseTheme = GLFW_BASE_THEME_DEFAULT;
+            glfwThemeSetVariation(theme, GLFW_THEME_DEFAULT);
             set_theme(window, cur_theme_color);
             break;
         case GLFW_KEY_2:
-            theme.baseTheme = GLFW_BASE_THEME_LIGHT;
+            glfwThemeSetVariation(theme, GLFW_THEME_LIGHT);
             set_theme(window, cur_theme_color);
             break;
         case GLFW_KEY_3:
-            theme.baseTheme = GLFW_BASE_THEME_DARK;
+            glfwThemeSetVariation(theme, GLFW_THEME_DARK);
             set_theme(window, cur_theme_color);
             break;
         case GLFW_KEY_ESCAPE:
@@ -172,12 +181,11 @@ int main(int argc, char** argv)
 
     glfwSetKeyCallback(window, key_callback);
     
-    theme.baseTheme = GLFW_BASE_THEME_DEFAULT;
-    theme.flags = 0;
-    theme.color[0] = 0;
-    theme.color[1] = 0;
-    theme.color[2] = 0;
-    theme.color[3] = 0;
+    theme = glfwCreateTheme();
+    
+    glfwThemeSetVariation(theme, GLFW_THEME_DEFAULT);
+    glfwThemeSetFlags(theme, 0);
+    glfwThemeSetColor(theme, 0, 0, 0, 0);
     set_theme(window, cur_theme_color);
     
     glfwSetSystemThemeCallback(theme_callback);
@@ -195,6 +203,7 @@ int main(int argc, char** argv)
         glfwWaitEvents();
     }
 
+    glfwDestroyTheme(theme);
     glfwDestroyWindow(window);
     glfwTerminate();
     exit(EXIT_SUCCESS);

@@ -1160,7 +1160,7 @@ GLFWAPI void glfwSetTheme(GLFWwindow* handle, GLFWtheme* theme)
     assert(window != NULL);
     
     _GLFW_REQUIRE_INIT();
-    _glfw.platform.setTheme(window, theme);
+    _glfw.platform.setTheme(window, (_GLFWtheme*) theme);
 }
 
 GLFWAPI GLFWtheme* glfwGetTheme(GLFWwindow* handle)
@@ -1169,5 +1169,5 @@ GLFWAPI GLFWtheme* glfwGetTheme(GLFWwindow* handle)
     assert(window != NULL);
     
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    return _glfw.platform.getTheme(window);
+    return (GLFWtheme*) _glfw.platform.getTheme(window);
 }

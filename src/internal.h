@@ -571,7 +571,7 @@ struct _GLFWwindow
         GLFWdropfun               drop;
     } callbacks;
     
-    GLFWtheme theme;
+    _GLFWtheme theme; // TODO: This data is mutable by clients, so remove it.
 
     // This is defined in platform.h
     GLFW_PLATFORM_WINDOW_STATE
@@ -675,7 +675,7 @@ struct _GLFWplatform
     // Init
     GLFWbool (*init)(void);
     void (*terminate)(void);
-    GLFWtheme* (*getSystemDefaultTheme)(void);
+    _GLFWtheme* (*getSystemDefaultTheme)(void);
     // Input
     void (*getCursorPos)(_GLFWwindow*,double*,double*);
     void (*setCursorPos)(_GLFWwindow*,double,double);
@@ -738,8 +738,8 @@ struct _GLFWplatform
     void (*setWindowFloating)(_GLFWwindow*,GLFWbool);
     void (*setWindowOpacity)(_GLFWwindow*,float);
     void (*setWindowMousePassthrough)(_GLFWwindow*,GLFWbool);
-    GLFWtheme* (*getTheme)(_GLFWwindow*);
-    void (*setTheme)(_GLFWwindow*,GLFWtheme*);
+    _GLFWtheme* (*getTheme)(_GLFWwindow*);
+    void (*setTheme)(_GLFWwindow*,_GLFWtheme*);
     // Events
     void (*pollEvents)(void);
     void (*waitEvents)(void);
@@ -936,7 +936,7 @@ void _glfwInputJoystickAxis(_GLFWjoystick* js, int axis, float value);
 void _glfwInputJoystickButton(_GLFWjoystick* js, int button, char value);
 void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value);
 
-void _glfwInputSystemTheme(GLFWtheme* theme);
+void _glfwInputSystemTheme(_GLFWtheme* theme);
 
 void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement);
 void _glfwInputMonitorWindow(_GLFWmonitor* monitor, _GLFWwindow* window);

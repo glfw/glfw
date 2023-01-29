@@ -2373,12 +2373,12 @@ const char* _glfwGetClipboardStringWin32(void)
     return _glfw.win32.clipboardString;
 }
 
-void _glfwSetThemeWin32(_GLFWwindow* window, GLFWtheme* theme)
+void _glfwSetThemeWin32(_GLFWwindow* window, _GLFWtheme* theme)
 {
     _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
 }
 
-GLFWtheme* _glfwGetThemeWin32(_GLFWwindow* window)
+_GLFWtheme* _glfwGetThemeWin32(_GLFWwindow* window)
 {
     _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
     return NULL; // TODO: implement

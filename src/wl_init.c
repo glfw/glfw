@@ -803,7 +803,7 @@ void _glfwTerminateWayland(void)
     _glfw_free(_glfw.wl.clipboardString);
 }
 
-GLFWtheme* _glfwGetSystemDefaultThemeWayland(void)
+_GLFWtheme* _glfwGetSystemDefaultThemeWayland(void)
 {
     _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
     return NULL; // TODO: implement

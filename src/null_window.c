@@ -551,11 +551,11 @@ const char* _glfwGetClipboardStringNull(void)
     return _glfw.null.clipboardString;
 }
 
-void _glfwSetThemeNull(_GLFWwindow* window, GLFWtheme* theme)
+void _glfwSetThemeNull(_GLFWwindow* window, _GLFWtheme* theme)
 {
 }
 
-GLFWtheme* _glfwGetThemeNull(_GLFWwindow* window)
+_GLFWtheme* _glfwGetThemeNull(_GLFWwindow* window)
 {
     return NULL; // TODO: see to-do in _glfwGetSystemDefaultThemeNull
 }

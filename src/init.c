@@ -546,7 +546,11 @@ GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun)
 GLFWAPI GLFWtheme* glfwGetSystemDefaultTheme()
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    return _glfw.platform.getSystemDefaultTheme();
+    
+    _GLFWtheme* theme = _glfw.platform.getSystemDefaultTheme();
+    assert(theme->variation != GLFW_THEME_DEFAULT); 
+    
+    return (GLFWtheme*) theme;
 }
 
 GLFWAPI GLFWthemefun glfwSetSystemThemeCallback(GLFWthemefun callback)

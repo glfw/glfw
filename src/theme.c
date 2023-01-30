@@ -1,9 +1,26 @@
+//========================================================================
+// GLFW 3.4 - www.glfw.org
+//------------------------------------------------------------------------
+// Copyright (c) 2023 Andreas O. Jansen
 //
-//  theme.c
-//  glfw
+// This software is provided 'as-is', without any express or implied
+// warranty. In no event will the authors be held liable for any damages
+// arising from the use of this software.
 //
-//  Created by Andreas Ormevik Jansen on 28/01/2023.
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
 //
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would
+//    be appreciated but is not required.
+//
+// 2. Altered source versions must be plainly marked as such, and must not
+//    be misrepresented as being the original software.
+//
+// 3. This notice may not be removed or altered from any source
+//    distribution.
 
 #include "internal.h"
 
@@ -48,18 +65,30 @@ GLFWAPI void glfwThemeSetVariation(GLFWtheme* theme, int value)
     ((_GLFWtheme*) theme)->variation = value;
 }
 
-GLFWAPI int glfwThemeGetFlags(const GLFWtheme* theme)
+GLFWAPI int glfwThemeGetAttribute(const GLFWtheme* theme, int attribute)
 {
     assert(theme != NULL);
-    return ((_GLFWtheme*) theme)->flags;
+    assert((attribute & ~(GLFW_THEME_ATTRIBUTE_HAS_COLOR |
+                          GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST |
+                          GLFW_THEME_ATTRIBUTE_VIBRANT)) == 0);
+    
+    return ((_GLFWtheme*) theme)->flags & attribute ? GLFW_TRUE : GLFW_FALSE;
 }
 
-GLFWAPI void glfwThemeSetFlags(GLFWtheme* theme, int value)
+GLFWAPI void glfwThemeSetAttribute(GLFWtheme* theme, int attribute, int value)
 {
     assert(theme != NULL);
-    assert((value & ~(GLFW_THEME_FLAG_HAS_COLOR | GLFW_THEME_FLAG_HIGH_CONTRAST | GLFW_THEME_FLAG_VIBRANT)) == 0);
+    assert(value == GLFW_TRUE || value == GLFW_FALSE);
+    assert((attribute & ~(GLFW_THEME_ATTRIBUTE_HAS_COLOR |
+                          GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST |
+                          GLFW_THEME_ATTRIBUTE_VIBRANT)) == 0);
     
-    ((_GLFWtheme*) theme)->flags = value;
+    _GLFWtheme* _theme = (_GLFWtheme*) theme;
+    
+    if (value == GLFW_TRUE)
+        _theme->flags |= attribute;
+    else
+        _theme->flags &= ~attribute;
 }
 
 GLFWAPI void glfwThemeGetColor(const GLFWtheme* theme, float* red, float* green, float* blue, float* alpha)
@@ -67,22 +96,22 @@ GLFWAPI void glfwThemeGetColor(const GLFWtheme* theme, float* red, float* green,
     assert(theme != NULL);
     assert(red != NULL && green != NULL && blue != NULL && alpha != NULL);
     
-    const _GLFWtheme* iTheme = ((_GLFWtheme*) theme);
+    const float* color = ((_GLFWtheme*) theme)->color;
     
-    *red   = iTheme->color[0] / 255.0f;
-    *green = iTheme->color[1] / 255.0f;
-    *blue  = iTheme->color[2] / 255.0f;
-    *alpha = iTheme->color[3] / 255.0f;
+    *red   = color[0];
+    *green = color[1];
+    *blue  = color[2];
+    *alpha = color[3];
 }
 
 GLFWAPI void glfwThemeSetColor(GLFWtheme* theme, float red, float green, float blue, float alpha)
 {
     assert(theme != NULL);
     
-    _GLFWtheme* iTheme = ((_GLFWtheme*) theme);
+    float* color = ((_GLFWtheme*) theme)->color;
     
-    iTheme->color[0] = red * 255.0f;
-    iTheme->color[1] = green * 255.0f;
-    iTheme->color[2] = blue * 255.0f;
-    iTheme->color[3] = alpha * 255.0f;
+    color[0] = red;
+    color[1] = green;
+    color[2] = blue;
+    color[3] = alpha;
 }

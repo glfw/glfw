@@ -162,6 +162,8 @@ int main(int argc, char** argv)
         fprintf(stderr, "Failed to initialize GLFW\n");
         exit(EXIT_FAILURE);
     }
+    
+    print_theme(glfwGetSystemDefaultTheme(), "System theme");
 
     window = glfwCreateWindow(200, 200, "Window Icon", NULL, NULL);
     if (!window)
@@ -178,8 +180,6 @@ int main(int argc, char** argv)
     glfwSetKeyCallback(window, key_callback);
     
     theme = glfwCreateTheme();
-    
-    glfwThemeSetColor(theme, 0, 0, 0, 0);
     set_theme(window, cur_theme_color);
     
     glfwSetSystemThemeCallback(theme_callback);

@@ -887,6 +887,9 @@ struct _GLFWlibrary
         GLFWjoystickfun joystick;
         GLFWthemefun    theme;
     } callbacks;
+    
+    // Clients can mutate this theme data at any time
+    _GLFWtheme theme;
 
     // These are defined in platform.h
     GLFW_PLATFORM_LIBRARY_WINDOW_STATE

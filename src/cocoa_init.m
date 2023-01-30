@@ -252,6 +252,28 @@ void nsAppearanceToGLFWTheme(NSAppearance* appearance, _GLFWtheme* theme)
     theme->variation = GLFW_THEME_LIGHT;
 }
 
+static void getSystemTheme(_GLFWtheme* theme)
+{
+    theme->variation = GLFW_THEME_LIGHT;
+    theme->flags = 0;
+    
+    if (@available(macOS 10.14, *))
+    {
+        // effectiveAppearance is actually not the system appearance, but the application appearance.
+        // As long as NSApplication.appearance is never set, using the effective appearance is fine
+        // to get and observe the system appearance.
+        nsAppearanceToGLFWTheme(NSApp.effectiveAppearance, theme);
+        
+        NSColor* color = [[NSColor controlAccentColor] colorUsingColorSpace:NSColorSpace.genericRGBColorSpace];
+        
+        theme->flags |= GLFW_THEME_ATTRIBUTE_HAS_COLOR;
+        theme->color[0] = color.redComponent;
+        theme->color[1] = color.greenComponent;
+        theme->color[2] = color.blueComponent;
+        theme->color[3] = color.alphaComponent;
+    }
+}
+
 // Create key code translation tables
 //
 static void createKeyTables(void)
@@ -491,22 +513,8 @@ static GLFWbool initializeTIS(void)
     
     // TODO: FIXME: this method is invoked twice when the high contrast setting is edited in the preferences.
     
-    _GLFWtheme theme = { GLFW_THEME_LIGHT, 0 };
-    
-    if (@available(macOS 10.14, *)) {
-        // effectiveAppearance is actually not the system appearance, but the application appearance.
-        // As long as NSApplication.appearance is never set, using the effective appearance is fine
-        // to get and observe the system appearance.
-        nsAppearanceToGLFWTheme(NSApp.effectiveAppearance, &theme);
-        
-        NSColor* color = [[NSColor controlAccentColor] colorUsingColorSpace:NSColorSpace.genericRGBColorSpace];
-        
-        theme.flags |= GLFW_THEME_ATTRIBUTE_HAS_COLOR;
-        theme.color[0] = color.redComponent;
-        theme.color[1] = color.greenComponent;
-        theme.color[2] = color.blueComponent;
-        theme.color[3] = color.alphaComponent;
-    }
+    _GLFWtheme theme;
+    getSystemTheme(&theme);
     
     _glfwInputSystemTheme(&theme);
     
@@ -778,12 +786,13 @@ int _glfwInitCocoa(void)
                  context:nil];
     */
     
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101400
-    [NSApp addObserver:_glfw.ns.helper
-            forKeyPath:@"effectiveAppearance"
-               options:0
-               context:nil];
-#endif
+    if (@available(macOS 10.14, *))
+    {
+        [NSApp addObserver:_glfw.ns.helper
+                forKeyPath:@"effectiveAppearance"
+                   options:0
+                   context:nil];
+    }
 
     if (![[NSRunningApplication currentApplication] isFinishedLaunching])
         [NSApp run];
@@ -847,8 +856,10 @@ void _glfwTerminateCocoa(void)
 
 _GLFWtheme* _glfwGetSystemDefaultThemeCocoa(void)
 {
-    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
-    return NULL; // TODO: implement
+    _GLFWtheme* theme = &_glfw.theme;
+    getSystemTheme(theme);
+    
+    return theme;
 }
 
 #endif // _GLFW_COCOA

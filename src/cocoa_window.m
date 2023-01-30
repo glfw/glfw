@@ -1935,7 +1935,12 @@ _GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window)
     
     if (@available(macOS 10.09, *))
     {
-        nsAppearanceToGLFWTheme([(NSWindow*)window->ns.object appearance], theme);
+        NSAppearance* appearance = [(NSWindow*)window->ns.object appearance];
+        
+        if (appearance == NULL)
+            appearance = [NSApp effectiveAppearance];
+    
+        nsAppearanceToGLFWTheme(appearance, theme);
     }
     
     if (@available(macOS 10.14, *)) {

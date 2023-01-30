@@ -1898,7 +1898,7 @@ void _glfwSetThemeCocoa(_GLFWwindow* window, _GLFWtheme* theme)
     
     if (theme->variation == GLFW_THEME_LIGHT)
     {
-        if (theme->flags & GLFW_THEME_FLAG_VIBRANT)
+        if (theme->flags & GLFW_THEME_ATTRIBUTE_VIBRANT)
         {
             name = NSAppearanceNameVibrantLight;
         }
@@ -1909,7 +1909,7 @@ void _glfwSetThemeCocoa(_GLFWwindow* window, _GLFWtheme* theme)
     }
     else
     {
-        if (theme->flags & GLFW_THEME_FLAG_VIBRANT)
+        if (theme->flags & GLFW_THEME_ATTRIBUTE_VIBRANT)
         {
             name = NSAppearanceNameVibrantDark;
         }
@@ -1943,7 +1943,7 @@ _GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window)
         NSColor* color = [[NSColor controlAccentColor] colorUsingColorSpace:NSColorSpace.genericRGBColorSpace];
         // TODO: Cannot use the accent color directly, for window themes, because the accent color is never overridden.
         
-        theme->flags |= GLFW_THEME_FLAG_HAS_COLOR;
+        theme->flags |= GLFW_THEME_ATTRIBUTE_HAS_COLOR;
         theme->color[0] = color.redComponent;
         theme->color[1] = color.greenComponent;
         theme->color[2] = color.blueComponent;

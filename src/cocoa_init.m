@@ -205,13 +205,13 @@ void nsAppearanceToGLFWTheme(NSAppearance* appearance, _GLFWtheme* theme)
         if ([name isEqualToString:NSAppearanceNameVibrantLight])
         {
             theme->variation = GLFW_THEME_LIGHT;
-            theme->flags |= GLFW_THEME_FLAG_VIBRANT;
+            theme->flags |= GLFW_THEME_ATTRIBUTE_VIBRANT;
             return;
         }
         if ([name isEqualToString:NSAppearanceNameVibrantDark])
         {
             theme->variation = GLFW_THEME_DARK;
-            theme->flags |= GLFW_THEME_FLAG_VIBRANT;
+            theme->flags |= GLFW_THEME_ATTRIBUTE_VIBRANT;
             return;
         }
     }
@@ -226,25 +226,25 @@ void nsAppearanceToGLFWTheme(NSAppearance* appearance, _GLFWtheme* theme)
         if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastAqua])
         {
             theme->variation = GLFW_THEME_LIGHT;
-            theme->flags |= GLFW_THEME_FLAG_HIGH_CONTRAST;
+            theme->flags |= GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST;
             return;
         }
         if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastDarkAqua])
         {
             theme->variation = GLFW_THEME_DARK;
-            theme->flags |= GLFW_THEME_FLAG_HIGH_CONTRAST;
+            theme->flags |= GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST;
             return;
         }
         if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastVibrantLight])
         {
             theme->variation = GLFW_THEME_LIGHT;
-            theme->flags |= GLFW_THEME_FLAG_VIBRANT | GLFW_THEME_FLAG_HIGH_CONTRAST;
+            theme->flags |= GLFW_THEME_ATTRIBUTE_VIBRANT | GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST;
             return;
         }
         if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastVibrantDark])
         {
             theme->variation = GLFW_THEME_DARK;
-            theme->flags |= GLFW_THEME_FLAG_VIBRANT | GLFW_THEME_FLAG_HIGH_CONTRAST;
+            theme->flags |= GLFW_THEME_ATTRIBUTE_VIBRANT | GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST;
             return;
         }
     }
@@ -501,7 +501,7 @@ static GLFWbool initializeTIS(void)
         
         NSColor* color = [[NSColor controlAccentColor] colorUsingColorSpace:NSColorSpace.genericRGBColorSpace];
         
-        theme.flags |= GLFW_THEME_FLAG_HAS_COLOR;
+        theme.flags |= GLFW_THEME_ATTRIBUTE_HAS_COLOR;
         theme.color[0] = color.redComponent;
         theme.color[1] = color.greenComponent;
         theme.color[2] = color.blueComponent;

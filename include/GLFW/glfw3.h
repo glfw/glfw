@@ -5886,8 +5886,8 @@ GLFWAPI void glfwCopyTheme(const GLFWtheme* source, GLFWtheme* target);
 GLFWAPI int glfwThemeGetVariation(const GLFWtheme* theme);
 GLFWAPI void glfwThemeSetVariation(GLFWtheme* theme, int value);
 
-GLFWAPI int glfwThemeGetFlags(const GLFWtheme* theme);
-GLFWAPI void glfwThemeSetFlags(GLFWtheme* theme, int value);
+GLFWAPI int glfwThemeGetAttribute(const GLFWtheme* theme, int attribute);
+GLFWAPI void glfwThemeSetAttribute(GLFWtheme* theme, int attribute, int value);
 
 GLFWAPI void glfwThemeGetColor(const GLFWtheme* theme, float* red, float* green, float* blue, float* alpha);
 GLFWAPI void glfwThemeSetColor(GLFWtheme* theme, float red, float green, float blue, float alpha);
@@ -5920,7 +5920,7 @@ GLFWAPI void glfwThemeSetColor(GLFWtheme* theme, float red, float green, float b
 #define GLFW_THEME_LIGHT 1
 
 
-/*! @brief Theme flag.
+/*! @brief Theme attribute.
  *
  *  Specifies that a theme provides a color. If this flag is set on a theme
  *  returned by GLFW, this theme contains a color. If this flag is set on a
@@ -5929,23 +5929,23 @@ GLFWAPI void glfwThemeSetColor(GLFWtheme* theme, float red, float green, float b
  *
  *  @ingroup theme
  */
-#define GLFW_THEME_FLAG_HAS_COLOR 1
+#define GLFW_THEME_ATTRIBUTE_HAS_COLOR 1
 
-/*! @brief Theme flag.
+/*! @brief Theme attribute.
  *
  *  Specifies that a theme uses a high contrast mode.
  *
  *  @ingroup theme
  */
-#define GLFW_THEME_FLAG_HIGH_CONTRAST 2
+#define GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST 2
 
-/*! @brief Theme flag.
+/*! @brief Theme attribute.
  *
  *  Specifies that a theme is vibrant.
  *
  *  @ingroup theme
  */
-#define GLFW_THEME_FLAG_VIBRANT 4
+#define GLFW_THEME_ATTRIBUTE_VIBRANT 4
 
 /*! @brief Sets the system theme callback.
  *

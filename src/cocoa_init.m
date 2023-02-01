@@ -266,7 +266,7 @@ static void getSystemTheme(_GLFWtheme* theme)
         
         NSColor* color = [[NSColor controlAccentColor] colorUsingColorSpace:NSColorSpace.genericRGBColorSpace];
         
-        theme->flags |= GLFW_THEME_ATTRIBUTE_HAS_COLOR;
+        theme->flags |= GLFW_THEME_COLOR_MAIN;
         theme->color[0] = color.redComponent;
         theme->color[1] = color.greenComponent;
         theme->color[2] = color.blueComponent;

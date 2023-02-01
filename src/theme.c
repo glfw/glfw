@@ -68,9 +68,9 @@ GLFWAPI void glfwThemeSetVariation(GLFWtheme* theme, int value)
 GLFWAPI int glfwThemeGetAttribute(const GLFWtheme* theme, int attribute)
 {
     assert(theme != NULL);
-    assert((attribute & ~(GLFW_THEME_ATTRIBUTE_HAS_COLOR |
-                          GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST |
-                          GLFW_THEME_ATTRIBUTE_VIBRANT)) == 0);
+    assert((attribute & ~(GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST |
+                          GLFW_THEME_ATTRIBUTE_VIBRANT |
+                          GLFW_THEME_COLOR_MAIN)) == 0);
     
     return ((_GLFWtheme*) theme)->flags & attribute ? GLFW_TRUE : GLFW_FALSE;
 }
@@ -79,9 +79,9 @@ GLFWAPI void glfwThemeSetAttribute(GLFWtheme* theme, int attribute, int value)
 {
     assert(theme != NULL);
     assert(value == GLFW_TRUE || value == GLFW_FALSE);
-    assert((attribute & ~(GLFW_THEME_ATTRIBUTE_HAS_COLOR |
-                          GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST |
-                          GLFW_THEME_ATTRIBUTE_VIBRANT)) == 0);
+    assert((attribute & ~(GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST |
+                          GLFW_THEME_ATTRIBUTE_VIBRANT |
+                          GLFW_THEME_COLOR_MAIN)) == 0);
     
     _GLFWtheme* _theme = (_GLFWtheme*) theme;
     
@@ -91,9 +91,10 @@ GLFWAPI void glfwThemeSetAttribute(GLFWtheme* theme, int attribute, int value)
         _theme->flags &= ~attribute;
 }
 
-GLFWAPI void glfwThemeGetColor(const GLFWtheme* theme, float* red, float* green, float* blue, float* alpha)
+GLFWAPI void glfwThemeGetColor(const GLFWtheme* theme, int specifier, float* red, float* green, float* blue, float* alpha)
 {
     assert(theme != NULL);
+    assert(specifier == GLFW_THEME_COLOR_MAIN);
     assert(red != NULL && green != NULL && blue != NULL && alpha != NULL);
     
     const float* color = ((_GLFWtheme*) theme)->color;
@@ -104,9 +105,10 @@ GLFWAPI void glfwThemeGetColor(const GLFWtheme* theme, float* red, float* green,
     *alpha = color[3];
 }
 
-GLFWAPI void glfwThemeSetColor(GLFWtheme* theme, float red, float green, float blue, float alpha)
+GLFWAPI void glfwThemeSetColor(GLFWtheme* theme, int specifier, float red, float green, float blue, float alpha)
 {
     assert(theme != NULL);
+    assert(specifier == GLFW_THEME_COLOR_MAIN);
     
     float* color = ((_GLFWtheme*) theme)->color;
     

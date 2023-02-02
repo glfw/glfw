@@ -31,6 +31,9 @@ project "glfw"
 		"src/null_joystick.c",
     }
 	
+	filter "files:**.h"
+		compileas "HeaderUnit"
+	
 	filter "system:linux"
 		pic "On"
 

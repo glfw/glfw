@@ -1902,8 +1902,10 @@ void _glfwSetWindowIconWayland(_GLFWwindow* window,
                     "Wayland: The platform does not support setting the window icon");
 }
 
-void _glfwSetWindowTaskbarProgress(_GLFWwindow* /*window*/, const int progressState, int completed)
+void _glfwSetWindowTaskbarProgress(_GLFWwindow* window, const int taskbarState, int completed)
 {
+    (void)window;
+
     const dbus_bool_t progressVisible = (taskbarState != GLFW_TASKBAR_PROGRESS_NOPROGRESS);
     const double progressValue = (double)completed / 100.0;
 

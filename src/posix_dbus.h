@@ -129,3 +129,4 @@ typedef struct _GLFWDBusPOSIX
 
 void _glfwInitDBusPOSIX(void);
 void _glfwTerminateDBusPOSIX(void);
+void _glfwUpdateTaskbarProgressDBusPOSIX(dbus_bool_t progressVisible, double progressValue);

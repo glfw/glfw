@@ -1272,11 +1272,56 @@ extern "C" {
 #define GLFW_HAND_CURSOR            GLFW_POINTING_HAND_CURSOR
 /*! @} */
 
+/*! @addtogroup window
+ *  @{ */
+/*! @brief Disable the progress bar.
+ *
+ *  Disable the progress bar.
+ *
+ *  Used by @ref window_taskbar_progress.
+ */
 #define GLFW_TASKBAR_PROGRESS_NOPROGRESS    0
+/*! @brief Display the progress bar in an indeterminate state.
+ *
+ *  Display the progress bar in an indeterminate state.
+ *
+ *  @remark @win32 This displays the progress bar animation cycling repeatedly.
+ *
+ *  @remark @x11 @wayland This behaves like @ref GLFW_TASKBAR_PROGRESS_NORMAL.
+ *
+ *  Used by @ref window_taskbar_progress.
+ */
 #define GLFW_TASKBAR_PROGRESS_INDETERMINATE 1
+/*! @brief Display the normal progress bar.
+ *
+ *  Display the normal progress bar.
+ *
+ *  Used by @ref window_taskbar_progress.
+ */
 #define GLFW_TASKBAR_PROGRESS_NORMAL        2
+/*! @brief Display the progress bar in an error state.
+ *
+ *  Display the progress bar in an error state.
+ *
+ *  @remark @win32 This displays a red progress bar with 100% progress.
+ *
+ *  @remark @x11 @wayland This behaves like @ref GLFW_TASKBAR_PROGRESS_NORMAL.
+ *
+ *  Used by @ref window_taskbar_progress.
+ */
 #define GLFW_TASKBAR_PROGRESS_ERROR         3
+/*! @brief Display the progress bar in a paused state.
+ *
+ *  Display the progress bar in a paused state.
+ *
+ *  @remark @win32 This displays a yellow filled progress bar.
+ *
+ *  @remark @x11 @wayland This behaves like @ref GLFW_TASKBAR_PROGRESS_NORMAL.
+ *
+ *  Used by @ref window_taskbar_progress.
+ */
 #define GLFW_TASKBAR_PROGRESS_PAUSED        4
+/*! @} */
 
 #define GLFW_CONNECTED              0x00040001
 #define GLFW_DISCONNECTED           0x00040002
@@ -1321,6 +1366,7 @@ extern "C" {
  *
  *  Hint value for @ref GLFW_PLATFORM that enables automatic platform selection.
  */
+
 #define GLFW_ANY_PLATFORM           0x00060000
 #define GLFW_PLATFORM_WIN32         0x00060001
 #define GLFW_PLATFORM_COCOA         0x00060002
@@ -3310,6 +3356,41 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  */
 GLFWAPI void glfwSetWindowIcon(GLFWwindow* window, int count, const GLFWimage* images);
 
+/*! @brief Sets the taskbar progress for the specified window.
+ *
+ *  This function sets the taskbar progress of the specified window.
+ *
+ *  @param[in] window The window whose taskbar progress to set.
+ *  @param[in] progressState State of the progress to be displayed in the taskbar. Valid values are:
+ *  @ref GLFW_TASKBAR_PROGRESS_NOPROGRESS, @ref GLFW_TASKBAR_PROGRESS_INDETERMINATE,
+ *  @ref GLFW_TASKBAR_PROGRESS_NORMAL, @ref GLFW_TASKBAR_PROGRESS_ERROR
+ *  and @ref GLFW_TASKBAR_PROGRESS_PAUSED.
+ *  @param[in] completed The amount of completed progress to set. Valid range is 0 to 100.
+ *  This is ignored if progressState is set to @ref GLFW_TASKBAR_PROGRESS_NOPROGRESS.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_INVALID_VALUE, @ref GLFW_INVALID_ENUM, @ref GLFW_PLATFORM_ERROR,
+ *  @ref GLFW_FEATURE_UNIMPLEMENTED and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
+ *
+ *  @remark @win32 On Windows Vista and earlier, this function will emit @ref GLFW_FEATURE_UNAVAILABLE.
+ *
+ *  @remark @macos This function will emit @ref GLFW_FEATURE_UNIMPLEMENTED.
+ *
+ *  @remark @x11 @wayland Requires a valid application desktop file with the same name
+ *  as the compiled executable. Due to limitations in the Unity Launcher API
+ *  @ref GLFW_TASKBAR_PROGRESS_INDETERMINATE, @ref GLFW_TASKBAR_PROGRESS_ERROR and @ref GLFW_TASKBAR_PROGRESS_PAUSED
+ *  have the same behaviour as @ref GLFW_TASKBAR_PROGRESS_NORMAL. The Unity Launcher API is only known
+ *  to be supported on the Unity and KDE desktop environments, on other desktop environments this
+ *  function may do nothing.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_taskbar_progress
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup window
+ */
 GLFWAPI void glfwSetWindowTaskbarProgress(GLFWwindow* window, const int progressState, int completed);
 
 /*! @brief Retrieves the position of the content area of the specified window.

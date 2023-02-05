@@ -1159,6 +1159,11 @@ not supported, the application as a whole.  Once the user has given it
 attention, the system will automatically end the request.
 
 
+@subsection window_taskbar_progress Window taskbar progress
+
+TBD
+
+
 @subsection window_refresh Window damage and refresh
 
 If you wish to be notified when the contents of a window is damaged and needs

@@ -563,8 +563,8 @@ GLFWAPI void glfwSetWindowTaskbarProgress(GLFWwindow* handle, const int progress
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
     assert(window != NULL);
-    assert(completed >= 0);
-    assert(completed <= 100);
+
+    _GLFW_REQUIRE_INIT();
 
     if (completed < 0)
     {

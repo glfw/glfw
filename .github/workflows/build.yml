@@ -2,7 +2,7 @@ name: Build
 on:
     pull_request:
     push:
-        branches: [ ci, master, latest, 3.3-stable, taskbar-progress ]
+        branches: [ ci, master, latest, 3.3-stable ]
     workflow_dispatch:
 permissions:
     statuses: write

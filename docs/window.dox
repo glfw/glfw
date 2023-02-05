@@ -1161,7 +1161,22 @@ attention, the system will automatically end the request.
 
 @subsection window_taskbar_progress Window taskbar progress
 
-TBD
+If you whish to display the progress of some action on the taskbar, you can
+do this with @ref glfwSetWindowTaskbarProgress.
+
+@code
+glfwSetWindowTaskbarProgress(window, GLFW_TASKBAR_PROGRESS_NORMAL, 50);
+@endcode
+
+There are different taskbar progress states available for you to use:
+    - @ref GLFW_TASKBAR_PROGRESS_NOPROGRESS
+    - @ref GLFW_TASKBAR_PROGRESS_INDETERMINATE
+    - @ref GLFW_TASKBAR_PROGRESS_NORMAL
+    - @ref GLFW_TASKBAR_PROGRESS_ERROR
+    - @ref GLFW_TASKBAR_PROGRESS_PAUSED
+
+The last argument is the progress percentage to display.
+It has a valid range of 0 to 100.
 
 
 @subsection window_refresh Window damage and refresh

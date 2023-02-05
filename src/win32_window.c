@@ -1603,7 +1603,7 @@ void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, const int progressS
 
     if(!IsWindows7OrGreater())
     {
-        _glfwInputErrorWin32(GLFW_FEATURE_UNAVAILABLE, "Win32: Taskbar progress is only supported on Windows 7 or newer");
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE, "Win32: Taskbar progress is only supported on Windows 7 or newer");
         return;
     }
 

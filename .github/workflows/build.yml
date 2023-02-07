@@ -3,6 +3,7 @@ on:
     pull_request:
     push:
         branches: [ ci, master, latest, 3.3-stable ]
+    workflow_dispatch:
 permissions:
     statuses: write
     contents: read

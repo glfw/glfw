@@ -367,6 +367,8 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
 
     if (window->callbacks.mouseButton)
         window->callbacks.mouseButton((GLFWwindow*) window, button, action, mods);
+    if (window->callbacks.mouseButtonPos)
+        window->callbacks.mouseButtonPos((GLFWwindow*) window, button, action, mods, window->virtualCursorPosX, window->virtualCursorPosY);
 }
 
 // Notifies shared code of a cursor motion event
@@ -976,6 +978,17 @@ GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* handle,
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     _GLFW_SWAP(GLFWmousebuttonfun, window->callbacks.mouseButton, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWmousebuttonposfun glfwSetMouseButtonPosCallback(GLFWwindow *handle,
+                                                            GLFWmousebuttonposfun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(window->callbacks.mouseButtonPos, cbfun);
     return cbfun;
 }
 

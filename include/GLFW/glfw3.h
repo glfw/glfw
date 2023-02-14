@@ -1759,6 +1759,31 @@ typedef void (* GLFWwindowcontentscalefun)(GLFWwindow* window, float xscale, flo
  */
 typedef void (* GLFWmousebuttonfun)(GLFWwindow* window, int button, int action, int mods);
 
+/*! @brief The function pointer type for mouse button & position callbacks.
+ *  This is the function pointer type for mouse button & position callback functions.
+ *  A mouse button callback function has the following signature:
+ *  @code
+ *  void function_name(GLFWwindow* window, int button, int action, int mods, double xpos, double ypos)
+ *  @endcode
+ *
+ *  @param[in] window The window that received the vent.
+ *  @param[in] button The [mouse button](@ref buttons) that was pressed or
+ *  released.
+ *  @param[in] action One of 'GLFW_PRESS' or 'GLFW_RELEASE'. Future releases
+ *  may add more actions.
+ *  @param[in] mods Bit field describing which [modifier keys](@ref mods) were
+ *  held down.
+ *  @param[in] xpos The cursor x-position relative to the left edge of the
+ *  content area.
+ *  @param[in] xpos The cursor y-position relative to the right edge of the
+ *  content area.
+ *
+ *  @since Added in version 4.0
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWmousebuttonposfun)(GLFWwindow* window, int button, int action, int mods, double xpos, double ypos);
+
 /*! @brief The function pointer type for cursor position callbacks.
  *
  *  This is the function pointer type for cursor position callbacks.  A cursor
@@ -5210,6 +5235,37 @@ GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmods
  *  @ingroup input
  */
 GLFWAPI GLFWmousebuttonfun glfwSetMouseButtonCallback(GLFWwindow* window, GLFWmousebuttonfun callback);
+
+/*! @brief Sets the mouse button & position callback.
+ *
+ * This function sets the mouse button and position callback of the specified window, which
+ * is called when a mouse button is pressed or released.
+ *
+ * For more information see the @ref glfwSetMouseButtonCallback.
+ *
+ * When the callback is called it also provides the cursor position relative
+ * to the window content area.
+ *
+ * @param[in] window The window whose callback to set.
+ * @param[in] callback The new callback, or `NULL` to remove the currently set
+ * callback.
+ * @return The previously set callback, or `NULL` if no callback was set or the
+ * library had not been [initialized](@ref intro_init).
+ *
+ * @callback_signature
+ * @code
+ * void function_name(GLFWwindow* window, int button, int action, int mods, double xpos, double ypos)
+ * @endcode
+ * For more information about the callback parameters, see the
+ * [function pointer type](@ref GLFWmousebutonposfun).
+ *
+ * @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ * @thread_safety This function must only be called from the main thread.
+ *
+ * @ingroup input
+ */
+GLFWAPI GLFWmousebuttonposfun glfwSetMouseButtonPosCallback(GLFWwindow* window, GLFWmousebuttonposfun callback);
 
 /*! @brief Sets the cursor position callback.
  *

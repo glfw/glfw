@@ -27,8 +27,9 @@
 
 #include <pthread.h>
 
-#define GLFW_POSIX_TLS_STATE    _GLFWtlsPOSIX   posix;
-#define GLFW_POSIX_MUTEX_STATE  _GLFWmutexPOSIX posix;
+#define GLFW_POSIX_TLS_STATE      _GLFWtlsPOSIX     posix;
+#define GLFW_POSIX_MUTEX_STATE    _GLFWmutexPOSIX   posix;
+#define GLFW_POSIX_CONDVAR_STATE  _GLFWcondvarPOSIX posix;
 
 
 // POSIX-specific thread local storage data
@@ -47,3 +48,9 @@ typedef struct _GLFWmutexPOSIX
     pthread_mutex_t handle;
 } _GLFWmutexPOSIX;
 
+// POSIX-specific conditional variable data
+typedef struct _GLFWcondvarPOSIX
+{
+    GLFWbool        allocated;
+    pthread_cond_t  handle;
+} _GLFWcondvarPOSIX;

@@ -27,11 +27,9 @@
 
 #if defined(GLFW_BUILD_WIN32_TIMER) || \
     defined(GLFW_BUILD_WIN32_MODULE) || \
-    defined(GLFW_BUILD_WIN32_THREAD) || \
     defined(GLFW_BUILD_COCOA_TIMER) || \
     defined(GLFW_BUILD_POSIX_TIMER) || \
     defined(GLFW_BUILD_POSIX_MODULE) || \
-    defined(GLFW_BUILD_POSIX_THREAD) || \
     defined(GLFW_BUILD_POSIX_POLL) || \
     defined(GLFW_BUILD_LINUX_JOYSTICK)
  #error "You must not define these; define zero or more _GLFW_<platform> macros instead"
@@ -155,22 +153,6 @@
         GLFW_WGL_LIBRARY_CONTEXT_STATE \
         GLFW_NSGL_LIBRARY_CONTEXT_STATE \
         GLFW_GLX_LIBRARY_CONTEXT_STATE
-
-#if defined(_WIN32)
- #define GLFW_BUILD_WIN32_THREAD
-#else
- #define GLFW_BUILD_POSIX_THREAD
-#endif
-
-#if defined(GLFW_BUILD_WIN32_THREAD)
- #include "win32_thread.h"
- #define GLFW_PLATFORM_TLS_STATE    GLFW_WIN32_TLS_STATE
- #define GLFW_PLATFORM_MUTEX_STATE  GLFW_WIN32_MUTEX_STATE
-#elif defined(GLFW_BUILD_POSIX_THREAD)
- #include "posix_thread.h"
- #define GLFW_PLATFORM_TLS_STATE    GLFW_POSIX_TLS_STATE
- #define GLFW_PLATFORM_MUTEX_STATE  GLFW_POSIX_MUTEX_STATE
-#endif
 
 #if defined(_WIN32)
  #define GLFW_BUILD_WIN32_TIMER

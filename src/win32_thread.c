@@ -98,5 +98,36 @@ void _glfwPlatformUnlockMutex(_GLFWmutex* mutex)
     LeaveCriticalSection(&mutex->win32.section);
 }
 
+GLFWbool _glfwPlatformCreateCondVar(_GLFWcondvar* condvar)
+{
+    assert(condvar->win32.allocated == GLFW_FALSE);
+    InitializeConditionVariable(condvar->win32.condvar);
+    return condvar->win32.allocated = GLFW_TRUE;
+}
+
+void _glfwPlatformDestroyCondvar(_GLFWcondvar* condvar)
+{
+    if (condvar->win32.allocated)
+        DeleteConditionVariable(condvar->win32.condvar);
+    memset(condvar, 0, sizeof(_GLFWcondvar));
+}
+
+void _glfwPlatformCondWait(_GLFWcondvar* condvar, _GLFWmutex* mutex)
+{
+    assert(condvar->win32.allocated == GLFW_TRUE);
+    assert(mutex->win32.allocated == GLFW_TRUE);
+
+    SleepConditionVariableCS(&condvar->win32.condvar,
+        &mutex->win32.section,
+        INFINITE);
+}
+
+void _glfwPlatformCondSignal(_GLFWcondvar* condvar)
+{
+    assert(condvar->win32.allocated == GLFW_TRUE);
+
+    WakeConditionVariable(&condvar->win32.condvar);
+}
+
 #endif // GLFW_BUILD_WIN32_THREAD
 

@@ -77,6 +77,7 @@ typedef struct _GLFWmapping     _GLFWmapping;
 typedef struct _GLFWjoystick    _GLFWjoystick;
 typedef struct _GLFWtls         _GLFWtls;
 typedef struct _GLFWmutex       _GLFWmutex;
+typedef struct _GLFWcondvar     _GLFWcondvar;
 
 #define GL_VERSION 0x1f02
 #define GL_NONE 0
@@ -327,6 +328,32 @@ typedef void (APIENTRY * PFN_vkVoidFunction)(void);
 typedef PFN_vkVoidFunction (APIENTRY * PFN_vkGetInstanceProcAddr)(VkInstance,const char*);
 typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const char*,uint32_t*,VkExtensionProperties*);
 #define vkGetInstanceProcAddr _glfw.vk.GetInstanceProcAddr
+
+#include "platform_thread.h"
+
+// Thread local storage structure
+//
+struct _GLFWtls
+{
+    // This is defined in platform_thread.h
+    GLFW_PLATFORM_TLS_STATE
+};
+
+// Mutex structure
+//
+struct _GLFWmutex
+{
+    // This is defined in platform_thread.h
+    GLFW_PLATFORM_MUTEX_STATE
+};
+
+// Conditional variable structure
+//
+struct _GLFWcondvar
+{
+    // This is defined in platform_thread.h
+    GLFW_PLATFORM_CONDVAR_STATE
+};
 
 #include "platform.h"
 
@@ -649,22 +676,6 @@ struct _GLFWjoystick
     GLFW_PLATFORM_JOYSTICK_STATE
 };
 
-// Thread local storage structure
-//
-struct _GLFWtls
-{
-    // This is defined in platform.h
-    GLFW_PLATFORM_TLS_STATE
-};
-
-// Mutex structure
-//
-struct _GLFWmutex
-{
-    // This is defined in platform.h
-    GLFW_PLATFORM_MUTEX_STATE
-};
-
 // Platform API structure
 //
 struct _GLFWplatform
@@ -893,6 +904,11 @@ GLFWbool _glfwPlatformCreateMutex(_GLFWmutex* mutex);
 void _glfwPlatformDestroyMutex(_GLFWmutex* mutex);
 void _glfwPlatformLockMutex(_GLFWmutex* mutex);
 void _glfwPlatformUnlockMutex(_GLFWmutex* mutex);
+
+GLFWbool _glfwPlatformCreateCondVar(_GLFWcondvar* condvar);
+void _glfwPlatformDestroyCondvar(_GLFWcondvar* condvar);
+void _glfwPlatformCondWait(_GLFWcondvar* condvar, _GLFWmutex* mutex);
+void _glfwPlatformCondSignal(_GLFWcondvar* condvar);
 
 void* _glfwPlatformLoadModule(const char* path);
 void _glfwPlatformFreeModule(void* module);

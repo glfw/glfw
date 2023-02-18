@@ -105,5 +105,41 @@ void _glfwPlatformUnlockMutex(_GLFWmutex* mutex)
     pthread_mutex_unlock(&mutex->posix.handle);
 }
 
+GLFWbool _glfwPlatformCreateCondVar(_GLFWcondvar* condvar)
+{
+    assert(condvar->posix.allocated == GLFW_FALSE);
+
+    if(pthread_cond_init(&condvar->posix.handle, NULL) != 0)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "POSIX: Failed to create conditional variable");
+        return GLFW_FALSE;
+    }
+
+    return condvar->posix.allocated = GLFW_TRUE;
+}
+
+void _glfwPlatformDestroyCondvar(_GLFWcondvar* condvar)
+{
+    if (condvar->posix.allocated)
+        pthread_cond_destroy(&condvar->posix.handle);
+    memset(condvar, 0, sizeof(_GLFWcondvar));
+}
+
+void _glfwPlatformCondWait(_GLFWcondvar* condvar, _GLFWmutex* mutex)
+{
+    assert(condvar->posix.allocated == GLFW_TRUE);
+    assert(mutex->posix.allocated == GLFW_TRUE);
+
+    pthread_cond_wait(&condvar->posix.handle,
+        &mutex->posix.handle);
+}
+
+void _glfwPlatformCondSignal(_GLFWcondvar* condvar)
+{
+    assert(condvar->posix.allocated == GLFW_TRUE);
+
+    pthread_cond_signal(&condvar->posix.handle);
+}
+
 #endif // GLFW_BUILD_POSIX_THREAD
 

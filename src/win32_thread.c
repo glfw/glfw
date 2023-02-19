@@ -101,7 +101,7 @@ void _glfwPlatformUnlockMutex(_GLFWmutex* mutex)
 GLFWbool _glfwPlatformCreateCondVar(_GLFWcondvar* condvar)
 {
     assert(condvar->win32.allocated == GLFW_FALSE);
-    InitializeConditionVariable(condvar->win32.condvar);
+    InitializeConditionVariable(&condvar->win32.condvar);
     return condvar->win32.allocated = GLFW_TRUE;
 }
 

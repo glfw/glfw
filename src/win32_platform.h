@@ -25,47 +25,9 @@
 //
 //========================================================================
 
-// We don't need all the fancy stuff
-#ifndef NOMINMAX
- #define NOMINMAX
-#endif
-
-#ifndef VC_EXTRALEAN
- #define VC_EXTRALEAN
-#endif
-
-#ifndef WIN32_LEAN_AND_MEAN
- #define WIN32_LEAN_AND_MEAN
-#endif
-
-// This is a workaround for the fact that glfw3.h needs to export APIENTRY (for
-// example to allow applications to correctly declare a GL_KHR_debug callback)
-// but windows.h assumes no one will define APIENTRY before it does
-#undef APIENTRY
-
-// GLFW on Windows is Unicode only and does not work in MBCS mode
-#ifndef UNICODE
- #define UNICODE
-#endif
-
-// GLFW requires Windows XP or later
-#if WINVER < 0x0501
- #undef WINVER
- #define WINVER 0x0501
-#endif
-#if _WIN32_WINNT < 0x0501
- #undef _WIN32_WINNT
- #define _WIN32_WINNT 0x0501
-#endif
-
 // GLFW uses DirectInput8 interfaces
 #define DIRECTINPUT_VERSION 0x0800
 
-// GLFW uses OEM cursor resources
-#define OEMRESOURCE
-
-#include <wctype.h>
-#include <windows.h>
 #include <dinput.h>
 #include <xinput.h>
 #include <dbt.h>

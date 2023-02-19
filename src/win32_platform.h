@@ -370,7 +370,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(
 #define GLFW_WGL_LIBRARY_CONTEXT_STATE  _GLFWlibraryWGL wgl;
 
 typedef BOOL (WINAPI * ShouldAppsUseDarkModePtr)();
-typedef DWORD(WINAPI * GetImmersiveColorFromColorSetExPtr)(UINT,UINT,BOOL,UINT);
+typedef DWORD (WINAPI * GetImmersiveColorFromColorSetExPtr)(UINT,UINT,BOOL,UINT);
 typedef int (WINAPI * GetImmersiveColorTypeFromNamePtr)(const WCHAR*);
 typedef int (WINAPI * GetImmersiveUserColorSetPreferencePtr)(BOOL,BOOL);
 

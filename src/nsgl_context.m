@@ -121,6 +121,8 @@ static void destroyContextNSGL(_GLFWwindow* window)
 {
     @autoreleasepool {
     CVDisplayLinkStop(window->context.nsgl.displayLink);
+    CVDisplayLinkRelease(window->context.nsgl.displayLink);
+    window->context.nsgl.displayLink = NULL;
 
     _glfwPlatformDestroyCondvar(&window->context.nsgl.swapIntervalCond);
     _glfwPlatformDestroyMutex(&window->context.nsgl.swapIntervalLock);

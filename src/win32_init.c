@@ -207,6 +207,9 @@ static void freeLibraries(void)
 
     if (_glfw.win32.ntdll.instance)
         _glfwPlatformFreeModule(_glfw.win32.ntdll.instance);
+
+    if (_glfw.win32.uxtheme.instance)
+        _glfwPlatformFreeModule(_glfw.win32.uxtheme.instance);
 }
 
 // Create key code translation tables

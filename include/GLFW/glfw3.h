@@ -5889,8 +5889,13 @@ GLFWAPI void glfwThemeSetVariation(GLFWtheme* theme, int value);
 GLFWAPI int glfwThemeGetAttribute(const GLFWtheme* theme, int attribute);
 GLFWAPI void glfwThemeSetAttribute(GLFWtheme* theme, int attribute, int value);
 
-GLFWAPI void glfwThemeGetColor(const GLFWtheme* theme, float* red, float* green, float* blue, float* alpha);
-GLFWAPI void glfwThemeSetColor(GLFWtheme* theme, float red, float green, float blue, float alpha);
+GLFWAPI void glfwThemeGetColor(const GLFWtheme* theme,
+                               int specifier,
+                               float* red, float* green, float* blue, float* alpha);
+
+GLFWAPI void glfwThemeSetColor(GLFWtheme* theme,
+                               int specifier,
+                               float red, float green, float blue, float alpha);
 
 /*! @brief Theme variation type.
  *
@@ -5919,25 +5924,13 @@ GLFWAPI void glfwThemeSetColor(GLFWtheme* theme, float red, float green, float b
  */
 #define GLFW_THEME_LIGHT 1
 
-
-/*! @brief Theme attribute.
- *
- *  Specifies that a theme provides a color. If this flag is set on a theme
- *  returned by GLFW, this theme contains a color. If this flag is set on a
- *  theme supplied to GLFW, GLFW applies this theme if the platform supports it.
- *  If the flag is unset, the theme's color is ignored.
- *
- *  @ingroup theme
- */
-#define GLFW_THEME_ATTRIBUTE_HAS_COLOR 1
-
 /*! @brief Theme attribute.
  *
  *  Specifies that a theme uses a high contrast mode.
  *
  *  @ingroup theme
  */
-#define GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST 2
+#define GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST 1
 
 /*! @brief Theme attribute.
  *
@@ -5945,7 +5938,18 @@ GLFWAPI void glfwThemeSetColor(GLFWtheme* theme, float red, float green, float b
  *
  *  @ingroup theme
  */
-#define GLFW_THEME_ATTRIBUTE_VIBRANT 4
+#define GLFW_THEME_ATTRIBUTE_VIBRANT 2
+
+/*! @brief Theme color attribute.
+ *
+ *  This is both an attribute and color specifier. As an attribute, it specifies
+ *  if this color is present in the theme or not. If this attribute is set on a theme
+ *  returned by GLFW, that theme contains this color. If this attribute is set on a
+ *  theme supplied to GLFW, GLFW applies this color if the platform supports it.
+ *
+ *  @ingroup theme
+ */
+#define GLFW_THEME_COLOR_MAIN 4
 
 /*! @brief Sets the system theme callback.
  *

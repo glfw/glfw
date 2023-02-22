@@ -55,11 +55,11 @@ static void print_theme(GLFWtheme* theme, const char* title)
     int n = 0;
     
     printf("%s: {\n", title);
-    printf("    Base: %s\n", glfwThemeGetVariation(theme) == GLFW_THEME_LIGHT ? "light" : "dark");
-    printf("    Flags: [");
-    if (glfwThemeGetAttribute(theme, GLFW_THEME_ATTRIBUTE_HAS_COLOR))
+    printf("    Variation: %s\n", glfwThemeGetVariation(theme) == GLFW_THEME_LIGHT ? "light" : "dark");
+    printf("    Attributes: [");
+    if (glfwThemeGetAttribute(theme, GLFW_THEME_COLOR_MAIN))
     {
-        printf(n++ > 0 ? ", %s" : "%s", "HAS_COLOR");
+        printf(n++ > 0 ? ", %s" : "%s", "COLOR_MAIN");
     }
     if (glfwThemeGetAttribute(theme, GLFW_THEME_ATTRIBUTE_VIBRANT))
     {
@@ -70,11 +70,11 @@ static void print_theme(GLFWtheme* theme, const char* title)
         printf(n++ > 0 ? ", %s" : "%s", "HIGH_CONTRAST");
     }
     printf("]\n");
-    if (glfwThemeGetAttribute(theme, GLFW_THEME_ATTRIBUTE_HAS_COLOR))
+    if (glfwThemeGetAttribute(theme, GLFW_THEME_COLOR_MAIN))
     {
         float r, g, b, a;
-        glfwThemeGetColor(theme, &r, &g, &b, &a);
-        printf("    Color: [%f, %f, %f, %f]\n", r, g, b, a);
+        glfwThemeGetColor(theme, GLFW_THEME_COLOR_MAIN, &r, &g, &b, &a);
+        printf("    Main color: [%f, %f, %f, %f]\n", r, g, b, a);
     }
     printf("}\n");
 }
@@ -83,6 +83,7 @@ static void set_theme(GLFWwindow* window, int theme_color)
 {
     glfwThemeSetColor(
             theme,
+            GLFW_THEME_COLOR_MAIN,
             theme_colors[theme_color][0],
             theme_colors[theme_color][1],
             theme_colors[theme_color][2],
@@ -90,9 +91,9 @@ static void set_theme(GLFWwindow* window, int theme_color)
     );
     
     if (theme_color == 6)
-        glfwThemeSetAttribute(theme, GLFW_THEME_ATTRIBUTE_HAS_COLOR, GLFW_FALSE);
+        glfwThemeSetAttribute(theme, GLFW_THEME_COLOR_MAIN, GLFW_FALSE);
     else
-        glfwThemeSetAttribute(theme, GLFW_THEME_ATTRIBUTE_HAS_COLOR, GLFW_TRUE);
+        glfwThemeSetAttribute(theme, GLFW_THEME_COLOR_MAIN, GLFW_TRUE);
 
     const char* title;
     

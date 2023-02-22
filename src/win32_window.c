@@ -44,8 +44,10 @@
 
 // Update window theme (light/dark)
 //
-static void updateTheme(HWND hWnd) {
-    if (_glfw.win32.uxtheme.uxThemeAvailable && _glfw.win32.uxtheme.darkTitleAvailable) {
+static void updateTheme(HWND hWnd)
+{
+    if (_glfw.win32.uxtheme.uxThemeAvailable && _glfw.win32.uxtheme.darkTitleAvailable)
+    {
         BOOL value = _glfw.win32.uxtheme.ShouldAppsUseDarkMode() & 0x1;
         DwmSetWindowAttribute(hWnd,
                               DWMWA_USE_IMMERSIVE_DARK_MODE,
@@ -1164,9 +1166,11 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         }
 
         case WM_THEMECHANGED:
-        case WM_SETTINGCHANGE: {
+        case WM_SETTINGCHANGE:
+        {
             updateTheme(window->win32.handle);
-        } break;
+            break;
+        }
 
         case WM_GETDPISCALEDSIZE:
         {

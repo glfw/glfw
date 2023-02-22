@@ -37,6 +37,46 @@
 #include <windowsx.h>
 #include <shellapi.h>
 
+// Ref: https://docs.microsoft.com/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
+#ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
+#define DWMWA_USE_IMMERSIVE_DARK_MODE 20
+#endif
+
+// Apply the system default theme
+//
+static void applySystemTheme(HWND handle)
+{
+    if (_glfw.win32.uxtheme.uxThemeAvailable && _glfw.win32.uxtheme.darkTitleAvailable)
+    {
+        GLFWbool value = _glfw.win32.uxtheme.ShouldAppsUseDarkMode() & 0x1;
+        DwmSetWindowAttribute(handle,
+                              DWMWA_USE_IMMERSIVE_DARK_MODE,
+                              &value,
+                              sizeof(value));
+    }
+}
+
+static void getAccentColor(float color[4])
+{
+    if (!_glfw.win32.uxtheme.uxThemeAvailable)
+    {
+        return;
+    }
+
+    UINT dwImmersiveColorType = _glfw.win32.uxtheme.GetImmersiveColorTypeFromName(L"ImmersiveSystemAccent");
+    UINT dwImmersiveColorSet = _glfw.win32.uxtheme.GetImmersiveUserColorSetPreference(FALSE, FALSE);
+
+    UINT rgba = _glfw.win32.uxtheme.GetImmersiveColorFromColorSetEx(dwImmersiveColorSet,
+                                                                    dwImmersiveColorType,
+                                                                    FALSE,
+                                                                    0);
+
+    color[0] = (0xFF & rgba);
+    color[1] = ((0xFF00 & rgba) >> 8) ;
+    color[2] = ((0xFF0000 & rgba) >> 16);
+    color[3] = ((0xFF000000 & rgba) >> 24);
+}
+
 // Returns the window style for the specified window
 //
 static DWORD getWindowStyle(const _GLFWwindow* window)
@@ -1146,6 +1186,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             return 0;
         }
 
+        case WM_THEMECHANGED:
+        case WM_SETTINGCHANGE: {
+            if (window->theme.variation == GLFW_THEME_DEFAULT) {
+                applySystemTheme(window->win32.handle);
+            }
+        } break;
+
         case WM_GETDPISCALEDSIZE:
         {
             if (window->win32.scaleToMonitor)
@@ -1435,6 +1482,9 @@ static int createNativeWindow(_GLFWwindow* window,
     }
 
     _glfwGetWindowSizeWin32(window, &window->win32.width, &window->win32.height);
+
+    // Use the system default when creating a window
+    applySystemTheme(window->win32.handle);
 
     return GLFW_TRUE;
 }
@@ -2375,13 +2425,36 @@ const char* _glfwGetClipboardStringWin32(void)
 
 void _glfwSetThemeWin32(_GLFWwindow* window, _GLFWtheme* theme)
 {
-    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
+    if (!theme || theme->variation == GLFW_THEME_DEFAULT)
+    {
+        applySystemTheme(window->win32.handle);
+        return;
+    }
+
+    GLFWbool darkMode = theme->variation == GLFW_THEME_DARK;
+
+    DwmSetWindowAttribute(window->win32.handle,
+                          DWMWA_USE_IMMERSIVE_DARK_MODE,
+                          &darkMode,
+                          sizeof(darkMode));
 }
 
 _GLFWtheme* _glfwGetThemeWin32(_GLFWwindow* window)
 {
-    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
-    return NULL; // TODO: implement
+    _GLFWtheme* theme = &window->theme;
+
+    theme->variation = GLFW_THEME_LIGHT;
+    theme->flags = 0;
+
+    if (_glfw.win32.uxtheme.uxThemeAvailable && _glfw.win32.uxtheme.darkTitleAvailable)
+    {
+        theme->variation = GLFW_THEME_DARK;
+    }
+
+    memset(theme->color, 0, sizeof(float) * 4);
+    getAccentColor(theme->color);
+
+    return theme;
 }
 
 EGLenum _glfwGetEGLPlatformWin32(EGLint** attribs)
@@ -2512,4 +2585,3 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
 }
 
 #endif // _GLFW_WIN32
-

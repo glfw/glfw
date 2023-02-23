@@ -70,10 +70,10 @@ static int getAccentColor(float color[4])
                                                                     FALSE,
                                                                     0);
 
-    color[0] = (double) (0xFF & rgba);
-    color[1] = (double) ((0xFF00 & rgba) >> 8);
-    color[2] = (double) ((0xFF0000 & rgba) >> 16);
-    color[3] = (double) ((0xFF000000 & rgba) >> 24);
+    color[0] = (float) (0xFF & rgba);
+    color[1] = (float) ((0xFF00 & rgba) >> 8);
+    color[2] = (float) ((0xFF0000 & rgba) >> 16);
+    color[3] = (float) ((0xFF000000 & rgba) >> 24);
     
     return GLFW_TRUE;
 }
@@ -1189,7 +1189,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
         case WM_THEMECHANGED:
         case WM_SETTINGCHANGE: {
-            if (window->theme.variation == GLFW_THEME_DEFAULT) {
+            if (window->theme.internal.variation == GLFW_THEME_DEFAULT) {
                 applySystemTheme(window->win32.handle);
             }
         } break;
@@ -2426,20 +2426,37 @@ const char* _glfwGetClipboardStringWin32(void)
 
 void _glfwSetThemeWin32(_GLFWwindow* window, const _GLFWtheme* theme)
 {
-    if (!theme || theme->variation == GLFW_THEME_DEFAULT)
+    _GLFWtheme* currentTheme = &window->theme.internal;
+    _GLFWtheme newTheme;
+    
+    if (!theme)
+        _glfwInitDefaultTheme(&newTheme);
+    else
+        memcpy(&newTheme, theme, sizeof(_GLFWtheme));
+    
+    if (newTheme->variation == GLFW_THEME_DEFAULT)
     {
         applySystemTheme(window->win32.handle);
-        return;
     }
-
-    GLFWbool darkMode = theme->variation == GLFW_THEME_DARK;
-
-    DwmSetWindowAttribute(window->win32.handle,
-                          DWMWA_USE_IMMERSIVE_DARK_MODE,
-                          &darkMode,
-                          sizeof(darkMode));
+    else
+    {
+        GLFWbool darkMode = theme->variation == GLFW_THEME_DARK;
+        
+        DwmSetWindowAttribute(window->win32.handle,
+                              DWMWA_USE_IMMERSIVE_DARK_MODE,
+                              &darkMode,
+                              sizeof(darkMode));
+    }
     
     // TODO: set accent color
+    
+    memcpy(currentTheme, &newTheme, sizeof(_GLFWtheme));
+    
+    // Not available for setting in Win32.
+    currentTheme->flags &= ~(GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST |
+                             GLFW_THEME_ATTRIBUTE_REDUCE_TRANSPARENCY |
+                             GLFW_THEME_ATTRIBUTE_REDUCE_MOTION|
+                             GLFW_THEME_COLOR_MAIN);
 }
 
 _GLFWtheme* _glfwGetThemeWin32(_GLFWwindow* window, int inlineDefaults)
@@ -2447,7 +2464,6 @@ _GLFWtheme* _glfwGetThemeWin32(_GLFWwindow* window, int inlineDefaults)
     _GLFWtheme* theme = &window->theme.external;
     memcpy(theme, &window->theme.internal, sizeof(_GLFWtheme));
     
-    // FIXME: fix not overriding specified properties.
     if (!inlineDefaults)
         return theme;
 
@@ -2461,7 +2477,7 @@ _GLFWtheme* _glfwGetThemeWin32(_GLFWwindow* window, int inlineDefaults)
     
     if ((theme->flags & GLFW_THEME_COLOR_MAIN) == 0)
     {
-        if (getAccentColor(&theme->color))
+        if (getAccentColor(theme->color))
             theme->flags |= GLFW_THEME_COLOR_MAIN;
         else
             memset(&theme->color, 0, sizeof(float) * 4);

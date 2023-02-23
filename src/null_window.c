@@ -30,6 +30,7 @@
 #include "internal.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
 {

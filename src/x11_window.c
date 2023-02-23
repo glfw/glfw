@@ -3085,6 +3085,7 @@ const char* _glfwGetClipboardStringX11(void)
 void _glfwSetThemeX11(_GLFWwindow* window, const _GLFWtheme* theme)
 {
     _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
+    // TODO: implement
 }
 
 _GLFWtheme* _glfwGetThemeX11(_GLFWwindow* window, int inlineDefaults)

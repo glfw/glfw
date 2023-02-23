@@ -46,6 +46,7 @@ video tutorials.
  - Bailey Cosier
  - Noel Cower
  - CuriouserThing
+ - Haoyun Chen
  - Jason Daly
  - danhambleton
  - Jarrod Davis
@@ -260,7 +261,6 @@ video tutorials.
  - Jonas Ådahl
  - Lasse Öörni
  - Leonard König
- - Haoyun Chen
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

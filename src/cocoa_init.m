@@ -175,7 +175,7 @@ static void createMenuBar(void)
     [NSApp performSelector:setAppleMenuSelector withObject:appMenu];
 }
 
-void nsAppearanceToGLFWTheme(NSAppearance* appearance, _GLFWtheme* theme)
+void _glfwNSAppearanceToTheme(NSAppearance* appearance, _GLFWtheme* theme)
 {
     NSAppearanceName name;
     
@@ -188,10 +188,9 @@ void nsAppearanceToGLFWTheme(NSAppearance* appearance, _GLFWtheme* theme)
             NSAppearanceNameVibrantDark,
             NSAppearanceNameAccessibilityHighContrastAqua,
             NSAppearanceNameAccessibilityHighContrastDarkAqua,
-            NSAppearanceNameAccessibilityHighContrastVibrantLight,
-            NSAppearanceNameAccessibilityHighContrastVibrantDark
         ]];
-    } else {
+    } else
+    {
         name = appearance.name;
     }
     
@@ -205,13 +204,11 @@ void nsAppearanceToGLFWTheme(NSAppearance* appearance, _GLFWtheme* theme)
         if ([name isEqualToString:NSAppearanceNameVibrantLight])
         {
             theme->variation = GLFW_THEME_LIGHT;
-            theme->flags |= GLFW_THEME_ATTRIBUTE_VIBRANT;
             return;
         }
         if ([name isEqualToString:NSAppearanceNameVibrantDark])
         {
             theme->variation = GLFW_THEME_DARK;
-            theme->flags |= GLFW_THEME_ATTRIBUTE_VIBRANT;
             return;
         }
     }
@@ -235,24 +232,12 @@ void nsAppearanceToGLFWTheme(NSAppearance* appearance, _GLFWtheme* theme)
             theme->flags |= GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST;
             return;
         }
-        if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastVibrantLight])
-        {
-            theme->variation = GLFW_THEME_LIGHT;
-            theme->flags |= GLFW_THEME_ATTRIBUTE_VIBRANT | GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST;
-            return;
-        }
-        if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastVibrantDark])
-        {
-            theme->variation = GLFW_THEME_DARK;
-            theme->flags |= GLFW_THEME_ATTRIBUTE_VIBRANT | GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST;
-            return;
-        }
     }
     
     theme->variation = GLFW_THEME_LIGHT;
 }
 
-static void getSystemTheme(_GLFWtheme* theme)
+void _glfwGetSystemThemeCocoa(_GLFWtheme* theme)
 {
     theme->variation = GLFW_THEME_LIGHT;
     theme->flags = 0;
@@ -262,7 +247,7 @@ static void getSystemTheme(_GLFWtheme* theme)
         // effectiveAppearance is actually not the system appearance, but the application appearance.
         // As long as NSApplication.appearance is never set, using the effective appearance is fine
         // to get and observe the system appearance.
-        nsAppearanceToGLFWTheme(NSApp.effectiveAppearance, theme);
+        _glfwNSAppearanceToTheme(NSApp.effectiveAppearance, theme);
         
         NSColor* color = [[NSColor controlAccentColor] colorUsingColorSpace:NSColorSpace.genericRGBColorSpace];
         
@@ -272,6 +257,35 @@ static void getSystemTheme(_GLFWtheme* theme)
         theme->color[2] = color.blueComponent;
         theme->color[3] = color.alphaComponent;
     }
+    
+    // TODO: return the standard blue accent color if running in 10.13 or earlier.
+    
+    // TODO: optimize by reading multiple values at once.
+    
+    const CFStringRef applicationID = CFSTR("com.apple.universalaccess");
+    
+    Boolean keyIsValid = false;
+    Boolean highContrast = CFPreferencesGetAppBooleanValue(CFSTR("increaseContrast"),
+                                                           applicationID,
+                                                           &keyIsValid);
+    
+    if (keyIsValid && highContrast)
+        theme->flags |= GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST;
+    
+    keyIsValid = false;
+    Boolean reduceTransparency = CFPreferencesGetAppBooleanValue(CFSTR("reduceTransparency"),
+                                                                 applicationID,
+                                                                 &keyIsValid);
+    if (keyIsValid && reduceTransparency)
+        theme->flags |= GLFW_THEME_ATTRIBUTE_REDUCE_TRANSPARENCY;
+    
+    keyIsValid = false;
+    Boolean reduceMotion = CFPreferencesGetAppBooleanValue(CFSTR("reduceMotion"),
+                                                           applicationID,
+                                                           &keyIsValid);
+    
+    if (keyIsValid && reduceMotion)
+        theme->flags |= GLFW_THEME_ATTRIBUTE_REDUCE_MOTION;
 }
 
 // Create key code translation tables
@@ -511,11 +525,16 @@ static GLFWbool initializeTIS(void)
 {
     // This class is never subclassed, so it's safe to ignore the context parameter
     
-    // TODO: FIXME: this method is invoked twice when the high contrast setting is edited in the preferences.
-    
     _GLFWtheme theme;
-    getSystemTheme(&theme);
+    _glfwGetSystemThemeCocoa(&theme);
     
+    // The observer for the effective appearance is invoked more often than the appearance name itself changes.
+    // For instance, it's invoked when various accesibility settings are changed in the system preferences.
+    // Not all of these properties are included in the GLFW themes, so those updates must be filtered out.
+    if (glfwThemeEqual((GLFWtheme*) &theme, (GLFWtheme*) &_glfw.theme))
+        return;
+    
+    memcpy(&_glfw.theme, &theme, sizeof(_GLFWtheme));
     _glfwInputSystemTheme(&theme);
     
     /*if ([keyPath isEqualToString:@"controlAccentColor"]) {
@@ -785,7 +804,10 @@ int _glfwInitCocoa(void)
                  options:0
                  context:nil];
     */
+        
+    _glfwInitDefaultTheme(&_glfw.theme);
     
+    // TODO: add observer for properties other than effectiveAppearance, for observing prior to 10.14. I assume the accesibility options were available then.
     if (@available(macOS 10.14, *))
     {
         [NSApp addObserver:_glfw.ns.helper
@@ -857,7 +879,7 @@ void _glfwTerminateCocoa(void)
 _GLFWtheme* _glfwGetSystemDefaultThemeCocoa(void)
 {
     _GLFWtheme* theme = &_glfw.theme;
-    getSystemTheme(theme);
+    _glfwGetSystemThemeCocoa(theme);
     
     return theme;
 }

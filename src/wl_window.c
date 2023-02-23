@@ -2780,7 +2780,7 @@ void _glfwSetThemeWayland(_GLFWwindow* window, _GLFWtheme* theme)
     _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
 }
 
-_GLFWtheme* _glfwGetThemeWayland(_GLFWwindow* window)
+_GLFWtheme* _glfwGetThemeWayland(_GLFWwindow* window, int inlineDefaults)
 {
     _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
     return NULL; // TODO: implement

@@ -56,12 +56,11 @@ static void applySystemTheme(HWND handle)
     }
 }
 
-static void getAccentColor(float color[4])
+
+static int getAccentColor(float color[4])
 {
     if (!_glfw.win32.uxtheme.uxThemeAvailable)
-    {
-        return;
-    }
+        return GLFW_FALSE;
 
     UINT dwImmersiveColorType = _glfw.win32.uxtheme.GetImmersiveColorTypeFromName(L"ImmersiveSystemAccent");
     UINT dwImmersiveColorSet = _glfw.win32.uxtheme.GetImmersiveUserColorSetPreference(FALSE, FALSE);
@@ -71,10 +70,12 @@ static void getAccentColor(float color[4])
                                                                     FALSE,
                                                                     0);
 
-    color[0] = (0xFF & rgba);
-    color[1] = ((0xFF00 & rgba) >> 8) ;
-    color[2] = ((0xFF0000 & rgba) >> 16);
-    color[3] = ((0xFF000000 & rgba) >> 24);
+    color[0] = (double) (0xFF & rgba);
+    color[1] = (double) ((0xFF00 & rgba) >> 8);
+    color[2] = (double) ((0xFF0000 & rgba) >> 16);
+    color[3] = (double) ((0xFF000000 & rgba) >> 24);
+    
+    return GLFW_TRUE;
 }
 
 // Returns the window style for the specified window
@@ -2423,7 +2424,7 @@ const char* _glfwGetClipboardStringWin32(void)
     return _glfw.win32.clipboardString;
 }
 
-void _glfwSetThemeWin32(_GLFWwindow* window, _GLFWtheme* theme)
+void _glfwSetThemeWin32(_GLFWwindow* window, const _GLFWtheme* theme)
 {
     if (!theme || theme->variation == GLFW_THEME_DEFAULT)
     {
@@ -2437,22 +2438,34 @@ void _glfwSetThemeWin32(_GLFWwindow* window, _GLFWtheme* theme)
                           DWMWA_USE_IMMERSIVE_DARK_MODE,
                           &darkMode,
                           sizeof(darkMode));
+    
+    // TODO: set accent color
 }
 
-_GLFWtheme* _glfwGetThemeWin32(_GLFWwindow* window)
+_GLFWtheme* _glfwGetThemeWin32(_GLFWwindow* window, int inlineDefaults)
 {
-    _GLFWtheme* theme = &window->theme;
+    _GLFWtheme* theme = &window->theme.external;
+    memcpy(theme, &window->theme.internal, sizeof(_GLFWtheme));
+    
+    // FIXME: fix not overriding specified properties.
+    if (!inlineDefaults)
+        return theme;
 
-    theme->variation = GLFW_THEME_LIGHT;
-    theme->flags = 0;
-
-    if (_glfw.win32.uxtheme.uxThemeAvailable && _glfw.win32.uxtheme.darkTitleAvailable)
+    if (theme->variation == GLFW_THEME_DEFAULT)
     {
-        theme->variation = GLFW_THEME_DARK;
-    }
+        theme->variation = GLFW_THEME_LIGHT;
 
-    memset(theme->color, 0, sizeof(float) * 4);
-    getAccentColor(theme->color);
+        if (_glfw.win32.uxtheme.uxThemeAvailable && _glfw.win32.uxtheme.darkTitleAvailable)
+            theme->variation = GLFW_THEME_DARK;
+    }
+    
+    if ((theme->flags & GLFW_THEME_COLOR_MAIN) == 0)
+    {
+        if (getAccentColor(&theme->color))
+            theme->flags |= GLFW_THEME_COLOR_MAIN;
+        else
+            memset(&theme->color, 0, sizeof(float) * 4);
+    }
 
     return theme;
 }

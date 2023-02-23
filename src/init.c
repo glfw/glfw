@@ -543,7 +543,7 @@ GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun)
     return cbfun;
 }
 
-GLFWAPI GLFWtheme* glfwGetSystemDefaultTheme()
+GLFWAPI const GLFWtheme* glfwGetSystemDefaultTheme()
 {
     _GLFWtheme* theme;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
@@ -551,7 +551,7 @@ GLFWAPI GLFWtheme* glfwGetSystemDefaultTheme()
     theme = _glfw.platform.getSystemDefaultTheme();
     assert(theme->variation != GLFW_THEME_DEFAULT);
     
-    return (GLFWtheme*) theme;
+    return (const GLFWtheme*) theme;
 }
 
 GLFWAPI GLFWthemefun glfwSetSystemThemeCallback(GLFWthemefun callback)

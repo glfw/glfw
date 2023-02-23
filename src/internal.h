@@ -586,8 +586,13 @@ struct _GLFWwindow
         GLFWdropfun               drop;
     } callbacks;
     
-    // Clients can mutate this theme data at any time
-    _GLFWtheme theme;
+    struct {
+        // Clients can mutate this theme data at any time
+        _GLFWtheme external;
+        
+        // The window's user-specified theme settings.
+        _GLFWtheme internal; // TODO: init to defaults on window creation. TODO: set in glfwSetTheme
+    } theme;
 
     // This is defined in platform.h
     GLFW_PLATFORM_WINDOW_STATE
@@ -754,8 +759,8 @@ struct _GLFWplatform
     void (*setWindowFloating)(_GLFWwindow*,GLFWbool);
     void (*setWindowOpacity)(_GLFWwindow*,float);
     void (*setWindowMousePassthrough)(_GLFWwindow*,GLFWbool);
-    _GLFWtheme* (*getTheme)(_GLFWwindow*);
-    void (*setTheme)(_GLFWwindow*,_GLFWtheme*);
+    _GLFWtheme* (*getTheme)(_GLFWwindow*,int);
+    void (*setTheme)(_GLFWwindow*,const _GLFWtheme*);
     // Events
     void (*pollEvents)(void);
     void (*waitEvents)(void);
@@ -888,7 +893,6 @@ struct _GLFWlibrary
         GLFWthemefun    theme;
     } callbacks;
     
-    // Clients can mutate this theme data at any time
     _GLFWtheme theme;
 
     // These are defined in platform.h
@@ -1035,3 +1039,4 @@ void* _glfw_calloc(size_t count, size_t size);
 void* _glfw_realloc(void* pointer, size_t size);
 void _glfw_free(void* pointer);
 
+void _glfwInitDefaultTheme(_GLFWtheme* theme);

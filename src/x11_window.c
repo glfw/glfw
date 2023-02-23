@@ -3082,12 +3082,12 @@ const char* _glfwGetClipboardStringX11(void)
     return getSelectionString(_glfw.x11.CLIPBOARD);
 }
 
-void _glfwSetThemeX11(_GLFWwindow* window, _GLFWtheme* theme)
+void _glfwSetThemeX11(_GLFWwindow* window, const _GLFWtheme* theme)
 {
     _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
 }
 
-_GLFWtheme* _glfwGetThemeX11(_GLFWwindow* window)
+_GLFWtheme* _glfwGetThemeX11(_GLFWwindow* window, int inlineDefaults)
 {
     _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
     return NULL; // TODO: implement

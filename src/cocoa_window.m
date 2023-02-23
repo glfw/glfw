@@ -1876,59 +1876,90 @@ const char* _glfwGetClipboardStringCocoa(void)
     } // autoreleasepool
 }
 
-void _glfwSetThemeCocoa(_GLFWwindow* window, _GLFWtheme* theme)
+// TODO: move
+static void replaceTheme(_GLFWwindow* window, _GLFWtheme* currentTheme, const _GLFWtheme* newTheme)
 {
-    if (!theme || theme->variation == GLFW_THEME_DEFAULT)
+    const int dissimilarFlags = currentTheme->flags ^ newTheme->flags;
+    
+    if (currentTheme->variation != newTheme->variation
+        || (dissimilarFlags & GLFW_THEME_ATTRIBUTE_REDUCE_TRANSPARENCY))
     {
-        [(NSWindow*)window->ns.object setAppearance:nil];
-        return;
-    }
-    
-    if (@available(macOS 10.10, *)) {} else
-    {
-        return;
-    }
-    
-    // TODO: support color
-    // TODO: fix vibrancy
-    
-    // As per the Cocoa documentation, passing the high contrast names to
-    // appearanceNamed: will result in nil, so these can not be used.
-    NSAppearanceName name;
-    
-    if (theme->variation == GLFW_THEME_LIGHT)
-    {
-        if (theme->flags & GLFW_THEME_ATTRIBUTE_VIBRANT)
+        if (newTheme->variation == GLFW_THEME_DEFAULT)
         {
-            name = NSAppearanceNameVibrantLight;
+            [(NSWindow*)window->ns.object setAppearance:nil];
         }
         else
         {
-            name = NSAppearanceNameAqua;
+            if (@available(macOS 10.10, *))
+            {
+                // TODO: support color
+                // TODO: fix vibrancy
+                
+                // As per the Cocoa documentation, passing the high contrast names to
+                // appearanceNamed: will result in nil, so these can not be used.
+                NSAppearanceName name;
+                
+                if (newTheme->variation == GLFW_THEME_LIGHT)
+                {
+                    if (newTheme->flags & GLFW_THEME_ATTRIBUTE_REDUCE_TRANSPARENCY)
+                        name = NSAppearanceNameVibrantLight;
+                    else
+                        name = NSAppearanceNameAqua;
+                }
+                else
+                {
+                    if (newTheme->flags & GLFW_THEME_ATTRIBUTE_REDUCE_TRANSPARENCY)
+                    {
+                        name = NSAppearanceNameVibrantDark;
+                    }
+                    else if (@available(macOS 10.14, *))
+                    {
+                        name = NSAppearanceNameDarkAqua;
+                    }
+                    else
+                    {
+                        name = NSAppearanceNameAqua;
+                    }
+                }
+                
+                NSAppearance* appearance = [NSAppearance appearanceNamed:name];
+                [(NSWindow*)window->ns.object setAppearance:appearance];
+            }
         }
     }
-    else
-    {
-        if (theme->flags & GLFW_THEME_ATTRIBUTE_VIBRANT)
-        {
-            name = NSAppearanceNameVibrantDark;
-        }
-        else if (@available(macOS 10.14, *))
-        {
-            name = NSAppearanceNameDarkAqua;
-        } else
-        {
-            name = NSAppearanceNameAqua;
-        }
-    }
-    
-    NSAppearance* appearance = [NSAppearance appearanceNamed:name];
-    [(NSWindow*)window->ns.object setAppearance:appearance];
 }
 
-_GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window)
+void _glfwSetThemeCocoa(_GLFWwindow* window, const _GLFWtheme* theme)
 {
-    _GLFWtheme* theme = &window->theme;
+    _GLFWtheme* currentTheme = &window->theme.internal;
+    _GLFWtheme newTheme;
+    
+    if (!theme)
+        _glfwInitDefaultTheme(&newTheme);
+    else
+        memcpy(&newTheme, theme, sizeof(_GLFWtheme));
+    
+    replaceTheme(window, currentTheme, &newTheme);
+    
+    memcpy(currentTheme, &newTheme, sizeof(_GLFWtheme));
+    
+    // Not available for setting in Cocoa.
+    currentTheme->flags &= ~(GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST |
+                             GLFW_THEME_ATTRIBUTE_REDUCE_TRANSPARENCY |
+                             GLFW_THEME_ATTRIBUTE_REDUCE_MOTION|
+                             GLFW_THEME_COLOR_MAIN);
+    
+    // TODO: NSColor controlAccentColor is not settable. Is there any reason in overriding a similar value? Does it apply to menu item highlights? If yes, then it must be overridden.
+}
+
+_GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window, int inlineDefaults)
+{
+    _GLFWtheme* theme = &window->theme.external;
+    memcpy(theme, &window->theme.internal, sizeof(_GLFWtheme));
+    
+    // FIXME: fix not overriding specified properties.
+    if (!inlineDefaults)
+        return theme;
     
     theme->variation = GLFW_THEME_LIGHT;
     theme->flags = 0;
@@ -1940,20 +1971,20 @@ _GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window)
         if (appearance == NULL)
             appearance = [NSApp effectiveAppearance];
     
-        nsAppearanceToGLFWTheme(appearance, theme);
+        _glfwNSAppearanceToTheme(appearance, theme);
     }
     
-    if (@available(macOS 10.14, *)) {
-        // TODO: this is not settable. Is there any reason in overriding a similar value? Does it apply to menu item highlights? If yes, then it must be overridden.
-        NSColor* color = [[NSColor controlAccentColor] colorUsingColorSpace:NSColorSpace.genericRGBColorSpace];
-        // TODO: Cannot use the accent color directly, for window themes, because the accent color is never overridden.
-        
-        theme->flags |= GLFW_THEME_COLOR_MAIN;
-        theme->color[0] = color.redComponent;
-        theme->color[1] = color.greenComponent;
-        theme->color[2] = color.blueComponent;
-        theme->color[3] = color.alphaComponent;
+    _GLFWtheme systemTheme;
+    
+    _glfwGetSystemThemeCocoa(&systemTheme);
+    
+    if ((theme->flags & GLFW_THEME_COLOR_MAIN) == 0)
+    {
+        assert(systemTheme.flags & GLFW_THEME_COLOR_MAIN);
+        memcpy(&theme->color, &systemTheme.color, sizeof(float) * 4);
     }
+    
+    theme->flags |= systemTheme.flags;
     
     return theme;
 }

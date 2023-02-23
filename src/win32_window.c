@@ -2434,13 +2434,13 @@ void _glfwSetThemeWin32(_GLFWwindow* window, const _GLFWtheme* theme)
     else
         memcpy(&newTheme, theme, sizeof(_GLFWtheme));
     
-    if (newTheme->variation == GLFW_THEME_DEFAULT)
+    if (newTheme.variation == GLFW_THEME_DEFAULT)
     {
         applySystemTheme(window->win32.handle);
     }
     else
     {
-        GLFWbool darkMode = theme->variation == GLFW_THEME_DARK;
+        GLFWbool darkMode = newTheme.variation == GLFW_THEME_DARK;
         
         DwmSetWindowAttribute(window->win32.handle,
                               DWMWA_USE_IMMERSIVE_DARK_MODE,

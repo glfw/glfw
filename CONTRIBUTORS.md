@@ -32,6 +32,7 @@ video tutorials.
  - David Carlier
  - Arturo Castro
  - Chi-kwan Chan
+ - Haoyun Chen
  - TheChocolateOre
  - Ali Chraghi
  - Joseph Chua
@@ -46,7 +47,6 @@ video tutorials.
  - Bailey Cosier
  - Noel Cower
  - CuriouserThing
- - Haoyun Chen
  - Jason Daly
  - danhambleton
  - Jarrod Davis

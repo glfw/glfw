@@ -299,12 +299,15 @@ typedef int (WINAPI * PFN_GetSystemMetricsForDpi)(int,UINT);
 // dwmapi.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_DwmIsCompositionEnabled)(BOOL*);
 typedef HRESULT (WINAPI * PFN_DwmFlush)(VOID);
-typedef HRESULT(WINAPI * PFN_DwmEnableBlurBehindWindow)(HWND,const DWM_BLURBEHIND*);
+typedef HRESULT (WINAPI * PFN_DwmEnableBlurBehindWindow)(HWND,const DWM_BLURBEHIND*);
 typedef HRESULT (WINAPI * PFN_DwmGetColorizationColor)(DWORD*,BOOL*);
+typedef HRESULT (WINAPI * PFN_DwmSetWindowAttribute)(HWND,DWORD,LPCVOID,DWORD);
+
 #define DwmIsCompositionEnabled _glfw.win32.dwmapi.IsCompositionEnabled
 #define DwmFlush _glfw.win32.dwmapi.Flush
 #define DwmEnableBlurBehindWindow _glfw.win32.dwmapi.EnableBlurBehindWindow
 #define DwmGetColorizationColor _glfw.win32.dwmapi.GetColorizationColor
+#define DwmSetWindowAttribute _glfw.win32.dwmapi.SetWindowAttribute
 
 // shcore.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_SetProcessDpiAwareness)(PROCESS_DPI_AWARENESS);
@@ -365,6 +368,11 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(
 
 #define GLFW_WGL_CONTEXT_STATE          _GLFWcontextWGL wgl;
 #define GLFW_WGL_LIBRARY_CONTEXT_STATE  _GLFWlibraryWGL wgl;
+
+typedef BOOL (WINAPI * ShouldAppsUseDarkModePtr)();
+typedef DWORD (WINAPI * GetImmersiveColorFromColorSetExPtr)(UINT,UINT,BOOL,UINT);
+typedef int (WINAPI * GetImmersiveColorTypeFromNamePtr)(const WCHAR*);
+typedef int (WINAPI * GetImmersiveUserColorSetPreferencePtr)(BOOL,BOOL);
 
 
 // WGL-specific per-context data
@@ -487,6 +495,7 @@ typedef struct _GLFWlibraryWin32
         PFN_DwmFlush                    Flush;
         PFN_DwmEnableBlurBehindWindow   EnableBlurBehindWindow;
         PFN_DwmGetColorizationColor     GetColorizationColor;
+        PFN_DwmSetWindowAttribute       SetWindowAttribute;
     } dwmapi;
 
     struct {
@@ -499,6 +508,16 @@ typedef struct _GLFWlibraryWin32
         HINSTANCE                       instance;
         PFN_RtlVerifyVersionInfo        RtlVerifyVersionInfo_;
     } ntdll;
+
+    struct {
+        HINSTANCE                              instance;
+        GLFWbool                               uxThemeAvailable;
+        GLFWbool                               darkTitleAvailable;
+        ShouldAppsUseDarkModePtr               ShouldAppsUseDarkMode;
+        GetImmersiveColorFromColorSetExPtr     GetImmersiveColorFromColorSetEx;
+        GetImmersiveColorTypeFromNamePtr       GetImmersiveColorTypeFromName;
+        GetImmersiveUserColorSetPreferencePtr  GetImmersiveUserColorSetPreference;
+    } uxtheme;
 } _GLFWlibraryWin32;
 
 // Win32-specific per-monitor data
@@ -623,5 +642,5 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                                const _GLFWfbconfig* fbconfig);
 
 _GLFWtheme* _glfwGetSystemDefaultThemeWin32(void);
-void _glfwSetThemeWin32(_GLFWwindow* window, _GLFWtheme* theme);
-_GLFWtheme* _glfwGetThemeWin32(_GLFWwindow* window);
+void _glfwSetThemeWin32(_GLFWwindow* window, const _GLFWtheme* theme);
+_GLFWtheme* _glfwGetThemeWin32(_GLFWwindow* window, int inlineDefaults);

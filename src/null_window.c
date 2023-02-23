@@ -30,6 +30,7 @@
 #include "internal.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
 {
@@ -551,13 +552,16 @@ const char* _glfwGetClipboardStringNull(void)
     return _glfw.null.clipboardString;
 }
 
-void _glfwSetThemeNull(_GLFWwindow* window, _GLFWtheme* theme)
+void _glfwSetThemeNull(_GLFWwindow* window, const _GLFWtheme* theme)
 {
+    memcpy(&window->theme.internal, theme, sizeof(_GLFWtheme));
 }
 
-_GLFWtheme* _glfwGetThemeNull(_GLFWwindow* window)
+_GLFWtheme* _glfwGetThemeNull(_GLFWwindow* window, int inlineDefaults)
 {
-    return NULL; // TODO: see to-do in _glfwGetSystemDefaultThemeNull
+    memcpy(&window->theme.external, &window->theme.internal, sizeof(_GLFWtheme));
+    
+    return &window->theme.external;
 }
 
 EGLenum _glfwGetEGLPlatformNull(EGLint** attribs)

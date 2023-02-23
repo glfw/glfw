@@ -148,5 +148,5 @@ VkResult _glfwCreateWindowSurfaceNull(VkInstance instance, _GLFWwindow* window, 
 void _glfwPollMonitorsNull(void);
 
 _GLFWtheme* _glfwGetSystemDefaultThemeNull(void);
-void _glfwSetThemeNull(_GLFWwindow* window, _GLFWtheme* theme);
-_GLFWtheme* _glfwGetThemeNull(_GLFWwindow* window);
+void _glfwSetThemeNull(_GLFWwindow* window, const _GLFWtheme* theme);
+_GLFWtheme* _glfwGetThemeNull(_GLFWwindow* window, int inlineDefaults);

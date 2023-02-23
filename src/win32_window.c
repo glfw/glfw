@@ -37,6 +37,47 @@
 #include <windowsx.h>
 #include <shellapi.h>
 
+// Ref: https://docs.microsoft.com/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute
+#ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
+#define DWMWA_USE_IMMERSIVE_DARK_MODE 20
+#endif
+
+// Apply the system default theme
+//
+static void applySystemTheme(HWND handle)
+{
+    if (_glfw.win32.uxtheme.uxThemeAvailable && _glfw.win32.uxtheme.darkTitleAvailable)
+    {
+        GLFWbool value = _glfw.win32.uxtheme.ShouldAppsUseDarkMode() & 0x1;
+        DwmSetWindowAttribute(handle,
+                              DWMWA_USE_IMMERSIVE_DARK_MODE,
+                              &value,
+                              sizeof(value));
+    }
+}
+
+
+static int getAccentColor(float color[4])
+{
+    if (!_glfw.win32.uxtheme.uxThemeAvailable)
+        return GLFW_FALSE;
+
+    UINT dwImmersiveColorType = _glfw.win32.uxtheme.GetImmersiveColorTypeFromName(L"ImmersiveSystemAccent");
+    UINT dwImmersiveColorSet = _glfw.win32.uxtheme.GetImmersiveUserColorSetPreference(FALSE, FALSE);
+
+    UINT rgba = _glfw.win32.uxtheme.GetImmersiveColorFromColorSetEx(dwImmersiveColorSet,
+                                                                    dwImmersiveColorType,
+                                                                    FALSE,
+                                                                    0);
+
+    color[0] = (float) (0xFF & rgba);
+    color[1] = (float) ((0xFF00 & rgba) >> 8);
+    color[2] = (float) ((0xFF0000 & rgba) >> 16);
+    color[3] = (float) ((0xFF000000 & rgba) >> 24);
+    
+    return GLFW_TRUE;
+}
+
 // Returns the window style for the specified window
 //
 static DWORD getWindowStyle(const _GLFWwindow* window)
@@ -1146,6 +1187,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             return 0;
         }
 
+        case WM_THEMECHANGED:
+        case WM_SETTINGCHANGE: {
+            if (window->theme.internal.variation == GLFW_THEME_DEFAULT) {
+                applySystemTheme(window->win32.handle);
+            }
+        } break;
+
         case WM_GETDPISCALEDSIZE:
         {
             if (window->win32.scaleToMonitor)
@@ -1435,6 +1483,9 @@ static int createNativeWindow(_GLFWwindow* window,
     }
 
     _glfwGetWindowSizeWin32(window, &window->win32.width, &window->win32.height);
+
+    // Use the system default when creating a window
+    applySystemTheme(window->win32.handle);
 
     return GLFW_TRUE;
 }
@@ -2373,15 +2424,66 @@ const char* _glfwGetClipboardStringWin32(void)
     return _glfw.win32.clipboardString;
 }
 
-void _glfwSetThemeWin32(_GLFWwindow* window, _GLFWtheme* theme)
+void _glfwSetThemeWin32(_GLFWwindow* window, const _GLFWtheme* theme)
 {
-    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
+    _GLFWtheme* currentTheme = &window->theme.internal;
+    _GLFWtheme newTheme;
+    
+    if (!theme)
+        _glfwInitDefaultTheme(&newTheme);
+    else
+        memcpy(&newTheme, theme, sizeof(_GLFWtheme));
+    
+    if (newTheme.variation == GLFW_THEME_DEFAULT)
+    {
+        applySystemTheme(window->win32.handle);
+    }
+    else
+    {
+        GLFWbool darkMode = newTheme.variation == GLFW_THEME_DARK;
+        
+        DwmSetWindowAttribute(window->win32.handle,
+                              DWMWA_USE_IMMERSIVE_DARK_MODE,
+                              &darkMode,
+                              sizeof(darkMode));
+    }
+    
+    // TODO: set accent color
+    
+    memcpy(currentTheme, &newTheme, sizeof(_GLFWtheme));
+    
+    // Not available for setting in Win32.
+    currentTheme->flags &= ~(GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST |
+                             GLFW_THEME_ATTRIBUTE_REDUCE_TRANSPARENCY |
+                             GLFW_THEME_ATTRIBUTE_REDUCE_MOTION|
+                             GLFW_THEME_COLOR_MAIN);
 }
 
-_GLFWtheme* _glfwGetThemeWin32(_GLFWwindow* window)
+_GLFWtheme* _glfwGetThemeWin32(_GLFWwindow* window, int inlineDefaults)
 {
-    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
-    return NULL; // TODO: implement
+    _GLFWtheme* theme = &window->theme.external;
+    memcpy(theme, &window->theme.internal, sizeof(_GLFWtheme));
+    
+    if (!inlineDefaults)
+        return theme;
+
+    if (theme->variation == GLFW_THEME_DEFAULT)
+    {
+        theme->variation = GLFW_THEME_LIGHT;
+
+        if (_glfw.win32.uxtheme.uxThemeAvailable && _glfw.win32.uxtheme.darkTitleAvailable)
+            theme->variation = GLFW_THEME_DARK;
+    }
+    
+    if ((theme->flags & GLFW_THEME_COLOR_MAIN) == 0)
+    {
+        if (getAccentColor(theme->color))
+            theme->flags |= GLFW_THEME_COLOR_MAIN;
+        else
+            memset(&theme->color, 0, sizeof(float) * 4);
+    }
+
+    return theme;
 }
 
 EGLenum _glfwGetEGLPlatformWin32(EGLint** attribs)
@@ -2512,4 +2614,3 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
 }
 
 #endif // _GLFW_WIN32
-

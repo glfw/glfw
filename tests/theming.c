@@ -50,26 +50,29 @@ static int cur_theme_color = 0;
 
 static GLFWtheme* theme;
 
-static void print_theme(GLFWtheme* theme, const char* title)
+static void print_theme(const GLFWtheme* theme, const char* title)
 {
     int n = 0;
+    int variation = glfwThemeGetVariation(theme);
     
     printf("%s: {\n", title);
-    printf("    Variation: %s\n", glfwThemeGetVariation(theme) == GLFW_THEME_LIGHT ? "light" : "dark");
+    printf("    Variation: %s\n", variation == GLFW_THEME_DEFAULT ? "default" : variation == GLFW_THEME_LIGHT ? "light" : "dark");
     printf("    Attributes: [");
+    
     if (glfwThemeGetAttribute(theme, GLFW_THEME_COLOR_MAIN))
-    {
         printf(n++ > 0 ? ", %s" : "%s", "COLOR_MAIN");
-    }
-    if (glfwThemeGetAttribute(theme, GLFW_THEME_ATTRIBUTE_VIBRANT))
-    {
-        printf(n++ > 0 ? ", %s" : "%s", "VIBRANT");
-    }
+    
     if (glfwThemeGetAttribute(theme, GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST))
-    {
         printf(n++ > 0 ? ", %s" : "%s", "HIGH_CONTRAST");
-    }
+    
+    if (glfwThemeGetAttribute(theme, GLFW_THEME_ATTRIBUTE_REDUCE_TRANSPARENCY))
+        printf(n++ > 0 ? ", %s" : "%s", "REDUCE_TRANSPARENCY");
+    
+    if (glfwThemeGetAttribute(theme, GLFW_THEME_ATTRIBUTE_REDUCE_MOTION))
+        printf(n++ > 0 ? ", %s" : "%s", "REDUCE_MOTION");
+    
     printf("]\n");
+    
     if (glfwThemeGetAttribute(theme, GLFW_THEME_COLOR_MAIN))
     {
         float r, g, b, a;
@@ -90,7 +93,7 @@ static void set_theme(GLFWwindow* window, int theme_color)
             theme_colors[theme_color][3]
     );
     
-    if (theme_color == 6)
+    if (theme_color == 5)
         glfwThemeSetAttribute(theme, GLFW_THEME_COLOR_MAIN, GLFW_FALSE);
     else
         glfwThemeSetAttribute(theme, GLFW_THEME_COLOR_MAIN, GLFW_TRUE);
@@ -113,6 +116,11 @@ static void set_theme(GLFWwindow* window, int theme_color)
     glfwSetTheme(window, theme);
 }
 
+static void flip_attribute(int attribute)
+{
+    glfwThemeSetAttribute(theme, attribute, !glfwThemeGetAttribute(theme, attribute));
+}
+
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (action != GLFW_PRESS)
@@ -120,31 +128,59 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
     switch (key)
     {
+        // No theme specified
         case GLFW_KEY_0:
             glfwSetWindowTitle(window, "Default theme (NULL)");
             glfwSetTheme(window, NULL);
             break;
+        // Theme with default variation
         case GLFW_KEY_1:
             glfwThemeSetVariation(theme, GLFW_THEME_DEFAULT);
             set_theme(window, cur_theme_color);
             break;
+        // Theme with light variation
         case GLFW_KEY_2:
             glfwThemeSetVariation(theme, GLFW_THEME_LIGHT);
             set_theme(window, cur_theme_color);
             break;
+        // Theme with dark variation
         case GLFW_KEY_3:
             glfwThemeSetVariation(theme, GLFW_THEME_DARK);
             set_theme(window, cur_theme_color);
             break;
-        case GLFW_KEY_ESCAPE:
-            glfwSetWindowShouldClose(window, GLFW_TRUE);
-            break;
+        // Traverse colors
         case GLFW_KEY_SPACE:
             cur_theme_color = (cur_theme_color + 1) % 6;
             set_theme(window, cur_theme_color);
             break;
+        // Inspect
+        case GLFW_KEY_I:
+            print_theme(theme, "Constructed theme");
+            break;
+        // Print
         case GLFW_KEY_P:
-            print_theme(glfwGetTheme(window), "Window theme");
+            print_theme(glfwGetTheme(window, GLFW_FALSE), "Specified window theme");
+            print_theme(glfwGetTheme(window, GLFW_TRUE), "Active window theme");
+            printf("\n");
+            break;
+        // High contrast
+        case GLFW_KEY_H:
+            flip_attribute(GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST);
+            set_theme(window, cur_theme_color);
+            break;
+        // Transparency
+        case GLFW_KEY_T:
+            flip_attribute(GLFW_THEME_ATTRIBUTE_REDUCE_TRANSPARENCY);
+            set_theme(window, cur_theme_color);
+            break;
+        // Motion
+        case GLFW_KEY_M:
+            flip_attribute(GLFW_THEME_ATTRIBUTE_REDUCE_MOTION);
+            set_theme(window, cur_theme_color);
+            break;
+        // Exit
+        case GLFW_KEY_ESCAPE:
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
             break;
     }
 }
@@ -174,6 +210,10 @@ int main(int argc, char** argv)
         fprintf(stderr, "Failed to open GLFW window\n");
         exit(EXIT_FAILURE);
     }
+    
+    print_theme(glfwGetTheme(window, GLFW_FALSE), "Initial specified window theme");
+    print_theme(glfwGetTheme(window, GLFW_TRUE), "Initial active window theme");
+    printf("\n");
 
     glfwMakeContextCurrent(window);
     gladLoadGL(glfwGetProcAddress);

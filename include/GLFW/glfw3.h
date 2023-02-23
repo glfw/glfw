@@ -5879,9 +5879,12 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  */
 GLFWAPI const char* glfwGetClipboardString(GLFWwindow* window);
 
+// TODO: consider requiring GLFW to be initialized for these GLFWTheme functions to work. That way, implementations can add extra data to the themes, and process them in a platform-specific way.
+
 GLFWAPI GLFWtheme* glfwCreateTheme(void);
 GLFWAPI void glfwDestroyTheme(GLFWtheme* theme);
 GLFWAPI void glfwCopyTheme(const GLFWtheme* source, GLFWtheme* target);
+GLFWAPI int glfwThemeEqual(const GLFWtheme* first, const GLFWtheme* second);
 
 GLFWAPI int glfwThemeGetVariation(const GLFWtheme* theme);
 GLFWAPI void glfwThemeSetVariation(GLFWtheme* theme, int value);
@@ -5889,10 +5892,12 @@ GLFWAPI void glfwThemeSetVariation(GLFWtheme* theme, int value);
 GLFWAPI int glfwThemeGetAttribute(const GLFWtheme* theme, int attribute);
 GLFWAPI void glfwThemeSetAttribute(GLFWtheme* theme, int attribute, int value);
 
+// If the return value of glfwGetAttribute(specifier) is GLFW_FALSE, the return values of this function are undefined.
 GLFWAPI void glfwThemeGetColor(const GLFWtheme* theme,
                                int specifier,
                                float* red, float* green, float* blue, float* alpha);
 
+// Must execute glfwThemeSetAttribute(specifier, GLFW_TRUE) for this to have an effect.
 GLFWAPI void glfwThemeSetColor(GLFWtheme* theme,
                                int specifier,
                                float red, float green, float blue, float alpha);
@@ -5934,11 +5939,19 @@ GLFWAPI void glfwThemeSetColor(GLFWtheme* theme,
 
 /*! @brief Theme attribute.
  *
- *  Specifies that a theme is vibrant.
+ *  Specifies that a theme requests reduced transparency.
  *
  *  @ingroup theme
  */
-#define GLFW_THEME_ATTRIBUTE_VIBRANT 2
+#define GLFW_THEME_ATTRIBUTE_REDUCE_TRANSPARENCY 2
+
+/*! @brief Theme attribute.
+ *
+ *  Specifies that a theme requests reduced motion.
+ *
+ *  @ingroup theme
+ */
+#define GLFW_THEME_ATTRIBUTE_REDUCE_MOTION 4
 
 /*! @brief Theme color attribute.
  *
@@ -5949,7 +5962,7 @@ GLFWAPI void glfwThemeSetColor(GLFWtheme* theme,
  *
  *  @ingroup theme
  */
-#define GLFW_THEME_COLOR_MAIN 4
+#define GLFW_THEME_COLOR_MAIN 8
 
 /*! @brief Sets the system theme callback.
  *
@@ -6006,7 +6019,23 @@ GLFWAPI void glfwSetTheme(GLFWwindow* handle, const GLFWtheme* theme);
 
 /*! @brief Returns the currently active system theme.
  *
+ *  Executing this yields no changes to a window's theme settings:
+ *  @code
+ *  glfwSetTheme(window, glfwGetTheme(window, GLFW_FALSE))
+ *  @endcode
+ *
+ *  Executing this sets a window's theme to the current system theme, and disables
+ *  automatic changes to the window's theme for when the system changes its theme.
+ *  @code
+ *  glfwSetTheme(window, glfwGetTheme(window, GLFW_TRUE))
+ *  @endcode
+ *
+ *
  *  @param[in] window The [window](@ref window) to retrieve the current theme for.
+ *  @param[in] inlineDefaults Specifies whether or not GLFW should replace unspecified
+ *  theme attributes with the currently active system ones.  If `GLFW_TRUE`, the returned
+ *  theme describes the active style of the window.  If `GLFW_FALSE`, the returned theme
+ *  describes the window's theme settings.
  *
  *  @return A mutable [theme](@ref theme) object, or `NULL` if an
  *  [error](@ref error_handling) occurred.
@@ -6027,7 +6056,7 @@ GLFWAPI void glfwSetTheme(GLFWwindow* handle, const GLFWtheme* theme);
  *
  *  @ingroup theme
  */
-GLFWAPI GLFWtheme* glfwGetTheme(GLFWwindow* handle);
+GLFWAPI GLFWtheme* glfwGetTheme(GLFWwindow* handle, int inlineDefaults);
 
 /*! @brief Returns the currently active system theme.
  *
@@ -6051,7 +6080,7 @@ GLFWAPI GLFWtheme* glfwGetTheme(GLFWwindow* handle);
  *
  *  @ingroup theme
  */
-GLFWAPI GLFWtheme* glfwGetSystemDefaultTheme();
+GLFWAPI const GLFWtheme* glfwGetSystemDefaultTheme();
 
 /*! @brief Returns the GLFW time.
  *

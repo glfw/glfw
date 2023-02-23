@@ -297,7 +297,8 @@ void _glfwRestoreVideoModeCocoa(_GLFWmonitor* monitor);
 
 float _glfwTransformYCocoa(float y);
 
-void nsAppearanceToGLFWTheme(NSAppearance* appearance, _GLFWtheme* theme);
+void _glfwNSAppearanceToTheme(NSAppearance* appearance, _GLFWtheme* theme);
+void _glfwGetSystemThemeCocoa(_GLFWtheme* theme);
 
 void* _glfwLoadLocalVulkanLoaderCocoa(void);
 
@@ -308,7 +309,6 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                 const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContextNSGL(_GLFWwindow* window);
 
-
 _GLFWtheme* _glfwGetSystemDefaultThemeCocoa(void);
-void _glfwSetThemeCocoa(_GLFWwindow* window, _GLFWtheme* theme);
-_GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window);
+void _glfwSetThemeCocoa(_GLFWwindow* window, const _GLFWtheme* theme);
+_GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window, int inlineDefaults);

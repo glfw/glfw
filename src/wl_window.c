@@ -2775,12 +2775,13 @@ const char* _glfwGetClipboardStringWayland(void)
     return _glfw.wl.clipboardString;
 }
 
-void _glfwSetThemeWayland(_GLFWwindow* window, _GLFWtheme* theme)
+void _glfwSetThemeWayland(_GLFWwindow* window, const _GLFWtheme* theme)
 {
     _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
+    // TODO: implement
 }
 
-_GLFWtheme* _glfwGetThemeWayland(_GLFWwindow* window)
+_GLFWtheme* _glfwGetThemeWayland(_GLFWwindow* window, int inlineDefaults)
 {
     _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
     return NULL; // TODO: implement

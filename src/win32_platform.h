@@ -432,6 +432,15 @@ typedef struct _GLFWwindowWin32
     int                 lastCursorPosX, lastCursorPosY;
     // The last received high surrogate when decoding pairs of UTF-16 messages
     WCHAR               highSurrogate;
+
+    struct grabAreaStruct {
+        int x;
+        int y;
+        int width;
+        int height;
+    } grabArea;
+
+    int                 resizeBorderSize;
 } _GLFWwindowWin32;
 
 // Win32-specific global data
@@ -541,6 +550,8 @@ void _glfwGetHMONITORContentScaleWin32(HMONITOR handle, float* xscale, float* ys
 
 GLFWbool _glfwCreateWindowWin32(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
 void _glfwDestroyWindowWin32(_GLFWwindow* window);
+void _glfwSetWindowBorderlessResizeBorderSizeWin32(_GLFWwindow* window, int size);
+void _glfwSetWindowBorderlessGrabAreaWin32(_GLFWwindow* window, int xpos, int ypos, int width, int height);
 void _glfwSetWindowTitleWin32(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* images);
 void _glfwGetWindowPosWin32(_GLFWwindow* window, int* xpos, int* ypos);

@@ -230,6 +230,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->monitor          = (_GLFWmonitor*) monitor;
     window->resizable        = wndconfig.resizable;
     window->decorated        = wndconfig.decorated;
+    window->borderLessAreo   = wndconfig.borderlessAreo;
     window->autoIconify      = wndconfig.autoIconify;
     window->floating         = wndconfig.floating;
     window->focusOnShow      = wndconfig.focusOnShow;
@@ -354,6 +355,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             return;
         case GLFW_DECORATED:
             _glfw.hints.window.decorated = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
+        case GLFW_BORDERLESS_AREO:
+            _glfw.hints.window.borderlessAreo = value ? GLFW_TRUE : GLFW_FALSE;
             return;
         case GLFW_FOCUSED:
             _glfw.hints.window.focused = value ? GLFW_TRUE : GLFW_FALSE;
@@ -513,6 +517,24 @@ GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* handle, int value)
 
     _GLFW_REQUIRE_INIT();
     window->shouldClose = value;
+}
+
+GLFWAPI void glfwSetWindowBorderlessResizeBorderSize(GLFWwindow* handle, int size)
+{
+    _GLFWwindow* window = (_GLFWwindow*)handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT();
+    _glfw.platform.setWindowBorderlessResizeBorderSize(window, size);
+}
+
+GLFWAPI void glfwSetWindowBorderlessGrabArea(GLFWwindow* handle, int xpos, int ypos, int width, int height)
+{
+    _GLFWwindow* window = (_GLFWwindow*)handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT();
+    _glfw.platform.setWindowBorderlessGrabArea(window, xpos, ypos, width, height);
 }
 
 GLFWAPI void glfwSetWindowTitle(GLFWwindow* handle, const char* title)

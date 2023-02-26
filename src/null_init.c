@@ -71,6 +71,8 @@ GLFWbool _glfwConnectNull(int platformID, _GLFWplatform* platform)
         _glfwSetGammaRampNull,
         _glfwCreateWindowNull,
         _glfwDestroyWindowNull,
+        _glfwSetWindowBorderlessResizeBorderSizeNull,
+        _glfwSetWindowBorderlessGrabAreaNull,
         _glfwSetWindowTitleNull,
         _glfwSetWindowIconNull,
         _glfwGetWindowPosNull,

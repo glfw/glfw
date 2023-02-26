@@ -636,6 +636,8 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         _glfwSetGammaRampWin32,
         _glfwCreateWindowWin32,
         _glfwDestroyWindowWin32,
+        _glfwSetWindowBorderlessResizeBorderSizeWin32,
+        _glfwSetWindowBorderlessGrabAreaWin32,
         _glfwSetWindowTitleWin32,
         _glfwSetWindowIconWin32,
         _glfwGetWindowPosWin32,

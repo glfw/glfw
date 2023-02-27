@@ -880,12 +880,13 @@ extern "C" {
 #define GLFW_DECORATED              0x00020005
  /*! @brief Window borderless areo window hint and attribute
   *
+  *  This hint works only for windows!
+  * 
   *  Window borderless areo [window hint](@ref GLFW_BORDERLESS_AREO_hint) and
   *  [window attribute](@ref GLFW_BORDERLESS_AREO_attrib).
   */
 #define GLFW_BORDERLESS_AREO        0x00020015
 /*! @brief Window auto-iconification window hint and attribute
- *  This hint works only for windows.
  * 
  *  Window auto-iconification [window hint](@ref GLFW_AUTO_ICONIFY_hint) and
  *  [window attribute](@ref GLFW_AUTO_ICONIFY_attrib).

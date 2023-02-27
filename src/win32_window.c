@@ -37,8 +37,6 @@
 #include <windowsx.h>
 #include <shellapi.h>
 
-#include <Windows.h>
-
 // Returns the window style for the specified window
 //
 static DWORD getWindowStyle(const _GLFWwindow* window)
@@ -605,8 +603,6 @@ static void maximizeWindowManually(_GLFWwindow* window)
 
 // Window procedure for user-created windows
 //
-#include <stdio.h>
-
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     _GLFWwindow* window = GetPropW(hWnd, L"GLFW");

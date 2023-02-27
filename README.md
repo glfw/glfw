@@ -3,6 +3,8 @@
 This software was not created by me. The original repository is linked down below.
 [![Original repository]](https://github.com/glfw/glfw)
 
+<img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="100" height="100">
+
 ## Borderless features
 
 ###New hint for Windows:

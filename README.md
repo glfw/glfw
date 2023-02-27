@@ -1,6 +1,7 @@
 # GLFW
 
-[![Original repository](https://github.com/glfw/glfw/actions/workflows/build.yml/badge.svg)](https://github.com/glfw/glfw)
+
+[![Original repository](http://www.w3.org/2000/svg)](https://github.com/glfw/glfw)
 
 ## Borderless features
 

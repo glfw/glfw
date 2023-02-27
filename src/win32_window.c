@@ -49,7 +49,11 @@ static DWORD getWindowStyle(const _GLFWwindow* window)
     {
         style |= WS_SYSMENU | WS_MINIMIZEBOX;
 
-        if (window->decorated)
+        if (window->borderLessAreo)
+        {
+            style |= WS_POPUP | WS_THICKFRAME | WS_CAPTION | WS_MAXIMIZEBOX;
+        }
+        else if (window->decorated)
         {
             style |= WS_CAPTION;
 
@@ -61,6 +65,78 @@ static DWORD getWindowStyle(const _GLFWwindow* window)
     }
 
     return style;
+}
+
+
+LRESULT hit_test(_GLFWwindow* window, int posX, int posY)
+{
+    RECT windowRect;
+    if (!GetWindowRect(window->win32.handle, &windowRect)) {
+        return HTNOWHERE;
+    }
+
+    enum region_mask {
+        non = 0b00000,
+        left = 0b0001,
+        right = 0b0010,
+        top = 0b0100,
+        bottom = 0b1000,
+    };
+
+    enum region_mask result =
+        left * (posX < (windowRect.left + window->win32.resizeBorderSize)) |
+        right * (posX >= (windowRect.right - window->win32.resizeBorderSize)) |
+        top * (posY < (windowRect.top + window->win32.resizeBorderSize)) |
+        bottom * (posY >= (windowRect.bottom - window->win32.resizeBorderSize));
+
+    if (result == non)
+    {
+        if ((posX >= (windowRect.left + window->win32.grabArea.x)) &&
+            posX <= (windowRect.left + window->win32.grabArea.x + window->win32.grabArea.width) &&
+            posY >= (windowRect.top + window->win32.grabArea.y) &&
+            posY <= (windowRect.top + window->win32.grabArea.y + window->win32.grabArea.height))
+        {
+            return HTCAPTION;
+        }
+        else
+        {
+            return HTCLIENT;
+        }
+    }
+
+    switch (result) {
+    case left: return HTLEFT;
+    case right: return HTRIGHT;
+    case top: return HTTOP;
+    case bottom: return HTBOTTOM;
+    case top | left: return HTTOPLEFT;
+    case top | right: return HTTOPRIGHT;
+    case bottom | left: return HTBOTTOMLEFT;
+    case bottom | right: return HTBOTTOMRIGHT;
+    default: return HTCLIENT;
+    }
+}
+
+int adjust_maximized_client_rect(_GLFWwindow* window, RECT* rect){
+    WINDOWPLACEMENT placement;
+    if (!GetWindowPlacement(window->win32.handle, &placement))
+        return 0;
+
+    if (placement.showCmd != SW_MAXIMIZE)
+        return 0;
+
+    auto monitor = MonitorFromWindow(window->win32.handle, MONITOR_DEFAULTTONULL);
+    if (!monitor)
+        return 0;
+
+    MONITORINFO monitor_info;
+    monitor_info.cbSize = sizeof(monitor_info);
+    if (!GetMonitorInfoW(monitor, &monitor_info))
+        return 0;
+
+    (*rect) = monitor_info.rcWork;
+    
+    return 1;
 }
 
 // Returns the extended window style for the specified window
@@ -553,6 +629,27 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
     switch (uMsg)
     {
+        case WM_NCCALCSIZE:
+        {
+            if (window->borderLessAreo == GLFW_TRUE)
+            {
+                NCCALCSIZE_PARAMS* pParams = (NCCALCSIZE_PARAMS*)lParam;
+
+                if(!adjust_maximized_client_rect(window, &pParams->rgrc[0]))
+                    pParams->rgrc[0].top -= 1;
+
+                return 0;
+            }
+            break;
+        }
+
+        case WM_NCHITTEST: {
+            if (window->borderLessAreo) {
+                return hit_test(window, GET_X_LPARAM(lParam),GET_Y_LPARAM(lParam));
+            }
+            break;
+        }
+
         case WM_MOUSEACTIVATE:
         {
             // HACK: Postpone cursor disabling when the window was activated by
@@ -1133,11 +1230,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             // Prevent title bar from being drawn after restoring a minimized
             // undecorated window
             if (!window->decorated)
-                return TRUE;
-
+                return TRUE;  
             break;
         }
-
         case WM_DWMCOMPOSITIONCHANGED:
         case WM_DWMCOLORIZATIONCOLORCHANGED:
         {
@@ -1325,8 +1420,18 @@ static int createNativeWindow(_GLFWwindow* window,
             frameY = wndconfig->ypos + rect.top;
         }
 
-        frameWidth  = rect.right - rect.left;
-        frameHeight = rect.bottom - rect.top;
+        if (window->borderLessAreo)
+        {
+            frameX = (rect.right - rect.left - wndconfig->width) / 2;
+            frameY = (rect.bottom - rect.top - wndconfig->height) - frameX;
+            frameWidth = wndconfig->width;
+            frameHeight = wndconfig->height;
+        }
+        else
+        {
+            frameWidth = rect.right - rect.left;
+            frameHeight = rect.bottom - rect.top;
+        }
     }
 
     wideTitle = _glfwCreateWideStringFromUTF8Win32(wndconfig->title);
@@ -1354,7 +1459,7 @@ static int createNativeWindow(_GLFWwindow* window,
     }
 
     SetPropW(window->win32.handle, L"GLFW", window);
-
+    
     if (IsWindows7OrGreater())
     {
         ChangeWindowMessageFilterEx(window->win32.handle,
@@ -1434,6 +1539,14 @@ static int createNativeWindow(_GLFWwindow* window,
         window->win32.transparent = GLFW_TRUE;
     }
 
+    if (window->borderLessAreo)
+    {
+        updateWindowStyles(window);
+        _glfwSetWindowSizeWin32(window, frameWidth, frameHeight);
+        _glfwSetWindowBorderlessGrabAreaWin32(window, 0, 0, frameWidth, GetSystemMetrics(SM_CYSIZE));
+        window->win32.resizeBorderSize = GetSystemMetrics(SM_CXFRAME);
+    }
+     
     _glfwGetWindowSizeWin32(window, &window->win32.width, &window->win32.height);
 
     return GLFW_TRUE;
@@ -1529,6 +1642,19 @@ void _glfwDestroyWindowWin32(_GLFWwindow* window)
         DestroyIcon(window->win32.smallIcon);
 }
 
+void _glfwSetWindowBorderlessResizeBorderSizeWin32(_GLFWwindow* window, int size)
+{
+    window->win32.resizeBorderSize = size;
+}
+
+void _glfwSetWindowBorderlessGrabAreaWin32(_GLFWwindow* window, int xpos, int ypos, int width, int height)
+{
+    window->win32.grabArea.x = xpos;
+    window->win32.grabArea.y = ypos;
+    window->win32.grabArea.width = width;
+    window->win32.grabArea.height = height;
+}
+
 void _glfwSetWindowTitleWin32(_GLFWwindow* window, const char* title)
 {
     WCHAR* wideTitle = _glfwCreateWideStringFromUTF8Win32(title);
@@ -1604,7 +1730,16 @@ void _glfwSetWindowPosWin32(_GLFWwindow* window, int xpos, int ypos)
                            FALSE, getWindowExStyle(window));
     }
 
-    SetWindowPos(window->win32.handle, NULL, rect.left, rect.top, 0, 0,
+    int windowPosX = rect.left;
+    int windowPosY = rect.top;
+    
+    if (window->borderLessAreo)
+    {
+        windowPosX = xpos;
+        windowPosY = ypos;
+    }
+
+    SetWindowPos(window->win32.handle, NULL, windowPosX, windowPosY, 0, 0,
                  SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
 }
 
@@ -1617,6 +1752,9 @@ void _glfwGetWindowSizeWin32(_GLFWwindow* window, int* width, int* height)
         *width = area.right;
     if (height)
         *height = area.bottom;
+
+    if(window->borderLessAreo && !window->win32.maximized)
+        (*height) -= 1;
 }
 
 void _glfwSetWindowSizeWin32(_GLFWwindow* window, int width, int height)
@@ -1645,9 +1783,18 @@ void _glfwSetWindowSizeWin32(_GLFWwindow* window, int width, int height)
                                FALSE, getWindowExStyle(window));
         }
 
+        int windowWidth = rect.right - rect.left;
+        int windowHeight = rect.bottom - rect.top;
+
+        if (window->borderLessAreo)
+        {
+            windowWidth = width;
+            windowHeight = height;
+        }
+
         SetWindowPos(window->win32.handle, HWND_TOP,
-                     0, 0, rect.right - rect.left, rect.bottom - rect.top,
-                     SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
+            0, 0, windowWidth, windowHeight,
+            SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
     }
 }
 
@@ -2501,4 +2648,3 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
 }
 
 #endif // _GLFW_WIN32
-

@@ -878,8 +878,16 @@ extern "C" {
  *  [window attribute](@ref GLFW_DECORATED_attrib).
  */
 #define GLFW_DECORATED              0x00020005
+ /*! @brief Window borderless areo window hint and attribute
+  *
+  *  This hint works only for windows!
+  * 
+  *  Window borderless areo [window hint](@ref GLFW_BORDERLESS_AREO_hint) and
+  *  [window attribute](@ref GLFW_BORDERLESS_AREO_attrib).
+  */
+#define GLFW_BORDERLESS_AREO        0x00020015
 /*! @brief Window auto-iconification window hint and attribute
- *
+ * 
  *  Window auto-iconification [window hint](@ref GLFW_AUTO_ICONIFY_hint) and
  *  [window attribute](@ref GLFW_AUTO_ICONIFY_attrib).
  */
@@ -3229,7 +3237,40 @@ GLFWAPI int glfwWindowShouldClose(GLFWwindow* window);
  *
  *  @ingroup window
  */
-GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int value);
+GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int height);
+
+/*! @brief Sets the resize border size of the window when the window is borderless with areao(WINDOWS)
+ *
+ *  This function sets the window resize border size when the window is in broderles-areo mode.
+ *
+ *  @param[in] window The window whose title to change.
+ *  @param[in] resize border size.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ */
+
+GLFWAPI void glfwSetWindowBorderlessResizeBorderSize(GLFWwindow* window, int size);
+
+/*! @brief Sets the grab area of the window when the window is borderless with areao(WINDOWS)
+ *
+ *  This function sets the window grab area when the window is in broderles-areo mode.
+ *
+ *  @param[in] window The window whose title to change.
+ *  @param[in] x position of the grab area.
+ *  @param[in] y position of the grab area.
+ *  @param[in] width of the grab area.
+ *  @param[in] height of the grab area.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ */
+
+GLFWAPI void glfwSetWindowBorderlessGrabArea(GLFWwindow* window, int xpos, int ypos, int width, int height);
 
 /*! @brief Sets the title of the specified window.
  *
@@ -3254,6 +3295,7 @@ GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int value);
  *
  *  @ingroup window
  */
+
 GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
 
 /*! @brief Sets the icon for the specified window.

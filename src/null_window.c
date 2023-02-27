@@ -179,6 +179,14 @@ void _glfwDestroyWindowNull(_GLFWwindow* window)
         window->context.destroy(window);
 }
 
+void _glfwSetWindowBorderlessResizeBorderSizeNull(_GLFWwindow* window, int size)
+{
+}
+
+void _glfwSetWindowBorderlessGrabAreaNull(_GLFWwindow* window, int xpos, int ypos, int width, int height)
+{
+}
+
 void _glfwSetWindowTitleNull(_GLFWwindow* window, const char* title)
 {
 }

@@ -87,6 +87,8 @@ void _glfwSetGammaRampNull(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
 GLFWbool _glfwCreateWindowNull(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
 void _glfwDestroyWindowNull(_GLFWwindow* window);
+void _glfwSetWindowBorderlessResizeBorderSizeNull(_GLFWwindow* window, int size);
+void _glfwSetWindowBorderlessGrabAreaNull(_GLFWwindow* window, int xpos, int ypos, int width, int height);
 void _glfwSetWindowTitleNull(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconNull(_GLFWwindow* window, int count, const GLFWimage* images);
 void _glfwSetWindowMonitorNull(_GLFWwindow* window, _GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);

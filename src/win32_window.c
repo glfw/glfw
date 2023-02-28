@@ -117,17 +117,17 @@ LRESULT hit_test(_GLFWwindow* window, int posX, int posY)
     }
 }
 
-int adjust_maximized_client_rect(_GLFWwindow* window, RECT* rect){
+void adjust_maximized_client_rect(_GLFWwindow* window, RECT* rect){
     WINDOWPLACEMENT placement;
     if (!GetWindowPlacement(window->win32.handle, &placement))
-        return 0;
+        return;
 
     if (placement.showCmd != SW_MAXIMIZE)
-        return 0;
+        return;
 
     auto monitor = MonitorFromWindow(window->win32.handle, MONITOR_DEFAULTTONULL);
     if (!monitor)
-        return 0;
+        return;
 
     MONITORINFO monitor_info;
     monitor_info.cbSize = sizeof(monitor_info);
@@ -135,8 +135,6 @@ int adjust_maximized_client_rect(_GLFWwindow* window, RECT* rect){
         return 0;
 
     (*rect) = monitor_info.rcWork;
-    
-    return 1;
 }
 
 // Returns the extended window style for the specified window
@@ -634,9 +632,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             if (window->borderLessAreo == GLFW_TRUE)
             {
                 NCCALCSIZE_PARAMS* pParams = (NCCALCSIZE_PARAMS*)lParam;
-
-                if(!adjust_maximized_client_rect(window, &pParams->rgrc[0]))
-                    pParams->rgrc[0].top -= 1;
+                adjust_maximized_client_rect(window, &pParams->rgrc[0]);
 
                 return 0;
             }
@@ -1752,9 +1748,6 @@ void _glfwGetWindowSizeWin32(_GLFWwindow* window, int* width, int* height)
         *width = area.right;
     if (height)
         *height = area.bottom;
-
-    if(window->borderLessAreo && !window->win32.maximized)
-        (*height) -= 1;
 }
 
 void _glfwSetWindowSizeWin32(_GLFWwindow* window, int width, int height)

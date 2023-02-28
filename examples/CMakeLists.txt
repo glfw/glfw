@@ -27,7 +27,6 @@ set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
 
 add_executable(boing WIN32 MACOSX_BUNDLE boing.c ${ICON} ${GLAD_GL})
 add_executable(gears WIN32 MACOSX_BUNDLE gears.c ${ICON} ${GLAD_GL})
-add_executable(areoBorderless WIN32 MACOSX_BUNDLE areoBorderless.c ${ICON} ${GLAD_GL})
 add_executable(heightmap WIN32 MACOSX_BUNDLE heightmap.c ${ICON} ${GLAD_GL})
 add_executable(offscreen offscreen.c ${ICON} ${GLAD_GL})
 add_executable(particles WIN32 MACOSX_BUNDLE particles.c ${ICON} ${TINYCTHREAD} ${GETOPT} ${GLAD_GL})
@@ -43,7 +42,7 @@ if (RT_LIBRARY)
     target_link_libraries(particles "${RT_LIBRARY}")
 endif()
 
-set(GUI_ONLY_BINARIES boing gears areoBorderless heightmap particles sharing splitview
+set(GUI_ONLY_BINARIES boing gears heightmap particles sharing splitview
     triangle-opengl triangle-opengles wave windows)
 set(CONSOLE_BINARIES offscreen)
 
@@ -64,7 +63,6 @@ endif()
 if (APPLE)
     set_target_properties(boing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Boing")
     set_target_properties(gears PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Gears")
-    set_target_properties(areoBorderless PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "WindowsOnly!!!")
     set_target_properties(heightmap PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Heightmap")
     set_target_properties(particles PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Particles")
     set_target_properties(sharing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Sharing")

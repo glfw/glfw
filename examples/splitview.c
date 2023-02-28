@@ -495,6 +495,7 @@ int main(void)
     }
 
     glfwWindowHint(GLFW_SAMPLES, 4);
+    glfwWindowHint(GLFW_BORDERLESS_AREO, GLFW_TRUE);
 
     // Open OpenGL window
     window = glfwCreateWindow(500, 500, "Split view demo", NULL, NULL);

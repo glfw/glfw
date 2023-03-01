@@ -558,7 +558,7 @@ GLFWAPI void glfwSetWindowIcon(GLFWwindow* handle,
     _glfw.platform.setWindowIcon(window, count, images);
 }
 
-GLFWAPI void glfwSetWindowTaskbarProgress(GLFWwindow* handle, const int progressState, int completed)
+GLFWAPI void glfwSetWindowTaskbarProgress(GLFWwindow* handle, const int progressState, int value)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
@@ -566,12 +566,7 @@ GLFWAPI void glfwSetWindowTaskbarProgress(GLFWwindow* handle, const int progress
 
     _GLFW_REQUIRE_INIT();
 
-    if (completed < 0)
-    {
-        _glfwInputError(GLFW_INVALID_VALUE, "Invalid progress amount for window taskbar progress");
-        return;
-    }
-    else if (completed > 100)
+    if (value < 0 || value > 100)
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid progress amount for window taskbar progress");
         return;
@@ -585,7 +580,7 @@ GLFWAPI void glfwSetWindowTaskbarProgress(GLFWwindow* handle, const int progress
         return;
     }
 
-    _glfw.platform.setWindowTaskbarProgress(window, progressState, completed);
+    _glfw.platform.setWindowTaskbarProgress(window, progressState, value);
 }
 
 GLFWAPI void glfwGetWindowPos(GLFWwindow* handle, int* xpos, int* ypos)
@@ -1182,3 +1177,4 @@ GLFWAPI void glfwPostEmptyEvent(void)
     _GLFW_REQUIRE_INIT();
     _glfw.platform.postEmptyEvent();
 }
+

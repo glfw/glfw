@@ -2156,8 +2156,8 @@ void _glfwSetWindowTaskbarProgressX11(_GLFWwindow* window, const int taskbarStat
 {
     (void)window;
 
-    const dbus_bool_t progressVisible = (taskbarState != GLFW_TASKBAR_PROGRESS_NOPROGRESS);
     const double progressValue = (double)completed / 100.0;
+    const dbus_bool_t progressVisible = (taskbarState != GLFW_TASKBAR_PROGRESS_DISABLED);
 
     _glfwUpdateTaskbarProgressDBusPOSIX(progressVisible, progressValue);
 }
@@ -3362,4 +3362,3 @@ GLFWAPI const char* glfwGetX11SelectionString(void)
 }
 
 #endif // _GLFW_X11
-

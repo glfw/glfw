@@ -1906,8 +1906,8 @@ void _glfwSetWindowTaskbarProgressWayland(_GLFWwindow* window, const int taskbar
 {
     (void)window;
 
-    const dbus_bool_t progressVisible = (taskbarState != GLFW_TASKBAR_PROGRESS_NOPROGRESS);
     const double progressValue = (double)completed / 100.0;
+    const dbus_bool_t progressVisible = (taskbarState != GLFW_TASKBAR_PROGRESS_DISABLED);
 
     _glfwUpdateTaskbarProgressDBusPOSIX(progressVisible, progressValue);
 }
@@ -2901,4 +2901,3 @@ GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* handle)
 }
 
 #endif // _GLFW_WAYLAND
-

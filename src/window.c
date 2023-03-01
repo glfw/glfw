@@ -577,7 +577,7 @@ GLFWAPI void glfwSetWindowTaskbarProgress(GLFWwindow* handle, const int progress
         return;
     }
 
-    if (progressState != GLFW_TASKBAR_PROGRESS_NOPROGRESS && progressState != GLFW_TASKBAR_PROGRESS_INDETERMINATE &&
+    if (progressState != GLFW_TASKBAR_PROGRESS_DISABLED && progressState != GLFW_TASKBAR_PROGRESS_INDETERMINATE &&
         progressState != GLFW_TASKBAR_PROGRESS_NORMAL && progressState != GLFW_TASKBAR_PROGRESS_ERROR &&
         progressState != GLFW_TASKBAR_PROGRESS_PAUSED)
     {
@@ -1182,4 +1182,3 @@ GLFWAPI void glfwPostEmptyEvent(void)
     _GLFW_REQUIRE_INIT();
     _glfw.platform.postEmptyEvent();
 }
-

@@ -1280,7 +1280,7 @@ extern "C" {
  *
  *  Used by @ref window_taskbar_progress.
  */
-#define GLFW_TASKBAR_PROGRESS_NOPROGRESS    0
+#define GLFW_TASKBAR_PROGRESS_DISABLED      0
 /*! @brief Display the progress bar in an indeterminate state.
  *
  *  Display the progress bar in an indeterminate state.
@@ -3362,11 +3362,11 @@ GLFWAPI void glfwSetWindowIcon(GLFWwindow* window, int count, const GLFWimage* i
  *
  *  @param[in] window The window whose taskbar progress to set.
  *  @param[in] progressState State of the progress to be displayed in the taskbar. Valid values are:
- *  @ref GLFW_TASKBAR_PROGRESS_NOPROGRESS, @ref GLFW_TASKBAR_PROGRESS_INDETERMINATE,
+ *  @ref GLFW_TASKBAR_PROGRESS_DISABLED, @ref GLFW_TASKBAR_PROGRESS_INDETERMINATE,
  *  @ref GLFW_TASKBAR_PROGRESS_NORMAL, @ref GLFW_TASKBAR_PROGRESS_ERROR
  *  and @ref GLFW_TASKBAR_PROGRESS_PAUSED.
  *  @param[in] completed The amount of completed progress to set. Valid range is 0 to 100.
- *  This is ignored if progressState is set to @ref GLFW_TASKBAR_PROGRESS_NOPROGRESS.
+ *  This is ignored if progressState is set to @ref GLFW_TASKBAR_PROGRESS_DISABLED.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_INVALID_VALUE, @ref GLFW_INVALID_ENUM, @ref GLFW_PLATFORM_ERROR,
@@ -6510,4 +6510,3 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window
 #endif
 
 #endif /* _glfw3_h_ */
-

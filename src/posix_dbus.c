@@ -109,8 +109,8 @@ void _glfwInitDBusPOSIX(void)
     if(_glfw.dbus.connection)
     {
         //Window NULL is safe here because it won't get
-        //used inside th eSetWindowTaskbarProgress function
-        _glfw.platform.setWindowTaskbarProgress(NULL, GLFW_TASKBAR_PROGRESS_NOPROGRESS, 0);
+        //used inside the SetWindowTaskbarProgress function
+        _glfw.platform.setWindowTaskbarProgress(NULL, GLFW_TASKBAR_PROGRESS_DISABLED, 0);
     }
 }
 

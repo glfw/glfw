@@ -420,7 +420,7 @@ int main(int argc, char** argv)
 
             static int progress = 0;
             if(nk_button_label(nk, "No progress"))
-                glfwSetWindowTaskbarProgress(window, GLFW_TASKBAR_PROGRESS_NOPROGRESS, progress);
+                glfwSetWindowTaskbarProgress(window, GLFW_TASKBAR_PROGRESS_DISABLED, progress);
             if (nk_button_label(nk, "Indeterminate"))
                 glfwSetWindowTaskbarProgress(window, GLFW_TASKBAR_PROGRESS_INDETERMINATE, progress);
             if (nk_button_label(nk, "Normal"))

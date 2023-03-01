@@ -1620,20 +1620,20 @@ void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, const int progressS
     switch(progressState)
 	{
 	case 1:
-		winProgressState = 0x1;
+		winProgressState = TBPF_INDETERMINATE;
 		break;
 	case 2:
-		winProgressState = 0x2;
+		winProgressState = TBPF_NORMAL;
 		break;
 	case 3:
-		winProgressState = 0x4;
+		winProgressState = TBPF_ERROR;
 		break;
 	case 4:
-		winProgressState = 0x8;
+		winProgressState = TBPF_PAUSED;
 		break;
-	case 0:
+
 	default:
-		winProgressState = 0x0;
+		winProgressState = TBPF_NOPROGRESS;
 		break;
 	}
 

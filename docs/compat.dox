@@ -141,6 +141,12 @@ This protocol is part of wayland-protocols 1.4, and mandatory at build time.
 If the running compositor does not support this protocol either, no decorations
 will be drawn around windows.
 
+GLFW uses the [xdg-activation
+protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/staging/xdg-activation/xdg-activation-v1.xml)
+to enable attention requests.  This protocol is part of
+wayland-protocols staging, and mandatory at build time.  If the running compositor
+does not support this protocol, the attention requests do nothing.
+
 
 @section compat_glx GLX extensions
 

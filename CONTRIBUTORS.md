@@ -202,6 +202,7 @@ video tutorials.
  - Riku Salminen
  - Brandon Schaefer
  - Sebastian Schuberth
+ - Jan Schuerkamp
  - Christian Sdunek
  - Matt Sealey
  - Steve Sexton

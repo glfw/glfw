@@ -272,6 +272,7 @@ typedef struct _GLFWwindowWayland
     struct zwp_confined_pointer_v1* confinedPointer;
 
     struct zwp_idle_inhibitor_v1*          idleInhibitor;
+    struct xdg_activation_token_v1*        activationToken;
 
     struct {
         struct wl_buffer*                  buffer;
@@ -300,6 +301,7 @@ typedef struct _GLFWlibraryWayland
     struct zwp_relative_pointer_manager_v1* relativePointerManager;
     struct zwp_pointer_constraints_v1*      pointerConstraints;
     struct zwp_idle_inhibit_manager_v1*     idleInhibitManager;
+    struct xdg_activation_v1*               activationManager;
 
     _GLFWofferWayland*          offers;
     unsigned int                offerCount;

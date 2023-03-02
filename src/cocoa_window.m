@@ -1032,10 +1032,79 @@ void _glfwSetWindowIconCocoa(_GLFWwindow* window,
                     "Cocoa: Regular windows do not have icons on macOS");
 }
 
+// TODO: potential enhancement: use float or double for higher precision than int.
+// TODO: potential enhancement: also specify the source's weight. Used for calculating the combined progress.
+// TODO: move static progressIndicator to _glfw.ns. Remove/release in glfwTerminate.
+// TODO: allow multiple windows to set values. Use the combined progress for all of them; example: [35%, 70%, 90%] => 65%.
+// FIXME: Switching from INDETERMINATE to NORMAL, PAUSED or ERROR requires 2 invocations.
 void _glfwSetWindowTaskbarProgressCocoa(_GLFWwindow* window, const int progressState, int value)
 {
+    static NSProgressIndicator* progressIndicator;
+    
     _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
                     "Cocoa: Window taskbar progress is not implemented");
+    
+    NSDockTile* dockTile = [[NSApplication sharedApplication] dockTile];
+    
+    if (progressIndicator == nil)
+    {
+        if ([dockTile contentView] == nil)
+        {
+            NSImageView *iconView = [[NSImageView alloc] init];
+            [iconView setImage:[[NSApplication sharedApplication] applicationIconImage]];
+            [dockTile setContentView:iconView];
+        }
+        NSView* contentView = [dockTile contentView];
+    
+        //progressIndicator = [[NSProgressIndicator alloc] init];
+        progressIndicator = [[NSProgressIndicator alloc] initWithFrame:NSMakeRect(0.0f, 0.0f, contentView.frame.size.width, 15.0f)];
+        [progressIndicator setStyle:NSProgressIndicatorStyleBar];
+        [progressIndicator setControlSize:NSControlSizeLarge];
+        [progressIndicator setMinValue:0.0f];
+        [progressIndicator setMaxValue:100.0f];
+    
+        [progressIndicator setAccessibilityLabel:@"LABEL"];
+        [progressIndicator setAccessibilityHelp:@"HELP"];
+        [progressIndicator setToolTip:@"TOOLTIP"];
+    
+        [contentView addSubview:progressIndicator];
+    
+        /*
+        NSLayoutConstraint* constraint = [NSLayoutConstraint constraintWithItem:progressIndicator
+                                                                      attribute:NSLayoutAttributeWidth
+                                                                      relatedBy:NSLayoutRelationEqual
+                                                                         toItem:contentView
+                                                                      attribute:NSLayoutAttributeWidth
+                                                                     multiplier:1.0f
+                                                                       constant:0.0f];
+    
+        [contentView addConstraint:constraint];*/
+    
+        [progressIndicator release];
+    }
+    
+    
+    switch (progressState)
+    {
+        case GLFW_TASKBAR_PROGRESS_DISABLED:
+            [progressIndicator setIndeterminate:NO];
+            [progressIndicator setHidden:YES];
+            break;
+        case GLFW_TASKBAR_PROGRESS_INDETERMINATE:
+            [progressIndicator setIndeterminate:YES];
+            [progressIndicator setHidden:NO];
+            break;
+        case GLFW_TASKBAR_PROGRESS_NORMAL:
+        case GLFW_TASKBAR_PROGRESS_PAUSED:
+        case GLFW_TASKBAR_PROGRESS_ERROR:
+            [progressIndicator setIndeterminate:NO];
+            [progressIndicator setHidden:NO];
+            break;
+    }
+    
+    [progressIndicator setDoubleValue:value];
+    
+    [dockTile display];
 }
 
 void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos)

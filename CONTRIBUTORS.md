@@ -188,6 +188,7 @@ video tutorials.
  - pthom
  - Martin Pulec
  - Guillaume Racicot
+ - Juan Ramos
  - Christian Rauch
  - Philip Rideout
  - Eddie Ringle

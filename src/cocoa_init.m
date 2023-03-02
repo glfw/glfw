@@ -650,10 +650,10 @@ void _glfwTerminateCocoa(void)
 {
     @autoreleasepool {
         
-    if (_glfw.ns.dockProgressIndicator != nil)
+    if (_glfw.ns.dockProgressIndicator.view != nil)
     {
-        [_glfw.ns.dockProgressIndicator removeFromSuperview];
-        [_glfw.ns.dockProgressIndicator release];
+        [_glfw.ns.dockProgressIndicator.view removeFromSuperview];
+        [_glfw.ns.dockProgressIndicator.view release];
     }
 
     if (_glfw.ns.inputSource)

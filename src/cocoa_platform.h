@@ -156,6 +156,11 @@ typedef struct _GLFWwindowNS
     // since the last cursor motion event was processed
     // This is kept to counteract Cocoa doing the same internally
     double          cursorWarpDeltaX, cursorWarpDeltaY;
+    
+    struct {
+        int state;
+        double value;
+    } dockProgressIndicator;
 } _GLFWwindowNS;
 
 // Cocoa-specific global data
@@ -190,7 +195,12 @@ typedef struct _GLFWlibraryNS
         CFStringRef     kPropertyUnicodeKeyLayoutData;
     } tis;
     
-    id dockProgressIndicator;
+    struct {
+        id view;
+        int windowCount;
+        int indeterminateCount;
+        double totalValue;
+    } dockProgressIndicator;
 } _GLFWlibraryNS;
 
 // Cocoa-specific per-monitor data

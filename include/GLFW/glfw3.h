@@ -1289,6 +1289,8 @@ extern "C" {
  *
  *  @remark @x11 @wayland This behaves like @ref GLFW_TASKBAR_PROGRESS_NORMAL.
  *
+ *  @remark @macos This displays a standard indeterminate `NSProgressIndicator`.
+ *
  *  Used by @ref window_taskbar_progress.
  */
 #define GLFW_TASKBAR_PROGRESS_INDETERMINATE 1
@@ -1305,7 +1307,7 @@ extern "C" {
  *
  *  @remark @win32 This displays a red progress bar with 100% progress.
  *
- *  @remark @x11 @wayland This behaves like @ref GLFW_TASKBAR_PROGRESS_NORMAL.
+ *  @remark @x11 @wayland @macos This behaves like @ref GLFW_TASKBAR_PROGRESS_NORMAL.
  *
  *  Used by @ref window_taskbar_progress.
  */
@@ -1316,7 +1318,7 @@ extern "C" {
  *
  *  @remark @win32 This displays a yellow filled progress bar.
  *
- *  @remark @x11 @wayland This behaves like @ref GLFW_TASKBAR_PROGRESS_NORMAL.
+ *  @remark @x11 @wayland @macos This behaves like @ref GLFW_TASKBAR_PROGRESS_NORMAL.
  *
  *  Used by @ref window_taskbar_progress.
  */
@@ -3374,7 +3376,8 @@ GLFWAPI void glfwSetWindowIcon(GLFWwindow* window, int count, const GLFWimage* i
  *
  *  @remark @win32 On Windows Vista and earlier, this function will emit @ref GLFW_FEATURE_UNAVAILABLE.
  *
- *  @remark @macos This function will emit @ref GLFW_FEATURE_UNIMPLEMENTED.
+ *  @remark @macos There exists only one Dock icon progress bar, and this
+ *  displays the combined values of all the windows.
  *
  *  @remark @x11 @wayland Requires a valid application desktop file with the same name
  *  as the compiled executable. Due to limitations in the Unity Launcher API

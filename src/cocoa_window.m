@@ -1032,77 +1032,58 @@ void _glfwSetWindowIconCocoa(_GLFWwindow* window,
                     "Cocoa: Regular windows do not have icons on macOS");
 }
 
-// TODO: potential enhancement: use float or double for higher precision than int.
-// TODO: potential enhancement: also specify the source's weight. Used for calculating the combined progress.
-// TODO: move static progressIndicator to _glfw.ns. Remove/release in glfwTerminate.
 // TODO: allow multiple windows to set values. Use the combined progress for all of them; example: [35%, 70%, 90%] => 65%.
-// FIXME: Switching from INDETERMINATE to NORMAL, PAUSED or ERROR requires 2 invocations.
-void _glfwSetWindowTaskbarProgressCocoa(_GLFWwindow* window, const int progressState, double value)
+// TODO: documentation remarks for MacOS
+void _glfwSetWindowTaskbarProgressCocoa(_GLFWwindow* window, int progressState, double value)
 {
-    static NSProgressIndicator* progressIndicator;
-    
-    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
-                    "Cocoa: Window taskbar progress is not implemented");
+    NSProgressIndicator* indicator = _glfw.ns.dockProgressIndicator;
     
     NSDockTile* dockTile = [[NSApplication sharedApplication] dockTile];
     
-    if (progressIndicator == nil)
+    if (indicator == nil)
     {
         if ([dockTile contentView] == nil)
         {
             NSImageView *iconView = [[NSImageView alloc] init];
             [iconView setImage:[[NSApplication sharedApplication] applicationIconImage]];
             [dockTile setContentView:iconView];
+            [iconView release];
         }
         NSView* contentView = [dockTile contentView];
     
-        //progressIndicator = [[NSProgressIndicator alloc] init];
-        progressIndicator = [[NSProgressIndicator alloc] initWithFrame:NSMakeRect(0.0f, 0.0f, contentView.frame.size.width, 15.0f)];
-        [progressIndicator setStyle:NSProgressIndicatorStyleBar];
-        [progressIndicator setControlSize:NSControlSizeLarge];
-        [progressIndicator setMinValue:0.0f];
-        [progressIndicator setMaxValue:100.0f];
+        indicator = [[NSProgressIndicator alloc] initWithFrame:NSMakeRect(0.0f, 0.0f, contentView.frame.size.width, 15.0f)];
+        [indicator setStyle:NSProgressIndicatorStyleBar];
+        [indicator setControlSize:NSControlSizeLarge];
+        [indicator setMinValue:0.0f];
+        [indicator setMaxValue:1.0f];
     
-        [progressIndicator setAccessibilityLabel:@"LABEL"];
-        [progressIndicator setAccessibilityHelp:@"HELP"];
-        [progressIndicator setToolTip:@"TOOLTIP"];
+        [contentView addSubview:indicator];
     
-        [contentView addSubview:progressIndicator];
-    
-        /*
-        NSLayoutConstraint* constraint = [NSLayoutConstraint constraintWithItem:progressIndicator
-                                                                      attribute:NSLayoutAttributeWidth
-                                                                      relatedBy:NSLayoutRelationEqual
-                                                                         toItem:contentView
-                                                                      attribute:NSLayoutAttributeWidth
-                                                                     multiplier:1.0f
-                                                                       constant:0.0f];
-    
-        [contentView addConstraint:constraint];*/
-    
-        [progressIndicator release];
+        _glfw.ns.dockProgressIndicator = indicator;
     }
     
+    // FIXME: Switching from INDETERMINATE to NORMAL, PAUSED or ERROR requires 2 invocations in different frames.
+    // In MacOS 12 (and probably other versions), an indeterminate progress bar is rendered as a normal bar
+    // with 0.0 progress. So when calling [progressIndicator setIndeterminate:YES], the indicator actually
+    // sets its doubleValue to 0.0.
+    // The bug is caused by NSProgressIndicator not immediately updating its value when it's increasing.
+    // This code illustrates the exact same problem, but this time from NORMAL, PAUSED and ERROR to INDETERMINATE:
+    //
+    // if (progressState == GLFW_TASKBAR_PROGRESS_INDETERMINATE)
+    //     [progressIndicator setDoubleValue:0.75];
+    // else
+    //     [progressIndicator setDoubleValue:0.25];
+    //
+    // This is likely a bug in Cocoa.
+    //
+    // FIXME: Progress increments are delayed
+    // What this also means, is that each time the progress increments, the bar's progress will be 1 frame delayed,
+    // and only updated once a higher or similar value is again set the next frame.
     
-    switch (progressState)
-    {
-        case GLFW_TASKBAR_PROGRESS_DISABLED:
-            [progressIndicator setIndeterminate:NO];
-            [progressIndicator setHidden:YES];
-            break;
-        case GLFW_TASKBAR_PROGRESS_INDETERMINATE:
-            [progressIndicator setIndeterminate:YES];
-            [progressIndicator setHidden:NO];
-            break;
-        case GLFW_TASKBAR_PROGRESS_NORMAL:
-        case GLFW_TASKBAR_PROGRESS_PAUSED:
-        case GLFW_TASKBAR_PROGRESS_ERROR:
-            [progressIndicator setIndeterminate:NO];
-            [progressIndicator setHidden:NO];
-            break;
-    }
     
-    [progressIndicator setDoubleValue:value];
+    [indicator setIndeterminate:progressState == GLFW_TASKBAR_PROGRESS_INDETERMINATE];
+    [indicator setHidden:progressState == GLFW_TASKBAR_PROGRESS_DISABLED];
+    [indicator setDoubleValue:value];
     
     [dockTile display];
 }

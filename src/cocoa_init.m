@@ -649,6 +649,12 @@ int _glfwInitCocoa(void)
 void _glfwTerminateCocoa(void)
 {
     @autoreleasepool {
+        
+    if (_glfw.ns.dockProgressIndicator != nil)
+    {
+        [_glfw.ns.dockProgressIndicator removeFromSuperview];
+        [_glfw.ns.dockProgressIndicator release];
+    }
 
     if (_glfw.ns.inputSource)
     {

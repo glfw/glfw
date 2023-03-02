@@ -3391,7 +3391,7 @@ GLFWAPI void glfwSetWindowIcon(GLFWwindow* window, int count, const GLFWimage* i
  *
  *  @ingroup window
  */
-GLFWAPI void glfwSetWindowTaskbarProgress(GLFWwindow* window, const int progressState, double value);
+GLFWAPI void glfwSetWindowTaskbarProgress(GLFWwindow* window, int progressState, double value);
 
 /*! @brief Retrieves the position of the content area of the specified window.
  *

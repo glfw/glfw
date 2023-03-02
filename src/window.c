@@ -558,7 +558,7 @@ GLFWAPI void glfwSetWindowIcon(GLFWwindow* handle,
     _glfw.platform.setWindowIcon(window, count, images);
 }
 
-GLFWAPI void glfwSetWindowTaskbarProgress(GLFWwindow* handle, const int progressState, double value)
+GLFWAPI void glfwSetWindowTaskbarProgress(GLFWwindow* handle, int progressState, double value)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
 

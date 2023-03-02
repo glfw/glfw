@@ -3365,7 +3365,7 @@ GLFWAPI void glfwSetWindowIcon(GLFWwindow* window, int count, const GLFWimage* i
  *  @ref GLFW_TASKBAR_PROGRESS_DISABLED, @ref GLFW_TASKBAR_PROGRESS_INDETERMINATE,
  *  @ref GLFW_TASKBAR_PROGRESS_NORMAL, @ref GLFW_TASKBAR_PROGRESS_ERROR
  *  and @ref GLFW_TASKBAR_PROGRESS_PAUSED.
- *  @param[in] value The amount of completed progress to set. Valid range is 0 to 100.
+ *  @param[in] value The amount of completed progress to set. Valid range is 0.0 to 1.0.
  *  This is ignored if progressState is set to @ref GLFW_TASKBAR_PROGRESS_DISABLED.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
@@ -3391,7 +3391,7 @@ GLFWAPI void glfwSetWindowIcon(GLFWwindow* window, int count, const GLFWimage* i
  *
  *  @ingroup window
  */
-GLFWAPI void glfwSetWindowTaskbarProgress(GLFWwindow* window, const int progressState, int value);
+GLFWAPI void glfwSetWindowTaskbarProgress(GLFWwindow* window, const int progressState, double value);
 
 /*! @brief Retrieves the position of the content area of the specified window.
  *

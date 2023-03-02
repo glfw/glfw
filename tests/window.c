@@ -418,20 +418,22 @@ int main(int argc, char** argv)
 
             nk_layout_row_dynamic(nk, 30, 5);
 
+            static int state = GLFW_TASKBAR_PROGRESS_DISABLED;
             static int progress = 0;
             if(nk_button_label(nk, "No progress"))
-                glfwSetWindowTaskbarProgress(window, GLFW_TASKBAR_PROGRESS_DISABLED, progress);
+                glfwSetWindowTaskbarProgress(window, state = GLFW_TASKBAR_PROGRESS_DISABLED, progress);
             if (nk_button_label(nk, "Indeterminate"))
-                glfwSetWindowTaskbarProgress(window, GLFW_TASKBAR_PROGRESS_INDETERMINATE, progress);
+                glfwSetWindowTaskbarProgress(window, state = GLFW_TASKBAR_PROGRESS_INDETERMINATE, progress);
             if (nk_button_label(nk, "Normal"))
-                glfwSetWindowTaskbarProgress(window, GLFW_TASKBAR_PROGRESS_NORMAL, progress);
+                glfwSetWindowTaskbarProgress(window, state = GLFW_TASKBAR_PROGRESS_NORMAL, progress);
             if (nk_button_label(nk, "Error"))
-                glfwSetWindowTaskbarProgress(window, GLFW_TASKBAR_PROGRESS_ERROR, progress);
+                glfwSetWindowTaskbarProgress(window, state = GLFW_TASKBAR_PROGRESS_ERROR, progress);
             if (nk_button_label(nk, "Paused"))
-                glfwSetWindowTaskbarProgress(window, GLFW_TASKBAR_PROGRESS_PAUSED, progress);
+                glfwSetWindowTaskbarProgress(window, state = GLFW_TASKBAR_PROGRESS_PAUSED, progress);
 
             nk_label(nk, "Progress: ", NK_TEXT_ALIGN_LEFT);
-            nk_slider_int(nk, 0, &progress, 100, 1);
+            if (nk_slider_int(nk, 0, &progress, 100, 1))
+                glfwSetWindowTaskbarProgress(window, state, progress);
         }
         nk_end(nk);
 

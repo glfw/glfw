@@ -1037,7 +1037,7 @@ void _glfwSetWindowIconCocoa(_GLFWwindow* window,
 // TODO: move static progressIndicator to _glfw.ns. Remove/release in glfwTerminate.
 // TODO: allow multiple windows to set values. Use the combined progress for all of them; example: [35%, 70%, 90%] => 65%.
 // FIXME: Switching from INDETERMINATE to NORMAL, PAUSED or ERROR requires 2 invocations.
-void _glfwSetWindowTaskbarProgressCocoa(_GLFWwindow* window, const int progressState, int value)
+void _glfwSetWindowTaskbarProgressCocoa(_GLFWwindow* window, const int progressState, double value)
 {
     static NSProgressIndicator* progressIndicator;
     

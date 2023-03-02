@@ -1596,10 +1596,11 @@ void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* im
     }
 }
 
-void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, const int progressState, int value)
+void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, const int progressState, double value)
 {
     HRESULT res = S_OK;
-    int32_t winProgressState = 0;
+    int winProgressState = 0;
+    int progressValue = (int)(value * 100.0);
 
     if(!IsWindows7OrGreater())
     {
@@ -1610,7 +1611,7 @@ void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, const int progressS
     if(!window->win32.TaskbarList)
         return;
 
-    res = window->win32.TaskbarList->lpVtbl->SetProgressValue(window->win32.TaskbarList, window->win32.handle, value, 100);
+    res = window->win32.TaskbarList->lpVtbl->SetProgressValue(window->win32.TaskbarList, window->win32.handle, progressValue, 100);
     if(res != S_OK)
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar progress value");

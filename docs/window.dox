@@ -1161,7 +1161,7 @@ attention, the system will automatically end the request.
 
 @subsection window_taskbar_progress Window taskbar progress
 
-If you whish to display the progress of some action on the taskbar, you can
+If you wish to display the progress of some action on the taskbar, you can
 do this with @ref glfwSetWindowTaskbarProgress.
 
 @code

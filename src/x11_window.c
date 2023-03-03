@@ -2152,11 +2152,11 @@ void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* imag
     XFlush(_glfw.x11.display);
 }
 
-void _glfwSetWindowTaskbarProgressX11(_GLFWwindow* window, const int taskbarState, double value)
+void _glfwSetWindowTaskbarProgressX11(_GLFWwindow* window, int progressState, double value)
 {
     (void)window;
 
-    const dbus_bool_t progressVisible = (taskbarState != GLFW_TASKBAR_PROGRESS_DISABLED);
+    const dbus_bool_t progressVisible = (progressState != GLFW_TASKBAR_PROGRESS_DISABLED);
 
     _glfwUpdateTaskbarProgressDBusPOSIX(progressVisible, value);
 }

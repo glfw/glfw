@@ -1596,7 +1596,7 @@ void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* im
     }
 }
 
-void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, const int progressState, double value)
+void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, int progressState, double value)
 {
     HRESULT res = S_OK;
     int winProgressState = 0;

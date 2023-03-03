@@ -384,7 +384,7 @@ typedef enum THUMBBUTTONMASK
     THB_ICON = 0x2,
     THB_TOOLTIP = 0x4,
     THB_FLAGS = 0x8
-} 	THUMBBUTTONMASK;
+} THUMBBUTTONMASK;
 
 typedef enum THUMBBUTTONFLAGS
 {
@@ -394,7 +394,7 @@ typedef enum THUMBBUTTONFLAGS
     THBF_NOBACKGROUND = 0x4,
     THBF_HIDDEN = 0x8,
     THBF_NONINTERACTIVE = 0x10
-} 	THUMBBUTTONFLAGS;
+} THUMBBUTTONFLAGS;
 
 typedef struct THUMBBUTTON {
     THUMBBUTTONMASK  dwMask;
@@ -403,7 +403,7 @@ typedef struct THUMBBUTTON {
     HICON            hIcon;
     WCHAR            szTip[260];
     THUMBBUTTONFLAGS dwFlags;
-} THUMBBUTTON, * LPTHUMBBUTTON;
+} THUMBBUTTON, *LPTHUMBBUTTON;
 
 struct _IMAGELIST;
 typedef struct _IMAGELIST* HIMAGELIST;
@@ -506,8 +506,8 @@ typedef struct _GLFWwindowWin32
     // The last received high surrogate when decoding pairs of UTF-16 messages
     WCHAR               highSurrogate;
 
-    ITaskbarList3* TaskbarList;
-    UINT TaskbarListMsgID;
+    ITaskbarList3*      taskbarList;
+    UINT                taskbarListMsgID;
 } _GLFWwindowWin32;
 
 // Win32-specific global data

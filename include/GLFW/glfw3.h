@@ -1305,7 +1305,7 @@ extern "C" {
  *
  *  Display the progress bar in an error state.
  *
- *  @remark @win32 This displays a red progress bar with 100% progress.
+ *  @remark @win32 This displays a red progress bar.
  *
  *  @remark @x11 @wayland @macos This behaves like @ref GLFW_TASKBAR_PROGRESS_NORMAL.
  *
@@ -1316,7 +1316,7 @@ extern "C" {
  *
  *  Display the progress bar in a paused state.
  *
- *  @remark @win32 This displays a yellow filled progress bar.
+ *  @remark @win32 This displays a yellow progress bar.
  *
  *  @remark @x11 @wayland @macos This behaves like @ref GLFW_TASKBAR_PROGRESS_NORMAL.
  *
@@ -1368,7 +1368,6 @@ extern "C" {
  *
  *  Hint value for @ref GLFW_PLATFORM that enables automatic platform selection.
  */
-
 #define GLFW_ANY_PLATFORM           0x00060000
 #define GLFW_PLATFORM_WIN32         0x00060001
 #define GLFW_PLATFORM_COCOA         0x00060002

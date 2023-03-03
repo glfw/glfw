@@ -132,7 +132,10 @@ void _glfwTerminateDBusPOSIX(void)
 void _glfwUpdateTaskbarProgressDBusPOSIX(dbus_bool_t progressVisible, double progressValue)
 {
     if(!_glfw.dbus.handle || !_glfw.dbus.connection)
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE, "POSIX: No DBus connection open to set taskbar progress");
         return;
+    }
 
     //Signal signature:
     //signal com.canonical.Unity.LauncherEntry.Update (in s app_uri, in a{sv} properties)

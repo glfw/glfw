@@ -202,10 +202,18 @@ static NSProgressIndicator* createProgressIndicator(const NSDockTile* dockTile)
     NSView* contentView = [dockTile contentView];
 
     NSProgressIndicator* indicator = [[NSProgressIndicator alloc] initWithFrame:NSMakeRect(0.0f, 0.0f, contentView.frame.size.width, 15.0f)];
+    
     [indicator setStyle:NSProgressIndicatorStyleBar];
-    [indicator setControlSize:NSControlSizeLarge];
+    
+    if (@available(macOS 11.0, *))
+    {
+        [indicator setControlSize:NSControlSizeLarge];
+    }
+    
     [indicator setMinValue:0.0f];
     [indicator setMaxValue:1.0f];
+    
+    [indicator sizeToFit];
 
     [contentView addSubview:indicator];
 

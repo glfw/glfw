@@ -1370,6 +1370,22 @@ typedef void (*GLFWvkproc)(void);
  */
 typedef struct GLFWmonitor GLFWmonitor;
 
+/*! @brief Opaque video mode object.
+ *
+ *  Opaque video mode object.
+ *
+ *  @see @ref video_mode_object
+ *
+ *  @sa @ref monitor_modes
+ *  @sa @ref glfwGetVideoMode2
+ *  @sa @ref glfwGetVideoModes2
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup monitor
+ */
+typedef struct GLFWvideoMode GLFWvideoMode;
+
 /*! @brief Opaque window object.
  *
  *  Opaque window object.
@@ -1975,6 +1991,8 @@ typedef void (* GLFWjoystickfun)(int jid, int event);
  *  @since Added in version 1.0.
  *  @glfw3 Added refresh rate member.
  *
+ *  @deprecated Scheduled for removal in version 4.0.
+ *
  *  @ingroup monitor
  */
 typedef struct GLFWvidmode
@@ -2076,7 +2094,7 @@ typedef struct GLFWgamepadstate
     float axes[6];
 } GLFWgamepadstate;
 
-/*! @brief
+/*! @brief Allocation function pointers
  *
  *  @sa @ref init_allocator
  *  @sa @ref glfwInitAllocator
@@ -2786,6 +2804,9 @@ GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun callback);
  *  @since Added in version 1.0.
  *  @glfw3 Changed to return an array of modes for a specific monitor.
  *
+ *  @deprecated Deprecated in version 3.4.  Scheduled for removal in version 4.0.
+ *  Replaced with @ref glfwGetVideoModes2.
+ *
  *  @ingroup monitor
  */
 GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count);
@@ -2814,9 +2835,73 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* monitor, int* count);
  *
  *  @since Added in version 3.0.  Replaces `glfwGetDesktopMode`.
  *
+ *  @deprecated Deprecated in version 3.4.  Scheduled for removal in version 4.0.
+ *  Replaced with @ref glfwGetVideoMode2.
+ *
  *  @ingroup monitor
  */
 GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor);
+
+/*! @brief Returns the available video modes for the specified monitor.
+ *
+ *  This function returns an array of all video modes supported by the specified
+ *  monitor.  The returned array is sorted in ascending order, first by color
+ *  bit depth (the sum of all channel depths), then by resolution area (the
+ *  product of width and height), then resolution width and finally by refresh
+ *  rate.
+ *
+ *  @param[in] monitor The monitor to query.
+ *  @param[out] count Where to store the number of video modes in the returned
+ *  array.  This is set to zero if an error occurred.
+ *  @return An array of video modes, or `NULL` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @pointer_lifetime The returned array is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is valid until the specified monitor is
+ *  disconnected, this function is called again for that monitor or the library
+ *  is terminated.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref monitor_modes
+ *  @sa @ref glfwGetVideoMode2
+ *
+ *  @since Added in version 3.4.  Replaces `glfwGetVideoModes`.
+ *
+ *  @ingroup monitor
+ */
+GLFWAPI const GLFWvideoMode* const* glfwGetVideoModes2(GLFWmonitor* monitor, int* count);
+
+/*! @brief Returns the current mode of the specified monitor.
+ *
+ *  This function returns the current video mode of the specified monitor.  If
+ *  you have created a full screen window for that monitor, the return value
+ *  will depend on whether that window is iconified.
+ *
+ *  @param[in] monitor The monitor to query.
+ *  @return The current mode of the monitor, or `NULL` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @pointer_lifetime The returned array is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is valid until the specified monitor is
+ *  disconnected or the library is terminated.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref monitor_modes
+ *  @sa @ref glfwGetVideoModes2
+ *
+ *  @since Added in version 3.4.  Replaces `glfwGetVideoMode`.
+ *
+ *  @ingroup monitor
+ */
+GLFWAPI const GLFWvideoMode* glfwGetVideoMode2(GLFWmonitor* monitor);
 
 /*! @brief Generates a gamma ramp and sets it for the specified monitor.
  *
@@ -2922,6 +3007,79 @@ GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
  */
 GLFWAPI void glfwSetGammaRamp(GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
+/*! @brief Tests the equality of two [video modes](@ref GLFWvideoMode).
+ *
+ *  This function tests the equality of two [video modes](@ref GLFWvideoMode).
+ *
+ *  @param[in] first The video mode to test against the second argument.
+ *  @param[in] second The video mode to test against the first argument.
+ *
+ *  @return @ref GLFW_TRUE if the modes are equal, else @ref GLFW_FALSE.
+ *
+ *  @sa @ref monitor_modes
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup monitor
+ */
+GLFWAPI int glfwVideoModesEqual(const GLFWvideoMode* first, const GLFWvideoMode* second);
+
+/*! @brief Gets the size of a [video mode](@ref GLFWvideoMode).
+ *
+ *  This function returns the size of a [video mode](@ref GLFWvideoMode), in screen coordinates.
+ *
+ *  @param[in]  videoMode The video mode to get the size of.
+ *  @param[out] width Where to store the width of the
+ *  video mode, or `NULL`.
+ *  @param[out] height Where to store the height of the
+ *  video mode, or `NULL`.
+ *
+ *  @sa @ref monitor_modes
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup monitor
+ */
+GLFWAPI void glfwVideoModeGetSize(const GLFWvideoMode* videoMode, int* width, int* height);
+
+/*! @brief Gets the color depth of a [video mode](@ref GLFWvideoMode).
+ *
+ *  This function returns the color depth of a [video mode](@ref GLFWvideoMode).
+ *
+ *  @param[in]  videoMode The video mode to get the color depth of.
+ *  @param[out] red Where to store the red bits of the
+ *  video mode, or `NULL`.
+ *  @param[out] green Where to store the green bits of the
+ *  video mode, or `NULL`.
+ *  @param[out] blue Where to store the blue bits of the
+ *  video mode, or `NULL`.
+ *
+ *  @sa @ref monitor_modes
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup monitor
+ */
+GLFWAPI void glfwVideoModeGetColorDepth(const GLFWvideoMode* videoMode, int* red, int* green, int* blue);
+
+/*! @brief Gets the refresh rate of a [video mode](@ref GLFWvideoMode).
+ *
+ *  This function returns the refresh rate, in Hz, of the [video mode](@ref GLFWvideoMode).
+ *
+ *  @param[in] videoMode The video mode to get the refresh rate of.
+ *
+ *  @return @ref The refresh rate, in Hz, of the video mode.
+ *
+ *  @remark @win32 Precise refresh rates are not currently available in GLFW.
+ *
+ *  @sa @ref monitor_modes
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup monitor
+ */
+GLFWAPI double glfwVideoModeGetRefreshRate(const GLFWvideoMode* videoMode);
+
 /*! @brief Resets all window hints to their default values.
  *
  *  This function resets all window hints to their
@@ -2947,7 +3105,8 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  hints, once set, retain their values until changed by a call to this
  *  function or @ref glfwDefaultWindowHints, or until the library is terminated.
  *
- *  Only integer value hints can be set with this function.  String value hints
+ *  Only integer value hints can be set with this function.  Floating point
+ *  value hints are set with @ref glfwWindowHintDouble.  String value hints
  *  are set with @ref glfwWindowHintString.
  *
  *  This function does not check whether the specified hint values are valid.
@@ -2967,6 +3126,7 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_hints
+ *  @sa @ref glfwWindowHintDouble
  *  @sa @ref glfwWindowHintString
  *  @sa @ref glfwDefaultWindowHints
  *
@@ -2982,8 +3142,46 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *  hints, once set, retain their values until changed by a call to this
  *  function or @ref glfwDefaultWindowHints, or until the library is terminated.
  *
+ *  Only floating point hints can be set with this function.  Integer value hints
+ *  are set with @ref glfwWindowHint.  String value hints are set
+ *  with @ref glfwWindowHintString.
+ *
+ *  This function does not check whether the specified hint values are valid.
+ *  If you set hints to invalid values this will instead be reported by the next
+ *  call to @ref glfwCreateWindow.
+ *
+ *  Some hints are platform specific.  These may be set on any platform but they
+ *  will only affect their specific platform.  Other platforms will ignore them.
+ *  Setting these hints requires no platform specific headers or functions.
+ *
+ *  @param[in] hint The [window hint](@ref window_hints) to set.
+ *  @param[in] value The new value of the window hint.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_INVALID_ENUM.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_hints
+ *  @sa @ref glfwWindowHint
+ *  @sa @ref glfwWindowHintString
+ *  @sa @ref glfwDefaultWindowHints
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwWindowHintDouble(int hint, double value);
+
+/*! @brief Sets the specified window hint to the desired value.
+ *
+ *  This function sets hints for the next call to @ref glfwCreateWindow.  The
+ *  hints, once set, retain their values until changed by a call to this
+ *  function or @ref glfwDefaultWindowHints, or until the library is terminated.
+ *
  *  Only string type hints can be set with this function.  Integer value hints
- *  are set with @ref glfwWindowHint.
+ *  are set with @ref glfwWindowHint.  Floating point value hints are set
+ *  with @ref glfwWindowHintDouble.
  *
  *  This function does not check whether the specified hint values are valid.
  *  If you set hints to invalid values this will instead be reported by the next
@@ -3006,6 +3204,7 @@ GLFWAPI void glfwWindowHint(int hint, int value);
  *
  *  @sa @ref window_hints
  *  @sa @ref glfwWindowHint
+ *  @sa @ref glfwWindowHintDouble
  *  @sa @ref glfwDefaultWindowHints
  *
  *  @since Added in version 3.3.
@@ -3046,7 +3245,7 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *  or _borderless full screen_ windows, see @ref window_windowed_full_screen.
  *
  *  Once you have created the window, you can switch it between windowed and
- *  full screen mode with @ref glfwSetWindowMonitor.  This will not affect its
+ *  full screen mode with @ref glfwSetWindowMonitor2.  This will not affect its
  *  OpenGL or OpenGL ES context.
  *
  *  By default, newly created windows use the placement recommended by the
@@ -3498,7 +3697,7 @@ GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* window, int numer, int denom);
  *  framebuffer remain unchanged.
  *
  *  If you wish to update the refresh rate of the desired video mode in addition
- *  to its resolution, see @ref glfwSetWindowMonitor.
+ *  to its resolution, see @ref glfwSetWindowMonitor2.
  *
  *  The window manager may put limits on what sizes are allowed.  GLFW cannot
  *  and should not override these limits.
@@ -3519,7 +3718,7 @@ GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* window, int numer, int denom);
  *
  *  @sa @ref window_size
  *  @sa @ref glfwGetWindowSize
- *  @sa @ref glfwSetWindowMonitor
+ *  @sa @ref glfwSetWindowMonitor2
  *
  *  @since Added in version 1.0.
  *  @glfw3 Added window handle parameter.
@@ -3904,13 +4103,28 @@ GLFWAPI void glfwRequestWindowAttention(GLFWwindow* window);
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_monitor
- *  @sa @ref glfwSetWindowMonitor
+ *  @sa @ref glfwSetWindowMonitor2
  *
  *  @since Added in version 3.0.
  *
  *  @ingroup window
  */
 GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
+
+/*! @brief Sets the mode, monitor, video mode and placement of a window.
+ *
+ *  @see @ref glfwSetWindowMonitor2 for a detailed description of this function.
+ *
+ *  @sa @ref window_monitor
+ *  @sa @ref window_full_screen
+ *
+ *  @since Added in version 3.2.
+ *
+ *  @deprecated Deprecated in version 3.4.  Replaced with @ref glfwSetWindowMonitor2
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowMonitor(GLFWwindow* window, GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);
 
 /*! @brief Sets the mode, monitor, video mode and placement of a window.
  *
@@ -3956,7 +4170,7 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  for an application to set this property.
  *
  *  @remark @wayland Setting the window to full screen will not attempt to
- *  change the mode, no matter what the requested size or refresh rate.
+ *  change the mode, no matter what the requested size or refresh rate are.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -3965,11 +4179,11 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  @sa @ref glfwGetWindowMonitor
  *  @sa @ref glfwSetWindowSize
  *
- *  @since Added in version 3.2.
+ *  @since Added in version 3.4.
  *
  *  @ingroup window
  */
-GLFWAPI void glfwSetWindowMonitor(GLFWwindow* window, GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);
+GLFWAPI void glfwSetWindowMonitor2(GLFWwindow* window, GLFWmonitor* monitor, int xpos, int ypos, int width, int height, double refreshRate);
 
 /*! @brief Returns an attribute of the specified window.
  *

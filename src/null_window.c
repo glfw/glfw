@@ -52,7 +52,7 @@ static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
 
 static void fitToMonitor(_GLFWwindow* window)
 {
-    GLFWvidmode mode;
+    _GLFWvideoMode mode;
     _glfwGetVideoModeNull(window->monitor, &mode);
     _glfwGetMonitorPosNull(window->monitor,
                            &window->null.xpos,
@@ -191,7 +191,7 @@ void _glfwSetWindowMonitorNull(_GLFWwindow* window,
                                _GLFWmonitor* monitor,
                                int xpos, int ypos,
                                int width, int height,
-                               int refreshRate)
+                               double refreshRate)
 {
     if (window->monitor == monitor)
     {

@@ -49,7 +49,7 @@ static GLFWbool modeIsGood(const XRRModeInfo* mi)
 static int calculateRefreshRate(const XRRModeInfo* mi)
 {
     if (mi->hTotal && mi->vTotal)
-        return (int) round((double) mi->dotClock / ((double) mi->hTotal * (double) mi->vTotal));
+        return (double) mi->dotClock / ((double) mi->hTotal * (double) mi->vTotal);
     else
         return 0;
 }
@@ -69,10 +69,10 @@ static const XRRModeInfo* getModeInfo(const XRRScreenResources* sr, RRMode id)
 
 // Convert RandR mode info to GLFW video mode
 //
-static GLFWvidmode vidmodeFromModeInfo(const XRRModeInfo* mi,
-                                       const XRRCrtcInfo* ci)
+static _GLFWvideoMode vidmodeFromModeInfo(const XRRModeInfo* mi,
+                                          const XRRCrtcInfo* ci)
 {
-    GLFWvidmode mode;
+    _GLFWvideoMode mode;
 
     if (ci->rotation == RR_Rotate_90 || ci->rotation == RR_Rotate_270)
     {
@@ -226,14 +226,14 @@ void _glfwPollMonitorsX11(void)
 
 // Set the current video mode for the specified monitor
 //
-void _glfwSetVideoModeX11(_GLFWmonitor* monitor, const GLFWvidmode* desired)
+void _glfwSetVideoModeX11(_GLFWmonitor* monitor, const _GLFWvideoMode* desired)
 {
     if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
     {
-        GLFWvidmode current;
+        _GLFWvideoMode current;
         RRMode native = None;
 
-        const GLFWvidmode* best = _glfwChooseVideoMode(monitor, desired);
+        const _GLFWvideoMode* best = _glfwChooseVideoMode(monitor, desired);
         _glfwGetVideoModeX11(monitor, &current);
         if (_glfwCompareVideoModes(&current, best) == 0)
             return;
@@ -249,7 +249,7 @@ void _glfwSetVideoModeX11(_GLFWmonitor* monitor, const GLFWvidmode* desired)
             if (!modeIsGood(mi))
                 continue;
 
-            const GLFWvidmode mode = vidmodeFromModeInfo(mi, ci);
+            const _GLFWvideoMode mode = vidmodeFromModeInfo(mi, ci);
             if (_glfwCompareVideoModes(best, &mode) == 0)
             {
                 native = mi->id;
@@ -441,9 +441,9 @@ void _glfwGetMonitorWorkareaX11(_GLFWmonitor* monitor,
         *height = areaHeight;
 }
 
-GLFWvidmode* _glfwGetVideoModesX11(_GLFWmonitor* monitor, int* count)
+_GLFWvideoMode* _glfwGetVideoModesX11(_GLFWmonitor* monitor, int* count)
 {
-    GLFWvidmode* result;
+    _GLFWvideoMode* result;
 
     *count = 0;
 
@@ -454,7 +454,7 @@ GLFWvidmode* _glfwGetVideoModesX11(_GLFWmonitor* monitor, int* count)
         XRRCrtcInfo* ci = XRRGetCrtcInfo(_glfw.x11.display, sr, monitor->x11.crtc);
         XRROutputInfo* oi = XRRGetOutputInfo(_glfw.x11.display, sr, monitor->x11.output);
 
-        result = _glfw_calloc(oi->nmode, sizeof(GLFWvidmode));
+        result = _glfw_calloc(oi->nmode, sizeof(_GLFWvideoMode));
 
         for (int i = 0;  i < oi->nmode;  i++)
         {
@@ -462,7 +462,7 @@ GLFWvidmode* _glfwGetVideoModesX11(_GLFWmonitor* monitor, int* count)
             if (!modeIsGood(mi))
                 continue;
 
-            const GLFWvidmode mode = vidmodeFromModeInfo(mi, ci);
+            const _GLFWvideoMode mode = vidmodeFromModeInfo(mi, ci);
             int j;
 
             for (j = 0;  j < *count;  j++)
@@ -486,14 +486,14 @@ GLFWvidmode* _glfwGetVideoModesX11(_GLFWmonitor* monitor, int* count)
     else
     {
         *count = 1;
-        result = _glfw_calloc(1, sizeof(GLFWvidmode));
+        result = _glfw_calloc(1, sizeof(_GLFWvideoMode));
         _glfwGetVideoModeX11(monitor, result);
     }
 
     return result;
 }
 
-void _glfwGetVideoModeX11(_GLFWmonitor* monitor, GLFWvidmode* mode)
+void _glfwGetVideoModeX11(_GLFWmonitor* monitor, _GLFWvideoMode* mode)
 {
     if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
     {

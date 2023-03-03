@@ -58,7 +58,7 @@ Full screen windows cover the entire display area of a monitor, have no border
 or decorations.
 
 Windowed mode windows can be made full screen by setting a monitor with @ref
-glfwSetWindowMonitor, and full screen ones can be made windowed by unsetting it
+glfwSetWindowMonitor2, and full screen ones can be made windowed by unsetting it
 with the same function.
 
 Each field of the @ref GLFWvidmode structure corresponds to a function parameter
@@ -67,18 +67,18 @@ The supported video mode most closely matching the desired video mode will be
 set for the chosen monitor as long as the window has input focus.  For more
 information about retrieving video modes, see @ref monitor_modes.
 
-Video mode field        | Corresponds to
-----------------        | --------------
-GLFWvidmode.width       | `width` parameter of @ref glfwCreateWindow
-GLFWvidmode.height      | `height` parameter of @ref glfwCreateWindow
-GLFWvidmode.redBits     | @ref GLFW_RED_BITS hint
-GLFWvidmode.greenBits   | @ref GLFW_GREEN_BITS hint
-GLFWvidmode.blueBits    | @ref GLFW_BLUE_BITS hint
-GLFWvidmode.refreshRate | @ref GLFW_REFRESH_RATE hint
+Video mode field        | Corresponds to                              | GLFWvideoMode equivalence
+----------------        | --------------                              | --------------
+GLFWvidmode.width       | `width` parameter of @ref glfwCreateWindow  | @ref glfwVideoModeGetSize
+GLFWvidmode.height      | `height` parameter of @ref glfwCreateWindow | @ref glfwVideoModeGetSize
+GLFWvidmode.redBits     | @ref GLFW_RED_BITS hint                     | @ref glfwVideoModeGetColorDepth
+GLFWvidmode.greenBits   | @ref GLFW_GREEN_BITS hint                   | @ref glfwVideoModeGetColorDepth
+GLFWvidmode.blueBits    | @ref GLFW_BLUE_BITS hint                    | @ref glfwVideoModeGetColorDepth
+GLFWvidmode.refreshRate | @ref GLFW_REFRESH_RATE hint                 | @ref glfwVideoModeGetRefreshRate
 
 Once you have a full screen window, you can change its resolution, refresh rate
-and monitor with @ref glfwSetWindowMonitor.  If you only need change its
-resolution you can also call @ref glfwSetWindowSize.  In all cases, the new
+and monitor with @ref glfwSetWindowMonitor2.  If you only need to change its
+resolution, you can also call @ref glfwSetWindowSize.  In all cases, the new
 video mode will be selected the same way as the video mode chosen by @ref
 glfwCreateWindow.  If the window has an OpenGL or OpenGL ES context, it will be
 unaffected.
@@ -102,22 +102,33 @@ _borderless full screen_ window and counts as a full screen window.  To create
 such a window, request the current video mode.
 
 @code
-const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+const GLFWvideoMode* mode = glfwGetVideoMode2(monitor);
 
-glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+int width, height;
+int red, green, blue;
+double refreshRate;
 
-GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "My Title", monitor, NULL);
+glfwVideoModeGetSize(&width, &height);
+glfwVideoModeGetColorDepth(&red, &green, &blue);
+refreshRate = glfwVideoModeGetRefreshRate();
+
+glfwWindowHint(GLFW_RED_BITS, red);
+glfwWindowHint(GLFW_GREEN_BITS, green);
+glfwWindowHint(GLFW_BLUE_BITS, blue);
+glfwWindowHintDouble(GLFW_REFRESH_RATE, refreshRate);
+
+GLFWwindow* window = glfwCreateWindow(width, height, "My Title", monitor, NULL);
 @endcode
 
 This also works for windowed mode windows that are made full screen.
 
 @code
-const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+const GLFWvideoMode* mode = glfwGetVideoMode2(monitor);
+int width, height;
+glfwVideoModeGetSize(&width, &height);
+double refreshRate = glfwVideoModeGetRefreshRate();
 
-glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+glfwSetWindowMonitor2(window, monitor, 0, 0, width, height, refreshRate);
 @endcode
 
 Note that @ref glfwGetVideoMode returns the _current_ video mode of a monitor,
@@ -147,7 +158,9 @@ There are a number of hints that can be set before the creation of a window and
 context.  Some affect the window itself, others affect the framebuffer or
 context.  These hints are set to their default values each time the library is
 initialized with @ref glfwInit.  Integer value hints can be set individually
-with @ref glfwWindowHint and string value hints with @ref glfwWindowHintString.
+with @ref glfwWindowHint, floating point value hints
+with @ref glfwWindowHintDouble, and string value hints
+with @ref glfwWindowHintString.
 You can reset all at once to their defaults with @ref glfwDefaultWindowHints.
 
 Some hints are platform specific.  These are always valid to set on any
@@ -539,7 +552,7 @@ GLFW_ACCUM_BLUE_BITS          | 0                           | 0 to `INT_MAX` or 
 GLFW_ACCUM_ALPHA_BITS         | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 GLFW_AUX_BUFFERS              | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
 GLFW_SAMPLES                  | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-GLFW_REFRESH_RATE             | `GLFW_DONT_CARE`            | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_REFRESH_RATE             | `GLFW_DONT_CARE`            | 0.0 to `DBL_MAX` or `GLFW_DONT_CARE`
 GLFW_STEREO                   | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_SRGB_CAPABLE             | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_DOUBLEBUFFER             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
@@ -927,16 +940,19 @@ on a different monitor, specify the desired monitor, resolution and refresh
 rate.  The position arguments are ignored.
 
 @code
-const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+const GLFWvideoMode* mode = glfwGetVideoMode2(monitor);
+int width, height;
+glfwVideoModeGetSize(&width, &height);
+double refreshRate = glfwVideoModeGetRefreshRate();
 
-glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+glfwSetWindowMonitor2(window, monitor, 0, 0, width, height, refreshRate);
 @endcode
 
 When making the window windowed, specify the desired position and size.  The
 refresh rate argument is ignored.
 
 @code
-glfwSetWindowMonitor(window, NULL, xpos, ypos, width, height, 0);
+glfwSetWindowMonitor2(window, NULL, xpos, ypos, width, height, 0);
 @endcode
 
 This restores any previous window settings such as whether it is decorated,

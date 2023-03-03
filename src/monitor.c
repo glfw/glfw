@@ -36,13 +36,32 @@
 #include <stdlib.h>
 #include <limits.h>
 
+// Copies the contents of a @ref _GLFWvideoMode into a @ref GLFWvidmode.
+//
+static void copyVideoMode(GLFWvidmode* target, const _GLFWvideoMode* source)
+{
+    target->width       = source->width;
+    target->height      = source->height;
+    target->redBits     = source->redBits;
+    target->greenBits   = source->greenBits;
+    target->blueBits    = source->blueBits;
+    
+    
+    #ifdef _MSC_VER
+    // Win32 only provides integers. No need to round.
+    target->refreshRate = (int) source->refreshRate;
+    #else
+    target->refreshRate = (int) round(source->refreshRate);
+    #endif
+}
 
 // Lexically compare video modes, used by qsort
 //
 static int compareVideoModes(const void* fp, const void* sp)
 {
-    const GLFWvidmode* fm = fp;
-    const GLFWvidmode* sm = sp;
+    double refRateDiff;
+    const _GLFWvideoMode* fm = fp;
+    const _GLFWvideoMode* sm = sp;
     const int fbpp = fm->redBits + fm->greenBits + fm->blueBits;
     const int sbpp = sm->redBits + sm->greenBits + sm->blueBits;
     const int farea = fm->width * fm->height;
@@ -61,27 +80,46 @@ static int compareVideoModes(const void* fp, const void* sp)
         return fm->width - sm->width;
 
     // Lastly sort on refresh rate
-    return fm->refreshRate - sm->refreshRate;
+    refRateDiff = fm->refreshRate - sm->refreshRate;
+    
+    #ifdef _MSC_VER
+    // All Win32 refresh rates are converted from integers
+    return (int) refRateDiff;
+    #else
+    // Limits the minimum absolute value to 1.0, to prevent different modes from
+    // evaluating to equal, which happens when the difference between the
+    // refresh rates is less than 1.0, and this number is truncated to an integer.
+    return (int) copysign(fmax(fabs(refRateDiff), 1.0), refRateDiff);
+    #endif
 }
 
 // Retrieves the available modes for the specified monitor
 //
 static GLFWbool refreshVideoModes(_GLFWmonitor* monitor)
 {
-    int modeCount;
-    GLFWvidmode* modes;
+    int i, modeCount;
+    _GLFWvideoMode* modes;
 
     if (monitor->modes)
         return GLFW_TRUE;
 
     modes = _glfw.platform.getVideoModes(monitor, &modeCount);
+    
     if (!modes)
         return GLFW_FALSE;
 
-    qsort(modes, modeCount, sizeof(GLFWvidmode), compareVideoModes);
+    qsort(modes, modeCount, sizeof(_GLFWvideoMode), compareVideoModes);
 
-    _glfw_free(monitor->modes);
+    _glfw_free(monitor->modesOld);
+    monitor->modesOld = NULL;
+    
     monitor->modes = modes;
+    monitor->modesPointers = _glfw_realloc(monitor->modesPointers,
+                                           modeCount * sizeof(GLFWvideoMode*));
+    
+    for (i = 0; i < modeCount; ++i)
+        monitor->modesPointers[i] = (GLFWvideoMode*) &modes[i];
+    
     monitor->modeCount = modeCount;
 
     return GLFW_TRUE;
@@ -194,6 +232,8 @@ void _glfwFreeMonitor(_GLFWmonitor* monitor)
     _glfwFreeGammaArrays(&monitor->currentRamp);
 
     _glfw_free(monitor->modes);
+    _glfw_free(monitor->modesPointers);
+    _glfw_free(monitor->modesOld);
     _glfw_free(monitor);
 }
 
@@ -220,15 +260,15 @@ void _glfwFreeGammaArrays(GLFWgammaramp* ramp)
 
 // Chooses the video mode most closely matching the desired one
 //
-const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
-                                        const GLFWvidmode* desired)
+const _GLFWvideoMode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
+                                           const _GLFWvideoMode* desired)
 {
     int i;
     unsigned int sizeDiff, leastSizeDiff = UINT_MAX;
-    unsigned int rateDiff, leastRateDiff = UINT_MAX;
+    double rateDiff, leastRateDiff = DBL_MAX;
     unsigned int colorDiff, leastColorDiff = UINT_MAX;
-    const GLFWvidmode* current;
-    const GLFWvidmode* closest = NULL;
+    const _GLFWvideoMode* current;
+    const _GLFWvideoMode* closest = NULL;
 
     if (!refreshVideoModes(monitor))
         return NULL;
@@ -252,7 +292,7 @@ const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
                        (current->height - desired->height));
 
         if (desired->refreshRate != GLFW_DONT_CARE)
-            rateDiff = abs(current->refreshRate - desired->refreshRate);
+            rateDiff = fabs(current->refreshRate - desired->refreshRate);
         else
             rateDiff = UINT_MAX - current->refreshRate;
 
@@ -270,9 +310,9 @@ const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
     return closest;
 }
 
-// Performs lexical comparison between two @ref GLFWvidmode structures
+// Performs lexical comparison between two @ref _GLFWvideoMode structures
 //
-int _glfwCompareVideoModes(const GLFWvidmode* fm, const GLFWvidmode* sm)
+int _glfwCompareVideoModes(const _GLFWvideoMode* fm, const _GLFWvideoMode* sm)
 {
     return compareVideoModes(fm, sm);
 }
@@ -430,6 +470,45 @@ GLFWAPI GLFWmonitorfun glfwSetMonitorCallback(GLFWmonitorfun cbfun)
 
 GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)
 {
+    int i, j;
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    if (!glfwGetVideoModes2(handle, count))
+        return NULL;
+    
+    if (!monitor->modesOld)
+    {
+        monitor->modesOld = _glfw_calloc(monitor->modeCount, sizeof(GLFWvidmode));
+        
+        monitor->modeCountOld = 0;
+        for (i = 0, j = 0; i < monitor->modeCount; ++i)
+        {
+            copyVideoMode(&monitor->modesOld[j], &monitor->modes[i]);
+                
+            // Because the old video mode structure contains less precision
+            // than the new one, different new modes will lead to similar
+            // old ones, which must be ignored.
+        
+            // The modes array is already sorted, so identical video modes
+            // will always be adjacent. Therefore, it's only necessary to
+            // test for equality with the previous mode in the array.
+            
+            // The only difference between the old and new GLFW video modes,
+            // is that the new one allows higher precision refresh rates, so
+            // this is the only field that requires a comparison.
+            if (j > 0 && monitor->modesOld[j - 1].refreshRate == monitor->modesOld[j].refreshRate)
+                continue;
+            
+            ++monitor->modeCountOld;
+            ++j;
+        }
+    }
+    
+    *count = monitor->modeCountOld;
+    return monitor->modesOld;
+}
+
+GLFWAPI const GLFWvideoMode* const* glfwGetVideoModes2(GLFWmonitor* handle, int* count)
+{
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
     assert(monitor != NULL);
     assert(count != NULL);
@@ -442,7 +521,7 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)
         return NULL;
 
     *count = monitor->modeCount;
-    return monitor->modes;
+    return (const GLFWvideoMode* const *) monitor->modesPointers;
 }
 
 GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* handle)
@@ -453,7 +532,21 @@ GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* handle)
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     _glfw.platform.getVideoMode(monitor, &monitor->currentMode);
-    return &monitor->currentMode;
+    
+    copyVideoMode(&monitor->currentModeOld, &monitor->currentMode);
+    
+    return &monitor->currentModeOld;
+}
+
+GLFWAPI const GLFWvideoMode* glfwGetVideoMode2(GLFWmonitor* handle)
+{
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    assert(monitor != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+    _glfw.platform.getVideoMode(monitor, &monitor->currentMode);
+    return (GLFWvideoMode*) &monitor->currentMode;
 }
 
 GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
@@ -544,5 +637,45 @@ GLFWAPI void glfwSetGammaRamp(GLFWmonitor* handle, const GLFWgammaramp* ramp)
     }
 
     _glfw.platform.setGammaRamp(monitor, ramp);
+}
+
+
+GLFWAPI int glfwVideoModesEqual(const GLFWvideoMode* first, const GLFWvideoMode* second)
+{
+    if (memcmp(first, second, sizeof(_GLFWvideoMode)) == 0)
+        return GLFW_TRUE;
+    
+    return GLFW_FALSE;
+}
+
+GLFWAPI void glfwVideoModeGetSize(const GLFWvideoMode* videoMode, int* width, int* height)
+{
+    const _GLFWvideoMode* mode = (_GLFWvideoMode*) videoMode;
+    assert(videoMode != NULL);
+    
+    if (width)
+        *width = mode->width;
+    if (height)
+        *height = mode->height;
+}
+
+GLFWAPI void glfwVideoModeGetColorDepth(const GLFWvideoMode* videoMode, int* red, int* green, int* blue)
+{
+    const _GLFWvideoMode* mode = (_GLFWvideoMode*) videoMode;
+    assert(videoMode != NULL);
+    
+    if (red)
+        *red = mode->redBits;
+    if (green)
+        *green = mode->greenBits;
+    if (blue)
+        *blue = mode->blueBits;
+}
+
+GLFWAPI double glfwVideoModeGetRefreshRate(const GLFWvideoMode* videoMode)
+{
+    assert(videoMode != NULL);
+    
+    return ((_GLFWvideoMode*) videoMode)->refreshRate;
 }
 

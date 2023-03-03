@@ -69,18 +69,18 @@ static void outputHandleMode(void* userData,
                              int32_t refresh)
 {
     struct _GLFWmonitor* monitor = userData;
-    GLFWvidmode mode;
+    _GLFWvideoMode mode;
 
     mode.width = width;
     mode.height = height;
     mode.redBits = 8;
     mode.greenBits = 8;
     mode.blueBits = 8;
-    mode.refreshRate = (int) round(refresh / 1000.0);
+    mode.refreshRate = refresh / 1000.0;
 
     monitor->modeCount++;
     monitor->modes =
-        _glfw_realloc(monitor->modes, monitor->modeCount * sizeof(GLFWvidmode));
+        _glfw_realloc(monitor->modes, monitor->modeCount * sizeof(_GLFWvideoMode));
     monitor->modes[monitor->modeCount - 1] = mode;
 
     if (flags & WL_OUTPUT_MODE_CURRENT)
@@ -94,7 +94,7 @@ static void outputHandleDone(void* userData, struct wl_output* output)
     if (monitor->widthMM <= 0 || monitor->heightMM <= 0)
     {
         // If Wayland does not provide a physical size, assume the default 96 DPI
-        const GLFWvidmode* mode = &monitor->modes[monitor->wl.currentMode];
+        const _GLFWvideoMode* mode = &monitor->modes[monitor->wl.currentMode];
         monitor->widthMM  = (int) (mode->width * 25.4f / 96.f);
         monitor->heightMM = (int) (mode->height * 25.4f / 96.f);
     }
@@ -236,13 +236,13 @@ void _glfwGetMonitorWorkareaWayland(_GLFWmonitor* monitor,
         *height = monitor->modes[monitor->wl.currentMode].height;
 }
 
-GLFWvidmode* _glfwGetVideoModesWayland(_GLFWmonitor* monitor, int* found)
+_GLFWvideoMode* _glfwGetVideoModesWayland(_GLFWmonitor* monitor, int* found)
 {
     *found = monitor->modeCount;
     return monitor->modes;
 }
 
-void _glfwGetVideoModeWayland(_GLFWmonitor* monitor, GLFWvidmode* mode)
+void _glfwGetVideoModeWayland(_GLFWmonitor* monitor, _GLFWvideoMode* mode)
 {
     *mode = monitor->modes[monitor->wl.currentMode];
 }

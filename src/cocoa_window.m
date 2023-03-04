@@ -1169,6 +1169,8 @@ void _glfwSetWindowTaskbarProgressCocoa(_GLFWwindow* window, int progressState, 
 
 void _glfwSetWindowTaskbarBadgeCocoa(_GLFWwindow* window, int count)
 {
+    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
+                    "Cocoa: Setting the taskbar progress badge is not implemented");
 }
 
 void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos)

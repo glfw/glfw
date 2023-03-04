@@ -1913,6 +1913,8 @@ void _glfwSetWindowTaskbarProgressWayland(_GLFWwindow* window, const int progres
 
 void _glfwSetWindowTaskbarBadgeWayland(_GLFWwindow* window, int count)
 {
+    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
+                    "Wayland: Setting the taskbar progress badge is not implemented");
 }
 
 void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos)

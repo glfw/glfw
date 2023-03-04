@@ -906,6 +906,7 @@ void _glfwDestroyWindowX11(_GLFWwindow* window);
 void _glfwSetWindowTitleX11(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* images);
 void _glfwSetWindowTaskbarProgressX11(_GLFWwindow* window, int progressState, double value);
+void _glfwSetWindowTaskbarBadgeX11(_GLFWwindow* window, int count);
 void _glfwGetWindowPosX11(_GLFWwindow* window, int* xpos, int* ypos);
 void _glfwSetWindowPosX11(_GLFWwindow* window, int xpos, int ypos);
 void _glfwGetWindowSizeX11(_GLFWwindow* window, int* width, int* height);

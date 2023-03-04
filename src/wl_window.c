@@ -1911,6 +1911,10 @@ void _glfwSetWindowTaskbarProgressWayland(_GLFWwindow* window, const int progres
     _glfwUpdateTaskbarProgressDBusPOSIX(progressVisible, value);
 }
 
+void _glfwSetWindowTaskbarBadgeWayland(_GLFWwindow* window, int count)
+{
+}
+
 void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos)
 {
     // A Wayland client is not aware of its position, so just warn and leave it

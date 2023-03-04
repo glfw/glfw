@@ -529,6 +529,7 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         _glfwSetWindowTitleCocoa,
         _glfwSetWindowIconCocoa,
         _glfwSetWindowTaskbarProgressCocoa,
+        _glfwSetWindowTaskbarBadgeCocoa,
         _glfwGetWindowPosCocoa,
         _glfwSetWindowPosCocoa,
         _glfwGetWindowSizeCocoa,

@@ -1643,6 +1643,11 @@ void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, int progressState, 
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar progress state");
 }
 
+void _glfwSetWindowTaskbarBadgeWin32(_GLFWwindow* window, int count)
+{
+    //TODO
+}
+
 void _glfwGetWindowPosWin32(_GLFWwindow* window, int* xpos, int* ypos)
 {
     POINT pos = { 0, 0 };

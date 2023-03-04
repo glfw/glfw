@@ -2161,6 +2161,10 @@ void _glfwSetWindowTaskbarProgressX11(_GLFWwindow* window, int progressState, do
     _glfwUpdateTaskbarProgressDBusPOSIX(progressVisible, value);
 }
 
+void _glfwSetWindowTaskbarProgressX11(_GLFWwindow* window, int count)
+{
+}
+
 void _glfwGetWindowPosX11(_GLFWwindow* window, int* xpos, int* ypos)
 {
     Window dummy;

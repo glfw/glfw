@@ -69,6 +69,7 @@ struct DBusMessageIter
 #define DBUS_TYPE_VARIANT (unsigned int)'v'
 #define DBUS_TYPE_BOOLEAN (unsigned int)'b'
 #define DBUS_TYPE_DOUBLE (unsigned int)'d'
+#define DBUS_TYPE_INT64 (unsigned int)'x'
 
 typedef void (* PFN_dbus_error_init)(struct DBusError*);
 typedef dbus_bool_t (* PFN_dbus_error_is_set)(const struct DBusError*);
@@ -130,3 +131,4 @@ typedef struct _GLFWDBusPOSIX
 void _glfwInitDBusPOSIX(void);
 void _glfwTerminateDBusPOSIX(void);
 void _glfwUpdateTaskbarProgressDBusPOSIX(dbus_bool_t progressVisible, double progressValue);
+void _glfwUpdateTaskbarBadgeDBusPOSIX(dbus_bool_t badgeVisible, int badgeCount);

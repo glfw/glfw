@@ -2163,8 +2163,11 @@ void _glfwSetWindowTaskbarProgressX11(_GLFWwindow* window, int progressState, do
 
 void _glfwSetWindowTaskbarBadgeX11(_GLFWwindow* window, int count)
 {
-    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
-                    "X11: Setting the taskbar progress badge is not implemented");
+    (void)window;
+
+    const dbus_bool_t badgeVisible = (count != GLFW_DONT_CARE);
+
+    _glfwUpdateTaskbarBadgeDBusPOSIX(badgeVisible, count);
 }
 
 void _glfwGetWindowPosX11(_GLFWwindow* window, int* xpos, int* ypos)

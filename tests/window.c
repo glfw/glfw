@@ -71,7 +71,7 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    GLFWwindow* window = glfwCreateWindow(600, 700, "Window Features", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(600, 800, "Window Features", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -431,9 +431,30 @@ int main(int argc, char** argv)
             if (nk_button_label(nk, "Paused"))
                 glfwSetWindowTaskbarProgress(window, state = GLFW_TASKBAR_PROGRESS_PAUSED, (double) progress);
 
-            nk_label(nk, "Progress: ", NK_TEXT_ALIGN_LEFT);
-            if (nk_slider_float(nk, 0.0f, &progress, 1.0f, 0.05f))
-                glfwSetWindowTaskbarProgress(window, state, (double) progress);
+            nk_layout_row_begin(nk, NK_DYNAMIC, 30, 2);
+            nk_layout_row_push(nk, 1.f / 3.f);
+            nk_labelf(nk, NK_TEXT_LEFT, "Progress: %0.3f", progress);
+            nk_layout_row_push(nk, 2.f / 3.f);
+            if (nk_slider_float(nk, 0.f, &progress, 1.0f, 0.001f))
+                glfwSetWindowTaskbarProgress(window, state, (double)progress);
+            nk_layout_row_end(nk);
+
+            nk_layout_row_dynamic(nk, 30, 1);
+
+            nk_label(nk, "Taskbar Badge", NK_TEXT_CENTERED);
+
+            static int enableBadge = false;
+            static int badgeCount = 0;
+            nk_layout_row_begin(nk, NK_DYNAMIC, 30, 3);
+            nk_layout_row_push(nk, 1.0f / 3.f);
+            if (nk_checkbox_label(nk, "Enable Badge", &enableBadge))
+                glfwSetWindowTaskbarBadge(window, enableBadge ? badgeCount : GLFW_DONT_CARE);
+            nk_layout_row_push(nk, 1.0f / 3.f);
+            nk_labelf(nk, NK_TEXT_LEFT, "Badge count: %d", badgeCount);
+            nk_layout_row_push(nk, 2.f / 3.f);
+            if (nk_slider_int(nk, 0, &badgeCount, 99, 1))
+                glfwSetWindowTaskbarBadge(window, enableBadge ? badgeCount : GLFW_DONT_CARE);
+            nk_layout_row_end(nk);
         }
         nk_end(nk);
 

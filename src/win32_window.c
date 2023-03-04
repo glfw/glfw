@@ -36,6 +36,7 @@
 #include <string.h>
 #include <windowsx.h>
 #include <shellapi.h>
+#include <stdio.h>
 
 // Returns the window style for the specified window
 //
@@ -1643,9 +1644,90 @@ void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, int progressState, 
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar progress state");
 }
 
+HICON GenerateBadgeIcon(HWND hWnd, int count)
+{
+    HDC hdc = NULL, hdcMem = NULL;
+    HBITMAP hBitmap = NULL;
+    HBITMAP hOldBitmap = NULL;
+    HBITMAP hBitmapMask = NULL;
+    ICONINFO iconInfo;
+    HICON hIcon = NULL;
+    char countStr[3];
+
+    //Convert count to string (is guaranteed to be at max 2 digits)
+    countStr[2] = '\0';
+    sprintf(countStr, "%d", count);
+    WCHAR* countWStr = _glfwCreateWideStringFromUTF8Win32(countStr);
+    if (!countWStr)
+        return NULL;
+
+    hdc = GetDC(hWnd);
+    hdcMem = CreateCompatibleDC(hdc);
+    hBitmap = CreateCompatibleBitmap(hdc, 16, 16);
+    hBitmapMask = CreateCompatibleBitmap(hdc, 16, 16);
+    ReleaseDC(hWnd, hdc);
+    hOldBitmap = (HBITMAP)SelectObject(hdcMem, hBitmap);
+
+    SetTextColor(hdcMem, RGB(255, 255, 255)); //Use white text color
+    SetBkMode(hdcMem, TRANSPARENT); //Make font background transparent
+
+    //Draw numbers
+    TextOut(hdcMem, 0, 0, countWStr, lstrlen(countWStr));
+
+    SelectObject(hdc, hOldBitmap);
+    hOldBitmap = NULL;
+
+    iconInfo.fIcon = TRUE;
+    iconInfo.xHotspot = 0;
+    iconInfo.yHotspot = 0;
+    iconInfo.hbmMask = hBitmapMask;
+    iconInfo.hbmColor = hBitmap;
+
+    hIcon = CreateIconIndirect(&iconInfo);
+
+    DeleteDC(hdcMem);
+    DeleteObject(hBitmap);
+    DeleteObject(hBitmapMask);
+
+    _glfw_free(countWStr);
+
+    return hIcon;
+}
+
 void _glfwSetWindowTaskbarBadgeWin32(_GLFWwindow* window, int count)
 {
-    //TODO
+    HRESULT res = S_OK;
+    HICON icon = NULL;
+
+    if (!IsWindows7OrGreater())
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE, "Win32: Taskbar badge is only supported on Windows 7 or newer");
+        return;
+    }
+
+    if (!window->win32.taskbarList)
+        return;
+
+    if (count != GLFW_DONT_CARE)
+    {
+        icon = GenerateBadgeIcon(window->win32.handle, count);
+        if (!icon)
+        {
+            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar badge count");
+            return;
+        }
+    }
+
+    res = window->win32.taskbarList->lpVtbl->SetOverlayIcon(window->win32.taskbarList, window->win32.handle, icon, TEXT(""));
+
+    if(icon)
+        DestroyIcon(icon);
+
+    if (res != S_OK)
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar badge count");
+        return;
+    }
 }
 
 void _glfwGetWindowPosWin32(_GLFWwindow* window, int* xpos, int* ypos)

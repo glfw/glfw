@@ -591,7 +591,7 @@ GLFWAPI void glfwSetWindowTaskbarBadge(GLFWwindow* handle, int count)
 
     _GLFW_REQUIRE_INIT();
 
-    if (count != GLFW_DONT_CARE && (count < 0 || count > 99))
+    if (count != GLFW_DONT_CARE && (count < 0 || count > 999))
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid badge count %d", count);
         return;

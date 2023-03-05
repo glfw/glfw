@@ -1668,8 +1668,16 @@ HICON GenerateBadgeIcon(HWND hWnd, int count)
     ReleaseDC(hWnd, hdc);
     hOldBitmap = (HBITMAP)SelectObject(hdcMem, hBitmap);
 
+    //PatBlt(hdcMem, 0, 0, 16, 16, BLACKNESS);
+    SelectObject(hdcMem, CreateSolidBrush(RGB(0x26, 0x25, 0x2D)));
+    Ellipse(hdcMem, 0, 0, 15, 15);
+    SelectObject(hdcMem, CreateSolidBrush(RGB(255, 255, 255)));
+
     SetTextColor(hdcMem, RGB(255, 255, 255)); //Use white text color
     SetBkMode(hdcMem, TRANSPARENT); //Make font background transparent
+
+    //TODO Custom Segoe UI Font
+    //TODO Transparency (cull outside of circle)
 
     //Draw numbers
     if (count < 10)

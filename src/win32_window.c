@@ -1672,7 +1672,10 @@ HICON GenerateBadgeIcon(HWND hWnd, int count)
     SetBkMode(hdcMem, TRANSPARENT); //Make font background transparent
 
     //Draw numbers
-    TextOut(hdcMem, 0, 0, countWStr, lstrlen(countWStr));
+    if (count < 10)
+        TextOut(hdcMem, 16 / 4, 0, countWStr, lstrlen(countWStr));
+    else
+        TextOut(hdcMem, 0, 0, countWStr, lstrlen(countWStr));
 
     SelectObject(hdc, hOldBitmap);
     hOldBitmap = NULL;

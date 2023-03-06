@@ -1756,7 +1756,7 @@ void _glfwSetWindowTaskbarBadgeWin32(_GLFWwindow* window, int count)
     }
 
     // TODO: should probably set the alt text too. Integer as text is better than nothing. Use the same string for the icon and alt text in the string version.
-    res = window->win32.taskbarList->lpVtbl-> (window->win32.taskbarList, window->win32.handle, icon, TEXT(""));
+    res = window->win32.taskbarList->lpVtbl->SetOverlayIcon(window->win32.taskbarList, window->win32.handle, icon, TEXT(""));
 
     if(icon)
         DestroyIcon(icon);

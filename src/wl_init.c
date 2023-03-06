@@ -421,6 +421,7 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         _glfwSetWindowIconWayland,
         _glfwSetWindowTaskbarProgressWayland,
         _glfwSetWindowTaskbarBadgeWayland,
+        _glfwSetWindowTaskbarBadgeStringWayland,
         _glfwGetWindowPosWayland,
         _glfwSetWindowPosWayland,
         _glfwGetWindowSizeWayland,

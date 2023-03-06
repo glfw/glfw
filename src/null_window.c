@@ -195,6 +195,10 @@ void _glfwSetWindowTaskbarBadgeNull(_GLFWwindow* window, int count)
 {
 }
 
+void _glfwSetWindowTaskbarBadgeStringNull(_GLFWwindow* window, int count)
+{
+}
+
 void _glfwSetWindowMonitorNull(_GLFWwindow* window,
                                _GLFWmonitor* monitor,
                                int xpos, int ypos,

@@ -2163,11 +2163,22 @@ void _glfwSetWindowTaskbarProgressX11(_GLFWwindow* window, int progressState, do
 
 void _glfwSetWindowTaskbarBadgeX11(_GLFWwindow* window, int count)
 {
-    (void)window;
+    if (window != NULL)
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "X11: Cannot set a badge for a window. Pass NULL to set the application's shared badge.");
+        return;
+    }
 
-    const dbus_bool_t badgeVisible = (count != GLFW_DONT_CARE);
+    const dbus_bool_t badgeVisible = (count > 0);
 
     _glfwUpdateTaskbarBadgeDBusPOSIX(badgeVisible, count);
+}
+
+void _glfwSetWindowTaskbarBadgeStringX11(_GLFWwindow* window, const char* string)
+{
+    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                    "X11: Unable to set a string badge. Only integer badges are supported.");
 }
 
 void _glfwGetWindowPosX11(_GLFWwindow* window, int* xpos, int* ypos)

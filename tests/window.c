@@ -443,17 +443,16 @@ int main(int argc, char** argv)
 
             nk_label(nk, "Taskbar Badge", NK_TEXT_CENTERED);
 
-            static int enableBadge = false;
             static int badgeCount = 0;
             nk_layout_row_begin(nk, NK_DYNAMIC, 30, 3);
             nk_layout_row_push(nk, 1.0f / 3.f);
-            if (nk_checkbox_label(nk, "Enable Badge", &enableBadge))
-                glfwSetWindowTaskbarBadge(window, enableBadge ? badgeCount : GLFW_DONT_CARE);
-            nk_layout_row_push(nk, 1.0f / 3.f);
             nk_labelf(nk, NK_TEXT_LEFT, "Badge count: %d", badgeCount);
             nk_layout_row_push(nk, 2.f / 3.f);
-            if (nk_slider_int(nk, 0, &badgeCount, 99, 1))
-                glfwSetWindowTaskbarBadge(window, enableBadge ? badgeCount : GLFW_DONT_CARE);
+            if (nk_slider_int(nk, 0, &badgeCount, 10000, 1))
+            {
+                glfwSetWindowTaskbarBadge(window, badgeCount);
+                glfwSetWindowTaskbarBadge(NULL, badgeCount);
+            }
             nk_layout_row_end(nk);
         }
         nk_end(nk);

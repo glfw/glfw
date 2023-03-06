@@ -75,6 +75,7 @@ GLFWbool _glfwConnectNull(int platformID, _GLFWplatform* platform)
         _glfwSetWindowIconNull,
         _glfwSetWindowTaskbarProgressNull,
         _glfwSetWindowTaskbarBadgeNull,
+        _glfwSetWindowTaskbarBadgeStringNull,
         _glfwGetWindowPosNull,
         _glfwSetWindowPosNull,
         _glfwGetWindowSizeNull,

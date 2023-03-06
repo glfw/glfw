@@ -1169,8 +1169,47 @@ void _glfwSetWindowTaskbarProgressCocoa(_GLFWwindow* window, int progressState, 
 
 void _glfwSetWindowTaskbarBadgeCocoa(_GLFWwindow* window, int count)
 {
-    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
-                    "Cocoa: Setting the taskbar progress badge is not implemented");
+    if (window != NULL)
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Cocoa: Cannot set a badge for a window. Pass NULL to set the Dock badge.");
+        return;
+    }
+    
+    if (count == 0)
+    {
+        [NSApp dockTile].badgeLabel = nil;
+        return;
+    }
+    
+    NSString* string;
+    
+    if (count <= 9999)
+        string = [@(count) stringValue];
+    else
+        string = [[@(9999) stringValue] stringByAppendingString:@"+"];
+    
+    [NSApp dockTile].badgeLabel = string;
+}
+
+void _glfwSetWindowTaskbarBadgeStringCocoa(_GLFWwindow* window, const char* string)
+{
+    if (window != NULL)
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Cocoa: Cannot set a badge for a window. Pass NULL to set for the application.");
+    }
+    
+    if (string == NULL)
+    {
+        [NSApp dockTile].badgeLabel = nil;
+        return;
+    }
+    
+    NSString* nsString = [NSString stringWithCString:string
+                                            encoding:[NSString defaultCStringEncoding]];
+    
+    [NSApp dockTile].badgeLabel = nsString;
 }
 
 void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos)

@@ -91,6 +91,7 @@ void _glfwSetWindowTitleNull(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconNull(_GLFWwindow* window, int count, const GLFWimage* images);
 void _glfwSetWindowTaskbarProgressNull(_GLFWwindow* window, int progressState, double value);
 void _glfwSetWindowTaskbarBadgeNull(_GLFWwindow* window, int count);
+void _glfwSetWindowTaskbarBadgeStringNull(_GLFWwindow* window, int count);
 void _glfwSetWindowMonitorNull(_GLFWwindow* window, _GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);
 void _glfwGetWindowPosNull(_GLFWwindow* window, int* xpos, int* ypos);
 void _glfwSetWindowPosNull(_GLFWwindow* window, int xpos, int ypos);

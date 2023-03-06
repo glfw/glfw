@@ -1913,11 +1913,22 @@ void _glfwSetWindowTaskbarProgressWayland(_GLFWwindow* window, const int progres
 
 void _glfwSetWindowTaskbarBadgeWayland(_GLFWwindow* window, int count)
 {
-    (void)window;
-
-    const dbus_bool_t badgeVisible = (count != GLFW_DONT_CARE);
+    if (window != NULL)
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Wayland: Cannot set a badge for a window. Pass NULL to set the application's shared badge.");
+        return;
+    }
+    
+    const dbus_bool_t badgeVisible = (count > 0);
 
     _glfwUpdateTaskbarBadgeDBusPOSIX(badgeVisible, count);
+}
+
+void _glfwSetWindowTaskbarBadgeStringWayland(_GLFWwindow* window, const char* string)
+{
+    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                    "Wayland: Unable to set a string badge. Only integer badges are supported.");
 }
 
 void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos)

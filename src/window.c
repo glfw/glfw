@@ -587,17 +587,24 @@ GLFWAPI void glfwSetWindowTaskbarBadge(GLFWwindow* handle, int count)
 {
     _GLFWwindow* window = (_GLFWwindow*)handle;
 
-    assert(window != NULL);
-
     _GLFW_REQUIRE_INIT();
 
-    if (count != GLFW_DONT_CARE && (count < 0 || count > 999))
+    if (count < 0)
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid badge count %d", count);
         return;
     }
 
     _glfw.platform.setWindowTaskbarBadge(window, count);
+}
+
+GLFWAPI void glfwSetWindowTaskbarBadgeString(GLFWwindow* handle, const char* string)
+{
+    _GLFWwindow* window = (_GLFWwindow*)handle;
+
+    _GLFW_REQUIRE_INIT();
+
+    _glfw.platform.setWindowTaskbarBadgeString(window, string);
 }
 
 GLFWAPI void glfwGetWindowPos(GLFWwindow* handle, int* xpos, int* ypos)

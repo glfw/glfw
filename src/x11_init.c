@@ -1211,6 +1211,7 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
         _glfwSetWindowIconX11,
         _glfwSetWindowTaskbarProgressX11,
         _glfwSetWindowTaskbarBadgeX11,
+        _glfwSetWindowTaskbarBadgeStringX11,
         _glfwGetWindowPosX11,
         _glfwSetWindowPosX11,
         _glfwGetWindowSizeX11,

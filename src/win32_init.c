@@ -640,6 +640,7 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         _glfwSetWindowIconWin32,
         _glfwSetWindowTaskbarProgressWin32,
         _glfwSetWindowTaskbarBadgeWin32,
+        _glfwSetWindowTaskbarBadgeStringWin32,
         _glfwGetWindowPosWin32,
         _glfwSetWindowPosWin32,
         _glfwGetWindowSizeWin32,

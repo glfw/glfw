@@ -232,7 +232,7 @@ void _glfwSetWindowTitleCocoa(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconCocoa(_GLFWwindow* window, int count, const GLFWimage* images);
 void _glfwSetWindowTaskbarProgressCocoa(_GLFWwindow* window, int progressState, double value);
 void _glfwSetWindowTaskbarBadgeCocoa(_GLFWwindow* window, int count);
-void _glfwSetWindowTaskbarBadgeStringCocoa(_GLFWwindow* window, const char* count);
+void _glfwSetWindowTaskbarBadgeStringCocoa(_GLFWwindow* window, const char* string);
 void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos);
 void _glfwSetWindowPosCocoa(_GLFWwindow* window, int xpos, int ypos);
 void _glfwGetWindowSizeCocoa(_GLFWwindow* window, int* width, int* height);

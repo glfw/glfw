@@ -448,7 +448,7 @@ void _glfwSetWindowTitleWayland(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconWayland(_GLFWwindow* window, int count, const GLFWimage* images);
 void _glfwSetWindowTaskbarProgressWayland(_GLFWwindow* window, int progressState, double value);
 void _glfwSetWindowTaskbarBadgeWayland(_GLFWwindow* window, int count);
-void _glfwSetWindowTaskbarBadgeStringWayland(_GLFWwindow* window, const char* count);
+void _glfwSetWindowTaskbarBadgeStringWayland(_GLFWwindow* window, const char* string);
 void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos);
 void _glfwSetWindowPosWayland(_GLFWwindow* window, int xpos, int ypos);
 void _glfwGetWindowSizeWayland(_GLFWwindow* window, int* width, int* height);

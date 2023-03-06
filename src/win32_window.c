@@ -1810,8 +1810,9 @@ void _glfwSetWindowTaskbarBadgeWin32(_GLFWwindow* window, int count)
 
 void _glfwSetWindowTaskbarBadgeStringWin32(_GLFWwindow* window, const char* string)
 {
-    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
-                    "Win32: I'm sure GamesTrap will find a way to write non-integer strings with GDI too. :)");
+    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                    "Win32: Unable to set a string badge. Only integer badges are supported");
+    //In reality you can display a string but it could only be 3 maybe 4 characters long till it becomes an unreadable mess.
 }
 
 void _glfwGetWindowPosWin32(_GLFWwindow* window, int* xpos, int* ypos)

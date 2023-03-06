@@ -1646,11 +1646,15 @@ void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, int progressState, 
 
 static HICON GenerateBadgeIcon(HWND hWnd, WCHAR* text)
 {
-    HDC hdc = NULL, hdcMem = NULL;
+    //Credits to GyrosGeier for helping with transparency
+
+    HDC hdc = NULL, hdcMem = NULL, hdcMemMask = NULL;
     HBITMAP hBitmap = NULL, hBitmapMask = NULL;
     ICONINFO iconInfo;
     HICON hIcon = NULL;
     HFONT hFont = NULL;
+    void* bits = NULL;
+    DWORD* pixels = NULL;
     int width = 16, height = 16;
     int fontSize = 16, weight = FW_REGULAR;
     RECT contentRect = { 0, 0, width, height };
@@ -1658,17 +1662,35 @@ static HICON GenerateBadgeIcon(HWND hWnd, WCHAR* text)
     if (!text)
         return NULL;
 
+    BITMAPINFO bmi =
+    {
+        .bmiHeader =
+        {
+            .biSize = sizeof(BITMAPINFOHEADER),
+            .biWidth = width,
+            .biHeight = height,
+            .biPlanes = 1,
+            .biBitCount = 32,
+            .biCompression = BI_RGB
+        }
+    };
+
     hdc = GetDC(hWnd);
     hdcMem = CreateCompatibleDC(hdc);
-    hBitmap = CreateCompatibleBitmap(hdc, width, height);
+    hdcMemMask = CreateCompatibleDC(hdc);
+
+    hBitmap = CreateDIBSection(hdc, &bmi, DIB_RGB_COLORS, &bits, NULL, 0);
+    pixels = (DWORD*)bits;
+
     hBitmapMask = CreateCompatibleBitmap(hdc, width, height);
     ReleaseDC(hWnd, hdc);
     SelectObject(hdcMem, hBitmap);
+    SelectObject(hdcMemMask, hBitmapMask);
+
+    BitBlt(hdcMemMask, 0, 0, width, height, hdcMem, 0, 0, SRCCOPY);
 
     SelectObject(hdcMem, CreateSolidBrush(RGB(0x26, 0x25, 0x2D)));
     Ellipse(hdcMem, 0, 0, width + 1, height + 1); //17x17 gives a more fancy ellipse
-
-    //TODO Transparency (cull outside of circle)
 
     //Adjust font size depending on digits to display
     if (lstrlen(text) > 2)
@@ -1692,6 +1714,19 @@ static HICON GenerateBadgeIcon(HWND hWnd, WCHAR* text)
 
     DrawText(hdcMem, text, lstrlen(text), &contentRect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
+    //Transparency
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+            DWORD pixel = pixels[y * width + x];
+            if (pixel == 0x0026252Du || pixel == 0x00FFFFFFu) //Pixel is text or ellipsis
+                pixels[y * width + x] |= 0xFF000000u; //Set opaque
+            else
+                pixels[y * width + x] &= 0xFF000000u; //Set fully transparent
+        }
+    }
+
     //Generate icon from bitmap
     iconInfo.fIcon = TRUE;
     iconInfo.xHotspot = 0;
@@ -1701,6 +1736,7 @@ static HICON GenerateBadgeIcon(HWND hWnd, WCHAR* text)
     hIcon = CreateIconIndirect(&iconInfo);
 
     //Cleanup
+    DeleteDC(hdcMemMask);
     DeleteDC(hdcMem);
     DeleteObject(hBitmap);
     DeleteObject(hBitmapMask);

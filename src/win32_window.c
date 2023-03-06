@@ -1647,17 +1647,17 @@ void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, int progressState, 
 static HICON GenerateBadgeIcon(HWND hWnd, int count)
 {
     HDC hdc = NULL, hdcMem = NULL;
-    HBITMAP hBitmap = NULL, hOldBitmap = NULL;
+    HBITMAP hBitmap = NULL;
     HBITMAP hBitmapMask = NULL;
     ICONINFO iconInfo;
     HICON hIcon = NULL;
-    HFONT hFont = NULL, hOldFont = NULL;
+    HFONT hFont = NULL;
     int width = 16, height = 16;
-    int fontSize = 16;
-    RECT contentRect;
+    int fontSize = 16, weight = FW_REGULAR;
+    RECT contentRect = { 0, 0, width, height };
     char countStr[4];
 
-    //Convert count to string (is guaranteed to be at max 2 digits)
+    //Convert count to string (is guaranteed to be at max 3 digits)
     memset(countStr, 0, 4 * sizeof(char));
     sprintf(countStr, "%d", count);
     WCHAR* countWStr = _glfwCreateWideStringFromUTF8Win32(countStr);
@@ -1669,39 +1669,35 @@ static HICON GenerateBadgeIcon(HWND hWnd, int count)
     hBitmap = CreateCompatibleBitmap(hdc, width, height);
     hBitmapMask = CreateCompatibleBitmap(hdc, width, height);
     ReleaseDC(hWnd, hdc);
-    hOldBitmap = (HBITMAP)SelectObject(hdcMem, hBitmap);
+    SelectObject(hdcMem, hBitmap);
 
     //PatBlt(hdcMem, 0, 0, 16, 16, BLACKNESS);
     SelectObject(hdcMem, CreateSolidBrush(RGB(0x26, 0x25, 0x2D)));
-    Ellipse(hdcMem, 0, 0, width - 1, height - 1); //15x15 gives a more fancy ellipse
-    SelectObject(hdcMem, CreateSolidBrush(RGB(255, 255, 255)));
-
-    SetTextColor(hdcMem, RGB(255, 255, 255)); //Use white text color
-    SetBkMode(hdcMem, TRANSPARENT); //Make font background transparent
+    Ellipse(hdcMem, 0, 0, width + 1, height + 1); //17x17 gives a more fancy ellipse
 
     //TODO Transparency (cull outside of circle)
 
     //Adjust font size depending on digits to display
     if (count > 99)
-        fontSize = 12;
+    {
+        fontSize = 10;
+        weight = FW_LIGHT;
+    }
     else if (count > 9)
         fontSize = 14;
        
     //Create and set font
-    hFont = CreateFont(fontSize, 0, 0, 0, FW_REGULAR, FALSE, FALSE, FALSE, 0,
+    hFont = CreateFont(fontSize, 0, 0, 0, weight, FALSE, FALSE, FALSE, 0,
                        OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
                        DEFAULT_PITCH | FF_DONTCARE, TEXT("Segeo UI"));
-    hOldFont = (HFONT)SelectObject(hdcMem, hFont);
+    SelectObject(hdcMem, hFont);
 
     //Draw numbers (center aligned)
-    contentRect.top = 0; contentRect.left = 0; contentRect.right = width; contentRect.bottom = height;
-    DrawText(hdcMem, countWStr, -1, &contentRect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    SetTextColor(hdcMem, RGB(255, 255, 255)); //Use white text color
+    SetBkMode(hdcMem, TRANSPARENT); //Make font background transparent
+    SetTextAlign(hdcMem, TA_LEFT | TA_TOP | TA_NOUPDATECP);
 
-    //Re-apply old settings
-    SelectObject(hdc, hOldFont);
-    hOldFont = NULL;
-    SelectObject(hdc, hOldBitmap);
-    hOldBitmap = NULL;
+    DrawText(hdcMem, countWStr, lstrlen(countWStr), &contentRect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
     //Generate icon from bitmap
     iconInfo.fIcon = TRUE;
@@ -1709,7 +1705,6 @@ static HICON GenerateBadgeIcon(HWND hWnd, int count)
     iconInfo.yHotspot = 0;
     iconInfo.hbmMask = hBitmapMask;
     iconInfo.hbmColor = hBitmap;
-
     hIcon = CreateIconIndirect(&iconInfo);
 
     //Cleanup

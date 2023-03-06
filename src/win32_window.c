@@ -1605,7 +1605,7 @@ void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, int progressState, 
 
     if(!IsWindows7OrGreater())
     {
-        _glfwInputError(GLFW_FEATURE_UNAVAILABLE, "Win32: Taskbar progress is only supported on Windows 7 or newer");
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE, "Win32: Taskbar progress is only supported on Windows 7 and newer");
         return;
     }
 
@@ -1644,7 +1644,7 @@ void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, int progressState, 
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar progress state");
 }
 
-HICON GenerateBadgeIcon(HWND hWnd, int count)
+static HICON GenerateBadgeIcon(HWND hWnd, int count)
 {
     HDC hdc = NULL, hdcMem = NULL;
     HBITMAP hBitmap = NULL, hOldBitmap = NULL;
@@ -1727,17 +1727,25 @@ void _glfwSetWindowTaskbarBadgeWin32(_GLFWwindow* window, int count)
 {
     HRESULT res = S_OK;
     HICON icon = NULL;
+    
+    if (window == NULL)
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE, "Win32: Taskbar badge requires a valid window handle");
+        return;
+    }
 
     if (!IsWindows7OrGreater())
     {
-        _glfwInputError(GLFW_FEATURE_UNAVAILABLE, "Win32: Taskbar badge is only supported on Windows 7 or newer");
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE, "Win32: Taskbar badge is only supported on Windows 7 and newer");
         return;
     }
 
     if (!window->win32.taskbarList)
         return;
+    
+    count = min(count, 999);
 
-    if (count != GLFW_DONT_CARE)
+    if (count > 0)
     {
         icon = GenerateBadgeIcon(window->win32.handle, count);
         if (!icon)
@@ -1747,6 +1755,7 @@ void _glfwSetWindowTaskbarBadgeWin32(_GLFWwindow* window, int count)
         }
     }
 
+    // TODO: should probably set the alt text too. Integer as text is better than nothing. Use the same string for the icon and alt text in the string version.
     res = window->win32.taskbarList->lpVtbl->SetOverlayIcon(window->win32.taskbarList, window->win32.handle, icon, TEXT(""));
 
     if(icon)
@@ -1757,6 +1766,12 @@ void _glfwSetWindowTaskbarBadgeWin32(_GLFWwindow* window, int count)
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar badge count");
         return;
     }
+}
+
+void _glfwSetWindowTaskbarBadgeStringWin32(_GLFWwindow* window, const char* string)
+{
+    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
+                    "Win32: I'm sure GamesTrap will find a way to write non-integer strings with GDI too. :)");
 }
 
 void _glfwGetWindowPosWin32(_GLFWwindow* window, int* xpos, int* ypos)

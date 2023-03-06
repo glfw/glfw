@@ -1644,24 +1644,18 @@ void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, int progressState, 
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar progress state");
 }
 
-static HICON GenerateBadgeIcon(HWND hWnd, int count)
+static HICON GenerateBadgeIcon(HWND hWnd, WCHAR* text)
 {
     HDC hdc = NULL, hdcMem = NULL;
-    HBITMAP hBitmap = NULL;
-    HBITMAP hBitmapMask = NULL;
+    HBITMAP hBitmap = NULL, hBitmapMask = NULL;
     ICONINFO iconInfo;
     HICON hIcon = NULL;
     HFONT hFont = NULL;
     int width = 16, height = 16;
     int fontSize = 16, weight = FW_REGULAR;
     RECT contentRect = { 0, 0, width, height };
-    char countStr[4];
 
-    //Convert count to string (is guaranteed to be at max 3 digits)
-    memset(countStr, 0, 4 * sizeof(char));
-    sprintf(countStr, "%d", count);
-    WCHAR* countWStr = _glfwCreateWideStringFromUTF8Win32(countStr);
-    if (!countWStr)
+    if (!text)
         return NULL;
 
     hdc = GetDC(hWnd);
@@ -1671,19 +1665,18 @@ static HICON GenerateBadgeIcon(HWND hWnd, int count)
     ReleaseDC(hWnd, hdc);
     SelectObject(hdcMem, hBitmap);
 
-    //PatBlt(hdcMem, 0, 0, 16, 16, BLACKNESS);
     SelectObject(hdcMem, CreateSolidBrush(RGB(0x26, 0x25, 0x2D)));
     Ellipse(hdcMem, 0, 0, width + 1, height + 1); //17x17 gives a more fancy ellipse
 
     //TODO Transparency (cull outside of circle)
 
     //Adjust font size depending on digits to display
-    if (count > 99)
+    if (lstrlen(text) > 2)
     {
         fontSize = 10;
         weight = FW_LIGHT;
     }
-    else if (count > 9)
+    else if (lstrlen(text) > 1)
         fontSize = 14;
        
     //Create and set font
@@ -1692,12 +1685,12 @@ static HICON GenerateBadgeIcon(HWND hWnd, int count)
                        DEFAULT_PITCH | FF_DONTCARE, TEXT("Segeo UI"));
     SelectObject(hdcMem, hFont);
 
-    //Draw numbers (center aligned)
+    //Draw text (center aligned)
     SetTextColor(hdcMem, RGB(255, 255, 255)); //Use white text color
     SetBkMode(hdcMem, TRANSPARENT); //Make font background transparent
     SetTextAlign(hdcMem, TA_LEFT | TA_TOP | TA_NOUPDATECP);
 
-    DrawText(hdcMem, countWStr, lstrlen(countWStr), &contentRect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    DrawText(hdcMem, text, lstrlen(text), &contentRect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
     //Generate icon from bitmap
     iconInfo.fIcon = TRUE;
@@ -1713,8 +1706,6 @@ static HICON GenerateBadgeIcon(HWND hWnd, int count)
     DeleteObject(hBitmapMask);
     DeleteObject(hFont);
 
-    _glfw_free(countWStr);
-
     return hIcon;
 }
 
@@ -1722,6 +1713,8 @@ void _glfwSetWindowTaskbarBadgeWin32(_GLFWwindow* window, int count)
 {
     HRESULT res = S_OK;
     HICON icon = NULL;
+    char countStr[4];
+    WCHAR* countWStr = NULL;
     
     if (window == NULL)
     {
@@ -1736,22 +1729,38 @@ void _glfwSetWindowTaskbarBadgeWin32(_GLFWwindow* window, int count)
     }
 
     if (!window->win32.taskbarList)
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar badge count");
         return;
+    }
     
     count = min(count, 999);
 
     if (count > 0)
     {
-        icon = GenerateBadgeIcon(window->win32.handle, count);
-        if (!icon)
+        //Convert count to string (its guaranteed to be at max 3 digits)
+        memset(countStr, 0, 4 * sizeof(char));
+        sprintf(countStr, "%d", count);
+        countWStr = _glfwCreateWideStringFromUTF8Win32(countStr);
+        if (!countWStr)
         {
             _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar badge count");
             return;
         }
+
+        icon = GenerateBadgeIcon(window->win32.handle, countWStr);
+        if (!icon)
+        {
+            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar badge count");
+            _glfw_free(countWStr);
+            return;
+        }
     }
 
-    // TODO: should probably set the alt text too. Integer as text is better than nothing. Use the same string for the icon and alt text in the string version.
-    res = window->win32.taskbarList->lpVtbl->SetOverlayIcon(window->win32.taskbarList, window->win32.handle, icon, TEXT(""));
+    res = window->win32.taskbarList->lpVtbl->SetOverlayIcon(window->win32.taskbarList, window->win32.handle, icon, countWStr ? countWStr : TEXT(""));
+
+    if (countWStr)
+        _glfw_free(countWStr);
 
     if(icon)
         DestroyIcon(icon);

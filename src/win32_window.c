@@ -1655,6 +1655,7 @@ typedef struct
     HBITMAP hOldBitmap;
     HBITMAP hOldBitmapMask;
 
+    HBRUSH hForegroundBrush;
     HBRUSH hBackgroundBrush;
     HBRUSH hOldBrush;
 
@@ -1687,8 +1688,11 @@ static void CleanupBadgeData(HWND hWnd, BadgeData* data)
     if(data->hOldFont)
         SelectObject(data->hdcMem, data->hOldFont);
 
+    if (data->hForegroundBrush)
+        DeleteObject(data->hForegroundBrush);
     if (data->hBackgroundBrush)
         DeleteObject(data->hBackgroundBrush);
+
     if(data->hOldBrush)
         SelectObject(data->hdcMem, data->hOldBrush);
 
@@ -1869,6 +1873,139 @@ static HICON GenerateTextBadgeIcon(HWND hWnd, WCHAR* text)
     badgeData.hOldBitmap = NULL;
     SelectObject(badgeData.hdcMemMask, badgeData.hOldBitmapMask);
     badgeData.hOldBitmapMask = NULL;
+
+    //Generate icon from bitmap
+    iconInfo.fIcon = TRUE;
+    iconInfo.xHotspot = 0;
+    iconInfo.yHotspot = 0;
+    iconInfo.hbmMask = badgeData.hBitmapMask;
+    iconInfo.hbmColor = badgeData.hBitmap;
+    hIcon = CreateIconIndirect(&iconInfo);
+
+    CleanupBadgeData(hWnd, &badgeData);
+
+    return hIcon;
+}
+
+static HICON GenerateGenericBadgeIcon(HWND hWnd)
+{
+    //Credits to GyrosGeier for helping with transparency
+
+    BadgeData badgeData;
+
+    void* bits = NULL;
+    DWORD* pixels = NULL;
+    ICONINFO iconInfo;
+    int width = 32, height = 32;
+    HICON hIcon = NULL;
+
+    memset(&badgeData, 0, sizeof(BadgeData));
+
+    BITMAPINFO bmi =
+    {
+        .bmiHeader =
+        {
+            .biSize = sizeof(BITMAPINFOHEADER),
+            .biWidth = width,
+            .biHeight = height,
+            .biPlanes = 1,
+            .biBitCount = 32,
+            .biCompression = BI_RGB
+        }
+    };
+
+    badgeData.hdc = GetDC(hWnd);
+    if (!badgeData.hdc)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hdcMem = CreateCompatibleDC(badgeData.hdc);
+    if (!badgeData.hdcMem)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hdcMemMask = CreateCompatibleDC(badgeData.hdc);
+    if (!badgeData.hdcMemMask)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hBitmap = CreateDIBSection(badgeData.hdc, &bmi, DIB_RGB_COLORS, &bits, NULL, 0);
+    if (!badgeData.hBitmap)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+    pixels = (DWORD*)bits;
+
+    badgeData.hBitmapMask = CreateCompatibleBitmap(badgeData.hdc, width, height);
+    if (!badgeData.hBitmapMask)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hOldBitmap = (HBITMAP)SelectObject(badgeData.hdcMem, badgeData.hBitmap);
+    badgeData.hOldBitmapMask = (HBITMAP)SelectObject(badgeData.hdcMemMask, badgeData.hBitmapMask);
+
+    if (BitBlt(badgeData.hdcMemMask, 0, 0, width, height, badgeData.hdcMem, 0, 0, SRCCOPY) == FALSE)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hBackgroundBrush = CreateSolidBrush(RGB(0xEB, 0x5A, 0x5E));
+    if (!badgeData.hBackgroundBrush)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hOldBrush = (HBRUSH)SelectObject(badgeData.hdcMem, badgeData.hBackgroundBrush);
+
+    if (Ellipse(badgeData.hdcMem, 0, 0, width + 1, height + 1) == FALSE) //17x17 gives a more fancy ellipse
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hForegroundBrush = CreateSolidBrush(RGB(0xFF, 0xFF, 0xFF));
+    if (!badgeData.hForegroundBrush)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    SelectObject(badgeData.hdcMem, badgeData.hForegroundBrush);
+
+    if (Ellipse(badgeData.hdcMem, 9, 9, (width - 8), (height - 8)) == FALSE)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    SelectObject(badgeData.hdcMem, badgeData.hOldBitmap);
+    badgeData.hOldBitmap = NULL;
+    SelectObject(badgeData.hdcMemMask, badgeData.hOldBitmapMask);
+    badgeData.hOldBitmapMask = NULL;
+
+    //Transparency
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+            DWORD pixel = pixels[y * width + x];
+            if (pixel >= 0x00010101u) //Pixel is ellipsis
+                pixels[y * width + x] |= 0xFF000000u; //Set opaque
+            else
+                pixels[y * width + x] &= 0xFF000000u; //Set fully transparent
+        }
+    }
 
     //Generate icon from bitmap
     iconInfo.fIcon = TRUE;

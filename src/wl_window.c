@@ -1843,6 +1843,14 @@ GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
             return GLFW_FALSE;
     }
 
+    //Reset progress state as it gets saved between application runs
+    if(_glfw.dbus.connection)
+    {
+        //Window NULL is safe here because it won't get
+        //used inside the SetWindowTaskbarProgress function
+        _glfwSetWindowProgressIndicatorWayland(NULL, GLFW_PROGRESS_INDICATOR_DISABLED, 0.0);
+    }
+
     return GLFW_TRUE;
 }
 

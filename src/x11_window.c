@@ -2040,6 +2040,14 @@ GLFWbool _glfwCreateWindowX11(_GLFWwindow* window,
         }
     }
 
+    //Reset progress state as it gets saved between application runs
+    if(_glfw.dbus.connection)
+    {
+        //Window NULL is safe here because it won't get
+        //used inside the SetWindowTaskbarProgress function
+        _glfwSetWindowProgressIndicatorX11(NULL, GLFW_PROGRESS_INDICATOR_DISABLED, 0.0);
+    }
+
     XFlush(_glfw.x11.display);
     return GLFW_TRUE;
 }

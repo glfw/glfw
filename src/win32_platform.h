@@ -497,6 +497,7 @@ typedef struct _GLFWwindowWin32
     GLFWbool            transparent;
     GLFWbool            scaleToMonitor;
     GLFWbool            keymenu;
+    GLFWbool            genericBadge;
 
     // Cached size used to filter out duplicate events
     int                 width, height;

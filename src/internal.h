@@ -415,6 +415,7 @@ struct _GLFWwndconfig
     } x11;
     struct {
         GLFWbool  keymenu;
+        GLFWbool  genericBadge;
     } win32;
     struct {
         char      appId[256];

@@ -1384,6 +1384,7 @@ static int createNativeWindow(_GLFWwindow* window,
 
     window->win32.scaleToMonitor = wndconfig->scaleToMonitor;
     window->win32.keymenu = wndconfig->win32.keymenu;
+    window->win32.genericBadge = wndconfig->win32.genericBadge;
 
     if (!window->monitor)
     {
@@ -2046,20 +2047,25 @@ void _glfwSetWindowBadgeWin32(_GLFWwindow* window, int count)
     }
 
     count = min(count, 999);
-
     if (count > 0)
     {
-        //Convert count to string (its guaranteed to be at max 3 digits)
-        memset(countStr, 0, 4 * sizeof(char));
-        sprintf(countStr, "%d", count);
-        countWStr = _glfwCreateWideStringFromUTF8Win32(countStr);
-        if (!countWStr)
+        if (window->win32.genericBadge)
+            icon = GenerateGenericBadgeIcon(window->win32.handle);
+        else
         {
-            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar badge count");
-            return;
+            //Convert count to string (its guaranteed to be at max 3 digits)
+            memset(countStr, 0, 4 * sizeof(char));
+            sprintf(countStr, "%d", count);
+            countWStr = _glfwCreateWideStringFromUTF8Win32(countStr);
+            if (!countWStr)
+            {
+                _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar badge count");
+                return;
+            }
+
+            icon = GenerateTextBadgeIcon(window->win32.handle, countWStr);
         }
 
-        icon = GenerateTextBadgeIcon(window->win32.handle, countWStr);
         if (!icon)
         {
             _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar badge count");

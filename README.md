@@ -127,6 +127,7 @@ information on what to include when reporting a bug.
  - Bugfix: Failure to make a newly created context current could cause segfault (#2327)
  - [Win32] Fix pkg-config for dynamic library on Windows (#2386, #2420)
  - [Win32] Bugfix: `glfwWaitEventsTimeout` did not return for some sent messages (#2408)
+ - [Win32] Bugfix: XInput could reportedly provide invalid DPad bit masks (#2291)
  - [Wayland] Added improved fallback window decorations via libdecor (#1639,#1693)
  - [Wayland] Bugfix: Connecting a mouse after `glfwInit` would segfault (#1450)
  - [Wayland] Disabled alpha channel for opaque windows on systems lacking

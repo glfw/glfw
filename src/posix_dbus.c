@@ -1,7 +1,7 @@
 //========================================================================
 // GLFW 3.4 POSIX - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2022 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2023 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -110,7 +110,7 @@ void _glfwInitDBusPOSIX(void)
     {
         //Window NULL is safe here because it won't get
         //used inside the SetWindowTaskbarProgress function
-        _glfw.platform.setWindowTaskbarProgress(NULL, GLFW_TASKBAR_PROGRESS_DISABLED, 0);
+        _glfw.platform.setWindowProgressIndicator(NULL, GLFW_PROGRESS_INDICATOR_DISABLED, 0);
     }
 }
 

@@ -1596,7 +1596,7 @@ void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* im
     }
 }
 
-void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, int progressState, double value)
+void _glfwSetWindowProgressIndicatorWin32(_GLFWwindow* window, int progressState, double value)
 {
     HRESULT res = S_OK;
     int winProgressState = 0;
@@ -1620,22 +1620,22 @@ void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, int progressState, 
 
     switch(progressState)
 	{
-	case 1:
-		winProgressState = TBPF_INDETERMINATE;
-		break;
-	case 2:
-		winProgressState = TBPF_NORMAL;
-		break;
-	case 3:
-		winProgressState = TBPF_ERROR;
-		break;
-	case 4:
-		winProgressState = TBPF_PAUSED;
-		break;
+        case GLFW_PROGRESS_INDICATOR_INDETERMINATE:
+            winProgressState = TBPF_INDETERMINATE;
+            break;
+        case GLFW_PROGRESS_INDICATOR_NORMAL:
+            winProgressState = TBPF_NORMAL;
+            break;
+        case GLFW_PROGRESS_INDICATOR_ERROR:
+            winProgressState = TBPF_ERROR;
+            break;
+        case GLFW_PROGRESS_INDICATOR_PAUSED:
+            winProgressState = TBPF_PAUSED;
+            break;
 
-	default:
-		winProgressState = TBPF_NOPROGRESS;
-		break;
+        default:
+            winProgressState = TBPF_NOPROGRESS;
+            break;
 	}
 
     res = window->win32.taskbarList->lpVtbl->SetProgressState(window->win32.taskbarList, window->win32.handle, winProgressState);

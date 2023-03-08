@@ -187,7 +187,7 @@ void _glfwSetWindowIconNull(_GLFWwindow* window, int count, const GLFWimage* ima
 {
 }
 
-void _glfwSetWindowTaskbarProgressNull(_GLFWwindow* window, int progressState, double value)
+void _glfwSetWindowProgressIndicatorNull(_GLFWwindow* window, int progressState, double value)
 {
 }
 

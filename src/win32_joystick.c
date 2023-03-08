@@ -736,6 +736,13 @@ GLFWbool _glfwPollJoystickWin32(_GLFWjoystick* js, int mode)
         if (xis.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
             dpad |= GLFW_HAT_LEFT;
 
+        // Treat invalid combinations as neither being pressed
+        // while preserving what data can be preserved
+        if ((dpad & GLFW_HAT_RIGHT) && (dpad & GLFW_HAT_LEFT))
+            dpad &= ~(GLFW_HAT_RIGHT | GLFW_HAT_LEFT);
+        if ((dpad & GLFW_HAT_UP) && (dpad & GLFW_HAT_DOWN))
+            dpad &= ~(GLFW_HAT_UP | GLFW_HAT_DOWN);
+
         _glfwInputJoystickHat(js, 0, dpad);
     }
 

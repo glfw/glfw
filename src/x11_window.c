@@ -2161,7 +2161,7 @@ void _glfwSetWindowTaskbarProgressX11(_GLFWwindow* window, int progressState, do
     _glfwUpdateTaskbarProgressDBusPOSIX(progressVisible, value);
 }
 
-void _glfwSetWindowTaskbarBadgeX11(_GLFWwindow* window, int count)
+void _glfwSetWindowBadgeX11(_GLFWwindow* window, int count)
 {
     if (window != NULL)
     {
@@ -2172,10 +2172,10 @@ void _glfwSetWindowTaskbarBadgeX11(_GLFWwindow* window, int count)
 
     const dbus_bool_t badgeVisible = (count > 0);
 
-    _glfwUpdateTaskbarBadgeDBusPOSIX(badgeVisible, count);
+    _glfwUpdateBadgeDBusPOSIX(badgeVisible, count);
 }
 
-void _glfwSetWindowTaskbarBadgeStringX11(_GLFWwindow* window, const char* string)
+void _glfwSetWindowBadgeStringX11(_GLFWwindow* window, const char* string)
 {
     _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
                     "X11: Unable to set a string badge. Only integer badges are supported.");

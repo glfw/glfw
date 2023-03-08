@@ -583,7 +583,7 @@ GLFWAPI void glfwSetWindowTaskbarProgress(GLFWwindow* handle, int progressState,
     _glfw.platform.setWindowTaskbarProgress(window, progressState, value);
 }
 
-GLFWAPI void glfwSetWindowTaskbarBadge(GLFWwindow* handle, int count)
+GLFWAPI void glfwSetWindowBadge(GLFWwindow* handle, int count)
 {
     _GLFWwindow* window = (_GLFWwindow*)handle;
 
@@ -595,16 +595,16 @@ GLFWAPI void glfwSetWindowTaskbarBadge(GLFWwindow* handle, int count)
         return;
     }
 
-    _glfw.platform.setWindowTaskbarBadge(window, count);
+    _glfw.platform.setWindowBadge(window, count);
 }
 
-GLFWAPI void glfwSetWindowTaskbarBadgeString(GLFWwindow* handle, const char* string)
+GLFWAPI void glfwSetWindowBadgeString(GLFWwindow* handle, const char* string)
 {
     _GLFWwindow* window = (_GLFWwindow*)handle;
 
     _GLFW_REQUIRE_INIT();
 
-    _glfw.platform.setWindowTaskbarBadgeString(window, string);
+    _glfw.platform.setWindowBadgeString(window, string);
 }
 
 GLFWAPI void glfwGetWindowPos(GLFWwindow* handle, int* xpos, int* ypos)

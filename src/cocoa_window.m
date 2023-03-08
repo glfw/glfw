@@ -1167,7 +1167,7 @@ void _glfwSetWindowTaskbarProgressCocoa(_GLFWwindow* window, int progressState, 
     window->ns.dockProgressIndicator.value = value;
 }
 
-void _glfwSetWindowTaskbarBadgeCocoa(_GLFWwindow* window, int count)
+void _glfwSetWindowBadgeCocoa(_GLFWwindow* window, int count)
 {
     if (window != NULL)
     {
@@ -1192,7 +1192,7 @@ void _glfwSetWindowTaskbarBadgeCocoa(_GLFWwindow* window, int count)
     [NSApp dockTile].badgeLabel = string;
 }
 
-void _glfwSetWindowTaskbarBadgeStringCocoa(_GLFWwindow* window, const char* string)
+void _glfwSetWindowBadgeStringCocoa(_GLFWwindow* window, const char* string)
 {
     if (window != NULL)
     {

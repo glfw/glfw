@@ -191,11 +191,11 @@ void _glfwSetWindowTaskbarProgressNull(_GLFWwindow* window, int progressState, d
 {
 }
 
-void _glfwSetWindowTaskbarBadgeNull(_GLFWwindow* window, int count)
+void _glfwSetWindowBadgeNull(_GLFWwindow* window, int count)
 {
 }
 
-void _glfwSetWindowTaskbarBadgeStringNull(_GLFWwindow* window, const char* string)
+void _glfwSetWindowBadgeStringNull(_GLFWwindow* window, const char* string)
 {
 }
 

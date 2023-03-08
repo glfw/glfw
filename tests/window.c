@@ -441,7 +441,7 @@ int main(int argc, char** argv)
 
             nk_layout_row_dynamic(nk, 30, 1);
 
-            nk_label(nk, "Taskbar Badge", NK_TEXT_CENTERED);
+            nk_label(nk, "Badge", NK_TEXT_CENTERED);
 
             static int badgeCount = 0;
             nk_layout_row_begin(nk, NK_DYNAMIC, 30, 3);
@@ -450,8 +450,8 @@ int main(int argc, char** argv)
             nk_layout_row_push(nk, 2.f / 3.f);
             if (nk_slider_int(nk, 0, &badgeCount, 10000, 1))
             {
-                glfwSetWindowTaskbarBadge(window, badgeCount);
-                glfwSetWindowTaskbarBadge(NULL, badgeCount);
+                glfwSetWindowBadge(window, badgeCount);
+                glfwSetWindowBadge(NULL, badgeCount);
             }
             nk_layout_row_end(nk);
         }

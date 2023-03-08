@@ -131,4 +131,4 @@ typedef struct _GLFWDBusPOSIX
 void _glfwInitDBusPOSIX(void);
 void _glfwTerminateDBusPOSIX(void);
 void _glfwUpdateTaskbarProgressDBusPOSIX(dbus_bool_t progressVisible, double progressValue);
-void _glfwUpdateTaskbarBadgeDBusPOSIX(dbus_bool_t badgeVisible, int badgeCount);
+void _glfwUpdateBadgeDBusPOSIX(dbus_bool_t badgeVisible, int badgeCount);

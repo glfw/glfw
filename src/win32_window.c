@@ -2020,7 +2020,7 @@ static HICON GenerateGenericBadgeIcon(HWND hWnd)
     return hIcon;
 }
 
-void _glfwSetWindowTaskbarBadgeWin32(_GLFWwindow* window, int count)
+void _glfwSetWindowBadgeWin32(_GLFWwindow* window, int count)
 {
     HRESULT res = S_OK;
     HICON icon = NULL;
@@ -2083,7 +2083,7 @@ void _glfwSetWindowTaskbarBadgeWin32(_GLFWwindow* window, int count)
     }
 }
 
-void _glfwSetWindowTaskbarBadgeStringWin32(_GLFWwindow* window, const char* string)
+void _glfwSetWindowBadgeStringWin32(_GLFWwindow* window, const char* string)
 {
     _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
                     "Win32: Unable to set a string badge. Only integer badges are supported");

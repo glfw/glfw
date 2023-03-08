@@ -3395,10 +3395,12 @@ GLFWAPI void glfwSetWindowIcon(GLFWwindow* window, int count, const GLFWimage* i
  */
 GLFWAPI void glfwSetWindowTaskbarProgress(GLFWwindow* window, int progressState, double value);
 
-//Use count = 0 to disable overlay/badge icon
-GLFWAPI void glfwSetWindowTaskbarBadge(GLFWwindow* window, int count);
+//TODO Documentation
+//Use count = 0 to disable badge icon
+GLFWAPI void glfwSetWindowBadge(GLFWwindow* window, int count);
 
-GLFWAPI void glfwSetWindowTaskbarBadgeString(GLFWwindow* window, const char* string);
+//TODO Documentation
+GLFWAPI void glfwSetWindowBadgeString(GLFWwindow* window, const char* string);
 
 /*! @brief Retrieves the position of the content area of the specified window.
  *

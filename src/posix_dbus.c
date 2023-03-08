@@ -221,7 +221,7 @@ void _glfwUpdateTaskbarProgressDBusPOSIX(dbus_bool_t progressVisible, double pro
     dbus_message_unref(msg);
 }
 
-void _glfwUpdateTaskbarBadgeDBusPOSIX(dbus_bool_t badgeVisible, int badgeCount)
+void _glfwUpdateBadgeDBusPOSIX(dbus_bool_t badgeVisible, int badgeCount)
 {
     if(!_glfw.dbus.handle || !_glfw.dbus.connection)
         return;

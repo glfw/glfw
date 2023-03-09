@@ -2104,6 +2104,14 @@ void _glfwSetWindowTitleX11(_GLFWwindow* window, const char* title)
 
 void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* images)
 {
+    if (window == NULL)
+    {
+    
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "X11: Requires a valid window handle to set the icon. There is no application icon to set.");
+        return;
+    }
+    
     if (count)
     {
         int longCount = 0;

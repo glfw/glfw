@@ -1520,6 +1520,14 @@ void _glfwSetWindowTitleWin32(_GLFWwindow* window, const char* title)
 void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* images)
 {
     HICON bigIcon = NULL, smallIcon = NULL;
+    
+    if (window == NULL)
+    {
+    
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Win32: Requires a valid window handle to set the icon. There is no application icon to set.");
+        return;
+    }
 
     if (count)
     {

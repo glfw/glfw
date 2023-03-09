@@ -75,28 +75,6 @@ static DWORD getWindowExStyle(const _GLFWwindow* window)
     return style;
 }
 
-// Returns the image whose area most closely matches the desired one
-//
-static const GLFWimage* chooseImage(int count, const GLFWimage* images,
-                                    int width, int height)
-{
-    int i, leastDiff = INT_MAX;
-    const GLFWimage* closest = NULL;
-
-    for (i = 0;  i < count;  i++)
-    {
-        const int currDiff = abs(images[i].width * images[i].height -
-                                 width * height);
-        if (currDiff < leastDiff)
-        {
-            closest = images + i;
-            leastDiff = currDiff;
-        }
-    }
-
-    return closest;
-}
-
 // Creates an RGBA icon or cursor
 //
 static HICON createIcon(const GLFWimage* image, int xhot, int yhot, GLFWbool icon)
@@ -1545,10 +1523,10 @@ void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* im
 
     if (count)
     {
-        const GLFWimage* bigImage = chooseImage(count, images,
+        const GLFWimage* bigImage = _glfwChooseImage(count, images,
                                                 GetSystemMetrics(SM_CXICON),
                                                 GetSystemMetrics(SM_CYICON));
-        const GLFWimage* smallImage = chooseImage(count, images,
+        const GLFWimage* smallImage = _glfwChooseImage(count, images,
                                                   GetSystemMetrics(SM_CXSMICON),
                                                   GetSystemMetrics(SM_CYSMICON));
 

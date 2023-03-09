@@ -902,6 +902,23 @@ sequential rows, starting from the top-left corner.
 
 To revert to the default window icon, pass in an empty image array.
 
+On Windows and X11, the window's title bar and taskbar icons are set with this method.
+On MacOS, a `NULL` window handle may be passed to set the application's Dock icon.
+
+Some platforms support querying an optimal size for its icons.
+You can ask for this size by passing a `NULL` window handle, a count of zero,
+and a valid pointer to an image with its `pixels` field set to `NULL`:
+
+@code
+GLFWimage image = { DEFAULT_WIDTH, DEFAULT_HEIGHT, NULL };
+glfwSetWindowIcon(NULL, 0, &image);
+
+image.pixels = generatePixels(image.width, image.height);
+
+glfwSetWindowIcon(window, 1, &image);
+free(image.pixels);
+@endcode
+
 @code
 glfwSetWindowIcon(window, 0, NULL);
 @endcode

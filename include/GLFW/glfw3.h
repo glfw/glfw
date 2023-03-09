@@ -3256,12 +3256,12 @@ GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int value);
  */
 GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
 
-/*! @brief Sets the icon for the specified window.
+/*! @brief Sets the icon for the specified window or application.
  *
- *  This function sets the icon of the specified window.  If passed an array of
- *  candidate images, those of or closest to the sizes desired by the system are
- *  selected.  If no images are specified, the window reverts to its default
- *  icon.
+ *  This function sets the icon of the specified window or application.  If passed an
+ *  array of candidate images, those of or closest to the sizes desired by the system
+ *  are selected.  If no images are specified, the window or application reverts to its
+ *  default icon.
  *
  *  The pixels are 32-bit, little-endian, non-premultiplied RGBA, i.e. eight
  *  bits per channel with the red channel first.  They are arranged canonically
@@ -3269,9 +3269,17 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *
  *  The desired image sizes varies depending on platform and system settings.
  *  The selected images will be rescaled as needed.  Good sizes include 16x16,
- *  32x32 and 48x48.
+ *  32x32, 48x48, 64x64 and 128x128.
  *
- *  @param[in] window The window whose icon to set.
+ *  If passed a `NULL` window handle, a count of zero, and a valid pointer to an
+ *  image with its `pixels` field set to `NULL`, GLFW will set that image's
+ *  `width` and `height` fields to the optimal icon size for the current platform,
+ *  if these can be retrieved.  If they can not be retrieved by GLFW, they are left
+ *  untouched.  Doing this requires an internal const-cast for the `images` parameter.
+ *  This parameter remains qualified with `const` for backwards-compatability.
+ *  See @ref window_icon for an example.
+ *
+ *  @param[in] window The window whose icon to set, or `NULL` for the application's icon.
  *  @param[in] count The number of images in the specified array, or zero to
  *  revert to the default window icon.
  *  @param[in] images The images to create the icon from.  This is ignored if
@@ -3284,13 +3292,22 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *  @pointer_lifetime The specified image data is copied before this function
  *  returns.
  *
- *  @remark @macos Regular windows do not have icons on macOS.  This function
- *  will emit @ref GLFW_FEATURE_UNAVAILABLE.  The dock icon will be the same as
- *  the application bundle's icon.  For more information on bundles, see the
- *  [Bundle Programming Guide](https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/)
+ *  @remark Every platform has either a window icon, or an application icon.
+ *  To cover all platforms, you need to set both.
+ *
+ *  @remark @macos The Dock icon defaults to the application bundle's icon.
+ *  For more information on bundles, see the [Bundle Programming Guide](https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/)
  *  in the Mac Developer Library.
  *
- *  @remark @wayland There is no existing protocol to change an icon, the
+ *  @remark @wayland @x11 The default icon is specified in the application's
+ *  desktop file.
+ *
+ *  @remark @macos Regular windows do not have icons on macOS.  This function
+ *  will emit @ref GLFW_FEATURE_UNAVAILABLE if a valid window handle is passed.
+ *  Pass a `NULL` window handle to set the Dock icon. Otherwise, the dock icon
+ *  will be the same as the application bundle's icon.
+ *
+ *  @remark @wayland There is no existing protocol to change an icon; the
  *  window will thus inherit the one defined in the application's desktop file.
  *  This function will emit @ref GLFW_FEATURE_UNAVAILABLE.
  *

@@ -1007,3 +1007,5 @@ void* _glfw_calloc(size_t count, size_t size);
 void* _glfw_realloc(void* pointer, size_t size);
 void _glfw_free(void* pointer);
 
+const GLFWimage* _glfwChooseImage(int count, const GLFWimage* images,
+                                  int width, int height);

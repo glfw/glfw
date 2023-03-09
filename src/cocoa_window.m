@@ -193,6 +193,35 @@ static NSUInteger translateKeyToModifierFlag(int key)
     return 0;
 }
 
+// Converts a GLFWimage to an NSImage. The returned image must be explicitly freed.
+//
+static NSImage* imageToNative(const GLFWimage* image)
+{
+    NSBitmapImageRep* representation = [[NSBitmapImageRep alloc]
+        initWithBitmapDataPlanes:NULL
+                      pixelsWide:image->width
+                      pixelsHigh:image->height
+                   bitsPerSample:8
+                 samplesPerPixel:4
+                        hasAlpha:YES
+                        isPlanar:NO
+                  colorSpaceName:NSCalibratedRGBColorSpace
+                    bitmapFormat:NSBitmapFormatAlphaNonpremultiplied
+                     bytesPerRow:image->width * 4
+                    bitsPerPixel:32];
+    
+    if (representation == nil)
+        return nil;
+
+    memcpy([representation bitmapData], image->pixels, image->width * image->height * 4);
+
+    NSImage* native = [[NSImage alloc] initWithSize:NSMakeSize(image->width, image->height)];
+    [native addRepresentation:representation];
+    [representation release];
+    
+    return native;
+}
+
 // Defines a constant for empty ranges in NSTextInputClient
 //
 static const NSRange kEmptyRange = { NSNotFound, 0 };
@@ -1028,8 +1057,44 @@ void _glfwSetWindowTitleCocoa(_GLFWwindow* window, const char* title)
 void _glfwSetWindowIconCocoa(_GLFWwindow* window,
                              int count, const GLFWimage* images)
 {
-    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                    "Cocoa: Regular windows do not have icons on macOS");
+    if (window != NULL)
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Cocoa: Regular windows do not have icons on macOS");
+        return;
+    }
+    
+    // This is the actual pixel storage size of the dock, which is what we're after here.
+    NSSize preferredSize = [NSApp dockTile].size;
+    
+    if (count == 0 && images != NULL && images->pixels == NULL)
+    {
+        // Const-cast
+        ((GLFWimage*) images)->width = preferredSize.width;
+        ((GLFWimage*) images)->height = preferredSize.height;
+        return;
+    }
+    
+    if (count == 0)
+    {
+        NSApp.applicationIconImage = nil;
+        return;
+    }
+
+    const GLFWimage* image = _glfwChooseImage(count, images, preferredSize.width, preferredSize.height);
+
+    assert(image->pixels != NULL);
+
+    NSImage* native = imageToNative(image);
+
+    if (native == nil)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, NULL);
+        return;
+    }
+        
+    NSApp.applicationIconImage = native;
+    [native release];
 }
 
 void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos)
@@ -1710,35 +1775,15 @@ GLFWbool _glfwCreateCursorCocoa(_GLFWcursor* cursor,
 {
     @autoreleasepool {
 
-    NSImage* native;
-    NSBitmapImageRep* rep;
-
-    rep = [[NSBitmapImageRep alloc]
-        initWithBitmapDataPlanes:NULL
-                      pixelsWide:image->width
-                      pixelsHigh:image->height
-                   bitsPerSample:8
-                 samplesPerPixel:4
-                        hasAlpha:YES
-                        isPlanar:NO
-                  colorSpaceName:NSCalibratedRGBColorSpace
-                    bitmapFormat:NSBitmapFormatAlphaNonpremultiplied
-                     bytesPerRow:image->width * 4
-                    bitsPerPixel:32];
-
-    if (rep == nil)
+    NSImage* native = imageToNative(image);
+        
+    if (native == nil)
         return GLFW_FALSE;
-
-    memcpy([rep bitmapData], image->pixels, image->width * image->height * 4);
-
-    native = [[NSImage alloc] initWithSize:NSMakeSize(image->width, image->height)];
-    [native addRepresentation:rep];
-
+        
     cursor->ns.object = [[NSCursor alloc] initWithImage:native
                                                 hotSpot:NSMakePoint(xhot, yhot)];
 
     [native release];
-    [rep release];
 
     if (cursor->ns.object == nil)
         return GLFW_FALSE;

@@ -89,6 +89,7 @@ static void set_icon(GLFWwindow* window, int icon_color)
     }
 
     glfwSetWindowIcon(window, 1, &img);
+    glfwSetWindowIcon(NULL, 1, &img);
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -107,6 +108,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             break;
         case GLFW_KEY_X:
             glfwSetWindowIcon(window, 0, NULL);
+            glfwSetWindowIcon(NULL, 0, NULL);
             break;
     }
 }

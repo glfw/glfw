@@ -29,6 +29,7 @@ add_executable(monitors monitors.c ${GETOPT} ${GLAD_GL})
 add_executable(reopen reopen.c ${GLAD_GL})
 add_executable(cursor cursor.c ${GLAD_GL})
 
+add_executable(animate-icon WIN32 MACOSX_BUNDLE animate-icon.c ${GLAD_GL})
 add_executable(empty WIN32 MACOSX_BUNDLE empty.c ${TINYCTHREAD} ${GLAD_GL})
 add_executable(gamma WIN32 MACOSX_BUNDLE gamma.c ${GLAD_GL})
 add_executable(icon WIN32 MACOSX_BUNDLE icon.c ${GLAD_GL})
@@ -48,7 +49,7 @@ if (RT_LIBRARY)
     target_link_libraries(threads "${RT_LIBRARY}")
 endif()
 
-set(GUI_ONLY_BINARIES empty gamma icon inputlag joysticks tearing threads
+set(GUI_ONLY_BINARIES animate-icon empty gamma icon inputlag joysticks tearing threads
     timeout title triangle-vulkan window)
 set(CONSOLE_BINARIES allocator clipboard events msaa glfwinfo iconify monitors
     reopen cursor)

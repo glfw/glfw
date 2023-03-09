@@ -175,6 +175,28 @@ void _glfwInputWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor)
     window->monitor = monitor;
 }
 
+// Returns the image whose area most closely matches the desired one
+//
+const GLFWimage* _glfwChooseImage(int count, const GLFWimage* images,
+                                  int width, int height)
+{
+    int i, leastDiff = INT_MAX;
+    const GLFWimage* closest = NULL;
+
+    for (i = 0;  i < count;  i++)
+    {
+        const int currDiff = abs(images[i].width * images[i].height -
+                                 width * height);
+        if (currDiff < leastDiff)
+        {
+            closest = images + i;
+            leastDiff = currDiff;
+        }
+    }
+
+    return closest;
+}
+
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
@@ -531,7 +553,6 @@ GLFWAPI void glfwSetWindowIcon(GLFWwindow* handle,
     int i;
     _GLFWwindow* window = (_GLFWwindow*) handle;
 
-    assert(window != NULL);
     assert(count >= 0);
     assert(count == 0 || images != NULL);
 

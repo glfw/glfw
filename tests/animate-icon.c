@@ -64,6 +64,7 @@ static void error_callback(int error_code, const char* description)
 
 static void set_icon(GLFWwindow* window, int iconColor)
 {
+    GLFWimage image;
     int x, y;
     double time = glfwGetTime();
     
@@ -86,7 +87,9 @@ static void set_icon(GLFWwindow* window, int iconColor)
         }
     }
     
-    GLFWimage image = { width, height, pixels };
+    image.width = width;
+    image.height = height;
+    image.pixels = pixels;
     
     glfwSetErrorCallback(NULL);
     
@@ -133,6 +136,8 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 int main(int argc, char** argv)
 {
     GLFWwindow* window;
+    double lastTime = 0.0;
+    double time;
     
     glfwSetErrorCallback(error_callback);
 
@@ -157,7 +162,6 @@ int main(int argc, char** argv)
 
     glfwSetKeyCallback(window, key_callback);
 
-    double lastTime = 0.0;
     while (!glfwWindowShouldClose(window))
     {
         
@@ -180,7 +184,7 @@ int main(int argc, char** argv)
             height = HEIGHT;
         }
     
-        double time = glfwGetTime();
+        time = glfwGetTime();
         if (animate && (time - lastTime) > (smooth ? 0.01 : 0.15))
         {
             set_icon(window, currentIconColor);
@@ -196,7 +200,3 @@ int main(int argc, char** argv)
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }
-
-
-// TODO: rollback all changes in this branch. Create a new competing branch to set-application-icon, add this file's content as a new test program (animateIcon?)
-// Do not add glfwSetApplicationIcon in the new one. Rather, use glfwSetWindowIcon with NULL handle, and add support for getting an optimal max size.

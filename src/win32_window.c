@@ -1531,11 +1531,11 @@ void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* im
     if (count)
     {
         const GLFWimage* bigImage = _glfwChooseImage(count, images,
-                                                GetSystemMetrics(SM_CXICON),
-                                                GetSystemMetrics(SM_CYICON));
+                                                     GetSystemMetrics(SM_CXICON),
+                                                     GetSystemMetrics(SM_CYICON));
         const GLFWimage* smallImage = _glfwChooseImage(count, images,
-                                                  GetSystemMetrics(SM_CXSMICON),
-                                                  GetSystemMetrics(SM_CYSMICON));
+                                                       GetSystemMetrics(SM_CXSMICON),
+                                                       GetSystemMetrics(SM_CYSMICON));
 
         bigIcon = createIcon(bigImage, 0, 0, GLFW_TRUE);
         smallIcon = createIcon(smallImage, 0, 0, GLFW_TRUE);

@@ -30,6 +30,7 @@
 
 #include "internal.h"
 
+#include <limits.h>
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>

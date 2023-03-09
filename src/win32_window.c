@@ -31,7 +31,6 @@
 
 #if defined(_GLFW_WIN32)
 
-#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 #include <windowsx.h>

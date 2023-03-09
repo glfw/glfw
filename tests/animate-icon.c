@@ -72,7 +72,7 @@ static void set_icon(GLFWwindow* window, int iconColor)
     double green = (cos(SPEED * time * M_PI * 1.5) + 1.0) / 2.0;
     double blue  = (cos(SPEED * time * M_PI * 2.0) + 1.0) / 2.0;
     
-    unsigned char pixels[width * height * 4];
+    unsigned char* pixels = malloc(width * height * 4);
 
     for (x = 0; x < width; ++x)
     {
@@ -97,6 +97,8 @@ static void set_icon(GLFWwindow* window, int iconColor)
     glfwSetWindowIcon(0, 1, &image);
     
     glfwSetErrorCallback(error_callback);
+    
+    free(pixels);
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)

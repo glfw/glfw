@@ -38,6 +38,10 @@
 #include <math.h>
 #include <assert.h>
 
+#ifndef M_PI
+#define M_PI        3.14159265358979323846264338327950288
+#endif
+
 #define ALPHA 220
 #define WIDTH 3
 #define HEIGHT 3

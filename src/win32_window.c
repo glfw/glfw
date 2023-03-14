@@ -1718,8 +1718,6 @@ static void CleanupBadgeData(HWND hWnd, BadgeData* data)
 
 static HICON GenerateTextBadgeIcon(HWND hWnd, WCHAR* text)
 {
-    //Credits to GyrosGeier for helping with transparency
-
     BadgeData badgeData;
 
     void* bits = NULL;
@@ -1890,8 +1888,6 @@ static HICON GenerateTextBadgeIcon(HWND hWnd, WCHAR* text)
 
 static HICON GenerateGenericBadgeIcon(HWND hWnd)
 {
-    //Credits to GyrosGeier for helping with transparency
-
     BadgeData badgeData;
 
     void* bits = NULL;

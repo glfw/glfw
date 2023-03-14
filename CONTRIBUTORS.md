@@ -190,6 +190,7 @@ video tutorials.
  - Martin Pulec
  - Guillaume Racicot
  - Christian Rauch
+ - Simon Richter
  - Philip Rideout
  - Eddie Ringle
  - Max Risuhin

@@ -1,11 +1,15 @@
+file(GLOB_RECURSE include_deps LIST_DIRECTORIES true ${GLFW_SOURCE_DIR}/deps/*.h)
+SOURCE_GROUP(TREE ${GLFW_SOURCE_DIR}/deps PREFIX GLFW/deps FILES ${include_deps})
 
 add_library(glfw ${GLFW_LIBRARY_TYPE}
                  "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"
                  "${GLFW_SOURCE_DIR}/include/GLFW/glfw3native.h"
+                 "${include_deps}"
                  internal.h platform.h mappings.h
                  context.c init.c input.c monitor.c platform.c vulkan.c window.c
                  egl_context.c osmesa_context.c null_platform.h null_joystick.h
                  null_init.c null_monitor.c null_window.c null_joystick.c)
+
 
 # The time, thread and module code is shared between all backends on a given OS,
 # including the null backend, which still needs those bits to be functional
@@ -139,6 +143,7 @@ set_target_properties(glfw PROPERTIES
 
 target_include_directories(glfw PUBLIC
                            "$<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>"
+                           "$<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/deps>"
                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
 target_include_directories(glfw PRIVATE
                            "${GLFW_SOURCE_DIR}/src"

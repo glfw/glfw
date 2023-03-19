@@ -128,6 +128,7 @@ write_basic_package_version_file(src/glfw3ConfigVersion.cmake
 #--------------------------------------------------------------------
 # Add subdirectories
 #--------------------------------------------------------------------
+
 add_subdirectory(src)
 
 if (GLFW_BUILD_EXAMPLES)

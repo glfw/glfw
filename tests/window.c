@@ -414,30 +414,26 @@ int main(int argc, char** argv)
 
             nk_layout_row_dynamic(nk, 30, 1);
 
-            nk_label(nk, "Taskbar Progress", NK_TEXT_CENTERED);
+            nk_label(nk, "Window Progress indicator", NK_TEXT_CENTERED);
 
             nk_layout_row_dynamic(nk, 30, 5);
 
-            static int state = GLFW_TASKBAR_PROGRESS_DISABLED;
+            static int state = GLFW_PROGRESS_INDICATOR_DISABLED;
             static float progress = 0;
             if(nk_button_label(nk, "No progress"))
-                glfwSetWindowTaskbarProgress(window, state = GLFW_TASKBAR_PROGRESS_DISABLED, (double) progress);
+                glfwSetWindowProgressIndicator(window, state = GLFW_PROGRESS_INDICATOR_DISABLED, (double) progress);
             if (nk_button_label(nk, "Indeterminate"))
-                glfwSetWindowTaskbarProgress(window, state = GLFW_TASKBAR_PROGRESS_INDETERMINATE, (double) progress);
+                glfwSetWindowProgressIndicator(window, state = GLFW_PROGRESS_INDICATOR_INDETERMINATE, (double) progress);
             if (nk_button_label(nk, "Normal"))
-                glfwSetWindowTaskbarProgress(window, state = GLFW_TASKBAR_PROGRESS_NORMAL, (double) progress);
+                glfwSetWindowProgressIndicator(window, state = GLFW_PROGRESS_INDICATOR_NORMAL, (double) progress);
             if (nk_button_label(nk, "Error"))
-                glfwSetWindowTaskbarProgress(window, state = GLFW_TASKBAR_PROGRESS_ERROR, (double) progress);
+                glfwSetWindowProgressIndicator(window, state = GLFW_PROGRESS_INDICATOR_ERROR, (double) progress);
             if (nk_button_label(nk, "Paused"))
-                glfwSetWindowTaskbarProgress(window, state = GLFW_TASKBAR_PROGRESS_PAUSED, (double) progress);
+                glfwSetWindowProgressIndicator(window, state = GLFW_PROGRESS_INDICATOR_PAUSED, (double) progress);
 
-            nk_layout_row_begin(nk, NK_DYNAMIC, 30, 2);
-            nk_layout_row_push(nk, 1.f / 3.f);
-            nk_labelf(nk, NK_TEXT_LEFT, "Progress: %0.3f", progress);
-            nk_layout_row_push(nk, 2.f / 3.f);
-            if (nk_slider_float(nk, 0.f, &progress, 1.0f, 0.001f))
-                glfwSetWindowTaskbarProgress(window, state, (double)progress);
-            nk_layout_row_end(nk);
+            nk_label(nk, "Progress: ", NK_TEXT_ALIGN_LEFT);
+            if (nk_slider_float(nk, 0.0f, &progress, 1.0f, 0.05f))
+                glfwSetWindowProgressIndicator(window, state, (double) progress);
 
             nk_layout_row_dynamic(nk, 30, 1);
 

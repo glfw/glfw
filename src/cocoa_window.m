@@ -248,7 +248,7 @@ static void setDockProgressIndicator(int progressState, double value)
     // The bug is caused by NSProgressIndicator not immediately updating its value when it's increasing.
     // This code illustrates the exact same problem, but this time from NORMAL, PAUSED and ERROR to INDETERMINATE:
     //
-    // if (progressState == GLFW_TASKBAR_PROGRESS_INDETERMINATE)
+    // if (progressState == GLFW_PROGRESS_INDICATOR_INDETERMINATE)
     //     [progressIndicator setDoubleValue:0.75];
     // else
     //     [progressIndicator setDoubleValue:0.25];
@@ -268,8 +268,8 @@ static void setDockProgressIndicator(int progressState, double value)
         indicator = createProgressIndicator(dockTile);
     }
     
-    [indicator setIndeterminate:progressState == GLFW_TASKBAR_PROGRESS_INDETERMINATE];
-    [indicator setHidden:progressState == GLFW_TASKBAR_PROGRESS_DISABLED];
+    [indicator setIndeterminate:progressState == GLFW_PROGRESS_INDICATOR_INDETERMINATE];
+    [indicator setHidden:progressState == GLFW_PROGRESS_INDICATOR_DISABLED];
     [indicator setDoubleValue:value];
     
     [dockTile display];
@@ -1064,7 +1064,7 @@ void _glfwDestroyWindowCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
         
-    _glfwSetWindowTaskbarProgressCocoa(window, GLFW_TASKBAR_PROGRESS_DISABLED, 0.0);
+    _glfwSetWindowProgressIndicatorCocoa(window, GLFW_PROGRESS_INDICATOR_DISABLED, 0.0);
 
     if (_glfw.ns.disabledCursorWindow == window)
         _glfw.ns.disabledCursorWindow = NULL;
@@ -1111,10 +1111,10 @@ void _glfwSetWindowIconCocoa(_GLFWwindow* window,
                     "Cocoa: Regular windows do not have icons on macOS");
 }
 
-void _glfwSetWindowTaskbarProgressCocoa(_GLFWwindow* window, int progressState, double value)
+void _glfwSetWindowProgressIndicatorCocoa(_GLFWwindow* window, int progressState, double value)
 {
-    if (progressState == GLFW_TASKBAR_PROGRESS_ERROR || progressState == GLFW_TASKBAR_PROGRESS_PAUSED)
-        progressState = GLFW_TASKBAR_PROGRESS_NORMAL;
+    if (progressState == GLFW_PROGRESS_INDICATOR_ERROR || progressState == GLFW_PROGRESS_INDICATOR_PAUSED)
+        progressState = GLFW_PROGRESS_INDICATOR_NORMAL;
         
     const int oldState = window->ns.dockProgressIndicator.state;
     const int state = progressState;
@@ -1123,8 +1123,8 @@ void _glfwSetWindowTaskbarProgressCocoa(_GLFWwindow* window, int progressState, 
     
     if (oldState == state)
     {
-        if (state == GLFW_TASKBAR_PROGRESS_DISABLED ||
-            state == GLFW_TASKBAR_PROGRESS_INDETERMINATE ||
+        if (state == GLFW_PROGRESS_INDICATOR_DISABLED ||
+            state == GLFW_PROGRESS_INDICATOR_INDETERMINATE ||
             oldValue == value)
             return;
     }
@@ -1132,36 +1132,36 @@ void _glfwSetWindowTaskbarProgressCocoa(_GLFWwindow* window, int progressState, 
     if (oldState != state)
     {
         // Reset
-        if (oldState == GLFW_TASKBAR_PROGRESS_INDETERMINATE)
+        if (oldState == GLFW_PROGRESS_INDICATOR_INDETERMINATE)
             --_glfw.ns.dockProgressIndicator.indeterminateCount;
-        if (oldState != GLFW_TASKBAR_PROGRESS_DISABLED)
+        if (oldState != GLFW_PROGRESS_INDICATOR_DISABLED)
         {
             --_glfw.ns.dockProgressIndicator.windowCount;
             _glfw.ns.dockProgressIndicator.totalValue -= oldValue;
         }
         
         // Set
-        if (state == GLFW_TASKBAR_PROGRESS_INDETERMINATE)
+        if (state == GLFW_PROGRESS_INDICATOR_INDETERMINATE)
             ++_glfw.ns.dockProgressIndicator.indeterminateCount;
-        if (state != GLFW_TASKBAR_PROGRESS_DISABLED)
+        if (state != GLFW_PROGRESS_INDICATOR_DISABLED)
         {
             ++_glfw.ns.dockProgressIndicator.windowCount;
             _glfw.ns.dockProgressIndicator.totalValue += value;
         }
     }
-    else if (state != GLFW_TASKBAR_PROGRESS_DISABLED)
+    else if (state != GLFW_PROGRESS_INDICATOR_DISABLED)
         _glfw.ns.dockProgressIndicator.totalValue += (value - oldValue);
     
     
     if (_glfw.ns.dockProgressIndicator.windowCount > _glfw.ns.dockProgressIndicator.indeterminateCount)
     {
         const double finalValue = _glfw.ns.dockProgressIndicator.totalValue / _glfw.ns.dockProgressIndicator.windowCount;
-        setDockProgressIndicator(GLFW_TASKBAR_PROGRESS_NORMAL, finalValue);
+        setDockProgressIndicator(GLFW_PROGRESS_INDICATOR_NORMAL, finalValue);
     }
     else if (_glfw.ns.dockProgressIndicator.indeterminateCount > 0)
-        setDockProgressIndicator(GLFW_TASKBAR_PROGRESS_INDETERMINATE, 0.0f);
+        setDockProgressIndicator(GLFW_PROGRESS_INDICATOR_INDETERMINATE, 0.0f);
     else
-        setDockProgressIndicator(GLFW_TASKBAR_PROGRESS_DISABLED, 0.0f);
+        setDockProgressIndicator(GLFW_PROGRESS_INDICATOR_DISABLED, 0.0f);
     
     window->ns.dockProgressIndicator.state = state;
     window->ns.dockProgressIndicator.value = value;

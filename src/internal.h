@@ -707,7 +707,7 @@ struct _GLFWplatform
     void (*destroyWindow)(_GLFWwindow*);
     void (*setWindowTitle)(_GLFWwindow*,const char*);
     void (*setWindowIcon)(_GLFWwindow*,int,const GLFWimage*);
-    void (*setWindowTaskbarProgress)(_GLFWwindow*,const int,double);
+    void (*setWindowProgressIndicator)(_GLFWwindow*,const int,double);
     void (*setWindowBadge)(_GLFWwindow*,int);
     void (*setWindowBadgeString)(_GLFWwindow*,const char* string);
     void (*getWindowPos)(_GLFWwindow*,int*,int*);

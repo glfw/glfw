@@ -1159,21 +1159,21 @@ not supported, the application as a whole.  Once the user has given it
 attention, the system will automatically end the request.
 
 
-@subsection window_taskbar_progress Window taskbar progress
+@subsection window_progress_indicator Window progress indicator
 
-If you wish to display the progress of some action on the taskbar, you can
-do this with @ref glfwSetWindowTaskbarProgress.
+If you wish to display the progress of some action on the Dock icon or task bar, you can
+do this with @ref glfwSetWindowProgressIndicator.
 
 @code
-glfwSetWindowTaskbarProgress(window, GLFW_TASKBAR_PROGRESS_NORMAL, 50);
+glfwSetWindowProgressIndicator(window, GLFW_PROGRESS_INDICATOR_NORMAL, 0.5);
 @endcode
 
-There are different taskbar progress states available for you to use:
-    - @ref GLFW_TASKBAR_PROGRESS_DISABLED
-    - @ref GLFW_TASKBAR_PROGRESS_INDETERMINATE
-    - @ref GLFW_TASKBAR_PROGRESS_NORMAL
-    - @ref GLFW_TASKBAR_PROGRESS_ERROR
-    - @ref GLFW_TASKBAR_PROGRESS_PAUSED
+There are different progress states available for you to use:
+    - @ref GLFW_PROGRESS_INDICATOR_DISABLED
+    - @ref GLFW_PROGRESS_INDICATOR_INDETERMINATE
+    - @ref GLFW_PROGRESS_INDICATOR_NORMAL
+    - @ref GLFW_PROGRESS_INDICATOR_ERROR
+    - @ref GLFW_PROGRESS_INDICATOR_PAUSED
 
 The last argument is the progress percentage to display.
 It has a valid range of 0.0 to 1.0.

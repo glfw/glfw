@@ -230,7 +230,7 @@ GLFWbool _glfwCreateWindowCocoa(_GLFWwindow* window, const _GLFWwndconfig* wndco
 void _glfwDestroyWindowCocoa(_GLFWwindow* window);
 void _glfwSetWindowTitleCocoa(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconCocoa(_GLFWwindow* window, int count, const GLFWimage* images);
-void _glfwSetWindowTaskbarProgressCocoa(_GLFWwindow* window, int progressState, double value);
+void _glfwSetWindowProgressIndicatorCocoa(_GLFWwindow* window, int progressState, double value);
 void _glfwSetWindowBadgeCocoa(_GLFWwindow* window, int count);
 void _glfwSetWindowBadgeStringCocoa(_GLFWwindow* window, const char* string);
 void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos);

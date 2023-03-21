@@ -419,7 +419,7 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         _glfwDestroyWindowWayland,
         _glfwSetWindowTitleWayland,
         _glfwSetWindowIconWayland,
-        _glfwSetWindowTaskbarProgressWayland,
+        _glfwSetWindowProgressIndicatorWayland,
         _glfwSetWindowBadgeWayland,
         _glfwSetWindowBadgeStringWayland,
         _glfwGetWindowPosWayland,

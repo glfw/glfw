@@ -619,7 +619,7 @@ GLFWbool _glfwCreateWindowWin32(_GLFWwindow* window, const _GLFWwndconfig* wndco
 void _glfwDestroyWindowWin32(_GLFWwindow* window);
 void _glfwSetWindowTitleWin32(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* images);
-void _glfwSetWindowTaskbarProgressWin32(_GLFWwindow* window, int progressState, double value);
+void _glfwSetWindowProgressIndicatorWin32(_GLFWwindow* window, int progressState, double value);
 void _glfwSetWindowBadgeWin32(_GLFWwindow* window, int count);
 void _glfwSetWindowBadgeStringWin32(_GLFWwindow* window, const char* string);
 void _glfwGetWindowPosWin32(_GLFWwindow* window, int* xpos, int* ypos);

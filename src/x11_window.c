@@ -2040,6 +2040,14 @@ GLFWbool _glfwCreateWindowX11(_GLFWwindow* window,
         }
     }
 
+    //Reset progress state as it gets saved between application runs
+    if(_glfw.dbus.connection)
+    {
+        //Window NULL is safe here because it won't get
+        //used inside the SetWindowTaskbarProgress function
+        _glfwSetWindowProgressIndicatorX11(NULL, GLFW_PROGRESS_INDICATOR_DISABLED, 0.0);
+    }
+
     XFlush(_glfw.x11.display);
     return GLFW_TRUE;
 }
@@ -2152,11 +2160,11 @@ void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* imag
     XFlush(_glfw.x11.display);
 }
 
-void _glfwSetWindowTaskbarProgressX11(_GLFWwindow* window, int progressState, double value)
+void _glfwSetWindowProgressIndicatorX11(_GLFWwindow* window, int progressState, double value)
 {
     (void)window;
 
-    const dbus_bool_t progressVisible = (progressState != GLFW_TASKBAR_PROGRESS_DISABLED);
+    const dbus_bool_t progressVisible = (progressState != GLFW_PROGRESS_INDICATOR_DISABLED);
 
     _glfwUpdateTaskbarProgressDBusPOSIX(progressVisible, value);
 }

@@ -89,7 +89,7 @@ static GLFWbool waitForAnyEvent(double* timeout)
         { _glfw.x11.emptyEventPipe[0], POLLIN }
     };
 
-#if defined(_GLFW_LINUX_JOYSTICK)
+#if defined(GLFW_BUILD_LINUX_JOYSTICK)
     if (_glfw.joysticksInitialized)
         fds[count++] = (struct pollfd) { _glfw.linjs.inotify, POLLIN };
 #endif
@@ -2806,7 +2806,7 @@ void _glfwPollEventsX11(void)
 {
     drainEmptyEvents();
 
-#if defined(_GLFW_LINUX_JOYSTICK)
+#if defined(GLFW_BUILD_LINUX_JOYSTICK)
     if (_glfw.joysticksInitialized)
         _glfwDetectJoystickConnectionLinux();
 #endif

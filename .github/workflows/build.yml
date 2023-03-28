@@ -3,6 +3,7 @@ on:
     pull_request:
     push:
         branches: [ ci, master, latest, 3.3-stable ]
+    workflow_dispatch:
 permissions:
     statuses: write
     contents: read
@@ -15,7 +16,7 @@ jobs:
             CC: clang
             CFLAGS: -Werror
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
             - name: Install dependencies
               run: |
                   sudo apt update
@@ -38,7 +39,7 @@ jobs:
             CC: clang
             CFLAGS: -Werror
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
             - name: Install dependencies
               run: |
                   sudo apt update
@@ -61,7 +62,7 @@ jobs:
             CFLAGS: -Werror
             MACOSX_DEPLOYMENT_TARGET: 10.8
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
 
             - name: Configure static library
               run: cmake -S . -B build-static
@@ -79,7 +80,7 @@ jobs:
         env:
             CFLAGS: /WX
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
 
             - name: Configure static library
               run: cmake -S . -B build-static -G "Visual Studio 17 2022"

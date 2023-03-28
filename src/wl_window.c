@@ -2112,8 +2112,7 @@ void _glfwSetWindowTitleWayland(_GLFWwindow* window, const char* title)
 void _glfwSetWindowIconWayland(_GLFWwindow* window,
                                int count, const GLFWimage* images)
 {
-    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                    "Wayland: The platform does not support setting the window icon");
+   fprintf(stderr, "!!! Ignoring Error: Wayland: Setting window icon not supported\n");
 }
 
 void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos)
@@ -2356,8 +2355,7 @@ void _glfwRequestWindowAttentionWayland(_GLFWwindow* window)
 
 void _glfwFocusWindowWayland(_GLFWwindow* window)
 {
-    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                    "Wayland: The platform does not support setting the input focus");
+   fprintf(stderr, "!!! Ignoring Error: Wayland: Focusing a window requires user interaction\n");
 }
 
 void _glfwSetWindowMonitorWayland(_GLFWwindow* window,

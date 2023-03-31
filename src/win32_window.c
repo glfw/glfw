@@ -1011,19 +1011,16 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 			if (_glfw.hints.window.titlebar || !hasThickFrame || !wParam)
 				break;
 
-			UINT dpi = GetDpiForWindow(hWnd);
-
-			int frame_x = GetSystemMetricsForDpi(SM_CXFRAME, dpi);
-			int frame_y = GetSystemMetricsForDpi(SM_CYFRAME, dpi);
-			int padding = GetSystemMetricsForDpi(92, dpi);
+			const int frame_x = 2.0f * GetSystemMetrics(SM_CXFRAME);
+			const int frame_y = 2.0f * GetSystemMetrics(SM_CYFRAME);
 
 			NCCALCSIZE_PARAMS* params = (NCCALCSIZE_PARAMS*)lParam;
 			RECT* requested_client_rect = params->rgrc;
 
-			requested_client_rect->right -= frame_x + padding;
-			requested_client_rect->left += frame_x + padding;
-			requested_client_rect->bottom -= frame_y + padding;
-			requested_client_rect->top += frame_y + (window->win32.maximized ? 1.0f : -1.0f) * padding;
+			requested_client_rect->right -= frame_x;
+			requested_client_rect->left += frame_x;
+			requested_client_rect->bottom -= frame_y;
+			requested_client_rect->top += window->win32.maximized ? frame_y : 0.0f;
 
 			return 0;
 		}
@@ -1307,15 +1304,13 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 					RECT rc;
 					GetClientRect(hWnd, &rc);
 
-					UINT dpi = GetDpiForWindow(hWnd);
-					int frame_y = GetSystemMetricsForDpi(SM_CYFRAME, dpi);
-					int padding = GetSystemMetricsForDpi(92, dpi);
+					int frame_y = 2.0f * GetSystemMetrics(SM_CYFRAME);
 
 					enum { left = 1, top = 2, right = 4, bottom = 8 };
 					int hit = 0;
 					if (pt.x < border_thickness.left)								hit |= left;
 					if (pt.x > rc.right - border_thickness.right)					hit |= right;
-					if (pt.y < border_thickness.top || pt.y < frame_y + padding)	hit |= top;
+					if (pt.y < border_thickness.top || pt.y < frame_y)				hit |= top;
 					if (pt.y > rc.bottom - border_thickness.bottom)					hit |= bottom;
 
 					if (hit & top && hit & left)        return HTTOPLEFT;

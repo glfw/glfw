@@ -336,11 +336,16 @@ static char * GetAccurateMonitorName(const WCHAR *deviceName)
     if(loadWin7MonitorPointers(&dllPointers) == 0)
         return NULL;
 
-    DISPLAYCONFIG_PATH_INFO *paths = NULL;
-    DISPLAYCONFIG_MODE_INFO *modes = NULL;
-    char *retval = NULL;
-    UINT32 pathCount = 0;
-    UINT32 modeCount = 0;
+    DISPLAYCONFIG_PATH_INFO *paths;
+    paths = NULL;
+    DISPLAYCONFIG_MODE_INFO *modes;
+    modes = NULL;
+    char *retval;
+    retval = NULL;
+    UINT32 pathCount;
+    pathCount = 0;
+    UINT32 modeCount;
+    modeCount = 0;
     UINT32 i;
     LONG rc;
 
@@ -429,7 +434,8 @@ static BOOL CALLBACK monitorCallback(HMONITOR handle,
         if (wcscmp(mi.szDevice, monitor->win32.adapterName) == 0)
         {
             monitor->win32.handle = handle;
-            char *possiblyMoreAccurateMonitorName = GetAccurateMonitorName(mi.szDevice);
+            char *possiblyMoreAccurateMonitorName;
+            possiblyMoreAccurateMonitorName = GetAccurateMonitorName(mi.szDevice);
             if(possiblyMoreAccurateMonitorName != NULL)
             {
                 strncpy(monitor->name, possiblyMoreAccurateMonitorName, sizeof(monitor->name) - 1);

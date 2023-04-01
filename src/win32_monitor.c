@@ -332,6 +332,7 @@ BOOL loadWin7MonitorPointers(AccurateMonitorNameRequiredData *io_ptrs)
 // If the returned pointer is valid (not NULL) the caller of this function is in charge of freeing the memory when he is done.
 static char * GetAccurateMonitorName(const WCHAR *deviceName)
 {
+    AccurateMonitorNameRequiredData dllPointers;
     DISPLAYCONFIG_PATH_INFO *paths;
     DISPLAYCONFIG_MODE_INFO *modes;
     char *retval;
@@ -348,7 +349,6 @@ static char * GetAccurateMonitorName(const WCHAR *deviceName)
     i = 0;
     rc = 0;
 
-    AccurateMonitorNameRequiredData dllPointers;
     if(loadWin7MonitorPointers(&dllPointers) == 0)
         return NULL;
 

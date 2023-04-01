@@ -425,6 +425,8 @@ static BOOL CALLBACK monitorCallback(HMONITOR handle,
                                      LPARAM data)
 {
     MONITORINFOEXW mi;
+    char *possiblyMoreAccurateMonitorName = NULL;
+
     ZeroMemory(&mi, sizeof(mi));
     mi.cbSize = sizeof(mi);
 
@@ -434,7 +436,6 @@ static BOOL CALLBACK monitorCallback(HMONITOR handle,
         if (wcscmp(mi.szDevice, monitor->win32.adapterName) == 0)
         {
             monitor->win32.handle = handle;
-            char *possiblyMoreAccurateMonitorName;
             possiblyMoreAccurateMonitorName = GetAccurateMonitorName(mi.szDevice);
             if(possiblyMoreAccurateMonitorName != NULL)
             {

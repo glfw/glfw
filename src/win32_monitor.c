@@ -337,17 +337,20 @@ static char * GetAccurateMonitorName(const WCHAR *deviceName)
         return NULL;
 
     DISPLAYCONFIG_PATH_INFO *paths;
-    paths = NULL;
     DISPLAYCONFIG_MODE_INFO *modes;
-    modes = NULL;
     char *retval;
-    retval = NULL;
     UINT32 pathCount;
-    pathCount = 0;
     UINT32 modeCount;
-    modeCount = 0;
     UINT32 i;
     LONG rc;
+    
+    paths = NULL;
+    modes = NULL;
+    retval = NULL;
+    pathCount = 0;
+    modeCount = 0;
+    int i = 0;
+    rc = 0;
 
     do {
         rc = dllPointers.m_GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, &pathCount, &modeCount);

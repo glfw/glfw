@@ -429,12 +429,12 @@ static BOOL CALLBACK monitorCallback(HMONITOR handle,
         if (wcscmp(mi.szDevice, monitor->win32.adapterName) == 0)
         {
             monitor->win32.handle = handle;
-            char *possibleBetterDisplayName = GetAccurateMonitorName(mi.szDevice);
-            if(possibleBetterDisplayName != NULL)
+            char *possiblyMoreAccurateMonitorName = GetAccurateMonitorName(mi.szDevice);
+            if(possiblyMoreAccurateMonitorName != NULL)
             {
-                strncpy(monitor->name, possibleBetterDisplayName, sizeof(monitor->name) - 1);
-                free(possibleBetterDisplayName);
-                possibleBetterDisplayName = NULL;
+                strncpy(monitor->name, possiblyMoreAccurateMonitorName, sizeof(monitor->name) - 1);
+                free(possiblyMoreAccurateMonitorName);
+                possiblyMoreAccurateMonitorName = NULL;
             }
         }
     }

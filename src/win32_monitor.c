@@ -297,15 +297,15 @@ typedef LONG (*pGetDisplayConfigBufferSizes)(UINT32 flags, UINT32 *numPathArrayE
 typedef LONG (*pQueryDisplayConfig)(UINT32 flags, UINT32 *numPathArrayElements, DISPLAYCONFIG_PATH_INFO *pathArray, UINT32 *numModeInfoArrayElements, DISPLAYCONFIG_MODE_INFO *modeInfoArray, DISPLAYCONFIG_TOPOLOGY_ID *currentTopologyId);
 typedef LONG (*pDisplayConfigGetDeviceInfo)(DISPLAYCONFIG_DEVICE_INFO_HEADER* requestPacket);
 
-typedef struct AccurateNameRequiredData
+typedef struct AccurateMonitorNameRequiredData
 {
     HMODULE m_dll;
     pGetDisplayConfigBufferSizes m_GetDisplayConfigBufferSizes;
     pQueryDisplayConfig m_QueryDisplayConfig;
     pDisplayConfigGetDeviceInfo m_DisplayConfigGetDeviceInfo;
-} AccurateNameRequiredData;
+} AccurateMonitorNameRequiredData;
 
-BOOL loadWin7MonitorPointers(AccurateNameRequiredData *io_ptrs)
+BOOL loadWin7MonitorPointers(AccurateMonitorNameRequiredData *io_ptrs)
 {
     if(!IsWindows7OrGreater())
         return 0;
@@ -332,7 +332,7 @@ BOOL loadWin7MonitorPointers(AccurateNameRequiredData *io_ptrs)
 // If the returned pointer is valid (not NULL) the caller of this function is in charge of freeing the memory when he is done.
 static char * GetAccurateMonitorName(const WCHAR *deviceName)
 {
-    AccurateNameRequiredData dllPointers;
+    AccurateMonitorNameRequiredData dllPointers;
     if(loadWin7MonitorPointers(&dllPointers) == 0)
         return NULL;
 

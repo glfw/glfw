@@ -349,7 +349,7 @@ static char * GetAccurateMonitorName(const WCHAR *deviceName)
     retval = NULL;
     pathCount = 0;
     modeCount = 0;
-    int i = 0;
+    i = 0;
     rc = 0;
 
     do {

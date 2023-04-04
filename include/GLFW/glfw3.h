@@ -3398,11 +3398,64 @@ GLFWAPI void glfwSetWindowIcon(GLFWwindow* window, int count, const GLFWimage* i
  */
 GLFWAPI void glfwSetWindowProgressIndicator(GLFWwindow* window, int progressState, double value);
 
-//TODO Documentation
-//Use count = 0 to disable badge icon
+/*! @brief Sets the dock or taskbar badge for the specified window or the application.
+ *
+ *  This function sets the dock or taskbar badge for the specified window
+ *  or the application as a whole.  Any badge set with this function
+ *  overrides the string badge set with @ref glfwSetWindowBadgeString.
+ *  If the platform does not support number badges, the string badge
+ *  is not overridden.
+ *
+ *  @param[in] window The window whose badge to set.
+ *  @param[in] count The number to set, or `0` to disable it.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_PLATFORM_ERROR, and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
+ *
+ *  @remark @win32 On Windows Vista and earlier, this function will emit
+ *  @ref GLFW_FEATURE_UNAVAILABLE.
+ *
+ *  @remark @macos Only the Dock icon may contain a badge. Pass a `NULL`
+ *  window handle to set it.  Emits @ref GLFW_FEATURE_UNAVAILABLE if a
+ *  valid window handle is passed.
+ *
+ *  @remark @x11 @wayland @win32 Emits GLFW_FEATURE_UNAVAILABLE if a
+ *  `NULL` window handle is passed.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup window
+ */
 GLFWAPI void glfwSetWindowBadge(GLFWwindow* window, int count);
 
-//TODO Documentation
+/*! @brief Sets the dock or taskbar badge for the specified window or the application.
+ *
+ *  This function sets the dock or taskbar badge for the specified window
+ *  or the application as a whole.  Any string badge set with this function
+ *  overrides the number badge set with @ref glfwSetWindowBadge.
+ *  If the platform does not support string badges, the number badge
+ *  is not overridden.
+ *
+ *  @param[in] window The window whose badge to set.
+ *  @param[in] string The text to set, or `NULL` to disable it.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_PLATFORM_ERROR, and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
+ *
+ *  @remark @macos Only the Dock icon may contain a badge. Pass a `NULL`
+ *  window handle to set it.  Emits @ref GLFW_FEATURE_UNAVAILABLE if a
+ *  valid window handle is passed.
+ *
+ *  @remark @x11 @wayland @win32 Emits GLFW_FEATURE_UNAVAILABLE.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup window
+ */
 GLFWAPI void glfwSetWindowBadgeString(GLFWwindow* window, const char* string);
 
 /*! @brief Retrieves the position of the content area of the specified window.

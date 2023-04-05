@@ -43,6 +43,16 @@ to whatever window is behind it.  This can also be changed after window
 creation with the matching [window attribute](@ref GLFW_MOUSE_PASSTHROUGH_attrib).
 
 
+@subsubsection wayland_libdecor_34 Wayland libdecor decorations
+
+GLFW now supports improved fallback window decorations via
+[libdecor](https://gitlab.freedesktop.org/libdecor/libdecor).
+
+Support for libdecor can be toggled before GLFW is initialized with the
+[GLFW_WAYLAND_LIBDECOR](@ref GLFW_WAYLAND_LIBDECOR_hint) init hint.  It is
+enabled by default.
+
+
 @subsubsection wayland_app_id_34 Wayland app_id specification
 
 GLFW now supports specifying the app_id for a Wayland window using the
@@ -267,6 +277,9 @@ then GLFW will fail to initialize.
  - @ref GLFW_POSITION_X
  - @ref GLFW_POSITION_Y
  - @ref GLFW_ANY_POSITION
+ - @ref GLFW_WAYLAND_LIBDECOR
+ - @ref GLFW_WAYLAND_PREFER_LIBDECOR
+ - @ref GLFW_WAYLAND_DISABLE_LIBDECOR
 
 
 @section news_archive Release notes for earlier versions

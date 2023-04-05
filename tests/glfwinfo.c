@@ -266,9 +266,10 @@ static void list_vulkan_instance_layers(void)
 
     for (uint32_t i = 0;  i < lp_count;  i++)
     {
-        printf(" %s (spec version %u) \"%s\"\n",
+        printf(" %s (spec version %u.%u) \"%s\"\n",
                lp[i].layerName,
-               lp[i].specVersion >> 22,
+               VK_VERSION_MAJOR(lp[i].specVersion),
+               VK_VERSION_MINOR(lp[i].specVersion),
                lp[i].description);
     }
 
@@ -286,9 +287,10 @@ static void list_vulkan_device_layers(VkInstance instance, VkPhysicalDevice devi
 
     for (uint32_t i = 0;  i < lp_count;  i++)
     {
-        printf(" %s (spec version %u) \"%s\"\n",
+        printf(" %s (spec version %u.%u) \"%s\"\n",
                lp[i].layerName,
-               lp[i].specVersion >> 22,
+               VK_VERSION_MAJOR(lp[i].specVersion),
+               VK_VERSION_MINOR(lp[i].specVersion),
                lp[i].description);
     }
 
@@ -710,189 +712,186 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_COCOA_GRAPHICS_SWITCHING, cocoa_graphics_switching);
 
     GLFWwindow* window = glfwCreateWindow(200, 200, "Version", NULL, NULL);
-    if (!window)
+    if (window)
     {
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
+        glfwMakeContextCurrent(window);
+        gladLoadGL(glfwGetProcAddress);
 
-    glfwMakeContextCurrent(window);
-    gladLoadGL(glfwGetProcAddress);
+        const GLenum error = glGetError();
+        if (error != GL_NO_ERROR)
+            printf("*** OpenGL error after make current: 0x%08x ***\n", error);
 
-    const GLenum error = glGetError();
-    if (error != GL_NO_ERROR)
-        printf("*** OpenGL error after make current: 0x%08x ***\n", error);
+        // Report client API version
 
-    // Report client API version
+        const int client = glfwGetWindowAttrib(window, GLFW_CLIENT_API);
+        const int major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
+        const int minor = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR);
+        const int revision = glfwGetWindowAttrib(window, GLFW_CONTEXT_REVISION);
+        const int profile = glfwGetWindowAttrib(window, GLFW_OPENGL_PROFILE);
 
-    const int client = glfwGetWindowAttrib(window, GLFW_CLIENT_API);
-    const int major = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MAJOR);
-    const int minor = glfwGetWindowAttrib(window, GLFW_CONTEXT_VERSION_MINOR);
-    const int revision = glfwGetWindowAttrib(window, GLFW_CONTEXT_REVISION);
-    const int profile = glfwGetWindowAttrib(window, GLFW_OPENGL_PROFILE);
-
-    printf("%s context version string: \"%s\"\n",
-           get_api_name(client),
-           glGetString(GL_VERSION));
-
-    printf("%s context version parsed by GLFW: %u.%u.%u\n",
-           get_api_name(client),
-           major, minor, revision);
-
-    // Report client API context properties
-
-    if (client == GLFW_OPENGL_API)
-    {
-        if (major >= 3)
-        {
-            GLint flags;
-
-            glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-            printf("%s context flags (0x%08x):", get_api_name(client), flags);
-
-            if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
-                printf(" forward-compatible");
-            if (flags & 2/*GL_CONTEXT_FLAG_DEBUG_BIT*/)
-                printf(" debug");
-            if (flags & GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB)
-                printf(" robustness");
-            if (flags & 8/*GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR*/)
-                printf(" no-error");
-            putchar('\n');
-
-            printf("%s context flags parsed by GLFW:", get_api_name(client));
-
-            if (glfwGetWindowAttrib(window, GLFW_OPENGL_FORWARD_COMPAT))
-                printf(" forward-compatible");
-            if (glfwGetWindowAttrib(window, GLFW_CONTEXT_DEBUG))
-                printf(" debug");
-            if (glfwGetWindowAttrib(window, GLFW_CONTEXT_ROBUSTNESS) == GLFW_LOSE_CONTEXT_ON_RESET)
-                printf(" robustness");
-            if (glfwGetWindowAttrib(window, GLFW_CONTEXT_NO_ERROR))
-                printf(" no-error");
-            putchar('\n');
-        }
-
-        if (major >= 4 || (major == 3 && minor >= 2))
-        {
-            GLint mask;
-            glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
-
-            printf("%s profile mask (0x%08x): %s\n",
-                   get_api_name(client),
-                   mask,
-                   get_profile_name_gl(mask));
-
-            printf("%s profile mask parsed by GLFW: %s\n",
-                   get_api_name(client),
-                   get_profile_name_glfw(profile));
-        }
-
-        if (GLAD_GL_ARB_robustness)
-        {
-            const int robustness = glfwGetWindowAttrib(window, GLFW_CONTEXT_ROBUSTNESS);
-            GLint strategy;
-            glGetIntegerv(GL_RESET_NOTIFICATION_STRATEGY_ARB, &strategy);
-
-            printf("%s robustness strategy (0x%08x): %s\n",
-                   get_api_name(client),
-                   strategy,
-                   get_strategy_name_gl(strategy));
-
-            printf("%s robustness strategy parsed by GLFW: %s\n",
-                   get_api_name(client),
-                   get_strategy_name_glfw(robustness));
-        }
-    }
-
-    printf("%s context renderer string: \"%s\"\n",
-           get_api_name(client),
-           glGetString(GL_RENDERER));
-    printf("%s context vendor string: \"%s\"\n",
-           get_api_name(client),
-           glGetString(GL_VENDOR));
-
-    if (major >= 2)
-    {
-        printf("%s context shading language version: \"%s\"\n",
+        printf("%s context version string: \"%s\"\n",
                get_api_name(client),
-               glGetString(GL_SHADING_LANGUAGE_VERSION));
+               glGetString(GL_VERSION));
+
+        printf("%s context version parsed by GLFW: %u.%u.%u\n",
+               get_api_name(client),
+               major, minor, revision);
+
+        // Report client API context properties
+
+        if (client == GLFW_OPENGL_API)
+        {
+            if (major >= 3)
+            {
+                GLint flags;
+
+                glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+                printf("%s context flags (0x%08x):", get_api_name(client), flags);
+
+                if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
+                    printf(" forward-compatible");
+                if (flags & 2/*GL_CONTEXT_FLAG_DEBUG_BIT*/)
+                    printf(" debug");
+                if (flags & GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB)
+                    printf(" robustness");
+                if (flags & 8/*GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR*/)
+                    printf(" no-error");
+                putchar('\n');
+
+                printf("%s context flags parsed by GLFW:", get_api_name(client));
+
+                if (glfwGetWindowAttrib(window, GLFW_OPENGL_FORWARD_COMPAT))
+                    printf(" forward-compatible");
+                if (glfwGetWindowAttrib(window, GLFW_CONTEXT_DEBUG))
+                    printf(" debug");
+                if (glfwGetWindowAttrib(window, GLFW_CONTEXT_ROBUSTNESS) == GLFW_LOSE_CONTEXT_ON_RESET)
+                    printf(" robustness");
+                if (glfwGetWindowAttrib(window, GLFW_CONTEXT_NO_ERROR))
+                    printf(" no-error");
+                putchar('\n');
+            }
+
+            if (major >= 4 || (major == 3 && minor >= 2))
+            {
+                GLint mask;
+                glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
+
+                printf("%s profile mask (0x%08x): %s\n",
+                       get_api_name(client),
+                       mask,
+                       get_profile_name_gl(mask));
+
+                printf("%s profile mask parsed by GLFW: %s\n",
+                       get_api_name(client),
+                       get_profile_name_glfw(profile));
+            }
+
+            if (GLAD_GL_ARB_robustness)
+            {
+                const int robustness = glfwGetWindowAttrib(window, GLFW_CONTEXT_ROBUSTNESS);
+                GLint strategy;
+                glGetIntegerv(GL_RESET_NOTIFICATION_STRATEGY_ARB, &strategy);
+
+                printf("%s robustness strategy (0x%08x): %s\n",
+                       get_api_name(client),
+                       strategy,
+                       get_strategy_name_gl(strategy));
+
+                printf("%s robustness strategy parsed by GLFW: %s\n",
+                       get_api_name(client),
+                       get_strategy_name_glfw(robustness));
+            }
+        }
+
+        printf("%s context renderer string: \"%s\"\n",
+               get_api_name(client),
+               glGetString(GL_RENDERER));
+        printf("%s context vendor string: \"%s\"\n",
+               get_api_name(client),
+               glGetString(GL_VENDOR));
+
+        if (major >= 2)
+        {
+            printf("%s context shading language version: \"%s\"\n",
+                   get_api_name(client),
+                   glGetString(GL_SHADING_LANGUAGE_VERSION));
+        }
+
+        printf("%s framebuffer:\n", get_api_name(client));
+
+        GLint redbits, greenbits, bluebits, alphabits, depthbits, stencilbits;
+
+        if (client == GLFW_OPENGL_API && profile == GLFW_OPENGL_CORE_PROFILE)
+        {
+            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                                  GL_BACK_LEFT,
+                                                  GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE,
+                                                  &redbits);
+            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                                  GL_BACK_LEFT,
+                                                  GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE,
+                                                  &greenbits);
+            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                                  GL_BACK_LEFT,
+                                                  GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE,
+                                                  &bluebits);
+            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                                  GL_BACK_LEFT,
+                                                  GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE,
+                                                  &alphabits);
+            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                                  GL_DEPTH,
+                                                  GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE,
+                                                  &depthbits);
+            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
+                                                  GL_STENCIL,
+                                                  GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE,
+                                                  &stencilbits);
+        }
+        else
+        {
+            glGetIntegerv(GL_RED_BITS, &redbits);
+            glGetIntegerv(GL_GREEN_BITS, &greenbits);
+            glGetIntegerv(GL_BLUE_BITS, &bluebits);
+            glGetIntegerv(GL_ALPHA_BITS, &alphabits);
+            glGetIntegerv(GL_DEPTH_BITS, &depthbits);
+            glGetIntegerv(GL_STENCIL_BITS, &stencilbits);
+        }
+
+        printf(" red: %u green: %u blue: %u alpha: %u depth: %u stencil: %u\n",
+            redbits, greenbits, bluebits, alphabits, depthbits, stencilbits);
+
+        if (client == GLFW_OPENGL_ES_API ||
+            GLAD_GL_ARB_multisample ||
+            major > 1 || minor >= 3)
+        {
+            GLint samples, samplebuffers;
+            glGetIntegerv(GL_SAMPLES, &samples);
+            glGetIntegerv(GL_SAMPLE_BUFFERS, &samplebuffers);
+
+            printf(" samples: %u sample buffers: %u\n", samples, samplebuffers);
+        }
+
+        if (client == GLFW_OPENGL_API && profile != GLFW_OPENGL_CORE_PROFILE)
+        {
+            GLint accumredbits, accumgreenbits, accumbluebits, accumalphabits;
+            GLint auxbuffers;
+
+            glGetIntegerv(GL_ACCUM_RED_BITS, &accumredbits);
+            glGetIntegerv(GL_ACCUM_GREEN_BITS, &accumgreenbits);
+            glGetIntegerv(GL_ACCUM_BLUE_BITS, &accumbluebits);
+            glGetIntegerv(GL_ACCUM_ALPHA_BITS, &accumalphabits);
+            glGetIntegerv(GL_AUX_BUFFERS, &auxbuffers);
+
+            printf(" accum red: %u accum green: %u accum blue: %u accum alpha: %u aux buffers: %u\n",
+                   accumredbits, accumgreenbits, accumbluebits, accumalphabits, auxbuffers);
+        }
+
+        if (list_extensions)
+            list_context_extensions(client, major, minor);
+
+        glfwDestroyWindow(window);
     }
-
-    printf("%s framebuffer:\n", get_api_name(client));
-
-    GLint redbits, greenbits, bluebits, alphabits, depthbits, stencilbits;
-
-    if (client == GLFW_OPENGL_API && profile == GLFW_OPENGL_CORE_PROFILE)
-    {
-        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
-                                              GL_BACK_LEFT,
-                                              GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE,
-                                              &redbits);
-        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
-                                              GL_BACK_LEFT,
-                                              GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE,
-                                              &greenbits);
-        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
-                                              GL_BACK_LEFT,
-                                              GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE,
-                                              &bluebits);
-        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
-                                              GL_BACK_LEFT,
-                                              GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE,
-                                              &alphabits);
-        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
-                                              GL_DEPTH,
-                                              GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE,
-                                              &depthbits);
-        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER,
-                                              GL_STENCIL,
-                                              GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE,
-                                              &stencilbits);
-    }
-    else
-    {
-        glGetIntegerv(GL_RED_BITS, &redbits);
-        glGetIntegerv(GL_GREEN_BITS, &greenbits);
-        glGetIntegerv(GL_BLUE_BITS, &bluebits);
-        glGetIntegerv(GL_ALPHA_BITS, &alphabits);
-        glGetIntegerv(GL_DEPTH_BITS, &depthbits);
-        glGetIntegerv(GL_STENCIL_BITS, &stencilbits);
-    }
-
-    printf(" red: %u green: %u blue: %u alpha: %u depth: %u stencil: %u\n",
-           redbits, greenbits, bluebits, alphabits, depthbits, stencilbits);
-
-    if (client == GLFW_OPENGL_ES_API ||
-        GLAD_GL_ARB_multisample ||
-        major > 1 || minor >= 3)
-    {
-        GLint samples, samplebuffers;
-        glGetIntegerv(GL_SAMPLES, &samples);
-        glGetIntegerv(GL_SAMPLE_BUFFERS, &samplebuffers);
-
-        printf(" samples: %u sample buffers: %u\n", samples, samplebuffers);
-    }
-
-    if (client == GLFW_OPENGL_API && profile != GLFW_OPENGL_CORE_PROFILE)
-    {
-        GLint accumredbits, accumgreenbits, accumbluebits, accumalphabits;
-        GLint auxbuffers;
-
-        glGetIntegerv(GL_ACCUM_RED_BITS, &accumredbits);
-        glGetIntegerv(GL_ACCUM_GREEN_BITS, &accumgreenbits);
-        glGetIntegerv(GL_ACCUM_BLUE_BITS, &accumbluebits);
-        glGetIntegerv(GL_ACCUM_ALPHA_BITS, &accumalphabits);
-        glGetIntegerv(GL_AUX_BUFFERS, &auxbuffers);
-
-        printf(" accum red: %u accum green: %u accum blue: %u accum alpha: %u aux buffers: %u\n",
-               accumredbits, accumgreenbits, accumbluebits, accumalphabits, auxbuffers);
-    }
-
-    if (list_extensions)
-        list_context_extensions(client, major, minor);
-
-    glfwDestroyWindow(window);
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 

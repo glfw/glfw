@@ -1727,24 +1727,20 @@ static HICON GenerateTextBadgeIcon(HWND hWnd, WCHAR* text)
     int fontSize = 16, weight = FW_REGULAR;
     RECT contentRect = { 0, 0, width, height };
     HICON hIcon = NULL;
+    BITMAPINFO bmi = {0};
+    int x = 0, y = 0;
 
     memset(&badgeData, 0, sizeof(BadgeData));
 
     if (!text)
         return NULL;
 
-    BITMAPINFO bmi =
-    {
-        .bmiHeader =
-        {
-            .biSize = sizeof(BITMAPINFOHEADER),
-            .biWidth = width,
-            .biHeight = height,
-            .biPlanes = 1,
-            .biBitCount = 32,
-            .biCompression = BI_RGB
-        }
-    };
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = width;
+    bmi.bmiHeader.biHeight = height;
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 32;
+    bmi.bmiHeader.biCompression = BI_RGB;
 
     badgeData.hdc = GetDC(hWnd);
     if(!badgeData.hdc)
@@ -1856,11 +1852,11 @@ static HICON GenerateTextBadgeIcon(HWND hWnd, WCHAR* text)
     }
 
     //Transparency
-    for (int y = 0; y < height; ++y)
+    for (y = 0; y < height; ++y)
     {
-        for (int x = 0; x < width; ++x)
+        for (x = 0; x < width; ++x)
         {
-            DWORD pixel = pixels[y * width + x];
+            const DWORD pixel = pixels[y * width + x];
             if (pixel == 0x0026252Du || pixel == 0x00FFFFFFu) //Pixel is text or ellipsis
                 pixels[y * width + x] |= 0xFF000000u; //Set opaque
             else
@@ -1895,21 +1891,17 @@ static HICON GenerateGenericBadgeIcon(HWND hWnd)
     ICONINFO iconInfo;
     int width = 32, height = 32;
     HICON hIcon = NULL;
+    BITMAPINFO bmi;
+    int x = 0, y = 0;
 
     memset(&badgeData, 0, sizeof(BadgeData));
 
-    BITMAPINFO bmi =
-    {
-        .bmiHeader =
-        {
-            .biSize = sizeof(BITMAPINFOHEADER),
-            .biWidth = width,
-            .biHeight = height,
-            .biPlanes = 1,
-            .biBitCount = 32,
-            .biCompression = BI_RGB
-        }
-    };
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = width;
+    bmi.bmiHeader.biHeight = height;
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 32;
+    bmi.bmiHeader.biCompression = BI_RGB;
 
     badgeData.hdc = GetDC(hWnd);
     if (!badgeData.hdc)
@@ -1992,11 +1984,11 @@ static HICON GenerateGenericBadgeIcon(HWND hWnd)
     badgeData.hOldBitmapMask = NULL;
 
     //Transparency
-    for (int y = 0; y < height; ++y)
+    for (y = 0; y < height; ++y)
     {
-        for (int x = 0; x < width; ++x)
+        for (x = 0; x < width; ++x)
         {
-            DWORD pixel = pixels[y * width + x];
+            const DWORD pixel = pixels[y * width + x];
             if (pixel >= 0x00010101u) //Pixel is ellipsis
                 pixels[y * width + x] |= 0xFF000000u; //Set opaque
             else
@@ -2042,7 +2034,7 @@ void _glfwSetWindowBadgeWin32(_GLFWwindow* window, int count)
         return;
     }
 
-    count = min(count, 999);
+    count = _glfw_min(count, 999);
     if (count > 0)
     {
         if (window->win32.genericBadge)

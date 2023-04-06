@@ -441,7 +441,7 @@ static BOOL CALLBACK monitorCallback(HMONITOR handle,
         if (wcscmp(mi.szDevice, monitor->win32.adapterName) == 0)
         {
             monitor->win32.handle = handle;
-            possiblyMoreAccurateMonitorName = GetAccurateMonitorName(mi.szDevice);
+            possiblyMoreAccurateMonitorName = getAccurateMonitorName(mi.szDevice);
             if(possiblyMoreAccurateMonitorName != NULL)
             {
                 strncpy(monitor->name, possiblyMoreAccurateMonitorName, sizeof(monitor->name) - 1);

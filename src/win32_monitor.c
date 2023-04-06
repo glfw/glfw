@@ -352,26 +352,27 @@ static char * getAccurateMonitorName(const WCHAR *deviceName)
     if(loadWin7MonitorPointers(&dllPointers) == 0)
         return NULL;
 
-    do {
+    do
+    {
         rc = dllPointers.m_GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, &pathCount, &modeCount);
-        if (rc != ERROR_SUCCESS) {
+        if (rc != ERROR_SUCCESS)
             goto GET_ACCURATE_MONITOR_NAME_FAILURE;
-        }
 
         free(paths);
         free(modes);
 
         paths = (DISPLAYCONFIG_PATH_INFO *) malloc(sizeof (DISPLAYCONFIG_PATH_INFO) * pathCount);
         modes = (DISPLAYCONFIG_MODE_INFO *) malloc(sizeof (DISPLAYCONFIG_MODE_INFO) * modeCount);
-        if ((paths == NULL) || (modes == NULL)) {
+        if ((paths == NULL) || (modes == NULL))
             goto GET_ACCURATE_MONITOR_NAME_FAILURE;
-        }
 
         rc = dllPointers.m_QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, &pathCount, paths, &modeCount, modes, 0);
     } while (rc == ERROR_INSUFFICIENT_BUFFER);
 
-    if (rc == ERROR_SUCCESS) {
-        for (i = 0; i < pathCount; i++) {
+    if (rc == ERROR_SUCCESS)
+    {
+        for (i = 0; i < pathCount; i++)
+        {
             DISPLAYCONFIG_SOURCE_DEVICE_NAME sourceName;
             DISPLAYCONFIG_TARGET_DEVICE_NAME targetName;
 
@@ -381,11 +382,10 @@ static char * getAccurateMonitorName(const WCHAR *deviceName)
             sourceName.header.size = sizeof (sourceName);
             sourceName.header.id = paths[i].sourceInfo.id;
             rc = dllPointers.m_DisplayConfigGetDeviceInfo(&sourceName.header);
-            if (rc != ERROR_SUCCESS) {
+            if (rc != ERROR_SUCCESS)
                 break;
-            } else if (wcscmp(deviceName, sourceName.viewGdiDeviceName) != 0) {
+            else if (wcscmp(deviceName, sourceName.viewGdiDeviceName) != 0)
                 continue;
-            }
 
             ZeroMemory(&targetName, sizeof(targetName));
             targetName.header.adapterId = paths[i].targetInfo.adapterId;
@@ -393,11 +393,13 @@ static char * getAccurateMonitorName(const WCHAR *deviceName)
             targetName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
             targetName.header.size = sizeof (targetName);
             rc = dllPointers.m_DisplayConfigGetDeviceInfo(&targetName.header);
-            if (rc == ERROR_SUCCESS) {
+            if (rc == ERROR_SUCCESS)
+            {
                 retval = _glfwCreateUTF8FromWideStringWin32(targetName.monitorFriendlyDeviceName);
                 /* if we got an empty string, treat it as failure so we'll fallback
                    to getting the generic name. */
-                if (retval && (*retval == '\0')) {
+                if (retval && (*retval == '\0'))
+                {
                     free(retval);
                     retval = NULL;
                 }

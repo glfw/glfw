@@ -152,6 +152,15 @@ __GLFW_X11_XCB_VULKAN_SURFACE__ specifies whether to prefer the
 the `VK_KHR_xlib_surface` extension.  Possible values are `GLFW_TRUE` and
 `GLFW_FALSE`.  This is ignored on other platforms.
 
+@anchor GLFW_X11_ONTHESPOT_hint
+__GLFW_X11_ONTHESPOT__ specifies whether to use on-the-spot input method style.
+On X11 platform, over-the-spot style is used if this hint is `GLFW_FALSE`,
+which is the default value.  You can set `GLFW_TRUE` to use on-the-spot style
+as with other platforms.  However, on-the-spot style on X11 is unstable, so
+it is recommended not to use this hint in normal cases.  Possible values are
+`GLFW_TRUE` and `GLFW_FALSE`.  This is ignored on other platforms.  Please see
+@ref ime_support for more information about IME support.
+
 
 #### Supported and default values {#init_hints_values}
 
@@ -164,6 +173,7 @@ Initialization hint              | Default value                   | Supported v
 @ref GLFW_COCOA_MENUBAR          | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_WAYLAND_LIBDECOR       | `GLFW_WAYLAND_PREFER_LIBDECOR`  | `GLFW_WAYLAND_PREFER_LIBDECOR` or `GLFW_WAYLAND_DISABLE_LIBDECOR`
 @ref GLFW_X11_XCB_VULKAN_SURFACE | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_X11_ONTHESPOT          | `GLFW_FALSE`                    | `GLFW_TRUE` or `GLFW_FALSE`
 
 
 ### Runtime platform selection {#platform}

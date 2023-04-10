@@ -125,9 +125,12 @@ typedef struct _GLFWDBusPOSIX
 
     DBusConnection* connection;
     struct DBusError error;
+
+    char* desktopFilePath;
 } _GLFWDBusPOSIX;
 
 void _glfwInitDBusPOSIX(void);
+void _glfwCacheDesktopFilePathPOSIX(void);
 void _glfwTerminateDBusPOSIX(void);
 void _glfwUpdateTaskbarProgressDBusPOSIX(dbus_bool_t progressVisible, double progressValue);
 void _glfwUpdateBadgeDBusPOSIX(dbus_bool_t badgeVisible, int badgeCount);

@@ -125,10 +125,53 @@ void _glfwInitDBusPOSIX(void)
                 _glfw.dbus.connection = NULL;
         }
     }
+
+    _glfwCacheDesktopFilePathPOSIX();
+}
+
+void _glfwCacheDesktopFilePathPOSIX(void)
+{
+    //Cache path of .desktop file
+    //Get name of the running executable
+    char exeName[PATH_MAX];
+    memset(exeName, 0, sizeof(char) * PATH_MAX);
+    if(readlink("/proc/self/exe", exeName, PATH_MAX) == -1)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to get name of the running executable");
+        return;
+    }
+    char* exeNameEnd = strchr(exeName, '\0');
+    char* lastFound = strrchr(exeName, '/');
+    if(!lastFound || !exeNameEnd)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to get name of the running executable");
+        return;
+    }
+    unsigned int exeNameLength = (exeNameEnd - lastFound) - 1;
+
+    //Create our final desktop file uri
+    unsigned int desktopFileLength = strlen("application://") + exeNameLength + strlen(".desktop") + 1;
+    _glfw.dbus.desktopFilePath = _glfw_calloc(desktopFileLength, sizeof(char));
+    if(!_glfw.dbus.desktopFilePath)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, "Failed to allocate memory for .desktop file path");
+        return;
+    }
+    else
+    {
+        memset(_glfw.dbus.desktopFilePath, 0, sizeof(char) * desktopFileLength);
+        strcpy(_glfw.dbus.desktopFilePath, "application://");
+        memcpy(_glfw.dbus.desktopFilePath + strlen("application://"), lastFound + 1, exeNameLength);
+        strcpy(_glfw.dbus.desktopFilePath + strlen("application://") + (exeNameLength), ".desktop");
+        _glfw.dbus.desktopFilePath[desktopFileLength - 1] = '\0';
+    }
 }
 
 void _glfwTerminateDBusPOSIX(void)
 {
+    if(_glfw.dbus.desktopFilePath)
+        _glfw_free(_glfw.dbus.desktopFilePath);
+
     if (_glfw.dbus.connection)
     {
         dbus_connection_unref(_glfw.dbus.connection);
@@ -144,11 +187,8 @@ void _glfwTerminateDBusPOSIX(void)
 
 void _glfwUpdateTaskbarProgressDBusPOSIX(dbus_bool_t progressVisible, double progressValue)
 {
-    if(!_glfw.dbus.handle || !_glfw.dbus.connection)
-    {
-        _glfwInputError(GLFW_FEATURE_UNAVAILABLE, "POSIX: No DBus connection open to set taskbar progress");
+    if(!_glfw.dbus.handle || !_glfw.dbus.connection || !_glfw.dbus.desktopFilePath)
         return;
-    }
 
     //Signal signature:
     //signal com.canonical.Unity.LauncherEntry.Update (in s app_uri, in a{sv} properties)

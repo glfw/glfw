@@ -118,6 +118,16 @@ The ANGLE platform type is specified via the `EGL_ANGLE_platform_angle`
 extension.  This extension is not used if this hint is
 `GLFW_ANGLE_PLATFORM_TYPE_NONE`, which is the default value.
 
+@anchor GLFW_MANAGE_PREEDIT_CANDIDATE_hint
+__GLFW_MANAGE_PREEDIT_CANDIDATE__ specifies whether to manage the preedit
+candidates on the application side.  Possible values are `GLFW_TRUE` and
+`GLFW_FALSE`.  The default is `GLFW_FALSE` and there is no need to manage
+the candidates on the application side.  When you need to do that on the
+application side for some reason, you can enable this hint.  Please see
+@ref ime_support for more information about IME support.
+
+@win32 Only the OS currently supports this hint.
+
 
 #### macOS specific init hints {#init_hints_osx}
 
@@ -164,16 +174,17 @@ it is recommended not to use this hint in normal cases.  Possible values are
 
 #### Supported and default values {#init_hints_values}
 
-Initialization hint              | Default value                   | Supported values
--------------------------------- | ------------------------------- | ----------------
-@ref GLFW_PLATFORM               | `GLFW_ANY_PLATFORM`             | `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`, `GLFW_PLATFORM_WAYLAND`, `GLFW_PLATFORM_X11` or `GLFW_PLATFORM_NULL`
-@ref GLFW_JOYSTICK_HAT_BUTTONS   | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_ANGLE_PLATFORM_TYPE    | `GLFW_ANGLE_PLATFORM_TYPE_NONE` | `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGLES`, `GLFW_ANGLE_PLATFORM_TYPE_D3D9`, `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` or `GLFW_ANGLE_PLATFORM_TYPE_METAL`
-@ref GLFW_COCOA_CHDIR_RESOURCES  | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_COCOA_MENUBAR          | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_WAYLAND_LIBDECOR       | `GLFW_WAYLAND_PREFER_LIBDECOR`  | `GLFW_WAYLAND_PREFER_LIBDECOR` or `GLFW_WAYLAND_DISABLE_LIBDECOR`
-@ref GLFW_X11_XCB_VULKAN_SURFACE | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_X11_ONTHESPOT          | `GLFW_FALSE`                    | `GLFW_TRUE` or `GLFW_FALSE`
+Initialization hint                | Default value                   | Supported values
+---------------------------------- | ------------------------------- | ----------------
+@ref GLFW_PLATFORM                 | `GLFW_ANY_PLATFORM`             | `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`, `GLFW_PLATFORM_WAYLAND`, `GLFW_PLATFORM_X11` or `GLFW_PLATFORM_NULL`
+@ref GLFW_JOYSTICK_HAT_BUTTONS     | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_ANGLE_PLATFORM_TYPE      | `GLFW_ANGLE_PLATFORM_TYPE_NONE` | `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGLES`, `GLFW_ANGLE_PLATFORM_TYPE_D3D9`, `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` or `GLFW_ANGLE_PLATFORM_TYPE_METAL`
+@ref GLFW_MANAGE_PREEDIT_CANDIDATE | `GLFW_FALSE`                    | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_COCOA_CHDIR_RESOURCES    | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_COCOA_MENUBAR            | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_WAYLAND_LIBDECOR         | `GLFW_WAYLAND_PREFER_LIBDECOR`  | `GLFW_WAYLAND_PREFER_LIBDECOR` or `GLFW_WAYLAND_DISABLE_LIBDECOR`
+@ref GLFW_X11_XCB_VULKAN_SURFACE   | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_X11_ONTHESPOT            | `GLFW_FALSE`                    | `GLFW_TRUE` or `GLFW_FALSE`
 
 
 ### Runtime platform selection {#platform}

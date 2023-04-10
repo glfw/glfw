@@ -170,6 +170,8 @@ static GLFWbool loadLibraries(void)
     _glfw.win32.imm32.instance = _glfwPlatformLoadModule("imm32.dll");
     if (_glfw.win32.imm32.instance)
     {
+        _glfw.win32.imm32.ImmGetCandidateListW_ = (PFN_ImmGetCandidateListW)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.imm32.instance, "ImmGetCandidateListW");
         _glfw.win32.imm32.ImmGetCompositionStringW_ = (PFN_ImmGetCompositionStringW)
             _glfwPlatformGetModuleSymbol(_glfw.win32.imm32.instance, "ImmGetCompositionStringW");
         _glfw.win32.imm32.ImmGetContext_ = (PFN_ImmGetContext)

@@ -63,23 +63,24 @@
 typedef int GLFWbool;
 typedef void (*GLFWproc)(void);
 
-typedef struct _GLFWerror       _GLFWerror;
-typedef struct _GLFWinitconfig  _GLFWinitconfig;
-typedef struct _GLFWwndconfig   _GLFWwndconfig;
-typedef struct _GLFWctxconfig   _GLFWctxconfig;
-typedef struct _GLFWfbconfig    _GLFWfbconfig;
-typedef struct _GLFWcontext     _GLFWcontext;
-typedef struct _GLFWpreedit     _GLFWpreedit;
-typedef struct _GLFWwindow      _GLFWwindow;
-typedef struct _GLFWplatform    _GLFWplatform;
-typedef struct _GLFWlibrary     _GLFWlibrary;
-typedef struct _GLFWmonitor     _GLFWmonitor;
-typedef struct _GLFWcursor      _GLFWcursor;
-typedef struct _GLFWmapelement  _GLFWmapelement;
-typedef struct _GLFWmapping     _GLFWmapping;
-typedef struct _GLFWjoystick    _GLFWjoystick;
-typedef struct _GLFWtls         _GLFWtls;
-typedef struct _GLFWmutex       _GLFWmutex;
+typedef struct _GLFWerror            _GLFWerror;
+typedef struct _GLFWinitconfig       _GLFWinitconfig;
+typedef struct _GLFWwndconfig        _GLFWwndconfig;
+typedef struct _GLFWctxconfig        _GLFWctxconfig;
+typedef struct _GLFWfbconfig         _GLFWfbconfig;
+typedef struct _GLFWcontext          _GLFWcontext;
+typedef struct _GLFWpreedit          _GLFWpreedit;
+typedef struct _GLFWpreeditcandidate _GLFWpreeditcandidate;
+typedef struct _GLFWwindow           _GLFWwindow;
+typedef struct _GLFWplatform         _GLFWplatform;
+typedef struct _GLFWlibrary          _GLFWlibrary;
+typedef struct _GLFWmonitor          _GLFWmonitor;
+typedef struct _GLFWcursor           _GLFWcursor;
+typedef struct _GLFWmapelement       _GLFWmapelement;
+typedef struct _GLFWmapping          _GLFWmapping;
+typedef struct _GLFWjoystick         _GLFWjoystick;
+typedef struct _GLFWtls              _GLFWtls;
+typedef struct _GLFWmutex            _GLFWmutex;
 
 #define GL_VERSION 0x1f02
 #define GL_NONE 0
@@ -378,6 +379,7 @@ struct _GLFWinitconfig
     GLFWbool      hatButtons;
     int           angleType;
     int           platformID;
+    GLFWbool      managePreeditCandidate;
     PFN_vkGetInstanceProcAddr vulkanLoader;
     struct {
         GLFWbool  menubar;
@@ -531,15 +533,33 @@ struct _GLFWcontext
 //
 struct _GLFWpreedit
 {
+    unsigned int*          text;
+    int                    textCount;
+    int                    textBufferCount;
+    int*                   blockSizes;
+    int                    blockSizesCount;
+    int                    blockSizesBufferCount;
+    int                    focusedBlockIndex;
+    int                    caretIndex;
+    int                    cursorPosX, cursorPosY, cursorWidth, cursorHeight;
+
+    // Used only when apps display candidates by themselves.
+    // Usually, OS displays them, so apps don't need to do it.
+    _GLFWpreeditcandidate* candidates;
+    int                    candidateCount;
+    int                    candidateBufferCount;
+    int                    candidateSelection;
+    int                    candidatePageStart;
+    int                    candidatePageSize;
+};
+
+// Preedit candidate structure
+//
+struct _GLFWpreeditcandidate
+{
     unsigned int*       text;
     int                 textCount;
     int                 textBufferCount;
-    int*                blockSizes;
-    int                 blockSizesCount;
-    int                 blockSizesBufferCount;
-    int                 focusedBlockIndex;
-    int                 caretIndex;
-    int                 cursorPosX, cursorPosY, cursorWidth, cursorHeight;
 };
 
 // Window and context structure
@@ -601,6 +621,7 @@ struct _GLFWwindow
         GLFWcharmodsfun           charmods;
         GLFWpreeditfun            preedit;
         GLFWimestatusfun          imestatus;
+        GLFWpreeditcandidatefun   preeditCandidate;
         GLFWdropfun               drop;
     } callbacks;
 
@@ -961,6 +982,7 @@ void _glfwInputChar(_GLFWwindow* window,
                     uint32_t codepoint, int mods, GLFWbool plain);
 void _glfwInputPreedit(_GLFWwindow* window);
 void _glfwInputIMEStatus(_GLFWwindow* window);
+void _glfwInputPreeditCandidate(_GLFWwindow* window);
 void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset);
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods);
 void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos);

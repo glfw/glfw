@@ -355,6 +355,21 @@ void _glfwInputIMEStatus(_GLFWwindow* window)
     }
 }
 
+// Notifies shared code of a preedit candidate event
+//
+void _glfwInputPreeditCandidate(_GLFWwindow* window)
+{
+    if (window->callbacks.preeditCandidate)
+    {
+        _GLFWpreedit* preedit = &window->preedit;
+        window->callbacks.preeditCandidate((GLFWwindow*) window,
+                                           preedit->candidateCount,
+                                           preedit->candidateSelection,
+                                           preedit->candidatePageStart,
+                                           preedit->candidatePageSize);
+    }
+}
+
 // Notifies shared code of a scroll event
 //
 void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset)
@@ -1029,6 +1044,21 @@ GLFWAPI void glfwResetPreeditText(GLFWwindow* handle)
     _glfw.platform.resetPreeditText(window);
 }
 
+GLFWAPI unsigned int* glfwGetPreeditCandidate(GLFWwindow* handle, int index, int* textCount)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFWpreedit* preedit = &window->preedit;
+
+    if (preedit->candidateCount <= index)
+        return NULL;
+
+    if (textCount)
+        *textCount = preedit->candidates[index].textCount;
+
+
+    return preedit->candidates[index].text;
+}
+
 GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* handle, GLFWkeyfun cbfun)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
@@ -1075,6 +1105,15 @@ GLFWAPI GLFWimestatusfun glfwSetIMEStatusCallback(GLFWwindow* handle, GLFWimesta
     _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     _GLFW_SWAP(GLFWimestatusfun, window->callbacks.imestatus, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWpreeditcandidatefun glfwSetPreeditCandidateCallback(GLFWwindow* handle,
+                                                                GLFWpreeditcandidatefun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP(GLFWpreeditcandidatefun, window->callbacks.preeditCandidate, cbfun);
     return cbfun;
 }
 

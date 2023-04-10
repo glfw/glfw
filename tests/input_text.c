@@ -119,11 +119,16 @@ static int currentIMEStatus = GLFW_FALSE;
 #define MAX_PREEDIT_LEN 128
 static char preeditBuf[MAX_PREEDIT_LEN] = "";
 
+// Assuming that the page-size is 10 at most.
+static char candidateBuf[9][MAX_PREEDIT_LEN];
+static int candidatePageSize = 0;
+
 void usage(void)
 {
-    printf("Usage: input_text [-h] [-s]\n");
+    printf("Usage: input_text [-h] [-s] [-c]\n");
     printf("Options:\n");
     printf("  -s Use on-the-spot sytle on X11. This is ignored on other platforms.\n");
+    printf("  -c Use manage-preedit-candidate on Win32. This is ignored on other platforms.\n");
     printf("  -h Show this help\n");
 }
 
@@ -566,11 +571,32 @@ static void set_preedit_labels(GLFWwindow* window, struct nk_context* nk, int he
     nk_layout_row_end(nk);
 }
 
+static void set_candidate_labels(GLFWwindow* window, struct nk_context* nk)
+{
+    for (int i = 0; i < 5; ++i)
+    {
+        nk_layout_row_begin(nk, NK_DYNAMIC, 30, 3);
+        nk_layout_row_push(nk, 1.f / 3.f);
+        if (i == 0)
+            nk_label(nk, "Candidates:", NK_TEXT_LEFT);
+        else
+            nk_label(nk, "", NK_TEXT_LEFT);
+        nk_layout_row_push(nk, 1.f / 3.f);
+        if (candidatePageSize > i)
+            nk_label(nk, (const char*) candidateBuf[i], NK_TEXT_LEFT);
+        nk_layout_row_push(nk, 1.f / 3.f);
+        if (candidatePageSize > i + 5)
+            nk_label(nk, (const char*) candidateBuf[i + 5], NK_TEXT_LEFT);
+        nk_layout_row_end(nk);
+    }
+}
+
 // If it is possible to take the text-cursor position calculated in `nk_do_edit` function in `deps/nuklear.h`,
 // we can set preedit-cursor position more easily.
 // However, there doesn't seem to be a way to do that, so this does a simplified calculation only for the end
 // of the text. (Can not trace the cursor movement)
-static void update_cursor_pos(GLFWwindow* window, struct nk_context* nk, struct nk_user_font* f, char* boxBuffer, int boxLen)
+static void update_cursor_pos(GLFWwindow* window, struct nk_context* nk, struct nk_user_font* f,
+                              char* boxBuffer, int boxLen, int boxX, int boxY)
 {
     float lineWidth = 0;
     int totalLines = 1;
@@ -606,14 +632,10 @@ static void update_cursor_pos(GLFWwindow* window, struct nk_context* nk, struct 
     }
 
     {
-        // I don't know how to get these info.
-        int widgetLayoutX = 10;
-        int widgetLayoutY = 220;
-
         int lineHeight = f->height + nk->style.edit.row_padding;
 
-        int cursorPosX = widgetLayoutX + lineWidth;
-        int cursorPosY = widgetLayoutY + lineHeight * (totalLines - 1);
+        int cursorPosX = boxX + lineWidth;
+        int cursorPosY = boxY + lineHeight * (totalLines - 1);
         int cursorHeight = lineHeight;
         int cursorWidth;
 
@@ -686,6 +708,30 @@ static void preedit_callback(GLFWwindow* window, int preeditCount,
     }
 }
 
+static void candidate_callback(GLFWwindow* window, int candidates_count,
+                               int selected_index, int page_start, int page_size)
+{
+    int i, j;
+    candidatePageSize = page_size;
+    for (i = 0; i < page_size; ++i)
+    {
+        int index = i + page_start;
+        int textCount;
+        unsigned int* text = glfwGetPreeditCandidate(window, index, &textCount);
+        if (index == selected_index)
+            strcpy(candidateBuf[i], "> ");
+        else
+            strcpy(candidateBuf[i], "");
+        for (j = 0; j < textCount; ++j)
+        {
+            char encoded[5] = "";
+            encode_utf8(encoded, text[j]);
+            if (strlen(candidateBuf[i]) + strlen(encoded) < MAX_PREEDIT_LEN)
+                strcat(candidateBuf[i], encoded);
+        }
+    }
+}
+
 int main(int argc, char** argv)
 {
     GLFWwindow* window;
@@ -694,9 +740,10 @@ int main(int argc, char** argv)
     char boxBuffer[MAX_BUFFER_LEN] = "Input text here.";
     int boxLen = strlen(boxBuffer);
     int isAutoUpdatingCursorPosEnabled = GLFW_TRUE;
+    int managePreeditCandidate = GLFW_FALSE;
     int ch;
 
-    while ((ch = getopt(argc, argv, "hs")) != -1)
+    while ((ch = getopt(argc, argv, "hsc")) != -1)
     {
         switch (ch)
         {
@@ -706,6 +753,11 @@ int main(int argc, char** argv)
 
             case 's':
                 glfwInitHint(GLFW_X11_ONTHESPOT, GLFW_TRUE);
+                break;
+
+            case 'c':
+                glfwInitHint(GLFW_MANAGE_PREEDIT_CANDIDATE, GLFW_TRUE);
+                managePreeditCandidate = GLFW_TRUE;
                 break;
         }
     }
@@ -729,6 +781,7 @@ int main(int argc, char** argv)
     glfwSetPreeditCursorRectangle(window, 0, 0, 1, 1);
     glfwSetIMEStatusCallback(window, ime_callback);
     glfwSetPreeditCallback(window, preedit_callback);
+    glfwSetPreeditCandidateCallback(window, candidate_callback);
 
     glfwMakeContextCurrent(window);
     gladLoadGL(glfwGetProcAddress);
@@ -757,6 +810,8 @@ int main(int argc, char** argv)
             set_preedit_cursor_edit(window, nk, 30, &isAutoUpdatingCursorPosEnabled);
             set_ime_stauts_labels(window, nk, 30);
             set_preedit_labels(window, nk, 30);
+            if (managePreeditCandidate)
+                set_candidate_labels(window, nk);
 
             nk_layout_row_dynamic(nk, height - 250, 1);
             nk_edit_string(nk, NK_EDIT_BOX, boxBuffer, &boxLen, MAX_BUFFER_LEN, nk_filter_default);
@@ -768,7 +823,9 @@ int main(int argc, char** argv)
         glfwSwapBuffers(window);
 
         if (isAutoUpdatingCursorPosEnabled)
-            update_cursor_pos(window, nk, &currentFont->handle, boxBuffer, boxLen);
+            // I don't know how to get the layout info of `nk_edit_string`.
+            update_cursor_pos(window, nk, &currentFont->handle, boxBuffer, boxLen, 10,
+                              managePreeditCandidate ? 385 : 220);
 
         glfwWaitEvents();
     }

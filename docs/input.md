@@ -414,6 +414,80 @@ glfwResetPreeditText(window);
 @endcode
 
 
+@subsection manage_preedit_candidate Manage preedit candidate
+
+By default, the IME manages the drawing of the preedit candidates, but
+sometimes you need to do that on the application side for some reason.  In such
+a case, you can use
+[GLFW_MANAGE_PREEDIT_CANDIDATE](@ref GLFW_MANAGE_PREEDIT_CANDIDATE_hint) init hint.
+By setting this to `GLFW_TRUE`, the IME stops managing the drawing of the
+candidates and the application needs to manage it by using the following
+functions.
+
+@note
+@win32 Only the OS currently supports this hint.
+
+You can register the candidate callback as follows.
+
+@code
+glfwSetPreeditCandidateCallback(window, candidate_callback);
+@endcode
+
+The callback receives the following information.
+
+@code
+void candidate_callback(GLFWwindow* window,
+                        int candidates_count,
+                        int selected_index,
+                        int page_start,
+                        int page_size)
+{
+}
+@endcode
+
+`candidates_count` is the number of total candidates.  `selected_index` is the
+index of the currently selected candidate.  Normally all candidates should not
+be displayed at once, but divided into pages.  You can use `page_start` and
+`page_size` to manage the pages.  `page_start` is the index of the first
+candidate on the current page.  `page_size` is the number of the candidates on
+the current page.
+
+You can get the text of the candidate on the specific index as follows.  Each
+character of the returned text is a native endian UTF-32.
+
+@code
+int text_count;
+unsigned int* text = glfwGetPreeditCandidate(window, index, &text_count);
+@endcode
+
+A sample code to get all candidate texts on the current page is as follows.
+
+@code
+void candidate_callback(GLFWwindow* window, int candidates_count,
+                        int selected_index, int page_start, int page_size)
+{
+    int i, j;
+    for (i = 0; i < page_size; ++i)
+    {
+        int index = i + page_start;
+        int text_count;
+        unsigned int* text = glfwGetPreeditCandidate(window, index, &text_count);
+        if (index == selected_index)
+            printf("> ");
+        for (j = 0; j < text_count; ++j)
+        {
+            char encoded[5] = "";
+            encode_utf8(encoded, text[j]); // Some kind of encoding process
+            printf("%s", encoded);
+        }
+        printf("\n");
+    }
+}
+
+glfwSetPreeditCandidateCallback(window, candidate_callback);
+@endcode
+
+
 ## Mouse input {#input_mouse}
 
 Mouse input comes in many forms, including mouse motion, button presses and

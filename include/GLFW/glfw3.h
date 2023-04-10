@@ -1309,6 +1309,11 @@ extern "C" {
  *  Platform selection [init hint](@ref GLFW_PLATFORM).
  */
 #define GLFW_PLATFORM               0x00050003
+/*! @brief Preedit candidate init hint.
+ *
+ *  Preedit candidate [init hint](@ref GLFW_MANAGE_PREEDIT_CANDIDATE_hint).
+ */
+#define GLFW_MANAGE_PREEDIT_CANDIDATE 0x00050004
 /*! @brief macOS specific init hint.
  *
  *  macOS specific [init hint](@ref GLFW_COCOA_CHDIR_RESOURCES_hint).
@@ -1988,6 +1993,29 @@ typedef void (* GLFWpreeditfun)(GLFWwindow* window,
  *  @ingroup monitor
  */
 typedef void (* GLFWimestatusfun)(GLFWwindow* window);
+
+/*! @brief The function pointer type for preedit candidate callbacks.
+ *
+ *  This is the function pointer type for preedit candidate callback functions.
+ *  Use @ref glfwGetPreeditCandidate to get the candidate text for a specific index.
+ *
+ *  @param[in] window The window that received the event.
+ *  @param[in] candidates_count Candidates count.
+ *  @param[in] selected_index.Index of selected candidate.
+ *  @param[in] page_start Start index of candidate currently displayed.
+ *  @param[in] page_size Count of candidates currently displayed.
+ *
+ *  @sa @ref ime_support
+ *  @sa @ref glfwSetPreeditCandidateCallback
+ *  @sa @ref glfwGetPreeditCandidate
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWpreeditcandidatefun)(GLFWwindow* window,
+                                         int candidates_count,
+                                         int selected_index,
+                                         int page_start,
+                                         int page_size);
 
 /*! @brief The function pointer type for path drop callbacks.
  *
@@ -5270,6 +5298,34 @@ GLFWAPI void glfwSetPreeditCursorRectangle(GLFWwindow* window, int x, int y, int
  */
 GLFWAPI void glfwResetPreeditText(GLFWwindow* window);
 
+/*! @brief Returns the preedit candidate.
+ *
+ *  This function returns the text and the text-count of the preedit candidate.
+ *
+ *  By default, the IME manages the preedit candidates, so there is no need to
+ *  use this function.  See @ref glfwSetPreeditCandidateCallback and
+ *  [GLFW_MANAGE_PREEDIT_CANDIDATE](@ref GLFW_MANAGE_PREEDIT_CANDIDATE_hint) for details.
+ *
+ *  @param[in] window The window.
+ *  @param[in] index The index of the candidate.
+ *  @param[out] textCount The text-count of the candidate.
+ *  @return The text of the candidate as Unicode code points.
+ *
+ *  @remark @macos @x11 @wayland Don't support this function.
+ *
+ *  @par Thread Safety
+ *  This function may only be called from the main thread.
+ *
+ *  @sa @ref ime_support
+ *  @sa @ref glfwSetPreeditCandidateCallback
+ *  @sa [GLFW_MANAGE_PREEDIT_CANDIDATE](@ref GLFW_MANAGE_PREEDIT_CANDIDATE_hint)
+ *
+ *  @since Added in GLFW 3.X.
+ *
+ *  @ingroup input
+ */
+GLFWAPI unsigned int* glfwGetPreeditCandidate(GLFWwindow* window, int index, int* textCount);
+
 /*! @brief Sets the key callback.
  *
  *  This function sets the key callback of the specified window, which is called
@@ -5477,6 +5533,51 @@ GLFWAPI GLFWpreeditfun glfwSetPreeditCallback(GLFWwindow* window, GLFWpreeditfun
  *  @ingroup input
  */
 GLFWAPI GLFWimestatusfun glfwSetIMEStatusCallback(GLFWwindow* window, GLFWimestatusfun cbfun);
+
+/*! @brief Sets the preedit candidate change callback.
+ *
+ *  This function sets the preedit candidate callback of the specified
+ *  window, which is called when the candidates are updated and can be used
+ *  to display them by the application side.
+ *
+ *  By default, this callback is not called because the IME displays the
+ *  candidates and there is nothing to do on the application side.  Only when
+ *  the application side needs to use this to manage the displaying of 
+ *  IME candidates, you can set
+ *  [GLFW_MANAGE_PREEDIT_CANDIDATE](@ref GLFW_MANAGE_PREEDIT_CANDIDATE_hint) init hint
+ *  and stop the IME from managing it.
+ * 
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or an
+ *  error occurred.
+ *
+ *  @callback_signature
+ *  @code
+ *  void function_name(GLFWwindow* window,
+                       int candidates_count,
+                       int selected_index,
+                       int page_start,
+                       int page_size)
+ *  @endcode
+ *  For more information about the callback parameters, see the
+ *  [function pointer type](@ref GLFWpreeditcandidatefun).
+ *
+ *  @remark @macos @x11 @wayland Don't support this function.  The callback is
+ *  not called.
+ *
+ *  @par Thread Safety
+ *  This function may only be called from the main thread.
+ *
+ *  @sa @ref ime_support
+ *  @sa [GLFW_MANAGE_PREEDIT_CANDIDATE](@ref GLFW_MANAGE_PREEDIT_CANDIDATE_hint)
+ *
+ *  @since Added in GLFW 3.X
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWpreeditcandidatefun glfwSetPreeditCandidateCallback(GLFWwindow* window, GLFWpreeditcandidatefun cbfun);
 
 /*! @brief Sets the mouse button callback.
  *

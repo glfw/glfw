@@ -318,6 +318,7 @@ typedef LONG (WINAPI * PFN_RtlVerifyVersionInfo)(OSVERSIONINFOEXW*,ULONG,ULONGLO
 #define RtlVerifyVersionInfo _glfw.win32.ntdll.RtlVerifyVersionInfo_
 
 // imm32 function pointer typedefs
+typedef DWORD  (WINAPI * PFN_ImmGetCandidateListW)(HIMC,DWORD,LPCANDIDATELIST,DWORD);
 typedef LONG (WINAPI * PFN_ImmGetCompositionStringW)(HIMC,DWORD,LPVOID,DWORD);
 typedef HIMC (WINAPI * PFN_ImmGetContext)(HWND);
 typedef BOOL (WINAPI * PFN_ImmGetConversionStatus)(HIMC,LPDWORD,LPDWORD);
@@ -327,6 +328,7 @@ typedef BOOL (WINAPI * PFN_ImmNotifyIME)(HIMC,DWORD,DWORD,DWORD);
 typedef BOOL (WINAPI * PFN_ImmReleaseContext)(HWND,HIMC);
 typedef BOOL (WINAPI * PFN_ImmSetCandidateWindow)(HIMC,LPCANDIDATEFORM);
 typedef BOOL (WINAPI * PFN_ImmSetOpenStatus)(HIMC,BOOL);
+#define ImmGetCandidateListW _glfw.win32.imm32.ImmGetCandidateListW_
 #define ImmGetCompositionStringW _glfw.win32.imm32.ImmGetCompositionStringW_
 #define ImmGetContext _glfw.win32.imm32.ImmGetContext_
 #define ImmGetConversionStatus _glfw.win32.imm32.ImmGetConversionStatus_
@@ -526,6 +528,7 @@ typedef struct _GLFWlibraryWin32
 
     struct {
         HINSTANCE                       instance;
+        PFN_ImmGetCandidateListW        ImmGetCandidateListW_;
         PFN_ImmGetCompositionStringW    ImmGetCompositionStringW_;
         PFN_ImmGetContext               ImmGetContext_;
         PFN_ImmGetConversionStatus      ImmGetConversionStatus_;

@@ -34,6 +34,7 @@
 #include <string.h>
 #include <windowsx.h>
 #include <shellapi.h>
+#include <wchar.h>
 
 // Converts utf16 units to Unicode code points (UTF32).
 // Returns GLFW_TRUE when the converting completes and the result is assigned to
@@ -563,6 +564,117 @@ static void maximizeWindowManually(_GLFWwindow* window)
                  SWP_NOACTIVATE | SWP_NOZORDER | SWP_FRAMECHANGED);
 }
 
+// Store candidate text from the buffer data
+//
+static void setCandidate(_GLFWpreeditcandidate* candidate, LPWSTR buffer)
+{
+    size_t bufferCount = wcslen(buffer);
+    int textBufferCount = candidate->textBufferCount;
+    uint32_t codepoint;
+    WCHAR highSurrogate = 0;
+    int convertedLength = 0;
+    int i;
+
+    while ((size_t) textBufferCount < bufferCount + 1)
+        textBufferCount = (textBufferCount == 0) ? 1 : textBufferCount * 2;
+    if (textBufferCount != candidate->textBufferCount)
+    {
+        unsigned int* text =
+            _glfw_realloc(candidate->text,
+                          sizeof(unsigned int) * textBufferCount);
+        if (text == NULL)
+            return;
+        candidate->text = text;
+        candidate->textBufferCount = textBufferCount;
+    }
+
+    for (i = 0; (size_t) i < bufferCount; ++i)
+    {
+        if (convertToUTF32FromUTF16(buffer[i],
+                                    &highSurrogate,
+                                    &codepoint))
+            candidate->text[convertedLength++] = codepoint;
+    }
+
+    candidate->textCount = convertedLength;
+}
+
+// Get preedit candidates of Imm32 and pass them to candidate-callback
+//
+static void getImmCandidates(_GLFWwindow* window)
+{
+    _GLFWpreedit* preedit = &window->preedit;
+    HIMC hIMC = ImmGetContext(window->win32.handle);
+    DWORD candidateListBytes = ImmGetCandidateListW(hIMC, 0, NULL, 0);
+
+    if (candidateListBytes == 0)
+    {
+        ImmReleaseContext(window->win32.handle, hIMC);
+        return;
+    }
+
+    {
+        int i;
+        int bufferCount = preedit->candidateBufferCount;
+        LPCANDIDATELIST candidateList = _glfw_calloc(candidateListBytes, 1);
+        if (candidateList == NULL)
+        {
+            ImmReleaseContext(window->win32.handle, hIMC);
+            return;
+        }
+        ImmGetCandidateListW(hIMC, 0, candidateList, candidateListBytes);
+        ImmReleaseContext(window->win32.handle, hIMC);
+
+        while ((DWORD) bufferCount < candidateList->dwCount + 1)
+            bufferCount = (bufferCount == 0) ? 1 : bufferCount * 2;
+        if (bufferCount != preedit->candidateBufferCount)
+        {
+            _GLFWpreeditcandidate* candidates =
+                _glfw_realloc(preedit->candidates,
+                              sizeof(_GLFWpreeditcandidate) * bufferCount);
+            if (candidates == NULL)
+            {
+                _glfw_free(candidateList);
+                return;
+            }
+            // `realloc` does not initialize the increased area with 0.
+            // This logic should be moved to a more appropriate place to share
+            // when other platforms support this feature.
+            for (i = preedit->candidateBufferCount; i < bufferCount; ++i)
+            {
+                candidates[i].text = NULL;
+                candidates[i].textCount = 0;
+                candidates[i].textBufferCount = 0;
+            }
+            preedit->candidates = candidates;
+            preedit->candidateBufferCount = bufferCount;
+        }
+
+        for (i = 0; (DWORD) i < candidateList->dwCount; ++i)
+            setCandidate(&preedit->candidates[i],
+                         (LPWSTR)((char*) candidateList + candidateList->dwOffset[i]));
+
+        preedit->candidateCount = candidateList->dwCount;
+        preedit->candidateSelection = candidateList->dwSelection;
+        preedit->candidatePageStart = candidateList->dwPageStart;
+        preedit->candidatePageSize = candidateList->dwPageSize;
+
+        _glfw_free(candidateList);
+    }
+
+    _glfwInputPreeditCandidate(window);
+}
+
+// Clear preedit candidates
+static void clearImmCandidate(_GLFWwindow* window)
+{
+    window->preedit.candidateCount = 0;
+    window->preedit.candidateSelection = 0;
+    window->preedit.candidatePageStart = 0;
+    window->preedit.candidatePageSize = 0;
+    _glfwInputPreeditCandidate(window);
+}
+
 // Get preedit texts of Imm32 and pass them to preedit-callback
 //
 static GLFWbool getImmPreedit(_GLFWwindow* window)
@@ -797,6 +909,12 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             // To draw preedit text by an application side
             if (lParam & ISC_SHOWUICOMPOSITIONWINDOW)
                 lParam &= ~ISC_SHOWUICOMPOSITIONWINDOW;
+
+            if (_glfw.hints.init.managePreeditCandidate &&
+                (lParam & ISC_SHOWUICANDIDATEWINDOW))
+            {
+                lParam &= ~ISC_SHOWUICANDIDATEWINDOW;
+            }
             break;
         }
 
@@ -1043,15 +1161,34 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         case WM_IME_ENDCOMPOSITION:
         {
             clearImmPreedit(window);
+            // Usually clearing candidates in IMN_CLOSECANDIDATE is sufficient.
+            // However, some IME need it here, e.g. Google Japanese Input.
+            clearImmCandidate(window);
             return TRUE;
         }
 
         case WM_IME_NOTIFY:
         {
-            if (wParam == IMN_SETOPENSTATUS)
+            switch (wParam)
             {
-                _glfwInputIMEStatus(window);
-                return TRUE;
+                case IMN_SETOPENSTATUS:
+                {
+                    _glfwInputIMEStatus(window);
+                    return TRUE;
+                }
+
+                case IMN_OPENCANDIDATE:
+                case IMN_CHANGECANDIDATE:
+                {
+                    getImmCandidates(window);
+                    return TRUE;
+                }
+
+                case IMN_CLOSECANDIDATE:
+                {
+                    clearImmCandidate(window);
+                    return TRUE;
+                }
             }
             break;
         }

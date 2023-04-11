@@ -33,6 +33,7 @@
 #include <string.h>
 #include <limits.h>
 #include <unistd.h>
+#include <stdio.h>
 
 void _glfwInitDBusPOSIX(void)
 {
@@ -107,11 +108,31 @@ void _glfwInitDBusPOSIX(void)
 
         dbus_connection_unref(_glfw.dbus.connection);
         _glfw.dbus.connection = NULL;
+        return;
     }
     else
     {
         //Request name
-        const int res = dbus_bus_request_name(_glfw.dbus.connection, "org.glfw", DBUS_NAME_FLAG_REPLACE_EXISTING, &_glfw.dbus.error);
+
+        _glfwCacheExecutableNameDBusPOSIX();
+        if(!_glfw.dbus.executableName)
+            return;
+
+        //"org.glfw.<exe_name>_<pid>"
+        char* busName = _glfw_calloc(21 + strlen(_glfw.dbus.executableName), sizeof(char));
+        if(!busName)
+        {
+            _glfwInputError(GLFW_OUT_OF_MEMORY, "Failed to allocate memory for bus name");
+            return;
+        }
+        memset(busName, '\0', (21 + strlen(_glfw.dbus.executableName)) * sizeof(char));
+
+        const pid_t pid = getpid();
+        sprintf(busName, "org.glfw.%s_%d", _glfw.dbus.executableName, pid);
+
+        const int res = dbus_bus_request_name(_glfw.dbus.connection, busName, DBUS_NAME_FLAG_REPLACE_EXISTING, &_glfw.dbus.error);
+
+        _glfw_free(busName);
 
         //Check for errors
         if(dbus_error_is_set(&_glfw.dbus.error) || res != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER)
@@ -121,18 +142,43 @@ void _glfwInitDBusPOSIX(void)
 
             _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to request DBus name");
 
-                dbus_connection_unref(_glfw.dbus.connection);
-                _glfw.dbus.connection = NULL;
+            dbus_connection_unref(_glfw.dbus.connection);
+            _glfw.dbus.connection = NULL;
         }
     }
 
-    _glfwCacheDesktopFilePathPOSIX();
+    _glfwCacheDesktopFilePathDBusPOSIX();
+    _glfwCacheSignalNameDBusPOSIX();
 }
 
-void _glfwCacheDesktopFilePathPOSIX(void)
+void _glfwCacheSignalNameDBusPOSIX(void)
 {
-    //Cache path of .desktop file
-    //Get name of the running executable
+    if(!_glfw.dbus.executableName)
+        return;
+
+    //"/org/glfw/<exe_name>_<pid>"
+    char* signalName = _glfw_calloc(22 + strlen(_glfw.dbus.executableName), sizeof(char));
+    if(!signalName)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, "Failed to allocate memory for signal name");
+        return;
+    }
+
+    memset(signalName, '\0', (22 + strlen(_glfw.dbus.executableName)) * sizeof(char));
+
+    const pid_t pid = getpid();
+    if(sprintf(signalName, "/org/glfw/%s_%d", _glfw.dbus.executableName, pid) < 0)
+    {
+        _glfwInputError(GLFW_PLATFORM, "Failed to create signal name");
+        _glfw_free(signalName);
+        return;
+    }
+
+    _glfw.dbus.signalName = signalName;
+}
+
+void _glfwCacheExecutableNameDBusPOSIX(void)
+{
     char exeName[PATH_MAX];
     memset(exeName, 0, sizeof(char) * PATH_MAX);
     if(readlink("/proc/self/exe", exeName, PATH_MAX) == -1)
@@ -149,26 +195,52 @@ void _glfwCacheDesktopFilePathPOSIX(void)
     }
     unsigned int exeNameLength = (exeNameEnd - lastFound) - 1;
 
+    char* exeNameFinal = _glfw_calloc(exeNameLength + 1, sizeof(char));
+    if(!exeNameFinal)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, "Failed to allocate memory for executable name");
+        return;
+    }
+
+    memset(exeNameFinal, 0, sizeof(char) * (exeNameLength + 1));
+
+    memcpy(exeNameFinal, lastFound + 1, exeNameLength);
+
+    _glfw.dbus.executableName = exeNameFinal;
+}
+
+void _glfwCacheDesktopFilePathDBusPOSIX(void)
+{
+    if(!_glfw.dbus.executableName)
+        return;
+
+    //Cache path of .desktop file
+
     //Create our final desktop file uri
-    unsigned int desktopFileLength = strlen("application://") + exeNameLength + strlen(".desktop") + 1;
+    //"application://<exe_name>.desktop"
+    unsigned int desktopFileLength = strlen("application://") + strlen(_glfw.dbus.executableName) + strlen(".desktop") + 1;
     _glfw.dbus.desktopFilePath = _glfw_calloc(desktopFileLength, sizeof(char));
     if(!_glfw.dbus.desktopFilePath)
     {
         _glfwInputError(GLFW_OUT_OF_MEMORY, "Failed to allocate memory for .desktop file path");
         return;
     }
-    else
-    {
-        memset(_glfw.dbus.desktopFilePath, 0, sizeof(char) * desktopFileLength);
-        strcpy(_glfw.dbus.desktopFilePath, "application://");
-        memcpy(_glfw.dbus.desktopFilePath + strlen("application://"), lastFound + 1, exeNameLength);
-        strcpy(_glfw.dbus.desktopFilePath + strlen("application://") + (exeNameLength), ".desktop");
-        _glfw.dbus.desktopFilePath[desktopFileLength - 1] = '\0';
-    }
+
+    memset(_glfw.dbus.desktopFilePath, 0, sizeof(char) * desktopFileLength);
+    strcpy(_glfw.dbus.desktopFilePath, "application://");
+    memcpy(_glfw.dbus.desktopFilePath + strlen("application://"), _glfw.dbus.executableName, strlen(_glfw.dbus.executableName));
+    strcpy(_glfw.dbus.desktopFilePath + strlen("application://") + strlen(_glfw.dbus.executableName), ".desktop");
+    _glfw.dbus.desktopFilePath[desktopFileLength - 1] = '\0';
 }
 
 void _glfwTerminateDBusPOSIX(void)
 {
+    if(_glfw.dbus.signalName)
+        _glfw_free(_glfw.dbus.signalName);
+
+    if(_glfw.dbus.executableName)
+        _glfw_free(_glfw.dbus.executableName);
+
     if(_glfw.dbus.desktopFilePath)
         _glfw_free(_glfw.dbus.desktopFilePath);
 
@@ -187,7 +259,9 @@ void _glfwTerminateDBusPOSIX(void)
 
 void _glfwUpdateTaskbarProgressDBusPOSIX(dbus_bool_t progressVisible, double progressValue)
 {
-    if(!_glfw.dbus.handle || !_glfw.dbus.connection || !_glfw.dbus.desktopFilePath)
+    struct DBusMessage* msg = NULL;
+
+    if(!_glfw.dbus.handle || !_glfw.dbus.connection || !_glfw.dbus.desktopFilePath || !_glfw.dbus.signalName)
         return;
 
     //Signal signature:
@@ -196,52 +270,31 @@ void _glfwUpdateTaskbarProgressDBusPOSIX(dbus_bool_t progressVisible, double pro
     struct DBusMessageIter args;
     memset(&args, 0, sizeof(args));
 
-    DBusMessage* msg = dbus_message_new_signal("/org/glfw", "com.canonical.Unity.LauncherEntry", "Update");
-    if(!msg)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to create new DBus message");
+    if(!_glfwNewMessageSignalDBusPOSIX(_glfw.dbus.signalName, "com.canonical.Unity.LauncherEntry", "Update", &msg))
         return;
-    }
 
     dbus_message_iter_init_append(msg, &args);
 
     //Setup app_uri parameter
-    dbus_message_iter_append_basic(&args, DBUS_TYPE_STRING, &_glfw.dbus.desktopFilePath);
+    _glfwAppendDataDBusPOSIX(&args, DBUS_TYPE_STRING, &_glfw.dbus.desktopFilePath);
 
     //Set properties parameter
-    struct DBusMessageIter sub1, sub2, sub3;
+    struct DBusMessageIter sub1;
     memset(&sub1, 0, sizeof(sub1));
-    memset(&sub2, 0, sizeof(sub2));
-    memset(&sub3, 0, sizeof(sub3));
 
-    dbus_message_iter_open_container(&args, DBUS_TYPE_ARRAY, "{sv}", &sub1);
+    _glfwOpenContainerDBusPOSIX(&args, DBUS_TYPE_ARRAY, "{sv}", &sub1);
 
     //Set progress visible property
-    dbus_message_iter_open_container(&sub1, DBUS_TYPE_DICT_ENTRY, NULL, &sub2);
     const char* progressVisibleStr = "progress-visible";
-    dbus_message_iter_append_basic(&sub2, DBUS_TYPE_STRING, &progressVisibleStr);
-    dbus_message_iter_open_container(&sub2, DBUS_TYPE_VARIANT, "b", &sub3);
-    dbus_message_iter_append_basic(&sub3, DBUS_TYPE_BOOLEAN, &progressVisible);
-    dbus_message_iter_close_container(&sub2, &sub3);
-    dbus_message_iter_close_container(&sub1, &sub2);
+    _glfwAppendDictDataDBusPOSIX(&sub1, DBUS_TYPE_STRING, &progressVisibleStr, DBUS_TYPE_BOOLEAN, &progressVisible);
 
     //Set progress value property
-    dbus_message_iter_open_container(&sub1, DBUS_TYPE_DICT_ENTRY, NULL, &sub2);
-    const char* progressValueStr = "progress";
-    dbus_message_iter_append_basic(&sub2, DBUS_TYPE_STRING, &progressValueStr);
-    dbus_message_iter_open_container(&sub2, DBUS_TYPE_VARIANT, "d", &sub3);
-    dbus_message_iter_append_basic(&sub3, DBUS_TYPE_DOUBLE, &progressValue);
-    dbus_message_iter_close_container(&sub2, &sub3);
-    dbus_message_iter_close_container(&sub1, &sub2);
+    const char* progressStr = "progress";
+    _glfwAppendDictDataDBusPOSIX(&sub1, DBUS_TYPE_STRING, &progressStr, DBUS_TYPE_DOUBLE, &progressValue);
 
-    dbus_message_iter_close_container(&args, &sub1);
+    _glfwCloseContainerDBusPOSIX(&args, &sub1);
 
-    //Finally send the signal
-    unsigned int serial = 0;
-    if(!dbus_connection_send(_glfw.dbus.connection, msg, &serial))
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to send DBus message");
-    else
-        dbus_connection_flush(_glfw.dbus.connection);
+    _glfwSendMessageDBusPOSIX(msg);
 
     //Free the message
     dbus_message_unref(msg);
@@ -249,7 +302,9 @@ void _glfwUpdateTaskbarProgressDBusPOSIX(dbus_bool_t progressVisible, double pro
 
 void _glfwUpdateBadgeDBusPOSIX(dbus_bool_t badgeVisible, int badgeCount)
 {
-    if(!_glfw.dbus.handle || !_glfw.dbus.connection || !_glfw.dbus.desktopFilePath)
+    struct DBusMessage* msg = NULL;
+
+    if(!_glfw.dbus.handle || !_glfw.dbus.connection || !_glfw.dbus.desktopFilePath || !_glfw.dbus.signalName)
         return;
 
     long long badgeCountLL = badgeCount;
@@ -260,53 +315,151 @@ void _glfwUpdateBadgeDBusPOSIX(dbus_bool_t badgeVisible, int badgeCount)
     struct DBusMessageIter args;
     memset(&args, 0, sizeof(args));
 
-    DBusMessage* msg = dbus_message_new_signal("/org/glfw", "com.canonical.Unity.LauncherEntry", "Update");
-    if(!msg)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to create new DBus message");
+    if(!_glfwNewMessageSignalDBusPOSIX(_glfw.dbus.signalName, "com.canonical.Unity.LauncherEntry", "Update", &msg))
         return;
-    }
 
     dbus_message_iter_init_append(msg, &args);
 
     //Setup app_uri parameter
-    dbus_message_iter_append_basic(&args, DBUS_TYPE_STRING, &_glfw.dbus.desktopFilePath);
+    _glfwAppendDataDBusPOSIX(&args, DBUS_TYPE_STRING, &_glfw.dbus.desktopFilePath);
 
     //Set properties parameter
-    struct DBusMessageIter sub1, sub2, sub3;
+    struct DBusMessageIter sub1;
     memset(&sub1, 0, sizeof(sub1));
-    memset(&sub2, 0, sizeof(sub2));
-    memset(&sub3, 0, sizeof(sub3));
 
-    dbus_message_iter_open_container(&args, DBUS_TYPE_ARRAY, "{sv}", &sub1);
+    _glfwOpenContainerDBusPOSIX(&args, DBUS_TYPE_ARRAY, "{sv}", &sub1);
 
     //Set count visible property
-    dbus_message_iter_open_container(&sub1, DBUS_TYPE_DICT_ENTRY, NULL, &sub2);
     const char* countVisibleStr = "count-visible";
-    dbus_message_iter_append_basic(&sub2, DBUS_TYPE_STRING, &countVisibleStr);
-    dbus_message_iter_open_container(&sub2, DBUS_TYPE_VARIANT, "b", &sub3);
-    dbus_message_iter_append_basic(&sub3, DBUS_TYPE_BOOLEAN, &badgeVisible);
-    dbus_message_iter_close_container(&sub2, &sub3);
-    dbus_message_iter_close_container(&sub1, &sub2);
+    _glfwAppendDictDataDBusPOSIX(&sub1, DBUS_TYPE_STRING, &countVisibleStr, DBUS_TYPE_BOOLEAN, &badgeVisible);
 
     //Set count value property
-    dbus_message_iter_open_container(&sub1, DBUS_TYPE_DICT_ENTRY, NULL, &sub2);
     const char* countValueStr = "count";
-    dbus_message_iter_append_basic(&sub2, DBUS_TYPE_STRING, &countValueStr);
-    dbus_message_iter_open_container(&sub2, DBUS_TYPE_VARIANT, "x", &sub3);
-    dbus_message_iter_append_basic(&sub3, DBUS_TYPE_INT64, &badgeCountLL);
-    dbus_message_iter_close_container(&sub2, &sub3);
-    dbus_message_iter_close_container(&sub1, &sub2);
+    _glfwAppendDictDataDBusPOSIX(&sub1, DBUS_TYPE_STRING, &countValueStr, DBUS_TYPE_INT64, &badgeCountLL);
 
-    dbus_message_iter_close_container(&args, &sub1);
+    _glfwCloseContainerDBusPOSIX(&args, &sub1);
 
-    //Finally send the signal
-    unsigned int serial = 0;
-    if(!dbus_connection_send(_glfw.dbus.connection, msg, &serial))
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to send DBus message");
-    else
-        dbus_connection_flush(_glfw.dbus.connection);
+    _glfwSendMessageDBusPOSIX(msg);
 
     //Free the message
     dbus_message_unref(msg);
+}
+
+dbus_bool_t _glfwNewMessageSignalDBusPOSIX(const char* objectPath, const char* interfaceName, const char* signalName, struct DBusMessage** outMessage)
+{
+    if(!outMessage)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to create new DBus message, output message pointer is NULL");
+        return GLFW_FALSE;
+    }
+
+    *outMessage = dbus_message_new_signal(objectPath, interfaceName, signalName);
+    if(!(*outMessage))
+    {
+        *outMessage = NULL;
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to create new DBus message");
+        return GLFW_FALSE;
+    }
+
+    return GLFW_TRUE;
+}
+
+dbus_bool_t _glfwOpenContainerDBusPOSIX(struct DBusMessageIter* iterator, int DBusType, const char* signature, struct DBusMessageIter* subIterator)
+{
+    if(DBusType != DBUS_TYPE_ARRAY && DBusType != DBUS_TYPE_STRUCT_OPEN &&
+       DBusType != DBUS_TYPE_STRUCT_CLOSE && DBusType != DBUS_TYPE_VARIANT &&
+       DBusType != DBUS_TYPE_DICT_ENTRY)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Invalid DBUS container type provided");
+        return GLFW_FALSE;
+    }
+    if(!iterator || !subIterator)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "DBus message iterator is NULL");
+        return GLFW_FALSE;
+    }
+
+    return dbus_message_iter_open_container(iterator, DBusType, signature, subIterator);
+}
+
+dbus_bool_t _glfwCloseContainerDBusPOSIX(struct DBusMessageIter* iterator, struct DBusMessageIter* subIterator)
+{
+    if(!iterator || !subIterator)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "DBus message iterator is NULL");
+        return GLFW_FALSE;
+    }
+
+    return dbus_message_iter_close_container(iterator, subIterator);
+}
+
+dbus_bool_t _glfwAppendDataDBusPOSIX(struct DBusMessageIter* iterator, int DBusType, const void* data)
+{
+    if(DBusType == DBUS_TYPE_ARRAY || DBusType == DBUS_TYPE_VARIANT || DBusType == DBUS_TYPE_DICT_ENTRY || DBusType == DBUS_TYPE_STRUCT_OPEN || DBusType == DBUS_TYPE_STRUCT_CLOSE)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Invalid DBus type provided");
+        return GLFW_FALSE;
+    }
+    if(!iterator)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "DBus message iterator is NULL");
+        return GLFW_FALSE;
+    }
+    if(!data)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "DBus data to append is NULL");
+        return GLFW_FALSE;
+    }
+
+    return dbus_message_iter_append_basic(iterator, DBusType, data);
+}
+
+dbus_bool_t _glfwAppendDictDataDBusPOSIX(struct DBusMessageIter* iterator, int keyType, const void* keyData, int valueType, const void* valueData)
+{
+    struct DBusMessageIter keyIterator;
+    struct DBusMessageIter valueIterator;
+    memset(&keyIterator, 0, sizeof(keyIterator));
+    memset(&valueIterator, 0, sizeof(valueIterator));
+
+    if(!_glfwOpenContainerDBusPOSIX(iterator, DBUS_TYPE_DICT_ENTRY, NULL, &keyIterator))
+        return GLFW_FALSE;
+
+    //Append key data
+    if(!_glfwAppendDataDBusPOSIX(&keyIterator, keyType, keyData))
+        return GLFW_FALSE;
+
+    if(!_glfwOpenContainerDBusPOSIX(&keyIterator, DBUS_TYPE_VARIANT, (const char*)&valueType, &valueIterator))
+        return GLFW_FALSE;
+
+    //Append value data
+    if(!_glfwAppendDataDBusPOSIX(&valueIterator, valueType, valueData))
+        return GLFW_FALSE;
+
+    if(!_glfwCloseContainerDBusPOSIX(&keyIterator, &valueIterator))
+        return GLFW_FALSE;
+
+    if(!_glfwCloseContainerDBusPOSIX(iterator, &keyIterator))
+        return GLFW_FALSE;
+
+    return GLFW_TRUE;
+}
+
+dbus_bool_t _glfwSendMessageDBusPOSIX(struct DBusMessage* message)
+{
+    if(!message)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "DBus message is NULL");
+        return GLFW_FALSE;
+    }
+
+    unsigned int serial = 0;
+    if(!dbus_connection_send(_glfw.dbus.connection, message, &serial))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to send DBus message");
+        return GLFW_FALSE;
+    }
+
+    dbus_connection_flush(_glfw.dbus.connection);
+
+    return GLFW_TRUE;
 }

@@ -33,6 +33,7 @@
 #include <string.h>
 #include <limits.h>
 #include <unistd.h>
+#include <stdio.h>
 
 void _glfwInitDBusPOSIX(void)
 {
@@ -107,11 +108,32 @@ void _glfwInitDBusPOSIX(void)
 
         dbus_connection_unref(_glfw.dbus.connection);
         _glfw.dbus.connection = NULL;
+        return;
     }
     else
     {
         //Request name
-        const int res = dbus_bus_request_name(_glfw.dbus.connection, "org.glfw", DBUS_NAME_FLAG_REPLACE_EXISTING, &_glfw.dbus.error);
+
+        _glfwCacheExecutableNameDBusPOSIX();
+        if(!_glfw.dbus.executableName)
+            return;
+
+        //"org.glfw.<exe_name>_<pid>"
+        char* busName = _glfw_calloc(21 + strlen(_glfw.dbus.executableName), sizeof(char));
+        if(!busName)
+        {
+            _glfwInputError(GLFW_OUT_OF_MEMORY, "Failed to allocate memory for bus name");
+            return;
+        }
+        memset(busName, '\0', (21 + strlen(_glfw.dbus.executableName)) * sizeof(char));
+
+        const pid_t pid = getpid();
+        sprintf(busName, "org.glfw.%s_%d", _glfw.dbus.executableName, pid);
+
+        printf("The object path is: %s\n", busName);
+        const int res = dbus_bus_request_name(_glfw.dbus.connection, busName, DBUS_NAME_FLAG_REPLACE_EXISTING, &_glfw.dbus.error);
+
+        _glfw_free(busName);
 
         //Check for errors
         if(dbus_error_is_set(&_glfw.dbus.error) || res != DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER)
@@ -121,18 +143,43 @@ void _glfwInitDBusPOSIX(void)
 
             _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to request DBus name");
 
-                dbus_connection_unref(_glfw.dbus.connection);
-                _glfw.dbus.connection = NULL;
+            dbus_connection_unref(_glfw.dbus.connection);
+            _glfw.dbus.connection = NULL;
         }
     }
 
-    _glfwCacheDesktopFilePathPOSIX();
+    _glfwCacheDesktopFilePathDBusPOSIX();
+    _glfwCacheSignalNameDBusPOSIX();
 }
 
-void _glfwCacheDesktopFilePathPOSIX(void)
+void _glfwCacheSignalNameDBusPOSIX(void)
 {
-    //Cache path of .desktop file
-    //Get name of the running executable
+    if(!_glfw.dbus.executableName)
+        return;
+
+    //"/org/glfw/<exe_name>_<pid>"
+    char* signalName = _glfw_calloc(22 + strlen(_glfw.dbus.executableName), sizeof(char));
+    if(!signalName)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, "Failed to allocate memory for signal name");
+        return;
+    }
+
+    memset(signalName, '\0', (22 + strlen(_glfw.dbus.executableName)) * sizeof(char));
+
+    const pid_t pid = getpid();
+    if(sprintf(signalName, "/org/glfw/%s_%d", _glfw.dbus.executableName, pid) < 0)
+    {
+        _glfwInputError(GLFW_PLATFORM, "Failed to create signal name");
+        _glfw_free(signalName);
+        return;
+    }
+
+    _glfw.dbus.signalName = signalName;
+}
+
+void _glfwCacheExecutableNameDBusPOSIX(void)
+{
     char exeName[PATH_MAX];
     memset(exeName, 0, sizeof(char) * PATH_MAX);
     if(readlink("/proc/self/exe", exeName, PATH_MAX) == -1)
@@ -149,26 +196,52 @@ void _glfwCacheDesktopFilePathPOSIX(void)
     }
     unsigned int exeNameLength = (exeNameEnd - lastFound) - 1;
 
+    char* exeNameFinal = _glfw_calloc(exeNameLength + 1, sizeof(char));
+    if(!exeNameFinal)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, "Failed to allocate memory for executable name");
+        return;
+    }
+
+    memset(exeNameFinal, 0, sizeof(char) * (exeNameLength + 1));
+
+    memcpy(exeNameFinal, lastFound + 1, exeNameLength);
+
+    _glfw.dbus.executableName = exeNameFinal;
+}
+
+void _glfwCacheDesktopFilePathDBusPOSIX(void)
+{
+    if(!_glfw.dbus.executableName)
+        return;
+
+    //Cache path of .desktop file
+
     //Create our final desktop file uri
-    unsigned int desktopFileLength = strlen("application://") + exeNameLength + strlen(".desktop") + 1;
+    //"application://<exe_name>.desktop"
+    unsigned int desktopFileLength = strlen("application://") + strlen(_glfw.dbus.executableName) + strlen(".desktop") + 1;
     _glfw.dbus.desktopFilePath = _glfw_calloc(desktopFileLength, sizeof(char));
     if(!_glfw.dbus.desktopFilePath)
     {
         _glfwInputError(GLFW_OUT_OF_MEMORY, "Failed to allocate memory for .desktop file path");
         return;
     }
-    else
-    {
-        memset(_glfw.dbus.desktopFilePath, 0, sizeof(char) * desktopFileLength);
-        strcpy(_glfw.dbus.desktopFilePath, "application://");
-        memcpy(_glfw.dbus.desktopFilePath + strlen("application://"), lastFound + 1, exeNameLength);
-        strcpy(_glfw.dbus.desktopFilePath + strlen("application://") + (exeNameLength), ".desktop");
-        _glfw.dbus.desktopFilePath[desktopFileLength - 1] = '\0';
-    }
+
+    memset(_glfw.dbus.desktopFilePath, 0, sizeof(char) * desktopFileLength);
+    strcpy(_glfw.dbus.desktopFilePath, "application://");
+    memcpy(_glfw.dbus.desktopFilePath + strlen("application://"), _glfw.dbus.executableName, strlen(_glfw.dbus.executableName));
+    strcpy(_glfw.dbus.desktopFilePath + strlen("application://") + strlen(_glfw.dbus.executableName), ".desktop");
+    _glfw.dbus.desktopFilePath[desktopFileLength - 1] = '\0';
 }
 
 void _glfwTerminateDBusPOSIX(void)
 {
+    if(_glfw.dbus.signalName)
+        _glfw_free(_glfw.dbus.signalName);
+
+    if(_glfw.dbus.executableName)
+        _glfw_free(_glfw.dbus.executableName);
+
     if(_glfw.dbus.desktopFilePath)
         _glfw_free(_glfw.dbus.desktopFilePath);
 
@@ -187,7 +260,7 @@ void _glfwTerminateDBusPOSIX(void)
 
 void _glfwUpdateTaskbarProgressDBusPOSIX(dbus_bool_t progressVisible, double progressValue)
 {
-    if(!_glfw.dbus.handle || !_glfw.dbus.connection || !_glfw.dbus.desktopFilePath)
+    if(!_glfw.dbus.handle || !_glfw.dbus.connection || !_glfw.dbus.desktopFilePath || !_glfw.dbus.signalName)
         return;
 
     //Signal signature:
@@ -196,33 +269,7 @@ void _glfwUpdateTaskbarProgressDBusPOSIX(dbus_bool_t progressVisible, double pro
     struct DBusMessageIter args;
     memset(&args, 0, sizeof(args));
 
-    //Get name of the running executable
-    char exeName[PATH_MAX];
-    memset(exeName, 0, sizeof(char) * PATH_MAX);
-    if(readlink("/proc/self/exe", exeName, PATH_MAX) == -1)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to get name of the running executable");
-        return;
-    }
-    char* exeNameEnd = strchr(exeName, '\0');
-    char* lastFound = strrchr(exeName, '/');
-    if(!lastFound || !exeNameEnd)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to get name of the running executable");
-        return;
-    }
-    unsigned int exeNameLength = (exeNameEnd - lastFound) - 1;
-
-    //Create our final desktop file uri
-    unsigned int desktopFileLength = strlen("application://") + exeNameLength + strlen(".desktop") + 1;
-    char desktopFile[desktopFileLength];
-    memset(desktopFile, 0, sizeof(char) * desktopFileLength);
-    strcpy(desktopFile, "application://");
-    memcpy(desktopFile + strlen("application://"), lastFound + 1, exeNameLength);
-    strcpy(desktopFile + strlen("application://") + (exeNameLength), ".desktop");
-    desktopFile[desktopFileLength - 1] = '\0';
-
-    DBusMessage* msg = dbus_message_new_signal("/org/glfw", "com.canonical.Unity.LauncherEntry", "Update");
+    DBusMessage* msg = dbus_message_new_signal(_glfw.dbus.signalName, "com.canonical.Unity.LauncherEntry", "Update");
     if(!msg)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to create new DBus message");
@@ -232,8 +279,7 @@ void _glfwUpdateTaskbarProgressDBusPOSIX(dbus_bool_t progressVisible, double pro
     dbus_message_iter_init_append(msg, &args);
 
     //Setup app_uri parameter
-    const char* desktopFileStr = desktopFile;
-    dbus_message_iter_append_basic(&args, DBUS_TYPE_STRING, &desktopFileStr);
+    dbus_message_iter_append_basic(&args, DBUS_TYPE_STRING, &_glfw.dbus.desktopFilePath);
 
     //Set properties parameter
     struct DBusMessageIter sub1, sub2, sub3;

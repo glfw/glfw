@@ -34,6 +34,7 @@
 #include <limits.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <ctype.h>
 
 void _glfwInitDBusPOSIX(void)
 {
@@ -114,21 +115,21 @@ void _glfwInitDBusPOSIX(void)
     {
         //Request name
 
-        _glfwCacheExecutableNameDBusPOSIX();
-        if(!_glfw.dbus.executableName)
+        _glfwCacheLegalExecutableNameDBusPOSIX();
+        if(!_glfw.dbus.legalExecutableName)
             return;
 
         //"org.glfw.<exe_name>_<pid>"
-        char* busName = _glfw_calloc(21 + strlen(_glfw.dbus.executableName), sizeof(char));
+        char* busName = _glfw_calloc(21 + strlen(_glfw.dbus.legalExecutableName), sizeof(char));
         if(!busName)
         {
             _glfwInputError(GLFW_OUT_OF_MEMORY, "Failed to allocate memory for bus name");
             return;
         }
-        memset(busName, '\0', (21 + strlen(_glfw.dbus.executableName)) * sizeof(char));
+        memset(busName, '\0', (21 + strlen(_glfw.dbus.legalExecutableName)) * sizeof(char));
 
         const pid_t pid = getpid();
-        sprintf(busName, "org.glfw.%s_%d", _glfw.dbus.executableName, pid);
+        sprintf(busName, "org.glfw.%s_%d", _glfw.dbus.legalExecutableName, pid);
 
         const int res = dbus_bus_request_name(_glfw.dbus.connection, busName, DBUS_NAME_FLAG_REPLACE_EXISTING, &_glfw.dbus.error);
 
@@ -147,27 +148,28 @@ void _glfwInitDBusPOSIX(void)
         }
     }
 
+    _glfwCacheFullExecutableNameDBusPOSIX();
     _glfwCacheDesktopFilePathDBusPOSIX();
     _glfwCacheSignalNameDBusPOSIX();
 }
 
 void _glfwCacheSignalNameDBusPOSIX(void)
 {
-    if(!_glfw.dbus.executableName)
+    if(!_glfw.dbus.legalExecutableName)
         return;
 
     //"/org/glfw/<exe_name>_<pid>"
-    char* signalName = _glfw_calloc(22 + strlen(_glfw.dbus.executableName), sizeof(char));
+    char* signalName = _glfw_calloc(22 + strlen(_glfw.dbus.legalExecutableName), sizeof(char));
     if(!signalName)
     {
         _glfwInputError(GLFW_OUT_OF_MEMORY, "Failed to allocate memory for signal name");
         return;
     }
 
-    memset(signalName, '\0', (22 + strlen(_glfw.dbus.executableName)) * sizeof(char));
+    memset(signalName, '\0', (22 + strlen(_glfw.dbus.legalExecutableName)) * sizeof(char));
 
     const pid_t pid = getpid();
-    if(sprintf(signalName, "/org/glfw/%s_%d", _glfw.dbus.executableName, pid) < 0)
+    if(sprintf(signalName, "/org/glfw/%s_%d", _glfw.dbus.legalExecutableName, pid) < 0)
     {
         _glfwInputError(GLFW_PLATFORM, "Failed to create signal name");
         _glfw_free(signalName);
@@ -177,7 +179,7 @@ void _glfwCacheSignalNameDBusPOSIX(void)
     _glfw.dbus.signalName = signalName;
 }
 
-void _glfwCacheExecutableNameDBusPOSIX(void)
+void _glfwCacheFullExecutableNameDBusPOSIX(void)
 {
     char exeName[PATH_MAX];
     memset(exeName, 0, sizeof(char) * PATH_MAX);
@@ -204,21 +206,69 @@ void _glfwCacheExecutableNameDBusPOSIX(void)
 
     memset(exeNameFinal, 0, sizeof(char) * (exeNameLength + 1));
 
-    memcpy(exeNameFinal, lastFound + 1, exeNameLength);
+    memcpy(exeNameFinal, (lastFound + 1), exeNameLength);
 
-    _glfw.dbus.executableName = exeNameFinal;
+    _glfw.dbus.fullExecutableName = exeNameFinal;
+}
+
+void _glfwCacheLegalExecutableNameDBusPOSIX(void)
+{
+    //The executable name is stripped of any illegal characters
+    //according to the DBus specification
+
+    int i = 0;
+    int validExeNameLength = 0;
+    int output = 0;
+    char exeName[PATH_MAX];
+    memset(exeName, 0, sizeof(char) * PATH_MAX);
+    if(readlink("/proc/self/exe", exeName, PATH_MAX) == -1)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to get name of the running executable");
+        return;
+    }
+    char* exeNameEnd = strchr(exeName, '\0');
+    char* lastFound = strrchr(exeName, '/');
+    if(!lastFound || !exeNameEnd)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Failed to get name of the running executable");
+        return;
+    }
+    unsigned int exeNameLength = (exeNameEnd - lastFound) - 1;
+
+    for(i = 0; i < exeNameLength; ++i)
+    {
+        if(isalnum(*(lastFound + 1 + i)))
+            validExeNameLength++;
+    }
+
+    char* exeNameFinal = _glfw_calloc(validExeNameLength + 1, sizeof(char));
+    if(!exeNameFinal)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, "Failed to allocate memory for executable name");
+        return;
+    }
+
+    memset(exeNameFinal, 0, sizeof(char) * (validExeNameLength + 1));
+
+    for(i = 0; i < exeNameLength; ++i)
+    {
+        if(isalnum(*(lastFound + 1 + i)))
+            exeNameFinal[output++] = *(lastFound + 1 + i);
+    }
+
+    _glfw.dbus.legalExecutableName = exeNameFinal;
 }
 
 void _glfwCacheDesktopFilePathDBusPOSIX(void)
 {
-    if(!_glfw.dbus.executableName)
+    if(!_glfw.dbus.fullExecutableName)
         return;
 
     //Cache path of .desktop file
 
     //Create our final desktop file uri
     //"application://<exe_name>.desktop"
-    unsigned int desktopFileLength = strlen("application://") + strlen(_glfw.dbus.executableName) + strlen(".desktop") + 1;
+    unsigned int desktopFileLength = strlen("application://") + strlen(_glfw.dbus.fullExecutableName) + strlen(".desktop") + 1;
     _glfw.dbus.desktopFilePath = _glfw_calloc(desktopFileLength, sizeof(char));
     if(!_glfw.dbus.desktopFilePath)
     {
@@ -228,8 +278,8 @@ void _glfwCacheDesktopFilePathDBusPOSIX(void)
 
     memset(_glfw.dbus.desktopFilePath, 0, sizeof(char) * desktopFileLength);
     strcpy(_glfw.dbus.desktopFilePath, "application://");
-    memcpy(_glfw.dbus.desktopFilePath + strlen("application://"), _glfw.dbus.executableName, strlen(_glfw.dbus.executableName));
-    strcpy(_glfw.dbus.desktopFilePath + strlen("application://") + strlen(_glfw.dbus.executableName), ".desktop");
+    memcpy(_glfw.dbus.desktopFilePath + strlen("application://"), _glfw.dbus.fullExecutableName, strlen(_glfw.dbus.fullExecutableName));
+    strcpy(_glfw.dbus.desktopFilePath + strlen("application://") + strlen(_glfw.dbus.fullExecutableName), ".desktop");
     _glfw.dbus.desktopFilePath[desktopFileLength - 1] = '\0';
 }
 
@@ -238,8 +288,11 @@ void _glfwTerminateDBusPOSIX(void)
     if(_glfw.dbus.signalName)
         _glfw_free(_glfw.dbus.signalName);
 
-    if(_glfw.dbus.executableName)
-        _glfw_free(_glfw.dbus.executableName);
+    if(_glfw.dbus.legalExecutableName)
+        _glfw_free(_glfw.dbus.legalExecutableName);
+
+    if(_glfw.dbus.fullExecutableName)
+        _glfw_free(_glfw.dbus.fullExecutableName);
 
     if(_glfw.dbus.desktopFilePath)
         _glfw_free(_glfw.dbus.desktopFilePath);

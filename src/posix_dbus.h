@@ -137,13 +137,15 @@ typedef struct _GLFWDBusPOSIX
     struct DBusError error;
 
     char* desktopFilePath;
-    char* executableName;
+    char* fullExecutableName;
+    char* legalExecutableName;
     char* signalName;
 } _GLFWDBusPOSIX;
 
 void _glfwInitDBusPOSIX(void);
 void _glfwCacheSignalNameDBusPOSIX(void);
-void _glfwCacheExecutableNameDBusPOSIX(void);
+void _glfwCacheFullExecutableNameDBusPOSIX(void);
+void _glfwCacheLegalExecutableNameDBusPOSIX(void);
 void _glfwCacheDesktopFilePathDBusPOSIX(void);
 void _glfwTerminateDBusPOSIX(void);
 void _glfwUpdateTaskbarProgressDBusPOSIX(dbus_bool_t progressVisible, double progressValue);

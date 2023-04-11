@@ -68,6 +68,17 @@ struct DBusMessageIter
 #define DBUS_TYPE_VARIANT (unsigned int)'v'
 #define DBUS_TYPE_BOOLEAN (unsigned int)'b'
 #define DBUS_TYPE_DOUBLE (unsigned int)'d'
+#define DBUS_TYPE_INT16 (unsigned int)'n'
+#define DBUS_TYPE_UINT16 (unsigned int)'q'
+#define DBUS_TYPE_INT32 (unsigned int)'i'
+#define DBUS_TYPE_UINT32 (unsigned int)'u'
+#define DBUS_TYPE_INT64 (unsigned int)'x'
+#define DBUS_TYPE_UINT64 (unsigned int)'t'
+#define DBUS_TYPE_STRUCT_OPEN (unsigned int)'('
+#define DBUS_TYPE_STRUCT_CLOSE (unsigned int)')'
+#define DBUS_TYPE_BYTE (unsigned int)'y'
+#define DBUS_TYPE_OBJECT_PATH (unsigned int)'o'
+#define DBUS_TYPE_SIGNATURE (unsigned int)'g'
 
 typedef void (* PFN_dbus_error_init)(struct DBusError*);
 typedef dbus_bool_t (* PFN_dbus_error_is_set)(const struct DBusError*);
@@ -136,3 +147,10 @@ void _glfwCacheExecutableNameDBusPOSIX(void);
 void _glfwCacheDesktopFilePathDBusPOSIX(void);
 void _glfwTerminateDBusPOSIX(void);
 void _glfwUpdateTaskbarProgressDBusPOSIX(dbus_bool_t progressVisible, double progressValue);
+
+dbus_bool_t _glfwNewMessageSignalDBusPOSIX(const char* objectPath, const char* interfaceName, const char* signalName, struct DBusMessage** outMessage);
+dbus_bool_t _glfwOpenContainerDBusPOSIX(struct DBusMessageIter* iterator, int DBusType, const char* signature, struct DBusMessageIter* subIterator);
+dbus_bool_t _glfwCloseContainerDBusPOSIX(struct DBusMessageIter* iterator, struct DBusMessageIter* subIterator);
+dbus_bool_t _glfwAppendDataDBusPOSIX(struct DBusMessageIter* iterator, int DBusType, const void* data);
+dbus_bool_t _glfwAppendDictDataDBusPOSIX(struct DBusMessageIter* iterator, int keyType, const void* keyData, int valueType, const void* valueData);
+dbus_bool_t _glfwSendMessageDBusPOSIX(struct DBusMessage* message);

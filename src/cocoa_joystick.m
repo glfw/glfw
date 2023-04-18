@@ -182,83 +182,86 @@ static void matchCallback(void* context,
     CFArrayRef elements =
         IOHIDDeviceCopyMatchingElements(device, NULL, kIOHIDOptionsTypeNone);
 
-    for (CFIndex i = 0;  i < CFArrayGetCount(elements);  i++)
+    if (elements)
     {
-        IOHIDElementRef native = (IOHIDElementRef)
-            CFArrayGetValueAtIndex(elements, i);
-        if (CFGetTypeID(native) != IOHIDElementGetTypeID())
-            continue;
-
-        const IOHIDElementType type = IOHIDElementGetType(native);
-        if ((type != kIOHIDElementTypeInput_Axis) &&
-            (type != kIOHIDElementTypeInput_Button) &&
-            (type != kIOHIDElementTypeInput_Misc))
+        for (CFIndex i = 0;  i < CFArrayGetCount(elements);  i++)
         {
-            continue;
-        }
+            IOHIDElementRef native = (IOHIDElementRef)
+                CFArrayGetValueAtIndex(elements, i);
+            if (CFGetTypeID(native) != IOHIDElementGetTypeID())
+                continue;
 
-        CFMutableArrayRef target = NULL;
-
-        const uint32_t usage = IOHIDElementGetUsage(native);
-        const uint32_t page = IOHIDElementGetUsagePage(native);
-        if (page == kHIDPage_GenericDesktop)
-        {
-            switch (usage)
+            const IOHIDElementType type = IOHIDElementGetType(native);
+            if ((type != kIOHIDElementTypeInput_Axis) &&
+                (type != kIOHIDElementTypeInput_Button) &&
+                (type != kIOHIDElementTypeInput_Misc))
             {
-                case kHIDUsage_GD_X:
-                case kHIDUsage_GD_Y:
-                case kHIDUsage_GD_Z:
-                case kHIDUsage_GD_Rx:
-                case kHIDUsage_GD_Ry:
-                case kHIDUsage_GD_Rz:
-                case kHIDUsage_GD_Slider:
-                case kHIDUsage_GD_Dial:
-                case kHIDUsage_GD_Wheel:
-                    target = axes;
-                    break;
-                case kHIDUsage_GD_Hatswitch:
-                    target = hats;
-                    break;
-                case kHIDUsage_GD_DPadUp:
-                case kHIDUsage_GD_DPadRight:
-                case kHIDUsage_GD_DPadDown:
-                case kHIDUsage_GD_DPadLeft:
-                case kHIDUsage_GD_SystemMainMenu:
-                case kHIDUsage_GD_Select:
-                case kHIDUsage_GD_Start:
-                    target = buttons;
-                    break;
+                continue;
+            }
+
+            CFMutableArrayRef target = NULL;
+
+            const uint32_t usage = IOHIDElementGetUsage(native);
+            const uint32_t page = IOHIDElementGetUsagePage(native);
+            if (page == kHIDPage_GenericDesktop)
+            {
+                switch (usage)
+                {
+                    case kHIDUsage_GD_X:
+                    case kHIDUsage_GD_Y:
+                    case kHIDUsage_GD_Z:
+                    case kHIDUsage_GD_Rx:
+                    case kHIDUsage_GD_Ry:
+                    case kHIDUsage_GD_Rz:
+                    case kHIDUsage_GD_Slider:
+                    case kHIDUsage_GD_Dial:
+                    case kHIDUsage_GD_Wheel:
+                        target = axes;
+                        break;
+                    case kHIDUsage_GD_Hatswitch:
+                        target = hats;
+                        break;
+                    case kHIDUsage_GD_DPadUp:
+                    case kHIDUsage_GD_DPadRight:
+                    case kHIDUsage_GD_DPadDown:
+                    case kHIDUsage_GD_DPadLeft:
+                    case kHIDUsage_GD_SystemMainMenu:
+                    case kHIDUsage_GD_Select:
+                    case kHIDUsage_GD_Start:
+                        target = buttons;
+                        break;
+                }
+            }
+            else if (page == kHIDPage_Simulation)
+            {
+                switch (usage)
+                {
+                    case kHIDUsage_Sim_Accelerator:
+                    case kHIDUsage_Sim_Brake:
+                    case kHIDUsage_Sim_Throttle:
+                    case kHIDUsage_Sim_Rudder:
+                    case kHIDUsage_Sim_Steering:
+                        target = axes;
+                        break;
+                }
+            }
+            else if (page == kHIDPage_Button || page == kHIDPage_Consumer)
+                target = buttons;
+
+            if (target)
+            {
+                _GLFWjoyelementNS* element = _glfw_calloc(1, sizeof(_GLFWjoyelementNS));
+                element->native  = native;
+                element->usage   = usage;
+                element->index   = (int) CFArrayGetCount(target);
+                element->minimum = IOHIDElementGetLogicalMin(native);
+                element->maximum = IOHIDElementGetLogicalMax(native);
+                CFArrayAppendValue(target, element);
             }
         }
-        else if (page == kHIDPage_Simulation)
-        {
-            switch (usage)
-            {
-                case kHIDUsage_Sim_Accelerator:
-                case kHIDUsage_Sim_Brake:
-                case kHIDUsage_Sim_Throttle:
-                case kHIDUsage_Sim_Rudder:
-                case kHIDUsage_Sim_Steering:
-                    target = axes;
-                    break;
-            }
-        }
-        else if (page == kHIDPage_Button || page == kHIDPage_Consumer)
-            target = buttons;
 
-        if (target)
-        {
-            _GLFWjoyelementNS* element = _glfw_calloc(1, sizeof(_GLFWjoyelementNS));
-            element->native  = native;
-            element->usage   = usage;
-            element->index   = (int) CFArrayGetCount(target);
-            element->minimum = IOHIDElementGetLogicalMin(native);
-            element->maximum = IOHIDElementGetLogicalMax(native);
-            CFArrayAppendValue(target, element);
-        }
+        CFRelease(elements);
     }
-
-    CFRelease(elements);
 
     CFArraySortValues(axes, CFRangeMake(0, CFArrayGetCount(axes)),
                       compareElements, NULL);

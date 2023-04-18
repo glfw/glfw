@@ -269,6 +269,8 @@ information on what to include when reporting a bug.
    application (#2110)
  - [Cocoa] Bugfix: The Vulkan loader was not loaded from the `Frameworks` bundle
    subdirectory (#2113,#2120)
+ - [Cocoa] Bugfix: A connected joystick, for which input monitoring permissions
+   have not been granted, would cause a segfault (#2320).
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)

@@ -552,7 +552,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 SetRectEmpty(&border_thickness);
                 if (GetWindowLongPtr(hWnd, GWL_STYLE) & WS_THICKFRAME)
                 {
-                    AdjustWindowRectEx(&border_thickness, GetWindowLongPtr(hWnd, GWL_STYLE) & ~WS_CAPTION, FALSE, NULL);
+                    AdjustWindowRectEx(&border_thickness, GetWindowLongPtr(hWnd, GWL_STYLE) & ~WS_CAPTION, FALSE, 0);
                     border_thickness.left *= -1;
                     border_thickness.top *= -1;
                 }

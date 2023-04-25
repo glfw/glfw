@@ -384,6 +384,7 @@ information on what to include when reporting a bug.
    decorations
  - [Wayland] Bugfix: Connecting a mouse after `glfwInit` would segfault (#1450)
  - [Wayland] Bugfix: Joysticks connected after `glfwInit` were not detected (#2198)
+ - [Wayland] Bugfix: Fallback decorations emitted `GLFW_CURSOR_UNAVAILABLE` errors
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [Linux] Bugfix: Joysticks without buttons were ignored (#2042,#2043)

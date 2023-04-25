@@ -1327,11 +1327,8 @@ static void setCursor(_GLFWwindow* window, const char* name)
 
     cursor = wl_cursor_theme_get_cursor(theme, name);
     if (!cursor)
-    {
-        _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
-                        "Wayland: Standard cursor shape unavailable");
         return;
-    }
+
     // TODO: handle animated cursors too.
     image = cursor->images[0];
 

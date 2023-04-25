@@ -129,6 +129,7 @@ information on what to include when reporting a bug.
    `EGL_EXT_present_opaque` (#1895)
  - [Wayland] Bugfix: Buffer would overrun when storing received drag offer (#2225)
  - [Wayland] Bugfix: Joysticks connected after `glfwInit` were not detected (#2198)
+ - [Wayland] Bugfix: Fallback decorations emitted `GLFW_CURSOR_UNAVAILABLE` errors
  - [Linux] Bugfix: Joysticks without buttons were ignored (#2042,#2043)
    [EGL] Added loading of glvnd `libOpenGL.so.0` where available for OpenGL
  - [GLX] Added loading of glvnd `libGLX.so.0` where available

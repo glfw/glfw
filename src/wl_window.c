@@ -1315,47 +1315,47 @@ static void pointerHandleMotion(void* userData,
                                 wl_fixed_t sy)
 {
     _GLFWwindow* window = _glfw.wl.pointerFocus;
-    const char* cursorName = NULL;
-    double x, y;
-
     if (!window)
         return;
 
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
         return;
-    x = wl_fixed_to_double(sx);
-    y = wl_fixed_to_double(sy);
-    window->wl.cursorPosX = x;
-    window->wl.cursorPosY = y;
+
+    const double xpos = wl_fixed_to_double(sx);
+    const double ypos = wl_fixed_to_double(sy);
+    window->wl.cursorPosX = xpos;
+    window->wl.cursorPosY = ypos;
+
+    const char* cursorName = NULL;
 
     switch (window->wl.decorations.focus)
     {
         case GLFW_MAIN_WINDOW:
             _glfw.wl.cursorPreviousName = NULL;
-            _glfwInputCursorPos(window, x, y);
+            _glfwInputCursorPos(window, xpos, ypos);
             return;
         case GLFW_TOP_DECORATION:
-            if (y < GLFW_BORDER_SIZE)
+            if (ypos < GLFW_BORDER_SIZE)
                 cursorName = "n-resize";
             else
                 cursorName = "left_ptr";
             break;
         case GLFW_LEFT_DECORATION:
-            if (y < GLFW_BORDER_SIZE)
+            if (ypos < GLFW_BORDER_SIZE)
                 cursorName = "nw-resize";
             else
                 cursorName = "w-resize";
             break;
         case GLFW_RIGHT_DECORATION:
-            if (y < GLFW_BORDER_SIZE)
+            if (ypos < GLFW_BORDER_SIZE)
                 cursorName = "ne-resize";
             else
                 cursorName = "e-resize";
             break;
         case GLFW_BOTTOM_DECORATION:
-            if (x < GLFW_BORDER_SIZE)
+            if (xpos < GLFW_BORDER_SIZE)
                 cursorName = "sw-resize";
-            else if (x > window->wl.width + GLFW_BORDER_SIZE)
+            else if (xpos > window->wl.width + GLFW_BORDER_SIZE)
                 cursorName = "se-resize";
             else
                 cursorName = "s-resize";
@@ -1366,9 +1366,6 @@ static void pointerHandleMotion(void* userData,
 
     if (_glfw.wl.cursorPreviousName != cursorName)
     {
-        struct wl_buffer* buffer;
-        struct wl_cursor* cursor;
-        struct wl_cursor_image* image;
         struct wl_surface* surface = _glfw.wl.cursorSurface;
         struct wl_cursor_theme* theme = _glfw.wl.cursorTheme;
         int scale = 1;
@@ -1381,17 +1378,16 @@ static void pointerHandleMotion(void* userData,
             theme = _glfw.wl.cursorThemeHiDPI;
         }
 
-        cursor = wl_cursor_theme_get_cursor(theme, name);
+        struct wl_cursor* cursor = wl_cursor_theme_get_cursor(theme, cursorName);
         if (!cursor)
             return;
 
         // TODO: handle animated cursors too.
-        image = cursor->images[0];
-
+        struct wl_cursor_image* image = cursor->images[0];
         if (!image)
             return;
 
-        buffer = wl_cursor_image_get_buffer(image);
+        struct wl_buffer* buffer = wl_cursor_image_get_buffer(image);
         if (!buffer)
             return;
 
@@ -1401,10 +1397,10 @@ static void pointerHandleMotion(void* userData,
                               image->hotspot_y / scale);
         wl_surface_set_buffer_scale(surface, scale);
         wl_surface_attach(surface, buffer, 0, 0);
-        wl_surface_damage(surface, 0, 0,
-                          image->width, image->height);
+        wl_surface_damage(surface, 0, 0, image->width, image->height);
         wl_surface_commit(surface);
-        _glfw.wl.cursorPreviousName = name;
+
+        _glfw.wl.cursorPreviousName = cursorName;
     }
 }
 

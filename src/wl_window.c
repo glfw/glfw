@@ -1308,48 +1308,6 @@ static void pointerHandleLeave(void* userData,
     _glfwInputCursorEnter(window, GLFW_FALSE);
 }
 
-static void setCursor(_GLFWwindow* window, const char* name)
-{
-    struct wl_buffer* buffer;
-    struct wl_cursor* cursor;
-    struct wl_cursor_image* image;
-    struct wl_surface* surface = _glfw.wl.cursorSurface;
-    struct wl_cursor_theme* theme = _glfw.wl.cursorTheme;
-    int scale = 1;
-
-    if (window->wl.contentScale > 1 && _glfw.wl.cursorThemeHiDPI)
-    {
-        // We only support up to scale=2 for now, since libwayland-cursor
-        // requires us to load a different theme for each size.
-        scale = 2;
-        theme = _glfw.wl.cursorThemeHiDPI;
-    }
-
-    cursor = wl_cursor_theme_get_cursor(theme, name);
-    if (!cursor)
-        return;
-
-    // TODO: handle animated cursors too.
-    image = cursor->images[0];
-
-    if (!image)
-        return;
-
-    buffer = wl_cursor_image_get_buffer(image);
-    if (!buffer)
-        return;
-    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial,
-                          surface,
-                          image->hotspot_x / scale,
-                          image->hotspot_y / scale);
-    wl_surface_set_buffer_scale(surface, scale);
-    wl_surface_attach(surface, buffer, 0, 0);
-    wl_surface_damage(surface, 0, 0,
-                      image->width, image->height);
-    wl_surface_commit(surface);
-    _glfw.wl.cursorPreviousName = name;
-}
-
 static void pointerHandleMotion(void* userData,
                                 struct wl_pointer* pointer,
                                 uint32_t time,
@@ -1405,8 +1363,49 @@ static void pointerHandleMotion(void* userData,
         default:
             assert(0);
     }
+
     if (_glfw.wl.cursorPreviousName != cursorName)
-        setCursor(window, cursorName);
+    {
+        struct wl_buffer* buffer;
+        struct wl_cursor* cursor;
+        struct wl_cursor_image* image;
+        struct wl_surface* surface = _glfw.wl.cursorSurface;
+        struct wl_cursor_theme* theme = _glfw.wl.cursorTheme;
+        int scale = 1;
+
+        if (window->wl.contentScale > 1 && _glfw.wl.cursorThemeHiDPI)
+        {
+            // We only support up to scale=2 for now, since libwayland-cursor
+            // requires us to load a different theme for each size.
+            scale = 2;
+            theme = _glfw.wl.cursorThemeHiDPI;
+        }
+
+        cursor = wl_cursor_theme_get_cursor(theme, name);
+        if (!cursor)
+            return;
+
+        // TODO: handle animated cursors too.
+        image = cursor->images[0];
+
+        if (!image)
+            return;
+
+        buffer = wl_cursor_image_get_buffer(image);
+        if (!buffer)
+            return;
+
+        wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial,
+                              surface,
+                              image->hotspot_x / scale,
+                              image->hotspot_y / scale);
+        wl_surface_set_buffer_scale(surface, scale);
+        wl_surface_attach(surface, buffer, 0, 0);
+        wl_surface_damage(surface, 0, 0,
+                          image->width, image->height);
+        wl_surface_commit(surface);
+        _glfw.wl.cursorPreviousName = name;
+    }
 }
 
 static void pointerHandleButton(void* userData,

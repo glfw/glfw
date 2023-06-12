@@ -172,6 +172,12 @@ static GLFWbool openJoystickDevice(const char* path)
 
     char guid[33] = "";
 
+    _GLFWusbinfo usbinfo;
+    usbinfo.bustype = id.bustype;
+    usbinfo.vendor  = id.vendor;
+    usbinfo.product = id.product;
+    usbinfo.version = id.version;
+
     // Generate a joystick GUID that matches the SDL 2.0.5+ one
     if (id.vendor && id.product && id.version)
     {
@@ -231,6 +237,7 @@ static GLFWbool openJoystickDevice(const char* path)
         close(linjs.fd);
         return GLFW_FALSE;
     }
+    js->usbInfo = usbinfo;
 
     strncpy(linjs.path, path, sizeof(linjs.path) - 1);
     memcpy(&js->linjs, &linjs, sizeof(linjs));

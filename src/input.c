@@ -67,15 +67,50 @@ static GLFWbool initJoysticks(void)
     return _glfw.joysticksInitialized = GLFW_TRUE;
 }
 
+uint16_t parseHexDigit(char c)
+{
+    if (c >= '0' && c <= '9') return c - '0';
+    if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+    if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+    assert(GLFW_FALSE);
+}
+
+struct vendor_product
+{
+    uint16_t vendor;
+    uint16_t product;  
+};
+
+static struct vendor_product parseGUID(const char* guid)
+{
+    struct vendor_product result;
+    result.vendor = parseHexDigit(guid[8]) | (parseHexDigit(guid[9]) << 8);
+    result.product = parseHexDigit(guid[16]) | (parseHexDigit(guid[17]) << 8);
+    return result;
+}
+
 // Finds a mapping based on joystick GUID
 //
 static _GLFWmapping* findMapping(const char* guid)
 {
-    int i;
+    struct vendor_product this;
 
-    for (i = 0;  i < _glfw.mappingCount;  i++)
+    // exact match
+    for (int i = 0;  i < _glfw.mappingCount;  i++)
     {
-        if (strcmp(_glfw.mappings[i].guid, guid) == 0)
+        if (strncmp(_glfw.mappings[i].guid, guid, 32) == 0)
+            return _glfw.mappings + i;
+    }
+
+    // only match vendor product
+
+    this = parseGUID(guid);
+    
+    for (int i = 0;  i < _glfw.mappingCount;  i++)
+    {
+        struct vendor_product that = parseGUID(_glfw.mappings[i].guid);
+
+        if (memcmp(&this, &that, sizeof(struct vendor_product)) == 0)
             return _glfw.mappings + i;
     }
 

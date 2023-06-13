@@ -102,8 +102,8 @@ static _GLFWmapping* findMapping(const char* guid)
             return _glfw.mappings + i;
     }
 
+#if defined(GLFW_BUILD_LINUX_JOYSTICK)
     // only match vendor product
-
     this = parseGUID(guid);
     
     for (int i = 0;  i < _glfw.mappingCount;  i++)
@@ -113,6 +113,7 @@ static _GLFWmapping* findMapping(const char* guid)
         if (memcmp(&this, &that, sizeof(struct vendor_product)) == 0)
             return _glfw.mappings + i;
     }
+#endif
 
     return NULL;
 }

@@ -67,6 +67,8 @@ static GLFWbool initJoysticks(void)
     return _glfw.joysticksInitialized = GLFW_TRUE;
 }
 
+#if defined(GLFW_BUILD_LINUX_JOYSTICK)
+
 uint16_t parseHexDigit(char c)
 {
     if (c >= '0' && c <= '9') return c - '0';
@@ -89,21 +91,10 @@ static struct vendor_product parseGUID(const char* guid)
     return result;
 }
 
-// Finds a mapping based on joystick GUID
-//
-static _GLFWmapping* findMapping(const char* guid)
+static _GLFWmapping* findMappingUSBVendorProduct(const char* guid)
 {
+
     struct vendor_product this;
-
-    // exact match
-    for (int i = 0;  i < _glfw.mappingCount;  i++)
-    {
-        if (strncmp(_glfw.mappings[i].guid, guid, 32) == 0)
-            return _glfw.mappings + i;
-    }
-
-#if defined(GLFW_BUILD_LINUX_JOYSTICK)
-    // only match vendor product
     this = parseGUID(guid);
     
     for (int i = 0;  i < _glfw.mappingCount;  i++)
@@ -113,9 +104,29 @@ static _GLFWmapping* findMapping(const char* guid)
         if (memcmp(&this, &that, sizeof(struct vendor_product)) == 0)
             return _glfw.mappings + i;
     }
-#endif
 
     return NULL;
+}
+
+#endif
+
+// Finds a mapping based on joystick GUID
+//
+static _GLFWmapping* findMapping(const char* guid)
+{
+    // exact match
+    for (int i = 0;  i < _glfw.mappingCount;  i++)
+    {
+        if (strncmp(_glfw.mappings[i].guid, guid, 32) == 0)
+            return _glfw.mappings + i;
+    }
+
+#if defined(GLFW_BUILD_LINUX_JOYSTICK)
+    // only match vendor id, product id
+    return findMappingUSBVendorProduct(guid);
+#else
+    return NULL;
+#endif
 }
 
 // Checks whether a gamepad mapping element is present in the hardware

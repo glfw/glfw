@@ -313,6 +313,22 @@ GLFWAPI id glfwGetNSGLContext(GLFWwindow* window);
  */
 GLFWAPI Display* glfwGetX11Display(void);
 
+/*! @brief Returns the `Screen` used by GLFW.
+ *
+ *  @return The `Screen` used by GLFW, or `-1` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @since Added in version 3.8.9.
+ *
+ *  @ingroup native
+ */
+GLFWAPI int glfwGetX11Screen(void);
+
 /*! @brief Returns the `RRCrtc` of the specified monitor.
  *
  *  @return The `RRCrtc` of the specified monitor, or `None` if an

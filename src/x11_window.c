@@ -646,6 +646,9 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                  _glfw.x11.context,
                  (XPointer) window);
 
+    window->handleDND = wndconfig->handleDND;
+    window->handleKeyboard = wndconfig->handleKeyboard;
+
     if (!wndconfig->decorated)
         _glfwPlatformSetWindowDecorated(window, GLFW_FALSE);
 
@@ -759,6 +762,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     }
 
     // Announce support for Xdnd (drag and drop)
+    if (wndconfig->handleDND)
     {
         const Atom version = _GLFW_XDND_VERSION;
         XChangeProperty(_glfw.x11.display, window->x11.handle,
@@ -768,7 +772,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 
     _glfwPlatformSetWindowTitle(window, wndconfig->title);
 
-    if (_glfw.x11.im)
+    if (wndconfig->handleKeyboard && _glfw.x11.im)
     {
         window->x11.ic = XCreateIC(_glfw.x11.im,
                                    XNInputStyle,
@@ -780,7 +784,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                                    NULL);
     }
 
-    if (window->x11.ic)
+    if (wndconfig->handleKeyboard && window->x11.ic)
     {
         unsigned long filter = 0;
         if (XGetICValues(window->x11.ic, XNFilterEvents, &filter, NULL) == NULL)
@@ -1163,13 +1167,19 @@ static void processEvent(XEvent *event)
     if (_glfw.x11.im)
         filtered = XFilterEvent(event, None);
 
+    _GLFWwindow* window = NULL;
+    XFindContext(_glfw.x11.display,
+                  event->xany.window,
+                  _glfw.x11.context,
+                  (XPointer*) &window);
+
     if (_glfw.x11.randr.available)
     {
         if (event->type == _glfw.x11.randr.eventBase + RRNotify)
         {
             XRRUpdateConfiguration(event);
             _glfwPollMonitorsX11();
-            return;
+            goto unhandled_event;
         }
     }
 
@@ -1183,7 +1193,7 @@ static void processEvent(XEvent *event)
                 _glfw.x11.xkb.group = ((XkbEvent*) event)->state.group;
             }
 
-            return;
+            goto unhandled_event;
         }
     }
 
@@ -1222,20 +1232,16 @@ static void processEvent(XEvent *event)
             XFreeEventData(_glfw.x11.display, &event->xcookie);
         }
 
-        return;
+        goto unhandled_event;
     }
 
     if (event->type == SelectionRequest)
     {
         handleSelectionRequest(event);
-        return;
+        goto unhandled_event;
     }
 
-    _GLFWwindow* window = NULL;
-    if (XFindContext(_glfw.x11.display,
-                     event->xany.window,
-                     _glfw.x11.context,
-                     (XPointer*) &window) != 0)
+    if (!window)
     {
         // This is an event for a window that has already been destroyed
         return;
@@ -1243,6 +1249,15 @@ static void processEvent(XEvent *event)
 
     switch (event->type)
     {
+unhandled_event:
+        default:
+        {
+            if (!window)
+                return;
+            _glfwInputUnhandledEvent(window, (void *) event);
+            return;
+        }
+
         case ReparentNotify:
         {
             window->x11.parent = event->xreparent.parent;
@@ -1251,6 +1266,9 @@ static void processEvent(XEvent *event)
 
         case KeyPress:
         {
+            if (!window->handleKeyboard)
+                goto unhandled_event;
+
             const int key = translateKey(keycode);
             const int mods = translateState(event->xkey.state);
             const int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
@@ -1351,6 +1369,9 @@ static void processEvent(XEvent *event)
 
         case KeyRelease:
         {
+            if (!window->handleKeyboard)
+                goto unhandled_event;
+
             const int key = translateKey(keycode);
             const int mods = translateState(event->xkey.state);
 
@@ -1392,6 +1413,9 @@ static void processEvent(XEvent *event)
 
         case ButtonPress:
         {
+            if (!window->handleKeyboard)
+                goto unhandled_event;
+
             const int mods = translateState(event->xbutton.state);
 
             if (event->xbutton.button == Button1)
@@ -1578,13 +1602,11 @@ static void processEvent(XEvent *event)
                 return;
 
             if (event->xclient.message_type == None)
-                return;
+                goto unhandled_event;
 
             if (event->xclient.message_type == _glfw.x11.WM_PROTOCOLS)
             {
                 const Atom protocol = event->xclient.data.l[0];
-                if (protocol == None)
-                    return;
 
                 if (protocol == _glfw.x11.WM_DELETE_WINDOW)
                 {
@@ -1592,6 +1614,7 @@ static void processEvent(XEvent *event)
                     // example by the user pressing a 'close' window decoration
                     // button
                     _glfwInputWindowCloseRequest(window);
+                    return;
                 }
                 else if (protocol == _glfw.x11.NET_WM_PING)
                 {
@@ -1605,9 +1628,14 @@ static void processEvent(XEvent *event)
                                False,
                                SubstructureNotifyMask | SubstructureRedirectMask,
                                &reply);
+                return;
                 }
             }
-            else if (event->xclient.message_type == _glfw.x11.XdndEnter)
+
+            if (!window->handleDND)
+                goto unhandled_event;
+
+            if (event->xclient.message_type == _glfw.x11.XdndEnter)
             {
                 // A drag operation has entered the window
                 unsigned long i, count;
@@ -1859,9 +1887,6 @@ static void processEvent(XEvent *event)
 
             return;
         }
-
-        case DestroyNotify:
-            return;
     }
 }
 
@@ -3137,6 +3162,12 @@ GLFWAPI Display* glfwGetX11Display(void)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     return _glfw.x11.display;
+}
+
+GLFWAPI int glfwGetX11Screen(void)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(-1);
+    return _glfw.x11.screen;
 }
 
 GLFWAPI Window glfwGetX11Window(GLFWwindow* handle)

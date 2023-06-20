@@ -1031,6 +1031,14 @@ extern "C" {
  *  [window hint](@ref GLFW_X11_CLASS_NAME_hint).
  */
 #define GLFW_X11_INSTANCE_NAME      0x00024002
+/*! @brief X11 specific
+ *  [window hint](@ref GLFW_HANDLE_DND_hint).
+ */
+#define GLFW_HANDLE_DND             0x00024003
+/*! @brief X11 specific but probably/possibly shouldn't be
+ *  [window hint](@ref GLFW_HANDLE_KEYBOARD_hint).
+ */
+#define GLFW_HANDLE_KEYBOARD        0x00024004
 /*! @} */
 
 #define GLFW_NO_API                          0
@@ -1640,6 +1648,26 @@ typedef void (* GLFWmonitorfun)(GLFWmonitor* monitor, int event);
  *  @ingroup input
  */
 typedef void (* GLFWjoystickfun)(int jid, int event);
+
+/*! @brief The function pointer type for unhandled event callbacks.
+ *
+ *  This is the function pointer type for callbacks when GLFW has
+ *  not handled an input event.
+ *  unhandled event callback function has the following signature:
+ *  @code
+ *  void function_name(GLFWwindow* window, void *event)
+ *  @endcode
+ *
+ *  @param[in] window The window that received the event.
+ *  @param[in] event The event. What it means is platform-dependent.
+ *
+ *  @sa @ref glfwSetUnhandledCallback
+ *
+ *  @since Added in version 3.9.
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWunhandledfun)(GLFWwindow* window, void* event);
 
 /*! @brief Video mode type.
  *
@@ -4839,6 +4867,36 @@ GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun ca
  *  @ingroup input
  */
 GLFWAPI GLFWdropfun glfwSetDropCallback(GLFWwindow* window, GLFWdropfun callback);
+
+/*! @brief Sets the unhandled event callback.
+ *
+ *  This function sets the unhandled event callback of the specified
+ *  window, which is called when an event is received from the windowing system
+ *  which GLFW does not handle itself.
+ *
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] callback The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  @callback_signature
+ *  @code
+ *  void function_name(GLFWwindow* window, void *event)
+ *  @endcode
+ *  The meaning of the event variable is platform-dependent.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref cursor_enter
+ *
+ *  @since Added in version 3.0.
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWunhandledfun glfwSetUnhandledCallback(GLFWwindow* window, GLFWunhandledfun callback);
 
 /*! @brief Returns whether the specified joystick is present.
  *

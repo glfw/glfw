@@ -261,6 +261,10 @@ void glfwDefaultWindowHints(void)
 
     // The default is to use full Retina resolution framebuffers
     _glfw.hints.window.ns.retina = GLFW_TRUE;
+
+    // Handle keyboard and drag-and-dtop in GLFW by default
+    _glfw.hints.window.handleDND = GLFW_TRUE;
+    _glfw.hints.window.handleKeyboard = GLFW_TRUE;
 }
 
 GLFWAPI void glfwWindowHint(int hint, int value)
@@ -385,6 +389,12 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             return;
         case GLFW_REFRESH_RATE:
             _glfw.hints.refreshRate = value;
+            return;
+        case GLFW_HANDLE_DND:
+            _glfw.hints.window.handleDND = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
+        case GLFW_HANDLE_KEYBOARD:
+            _glfw.hints.window.handleKeyboard = value ? GLFW_TRUE : GLFW_FALSE;
             return;
     }
 

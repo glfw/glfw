@@ -267,6 +267,8 @@ struct _GLFWwndconfig
     GLFWbool      centerCursor;
     GLFWbool      focusOnShow;
     GLFWbool      scaleToMonitor;
+    GLFWbool      handleDND;
+    GLFWbool      handleKeyboard;
     struct {
         GLFWbool  retina;
         char      frameName[256];
@@ -393,6 +395,8 @@ struct _GLFWwindow
     // Virtual cursor position when cursor is disabled
     double              virtualCursorPosX, virtualCursorPosY;
     GLFWbool            rawMouseMotion;
+    GLFWbool            handleDND;
+    GLFWbool            handleKeyboard;
 
     _GLFWcontext        context;
 
@@ -414,6 +418,7 @@ struct _GLFWwindow
         GLFWcharfun               character;
         GLFWcharmodsfun           charmods;
         GLFWdropfun               drop;
+        GLFWunhandledfun          unhandled;
     } callbacks;
 
     // This is defined in the window API's platform.h
@@ -716,6 +721,7 @@ void _glfwInputWindowDamage(_GLFWwindow* window);
 void _glfwInputWindowCloseRequest(_GLFWwindow* window);
 void _glfwInputWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor);
 
+void _glfwInputUnhandledEvent(_GLFWwindow* window, void* event);
 void _glfwInputKey(_GLFWwindow* window,
                    int key, int scancode, int action, int mods);
 void _glfwInputChar(_GLFWwindow* window,

@@ -245,6 +245,14 @@ static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
 //////                         GLFW event API                       //////
 //////////////////////////////////////////////////////////////////////////
 
+// Notifies shared code of an event that was not handled by GLFW
+//
+void _glfwInputUnhandledEvent(_GLFWwindow* window, void *event)
+{
+    if (window->callbacks.unhandled)
+        window->callbacks.unhandled((GLFWwindow*) window, event);
+}
+
 // Notifies shared code of a physical key event
 //
 void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -847,6 +855,16 @@ GLFWAPI void glfwSetCursor(GLFWwindow* windowHandle, GLFWcursor* cursorHandle)
     window->cursor = cursor;
 
     _glfwPlatformSetCursor(window, cursor);
+}
+
+GLFWAPI GLFWunhandledfun glfwSetUnhandledCallback(GLFWwindow* handle, GLFWunhandledfun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP_POINTERS(window->callbacks.unhandled, cbfun);
+    return cbfun;
 }
 
 GLFWAPI GLFWkeyfun glfwSetKeyCallback(GLFWwindow* handle, GLFWkeyfun cbfun)

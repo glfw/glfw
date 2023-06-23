@@ -27,6 +27,9 @@
 //========================================================================
 
 #include "internal.h"
+
+#if defined(_GLFW_COCOA)
+
 #include <sys/param.h> // For MAXPATHLEN
 
 // Needed for _NSGetProgname
@@ -460,18 +463,26 @@ void* _glfwLoadLocalVulkanLoaderCocoa(void)
     if (!bundle)
         return NULL;
 
-    CFURLRef url =
-        CFBundleCopyAuxiliaryExecutableURL(bundle, CFSTR("libvulkan.1.dylib"));
-    if (!url)
+    CFURLRef frameworksUrl = CFBundleCopyPrivateFrameworksURL(bundle);
+    if (!frameworksUrl)
         return NULL;
+
+    CFURLRef loaderUrl = CFURLCreateCopyAppendingPathComponent(
+        kCFAllocatorDefault, frameworksUrl, CFSTR("libvulkan.1.dylib"), false);
+    if (!loaderUrl)
+    {
+        CFRelease(frameworksUrl);
+        return NULL;
+    }
 
     char path[PATH_MAX];
     void* handle = NULL;
 
-    if (CFURLGetFileSystemRepresentation(url, true, (UInt8*) path, sizeof(path) - 1))
+    if (CFURLGetFileSystemRepresentation(loaderUrl, true, (UInt8*) path, sizeof(path) - 1))
         handle = _glfwPlatformLoadModule(path);
 
-    CFRelease(url);
+    CFRelease(loaderUrl);
+    CFRelease(frameworksUrl);
     return handle;
 }
 
@@ -676,7 +687,11 @@ void _glfwTerminateCocoa(void)
     _glfw_free(_glfw.ns.clipboardString);
 
     _glfwTerminateNSGL();
+    _glfwTerminateEGL();
+    _glfwTerminateOSMesa();
 
     } // autoreleasepool
 }
+
+#endif // _GLFW_COCOA
 

@@ -26,7 +26,7 @@ GLFW.
 @endcode
 
 This header defines all the constants and declares all the types and function
-prototypes of the GLFW API.  By default it also includes the OpenGL header from
+prototypes of the GLFW API.  By default, it also includes the OpenGL header from
 your development environment.  See [option macros](@ref build_macros) below for
 how to select OpenGL ES headers and more.
 
@@ -57,7 +57,7 @@ macros that disable similar headers below it.
 
 Both of these mechanisms depend on the extension loader header defining a known
 macro.  If yours doesn't or you don't know which one your users will pick, the
-@ref GLFW_INCLUDE_NONE macro will explicitly to prevent the GLFW header from
+@ref GLFW_INCLUDE_NONE macro will explicitly prevent the GLFW header from
 including the OpenGL header.  This will also allow you to include the two
 headers in any order.
 

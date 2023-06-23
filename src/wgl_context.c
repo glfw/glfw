@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_WIN32)
+
 #include <stdlib.h>
 #include <assert.h>
 
@@ -52,12 +54,12 @@ static int findPixelFormatAttribValueWGL(const int* attribs,
     return 0;
 }
 
-#define addAttrib(a) \
+#define ADD_ATTRIB(a) \
 { \
     assert((size_t) attribCount < sizeof(attribs) / sizeof(attribs[0])); \
     attribs[attribCount++] = a; \
 }
-#define findAttribValue(a) \
+#define FIND_ATTRIB_VALUE(a) \
     findPixelFormatAttribValueWGL(attribs, attribCount, values, a)
 
 // Return a list of available and usable framebuffer configs
@@ -72,61 +74,49 @@ static int choosePixelFormatWGL(_GLFWwindow* window,
     int attribs[40];
     int values[sizeof(attribs) / sizeof(attribs[0])];
 
+    nativeCount = DescribePixelFormat(window->context.wgl.dc,
+                                      1,
+                                      sizeof(PIXELFORMATDESCRIPTOR),
+                                      NULL);
+
     if (_glfw.wgl.ARB_pixel_format)
     {
-        const int attrib = WGL_NUMBER_PIXEL_FORMATS_ARB;
-
-        if (!wglGetPixelFormatAttribivARB(window->context.wgl.dc,
-                                          1, 0, 1, &attrib, &nativeCount))
-        {
-            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                                 "WGL: Failed to retrieve pixel format attribute");
-            return 0;
-        }
-
-        addAttrib(WGL_SUPPORT_OPENGL_ARB);
-        addAttrib(WGL_DRAW_TO_WINDOW_ARB);
-        addAttrib(WGL_PIXEL_TYPE_ARB);
-        addAttrib(WGL_ACCELERATION_ARB);
-        addAttrib(WGL_RED_BITS_ARB);
-        addAttrib(WGL_RED_SHIFT_ARB);
-        addAttrib(WGL_GREEN_BITS_ARB);
-        addAttrib(WGL_GREEN_SHIFT_ARB);
-        addAttrib(WGL_BLUE_BITS_ARB);
-        addAttrib(WGL_BLUE_SHIFT_ARB);
-        addAttrib(WGL_ALPHA_BITS_ARB);
-        addAttrib(WGL_ALPHA_SHIFT_ARB);
-        addAttrib(WGL_DEPTH_BITS_ARB);
-        addAttrib(WGL_STENCIL_BITS_ARB);
-        addAttrib(WGL_ACCUM_BITS_ARB);
-        addAttrib(WGL_ACCUM_RED_BITS_ARB);
-        addAttrib(WGL_ACCUM_GREEN_BITS_ARB);
-        addAttrib(WGL_ACCUM_BLUE_BITS_ARB);
-        addAttrib(WGL_ACCUM_ALPHA_BITS_ARB);
-        addAttrib(WGL_AUX_BUFFERS_ARB);
-        addAttrib(WGL_STEREO_ARB);
-        addAttrib(WGL_DOUBLE_BUFFER_ARB);
+        ADD_ATTRIB(WGL_SUPPORT_OPENGL_ARB);
+        ADD_ATTRIB(WGL_DRAW_TO_WINDOW_ARB);
+        ADD_ATTRIB(WGL_PIXEL_TYPE_ARB);
+        ADD_ATTRIB(WGL_ACCELERATION_ARB);
+        ADD_ATTRIB(WGL_RED_BITS_ARB);
+        ADD_ATTRIB(WGL_RED_SHIFT_ARB);
+        ADD_ATTRIB(WGL_GREEN_BITS_ARB);
+        ADD_ATTRIB(WGL_GREEN_SHIFT_ARB);
+        ADD_ATTRIB(WGL_BLUE_BITS_ARB);
+        ADD_ATTRIB(WGL_BLUE_SHIFT_ARB);
+        ADD_ATTRIB(WGL_ALPHA_BITS_ARB);
+        ADD_ATTRIB(WGL_ALPHA_SHIFT_ARB);
+        ADD_ATTRIB(WGL_DEPTH_BITS_ARB);
+        ADD_ATTRIB(WGL_STENCIL_BITS_ARB);
+        ADD_ATTRIB(WGL_ACCUM_BITS_ARB);
+        ADD_ATTRIB(WGL_ACCUM_RED_BITS_ARB);
+        ADD_ATTRIB(WGL_ACCUM_GREEN_BITS_ARB);
+        ADD_ATTRIB(WGL_ACCUM_BLUE_BITS_ARB);
+        ADD_ATTRIB(WGL_ACCUM_ALPHA_BITS_ARB);
+        ADD_ATTRIB(WGL_AUX_BUFFERS_ARB);
+        ADD_ATTRIB(WGL_STEREO_ARB);
+        ADD_ATTRIB(WGL_DOUBLE_BUFFER_ARB);
 
         if (_glfw.wgl.ARB_multisample)
-            addAttrib(WGL_SAMPLES_ARB);
+            ADD_ATTRIB(WGL_SAMPLES_ARB);
 
         if (ctxconfig->client == GLFW_OPENGL_API)
         {
             if (_glfw.wgl.ARB_framebuffer_sRGB || _glfw.wgl.EXT_framebuffer_sRGB)
-                addAttrib(WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB);
+                ADD_ATTRIB(WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB);
         }
         else
         {
             if (_glfw.wgl.EXT_colorspace)
-                addAttrib(WGL_COLORSPACE_EXT);
+                ADD_ATTRIB(WGL_COLORSPACE_EXT);
         }
-    }
-    else
-    {
-        nativeCount = DescribePixelFormat(window->context.wgl.dc,
-                                          1,
-                                          sizeof(PIXELFORMATDESCRIPTOR),
-                                          NULL);
     }
 
     usableConfigs = _glfw_calloc(nativeCount, sizeof(_GLFWfbconfig));
@@ -152,48 +142,48 @@ static int choosePixelFormatWGL(_GLFWwindow* window,
                 return 0;
             }
 
-            if (!findAttribValue(WGL_SUPPORT_OPENGL_ARB) ||
-                !findAttribValue(WGL_DRAW_TO_WINDOW_ARB))
+            if (!FIND_ATTRIB_VALUE(WGL_SUPPORT_OPENGL_ARB) ||
+                !FIND_ATTRIB_VALUE(WGL_DRAW_TO_WINDOW_ARB))
             {
                 continue;
             }
 
-            if (findAttribValue(WGL_PIXEL_TYPE_ARB) != WGL_TYPE_RGBA_ARB)
+            if (FIND_ATTRIB_VALUE(WGL_PIXEL_TYPE_ARB) != WGL_TYPE_RGBA_ARB)
                 continue;
 
-            if (findAttribValue(WGL_ACCELERATION_ARB) == WGL_NO_ACCELERATION_ARB)
+            if (FIND_ATTRIB_VALUE(WGL_ACCELERATION_ARB) == WGL_NO_ACCELERATION_ARB)
                 continue;
 
-            if (findAttribValue(WGL_DOUBLE_BUFFER_ARB) != fbconfig->doublebuffer)
+            if (FIND_ATTRIB_VALUE(WGL_DOUBLE_BUFFER_ARB) != fbconfig->doublebuffer)
                 continue;
 
-            u->redBits = findAttribValue(WGL_RED_BITS_ARB);
-            u->greenBits = findAttribValue(WGL_GREEN_BITS_ARB);
-            u->blueBits = findAttribValue(WGL_BLUE_BITS_ARB);
-            u->alphaBits = findAttribValue(WGL_ALPHA_BITS_ARB);
+            u->redBits = FIND_ATTRIB_VALUE(WGL_RED_BITS_ARB);
+            u->greenBits = FIND_ATTRIB_VALUE(WGL_GREEN_BITS_ARB);
+            u->blueBits = FIND_ATTRIB_VALUE(WGL_BLUE_BITS_ARB);
+            u->alphaBits = FIND_ATTRIB_VALUE(WGL_ALPHA_BITS_ARB);
 
-            u->depthBits = findAttribValue(WGL_DEPTH_BITS_ARB);
-            u->stencilBits = findAttribValue(WGL_STENCIL_BITS_ARB);
+            u->depthBits = FIND_ATTRIB_VALUE(WGL_DEPTH_BITS_ARB);
+            u->stencilBits = FIND_ATTRIB_VALUE(WGL_STENCIL_BITS_ARB);
 
-            u->accumRedBits = findAttribValue(WGL_ACCUM_RED_BITS_ARB);
-            u->accumGreenBits = findAttribValue(WGL_ACCUM_GREEN_BITS_ARB);
-            u->accumBlueBits = findAttribValue(WGL_ACCUM_BLUE_BITS_ARB);
-            u->accumAlphaBits = findAttribValue(WGL_ACCUM_ALPHA_BITS_ARB);
+            u->accumRedBits = FIND_ATTRIB_VALUE(WGL_ACCUM_RED_BITS_ARB);
+            u->accumGreenBits = FIND_ATTRIB_VALUE(WGL_ACCUM_GREEN_BITS_ARB);
+            u->accumBlueBits = FIND_ATTRIB_VALUE(WGL_ACCUM_BLUE_BITS_ARB);
+            u->accumAlphaBits = FIND_ATTRIB_VALUE(WGL_ACCUM_ALPHA_BITS_ARB);
 
-            u->auxBuffers = findAttribValue(WGL_AUX_BUFFERS_ARB);
+            u->auxBuffers = FIND_ATTRIB_VALUE(WGL_AUX_BUFFERS_ARB);
 
-            if (findAttribValue(WGL_STEREO_ARB))
+            if (FIND_ATTRIB_VALUE(WGL_STEREO_ARB))
                 u->stereo = GLFW_TRUE;
 
             if (_glfw.wgl.ARB_multisample)
-                u->samples = findAttribValue(WGL_SAMPLES_ARB);
+                u->samples = FIND_ATTRIB_VALUE(WGL_SAMPLES_ARB);
 
             if (ctxconfig->client == GLFW_OPENGL_API)
             {
                 if (_glfw.wgl.ARB_framebuffer_sRGB ||
                     _glfw.wgl.EXT_framebuffer_sRGB)
                 {
-                    if (findAttribValue(WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB))
+                    if (FIND_ATTRIB_VALUE(WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB))
                         u->sRGB = GLFW_TRUE;
                 }
             }
@@ -201,7 +191,7 @@ static int choosePixelFormatWGL(_GLFWwindow* window,
             {
                 if (_glfw.wgl.EXT_colorspace)
                 {
-                    if (findAttribValue(WGL_COLORSPACE_EXT) == WGL_COLORSPACE_SRGB_EXT)
+                    if (FIND_ATTRIB_VALUE(WGL_COLORSPACE_EXT) == WGL_COLORSPACE_SRGB_EXT)
                         u->sRGB = GLFW_TRUE;
                 }
             }
@@ -290,8 +280,8 @@ static int choosePixelFormatWGL(_GLFWwindow* window,
     return pixelFormat;
 }
 
-#undef addAttrib
-#undef findAttribValue
+#undef ADD_ATTRIB
+#undef FIND_ATTRIB_VALUE
 
 static void makeContextCurrentWGL(_GLFWwindow* window)
 {
@@ -523,7 +513,7 @@ void _glfwTerminateWGL(void)
         _glfwPlatformFreeModule(_glfw.wgl.instance);
 }
 
-#define setAttrib(a, v) \
+#define SET_ATTRIB(a, v) \
 { \
     assert(((size_t) index + 1) < sizeof(attribs) / sizeof(attribs[0])); \
     attribs[index++] = a; \
@@ -631,13 +621,13 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
             {
                 if (ctxconfig->robustness == GLFW_NO_RESET_NOTIFICATION)
                 {
-                    setAttrib(WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
-                              WGL_NO_RESET_NOTIFICATION_ARB);
+                    SET_ATTRIB(WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
+                               WGL_NO_RESET_NOTIFICATION_ARB);
                 }
                 else if (ctxconfig->robustness == GLFW_LOSE_CONTEXT_ON_RESET)
                 {
-                    setAttrib(WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
-                              WGL_LOSE_CONTEXT_ON_RESET_ARB);
+                    SET_ATTRIB(WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB,
+                               WGL_LOSE_CONTEXT_ON_RESET_ARB);
                 }
 
                 flags |= WGL_CONTEXT_ROBUST_ACCESS_BIT_ARB;
@@ -650,13 +640,13 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
             {
                 if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_NONE)
                 {
-                    setAttrib(WGL_CONTEXT_RELEASE_BEHAVIOR_ARB,
-                              WGL_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB);
+                    SET_ATTRIB(WGL_CONTEXT_RELEASE_BEHAVIOR_ARB,
+                               WGL_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB);
                 }
                 else if (ctxconfig->release == GLFW_RELEASE_BEHAVIOR_FLUSH)
                 {
-                    setAttrib(WGL_CONTEXT_RELEASE_BEHAVIOR_ARB,
-                              WGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB);
+                    SET_ATTRIB(WGL_CONTEXT_RELEASE_BEHAVIOR_ARB,
+                               WGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB);
                 }
             }
         }
@@ -664,7 +654,7 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         if (ctxconfig->noerror)
         {
             if (_glfw.wgl.ARB_create_context_no_error)
-                setAttrib(WGL_CONTEXT_OPENGL_NO_ERROR_ARB, GLFW_TRUE);
+                SET_ATTRIB(WGL_CONTEXT_OPENGL_NO_ERROR_ARB, GLFW_TRUE);
         }
 
         // NOTE: Only request an explicitly versioned context when necessary, as
@@ -672,17 +662,17 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         //       highest version supported by the driver
         if (ctxconfig->major != 1 || ctxconfig->minor != 0)
         {
-            setAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, ctxconfig->major);
-            setAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, ctxconfig->minor);
+            SET_ATTRIB(WGL_CONTEXT_MAJOR_VERSION_ARB, ctxconfig->major);
+            SET_ATTRIB(WGL_CONTEXT_MINOR_VERSION_ARB, ctxconfig->minor);
         }
 
         if (flags)
-            setAttrib(WGL_CONTEXT_FLAGS_ARB, flags);
+            SET_ATTRIB(WGL_CONTEXT_FLAGS_ARB, flags);
 
         if (mask)
-            setAttrib(WGL_CONTEXT_PROFILE_MASK_ARB, mask);
+            SET_ATTRIB(WGL_CONTEXT_PROFILE_MASK_ARB, mask);
 
-        setAttrib(0, 0);
+        SET_ATTRIB(0, 0);
 
         window->context.wgl.handle =
             wglCreateContextAttribsARB(window->context.wgl.dc, share, attribs);
@@ -765,7 +755,7 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
-#undef setAttrib
+#undef SET_ATTRIB
 
 GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* handle)
 {
@@ -787,4 +777,6 @@ GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* handle)
 
     return window->context.wgl.handle;
 }
+
+#endif // _GLFW_WIN32
 

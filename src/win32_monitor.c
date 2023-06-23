@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_WIN32)
+
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
@@ -381,7 +383,7 @@ void _glfwGetMonitorWorkareaWin32(_GLFWmonitor* monitor,
                                   int* width, int* height)
 {
     MONITORINFO mi = { sizeof(mi) };
-    GetMonitorInfo(monitor->win32.handle, &mi);
+    GetMonitorInfoW(monitor->win32.handle, &mi);
 
     if (xpos)
         *xpos = mi.rcWork.left;
@@ -544,4 +546,6 @@ GLFWAPI const char* glfwGetWin32Monitor(GLFWmonitor* handle)
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
     return monitor->win32.publicDisplayName;
 }
+
+#endif // _GLFW_WIN32
 

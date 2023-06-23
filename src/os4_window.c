@@ -68,6 +68,29 @@ static struct Hook OS4_BackFillHook = {
     0             /* h_Data */
 };
 
+static ULONG
+OS4_MapCursorIdToNative(int id)
+{
+    switch (id) {
+        case GLFW_ARROW_CURSOR:         return POINTERTYPE_NORMAL;
+        case GLFW_IBEAM_CURSOR:         return POINTERTYPE_SELECT; //54.21
+        //case SDL_SYSTEM_CURSOR_WAITARROW:
+        //case SDL_SYSTEM_CURSOR_WAIT:  return POINTERTYPE_BUSY;
+        case GLFW_CROSSHAIR_CURSOR:     return POINTERTYPE_CROSS;
+        case GLFW_RESIZE_NWSE_CURSOR:   return POINTERTYPE_NORTHWESTSOUTHEASTRESIZE;
+        case GLFW_RESIZE_NESW_CURSOR:   return POINTERTYPE_NORTHEASTSOUTHWESTRESIZE;
+        case GLFW_RESIZE_EW_CURSOR:     return POINTERTYPE_EASTWESTRESIZE;
+        case GLFW_RESIZE_NS_CURSOR:     return POINTERTYPE_NORTHSOUTHRESIZE;
+        case GLFW_NOT_ALLOWED_CURSOR:   return POINTERTYPE_NOTALLOWED;
+        case GLFW_POINTING_HAND_CURSOR: return POINTERTYPE_HAND;
+        //
+        case GLFW_RESIZE_ALL_CURSOR:
+        default:
+            dprintf("Unknown mapping from type %d\n", id);
+            return POINTERTYPE_NORMAL;
+    }
+}
+
 static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
 {
     if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
@@ -113,13 +136,58 @@ static void releaseMonitor(_GLFWwindow* window)
     _glfwInputMonitorWindow(window->monitor, NULL);
 }
 
+// Apply disabled cursor mode to a focused window
+//
+static void disableCursor(_GLFWwindow* window)
+{
+    _glfw.os4.disabledCursorWindow = window;
+}
+
+// Exit disabled cursor mode for the specified window
+//
+static void enableCursor(_GLFWwindow* window)
+{
+    _glfw.os4.disabledCursorWindow = NULL;
+}
+
+// Returns whether the cursor is in the content area of the specified window
+//
+static GLFWbool cursorInContentArea(_GLFWwindow* window)
+{
+    return GLFW_TRUE;
+}
+
+// Updates the cursor image according to its cursor mode
+//
+static void updateCursorImage(_GLFWwindow* window)
+{
+    if (window->cursorMode == GLFW_CURSOR_NORMAL)
+    {
+        if (window->cursor) {
+            IIntuition->SetWindowPointer(
+                window->os4.handle,
+                WA_Pointer, window->cursor->os4.handle,
+                TAG_DONE);
+        }
+        else {
+            IIntuition->SetWindowPointer(
+                window->os4.handle,
+                //WA_PointerType, type,
+                TAG_DONE);
+        }
+    }
+    else {
+        //SetCursor(NULL);
+    }
+}
+
 static int createNativeWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
                               const _GLFWfbconfig* fbconfig,
                               int windowType)
 {
     if (window->monitor) {
-        printf("fitToMonitor\n");
+        dprintf("fitToMonitor\n");
         fitToMonitor(window);
     }
     else
@@ -155,6 +223,7 @@ static int createNativeWindow(_GLFWwindow* window,
             WA_MaxWidth,          _glfw.os4.publicScreen->Width,
             WA_MaxHeight,         _glfw.os4.publicScreen->Height,
             WA_Flags,             windowFlags,
+            WA_Activate,          TRUE,
             WA_IDCMP,             IDCMP_CLOSEWINDOW |
                                   IDCMP_MOUSEMOVE |
                                   IDCMP_MOUSEBUTTONS |
@@ -174,7 +243,7 @@ static int createNativeWindow(_GLFWwindow* window,
 
     /* If we have a valid handle return GLFW_TRUE */
     if (window->os4.handle) {
-        window->os4.title = wndconfig->title;
+        window->os4.title = (char *) wndconfig->title;
 
         _glfwGetWindowPosOS4(window, &window->os4.xpos, &window->os4.ypos);
         _glfwGetWindowSizeOS4(window, &window->os4.width, &window->os4.height);        
@@ -189,6 +258,7 @@ static int createNativeWindow(_GLFWwindow* window,
         if (wndconfig->autoIconify) {
             OS4_IconifyWindow(window);
         }
+        dprintf("Window Created\n");
 
         return GLFW_TRUE;
     }
@@ -206,13 +276,21 @@ int _glfwCreateWindowOS4(_GLFWwindow* window,
                           const _GLFWctxconfig* ctxconfig,
                           const _GLFWfbconfig* fbconfig)
 {
-    if (!createNativeWindow(window, wndconfig, fbconfig, ctxconfig->client))
+    dprintf("_glfwCreateWindowOS4 enter\n");
+    
+    if (!createNativeWindow(window, wndconfig, fbconfig, ctxconfig->client)) {
+        dprintf("Cannot create native window\n");
         return GLFW_FALSE;
+    }
     
     if (ctxconfig->client != GLFW_NO_API)
     {
-        if (!_glfwCreateContextGL(window, ctxconfig, fbconfig))
+        dprintf("Creating context\n");
+        if (!_glfwCreateContextGL(window, ctxconfig, fbconfig)) {
+            dprintf("Error creating context\n");
             return GLFW_FALSE;
+        }
+        dprintf("Context created\n");
     }
 
     if (window->monitor)
@@ -221,15 +299,13 @@ int _glfwCreateWindowOS4(_GLFWwindow* window,
         _glfwFocusWindowOS4(window);
         acquireMonitor(window);
     }
+    dprintf("_glfwCreateWindowOS4 exit\n");
 
     return GLFW_TRUE;
 }
 
 void _glfwDestroyWindowOS4(_GLFWwindow* window)
 {
-    if (window->context.destroy)
-        window->context.destroy(window);
-
     if (window->os4.appWin) {
         IWorkbench->RemoveAppWindow(window->os4.appWin);
         window->os4.appWin = NULL;
@@ -239,6 +315,9 @@ void _glfwDestroyWindowOS4(_GLFWwindow* window)
         IWorkbench->RemoveAppIcon(window->os4.appIcon);
         window->os4.appIcon = NULL;
     }
+
+    if (window->context.destroy)
+        window->context.destroy(window);
 
     IIntuition->CloseWindow(window->os4.handle);
 
@@ -593,6 +672,7 @@ void _glfwPollEventsOS4(void)
 {
     struct IntuiMessage *imsg;
     struct MyIntuiMessage msg;
+    memset(&msg, 0, sizeof(struct MyIntuiMessage));
 
     while ((imsg = (struct IntuiMessage *)IExec->GetMsg(_glfw.os4.userPort))) {
 
@@ -622,7 +702,7 @@ void _glfwPollEventsOS4(void)
                     _glfwInputKey(window, key, rawkey, GLFW_PRESS, mods);                          
 
                     if (text[0] && text[0] < 0x80) {
-                        _glfwInputChar(window, text, mods, plain);
+                        _glfwInputChar(window, text[0], mods, plain);
                     }
                 } else {
                     _glfwInputKey(window, key, rawkey, GLFW_RELEASE, mods);                          
@@ -673,8 +753,8 @@ void _glfwPollEventsOS4(void)
                 break;
 
             case IDCMP_ACTIVEWINDOW:
-                //if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                //    disableCursor(window);
+                if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                    disableCursor(window);
 
                 _glfwInputWindowFocus(window, GLFW_TRUE);
                 //OS4_HandleActivation(_this, &msg, SDL_TRUE);
@@ -682,8 +762,8 @@ void _glfwPollEventsOS4(void)
 
             case IDCMP_INACTIVEWINDOW:
                 //OS4_HandleActivation(_this, &msg, SDL_FALSE);
-                //if (window->cursorMode == GLFW_CURSOR_DISABLED)
-                //    enableCursor(window);                
+                if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                    enableCursor(window);                
 
                 _glfwInputWindowFocus(window, GLFW_FALSE);
                 break;
@@ -758,40 +838,52 @@ void _glfwSetCursorPosOS4(_GLFWwindow* window, double x, double y)
 
 void _glfwSetCursorModeOS4(_GLFWwindow* window, int mode)
 {
+    if (mode == GLFW_CURSOR_DISABLED) {
+        if (_glfwWindowFocusedOS4(window))
+            disableCursor(window);
+    }
+    else if (_glfw.os4.disabledCursorWindow == window)
+        enableCursor(window);
+    else if (cursorInContentArea(window))
+        updateCursorImage(window);
 }
 
-int _glfwCreateCursorOS4(_GLFWcursor* cursor,
-                          const GLFWimage* image,
-                          int xhot, int yhot)
-{
-    uint32_t *buffer = OS4_CopyImageData(image);
-
-    /* We need to pass some compatibility parameters even though we are going to use just ARGB pointer */
-    Object *object = IIntuition->NewObject(
-        NULL,
-        POINTERCLASS,
-        POINTERA_BitMap, &fallbackPointerBitMap,
-        POINTERA_XOffset, xhot,
-        POINTERA_YOffset, yhot,
-        POINTERA_WordWidth, 1,
-        POINTERA_XResolution, POINTERXRESN_SCREENRES,
-        POINTERA_YResolution, POINTERYRESN_SCREENRES,
-        POINTERA_ImageData, buffer,
-        POINTERA_Width, image->width,
-        POINTERA_Height, image->height,
-        TAG_DONE);
-    if (object) {
-        printf("cursor created\n");
-        cursor->os4.handle = object;
-        cursor->os4.imageData = buffer;
-        return GLFW_TRUE;
+int _glfwCreateCursorOS4(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot) {
+    if (image->width > 64 || image->height > 64) {
+        dprintf("Invalid pointer size w:%d h:%d\n", image->width, image->height, xhot, yhot);
     }
-    printf("error creating cursor\n");
+    else {
+        uint32_t *buffer = OS4_CopyImageData(image);
+        /* We need to pass some compatibility parameters even though we are going to use just ARGB pointer */
+        cursor->os4.handle = IIntuition->NewObject(
+            NULL,
+            POINTERCLASS,
+            POINTERA_BitMap, &fallbackPointerBitMap,
+            POINTERA_XOffset, xhot,
+            POINTERA_YOffset, yhot,
+            POINTERA_WordWidth, 1,
+            POINTERA_XResolution, POINTERXRESN_SCREENRES,
+            POINTERA_YResolution, POINTERYRESN_SCREENRES,
+            POINTERA_ImageData, buffer,
+            POINTERA_Width, image->width,
+            POINTERA_Height, image->height,
+            TAG_DONE);
+        if (cursor->os4.handle) {
+            dprintf("cursor created\n");
+            cursor->os4.imageData = buffer;
+            return GLFW_TRUE;
+        }
+    }
+    dprintf("error creating cursor\n");
     return GLFW_FALSE;
 }
 
 int _glfwCreateStandardCursorOS4(_GLFWcursor* cursor, int shape)
 {
+    int id = OS4_MapCursorIdToNative(shape);
+    printf("_glfwCreateStandardCursorOS4 %02x %d\n", shape, id);
+
+    //updateCursorImage    
     return GLFW_TRUE;
 }
 
@@ -808,6 +900,7 @@ void _glfwDestroyCursorOS4(_GLFWcursor* cursor)
 
 void _glfwSetCursorOS4(_GLFWwindow* window, _GLFWcursor* cursor)
 {
+    printf("_glfwSetCursorOS4\n");
 }
 
 void _glfwSetClipboardStringOS4(const char* string)
@@ -879,6 +972,46 @@ VkResult _glfwCreateWindowSurfaceOS4(VkInstance instance,
 {
     // This seems like the most appropriate error to return here
     return VK_ERROR_EXTENSION_NOT_PRESENT;
+}
+
+EGLenum _glfwGetEGLPlatformOS4(EGLint** attribs)
+{
+    if (_glfw.egl.ANGLE_platform_angle)
+    {
+        int type = 0;
+
+        if (_glfw.egl.ANGLE_platform_angle_opengl)
+        {
+            if (_glfw.hints.init.angleType == GLFW_ANGLE_PLATFORM_TYPE_OPENGL)
+                type = EGL_PLATFORM_ANGLE_TYPE_OPENGL_ANGLE;
+            else if (_glfw.hints.init.angleType == GLFW_ANGLE_PLATFORM_TYPE_OPENGLES)
+                type = EGL_PLATFORM_ANGLE_TYPE_OPENGLES_ANGLE;
+        }
+
+        if (type)
+        {
+            *attribs = _glfw_calloc(3, sizeof(EGLint));
+            (*attribs)[0] = EGL_PLATFORM_ANGLE_TYPE_ANGLE;
+            (*attribs)[1] = type;
+            (*attribs)[2] = EGL_NONE;
+            return EGL_PLATFORM_ANGLE_ANGLE;
+        }
+    }
+
+    return 0;
+}
+
+EGLNativeDisplayType _glfwGetEGLNativeDisplayOS4(void)
+{
+    return EGL_DEFAULT_DISPLAY;
+}
+
+EGLNativeWindowType _glfwGetEGLNativeWindowOS4(_GLFWwindow* window)
+{
+    if (_glfw.egl.platform)
+        return &window->os4.handle;
+    else
+        return (EGLNativeWindowType) window->os4.handle;
 }
 
 /**********************************************************************************************/
@@ -1019,7 +1152,7 @@ static int OS4_TranslateState(int state)
 static uint32_t
 OS4_GetWindowFlags(_GLFWwindow* window, BOOL fullscreen)
 {
-    uint32_t windowFlags = WFLG_REPORTMOUSE | WFLG_RMBTRAP | WFLG_SMART_REFRESH | WFLG_NOCAREREFRESH;
+    uint32_t windowFlags = WFLG_ACTIVATE | WFLG_REPORTMOUSE | WFLG_RMBTRAP | WFLG_SMART_REFRESH | WFLG_NOCAREREFRESH;
 
     if (fullscreen) {
         windowFlags |= WFLG_BORDERLESS | WFLG_BACKDROP;
@@ -1172,7 +1305,7 @@ OS4_UniconifyWindow(_GLFWwindow* window)
 
         if (window->os4.appIcon) {
             IWorkbench->RemoveAppIcon(window->os4.appIcon);
-            window->os4.appIcon == NULL;
+            window->os4.appIcon = NULL;
         }
         IIntuition->SetWindowAttrs(window->os4.handle,
             WA_Hidden, FALSE,

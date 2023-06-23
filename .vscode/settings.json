@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "internal.h": "c",
-        "platform.h": "c",
-        "xutility": "c",
-        "gl.h": "c"
-    }
-}

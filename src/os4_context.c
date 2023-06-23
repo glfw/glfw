@@ -36,6 +36,7 @@
 #include <GLES2/gl2.h>
 #define GETPROCADDRESS getProcAddressGL
 #else
+extern void *aglGetProcAddress(const char *name);
 enum CreateContextTags {
         OGLES2_CCT_MIN=(1UL<<31),
         OGLES2_CCT_WINDOW,
@@ -51,6 +52,10 @@ enum CreateContextTags {
         OGLES2_CCT_CONTEXT_FOR_MODEID,
         OGLES2_CCT_RESIZE_VIEWPORT,
         OGLES2_CCT_DEBUG_SHADER_LOG,
+        OGLES2_CCT_SPIRV_OPLINES,
+        OGLES2_CCT_SPIRV_OPLINES_OFFSET,
+        OGLES2_CCT_SPIRV_OPTIMIZE,
+        OGLES2_CCT_SHARE_WITH,
 };
 typedef int GLint;
 typedef int GLsizei;
@@ -82,7 +87,6 @@ static void makeContextCurrentGL(_GLFWwindow* window)
 
 static void destroyContextGL(_GLFWwindow* window) {
     if (window->context.gl.glContext) {
-        printf("Destroying context %p for window handle %p\n", window->context.gl.glContext, window->os4.handle);
         aglDestroyContext(window->context.gl.glContext);
     }
     window->context.gl.glContext = NULL;
@@ -134,6 +138,12 @@ GLFWbool _glfwCreateContextGL(_GLFWwindow* window,
     dprintf("accumAlphaBits=%d\n", fbconfig->accumAlphaBits);
     dprintf("auxBuffers=%d\n", fbconfig->auxBuffers);
 
+    void *sharedContext = NULL;
+    if (ctxconfig->share != NULL) {
+        sharedContext = ctxconfig->share->context.gl.glContext;
+    }
+    
+    dprintf("sharedContext = %p\n", sharedContext);
     struct TagItem contextparams[] =
     {
             {OGLES2_CCT_WINDOW, (ULONG)window->os4.handle},
@@ -141,10 +151,12 @@ GLFWbool _glfwCreateContextGL(_GLFWwindow* window,
             {OGLES2_CCT_STENCIL, fbconfig->stencilBits},
             {OGLES2_CCT_VSYNC, 0},
             {OGLES2_CCT_RESIZE_VIEWPORT, TRUE},
+            {OGLES2_CCT_SHARE_WITH, sharedContext},
             {TAG_DONE, 0}
     };
 
     window->context.gl.glContext = (void *)aglCreateContext2(&errCode, contextparams);
+    dprintf("firstContext = %p\n", window->context.gl.glContext);
 
     /* Set the context as current */
     if (window->context.gl.glContext) {
@@ -155,7 +167,7 @@ GLFWbool _glfwCreateContextGL(_GLFWwindow* window,
         window->os4.handle = NULL;
         return GLFW_FALSE;
     }
-    printf("Creating context %p for window handle %p\n", window->context.gl.glContext, window->os4.handle);
+    dprintf("Creating context %p for window handle %p\n", window->context.gl.glContext, window->os4.handle);
 
     window->context.makeCurrent = makeContextCurrentGL;
     window->context.swapBuffers = swapBuffersGL;

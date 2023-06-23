@@ -45,9 +45,6 @@ struct Library *IntuitionBase = NULL;
 struct KeymapIFace *IKeymap = NULL;
 struct Library *KeymapBase = NULL;
 
-struct UtilityIFace *IUtility = NULL;
-struct Library *UtilityBase = NULL;
-
 struct Library *AIN_Base = NULL;
 struct AIN_IFace *IAIN = NULL;
 
@@ -173,13 +170,6 @@ static int loadLibraries(void)
         return 0;
     }
 
-    // Utility.library
-    UtilityBase = openLib("utility.library", MIN_LIB_VERSION, (struct Interface **)&IUtility);
-    if (!UtilityBase)
-    {
-        return 0;
-    }
-
     // Workbench.library
     WorkbenchBase = openLib("workbench.library", MIN_LIB_VERSION, (struct Interface **)&IWorkbench);
     if (!WorkbenchBase)
@@ -221,7 +211,6 @@ static int loadLibraries(void)
 
 static void closeLibraries(void)
 {
-    printf("close libraries\n");
     if (ITextClip) {
         IExec->DropInterface((struct Interface *)ITextClip);
     }
@@ -308,18 +297,6 @@ static void closeLibraries(void)
     {
         IExec->CloseLibrary(KeymapBase);
         KeymapBase = NULL;
-    }
-
-    // Close utility.library
-    if (IUtility)
-    {
-        IExec->DropInterface((struct Interface *)IUtility);
-        IUtility = NULL;
-    }
-    if (UtilityBase)
-    {
-        IExec->CloseLibrary((struct Library *)UtilityBase);
-        UtilityBase = NULL;
     }
 }
 
@@ -521,6 +498,9 @@ GLFWbool _glfwConnectOS4(int platformID, _GLFWplatform *platform)
             _glfwWaitEventsOS4,
             _glfwWaitEventsTimeoutOS4,
             _glfwPostEmptyEventOS4,
+            _glfwGetEGLPlatformOS4,
+            _glfwGetEGLNativeDisplayOS4,
+            _glfwGetEGLNativeWindowOS4,            
             _glfwGetRequiredInstanceExtensionsOS4,
             _glfwGetPhysicalDevicePresentationSupportOS4,
             _glfwCreateWindowSurfaceOS4,

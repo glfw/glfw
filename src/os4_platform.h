@@ -68,15 +68,18 @@
 #include <proto/minigl.h>
 #endif
 
+#include "os4_joystick.h"
+
 #define MIN_MINIGLVERSION 2
 #define MIN_OGLES2_VERSION 0
 
-#define GLFW_OS4_WINDOW_STATE          _GLFWwindowOS4 os4;
-#define GLFW_OS4_LIBRARY_WINDOW_STATE  _GLFWlibraryOS4 os4;
-#define GLFW_OS4_MONITOR_STATE         _GLFWmonitorOS4 os4;
-#define GLFW_OS4_CONTEXT_STATE         _GLFWcontextGL  gl;
-
-#define GLFW_OS4_CURSOR_STATE          _GLFWcursorOS4 os4;
+#define GLFW_OS4_WINDOW_STATE             _GLFWwindowOS4   os4;
+#define GLFW_OS4_LIBRARY_WINDOW_STATE     _GLFWlibraryOS4  os4;
+#define GLFW_OS4_MONITOR_STATE            _GLFWmonitorOS4  os4;
+#define GLFW_OS4_CONTEXT_STATE            _GLFWcontextGL   gl;
+#define GLFW_OS4_JOYSTICK_STATE           _GLFWjoystickOS4 os4js;
+#define GLFW_OS4_LIBRARY_JOYSTICK_STATE   _GLFWjoystickOS4 os4js;
+#define GLFW_OS4_CURSOR_STATE             _GLFWcursorOS4   os4;
 #define GLFW_OS4_LIBRARY_CONTEXT_STATE
 
 #define GID_ICONIFY 123
@@ -145,9 +148,9 @@ typedef struct _GLFWmonitorOS4
     GLFWgammaramp   ramp;
 } _GLFWmonitorOS4;
 
-// X11-specific per-cursor data
+// OS4-specific per-cursor data
 //
-typedef struct _GLFWcursorX11
+typedef struct _GLFWcursorOS4
 {
     Object *handle;
     uint32_t *imageData;
@@ -155,8 +158,7 @@ typedef struct _GLFWcursorX11
 
 // OS4-specific global data
 //
-typedef struct _GLFWlibraryOS4
-{
+typedef struct _GLFWlibraryOS4 {
     STRPTR           appName;
 
     int              xcursor;
@@ -173,7 +175,19 @@ typedef struct _GLFWlibraryOS4
     struct Screen   *publicScreen;
 
     _GLFWwindow     *focusedWindow;
+    // The window whose disabled cursor mode is active
+    _GLFWwindow     *disabledCursorWindow;
 } _GLFWlibraryOS4;
+
+// OS4-specific joystick data
+//
+typedef struct _GLFWjoystickOS4 {
+    struct joystick_hwdata *hwdata;
+    uint32          joystickCount;
+    struct joystick joystickList [MAX_JOYSTICKS];
+    APTR            joystickContext;
+    uint32          instance_id;
+} _GLFWjoystickOS4;
 
 void _glfwPollMonitorsOS4(void);
 
@@ -242,23 +256,26 @@ const char* _glfwGetClipboardStringOS4(void);
 const char* _glfwGetScancodeNameOS4(int scancode);
 int _glfwGetKeyScancodeOS4(int key);
 
+void _glfwGetRequiredInstanceExtensionsOS4(char** extensions);
+int _glfwGetPhysicalDevicePresentationSupportOS4(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
+VkResult _glfwCreateWindowSurfaceOS4(VkInstance instance, _GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
+GLFWbool _glfwCreateContextGL(_GLFWwindow* window, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
+
+EGLenum _glfwGetEGLPlatformOS4(EGLint** attribs);
+EGLNativeDisplayType _glfwGetEGLNativeDisplayOS4(void);
+EGLNativeWindowType _glfwGetEGLNativeWindowOS4(_GLFWwindow* window);
+
+void _glfwPollMonitorsOS4(void);
+
 GLFWbool _glfwInitJoysticksOS4(void);
 void _glfwTerminateJoysticksOS4(void);
 int _glfwPollJoystickOS4(_GLFWjoystick* js, int mode);
 const char* _glfwGetMappingNameOS4(void);
 void _glfwUpdateGamepadGUIDOS4(char* guid);
-
-void _glfwGetRequiredInstanceExtensionsOS4(char** extensions);
-int _glfwGetPhysicalDevicePresentationSupportOS4(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
-VkResult _glfwCreateWindowSurfaceOS4(VkInstance instance, _GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
-
-void _glfwPollMonitorsOS4(void);
-
-
 /************************************************************************************/
 /********************************* AmigaOS4 METHODS *********************************/
 /************************************************************************************/
-#define DEBUG
+//#define DEBUG
 
 #ifndef DEBUG
 # define dprintf(format, args...)

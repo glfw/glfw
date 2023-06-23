@@ -44,6 +44,9 @@
 //
 void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused)
 {
+    assert(window != NULL);
+    assert(focused == GLFW_TRUE || focused == GLFW_FALSE);
+
     if (window->callbacks.focus)
         window->callbacks.focus((GLFWwindow*) window, focused);
 
@@ -73,6 +76,8 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused)
 //
 void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
 {
+    assert(window != NULL);
+
     if (window->callbacks.pos)
         window->callbacks.pos((GLFWwindow*) window, x, y);
 }
@@ -82,6 +87,10 @@ void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
 //
 void _glfwInputWindowSize(_GLFWwindow* window, int width, int height)
 {
+    assert(window != NULL);
+    assert(width >= 0);
+    assert(height >= 0);
+
     if (window->callbacks.size)
         window->callbacks.size((GLFWwindow*) window, width, height);
 }
@@ -90,6 +99,9 @@ void _glfwInputWindowSize(_GLFWwindow* window, int width, int height)
 //
 void _glfwInputWindowIconify(_GLFWwindow* window, GLFWbool iconified)
 {
+    assert(window != NULL);
+    assert(iconified == GLFW_TRUE || iconified == GLFW_FALSE);
+
     if (window->callbacks.iconify)
         window->callbacks.iconify((GLFWwindow*) window, iconified);
 }
@@ -98,6 +110,9 @@ void _glfwInputWindowIconify(_GLFWwindow* window, GLFWbool iconified)
 //
 void _glfwInputWindowMaximize(_GLFWwindow* window, GLFWbool maximized)
 {
+    assert(window != NULL);
+    assert(maximized == GLFW_TRUE || maximized == GLFW_FALSE);
+
     if (window->callbacks.maximize)
         window->callbacks.maximize((GLFWwindow*) window, maximized);
 }
@@ -107,6 +122,10 @@ void _glfwInputWindowMaximize(_GLFWwindow* window, GLFWbool maximized)
 //
 void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height)
 {
+    assert(window != NULL);
+    assert(width >= 0);
+    assert(height >= 0);
+
     if (window->callbacks.fbsize)
         window->callbacks.fbsize((GLFWwindow*) window, width, height);
 }
@@ -116,6 +135,12 @@ void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height)
 //
 void _glfwInputWindowContentScale(_GLFWwindow* window, float xscale, float yscale)
 {
+    assert(window != NULL);
+    assert(xscale > 0.f);
+    assert(xscale < FLT_MAX);
+    assert(yscale > 0.f);
+    assert(yscale < FLT_MAX);
+
     if (window->callbacks.scale)
         window->callbacks.scale((GLFWwindow*) window, xscale, yscale);
 }
@@ -124,6 +149,8 @@ void _glfwInputWindowContentScale(_GLFWwindow* window, float xscale, float yscal
 //
 void _glfwInputWindowDamage(_GLFWwindow* window)
 {
+    assert(window != NULL);
+
     if (window->callbacks.refresh)
         window->callbacks.refresh((GLFWwindow*) window);
 }
@@ -132,6 +159,8 @@ void _glfwInputWindowDamage(_GLFWwindow* window)
 //
 void _glfwInputWindowCloseRequest(_GLFWwindow* window)
 {
+    assert(window != NULL);
+
     window->shouldClose = GLFW_TRUE;
 
     if (window->callbacks.close)
@@ -142,6 +171,7 @@ void _glfwInputWindowCloseRequest(_GLFWwindow* window)
 //
 void _glfwInputWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor)
 {
+    assert(window != NULL);
     window->monitor = monitor;
 }
 
@@ -215,38 +245,10 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->numer       = GLFW_DONT_CARE;
     window->denom       = GLFW_DONT_CARE;
 
-    // Open the actual window and create its context
     if (!_glfw.platform.createWindow(window, &wndconfig, &ctxconfig, &fbconfig))
     {
         glfwDestroyWindow((GLFWwindow*) window);
         return NULL;
-    }
-
-    if (ctxconfig.client != GLFW_NO_API)
-    {
-        if (!_glfwRefreshContextAttribs(window, &ctxconfig))
-        {
-            glfwDestroyWindow((GLFWwindow*) window);
-            return NULL;
-        }
-    }
-
-    if (wndconfig.mousePassthrough)
-        _glfw.platform.setWindowMousePassthrough(window, GLFW_TRUE);
-
-    if (window->monitor)
-    {
-        if (wndconfig.centerCursor)
-            _glfwCenterCursorInContentArea(window);
-    }
-    else
-    {
-        if (wndconfig.visible)
-        {
-            _glfw.platform.showWindow(window);
-            if (wndconfig.focused)
-                _glfw.platform.focusWindow(window);
-        }
     }
 
     return (GLFWwindow*) window;
@@ -272,6 +274,8 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.window.autoIconify  = GLFW_TRUE;
     _glfw.hints.window.centerCursor = GLFW_TRUE;
     _glfw.hints.window.focusOnShow  = GLFW_TRUE;
+    _glfw.hints.window.xpos         = GLFW_ANY_POSITION;
+    _glfw.hints.window.ypos         = GLFW_ANY_POSITION;
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
     // double buffered
@@ -366,6 +370,12 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_VISIBLE:
             _glfw.hints.window.visible = value ? GLFW_TRUE : GLFW_FALSE;
             return;
+        case GLFW_POSITION_X:
+            _glfw.hints.window.xpos = value;
+            return;
+        case GLFW_POSITION_Y:
+            _glfw.hints.window.ypos = value;
+            return;
         case GLFW_COCOA_RETINA_FRAMEBUFFER:
             _glfw.hints.window.ns.retina = value ? GLFW_TRUE : GLFW_FALSE;
             return;
@@ -445,6 +455,10 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value)
             strncpy(_glfw.hints.window.x11.instanceName, value,
                     sizeof(_glfw.hints.window.x11.instanceName) - 1);
             return;
+        case GLFW_WAYLAND_APP_ID:
+            strncpy(_glfw.hints.window.wl.appId, value,
+                    sizeof(_glfw.hints.window.wl.appId) - 1);
+            return;
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint string 0x%08X", hint);
@@ -514,12 +528,33 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* handle, const char* title)
 GLFWAPI void glfwSetWindowIcon(GLFWwindow* handle,
                                int count, const GLFWimage* images)
 {
+    int i;
     _GLFWwindow* window = (_GLFWwindow*) handle;
+
     assert(window != NULL);
     assert(count >= 0);
     assert(count == 0 || images != NULL);
 
     _GLFW_REQUIRE_INIT();
+
+    if (count < 0)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid image count for window icon");
+        return;
+    }
+
+    for (i = 0; i < count; i++)
+    {
+        assert(images[i].pixels != NULL);
+
+        if (images[i].width <= 0 || images[i].height <= 0)
+        {
+            _glfwInputError(GLFW_INVALID_VALUE,
+                            "Invalid image dimensions for window icon");
+            return;
+        }
+    }
+
     _glfw.platform.setWindowIcon(window, count, images);
 }
 

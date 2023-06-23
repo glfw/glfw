@@ -29,6 +29,8 @@
 
 #include "internal.h"
 
+#if defined(GLFW_BUILD_LINUX_JOYSTICK)
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/inotify.h>
@@ -128,7 +130,7 @@ static GLFWbool openJoystickDevice(const char* path)
 {
     for (int jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
-        if (!_glfw.joysticks[jid].present)
+        if (!_glfw.joysticks[jid].connected)
             continue;
         if (strcmp(_glfw.joysticks[jid].linjs.path, path) == 0)
             return GLFW_FALSE;
@@ -157,7 +159,7 @@ static GLFWbool openJoystickDevice(const char* path)
     }
 
     // Ensure this device supports the events expected of a joystick
-    if (!isBitSet(EV_KEY, evBits) || !isBitSet(EV_ABS, evBits))
+    if (!isBitSet(EV_ABS, evBits))
     {
         close(linjs.fd);
         return GLFW_FALSE;
@@ -245,9 +247,9 @@ static GLFWbool openJoystickDevice(const char* path)
 //
 static void closeJoystick(_GLFWjoystick* js)
 {
+    _glfwInputJoystick(js, GLFW_DISCONNECTED);
     close(js->linjs.fd);
     _glfwFreeJoystick(js);
-    _glfwInputJoystick(js, GLFW_DISCONNECTED);
 }
 
 // Lexically compare joysticks by name; used by qsort
@@ -366,7 +368,7 @@ void _glfwTerminateJoysticksLinux(void)
     for (int jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         _GLFWjoystick* js = _glfw.joysticks + jid;
-        if (js->present)
+        if (js->connected)
             closeJoystick(js);
     }
 
@@ -380,7 +382,7 @@ void _glfwTerminateJoysticksLinux(void)
     }
 }
 
-int _glfwPollJoystickLinux(_GLFWjoystick* js, int mode)
+GLFWbool _glfwPollJoystickLinux(_GLFWjoystick* js, int mode)
 {
     // Read all queued events (non-blocking)
     for (;;)
@@ -417,7 +419,7 @@ int _glfwPollJoystickLinux(_GLFWjoystick* js, int mode)
             handleAbsEvent(js, e.code, e.value);
     }
 
-    return js->present;
+    return js->connected;
 }
 
 const char* _glfwGetMappingNameLinux(void)
@@ -428,4 +430,6 @@ const char* _glfwGetMappingNameLinux(void)
 void _glfwUpdateGamepadGUIDLinux(char* guid)
 {
 }
+
+#endif // GLFW_BUILD_LINUX_JOYSTICK
 

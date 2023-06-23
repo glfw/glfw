@@ -149,10 +149,6 @@ if (!window)
 }
 @endcode
 
-The window handle is passed to all window related functions and is provided to
-along to all window related callbacks, so they can tell which window received
-the event.
-
 When a window and context is no longer needed, destroy it.
 
 @code
@@ -238,7 +234,7 @@ events as described below.
 @subsection quick_render Rendering with OpenGL
 
 Once you have a current OpenGL context, you can use OpenGL normally.  In this
-tutorial, a multi-colored rotating triangle will be rendered.  The framebuffer
+tutorial, a multicolored rotating triangle will be rendered.  The framebuffer
 size needs to be retrieved for `glViewport`.
 
 @code

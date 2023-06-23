@@ -31,8 +31,6 @@
 #define GLFW_COCOA_JOYSTICK_STATE         _GLFWjoystickNS ns;
 #define GLFW_COCOA_LIBRARY_JOYSTICK_STATE
 
-#define GLFW_BUILD_COCOA_MAPPINGS
-
 // Cocoa-specific per-joystick data
 //
 typedef struct _GLFWjoystickNS
@@ -45,7 +43,7 @@ typedef struct _GLFWjoystickNS
 
 GLFWbool _glfwInitJoysticksCocoa(void);
 void _glfwTerminateJoysticksCocoa(void);
-int _glfwPollJoystickCocoa(_GLFWjoystick* js, int mode);
+GLFWbool _glfwPollJoystickCocoa(_GLFWjoystick* js, int mode);
 const char* _glfwGetMappingNameCocoa(void);
 void _glfwUpdateGamepadGUIDCocoa(char* guid);
 

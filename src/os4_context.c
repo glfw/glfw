@@ -30,50 +30,22 @@
 #include "internal.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
-#ifndef GL4ES
-#include <proto/ogles2.h>
-#include <GLES2/gl2.h>
-#define GETPROCADDRESS getProcAddressGL
-#else
-extern void *aglGetProcAddress(const char *name);
-enum CreateContextTags {
-        OGLES2_CCT_MIN=(1UL<<31),
-        OGLES2_CCT_WINDOW,
-        OGLES2_CCT_MODEID,
-        OGLES2_CCT_DEPTH,
-        OGLES2_CCT_STENCIL,
-        OGLES2_CCT_VSYNC,
-        OGLES2_CCT_SINGLE_GET_ERROR_MODE,
-        OGLES2_CCT_GET_WIDTH,
-        OGLES2_CCT_GET_HEIGHT,
-        OGLES2_CCT_BITMAP,
-        OGLES2_CCT_SHADER_COMPAT_PATCH,
-        OGLES2_CCT_CONTEXT_FOR_MODEID,
-        OGLES2_CCT_RESIZE_VIEWPORT,
-        OGLES2_CCT_DEBUG_SHADER_LOG,
-        OGLES2_CCT_SPIRV_OPLINES,
-        OGLES2_CCT_SPIRV_OPLINES_OFFSET,
-        OGLES2_CCT_SPIRV_OPTIMIZE,
-        OGLES2_CCT_SHARE_WITH,
-};
-typedef int GLint;
-typedef int GLsizei;
-
-extern void  aglMakeCurrent(void* context);
-extern void  aglSetParams2(struct TagItem * tags);
-extern void  aglDestroyContext(void* context);
-extern void  aglMakeCurrent(void* context);
-extern void  aglSwapBuffers();
-extern void  glFinish();
-extern void  glViewport(GLint x, GLint y, GLsizei width, GLsizei height);
-extern void *aglCreateContext2(ULONG * errcode, struct TagItem * tags);
-extern void *gl4es_aglGetProcAddress(const char *name);
-extern void gl4es_glXSwapInterval(int interval);
-#define GETPROCADDRESS gl4es_aglGetProcAddress
-
-extern struct OGLES2IFace *IOGLES2;
+#ifndef OGLES2_OGLES2_DEFS_H
+// it would be better to have an include with only the CreateContextTags enum difed, to avoid conflict
+//  of other typedef with full OpenGL header file...
+#include <ogles2/ogles2_defs.h>
 #endif
+
+void* aglCreateContext2(ULONG * errcode, struct TagItem * tags);
+void aglDestroyContext(void* context);
+void aglMakeCurrent(void* context);
+void aglSwapBuffers();
+void aglSetBitmap(struct BitMap *bitmap);
+void aglSetParams2(struct TagItem * tags);
+void* aglGetProcAddress(const char* name);
+#define GETPROCADDRESS aglGetProcAddress
 
 static void makeContextCurrentGL(_GLFWwindow* window)
 {
@@ -97,13 +69,18 @@ static void swapBuffersGL(_GLFWwindow* window)
     // First flush the render pipeline, so that everything gets drawn
     glFinish();
 
+    if (window->context.gl.vsyncEnabled) {
+        IGraphics->WaitTOF();
+    }
+    
     // Swap the buffers (if any)
     aglSwapBuffers();
 }
 
 static GLFWglproc getProcAddressGL(const char* procname)
 {
-    const GLFWglproc proc = (GLFWglproc) aglGetProcAddress(procname);
+    dprintf("Searching for %s\n", procname);
+    const GLFWglproc proc = (GLFWglproc) GETPROCADDRESS(procname);
     return proc;
 }
 
@@ -115,7 +92,16 @@ static int extensionSupportedGL(const char* extension)
 
 static void swapIntervalGL(int interval)
 {
-    // TODO - Should we implement this?
+    _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
+
+     switch (interval) {
+        case 0:
+        case 1:
+            window->context.gl.vsyncEnabled = interval ? TRUE : FALSE;
+            dprintf("VSYNC %d\n", interval);
+        default:
+            dprintf("Unsupported interval %d\n", interval);
+    }
 }
 
 // Create the OpenGL or OpenGL ES context
@@ -151,7 +137,8 @@ GLFWbool _glfwCreateContextGL(_GLFWwindow* window,
             {OGLES2_CCT_STENCIL, fbconfig->stencilBits},
             {OGLES2_CCT_VSYNC, 0},
             {OGLES2_CCT_RESIZE_VIEWPORT, TRUE},
-            {OGLES2_CCT_SHARE_WITH, sharedContext},
+            {OGLES2_CCT_SINGLE_GET_ERROR_MODE, 1},
+            {OGLES2_CCT_SHARE_WITH, (ULONG)sharedContext},
             {TAG_DONE, 0}
     };
 
@@ -160,7 +147,21 @@ GLFWbool _glfwCreateContextGL(_GLFWwindow* window,
 
     /* Set the context as current */
     if (window->context.gl.glContext) {
+        window->context.client = GLFW_OPENGL_ES_API;
+
+        dprintf("GL Extensions: %s\n", glGetString(GL_EXTENSIONS));
         aglMakeCurrent(window->context.gl.glContext);
+
+        // Some games (like q3) doesn't clear the z-buffer prior to use. Since we're using a floating-point depth buffer in warp3dnova,
+        // that means it may contain illegal floating-point values, which causes some pixels to fail the depth-test when they shouldn't,
+        // so we clear the depth buffer to a constant value when it's first created.
+        // Pandora may well use an integer depth-buffer, in which case this can't happen.
+        // On MiniGL it didn't happens as there is workaround inside of old warp3d (and probabaly inside of MiniGL itself too).
+        // in SDL1 with gl4es (so warp3dnova/ogles2, where no such workaround) it didn't happens probabaly because SDL1 doing something like that (but not glClear).
+
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+        glViewport(0, 0, window->os4.width, window->os4.height);        
     }
     else {
         IIntuition->CloseWindow(window->os4.handle);
@@ -173,7 +174,7 @@ GLFWbool _glfwCreateContextGL(_GLFWwindow* window,
     window->context.swapBuffers = swapBuffersGL;
     window->context.swapInterval = swapIntervalGL;
     window->context.extensionSupported = extensionSupportedGL;
-    window->context.getProcAddress = GETPROCADDRESS;
+    window->context.getProcAddress = getProcAddressGL;
     window->context.destroy = destroyContextGL;
 
     return GLFW_TRUE;

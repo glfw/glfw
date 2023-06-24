@@ -17,6 +17,7 @@ Release
 MinSizeRel
 RelWithDebInfo
 *.opensdf
+.vscode
 
 # Xcode clutter
 GLFW.build
@@ -100,5 +101,3 @@ tests/title
 tests/triangle-vulkan
 tests/window
 tests/windows
-
-.vscode

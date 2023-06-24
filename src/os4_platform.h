@@ -62,12 +62,6 @@
 #include <amigainput/amigainput.h>
 #include <proto/amigainput.h>
 
-/* GL Stuff */
-#ifndef GL4ES
-#include <proto/ogles2.h>
-#include <proto/minigl.h>
-#endif
-
 #include "os4_joystick.h"
 
 #define MIN_MINIGLVERSION 2
@@ -106,39 +100,51 @@ struct MyIntuiMessage
     int16  Height;
 };
 
+typedef struct {
+    ULONG					modeid;
+    long                    depth;
+    LONG					x;
+    LONG					y;
+} GLFW_DisplayModeData;
+
 // OS4-specific per-window data
 //
 typedef struct _GLFWwindowOS4
 {
-    struct Window   *handle;
-    int              xpos;
-    int              ypos;
-    int              lastCursorPosX;
-    int              lastCursorPosY;
-    int              width;
-    int              height;
-    char            *title;
-    GLFWbool         visible;
-    GLFWbool         iconified;
-    GLFWbool         maximized;
-    GLFWbool         resizable;
-    GLFWbool         decorated;
-    GLFWbool         floating;
-    GLFWbool         transparent;
-    float            opacity;
-    int              windowType; // NORMAL - GL - GLES
+    struct Window    *handle;
+    int               xpos;
+    int               ypos;
+    int               oldxpos;
+    int               oldypos;
+    int               lastCursorPosX;
+    int               lastCursorPosY;
+    int               width;
+    int               height;
+    char             *title;
+    GLFWbool          visible;
+    GLFWbool          iconified;
+    GLFWbool          maximized;
+    GLFWbool          resizable;
+    GLFWbool          decorated;
+    GLFWbool          floating;
+    GLFWbool          transparent;
+    GLFWbool          fullscreen;
+    float             opacity;
+    int               windowType; // NORMAL - GL - GLES
 
-    struct AppIcon  *appIcon;
+    struct AppIcon   *appIcon;
     struct AppWindow *appWin;
+    struct Screen    *screen;
 
-    struct Gadget   *gadget;
-    struct Image    *image;
+    struct Gadget    *gadget;
+    struct Image     *image;
 
 } _GLFWwindowOS4;
 
 typedef struct _GLFWcontextGL {
     struct BitMap  *bm;
     void*           glContext;
+    BOOL            vsyncEnabled;
 } _GLFWcontextGL;
 
 // OS4-specific per-monitor data

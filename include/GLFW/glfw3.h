@@ -236,10 +236,6 @@ extern "C" {
   #endif
   #include <OpenGL/gl.h>
 
- #elif defined(__amigaos4__) && defined(GL4ES)
-
-   #include <GL4ES/gl.h>
-
  #else /*__APPLE__*/
 
   #include <GL/gl.h>
@@ -6434,4 +6430,3 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window
 #endif
 
 #endif /* _glfw3_h_ */
-

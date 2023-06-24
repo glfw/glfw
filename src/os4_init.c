@@ -60,13 +60,6 @@ struct Library *IconBase = NULL;
 struct WorkbenchIFace *IWorkbench = NULL;
 struct Library *WorkbenchBase = NULL;
 
-#ifndef GL4ES
-struct Library *OGLES2Base = NULL;
-struct OGLES2IFace *IOGLES2 = NULL;
-#else
-extern struct OGLES2IFace *IOGLES2;
-#endif
-
 #define MIN_LIB_VERSION 51
 
 static void OS4_FindApplicationName();
@@ -184,14 +177,6 @@ static int loadLibraries(void)
         return 0;
     }
 
-#ifndef GL4ES
-    OGLES2Base = openLib("ogles2.library", MIN_OGLES2_VERSION, (struct Interface **)&IOGLES2);
-    if (!OGLES2Base)
-    {
-        return 0;
-    }
-#endif
-
     // AmigaInput
     AIN_Base = openLib("AmigaInput.library", MIN_LIB_VERSION, (struct Interface **)&IAIN);
     if (!AIN_Base)
@@ -227,17 +212,6 @@ static void closeLibraries(void)
     {
         IExec->CloseLibrary(AIN_Base);
     }
-
-#ifndef GL4ES
-    if (IOGLES2)
-    {
-        IExec->DropInterface((struct Interface *)IOGLES2);
-    }
-    if (OGLES2Base)
-    {
-        IExec->CloseLibrary(OGLES2Base);
-    }
-#endif
 
     // Close workbench.library
     if (IWorkbench)
@@ -571,9 +545,9 @@ OS4_FindApplicationName()
     char pathBuffer[MAXPATHLEN];
 
     if (IDOS->GetCliProgramName(pathBuffer, MAXPATHLEN - 1)) {
-        printf("GetCliProgramName: '%s'\n", pathBuffer);
+        dprintf("GetCliProgramName: '%s'\n", pathBuffer);
     } else {
-        printf("Failed to get CLI program name, checking task node\n");
+        dprintf("Failed to get CLI program name, checking task node\n");
 
         struct Task* me = IExec->FindTask(NULL);
         snprintf(pathBuffer, MAXPATHLEN, "%s", ((struct Node *)me)->ln_Name);
@@ -587,5 +561,5 @@ OS4_FindApplicationName()
         snprintf(_glfw.os4.appName, size, pathBuffer);
     }
 
-    printf("Application name: '%s'\n", _glfw.os4.appName);
+    dprintf("Application name: '%s'\n", _glfw.os4.appName);
 }

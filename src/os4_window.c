@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include <proto/intuition.h>
 #include <intuition/pointerclass.h>
@@ -45,7 +46,7 @@ static int OS4_GetButtonState(uint16_t code);
 static int OS4_GetButton(uint16_t code);
 static char OS4_TranslateUnicode(uint16_t code, uint32_t qualifier);
 static int OS4_TranslateState(int state);
-static uint32_t OS4_GetWindowFlags(_GLFWwindow* window, BOOL fullscreen);
+static uint32_t OS4_GetWindowFlags(_GLFWwindow* window, GLFWbool fullscreen);
 static void OS4_SetWindowLimits(_GLFWwindow * window);
 static void OS4_CreateIconifyGadget(_GLFWwindow * window);
 static struct DiskObject *OS4_GetDiskObject();
@@ -67,6 +68,148 @@ static struct Hook OS4_BackFillHook = {
     0,            /* h_SubEntry */
     0             /* h_Data */
 };
+static void
+OS4_GetWindowSize(struct Window * window, int * width, int * height)
+{
+    LONG ret = IIntuition->GetWindowAttrs(
+        window,
+        WA_InnerWidth, width,
+        WA_InnerHeight, height,
+        TAG_DONE);
+
+    if (ret) {
+        dprintf("GetWindowAttrs() returned %d\n", ret);
+    }
+}
+
+static void
+OS4_WaitForResize(_GLFWwindow* window, int * width, int * height)
+{
+    int counter = 0;
+    int activeWidth, activeHeight;
+    int w = 0;
+    int h = 0;
+
+    _glfwGetWindowSizeOS4(window, &activeWidth, &activeHeight);
+
+    while (counter++ < 100) {
+        OS4_GetWindowSize(window->os4.handle, &w, &h);
+
+        if (w == activeWidth && h == activeHeight) {
+            break;
+        }
+
+        dprintf("Waiting for Intuition %d\n", counter);
+        dprintf("System window size (%d * %d), GLFW window size (%d * %d)\n", w, h, activeWidth, activeHeight);
+        usleep(1000);
+    }
+
+    if (width) {
+        *width = w;
+    }
+
+    if (height) {
+        *height = h;
+    }
+}
+
+static void
+OS4_ResizeWindow(_GLFWwindow* window, int width, int height, int posx, int posy)
+{
+    if (width > 0 && height > 0) {
+        LONG ret = IIntuition->SetWindowAttrs(window->os4.handle,
+            WA_InnerWidth, width,
+            WA_InnerHeight, height,
+            WA_Left, posx,
+            WA_Top, posy,
+            TAG_DONE);
+
+        if (ret) {
+            dprintf("SetWindowAttrs() returned %d\n", ret);
+        }
+
+        OS4_WaitForResize(window, NULL, NULL);
+#if 0
+        if (window->os4.glwindow->context.gl.glContext) {
+            OS4_ResizeGlContext(window);
+        }
+#endif        
+    } else {
+        dprintf("Invalid width %d or height %d\n", width, height);
+    }
+}
+
+static uint32
+OS4_GetIDCMPFlags(_GLFWwindow* window, GLFWbool fullscreen)
+{
+    uint32 IDCMPFlags = IDCMP_MOUSEBUTTONS | IDCMP_MOUSEMOVE
+                      | IDCMP_DELTAMOVE | IDCMP_RAWKEY | IDCMP_ACTIVEWINDOW
+                      | IDCMP_INACTIVEWINDOW | IDCMP_INTUITICKS
+                      | IDCMP_EXTENDEDMOUSE;
+
+    dprintf("Called\n");
+
+    if (!fullscreen) {
+        if (window->decorated) {
+            IDCMPFlags  |= IDCMP_CLOSEWINDOW | IDCMP_GADGETUP | IDCMP_CHANGEWINDOW;
+        }
+
+        if (window->resizable) {
+            //IDCMPFlags  |= IDCMP_SIZEVERIFY; no handling so far
+            IDCMPFlags |= IDCMP_NEWSIZE;
+        }
+    }
+
+    return IDCMPFlags;
+}
+
+static struct Screen *
+OS4_GetScreenForWindow(_GLFWwindow* window)
+{
+    if (window->os4.screen) {
+        dprintf("Fullscreen\n");
+        return window->os4.screen;
+    } else {
+        dprintf("Window mode (public screen)\n");
+        return _glfw.os4.publicScreen;
+    }
+}
+
+static void
+OS4_DefineWindowBox(_GLFWwindow* window, const _GLFWwndconfig *wndconfig, struct Screen * screen, GLFWbool fullscreen, struct IBox *box)
+{
+    if (fullscreen && screen) {
+        box->Left = 0;
+        box->Top = 0;
+        box->Width = screen->Width;
+        box->Height = screen->Height;
+    } else {
+        box->Left = wndconfig->xpos;
+        box->Top = wndconfig->ypos;
+        box->Width = wndconfig->width;
+        box->Height = wndconfig->height;
+    }
+}
+
+void
+OS4_CloseScreen(struct Screen* screen)
+{
+    if (screen) {
+        if (screen != _glfw.os4.publicScreen) {
+            dprintf("Closing screen %p\n", screen);
+
+            if (IIntuition->CloseScreen(screen) == FALSE) {
+                dprintf("Screen has open window(s), cannot close\n");
+            } else {
+                dprintf("Screen closed successfully\n");
+            }
+        } else {
+            dprintf("Public screen, not closing\n");
+        }
+    } else {
+        dprintf("NULL pointer\n");
+    }
+}
 
 static ULONG
 OS4_MapCursorIdToNative(int id)
@@ -150,34 +293,24 @@ static void enableCursor(_GLFWwindow* window)
     _glfw.os4.disabledCursorWindow = NULL;
 }
 
-// Returns whether the cursor is in the content area of the specified window
-//
-static GLFWbool cursorInContentArea(_GLFWwindow* window)
-{
-    return GLFW_TRUE;
-}
-
 // Updates the cursor image according to its cursor mode
 //
-static void updateCursorImage(_GLFWwindow* window)
+static void updateCursorImage(_GLFWwindow* window, int shape)
 {
-    if (window->cursorMode == GLFW_CURSOR_NORMAL)
-    {
-        if (window->cursor) {
-            IIntuition->SetWindowPointer(
-                window->os4.handle,
-                WA_Pointer, window->cursor->os4.handle,
-                TAG_DONE);
-        }
-        else {
-            IIntuition->SetWindowPointer(
-                window->os4.handle,
-                //WA_PointerType, type,
-                TAG_DONE);
-        }
+    if (!window)
+        return;
+
+    if (shape < 0 && window->cursor && window->cursor->os4.handle) {
+        IIntuition->SetWindowPointer(
+            window->os4.handle,
+            WA_Pointer, window->cursor->os4.handle,
+            TAG_DONE);
     }
-    else {
-        //SetCursor(NULL);
+    else if (shape >= 0) {
+        IIntuition->SetWindowPointer(
+            window->os4.handle,
+            WA_PointerType, shape,
+            TAG_DONE);
     }
 }
 
@@ -186,12 +319,28 @@ static int createNativeWindow(_GLFWwindow* window,
                               const _GLFWfbconfig* fbconfig,
                               int windowType)
 {
+    window->autoIconify = GLFW_FALSE;
     if (window->monitor) {
+        GLFW_DisplayModeData *data = (GLFW_DisplayModeData *) window->monitor->userPointer;
+
+        IIntuition->OpenScreenTags(NULL,
+            SA_Width,       window->monitor->currentMode.width,
+            SA_Height,      window->monitor->currentMode.height,
+            SA_Depth,       data->depth,
+            SA_DisplayID,   data->modeid,
+            SA_Quiet,       TRUE,
+            SA_Title,       wndconfig->title,
+            SA_ShowTitle,   FALSE,
+            SA_LikeWorkbench, TRUE,
+            SA_Compositing, FALSE,
+            TAG_DONE);
         dprintf("fitToMonitor\n");
         fitToMonitor(window);
+        window->os4.fullscreen = GLFW_TRUE;
     }
     else
     {
+        window->os4.fullscreen = GLFW_FALSE;
         window->os4.xpos = 17;
         window->os4.ypos = 17;
         window->os4.width = wndconfig->width;
@@ -209,33 +358,29 @@ static int createNativeWindow(_GLFWwindow* window,
     window->os4.opacity = 1.f;
 
     window->os4.windowType = windowType;
-    uint32_t windowFlags = OS4_GetWindowFlags(window, FALSE);
+    uint32_t windowFlags = OS4_GetWindowFlags(window, window->os4.fullscreen);
+    uint32 IDCMPFlags = OS4_GetIDCMPFlags(window, window->os4.fullscreen);
+
+    struct Screen *screen = OS4_GetScreenForWindow(window);
 
     OS4_BackFillHook.h_Data = IGraphics; // Smuggle interface ptr for the hook
 
+    struct IBox box;
+    OS4_DefineWindowBox(window, wndconfig, screen, window->os4.fullscreen, &box);
+
     window->os4.handle = IIntuition->OpenWindowTags(NULL,
-            WA_Left,              window->os4.xpos,
-            WA_Top,               window->os4.ypos,
-            WA_InnerWidth,        wndconfig->width,
-            WA_InnerHeight,       wndconfig->height,
-            WA_Title,             wndconfig->title,
+            WA_PubScreen,         screen,
+            WA_Left,              box.Left,
+            WA_Top,               box.Top,
+            WA_InnerWidth,        box.Width,
+            WA_InnerHeight,       box.Height,
+            WA_Title,             window->os4.fullscreen ? NULL: wndconfig->title,
             WA_ScreenTitle,       wndconfig->title,
             WA_MaxWidth,          _glfw.os4.publicScreen->Width,
             WA_MaxHeight,         _glfw.os4.publicScreen->Height,
             WA_Flags,             windowFlags,
             WA_Activate,          TRUE,
-            WA_IDCMP,             IDCMP_CLOSEWINDOW |
-                                  IDCMP_MOUSEMOVE |
-                                  IDCMP_MOUSEBUTTONS |
-                                  IDCMP_EXTENDEDMOUSE |
-                                  IDCMP_RAWKEY |
-                                  IDCMP_NEWSIZE |
-                                  IDCMP_DELTAMOVE |
-                                  IDCMP_ACTIVEWINDOW |
-                                  IDCMP_INACTIVEWINDOW |
-                                  IDCMP_INTUITICKS |
-                                  IDCMP_GADGETUP |
-                                  IDCMP_CHANGEWINDOW,
+            WA_IDCMP,             IDCMPFlags,
             WA_Hidden,            !wndconfig->visible,
             WA_UserPort,          _glfw.os4.userPort,
             WA_BackFill,          &OS4_BackFillHook,
@@ -244,20 +389,21 @@ static int createNativeWindow(_GLFWwindow* window,
     /* If we have a valid handle return GLFW_TRUE */
     if (window->os4.handle) {
         window->os4.title = (char *) wndconfig->title;
+        window->maxwidth = _glfw.os4.publicScreen->Width;
+        window->maxheight = _glfw.os4.publicScreen->Height;
 
         _glfwGetWindowPosOS4(window, &window->os4.xpos, &window->os4.ypos);
         _glfwGetWindowSizeOS4(window, &window->os4.width, &window->os4.height);        
         window->os4.lastCursorPosX = window->os4.xpos;
         window->os4.lastCursorPosY = window->os4.ypos;
 
-        if (wndconfig->decorated && wndconfig->width > 99 && wndconfig->height) {
+        if (wndconfig->decorated && wndconfig->width > 99 && wndconfig->height ) {
             OS4_CreateIconifyGadget(window);
         }
         window->os4.appWin = IWorkbench->AddAppWindow(0, (ULONG)window, window->os4.handle, _glfw.os4.appMsgPort, TAG_DONE);
         
-        if (wndconfig->autoIconify) {
-            OS4_IconifyWindow(window);
-        }
+        _glfwWindowFocusedOS4(window);
+
         dprintf("Window Created\n");
 
         return GLFW_TRUE;
@@ -277,7 +423,7 @@ int _glfwCreateWindowOS4(_GLFWwindow* window,
                           const _GLFWfbconfig* fbconfig)
 {
     dprintf("_glfwCreateWindowOS4 enter\n");
-    
+
     if (!createNativeWindow(window, wndconfig, fbconfig, ctxconfig->client)) {
         dprintf("Cannot create native window\n");
         return GLFW_FALSE;
@@ -290,6 +436,10 @@ int _glfwCreateWindowOS4(_GLFWwindow* window,
             dprintf("Error creating context\n");
             return GLFW_FALSE;
         }
+
+        if (!_glfwRefreshContextAttribs(window, ctxconfig))
+            return GLFW_FALSE;
+
         dprintf("Context created\n");
     }
 
@@ -319,7 +469,11 @@ void _glfwDestroyWindowOS4(_GLFWwindow* window)
     if (window->context.destroy)
         window->context.destroy(window);
 
+    struct Screen *screen = window->os4.handle->WScreen;
+
     IIntuition->CloseWindow(window->os4.handle);
+
+    OS4_CloseScreen(screen);
 
     if (window->os4.gadget) {
         IIntuition->DisposeObject((Object *)window->os4.gadget);
@@ -503,14 +657,19 @@ void _glfwGetWindowContentScaleOS4(_GLFWwindow* window, float* xscale, float* ys
 
 void _glfwIconifyWindowOS4(_GLFWwindow* window)
 {
+    printf("_glfwIconifyWindowOS4\n");
     if (_glfw.os4.focusedWindow == window)
     {
+        printf("_glfwIconifyWindowOS4 1\n");
         _glfw.os4.focusedWindow = NULL;
         _glfwInputWindowFocus(window, GLFW_FALSE);
     }
 
     if (!window->os4.iconified)
     {
+        OS4_IconifyWindow(window);
+
+        printf("_glfwIconifyWindowOS4 2\n");
         window->os4.iconified = GLFW_TRUE;
         _glfwInputWindowIconify(window, GLFW_TRUE);
 
@@ -523,6 +682,8 @@ void _glfwRestoreWindowOS4(_GLFWwindow* window)
 {
     if (window->os4.iconified)
     {
+        OS4_UniconifyWindow(window);
+
         window->os4.iconified = GLFW_FALSE;
         _glfwInputWindowIconify(window, GLFW_FALSE);
 
@@ -531,6 +692,7 @@ void _glfwRestoreWindowOS4(_GLFWwindow* window)
     }
     else if (window->os4.maximized)
     {
+        OS4_ResizeWindow(window, window->os4.width, window->os4.height, window->os4.oldxpos, window->os4.oldypos);
         window->os4.maximized = GLFW_FALSE;
         _glfwInputWindowMaximize(window, GLFW_FALSE);
     }
@@ -540,6 +702,11 @@ void _glfwMaximizeWindowOS4(_GLFWwindow* window)
 {
     if (!window->os4.maximized)
     {
+        window->os4.oldxpos = window->os4.xpos;
+        window->os4.oldypos = window->os4.ypos;
+
+        OS4_ResizeWindow(window, window->maxwidth, window->maxheight, 0, 0);
+
         window->os4.maximized = GLFW_TRUE;
         _glfwInputWindowMaximize(window, GLFW_TRUE);
     }
@@ -646,7 +813,7 @@ void _glfwFocusWindowOS4(_GLFWwindow* window)
     if (previous)
     {
         _glfwInputWindowFocus(previous, GLFW_FALSE);
-        if (previous->monitor && previous->autoIconify)
+        if (!previous->monitor && previous->autoIconify)
             _glfwIconifyWindowOS4(previous);
     }
 
@@ -765,7 +932,11 @@ void _glfwPollEventsOS4(void)
                 if (window->cursorMode == GLFW_CURSOR_DISABLED)
                     enableCursor(window);                
 
+                if (!window->monitor && window->autoIconify) {
+                    OS4_IconifyWindow(window);
+                }                
                 _glfwInputWindowFocus(window, GLFW_FALSE);
+                
                 break;
 
             case IDCMP_CLOSEWINDOW:
@@ -844,8 +1015,8 @@ void _glfwSetCursorModeOS4(_GLFWwindow* window, int mode)
     }
     else if (_glfw.os4.disabledCursorWindow == window)
         enableCursor(window);
-    else if (cursorInContentArea(window))
-        updateCursorImage(window);
+    else
+        updateCursorImage(window, POINTERTYPE_NORMAL);
 }
 
 int _glfwCreateCursorOS4(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot) {
@@ -880,11 +1051,14 @@ int _glfwCreateCursorOS4(_GLFWcursor* cursor, const GLFWimage* image, int xhot, 
 
 int _glfwCreateStandardCursorOS4(_GLFWcursor* cursor, int shape)
 {
-    int id = OS4_MapCursorIdToNative(shape);
-    printf("_glfwCreateStandardCursorOS4 %02x %d\n", shape, id);
-
-    //updateCursorImage    
-    return GLFW_TRUE;
+    _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
+    if (window) {
+        int id = OS4_MapCursorIdToNative(shape);
+        printf("_glfwCreateStandardCursorOS4 %02x %d\n", shape, id);
+        updateCursorImage(window, id);
+        return GLFW_TRUE;
+    }
+    return GLFW_FALSE;
 }
 
 void _glfwDestroyCursorOS4(_GLFWcursor* cursor)
@@ -901,6 +1075,7 @@ void _glfwDestroyCursorOS4(_GLFWcursor* cursor)
 void _glfwSetCursorOS4(_GLFWwindow* window, _GLFWcursor* cursor)
 {
     printf("_glfwSetCursorOS4\n");
+    updateCursorImage(window, -1);    
 }
 
 void _glfwSetClipboardStringOS4(const char* string)
@@ -1150,7 +1325,7 @@ static int OS4_TranslateState(int state)
 }
 
 static uint32_t
-OS4_GetWindowFlags(_GLFWwindow* window, BOOL fullscreen)
+OS4_GetWindowFlags(_GLFWwindow* window, GLFWbool fullscreen)
 {
     uint32_t windowFlags = WFLG_ACTIVATE | WFLG_REPORTMOUSE | WFLG_RMBTRAP | WFLG_SMART_REFRESH | WFLG_NOCAREREFRESH;
 
@@ -1309,10 +1484,10 @@ OS4_UniconifyWindow(_GLFWwindow* window)
         }
         IIntuition->SetWindowAttrs(window->os4.handle,
             WA_Hidden, FALSE,
+            WA_Activate, TRUE,
             TAG_DONE);
 
         window->os4.iconified = FALSE;
-        //SDL_SendWindowEvent(window, SDL_WINDOWEVENT_RESTORED, 0, 0);
     }
 }
 

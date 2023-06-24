@@ -116,10 +116,33 @@ void _glfwPollMonitorsOS4(void)
 {
     const float dpi = 141.f;
     const GLFWvidmode mode = getVideoMode();
-    _GLFWmonitor* monitor = _glfwAllocMonitor("OS4 Monitor 0",
-                                              (int) (mode.width * 25.4f / dpi),
-                                              (int) (mode.height * 25.4f / dpi));
-    _glfwInputMonitor(monitor, GLFW_CONNECTED, _GLFW_INSERT_FIRST);
+    struct DimensionInfo diminfo;
+    APTR handle;
+    ULONG modeid;
+
+    IIntuition->GetScreenAttrs(_glfw.os4.publicScreen, SA_DisplayID, &modeid, TAG_DONE);
+
+    handle = IGraphics->FindDisplayInfo(modeid);
+    if (handle) {
+        if (IGraphics->GetDisplayInfoData(handle, (UBYTE *)&diminfo, sizeof(diminfo), DTAG_DIMS, 0)) {
+            GLFW_DisplayModeData *data;
+            data = (GLFW_DisplayModeData *) malloc(sizeof(*data));
+            if (data) {
+                data->modeid = modeid;
+                data->x = diminfo.Nominal.MinX;
+                data->y = diminfo.Nominal.MinY;
+                data->depth = diminfo.MaxDepth;
+
+                _GLFWmonitor* monitor = _glfwAllocMonitor("OS4 Monitor 0",
+                                                        (int) (mode.width * 25.4f / dpi),
+                                                        (int) (mode.height * 25.4f / dpi));
+                
+                monitor->userPointer = data;
+                
+                _glfwInputMonitor(monitor, GLFW_CONNECTED, _GLFW_INSERT_FIRST);
+            }
+        }
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -128,6 +151,9 @@ void _glfwPollMonitorsOS4(void)
 
 void _glfwFreeMonitorOS4(_GLFWmonitor* monitor)
 {
+    if (monitor->userPointer)
+        free(monitor->userPointer);
+
     _glfwFreeGammaArrays(&monitor->os4.ramp);
 }
 

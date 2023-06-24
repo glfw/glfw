@@ -196,7 +196,7 @@ AMIGAINPUT_Open(_GLFWjoystick * joysticks, int device_index)
             if (result) {
                 char guid[33];
                 // Generate a joystick GUID that matches the SDL 2.0.5+ one
-                sprintf(guid, "78696e707574%02x000000000000000000", handle->DeviceID & 0xff);                
+                sprintf(guid, "78696e707574%02lx000000000000000000", handle->DeviceID & 0xff);                
                 _glfwAllocJoystick(joystick->name, guid, joystick->axisCount, joystick->buttonCount, joystick->hatCount);
 
                 printf("Successful\n");
@@ -257,7 +257,7 @@ AMIGAINPUT_EnumerateJoysticks(AIN_Device *device, void *UserData)
                     joy->id   = device->DeviceID;
                     joy->name = _glfw_strdup(device->DeviceName);
 
-                    printf("Found joystick #%d (AI ID=%ld) '%s'\n", *count, joy->id, joy->name);
+                    printf("Found joystick #%ld (AI ID=%ld) '%s'\n", *count, joy->id, joy->name);
 
                     (*count)++;
 
@@ -313,7 +313,7 @@ GLFWbool _glfwInitJoysticksOS4(void)
             BOOL result = GLFW_IAIN->EnumDevices(_glfw.os4js.joystickContext, AMIGAINPUT_EnumerateJoysticks, &packet);
 #endif
             printf("EnumDevices returned %d\n", result);
-            printf("Found %d joysticks\n", _glfw.os4js.joystickCount);
+            printf("Found %ld joysticks\n", _glfw.os4js.joystickCount);
 
             if (result) {
                 /*

@@ -2630,6 +2630,12 @@ GLFWbool _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape)
 {
     const char* name = NULL;
 
+    if (!_glfw.wl.cursorTheme) {
+        _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
+                        "Wayland: No cursor theme");
+        return GLFW_FALSE;
+    }
+
     // Try the XDG names first
     switch (shape)
     {

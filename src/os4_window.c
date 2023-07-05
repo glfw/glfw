@@ -68,6 +68,7 @@ static struct Hook OS4_BackFillHook = {
     0,            /* h_SubEntry */
     0             /* h_Data */
 };
+
 static void
 OS4_GetWindowSize(struct Window * window, int * width, int * height)
 {
@@ -295,22 +296,34 @@ static void enableCursor(_GLFWwindow* window)
 
 // Updates the cursor image according to its cursor mode
 //
-static void updateCursorImage(_GLFWwindow* window, int shape)
+static void updateCursorImage(_GLFWwindow* window, _GLFWcursor* cursor)
 {
     if (!window)
         return;
 
-    if (shape < 0 && window->cursor && window->cursor->os4.handle) {
-        IIntuition->SetWindowPointer(
-            window->os4.handle,
-            WA_Pointer, window->cursor->os4.handle,
-            TAG_DONE);
+    if (cursor && cursor->os4.handle) {
+        if (cursor->os4.handle != window->cursor->os4.currentHandle) {
+            printf("handle: %p\n", window->cursor->os4.handle);
+            IIntuition->SetWindowPointer(
+                window->os4.handle,
+                WA_Pointer, window->cursor->os4.handle,
+                TAG_DONE);
+            window->cursor->os4.currentHandle = cursor->os4.handle;    
+        }
     }
-    else if (shape >= 0) {
-        IIntuition->SetWindowPointer(
-            window->os4.handle,
-            WA_PointerType, shape,
-            TAG_DONE);
+    else {
+        if (cursor != NULL) {
+            IIntuition->SetWindowPointer(
+                window->os4.handle,
+                WA_PointerType, cursor->os4.id,
+                TAG_DONE);
+        }
+        else {
+            IIntuition->SetWindowPointer(
+                window->os4.handle,
+                WA_PointerType, POINTERTYPE_NORMAL,
+                TAG_DONE);
+        }
     }
 }
 
@@ -388,7 +401,7 @@ static int createNativeWindow(_GLFWwindow* window,
 
     /* If we have a valid handle return GLFW_TRUE */
     if (window->os4.handle) {
-        window->os4.title = (char *) wndconfig->title;
+        window->os4.title = _glfw_strdup(wndconfig->title);
         window->maxwidth = _glfw.os4.publicScreen->Width;
         window->maxheight = _glfw.os4.publicScreen->Height;
 
@@ -443,10 +456,10 @@ int _glfwCreateWindowOS4(_GLFWwindow* window,
         dprintf("Context created\n");
     }
 
+    _glfwShowWindowOS4(window);
+    _glfwFocusWindowOS4(window);
     if (window->monitor)
     {
-        _glfwShowWindowOS4(window);
-        _glfwFocusWindowOS4(window);
         acquireMonitor(window);
     }
     dprintf("_glfwCreateWindowOS4 exit\n");
@@ -494,7 +507,11 @@ void _glfwDestroyWindowOS4(_GLFWwindow* window)
 
 void _glfwSetWindowTitleOS4(_GLFWwindow* window, const char* title)
 {
-    IIntuition->SetWindowTitles(window->os4.handle, title, title);
+    char* copy = _glfw_strdup(title);
+    if (window->os4.title)
+        _glfw_free(window->os4.title);
+    window->os4.title = copy;
+    IIntuition->SetWindowTitles(window->os4.handle, copy, copy);
 }
 
 void _glfwSetWindowIconOS4(_GLFWwindow* window, int count, const GLFWimage* images)
@@ -613,6 +630,7 @@ void _glfwSetWindowAspectRatioOS4(_GLFWwindow* window, int n, int d)
 
 void _glfwGetFramebufferSizeOS4(_GLFWwindow* window, int* width, int* height)
 {
+    //printf("window->os4.width = %d - window->os4.height = %d\n", window->os4.width, window->os4.height);
     if (width)
         *width = window->os4.width;
     if (height)
@@ -850,6 +868,9 @@ void _glfwPollEventsOS4(void)
 
         switch (msg.Class) {
             case IDCMP_MOUSEMOVE:
+                window->os4.xpos = msg.WindowMouseX;
+                window->os4.ypos = msg.WindowMouseY;
+
                 _glfwInputCursorPos(window, msg.WindowMouseX, msg.WindowMouseY);
                 break;
 
@@ -903,6 +924,10 @@ void _glfwPollEventsOS4(void)
                 break;
 
             case IDCMP_NEWSIZE:
+                if (window != NULL) {
+                    window->os4.width = msg.Width;
+                    window->os4.height = msg.Height;
+                }
                 _glfwInputWindowSize(window, msg.Width, msg.Height);
                 //OS4_HandleResize(_this, &msg);
                 break;
@@ -996,9 +1021,9 @@ void _glfwPostEmptyEventOS4(void)
 void _glfwGetCursorPosOS4(_GLFWwindow* window, double* xpos, double* ypos)
 {
     if (xpos)
-        *xpos = _glfw.os4.xcursor - window->os4.xpos;
+        *xpos = window->os4.xpos;
     if (ypos)
-        *ypos = _glfw.os4.ycursor - window->os4.ypos;
+        *ypos = window->os4.ypos;
 }
 
 void _glfwSetCursorPosOS4(_GLFWwindow* window, double x, double y)
@@ -1016,7 +1041,7 @@ void _glfwSetCursorModeOS4(_GLFWwindow* window, int mode)
     else if (_glfw.os4.disabledCursorWindow == window)
         enableCursor(window);
     else
-        updateCursorImage(window, POINTERTYPE_NORMAL);
+        updateCursorImage(window, NULL);
 }
 
 int _glfwCreateCursorOS4(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot) {
@@ -1042,6 +1067,7 @@ int _glfwCreateCursorOS4(_GLFWcursor* cursor, const GLFWimage* image, int xhot, 
         if (cursor->os4.handle) {
             dprintf("cursor created\n");
             cursor->os4.imageData = buffer;
+            cursor->os4.id = -1;
             return GLFW_TRUE;
         }
     }
@@ -1054,8 +1080,8 @@ int _glfwCreateStandardCursorOS4(_GLFWcursor* cursor, int shape)
     _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
     if (window) {
         int id = OS4_MapCursorIdToNative(shape);
-        printf("_glfwCreateStandardCursorOS4 %02x %d\n", shape, id);
-        updateCursorImage(window, id);
+        cursor->os4.id = id;
+        dprintf("_glfwCreateStandardCursorOS4 %02x %d\n", shape, id);
         return GLFW_TRUE;
     }
     return GLFW_FALSE;
@@ -1074,8 +1100,11 @@ void _glfwDestroyCursorOS4(_GLFWcursor* cursor)
 
 void _glfwSetCursorOS4(_GLFWwindow* window, _GLFWcursor* cursor)
 {
-    printf("_glfwSetCursorOS4\n");
-    updateCursorImage(window, -1);    
+    if (cursor != window->os4.currentCursor) {
+        dprintf("_glfwSetCursorOS4\n");
+        updateCursorImage(window, cursor);
+        window->os4.currentCursor = cursor;
+    }
 }
 
 void _glfwSetClipboardStringOS4(const char* string)

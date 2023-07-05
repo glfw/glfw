@@ -118,6 +118,7 @@ typedef struct _GLFWwindowOS4
     int               oldypos;
     int               lastCursorPosX;
     int               lastCursorPosY;
+    _GLFWcursor      *currentCursor;
     int               width;
     int               height;
     char             *title;
@@ -159,7 +160,9 @@ typedef struct _GLFWmonitorOS4
 typedef struct _GLFWcursorOS4
 {
     Object *handle;
+    Object *currentHandle;
     uint32_t *imageData;
+    int id;
 } _GLFWcursorOS4;
 
 // OS4-specific global data

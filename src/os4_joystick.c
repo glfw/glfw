@@ -340,7 +340,7 @@ GLFWbool _glfwInitJoysticksOS4(void)
 
 void _glfwTerminateJoysticksOS4(void)
 {
-    printf("_glfwTerminateJoysticksOS4\n");
+    dprintf("_glfwTerminateJoysticksOS4\n");
     uint32 i;
     
     for (i = 0; i < _glfw.os4js.joystickCount; i++) {

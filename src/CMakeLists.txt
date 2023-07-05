@@ -167,7 +167,7 @@ endif()
 
 if (GLFW_BUILD_OS4)
     target_compile_options(glfw PRIVATE "-DGL4ES" "-gstabs")
-    target_link_libraries(glfw PRIVATE "-lGL4ES")
+    target_link_libraries(glfw PRIVATE "-lGL")
 endif()
 
 if (GLFW_BUILD_COCOA)

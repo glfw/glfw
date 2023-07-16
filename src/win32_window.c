@@ -490,7 +490,8 @@ static void releaseMonitor(_GLFWwindow* window)
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                                    WPARAM wParam, LPARAM lParam)
 {
-    static RECT border_thickness;
+	static RECT border_thickness = { 4, 4, 4, 4 };
+	BOOL hasThickFrame = GetWindowLongPtr(hWnd, GWL_STYLE) & WS_THICKFRAME;
 
     _GLFWwindow* window = GetPropW(hWnd, L"GLFW");
     if (!window)
@@ -548,22 +549,21 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 if (_glfw.hints.window.titlebar)
                     break;
 
-                //find border thickness
-                SetRectEmpty(&border_thickness);
-                if (GetWindowLongPtr(hWnd, GWL_STYLE) & WS_THICKFRAME)
+                if (hasThickFrame)
                 {
-                    AdjustWindowRectEx(&border_thickness, GetWindowLongPtr(hWnd, GWL_STYLE) & ~WS_CAPTION, FALSE, 0);
-                    border_thickness.left *= -1;
-                    border_thickness.top *= -1;
-                }
-                else// if (GetWindowLongPtr(hWnd, GWL_STYLE) & WS_BORDER)
-                {
-                    SetRect(&border_thickness, 4, 4, 4, 4);
-                }
+                    RECT size_rect;
+                    GetWindowRect(hWnd, &size_rect);
 
-                MARGINS margins = { 0 };
-                DwmExtendFrameIntoClientArea(hWnd, &margins);
-                SetWindowPos(hWnd, NULL, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+                    // Inform the application of the frame change to force redrawing with the new
+                    // client area that is extended into the title bar
+                    SetWindowPos(
+                        hWnd, NULL,
+                        size_rect.left, size_rect.top,
+                        size_rect.right - size_rect.left, size_rect.bottom - size_rect.top,
+                        SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE
+                    );
+                    break;
+                }
 
                 break;
             }
@@ -573,15 +573,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
                 if (_glfw.hints.window.titlebar)
                     break;
 
-                // Extend the frame into the client area.
-                MARGINS margins = { 0 };
-                auto hr = DwmExtendFrameIntoClientArea(hWnd, &margins);
-
-                if (!SUCCEEDED(hr))
-                {
-                    // Handle the error.
-                }
-
+				RECT title_bar_rect = {0};
+				InvalidateRect(hWnd, &title_bar_rect, FALSE);
                 break;
             }
         }
@@ -1013,16 +1006,48 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             break;
         }
 
-        case  WM_NCCALCSIZE:
-        {
-            if (_glfw.hints.window.titlebar)
-                break;
+		case WM_NCCALCSIZE:
+		{
+			if (_glfw.hints.window.titlebar || !hasThickFrame || !wParam)
+				break;
 
-            if (lParam)
-                return 0;
+            // For custom frames
 
-            break;
-        }
+            // Shrink client area by border thickness so we can
+            // resize window and see borders
+			const int resizeBorderX = GetSystemMetrics(SM_CXFRAME);
+			const int resizeBorderY = GetSystemMetrics(SM_CYFRAME);
+
+			NCCALCSIZE_PARAMS* params = (NCCALCSIZE_PARAMS*)lParam;
+			RECT* requestedClientRect = params->rgrc;
+
+			requestedClientRect->right -= resizeBorderX;
+			requestedClientRect->left += resizeBorderX;
+			requestedClientRect->bottom -= resizeBorderY;
+
+            //
+            // NOTE(Yan):
+            // 
+            // Top borders seem to be handled differently.
+            // 
+            // Contracting by 1 on Win 11 seems to give a small area
+            // for resizing whilst not showing a white border.
+            // 
+			// But this doesn't seem to work on Win 10, instead showing
+			// a general white titlebar on top of the custom one...
+			// to be continued.
+            // 
+            // Not changing the top (i.e. 0) means we don't see the
+            // mouse icon change to a resize handle, but resizing still
+            // works once you click and drag. This works on both
+            // Windows 10 & 11, so we'll keep that for now.
+			requestedClientRect->top += 0; 
+
+            // NOTE(Yan): seems to make no difference what we return here,
+            //            was originally 0
+			return WVR_ALIGNTOP | WVR_ALIGNLEFT;
+		}
+
         case WM_SIZE:
         {
             const int width = LOWORD(lParam);
@@ -1063,6 +1088,18 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
 
             window->win32.iconified = iconified;
             window->win32.maximized = maximized;
+
+			RECT size_rect;
+			GetWindowRect(hWnd, &size_rect);
+
+			// Inform the application of the frame change to force redrawing with the new
+			// client area that is extended into the title bar
+			SetWindowPos(
+				hWnd, NULL,
+				size_rect.left, size_rect.top,
+				size_rect.right - size_rect.left, size_rect.bottom - size_rect.top,
+				SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE
+			);
             return 0;
         }
 
@@ -1271,54 +1308,57 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg,
             if (_glfw.hints.window.titlebar)
                 break;
 
-            // Extend the frame into the client area.
-            MARGINS margins = { 0 };
-            auto hr = DwmExtendFrameIntoClientArea(hWnd, &margins);
-
-            if (!SUCCEEDED(hr))
-            {
-                // Handle the error.
-            }
-
-            break;
+			RECT title_bar_rect = { 0 };
+			InvalidateRect(hWnd, &title_bar_rect, FALSE);
         }
         case WM_NCHITTEST:
         {
-            if (_glfw.hints.window.titlebar)
+            if (_glfw.hints.window.titlebar || !hasThickFrame)
                 break;
 
-            POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-            ScreenToClient(hWnd, &pt);
-            RECT rc;
-            GetClientRect(hWnd, &rc);
+            //
+            // Hit test for custom frames
+            //
+			POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+			ScreenToClient(hWnd, &pt);
 
-            int titlebarHittest = 0;
-            _glfwInputTitleBarHitTest(window, pt.x, pt.y, &titlebarHittest);
+            // Check borders first
+			if (!window->win32.maximized)
+			{
+				RECT rc;
+				GetClientRect(hWnd, &rc);
 
-            if (titlebarHittest)
-            {
-                return HTCAPTION;
-            }
-            else
-            {
-                enum { left = 1, top = 2, right = 4, bottom = 8 };
-                int hit = 0;
-                if (pt.x < border_thickness.left)               hit |= left;
-                if (pt.x > rc.right - border_thickness.right)   hit |= right;
-                if (pt.y < border_thickness.top)                hit |= top;
-                if (pt.y > rc.bottom - border_thickness.bottom) hit |= bottom;
+				const int verticalBorderSize = GetSystemMetrics(SM_CYFRAME);
 
-                if (hit & top && hit & left)        return HTTOPLEFT;
-                if (hit & top && hit & right)       return HTTOPRIGHT;
-                if (hit & bottom && hit & left)     return HTBOTTOMLEFT;
-                if (hit & bottom && hit & right)    return HTBOTTOMRIGHT;
-                if (hit & left)                     return HTLEFT;
+				enum { left = 1, top = 2, right = 4, bottom = 8 };
+				int hit = 0;
+				if (pt.x <= border_thickness.left)
+                    hit |= left;
+				if (pt.x >= rc.right - border_thickness.right)
+                    hit |= right;
+				if (pt.y <= border_thickness.top || pt.y < verticalBorderSize)
+                    hit |= top;
+				if (pt.y >= rc.bottom - border_thickness.bottom)
+                    hit |= bottom;
+
+				if (hit & top && hit & left)        return HTTOPLEFT;
+				if (hit & top && hit & right)       return HTTOPRIGHT;
+				if (hit & bottom && hit & left)     return HTBOTTOMLEFT;
+				if (hit & bottom && hit & right)    return HTBOTTOMRIGHT;
+				if (hit & left)                     return HTLEFT;
                 if (hit & top)                      return HTTOP;
-                if (hit & right)                    return HTRIGHT;
-                if (hit & bottom)                   return HTBOTTOM;
+				if (hit & right)                    return HTRIGHT;
+				if (hit & bottom)                   return HTBOTTOM;
+			}
 
-                return HTCLIENT;
-            }
+            // Then do client-side test which should determine titlebar bounds
+			int titlebarHittest = 0;
+			_glfwInputTitleBarHitTest(window, pt.x, pt.y, &titlebarHittest);
+			if (titlebarHittest)
+				return HTCAPTION;
+
+            // In client area
+			return HTCLIENT;
         }
     }
 

@@ -33,6 +33,7 @@ video tutorials.
  - David Carlier
  - Arturo Castro
  - Chi-kwan Chan
+ - Haoyun Chen
  - TheChocolateOre
  - Ali Chraghi
  - Joseph Chua

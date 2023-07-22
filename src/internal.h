@@ -756,7 +756,7 @@ struct _GLFWplatform
 //
 struct _GLFWlibrary
 {
-    GLFWbool            initialized;
+    int                 initialized;
     GLFWallocator       allocator;
 
     _GLFWplatform       platform;

@@ -2117,7 +2117,9 @@ typedef struct GLFWallocator
  *  succeeds, you should call @ref glfwTerminate before the application exits.
  *
  *  Additional calls to this function after successful initialization but before
- *  termination will return `GLFW_TRUE` immediately.
+ *  termination will return `GLFW_TRUE` immediately.  For each additional call
+ *  to this function an additional call to @ref glfwTerminate will need to be
+ *  done later.
  *
  *  The @ref GLFW_PLATFORM init hint controls which platforms are considered during
  *  initialization.  This also depends on which platforms the library was compiled to
@@ -2167,9 +2169,9 @@ GLFWAPI int glfwInit(void);
  *  you will be able to use most GLFW functions.
  *
  *  If GLFW has been successfully initialized, this function should be called
- *  before the application exits.  If initialization fails, there is no need to
- *  call this function, as it is called by @ref glfwInit before it returns
- *  failure.
+ *  once for every successful call to @ref glfwInit before the application
+ *  exits.  If initialization fails, there is no need to call this function, as
+ *  it is called by @ref glfwInit before it returns failure.
  *
  *  This function has no effect if GLFW is not initialized.
  *

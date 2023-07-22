@@ -41,7 +41,7 @@
 
 // This contains all mutable state shared between compilation units of GLFW
 //
-_GLFWlibrary _glfw = { GLFW_FALSE };
+_GLFWlibrary _glfw = { 0 };
 
 // These are outside of _glfw so they can be used before initialization and
 // after termination without special handling when _glfw is cleared to zero
@@ -122,7 +122,7 @@ static void terminate(void)
     _glfw.platform.terminateJoysticks();
     _glfw.platform.terminate();
 
-    _glfw.initialized = GLFW_FALSE;
+    _glfw.initialized = 0;
 
     while (_glfw.errorListHead)
     {
@@ -409,7 +409,10 @@ void _glfwInputError(int code, const char* format, ...)
 GLFWAPI int glfwInit(void)
 {
     if (_glfw.initialized)
+    {
+        _glfw.initialized++;
         return GLFW_TRUE;
+    }
 
     memset(&_glfw, 0, sizeof(_glfw));
     _glfw.hints.init = _glfwInitHints;
@@ -446,7 +449,7 @@ GLFWAPI int glfwInit(void)
     _glfwPlatformInitTimer();
     _glfw.timer.offset = _glfwPlatformGetTimerValue();
 
-    _glfw.initialized = GLFW_TRUE;
+    _glfw.initialized = 1;
 
     glfwDefaultWindowHints();
     return GLFW_TRUE;
@@ -456,6 +459,11 @@ GLFWAPI void glfwTerminate(void)
 {
     if (!_glfw.initialized)
         return;
+    if (_glfw.initialized > 1)
+    {
+        _glfw.initialized--;
+        return;
+    }
 
     terminate();
 }

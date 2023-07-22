@@ -58,7 +58,8 @@ if (!glfwInit())
 If any part of initialization fails, any parts that succeeded are terminated as
 if @ref glfwTerminate had been called.  The library only needs to be initialized
 once and additional calls to an already initialized library will return
-`GLFW_TRUE` immediately.
+`GLFW_TRUE` immediately.  For each additional call to this function an
+additional call to @ref glfwTerminate will need to be done later.
 
 Once the library has been successfully initialized, it should be terminated
 before the application exits.  Modern systems are very good at freeing resources
@@ -275,9 +276,10 @@ been initialized.  This is done with @ref glfwTerminate.
 glfwTerminate();
 @endcode
 
-This will destroy any remaining window, monitor and cursor objects, restore any
-modified gamma ramps, re-enable the screensaver if it had been disabled and free
-any other resources allocated by GLFW.
+This needs to be called once for every time @ref glfwInit was called successfully.
+On last necessary call this will destroy any remaining window, monitor and cursor
+objects, restore any modified gamma ramps, re-enable the screensaver if it had
+been disabled and free any other resources allocated by GLFW.
 
 Once the library is terminated, it is as if it had never been initialized, therefore
 you will need to initialize it again before being able to use GLFW.  If the

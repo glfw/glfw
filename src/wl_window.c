@@ -2478,7 +2478,7 @@ void _glfwSetWindowMousePassthroughWayland(_GLFWwindow* window, GLFWbool enabled
         wl_region_destroy(region);
     }
     else
-        wl_surface_set_input_region(window->wl.surface, 0);
+        wl_surface_set_input_region(window->wl.surface, NULL);
 }
 
 float _glfwGetWindowOpacityWayland(_GLFWwindow* window)

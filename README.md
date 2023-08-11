@@ -313,6 +313,7 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: The OSMesa libray was not unloaded on termination
  - [X11] Bugfix: A malformed response during selection transfer could cause a segfault
  - [X11] Bugfix: Some calls would reset Xlib to the default error handler (#2108)
+ - [Wayland] Added improved fallback window decorations via libdecor (#1639,#1693)
  - [Wayland] Added dynamic loading of all Wayland libraries
  - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Added support for file path drop events (#2040)
@@ -384,6 +385,8 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: `GLFW_DECORATED` was ignored when showing a window with XDG
    decorations
  - [Wayland] Bugfix: Connecting a mouse after `glfwInit` would segfault (#1450)
+ - [Wayland] Bugfix: Joysticks connected after `glfwInit` were not detected (#2198)
+ - [Wayland] Bugfix: Fallback decorations emitted `GLFW_CURSOR_UNAVAILABLE` errors
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [Linux] Bugfix: Joysticks without buttons were ignored (#2042,#2043)

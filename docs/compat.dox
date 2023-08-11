@@ -128,6 +128,14 @@ wayland-protocols 1.6, and mandatory at build time.  If the running compositor
 does not support this protocol, the screensaver may start even for full screen
 windows.
 
+GLFW uses the [libdecor library](https://gitlab.freedesktop.org/libdecor/libdecor)
+for window decorations, where available.  This in turn provides good quality
+client-side decorations (drawn by the application) on desktop systems that do
+not support server-side decorations (drawn by the window manager).  On systems
+that do not provide either libdecor or xdg-decoration, very basic window
+decorations are provided.  These do not include the window title or any caption
+buttons.
+
 GLFW uses the [xdg-decoration
 protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml)
 to request decorations to be drawn around its windows.  This protocol is part

@@ -188,6 +188,7 @@ video tutorials.
  - pthom
  - Martin Pulec
  - Guillaume Racicot
+ - Juan Ramos
  - Christian Rauch
  - Philip Rideout
  - Eddie Ringle
@@ -200,6 +201,7 @@ video tutorials.
  - Aleksey Rybalkin
  - Mikko Rytkönen
  - Riku Salminen
+ - Yoshinori Sano
  - Brandon Schaefer
  - Sebastian Schuberth
  - Jan Schuerkamp

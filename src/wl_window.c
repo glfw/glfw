@@ -1308,51 +1308,6 @@ static void pointerHandleLeave(void* userData,
     _glfwInputCursorEnter(window, GLFW_FALSE);
 }
 
-static void setCursor(_GLFWwindow* window, const char* name)
-{
-    struct wl_buffer* buffer;
-    struct wl_cursor* cursor;
-    struct wl_cursor_image* image;
-    struct wl_surface* surface = _glfw.wl.cursorSurface;
-    struct wl_cursor_theme* theme = _glfw.wl.cursorTheme;
-    int scale = 1;
-
-    if (window->wl.contentScale > 1 && _glfw.wl.cursorThemeHiDPI)
-    {
-        // We only support up to scale=2 for now, since libwayland-cursor
-        // requires us to load a different theme for each size.
-        scale = 2;
-        theme = _glfw.wl.cursorThemeHiDPI;
-    }
-
-    cursor = wl_cursor_theme_get_cursor(theme, name);
-    if (!cursor)
-    {
-        _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
-                        "Wayland: Standard cursor shape unavailable");
-        return;
-    }
-    // TODO: handle animated cursors too.
-    image = cursor->images[0];
-
-    if (!image)
-        return;
-
-    buffer = wl_cursor_image_get_buffer(image);
-    if (!buffer)
-        return;
-    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial,
-                          surface,
-                          image->hotspot_x / scale,
-                          image->hotspot_y / scale);
-    wl_surface_set_buffer_scale(surface, scale);
-    wl_surface_attach(surface, buffer, 0, 0);
-    wl_surface_damage(surface, 0, 0,
-                      image->width, image->height);
-    wl_surface_commit(surface);
-    _glfw.wl.cursorPreviousName = name;
-}
-
 static void pointerHandleMotion(void* userData,
                                 struct wl_pointer* pointer,
                                 uint32_t time,
@@ -1360,47 +1315,47 @@ static void pointerHandleMotion(void* userData,
                                 wl_fixed_t sy)
 {
     _GLFWwindow* window = _glfw.wl.pointerFocus;
-    const char* cursorName = NULL;
-    double x, y;
-
     if (!window)
         return;
 
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
         return;
-    x = wl_fixed_to_double(sx);
-    y = wl_fixed_to_double(sy);
-    window->wl.cursorPosX = x;
-    window->wl.cursorPosY = y;
+
+    const double xpos = wl_fixed_to_double(sx);
+    const double ypos = wl_fixed_to_double(sy);
+    window->wl.cursorPosX = xpos;
+    window->wl.cursorPosY = ypos;
+
+    const char* cursorName = NULL;
 
     switch (window->wl.decorations.focus)
     {
         case GLFW_MAIN_WINDOW:
             _glfw.wl.cursorPreviousName = NULL;
-            _glfwInputCursorPos(window, x, y);
+            _glfwInputCursorPos(window, xpos, ypos);
             return;
         case GLFW_TOP_DECORATION:
-            if (y < GLFW_BORDER_SIZE)
+            if (ypos < GLFW_BORDER_SIZE)
                 cursorName = "n-resize";
             else
                 cursorName = "left_ptr";
             break;
         case GLFW_LEFT_DECORATION:
-            if (y < GLFW_BORDER_SIZE)
+            if (ypos < GLFW_BORDER_SIZE)
                 cursorName = "nw-resize";
             else
                 cursorName = "w-resize";
             break;
         case GLFW_RIGHT_DECORATION:
-            if (y < GLFW_BORDER_SIZE)
+            if (ypos < GLFW_BORDER_SIZE)
                 cursorName = "ne-resize";
             else
                 cursorName = "e-resize";
             break;
         case GLFW_BOTTOM_DECORATION:
-            if (x < GLFW_BORDER_SIZE)
+            if (xpos < GLFW_BORDER_SIZE)
                 cursorName = "sw-resize";
-            else if (x > window->wl.width + GLFW_BORDER_SIZE)
+            else if (xpos > window->wl.width + GLFW_BORDER_SIZE)
                 cursorName = "se-resize";
             else
                 cursorName = "s-resize";
@@ -1408,8 +1363,45 @@ static void pointerHandleMotion(void* userData,
         default:
             assert(0);
     }
+
     if (_glfw.wl.cursorPreviousName != cursorName)
-        setCursor(window, cursorName);
+    {
+        struct wl_surface* surface = _glfw.wl.cursorSurface;
+        struct wl_cursor_theme* theme = _glfw.wl.cursorTheme;
+        int scale = 1;
+
+        if (window->wl.contentScale > 1 && _glfw.wl.cursorThemeHiDPI)
+        {
+            // We only support up to scale=2 for now, since libwayland-cursor
+            // requires us to load a different theme for each size.
+            scale = 2;
+            theme = _glfw.wl.cursorThemeHiDPI;
+        }
+
+        struct wl_cursor* cursor = wl_cursor_theme_get_cursor(theme, cursorName);
+        if (!cursor)
+            return;
+
+        // TODO: handle animated cursors too.
+        struct wl_cursor_image* image = cursor->images[0];
+        if (!image)
+            return;
+
+        struct wl_buffer* buffer = wl_cursor_image_get_buffer(image);
+        if (!buffer)
+            return;
+
+        wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial,
+                              surface,
+                              image->hotspot_x / scale,
+                              image->hotspot_y / scale);
+        wl_surface_set_buffer_scale(surface, scale);
+        wl_surface_attach(surface, buffer, 0, 0);
+        wl_surface_damage(surface, 0, 0, image->width, image->height);
+        wl_surface_commit(surface);
+
+        _glfw.wl.cursorPreviousName = cursorName;
+    }
 }
 
 static void pointerHandleButton(void* userData,

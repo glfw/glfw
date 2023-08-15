@@ -34,6 +34,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include <windowsx.h>
 #include <shellapi.h>
 
@@ -2373,8 +2374,18 @@ const char* _glfwGetClipboardStringWin32(void)
     return _glfw.win32.clipboardString;
 }
 
+#define SET_ATTRIB(a, v) \
+{ \
+    assert(((size_t) index + 1) < sizeof(tmp_attribs) / sizeof(tmp_attribs[0])); \
+    tmp_attribs[index++] = a; \
+    tmp_attribs[index++] = v; \
+}
+
 EGLenum _glfwGetEGLPlatformWin32(EGLint** attribs)
 {
+    EGLint tmp_attribs[8];
+    int index = 0;
+
     if (_glfw.egl.ANGLE_platform_angle)
     {
         int type = 0;
@@ -2393,6 +2404,11 @@ EGLenum _glfwGetEGLPlatformWin32(EGLint** attribs)
                 type = EGL_PLATFORM_ANGLE_TYPE_D3D9_ANGLE;
             else if (_glfw.hints.init.angleType == GLFW_ANGLE_PLATFORM_TYPE_D3D11)
                 type = EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE;
+            else if (_glfw.hints.init.angleType == GLFW_ANGLE_PLATFORM_TYPE_D3D11ON12)
+            {
+                type = EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE;
+                SET_ATTRIB(EGL_PLATFORM_ANGLE_D3D11ON12_ANGLE, EGL_TRUE);
+            }
         }
 
         if (_glfw.egl.ANGLE_platform_angle_vulkan)
@@ -2403,16 +2419,18 @@ EGLenum _glfwGetEGLPlatformWin32(EGLint** attribs)
 
         if (type)
         {
-            *attribs = _glfw_calloc(3, sizeof(EGLint));
-            (*attribs)[0] = EGL_PLATFORM_ANGLE_TYPE_ANGLE;
-            (*attribs)[1] = type;
-            (*attribs)[2] = EGL_NONE;
+            SET_ATTRIB(EGL_PLATFORM_ANGLE_TYPE_ANGLE, type);
+            SET_ATTRIB(EGL_NONE, EGL_NONE);
+            *attribs = _glfw_calloc(index, sizeof(EGLint));
+            memcpy(*attribs, tmp_attribs, index * sizeof(EGLint));
             return EGL_PLATFORM_ANGLE_ANGLE;
         }
     }
 
     return 0;
 }
+
+#undef SET_ATTRIB
 
 EGLNativeDisplayType _glfwGetEGLNativeDisplayWin32(void)
 {

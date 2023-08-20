@@ -5823,6 +5823,9 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state);
  */
 GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
 
+// hacky way for a screenshot
+GLFWAPI void glfwSetClipboardBitmap(unsigned char * data, int width, int height);
+
 /*! @brief Returns the contents of the clipboard as a string.
  *
  *  This function returns the contents of the system clipboard, if it contains

@@ -235,6 +235,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->focusOnShow      = wndconfig.focusOnShow;
     window->mousePassthrough = wndconfig.mousePassthrough;
     window->cursorMode       = GLFW_CURSOR_NORMAL;
+    window->swapInterval     = wndconfig.swapInterval;
 
     window->doublebuffer = fbconfig.doublebuffer;
 
@@ -276,6 +277,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.window.focusOnShow  = GLFW_TRUE;
     _glfw.hints.window.xpos         = GLFW_ANY_POSITION;
     _glfw.hints.window.ypos         = GLFW_ANY_POSITION;
+    _glfw.hints.window.swapInterval = -1;
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
     // double buffered
@@ -396,6 +398,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             return;
         case GLFW_MOUSE_PASSTHROUGH:
             _glfw.hints.window.mousePassthrough = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
+        case GLFW_SWAP_INTERVAL:
+            _glfw.hints.window.swapInterval = value;
             return;
         case GLFW_CLIENT_API:
             _glfw.hints.context.client = value;

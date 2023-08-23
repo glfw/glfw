@@ -36,6 +36,7 @@
 
 #include <proto/intuition.h>
 #include <intuition/pointerclass.h>
+#include <workbench/startup.h>
 
 #define MIN_WINDOW_SIZE 100
 
@@ -235,6 +236,34 @@ OS4_MapCursorIdToNative(int id)
     }
 }
 
+static void
+OS4_HandleAppWindow(struct AppMessage *msg)
+{
+    _GLFWwindow *window = (_GLFWwindow *) msg->am_UserData;
+
+    int count = msg->am_NumArgs;
+    if (count > 0) {
+        int i;
+        char** paths = _glfw_calloc(count, sizeof(char*));
+
+        for (i = 0; i < count; i++) {
+            const size_t maxPathLen = 255;
+            char buf[maxPathLen];
+
+            if (IDOS->NameFromLock(msg->am_ArgList[i].wa_Lock, buf, sizeof(buf))) {
+                if (IDOS->AddPart(buf, msg->am_ArgList[i].wa_Name, sizeof(buf))) {
+                    paths[i] = _glfw_strdup(buf);
+                    dprintf("%s - %s\n", buf, paths[i]);
+                }
+            }
+        }
+        _glfwInputDrop(window, count, (const char**) paths);
+        for (i = 0;  i < count;  i++)
+            _glfw_free(paths[i]);
+        _glfw_free(paths);
+    }
+}
+
 static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
 {
     if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
@@ -413,8 +442,13 @@ static int createNativeWindow(_GLFWwindow* window,
         if (wndconfig->decorated && wndconfig->width > 99 && wndconfig->height ) {
             OS4_CreateIconifyGadget(window);
         }
-        window->os4.appWin = IWorkbench->AddAppWindow(0, (ULONG)window, window->os4.handle, _glfw.os4.appMsgPort, TAG_DONE);
-        
+        window->os4.appWin = IWorkbench->AddAppWindow(0, (ULONG) window, window->os4.handle, _glfw.os4.appMsgPort, TAG_DONE);
+#if 0        
+        IWorkbench->AddAppWindowDropZone(window->os4.appWin,
+            DROPZONE_Icon, 0,
+			WBDZA_Box, &box,
+			TAG_DONE);
+#endif
         _glfwWindowFocusedOS4(window);
 
         dprintf("Window Created\n");
@@ -990,7 +1024,7 @@ void _glfwPollEventsOS4(void)
     while ((amsg = (struct AppMessage *)IExec->GetMsg(_glfw.os4.appMsgPort))) {
         switch (amsg->am_Type) {
             case AMTYPE_APPWINDOW:
-                //OS4_HandleAppWindow(msg);
+                OS4_HandleAppWindow(amsg);
                 break;
             case AMTYPE_APPICON:
                 OS4_HandleAppIcon(amsg);

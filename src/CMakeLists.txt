@@ -126,6 +126,7 @@ if (UNIX AND GLFW_BUILD_SHARED_LIBRARY)
 else()
     set(GLFW_LIB_NAME glfw3)
 endif()
+set(GLFW_LIB_NAME_SUFFIX "")
 
 set_target_properties(glfw PROPERTIES
                       OUTPUT_NAME ${GLFW_LIB_NAME}
@@ -337,6 +338,7 @@ if (GLFW_BUILD_SHARED_LIBRARY)
             # Add a suffix to the import library to avoid naming conflicts
             set_target_properties(glfw PROPERTIES IMPORT_SUFFIX "dll.lib")
         endif()
+        set (GLFW_LIB_NAME_SUFFIX "dll")
 
         target_compile_definitions(glfw INTERFACE GLFW_DLL)
     endif()

@@ -2292,29 +2292,8 @@ void _glfwSetCursorWin32(_GLFWwindow* window, _GLFWcursor* cursor)
 }
 
 void _glfwSetClipboardBitmapWin32(unsigned char * data, int width, int height) {
-    // HDC hdcScreen;
-    // HDC hdcMemDC = NULL;
-    // HBITMAP hbmScreen = NULL;
     HBITMAP fillBm = NULL;
-    // Retrieve the handle to a display device context for the client 
-    // area of the window. 
-    // hdcScreen = GetDC(NULL);
-
-    // and a device context to put it in
-    // hdcMemDC = CreateCompatibleDC(hdcScreen);
-
-    // int width = 1920;
-    // int height = 1080;
-
-    // Create a compatible bitmap from the Window DC.
-    // hbmScreen = CreateCompatibleBitmap(hdcScreen, width, height);
     fillBm = CreateBitmap(width, height, 1, 32, data);
-
-    // get a new bitmap
-    // HBITMAP hOldBitmap = (HBITMAP)SelectObject(hdcMemDC, hbmScreen);
-    // BitBlt(hdcMemDC, 0, 0, width, height, hdcScreen, 0, 0, SRCCOPY);
-    // hbmScreen = (HBITMAP)SelectObject(hdcMemDC, hOldBitmap);
-
 
     if (!OpenClipboard(_glfw.win32.helperWindowHandle)) {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to open clipboard");
@@ -2328,10 +2307,6 @@ void _glfwSetClipboardBitmapWin32(unsigned char * data, int width, int height) {
     // Close the clipboard. 
     CloseClipboard();
     DeleteObject(fillBm);
-    // DeleteObject(hbmScreen);
-    // DeleteObject(hOldBitmap);
-    // DeleteObject(hdcMemDC);
-    // ReleaseDC(NULL, hdcScreen);
 }
 
 void _glfwSetClipboardStringWin32(const char* string)

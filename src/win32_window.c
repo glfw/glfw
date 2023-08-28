@@ -37,6 +37,97 @@
 #include <windowsx.h>
 #include <shellapi.h>
 
+
+#ifdef ZD_GLFW_FORK
+
+/*
+ZD_GLFW_FORK: Adapted from: https://github.com/melak47/BorderlessWindow
+*/
+
+glfwMouseDragCheckFn checkDragFunction;
+int g_Cursor = 0;
+
+#define SM_CXPADDEDBORDER 92
+
+DWORD aero_borderless = WS_POPUP | WS_THICKFRAME | WS_CAPTION | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX;
+
+int maximized(HWND hwnd) {
+    WINDOWPLACEMENT placement;
+    if (!GetWindowPlacement(hwnd, &placement)) {
+        return 0;
+    }
+
+    return placement.showCmd == SW_MAXIMIZE;
+}
+
+void adjust_maximized_client_rect(HWND window, NCCALCSIZE_PARAMS* params) {
+    if (!maximized(window)) {
+        return;
+    }
+
+
+    HMONITOR monitor = MonitorFromWindow(window, MONITOR_DEFAULTTONULL);
+    if (!monitor) {
+        return;
+    }
+
+    MONITORINFO monitor_info;
+    monitor_info.cbSize = sizeof(monitor_info);
+    if (!GetMonitorInfoW(monitor, &monitor_info)) {
+        return;
+    }
+
+    // when maximized, make the client area fill just the monitor (without task bar) rect,
+    // not the whole window rect which extends beyond the monitor.
+    params->rgrc[0] = monitor_info.rcWork;
+}
+
+LRESULT hit_test(HWND handle, POINT cursor) {
+    // identify borders and corners to allow resizing the window.
+    // Note: On Windows 10, windows behave differently and
+    // allow resizing outside the visible window frame.
+    // This implementation does not replicate that behavior.
+    const POINT border = {
+        GetSystemMetrics(SM_CXFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER),
+        GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER)
+    };
+    RECT window;
+    if (!GetWindowRect(handle, &window)) {
+        return HTNOWHERE;
+    }
+
+    const int64_t drag = checkDragFunction ? (checkDragFunction() ? HTCAPTION : HTCLIENT) : HTCLIENT;
+    
+    enum region_mask {
+        client = 0b0000,
+        left = 0b0001,
+        right = 0b0010,
+        top = 0b0100,
+        bottom = 0b1000,
+    };
+
+    const uint64_t result =
+        left * (cursor.x < (window.left + border.x)) |
+        right * (cursor.x >= (window.right - border.x)) |
+        top * (cursor.y < (window.top + border.y)) |
+        bottom * (cursor.y >= (window.bottom - border.y));
+
+    switch (result) {
+    case left: return HTLEFT;
+    case right: return HTRIGHT;
+    case top: return HTTOP;
+    case bottom: return HTBOTTOM;
+    case top | left: return HTTOPLEFT;
+    case top | right: return  HTTOPRIGHT;
+    case bottom | left: return HTBOTTOMLEFT;
+    case bottom | right: return HTBOTTOMRIGHT;
+    case client: return drag;
+    default: return HTNOWHERE;
+    }
+}
+
+#endif // ZD_GLFW_FORK
+
 // Returns the window style for the specified window
 //
 static DWORD getWindowStyle(const _GLFWwindow* window)
@@ -553,6 +644,33 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
     switch (uMsg)
     {
+#ifdef ZD_GLFW_FORK
+        case WM_NCCALCSIZE:
+        {
+            if (wParam)
+            {
+                if (!window->decorated) {
+                    NCCALCSIZE_PARAMS* params = ((NCCALCSIZE_PARAMS*)lParam);
+                    adjust_maximized_client_rect(hWnd, params);
+                    return 0;
+                }
+                break;
+            }
+            break;
+        }
+
+        case WM_NCHITTEST:
+        {
+            if (!window->decorated) {
+                POINT cursor;
+                cursor.x = GET_X_LPARAM(lParam);
+                cursor.y = GET_Y_LPARAM(lParam);
+                return hit_test(hWnd, cursor);
+            }
+            break;
+        }
+#endif // ZD_GLFW_FORK
+
         case WM_MOUSEACTIVATE:
         {
             // HACK: Postpone cursor disabling when the window was activated by
@@ -1336,7 +1454,11 @@ static int createNativeWindow(_GLFWwindow* window,
     window->win32.handle = CreateWindowExW(exStyle,
                                            MAKEINTATOM(_glfw.win32.mainWindowClass),
                                            wideTitle,
+#ifdef ZD_GLFW_FORK 
+                                           window->decorated ? style : aero_borderless,
+#else
                                            style,
+#endif
                                            frameX, frameY,
                                            frameWidth, frameHeight,
                                            NULL, // No parent window
@@ -2432,6 +2554,18 @@ void _glfwGetRequiredInstanceExtensionsWin32(char** extensions)
     extensions[0] = "VK_KHR_surface";
     extensions[1] = "VK_KHR_win32_surface";
 }
+
+#ifdef ZD_GLFW_FORK
+void SetMouseDragCheckFn(glfwMouseDragCheckFn function)
+{
+    checkDragFunction = function;
+}
+
+GLFWAPI void glfwGetBorder(int* border)
+{
+    *border = g_Cursor;
+}
+#endif
 
 GLFWbool _glfwGetPhysicalDevicePresentationSupportWin32(VkInstance instance,
                                                         VkPhysicalDevice device,

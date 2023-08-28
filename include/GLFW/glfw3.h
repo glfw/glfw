@@ -6200,6 +6200,13 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);
  */
 GLFWAPI int glfwVulkanSupported(void);
 
+#ifdef ZD_GLFW_FORK
+typedef int(*glfwMouseDragCheckFn)();
+GLFWAPI void SetMouseDragCheckFn(glfwMouseDragCheckFn function);
+GLFWAPI void glfwGetBorder(int* border);
+#endif
+
+
 /*! @brief Returns the Vulkan instance extensions required by GLFW.
  *
  *  This function returns an array of names of Vulkan instance extensions required

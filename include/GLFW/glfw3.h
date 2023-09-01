@@ -6201,7 +6201,7 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);
 GLFWAPI int glfwVulkanSupported(void);
 
 #ifdef ZD_GLFW_FORK
-typedef int(*glfwMouseDragCheckFn)();
+typedef int(*glfwMouseDragCheckFn)(GLFWwindow* window);
 GLFWAPI void SetMouseDragCheckFn(glfwMouseDragCheckFn function);
 GLFWAPI void glfwGetBorder(int* border);
 #endif

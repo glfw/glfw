@@ -82,7 +82,7 @@ void adjust_maximized_client_rect(HWND window, NCCALCSIZE_PARAMS* params) {
     params->rgrc[0] = monitor_info.rcWork;
 }
 
-LRESULT hit_test(HWND handle, POINT cursor) {
+LRESULT hit_test(_GLFWwindow* wnd, HWND handle, POINT cursor) {
     // identify borders and corners to allow resizing the window.
     // Note: On Windows 10, windows behave differently and
     // allow resizing outside the visible window frame.
@@ -96,7 +96,7 @@ LRESULT hit_test(HWND handle, POINT cursor) {
         return HTNOWHERE;
     }
 
-    const int64_t drag = checkDragFunction ? (checkDragFunction() ? HTCAPTION : HTCLIENT) : HTCLIENT;
+    const int64_t drag = checkDragFunction ? (checkDragFunction((GLFWwindow*) wnd) ? HTCAPTION : HTCLIENT) : HTCLIENT;
     
     enum region_mask {
         client = 0b0000,
@@ -665,7 +665,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                 POINT cursor;
                 cursor.x = GET_X_LPARAM(lParam);
                 cursor.y = GET_Y_LPARAM(lParam);
-                return hit_test(hWnd, cursor);
+                return hit_test(window, hWnd, cursor);
             }
             break;
         }

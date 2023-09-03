@@ -6247,8 +6247,6 @@ static int glad_vk_find_extensions_vulkan( VkPhysicalDevice physical_device) {
     GLAD_VK_KHR_surface = glad_vk_has_extension("VK_KHR_surface", extension_count, extensions);
     GLAD_VK_KHR_swapchain = glad_vk_has_extension("VK_KHR_swapchain", extension_count, extensions);
 
-    (void) glad_vk_has_extension;
-
     glad_vk_free_extensions(extension_count, extensions);
 
     return 1;

@@ -31,396 +31,156 @@
 
 #if defined(_GLFW_WIN32)
 
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 #include <wchar.h>
 
-
-#if WINVER < 0x0601 // To be able to compile on windows Vista and XP even though the feature won't be used.
-
-typedef struct DISPLAYCONFIG_PATH_SOURCE_INFO
-{
-    LUID   adapterId;
-    UINT32 id;
-    union
-    {
-        UINT32 modeInfoIdx;
-        struct
-        {
-            UINT32 cloneGroupId : 16;
-            UINT32 sourceModeInfoIdx : 16;
-        } DUMMYSTRUCTNAME;
-    } DUMMYUNIONNAME;
-    UINT32 statusFlags;
-} DISPLAYCONFIG_PATH_SOURCE_INFO;
-
-typedef enum
-{
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER = -1,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_HD15 = 0,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SVIDEO = 1,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_COMPOSITE_VIDEO = 2,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_COMPONENT_VIDEO = 3,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DVI = 4,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_HDMI = 5,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_LVDS = 6,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_D_JPN = 8,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SDI = 9,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EXTERNAL = 10,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EMBEDDED = 11,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_UDI_EXTERNAL = 12,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_UDI_EMBEDDED = 13,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SDTVDONGLE = 14,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_MIRACAST = 15,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INDIRECT_WIRED = 16,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INDIRECT_VIRTUAL = 17,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_USB_TUNNEL,
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL = (int)0x80000000,     // Cast required to enforce 4 byte enum.
-    DISPLAYCONFIG_OUTPUT_TECHNOLOGY_FORCE_UINT32 = (int)0xFFFFFFFF  // Cast required to enforce 4 byte enum.
-} DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY;
-
-typedef enum
-{
-    DISPLAYCONFIG_ROTATION_IDENTITY = 1,
-    DISPLAYCONFIG_ROTATION_ROTATE90 = 2,
-    DISPLAYCONFIG_ROTATION_ROTATE180 = 3,
-    DISPLAYCONFIG_ROTATION_ROTATE270 = 4,
-    DISPLAYCONFIG_ROTATION_FORCE_UINT32 = 0xFFFFFFFF
-} DISPLAYCONFIG_ROTATION;
-
-typedef enum
-{
-    DISPLAYCONFIG_SCALING_IDENTITY = 1,
-    DISPLAYCONFIG_SCALING_CENTERED = 2,
-    DISPLAYCONFIG_SCALING_STRETCHED = 3,
-    DISPLAYCONFIG_SCALING_ASPECTRATIOCENTEREDMAX = 4,
-    DISPLAYCONFIG_SCALING_CUSTOM = 5,
-    DISPLAYCONFIG_SCALING_PREFERRED = 128,
-    DISPLAYCONFIG_SCALING_FORCE_UINT32 = 0xFFFFFFFF
-} DISPLAYCONFIG_SCALING;
-
-typedef struct DISPLAYCONFIG_RATIONAL
-{
-    UINT32 Numerator;
-    UINT32 Denominator;
-} DISPLAYCONFIG_RATIONAL;
-
-typedef enum
-{
-    DISPLAYCONFIG_SCANLINE_ORDERING_UNSPECIFIED = 0,
-    DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE = 1,
-    DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED = 2,
-    DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED_UPPERFIELDFIRST,
-    DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED_LOWERFIELDFIRST = 3,
-    DISPLAYCONFIG_SCANLINE_ORDERING_FORCE_UINT32 = 0xFFFFFFFF
-} DISPLAYCONFIG_SCANLINE_ORDERING;
-
-typedef struct DISPLAYCONFIG_PATH_TARGET_INFO
-{
-    LUID                                  adapterId;
-    UINT32                                id;
-    union
-    {
-        UINT32 modeInfoIdx;
-        struct
-        {
-            UINT32 desktopModeInfoIdx : 16;
-            UINT32 targetModeInfoIdx : 16;
-        } DUMMYSTRUCTNAME;
-    } DUMMYUNIONNAME;
-    DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY outputTechnology;
-    DISPLAYCONFIG_ROTATION                rotation;
-    DISPLAYCONFIG_SCALING                 scaling;
-    DISPLAYCONFIG_RATIONAL                refreshRate;
-    DISPLAYCONFIG_SCANLINE_ORDERING       scanLineOrdering;
-    BOOL                                  targetAvailable;
-    UINT32                                statusFlags;
-} DISPLAYCONFIG_PATH_TARGET_INFO;
-
-typedef struct DISPLAYCONFIG_PATH_INFO
-{
-    DISPLAYCONFIG_PATH_SOURCE_INFO sourceInfo;
-    DISPLAYCONFIG_PATH_TARGET_INFO targetInfo;
-    UINT32                         flags;
-} DISPLAYCONFIG_PATH_INFO;
-
-typedef enum
-{
-    DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE = 1,
-    DISPLAYCONFIG_MODE_INFO_TYPE_TARGET = 2,
-    DISPLAYCONFIG_MODE_INFO_TYPE_DESKTOP_IMAGE = 3,
-    DISPLAYCONFIG_MODE_INFO_TYPE_FORCE_UINT32 = 0xFFFFFFFF
-} DISPLAYCONFIG_MODE_INFO_TYPE;
-
-typedef struct DISPLAYCONFIG_2DREGION
-{
-    UINT32 cx;
-    UINT32 cy;
-} DISPLAYCONFIG_2DREGION;
-
-typedef struct DISPLAYCONFIG_VIDEO_SIGNAL_INFO
-{
-    UINT64                          pixelRate;
-    DISPLAYCONFIG_RATIONAL          hSyncFreq;
-    DISPLAYCONFIG_RATIONAL          vSyncFreq;
-    DISPLAYCONFIG_2DREGION          activeSize;
-    DISPLAYCONFIG_2DREGION          totalSize;
-    union
-    {
-        struct
-        {
-            UINT32 videoStandard : 16;
-            UINT32 vSyncFreqDivider : 6;
-            UINT32 reserved : 10;
-        } AdditionalSignalInfo;
-        UINT32 videoStandard;
-    } DUMMYUNIONNAME;
-    DISPLAYCONFIG_SCANLINE_ORDERING scanLineOrdering;
-} DISPLAYCONFIG_VIDEO_SIGNAL_INFO;
-
-typedef struct DISPLAYCONFIG_TARGET_MODE
-{
-  DISPLAYCONFIG_VIDEO_SIGNAL_INFO targetVideoSignalInfo;
-} DISPLAYCONFIG_TARGET_MODE;
-
-typedef enum
-{
-    DISPLAYCONFIG_PIXELFORMAT_8BPP = 1,
-    DISPLAYCONFIG_PIXELFORMAT_16BPP = 2,
-    DISPLAYCONFIG_PIXELFORMAT_24BPP = 3,
-    DISPLAYCONFIG_PIXELFORMAT_32BPP = 4,
-    DISPLAYCONFIG_PIXELFORMAT_NONGDI = 5,
-    DISPLAYCONFIG_PIXELFORMAT_FORCE_UINT32 = 0xffffffff
-} DISPLAYCONFIG_PIXELFORMAT;
-
-typedef struct DISPLAYCONFIG_SOURCE_MODE
-{
-    UINT32                    width;
-    UINT32                    height;
-    DISPLAYCONFIG_PIXELFORMAT pixelFormat;
-    POINTL                    position;
-} DISPLAYCONFIG_SOURCE_MODE;
-
-typedef struct DISPLAYCONFIG_DESKTOP_IMAGE_INFO
-{
-    POINTL PathSourceSize;
-    RECTL  DesktopImageRegion;
-    RECTL  DesktopImageClip;
-} DISPLAYCONFIG_DESKTOP_IMAGE_INFO;
-
-typedef struct DISPLAYCONFIG_MODE_INFO
-{
-    DISPLAYCONFIG_MODE_INFO_TYPE infoType;
-    UINT32                       id;
-    LUID                         adapterId;
-    union
-    {
-      DISPLAYCONFIG_TARGET_MODE        targetMode;
-      DISPLAYCONFIG_SOURCE_MODE        sourceMode;
-      DISPLAYCONFIG_DESKTOP_IMAGE_INFO desktopImageInfo;
-    } DUMMYUNIONNAME;
-} DISPLAYCONFIG_MODE_INFO;
-
+#if WINVER < 0x0601 // Windows 7
 const UINT32 QDC_ONLY_ACTIVE_PATHS = 0x00000002;
+#endif
 
-typedef enum
+DISPLAYCONFIG_PATH_INFO* getDisplayPaths(UINT32 *out_pathsCount)
 {
-    DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME = 1,
-    DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME = 2,
-    DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_PREFERRED_MODE = 3,
-    DISPLAYCONFIG_DEVICE_INFO_GET_ADAPTER_NAME = 4,
-    DISPLAYCONFIG_DEVICE_INFO_SET_TARGET_PERSISTENCE = 5,
-    DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_BASE_TYPE = 6,
-    DISPLAYCONFIG_DEVICE_INFO_GET_SUPPORT_VIRTUAL_RESOLUTION = 7,
-    DISPLAYCONFIG_DEVICE_INFO_SET_SUPPORT_VIRTUAL_RESOLUTION = 8,
-    DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO = 9,
-    DISPLAYCONFIG_DEVICE_INFO_SET_ADVANCED_COLOR_STATE = 10,
-    DISPLAYCONFIG_DEVICE_INFO_GET_SDR_WHITE_LEVEL = 11,
-    DISPLAYCONFIG_DEVICE_INFO_GET_MONITOR_SPECIALIZATION,
-    DISPLAYCONFIG_DEVICE_INFO_SET_MONITOR_SPECIALIZATION,
-    DISPLAYCONFIG_DEVICE_INFO_FORCE_UINT32 = 0xFFFFFFFF
-} DISPLAYCONFIG_DEVICE_INFO_TYPE;
-
-typedef struct DISPLAYCONFIG_DEVICE_INFO_HEADER {
-  DISPLAYCONFIG_DEVICE_INFO_TYPE type;
-  UINT32                         size;
-  LUID                           adapterId;
-  UINT32                         id;
-} DISPLAYCONFIG_DEVICE_INFO_HEADER;
-
-typedef struct DISPLAYCONFIG_SOURCE_DEVICE_NAME
-{
-    DISPLAYCONFIG_DEVICE_INFO_HEADER header;
-    WCHAR                            viewGdiDeviceName[CCHDEVICENAME];
-} DISPLAYCONFIG_SOURCE_DEVICE_NAME;
-
-typedef struct DISPLAYCONFIG_TARGET_DEVICE_NAME_FLAGS
-{
-    union
-    {
-        struct
-        {
-            UINT32 friendlyNameFromEdid : 1;
-            UINT32 friendlyNameForced : 1;
-            UINT32 edidIdsValid : 1;
-            UINT32 reserved : 29;
-        } DUMMYSTRUCTNAME;
-        UINT32 value;
-    } DUMMYUNIONNAME;
-} DISPLAYCONFIG_TARGET_DEVICE_NAME_FLAGS;
-
-typedef struct DISPLAYCONFIG_TARGET_DEVICE_NAME
-{
-    DISPLAYCONFIG_DEVICE_INFO_HEADER       header;
-    DISPLAYCONFIG_TARGET_DEVICE_NAME_FLAGS flags;
-    DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY  outputTechnology;
-    UINT16                                 edidManufactureId;
-    UINT16                                 edidProductCodeId;
-    UINT32                                 connectorInstance;
-    WCHAR                                  monitorFriendlyDeviceName[64];
-    WCHAR                                  monitorDevicePath[128];
-} DISPLAYCONFIG_TARGET_DEVICE_NAME;
-
-typedef enum DISPLAYCONFIG_TOPOLOGY_ID
-{
-    DISPLAYCONFIG_TOPOLOGY_INTERNAL = 0x00000001,
-    DISPLAYCONFIG_TOPOLOGY_CLONE = 0x00000002,
-    DISPLAYCONFIG_TOPOLOGY_EXTEND = 0x00000004,
-    DISPLAYCONFIG_TOPOLOGY_EXTERNAL = 0x00000008,
-    DISPLAYCONFIG_TOPOLOGY_FORCE_UINT32 = 0xFFFFFFFF
-} DISPLAYCONFIG_TOPOLOGY_ID;
-
-#endif //#if WINVER < 0x0601
-
-typedef LONG (*pGetDisplayConfigBufferSizes)(UINT32 flags, UINT32 *numPathArrayElements, UINT32 *numModeInfoArrayElements);
-typedef LONG (*pQueryDisplayConfig)(UINT32 flags, UINT32 *numPathArrayElements, DISPLAYCONFIG_PATH_INFO *pathArray, UINT32 *numModeInfoArrayElements, DISPLAYCONFIG_MODE_INFO *modeInfoArray, DISPLAYCONFIG_TOPOLOGY_ID *currentTopologyId);
-typedef LONG (*pDisplayConfigGetDeviceInfo)(DISPLAYCONFIG_DEVICE_INFO_HEADER* requestPacket);
-
-typedef struct AccurateMonitorNameRequiredData
-{
-    HMODULE m_dll;
-    pGetDisplayConfigBufferSizes m_GetDisplayConfigBufferSizes;
-    pQueryDisplayConfig m_QueryDisplayConfig;
-    pDisplayConfigGetDeviceInfo m_DisplayConfigGetDeviceInfo;
-} AccurateMonitorNameRequiredData;
-
-BOOL loadWin7MonitorPointers(AccurateMonitorNameRequiredData *io_ptrs)
-{
-    if(!IsWindows7OrGreater())
-        return 0;
-
-    io_ptrs->m_dll = LoadLibrary(L"User32.dll");
-    if (io_ptrs == NULL)
-        return 0;
-
-    io_ptrs->m_GetDisplayConfigBufferSizes = (pGetDisplayConfigBufferSizes)GetProcAddress(io_ptrs->m_dll, "GetDisplayConfigBufferSizes");
-    if(io_ptrs->m_GetDisplayConfigBufferSizes == NULL)
-        return 0;
-
-    io_ptrs->m_QueryDisplayConfig = (pQueryDisplayConfig)GetProcAddress(io_ptrs->m_dll, "QueryDisplayConfig");
-    if(io_ptrs->m_QueryDisplayConfig == NULL)
-        return 0;
-
-    io_ptrs->m_DisplayConfigGetDeviceInfo = (pDisplayConfigGetDeviceInfo)GetProcAddress(io_ptrs->m_dll, "DisplayConfigGetDeviceInfo");
-    if(io_ptrs->m_DisplayConfigGetDeviceInfo == NULL)
-        return 0;
-
-    return 1;
-}
-
-// If the returned pointer is valid (not NULL) the caller of this function is in charge of freeing the memory when he is done.
-static char * getAccurateMonitorName(const WCHAR *deviceName)
-{
-    AccurateMonitorNameRequiredData dllPointers;
     DISPLAYCONFIG_PATH_INFO *paths;
     DISPLAYCONFIG_MODE_INFO *modes;
-    char *retval;
-    UINT32 pathCount;
     UINT32 modeCount;
-    UINT32 i;
+    UINT32 pathsCount;
     LONG rc;
-    
+
     paths = NULL;
     modes = NULL;
-    retval = NULL;
-    pathCount = 0;
     modeCount = 0;
-    i = 0;
+    pathsCount = 0;
     rc = 0;
-
-    if(loadWin7MonitorPointers(&dllPointers) == 0)
-        return NULL;
 
     do
     {
-        rc = dllPointers.m_GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, &pathCount, &modeCount);
+        rc = GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, &pathsCount, &modeCount);
         if (rc != ERROR_SUCCESS)
-            goto GET_ACCURATE_MONITOR_NAME_FAILURE;
+            break;
 
-        free(paths);
-        free(modes);
-
-        paths = (DISPLAYCONFIG_PATH_INFO *) malloc(sizeof (DISPLAYCONFIG_PATH_INFO) * pathCount);
+        assert(paths == NULL);
+        assert(modes == NULL);
+        paths = (DISPLAYCONFIG_PATH_INFO *) malloc(sizeof (DISPLAYCONFIG_PATH_INFO) * pathsCount);
         modes = (DISPLAYCONFIG_MODE_INFO *) malloc(sizeof (DISPLAYCONFIG_MODE_INFO) * modeCount);
-        if ((paths == NULL) || (modes == NULL))
-            goto GET_ACCURATE_MONITOR_NAME_FAILURE;
 
-        rc = dllPointers.m_QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, &pathCount, paths, &modeCount, modes, 0);
-    } while (rc == ERROR_INSUFFICIENT_BUFFER);
-
-    if (rc == ERROR_SUCCESS)
-    {
-        for (i = 0; i < pathCount; i++)
+        if (paths == NULL)
         {
-            DISPLAYCONFIG_SOURCE_DEVICE_NAME sourceName;
-            DISPLAYCONFIG_TARGET_DEVICE_NAME targetName;
-
-            ZeroMemory(&sourceName, sizeof(sourceName));
-            sourceName.header.adapterId = paths[i].targetInfo.adapterId;
-            sourceName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME;
-            sourceName.header.size = sizeof (sourceName);
-            sourceName.header.id = paths[i].sourceInfo.id;
-            rc = dllPointers.m_DisplayConfigGetDeviceInfo(&sourceName.header);
-            if (rc != ERROR_SUCCESS)
-                break;
-            else if (wcscmp(deviceName, sourceName.viewGdiDeviceName) != 0)
-                continue;
-
-            ZeroMemory(&targetName, sizeof(targetName));
-            targetName.header.adapterId = paths[i].targetInfo.adapterId;
-            targetName.header.id = paths[i].targetInfo.id;
-            targetName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
-            targetName.header.size = sizeof (targetName);
-            rc = dllPointers.m_DisplayConfigGetDeviceInfo(&targetName.header);
-            if (rc == ERROR_SUCCESS)
-            {
-                retval = _glfwCreateUTF8FromWideStringWin32(targetName.monitorFriendlyDeviceName);
-                /* if we got an empty string, treat it as failure so we'll fallback
-                   to getting the generic name. */
-                if (retval && (*retval == '\0'))
-                {
-                    free(retval);
-                    retval = NULL;
-                }
-            }
+            free(modes);
+            modes = NULL;
             break;
         }
-    }
 
-    FreeLibrary(dllPointers.m_dll);
-    free(paths);
-    free(modes);
-    return retval;
+        if(modes == NULL)
+        {
+            free(paths);
+            paths = NULL;
+            break;
+        }
 
-GET_ACCURATE_MONITOR_NAME_FAILURE:
-    FreeLibrary(dllPointers.m_dll);
-    free(retval);
-    free(paths);
-    free(modes);
-    return NULL;
+        rc = QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, &pathsCount, paths, &modeCount, modes, 0);
+        if (rc == ERROR_SUCCESS)
+        {
+            free(modes); // We won't use it.
+            modes = NULL;
+        }
+        else
+        {
+            free(paths);
+            paths = NULL;
+            free(modes);
+            modes = NULL;
+        }
+
+    } while (rc == ERROR_INSUFFICIENT_BUFFER);
+
+    assert(modes == NULL);
+
+    *out_pathsCount = pathsCount;
+    return paths;
 }
 
+char* getMonitorNameFromPath(const WCHAR *deviceName, const DISPLAYCONFIG_PATH_INFO *paths, const UINT32 pathCount)
+{
+    UINT32 i;
+    LONG rc;
+    char *monitorName;
+
+    i = 0;
+    rc = 0;
+    monitorName = NULL;
+
+    for (i = 0; i < pathCount; i++)
+    {
+        DISPLAYCONFIG_SOURCE_DEVICE_NAME sourceName;
+        DISPLAYCONFIG_TARGET_DEVICE_NAME targetName;
+
+        ZeroMemory(&sourceName, sizeof(sourceName));
+        sourceName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME;
+        sourceName.header.size = sizeof (sourceName);
+        sourceName.header.adapterId = paths[i].sourceInfo.adapterId;
+        sourceName.header.id = paths[i].sourceInfo.id;
+
+        rc = DisplayConfigGetDeviceInfo(&sourceName.header);
+        if (rc != ERROR_SUCCESS)
+            break;
+
+        if (wcscmp(deviceName, sourceName.viewGdiDeviceName) != 0)
+            continue;
+
+        ZeroMemory(&targetName, sizeof(targetName));
+        targetName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
+        targetName.header.size = sizeof (targetName);
+        targetName.header.adapterId = paths[i].targetInfo.adapterId;
+        targetName.header.id = paths[i].targetInfo.id;
+
+        rc = DisplayConfigGetDeviceInfo(&targetName.header);
+        if (rc != ERROR_SUCCESS)
+            break;
+
+        monitorName = _glfwCreateUTF8FromWideStringWin32(targetName.monitorFriendlyDeviceName);
+        if (monitorName && (*monitorName == '\0')) // If we got an empty string, treat it as failure so we'll fallback to getting the generic name.
+        {
+            free(monitorName);
+            monitorName = NULL;
+        }
+        break;
+    }
+
+    return monitorName;
+}
+
+// Returns NULL if an error happens or the OS doesn't provide the needed feature (anything below Win7)
+// If the pointer is valid, the caller takes ownership of the underlying memory and has to free it when done.
+//
+char* tryGetAccurateMonitorName(const WCHAR *deviceName)
+{
+    char *monitorName;
+    DISPLAYCONFIG_PATH_INFO *paths;
+    UINT32 pathCount;
+
+    monitorName = NULL;
+    paths       = NULL;
+    pathCount   = 0;
+
+    if(QueryDisplayConfig == NULL)
+        return NULL;
+
+    // If QueryDisplayConfig is present then GetDisplayConfigBufferSizes and DisplayConfigGetDeviceInfo also should be present.
+    assert(GetDisplayConfigBufferSizes != NULL);
+    assert(DisplayConfigGetDeviceInfo != NULL);
+
+    paths = getDisplayPaths(&pathCount);
+    if (paths == NULL)
+        return NULL;
+
+    monitorName = getMonitorNameFromPath(deviceName, paths, pathCount);
+
+    free(paths);
+    return monitorName;
+}
 
 // Callback for EnumDisplayMonitors in createMonitor
 //
@@ -430,25 +190,29 @@ static BOOL CALLBACK monitorCallback(HMONITOR handle,
                                      LPARAM data)
 {
     MONITORINFOEXW mi;
-    char *possiblyMoreAccurateMonitorName = NULL;
+    char* accurateMonitorName = NULL;
 
     ZeroMemory(&mi, sizeof(mi));
     mi.cbSize = sizeof(mi);
 
-    if (GetMonitorInfoW(handle, (MONITORINFO*) &mi))
+    if (GetMonitorInfoW(handle, (MONITORINFO*) &mi) == 0)
+        return TRUE;
+
+    _GLFWmonitor* monitor = (_GLFWmonitor*) data;
+    if (wcscmp(mi.szDevice, monitor->win32.adapterName) != 0)
+        return TRUE;
+
+    // If the monitor driver is installed, we will already have an accurate name for the monitor.
+    if (strcmp(monitor->name, "Generic PnP Monitor") != 0)
+        return TRUE;
+
+    monitor->win32.handle = handle;
+    accurateMonitorName = tryGetAccurateMonitorName(mi.szDevice);
+    if(accurateMonitorName != NULL)
     {
-        _GLFWmonitor* monitor = (_GLFWmonitor*) data;
-        if (wcscmp(mi.szDevice, monitor->win32.adapterName) == 0)
-        {
-            monitor->win32.handle = handle;
-            possiblyMoreAccurateMonitorName = getAccurateMonitorName(mi.szDevice);
-            if(possiblyMoreAccurateMonitorName != NULL)
-            {
-                strncpy(monitor->name, possiblyMoreAccurateMonitorName, sizeof(monitor->name) - 1);
-                free(possiblyMoreAccurateMonitorName);
-                possiblyMoreAccurateMonitorName = NULL;
-            }
-        }
+        strncpy(monitor->name, accurateMonitorName, sizeof(monitor->name) - 1);
+        free(accurateMonitorName);
+        accurateMonitorName = NULL;
     }
 
     return TRUE;

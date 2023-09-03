@@ -191,6 +191,7 @@ static BOOL CALLBACK monitorCallback(HMONITOR handle,
 {
     MONITORINFOEXW mi;
     char* accurateMonitorName = NULL;
+    _GLFWmonitor* monitor = (_GLFWmonitor*) data;
 
     ZeroMemory(&mi, sizeof(mi));
     mi.cbSize = sizeof(mi);
@@ -198,7 +199,6 @@ static BOOL CALLBACK monitorCallback(HMONITOR handle,
     if (GetMonitorInfoW(handle, (MONITORINFO*) &mi) == 0)
         return TRUE;
 
-    _GLFWmonitor* monitor = (_GLFWmonitor*) data;
     if (wcscmp(mi.szDevice, monitor->win32.adapterName) != 0)
         return TRUE;
 

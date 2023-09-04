@@ -202,11 +202,12 @@ static BOOL CALLBACK monitorCallback(HMONITOR handle,
     if (wcscmp(mi.szDevice, monitor->win32.adapterName) != 0)
         return TRUE;
 
+    monitor->win32.handle = handle;
+
     // If the monitor driver is installed, we will already have an accurate name for the monitor.
     if (strcmp(monitor->name, "Generic PnP Monitor") != 0)
         return TRUE;
 
-    monitor->win32.handle = handle;
     accurateMonitorName = tryGetAccurateMonitorName(mi.szDevice);
     if(accurateMonitorName != NULL)
     {

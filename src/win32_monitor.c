@@ -70,7 +70,7 @@ static char * getAccurateMonitorName(const WCHAR *deviceName)
     {
         rc = GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, &pathCount, &modeCount);
         if (rc != ERROR_SUCCESS)
-            goto GET_ACCURATE_MONITOR_NAME_FAILURE;
+            goto EARLY_ABORT_ACCURATE_MONITOR_NAME;
 
         free(paths);
         free(modes);
@@ -78,7 +78,7 @@ static char * getAccurateMonitorName(const WCHAR *deviceName)
         paths = (DISPLAYCONFIG_PATH_INFO *) malloc(sizeof (DISPLAYCONFIG_PATH_INFO) * pathCount);
         modes = (DISPLAYCONFIG_MODE_INFO *) malloc(sizeof (DISPLAYCONFIG_MODE_INFO) * modeCount);
         if ((paths == NULL) || (modes == NULL))
-            goto GET_ACCURATE_MONITOR_NAME_FAILURE;
+            goto EARLY_ABORT_ACCURATE_MONITOR_NAME;
 
         rc = QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, &pathCount, paths, &modeCount, modes, 0);
     } while (rc == ERROR_INSUFFICIENT_BUFFER);
@@ -122,15 +122,11 @@ static char * getAccurateMonitorName(const WCHAR *deviceName)
         }
     }
 
+// We don't free retval when aborting because currently we goto when retval == NULL
+EARLY_ABORT_ACCURATE_MONITOR_NAME:
     free(paths);
     free(modes);
     return retval;
-
-GET_ACCURATE_MONITOR_NAME_FAILURE:
-    free(retval);
-    free(paths);
-    free(modes);
-    return NULL;
 }
 
 // Callback for EnumDisplayMonitors in createMonitor

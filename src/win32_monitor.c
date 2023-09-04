@@ -31,7 +31,6 @@
 
 #if defined(_GLFW_WIN32)
 
-#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
@@ -41,145 +40,89 @@
 const UINT32 QDC_ONLY_ACTIVE_PATHS = 0x00000002;
 #endif
 
-DISPLAYCONFIG_PATH_INFO* getDisplayPaths(UINT32 *out_pathsCount)
+static char * getAccurateMonitorName(const WCHAR *deviceName)
 {
     DISPLAYCONFIG_PATH_INFO *paths;
     DISPLAYCONFIG_MODE_INFO *modes;
+    char *retval;
+    UINT32 pathCount;
     UINT32 modeCount;
-    UINT32 pathsCount;
+    UINT32 i;
     LONG rc;
 
     paths = NULL;
     modes = NULL;
+    retval = NULL;
+    pathCount = 0;
     modeCount = 0;
-    pathsCount = 0;
+    i = 0;
     rc = 0;
 
     do
     {
-        rc = GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, &pathsCount, &modeCount);
+        rc = GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, &pathCount, &modeCount);
         if (rc != ERROR_SUCCESS)
-            break;
+            goto GET_ACCURATE_MONITOR_NAME_FAILURE;
 
-        assert(paths == NULL);
-        assert(modes == NULL);
-        paths = (DISPLAYCONFIG_PATH_INFO *) malloc(sizeof (DISPLAYCONFIG_PATH_INFO) * pathsCount);
+        free(paths);
+        free(modes);
+
+        paths = (DISPLAYCONFIG_PATH_INFO *) malloc(sizeof (DISPLAYCONFIG_PATH_INFO) * pathCount);
         modes = (DISPLAYCONFIG_MODE_INFO *) malloc(sizeof (DISPLAYCONFIG_MODE_INFO) * modeCount);
+        if ((paths == NULL) || (modes == NULL))
+            goto GET_ACCURATE_MONITOR_NAME_FAILURE;
 
-        if (paths == NULL)
-        {
-            free(modes);
-            modes = NULL;
-            break;
-        }
-
-        if(modes == NULL)
-        {
-            free(paths);
-            paths = NULL;
-            break;
-        }
-
-        rc = QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, &pathsCount, paths, &modeCount, modes, 0);
-        if (rc == ERROR_SUCCESS)
-        {
-            free(modes); // We won't use it.
-            modes = NULL;
-        }
-        else
-        {
-            free(paths);
-            paths = NULL;
-            free(modes);
-            modes = NULL;
-        }
-
+        rc = QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, &pathCount, paths, &modeCount, modes, 0);
     } while (rc == ERROR_INSUFFICIENT_BUFFER);
 
-    assert(modes == NULL);
-
-    *out_pathsCount = pathsCount;
-    return paths;
-}
-
-char* getMonitorNameFromPath(const WCHAR *deviceName, const DISPLAYCONFIG_PATH_INFO *paths, const UINT32 pathCount)
-{
-    UINT32 i;
-    LONG rc;
-    char *monitorName;
-
-    i = 0;
-    rc = 0;
-    monitorName = NULL;
-
-    for (i = 0; i < pathCount; i++)
+    if (rc == ERROR_SUCCESS)
     {
-        DISPLAYCONFIG_SOURCE_DEVICE_NAME sourceName;
-        DISPLAYCONFIG_TARGET_DEVICE_NAME targetName;
-
-        ZeroMemory(&sourceName, sizeof(sourceName));
-        sourceName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME;
-        sourceName.header.size = sizeof (sourceName);
-        sourceName.header.adapterId = paths[i].sourceInfo.adapterId;
-        sourceName.header.id = paths[i].sourceInfo.id;
-
-        rc = DisplayConfigGetDeviceInfo(&sourceName.header);
-        if (rc != ERROR_SUCCESS)
-            break;
-
-        if (wcscmp(deviceName, sourceName.viewGdiDeviceName) != 0)
-            continue;
-
-        ZeroMemory(&targetName, sizeof(targetName));
-        targetName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
-        targetName.header.size = sizeof (targetName);
-        targetName.header.adapterId = paths[i].targetInfo.adapterId;
-        targetName.header.id = paths[i].targetInfo.id;
-
-        rc = DisplayConfigGetDeviceInfo(&targetName.header);
-        if (rc != ERROR_SUCCESS)
-            break;
-
-        monitorName = _glfwCreateUTF8FromWideStringWin32(targetName.monitorFriendlyDeviceName);
-        if (monitorName && (*monitorName == '\0')) // If we got an empty string, treat it as failure so we'll fallback to getting the generic name.
+        for (i = 0; i < pathCount; i++)
         {
-            free(monitorName);
-            monitorName = NULL;
+            DISPLAYCONFIG_SOURCE_DEVICE_NAME sourceName;
+            DISPLAYCONFIG_TARGET_DEVICE_NAME targetName;
+
+            ZeroMemory(&sourceName, sizeof(sourceName));
+            sourceName.header.adapterId = paths[i].targetInfo.adapterId;
+            sourceName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME;
+            sourceName.header.size = sizeof (sourceName);
+            sourceName.header.id = paths[i].sourceInfo.id;
+            rc = DisplayConfigGetDeviceInfo(&sourceName.header);
+            if (rc != ERROR_SUCCESS)
+                break;
+            else if (wcscmp(deviceName, sourceName.viewGdiDeviceName) != 0)
+                continue;
+
+            ZeroMemory(&targetName, sizeof(targetName));
+            targetName.header.adapterId = paths[i].targetInfo.adapterId;
+            targetName.header.id = paths[i].targetInfo.id;
+            targetName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
+            targetName.header.size = sizeof (targetName);
+            rc = DisplayConfigGetDeviceInfo(&targetName.header);
+            if (rc == ERROR_SUCCESS)
+            {
+                retval = _glfwCreateUTF8FromWideStringWin32(targetName.monitorFriendlyDeviceName);
+                /* if we got an empty string, treat it as failure so we'll fallback
+                   to getting the generic name. */
+                if (retval && (*retval == '\0'))
+                {
+                    free(retval);
+                    retval = NULL;
+                }
+            }
+            break;
         }
-        break;
     }
 
-    return monitorName;
-}
-
-// Returns NULL if an error happens or the OS doesn't provide the needed feature (anything below Win7)
-// If the pointer is valid, the caller takes ownership of the underlying memory and has to free it when done.
-//
-char* tryGetAccurateMonitorName(const WCHAR *deviceName)
-{
-    char *monitorName;
-    DISPLAYCONFIG_PATH_INFO *paths;
-    UINT32 pathCount;
-
-    monitorName = NULL;
-    paths       = NULL;
-    pathCount   = 0;
-
-    if(QueryDisplayConfig == NULL)
-        return NULL;
-
-    // If QueryDisplayConfig is present then GetDisplayConfigBufferSizes and DisplayConfigGetDeviceInfo also should be present.
-    assert(GetDisplayConfigBufferSizes != NULL);
-    assert(DisplayConfigGetDeviceInfo != NULL);
-
-    paths = getDisplayPaths(&pathCount);
-    if (paths == NULL)
-        return NULL;
-
-    monitorName = getMonitorNameFromPath(deviceName, paths, pathCount);
-
     free(paths);
-    return monitorName;
+    free(modes);
+    return retval;
+
+GET_ACCURATE_MONITOR_NAME_FAILURE:
+    free(retval);
+    free(paths);
+    free(modes);
+    return NULL;
 }
 
 // Callback for EnumDisplayMonitors in createMonitor
@@ -190,29 +133,29 @@ static BOOL CALLBACK monitorCallback(HMONITOR handle,
                                      LPARAM data)
 {
     MONITORINFOEXW mi;
-    char* accurateMonitorName = NULL;
-    _GLFWmonitor* monitor = (_GLFWmonitor*) data;
+    char *possiblyMoreAccurateMonitorName = NULL;
 
     ZeroMemory(&mi, sizeof(mi));
     mi.cbSize = sizeof(mi);
 
-    if (GetMonitorInfoW(handle, (MONITORINFO*) &mi) == 0)
-        return TRUE;
-
-    if (wcscmp(mi.szDevice, monitor->win32.adapterName) != 0)
-        return TRUE;
-
-    // If the monitor driver is installed, we will already have an accurate name for the monitor.
-    if (strcmp(monitor->name, "Generic PnP Monitor") != 0)
-        return TRUE;
-
-    monitor->win32.handle = handle;
-    accurateMonitorName = tryGetAccurateMonitorName(mi.szDevice);
-    if(accurateMonitorName != NULL)
+    if (GetMonitorInfoW(handle, (MONITORINFO*) &mi))
     {
-        strncpy(monitor->name, accurateMonitorName, sizeof(monitor->name) - 1);
-        free(accurateMonitorName);
-        accurateMonitorName = NULL;
+        _GLFWmonitor* monitor = (_GLFWmonitor*) data;
+        if (wcscmp(mi.szDevice, monitor->win32.adapterName) == 0)
+        {
+            monitor->win32.handle = handle;
+
+            if (strcmp(monitor->name, "Generic PnP Monitor") == 0)
+            {
+                possiblyMoreAccurateMonitorName = getAccurateMonitorName(mi.szDevice);
+                if(possiblyMoreAccurateMonitorName != NULL)
+                {
+                    strncpy(monitor->name, possiblyMoreAccurateMonitorName, sizeof(monitor->name) - 1);
+                    free(possiblyMoreAccurateMonitorName);
+                    possiblyMoreAccurateMonitorName = NULL;
+                }
+            }
+        }
     }
 
     return TRUE;
@@ -708,4 +651,3 @@ GLFWAPI const char* glfwGetWin32Monitor(GLFWmonitor* handle)
 }
 
 #endif // _GLFW_WIN32
-

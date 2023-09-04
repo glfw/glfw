@@ -31,6 +31,7 @@
 
 #if defined(_GLFW_WIN32)
 
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
@@ -58,6 +59,13 @@ static char * getAccurateMonitorName(const WCHAR *deviceName)
     i = 0;
     rc = 0;
 
+    if(QueryDisplayConfig == NULL)
+        return NULL;
+
+    // If QueryDisplayConfig is present then GetDisplayConfigBufferSizes and DisplayConfigGetDeviceInfo also should be present.
+    assert(GetDisplayConfigBufferSizes != NULL);
+    assert(DisplayConfigGetDeviceInfo != NULL);
+
     do
     {
         rc = GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, &pathCount, &modeCount);
@@ -83,7 +91,7 @@ static char * getAccurateMonitorName(const WCHAR *deviceName)
             DISPLAYCONFIG_TARGET_DEVICE_NAME targetName;
 
             ZeroMemory(&sourceName, sizeof(sourceName));
-            sourceName.header.adapterId = paths[i].targetInfo.adapterId;
+            sourceName.header.adapterId = paths[i].sourceInfo.adapterId;
             sourceName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME;
             sourceName.header.size = sizeof (sourceName);
             sourceName.header.id = paths[i].sourceInfo.id;

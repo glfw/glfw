@@ -89,8 +89,6 @@
  #define GLFW_OS4_CURSOR_STATE
  #define GLFW_OS4_LIBRARY_WINDOW_STATE
  #define GLFW_OS4_JOYSTICK_STATE
- #define GLFW_GLX_CONTEXT_STATE
- #define GLFW_GLX_LIBRARY_CONTEXT_STATE
 #endif
 
 #include "null_joystick.h"

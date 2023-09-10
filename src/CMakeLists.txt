@@ -184,7 +184,7 @@ if (GLFW_BUILD_WAYLAND)
         wayland-client>=0.2.7
         wayland-cursor>=0.2.7
         wayland-egl>=0.2.7
-        xkbcommon)
+        xkbcommon>=0.5.0)
 
     target_include_directories(glfw PRIVATE ${Wayland_INCLUDE_DIRS})
 

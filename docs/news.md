@@ -27,6 +27,13 @@ GLFW now provides the @ref glfwGetGLXFBConfig native access function for
 querying the `GLXFBConfig` of a window that has a `GLXWindow`.
 
 
+X11 native Visual and XCB connection access {#native_x11_visual_and_xcb_connection}
+
+GLFW now supports X11 platform specific native functions for accessing
+the X11 visual and XCB connection handle:
+@ref glfwGetX11Visual and @ref glfwGetXCBConnection.
+
+
 ## Caveats {#caveats}
 
 ## Deprecations {#deprecations}
@@ -54,6 +61,8 @@ actively maintained and available on many platforms.
 
  - @ref glfwGetEGLConfig
  - @ref glfwGetGLXFBConfig
+ - @ref glfwGetX11Visual
+ - @ref glfwGetXCBConnection
 
 
 ### New types {#new_types}

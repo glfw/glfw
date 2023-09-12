@@ -3383,5 +3383,44 @@ GLFWAPI const char* glfwGetX11SelectionString(void)
     return getSelectionString(_glfw.x11.PRIMARY);
 }
 
+GLFWAPI VisualID glfwGetX11Visual(void)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(0);
+
+    if (_glfw.platform.platformID != GLFW_PLATFORM_X11)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "X11: Platform not initialized");
+        return 0;
+    }
+
+    return XVisualIDFromVisual(DefaultVisual(_glfw.x11.display, _glfw.x11.screen));
+}
+
+GLFWAPI xcb_connection_t* glfwGetXCBConnection(void)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+    if (_glfw.platform.platformID != GLFW_PLATFORM_X11)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "X11: Platform not initialized");
+        return NULL;
+    }
+
+    if (!_glfw.x11.x11xcb.handle)
+    {
+        return NULL;
+    }
+
+    xcb_connection_t* connection = XGetXCBConnection(_glfw.x11.display);
+    if (!connection)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "X11: Failed to retrieve XCB connection");
+        return NULL;
+    }
+
+    return connection;
+}
+
 #endif // _GLFW_X11
 

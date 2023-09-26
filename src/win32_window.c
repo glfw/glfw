@@ -1772,7 +1772,7 @@ _GLFWmonitor* _glfwGetMonitorDisplayingWindowWin32(_GLFWwindow* window)
             return _glfw.monitors[i];
     }
 
-    return _glfw.monitors[0];
+    return NULL;
 }
 
 void _glfwFocusWindowWin32(_GLFWwindow* window)

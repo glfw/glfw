@@ -3903,6 +3903,8 @@ GLFWAPI void glfwRequestWindowAttention(GLFWwindow* window);
  *  The window should not be NULL.
  *
  *  @param[in] window The window to query.
+ *  @return The monitor, or `NULL` if the window is NULL or an
+ *  [error](@ref error_handling) occurred.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *

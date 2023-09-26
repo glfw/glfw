@@ -436,6 +436,11 @@ void _glfwRequestWindowAttentionNull(_GLFWwindow* window)
 {
 }
 
+_GLFWmonitor* _glfwGetMonitorHostingWindoNull(_GLFWwindow*const window)
+{
+    return NULL;
+}
+
 void _glfwHideWindowNull(_GLFWwindow* window)
 {
     if (_glfw.null.focusedWindow == window)

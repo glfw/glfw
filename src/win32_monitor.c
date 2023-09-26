@@ -129,6 +129,14 @@ EARLY_ABORT_ACCURATE_MONITOR_NAME:
     return retval;
 }
 
+BOOL nameContainsOutputPort(const char *const i_nameToCheck)
+{
+    const size_t nameLength = strlen(i_nameToCheck);
+    const char lastChar = i_nameToCheck[nameLength - 1];
+
+    return lastChar == ')'; // Non generic initial names contain the output port use. E.g. MonitorName(DisplayPort)
+}
+
 // Callback for EnumDisplayMonitors in createMonitor
 //
 static BOOL CALLBACK monitorCallback(HMONITOR handle,
@@ -149,7 +157,7 @@ static BOOL CALLBACK monitorCallback(HMONITOR handle,
         {
             monitor->win32.handle = handle;
 
-            if (strcmp(monitor->name, "Generic PnP Monitor") == 0)
+            if (!nameContainsOutputPort(monitor->name))
             {
                 possiblyMoreAccurateMonitorName = getAccurateMonitorName(mi.szDevice);
                 if(possiblyMoreAccurateMonitorName != NULL)

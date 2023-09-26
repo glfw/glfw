@@ -822,14 +822,14 @@ GLFWAPI void glfwRequestWindowAttention(GLFWwindow* handle)
     _glfw.platform.requestWindowAttention(window);
 }
 
-GLFWAPI GLFWmonitor* glfwGetMonitorHostingWindow(GLFWwindow* const handle)
+GLFWAPI GLFWmonitor* glfwGetMonitorDisplayingWindow(GLFWwindow* handle)
 {
     _GLFWwindow* const window = (_GLFWwindow*) handle;
     assert(handle != NULL);
     
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
-    return (GLFWmonitor*)_glfw.platform.getMonitorHostingWindow(window);
+    return (GLFWmonitor*)_glfw.platform.getMonitorDisplayingWindow(window);
 }
 
 GLFWAPI void glfwHideWindow(GLFWwindow* handle)

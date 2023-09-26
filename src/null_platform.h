@@ -240,7 +240,7 @@ GLFWbool _glfwRawMouseMotionSupportedNull(void);
 void _glfwShowWindowNull(_GLFWwindow* window);
 void _glfwRequestWindowAttentionNull(_GLFWwindow* window);
 void _glfwRequestWindowAttentionNull(_GLFWwindow* window);
-_GLFWmonitor* _glfwGetMonitorHostingWindoNull(_GLFWwindow* const window);
+_GLFWmonitor* _glfwGetMonitorDisplayingWindoNull(_GLFWwindow* window);
 void _glfwHideWindowNull(_GLFWwindow* window);
 void _glfwFocusWindowNull(_GLFWwindow* window);
 GLFWbool _glfwWindowFocusedNull(_GLFWwindow* window);

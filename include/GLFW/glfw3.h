@@ -3914,7 +3914,7 @@ GLFWAPI void glfwRequestWindowAttention(GLFWwindow* window);
  *
  *  @ingroup window
  */
-GLFWAPI GLFWmonitor* glfwGetMonitorHostingWindow(GLFWwindow *const window);
+GLFWAPI GLFWmonitor* glfwGetMonitorDisplayingWindow(GLFWwindow* window);
 
 /*! @brief Returns the monitor that the window uses for full screen mode.
  *

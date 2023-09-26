@@ -1762,7 +1762,7 @@ void _glfwRequestWindowAttentionWin32(_GLFWwindow* window)
     FlashWindow(window->win32.handle, TRUE);
 }
 
-_GLFWmonitor* _glfwGetMonitorHostingWindowWin32(_GLFWwindow* const window)
+_GLFWmonitor* _glfwGetMonitorDisplayingWindowWin32(_GLFWwindow* window)
 {
     HMONITOR monitor = MonitorFromWindow(window->win32.handle, MONITOR_DEFAULTTONEAREST);
 

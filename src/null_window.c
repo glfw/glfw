@@ -436,7 +436,7 @@ void _glfwRequestWindowAttentionNull(_GLFWwindow* window)
 {
 }
 
-_GLFWmonitor* _glfwGetMonitorHostingWindoNull(_GLFWwindow*const window)
+_GLFWmonitor* _glfwGetMonitorDisplayingWindoNull(_GLFWwindow* window)
 {
     return NULL;
 }

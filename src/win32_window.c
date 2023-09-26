@@ -1764,9 +1764,10 @@ void _glfwRequestWindowAttentionWin32(_GLFWwindow* window)
 
 _GLFWmonitor* _glfwGetMonitorDisplayingWindowWin32(_GLFWwindow* window)
 {
+    int i;
     HMONITOR monitor = MonitorFromWindow(window->win32.handle, MONITOR_DEFAULTTONEAREST);
 
-    for(int i = 0; i < _glfw.monitorCount; ++i)
+    for(i = 0; i < _glfw.monitorCount; ++i)
     {
         if(_glfw.monitors[i]->win32.handle == monitor)
             return _glfw.monitors[i];

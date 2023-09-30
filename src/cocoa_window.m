@@ -1279,7 +1279,7 @@ void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
 
     if (window->monitor)
     {
-        styleMask &= ~(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable);
+        styleMask &= ~(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable);
         styleMask |= NSWindowStyleMaskBorderless;
     }
     else

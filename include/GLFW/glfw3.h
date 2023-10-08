@@ -6409,8 +6409,7 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window
  *  If the surface cannot be created, this function returns `NULL`.
  *
  *  It is the responsibility of the caller to destroy the window surface. The
- *  window surface must be destroyed using `wgpuSurfaceDrop` (wgpu-native) or
- *  `wgpuSurfaceRelease` (Dawn/emscripten).
+ *  window surface must be destroyed using `wgpuSurfaceRelease`.
  *
  *  @param[in] instance The WebGPU instance to create the surface in.
  *  @param[in] window The window to create the surface for.

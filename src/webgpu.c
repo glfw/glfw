@@ -74,20 +74,19 @@ GLFWAPI WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindo
     {
         id metal_layer = NULL;
         NSWindow* ns_window = glfwGetCocoaWindow(window);
-        [ns_window.contentView setWantsLayer : YES] ;
+        [ns_window.contentView setWantsLayer : YES];
         metal_layer = [CAMetalLayer layer];
-        [ns_window.contentView setLayer : metal_layer] ;
+        [ns_window.contentView setLayer : metal_layer];
         return wgpuInstanceCreateSurface(
             instance,
             &(WGPUSurfaceDescriptor){
-            .label = NULL,
+                .label = NULL,
                 .nextInChain =
                 (const WGPUChainedStruct*)&(
                     WGPUSurfaceDescriptorFromMetalLayer) {
-                .chain =
-                    (WGPUChainedStruct){
-                        .next = NULL,
-                        .sType = WGPUSType_SurfaceDescriptorFromMetalLayer,
+                .chain = (WGPUChainedStruct){
+                    .next = NULL,
+                    .sType = WGPUSType_SurfaceDescriptorFromMetalLayer,
                 },
                 .layer = metal_layer,
             },
@@ -100,14 +99,13 @@ GLFWAPI WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindo
         return wgpuInstanceCreateSurface(
             instance,
             &(WGPUSurfaceDescriptor){
-            .label = NULL,
+                .label = NULL,
                 .nextInChain =
                 (const WGPUChainedStruct*)&(
                     WGPUSurfaceDescriptorFromXlibWindow) {
-                .chain =
-                    (WGPUChainedStruct){
-                        .next = NULL,
-                        .sType = WGPUSType_SurfaceDescriptorFromXlibWindow,
+                .chain = (WGPUChainedStruct){
+                    .next = NULL,
+                    .sType = WGPUSType_SurfaceDescriptorFromXlibWindow,
                 },
                 .display = x11_display,
                 .window = x11_window,
@@ -121,21 +119,19 @@ GLFWAPI WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindo
         return wgpuInstanceCreateSurface(
             instance,
             &(WGPUSurfaceDescriptor){
-            .label = NULL,
+                .label = NULL,
                 .nextInChain =
                 (const WGPUChainedStruct*)&(
                     WGPUSurfaceDescriptorFromWaylandSurface) {
-                .chain =
-                    (WGPUChainedStruct){
-                        .next = NULL,
-                        .sType =
-                            WGPUSType_SurfaceDescriptorFromWaylandSurface,
-},
-.display = wayland_display,
-.surface = wayland_surface,
+                .chain = (WGPUChainedStruct){
+                    .next = NULL,
+                    .sType = WGPUSType_SurfaceDescriptorFromWaylandSurface,
                 },
+                .display = wayland_display,
+                .surface = wayland_surface,
+            },
         });
-  }
+    }
 #elif WGPU_TARGET == WGPU_TARGET_WINDOWS
     {
         HWND hwnd = glfwGetWin32Window(window);
@@ -143,20 +139,19 @@ GLFWAPI WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindo
         return wgpuInstanceCreateSurface(
             instance,
             &(WGPUSurfaceDescriptor){
-            .label = NULL,
+                .label = NULL,
                 .nextInChain =
                 (const WGPUChainedStruct*)&(
                     WGPUSurfaceDescriptorFromWindowsHWND) {
-                .chain =
-                    (WGPUChainedStruct){
-                        .next = NULL,
-                        .sType = WGPUSType_SurfaceDescriptorFromWindowsHWND,
+                .chain = (WGPUChainedStruct){
+                    .next = NULL,
+                    .sType = WGPUSType_SurfaceDescriptorFromWindowsHWND,
+                },
+                .hinstance = hinstance,
+                .hwnd = hwnd,
             },
-            .hinstance = hinstance,
-            .hwnd = hwnd,
-        },
-    });
-  }
+        });
+    }
 #else
 #error "Unsupported WGPU_TARGET"
 #endif

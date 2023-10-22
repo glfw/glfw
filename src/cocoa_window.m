@@ -614,6 +614,22 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         _glfwInputScroll(window, deltaX, deltaY);
 }
 
+- (void)magnifyWithEvent:(NSEvent *)event
+{
+    double magnification = [event magnification];
+
+    if (fabs(magnification) > 0.0)
+        _glfwInputTrackpadZoom(window, magnification);
+}
+
+- (void)rotateWithEvent:(NSEvent *)event
+{
+    double rotation = [event rotation];
+
+    if (fabs(rotation) > 0.0)
+        _glfwInputTrackpadRotate(window, rotation);
+}
+
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
 {
     // HACK: We don't know what to say here because we don't know what the

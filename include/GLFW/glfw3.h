@@ -1871,6 +1871,40 @@ typedef void (* GLFWcursorenterfun)(GLFWwindow* window, int entered);
  */
 typedef void (* GLFWscrollfun)(GLFWwindow* window, double xoffset, double yoffset);
 
+/*! @brief The function pointer type for trackpad zoom callbacks.
+ *
+ *  This is the function pointer type for trackpad zoom callbacks.  A zoom
+ *  callback function has the following signature:
+ *  @code
+ *  void function_name(GLFWwindow* window, double scale)
+ *  @endcode
+ *
+ *  @param[in] window The window that received the event.
+ *  @param[in] scale The manigification amount
+ *
+ *  @sa @ref glfwSetTrackpadZoomCallback
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWtrackpadzoomfun)(GLFWwindow* window, double scale);
+
+/*! @brief The function pointer type for trackpad rotate callbacks.
+ *
+ *  This is the function pointer type for trackpad rotate callbacks.  A rotate
+ *  callback function has the following signature:
+ *  @code
+ *  void function_name(GLFWwindow* window, double angle)
+ *  @endcode
+ *
+ *  @param[in] window The window that received the event.
+ *  @param[in] angle The rotation amount
+ *
+ *  @sa @ref glfwSetTrackpadRotateCallback
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWtrackpadrotatefun)(GLFWwindow* window, double angle);
+
 /*! @brief The function pointer type for keyboard key callbacks.
  *
  *  This is the function pointer type for keyboard key callbacks.  A keyboard
@@ -5429,6 +5463,58 @@ GLFWAPI GLFWcursorenterfun glfwSetCursorEnterCallback(GLFWwindow* window, GLFWcu
  *  @ingroup input
  */
 GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun callback);
+
+/*! @brief Sets the trackpad zoom callback.
+ *
+ *  This function sets the trackpad zoom of the specified window, which is
+ *  called when a trackpad magnification gesture is used on macOS.
+ *
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] callback The new trackpad zoom callback, or `NULL` to remove the
+ *  currently set callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  @callback_signature
+ *  @code
+ *  void function_name(GLFWwindow* window, double scale)
+ *  @endcode
+ *  For more information about the callback parameters, see the
+ *  [function pointer type](@ref GLFWtrackpadzoomfun).
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWtrackpadzoomfun glfwSetTrackpadZoomCallback(GLFWwindow* window, GLFWtrackpadzoomfun callback);
+
+/*! @brief Sets the trackpad rotate callback.
+ *
+ *  This function sets the trackpad rotate of the specified window, which is
+ *  called when a trackpad rotation gesture is used on macOS.
+ *
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] callback The new trackpad rotate callback, or `NULL` to remove the
+ *  currently set callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  @callback_signature
+ *  @code
+ *  void function_name(GLFWwindow* window, double angle)
+ *  @endcode
+ *  For more information about the callback parameters, see the
+ *  [function pointer type](@ref GLFWtrackpadrotatefun).
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWtrackpadrotatefun glfwSetTrackpadRotateCallback(GLFWwindow* window, GLFWtrackpadrotatefun callback);
 
 /*! @brief Sets the path drop callback.
  *

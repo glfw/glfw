@@ -106,6 +106,39 @@ static int createNativeWindow(_GLFWwindow* window,
 
     return GLFW_TRUE;
 }
+static int attachNativeWindow(_GLFWwindow* window,
+                              intptr_t native,
+                              const _GLFWwndconfig* wndconfig,
+                              const _GLFWfbconfig* fbconfig)
+{
+    if (window->monitor)
+        fitToMonitor(window);
+    else
+    {
+        if (wndconfig->xpos == GLFW_ANY_POSITION && wndconfig->ypos == GLFW_ANY_POSITION)
+        {
+            window->null.xpos = 17;
+            window->null.ypos = 17;
+        }
+        else
+        {
+            window->null.xpos = wndconfig->xpos;
+            window->null.ypos = wndconfig->ypos;
+        }
+
+        window->null.width = wndconfig->width;
+        window->null.height = wndconfig->height;
+    }
+
+    window->null.visible = wndconfig->visible;
+    window->null.decorated = wndconfig->decorated;
+    window->null.maximized = wndconfig->maximized;
+    window->null.floating = wndconfig->floating;
+    window->null.transparent = fbconfig->transparent;
+    window->null.opacity = 1.f;
+
+    return GLFW_TRUE;
+}
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -118,6 +151,61 @@ GLFWbool _glfwCreateWindowNull(_GLFWwindow* window,
                                const _GLFWfbconfig* fbconfig)
 {
     if (!createNativeWindow(window, wndconfig, fbconfig))
+        return GLFW_FALSE;
+
+    if (ctxconfig->client != GLFW_NO_API)
+    {
+        if (ctxconfig->source == GLFW_NATIVE_CONTEXT_API ||
+            ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
+        {
+            if (!_glfwInitOSMesa())
+                return GLFW_FALSE;
+            if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
+                return GLFW_FALSE;
+        }
+        else if (ctxconfig->source == GLFW_EGL_CONTEXT_API)
+        {
+            if (!_glfwInitEGL())
+                return GLFW_FALSE;
+            if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
+                return GLFW_FALSE;
+        }
+
+        if (!_glfwRefreshContextAttribs(window, ctxconfig))
+            return GLFW_FALSE;
+    }
+
+    if (wndconfig->mousePassthrough)
+        _glfwSetWindowMousePassthroughNull(window, GLFW_TRUE);
+
+    if (window->monitor)
+    {
+        _glfwShowWindowNull(window);
+        _glfwFocusWindowNull(window);
+        acquireMonitor(window);
+
+        if (wndconfig->centerCursor)
+            _glfwCenterCursorInContentArea(window);
+    }
+    else
+    {
+        if (wndconfig->visible)
+        {
+            _glfwShowWindowNull(window);
+            if (wndconfig->focused)
+                _glfwFocusWindowNull(window);
+        }
+    }
+
+    return GLFW_TRUE;
+}
+GLFWbool _glfwAttachWindowNull(_GLFWwindow* window,
+                               intptr_t native,
+                               const _GLFWwndconfig* wndconfig,
+                               const _GLFWctxconfig* ctxconfig,
+                               const _GLFWfbconfig* fbconfig)
+{
+    if (!attachNativeWindow(window, native, wndconfig, fbconfig))
         return GLFW_FALSE;
 
     if (ctxconfig->client != GLFW_NO_API)
@@ -717,4 +805,3 @@ VkResult _glfwCreateWindowSurfaceNull(VkInstance instance,
     // This seems like the most appropriate error to return here
     return VK_ERROR_EXTENSION_NOT_PRESENT;
 }
-

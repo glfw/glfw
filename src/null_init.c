@@ -71,6 +71,7 @@ GLFWbool _glfwConnectNull(int platformID, _GLFWplatform* platform)
         _glfwGetGammaRampNull,
         _glfwSetGammaRampNull,
         _glfwCreateWindowNull,
+        _glfwAttachWindowNull,
         _glfwDestroyWindowNull,
         _glfwSetWindowTitleNull,
         _glfwSetWindowIconNull,
@@ -263,4 +264,3 @@ void _glfwTerminateNull(void)
     _glfwTerminateOSMesa();
     _glfwTerminateEGL();
 }
-

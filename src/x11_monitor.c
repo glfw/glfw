@@ -617,4 +617,3 @@ GLFWAPI RROutput glfwGetX11Monitor(GLFWmonitor* handle)
 }
 
 #endif // _GLFW_X11
-

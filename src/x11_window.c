@@ -2044,7 +2044,7 @@ GLFWbool _glfwCreateWindowX11(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
-GLFWbool _glfwCreateWindowX11(_GLFWwindow* window,
+GLFWbool _glfwAttachWindowX11(_GLFWwindow* window,
                               intptr_t native,
                               const _GLFWwndconfig* wndconfig,
                               const _GLFWctxconfig* ctxconfig,

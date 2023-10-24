@@ -525,6 +525,7 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         _glfwGetGammaRampCocoa,
         _glfwSetGammaRampCocoa,
         _glfwCreateWindowCocoa,
+        _glfwAttachWindowCocoa,
         _glfwDestroyWindowCocoa,
         _glfwSetWindowTitleCocoa,
         _glfwSetWindowIconCocoa,
@@ -694,4 +695,3 @@ void _glfwTerminateCocoa(void)
 }
 
 #endif // _GLFW_COCOA
-

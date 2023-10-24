@@ -983,6 +983,15 @@ GLFWbool _glfwCreateWindowCocoa(_GLFWwindow* window,
     } // autoreleasepool
 }
 
+GLFWbool _glfwAttachWindowCocoa(_GLFWwindow* window,
+                                intptr_t native,
+                                const _GLFWwndconfig* wndconfig,
+                                const _GLFWctxconfig* ctxconfig,
+                                const _GLFWfbconfig* fbconfig) {
+    _glfwInputError(GLFW_PLATFORM_ERROR, "Cocoa window attachment is not implemented");
+    return GLFW_FALSE;
+}
+
 void _glfwDestroyWindowCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
@@ -2050,4 +2059,3 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
 }
 
 #endif // _GLFW_COCOA
-

@@ -286,7 +286,7 @@ GLFWAPI GLFWwindow* glfwAttachWindow(intptr_t nativeWindow, GLFWwindow* share) {
 
   window->autoIconify = wndconfig.autoIconify;
   window->cursorMode  = GLFW_CURSOR_NORMAL;
-  window->external    = true;
+  window->external    = GLFW_TRUE;
 
   window->minwidth    = GLFW_DONT_CARE;
   window->minheight   = GLFW_DONT_CARE;

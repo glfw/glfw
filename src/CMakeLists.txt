@@ -387,7 +387,12 @@ set(GLFW_PKG_CONFIG_REQUIRES_PRIVATE "${deps}" CACHE INTERNAL
     "GLFW pkg-config Requires.private")
 set(GLFW_PKG_CONFIG_LIBS_PRIVATE "${libs}" CACHE INTERNAL
     "GLFW pkg-config Libs.private")
-
+set(GLFW_LIB_NAME_SUFFIX "")
+if (BUILD_SHARED_LIBS)
+    if (WIN32)
+      set(GLFW_LIB_NAME_SUFFIX "dll")
+    endif()
+endif()
 configure_file("${GLFW_SOURCE_DIR}/CMake/glfw3.pc.in" glfw3.pc @ONLY)
 
 if (GLFW_INSTALL)

@@ -297,6 +297,8 @@ GLFWAPI GLFWwindow* glfwAttachWindow(intptr_t nativeWindow, GLFWwindow* share) {
 
   if (!_glfw.platform.attachWindow(window, nativeWindow, &wndconfig, &ctxconfig, &fbconfig))
     return NULL;
+
+  return (GLFWwindow*) window;
 }
 
 void glfwDefaultWindowHints(void) {

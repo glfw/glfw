@@ -994,6 +994,8 @@ static GLFWbool attachNativeSurface(_GLFWwindow* window,
     window->wl.transparent = fbconfig->transparent;
     if (!window->wl.transparent)
         setContentAreaOpaque(window);
+    
+    return GLFW_TRUE;
 }
 
 static void setCursorImage(_GLFWwindow* window,

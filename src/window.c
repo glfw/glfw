@@ -295,11 +295,12 @@ GLFWAPI GLFWwindow* glfwAttachWindow(intptr_t nativeWindow, GLFWwindow* share) {
   window->numer       = GLFW_DONT_CARE;
   window->denom       = GLFW_DONT_CARE;
 
-//  if (!_glfw.platform.attachWindow())
+  if (!_glfw.platform.attachWindow(window, nativeWindow, &wndconfig, &ctxconfig, &fbconfig))
+    return NULL;
 }
 
-void glfwDefaultWindowHints(void)
-{
+void glfwDefaultWindowHints(void) {
+
     _GLFW_REQUIRE_INIT();
 
     // The default is OpenGL with minimum version 1.0
@@ -1196,4 +1197,3 @@ GLFWAPI void glfwPostEmptyEvent(void)
     _GLFW_REQUIRE_INIT();
     _glfw.platform.postEmptyEvent();
 }
-

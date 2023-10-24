@@ -966,6 +966,36 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
+static GLFWbool attachNativeSurface(_GLFWwindow* window,
+                                    intptr_t native,
+                                    const _GLFWwndconfig* wndconfig,
+                                    const _GLFWfbconfig* fbconfig) {
+    if (!native)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Wayland: supplied wl_surface is null");
+        return GLFW_FALSE;
+    }
+    window->wl.surface = (struct wl_surface*) native;
+    
+    wl_proxy_set_tag((struct wl_proxy*) window->wl.surface, &_glfw.wl.tag);
+    wl_surface_add_listener(window->wl.surface,
+                            &surfaceListener,
+                            window);
+    
+    window->wl.width = wndconfig->width;
+    window->wl.height = wndconfig->height;
+    window->wl.contentScale = 1;
+    window->wl.title = _glfw_strdup(wndconfig->title);
+    window->wl.appId = _glfw_strdup(wndconfig->wl.appId);
+    
+    
+    window->wl.maximized = wndconfig->maximized;
+
+    window->wl.transparent = fbconfig->transparent;
+    if (!window->wl.transparent)
+        setContentAreaOpaque(window);
+}
+
 static void setCursorImage(_GLFWwindow* window,
                            _GLFWcursorWayland* cursorWayland)
 {
@@ -2046,11 +2076,58 @@ GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
     if (wndconfig->mousePassthrough)
         _glfwSetWindowMousePassthroughWayland(window, GLFW_TRUE);
 
-    if (window->monitor || wndconfig->visible)
+    // don't
+    if (!window->external && (window->monitor || wndconfig->visible))
     {
         if (!createShellObjects(window))
             return GLFW_FALSE;
     }
+
+    return GLFW_TRUE;
+}
+
+GLFWbool _glfwAttachWindowWayland(_GLFWwindow* window,
+                                  intptr_t native,
+                                  const _GLFWwndconfig* wndconfig,
+                                  const _GLFWctxconfig* ctxconfig,
+                                  const _GLFWfbconfig* fbconfig) {
+
+    if (!attachNativeSurface(window, native, wndconfig, fbconfig))
+        return GLFW_FALSE;
+    if (ctxconfig->client != GLFW_NO_API)
+    {
+        if (ctxconfig->source == GLFW_EGL_CONTEXT_API ||
+            ctxconfig->source == GLFW_NATIVE_CONTEXT_API)
+        {
+            window->wl.egl.window = wl_egl_window_create(window->wl.surface,
+                                                         wndconfig->width,
+                                                         wndconfig->height);
+            if (!window->wl.egl.window)
+            {
+                _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "Wayland: Failed to create EGL window");
+                return GLFW_FALSE;
+            }
+
+            if (!_glfwInitEGL())
+                return GLFW_FALSE;
+            if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
+                return GLFW_FALSE;
+        }
+        else if (ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
+        {
+            if (!_glfwInitOSMesa())
+                return GLFW_FALSE;
+            if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
+                return GLFW_FALSE;
+        }
+
+        if (!_glfwRefreshContextAttribs(window, ctxconfig))
+            return GLFW_FALSE;
+    }
+
+    if (wndconfig->mousePassthrough)
+        _glfwSetWindowMousePassthroughWayland(window, GLFW_TRUE);
 
     return GLFW_TRUE;
 }
@@ -2324,7 +2401,7 @@ void _glfwMaximizeWindowWayland(_GLFWwindow* window)
 
 void _glfwShowWindowWayland(_GLFWwindow* window)
 {
-    if (!window->wl.libdecor.frame && !window->wl.xdg.toplevel)
+    if (!window->external && (!window->wl.libdecor.frame && !window->wl.xdg.toplevel))
     {
         // NOTE: The XDG surface and role are created here so command-line applications
         //       with off-screen windows do not appear in for example the Unity dock
@@ -3173,4 +3250,3 @@ GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* handle)
 }
 
 #endif // _GLFW_WAYLAND
-

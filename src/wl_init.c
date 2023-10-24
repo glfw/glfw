@@ -428,6 +428,7 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         _glfwGetGammaRampWayland,
         _glfwSetGammaRampWayland,
         _glfwCreateWindowWayland,
+        _glfwAttachWindowWayland,
         _glfwDestroyWindowWayland,
         _glfwSetWindowTitleWayland,
         _glfwSetWindowIconWayland,
@@ -919,4 +920,3 @@ void _glfwTerminateWayland(void)
 }
 
 #endif // _GLFW_WAYLAND
-

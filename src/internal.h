@@ -707,7 +707,7 @@ struct _GLFWplatform
     void (*setGammaRamp)(_GLFWmonitor*,const GLFWgammaramp*);
     // window
     GLFWbool (*createWindow)(_GLFWwindow*,const _GLFWwndconfig*,const _GLFWctxconfig*,const _GLFWfbconfig*);
-    GLFWbool (*attachWindow)(_GLFWwindow*,const _GLFWwndconfig*,const _GLFWctxconfig*,const _GLFWfbconfig*);
+    GLFWbool (*attachWindow)(_GLFWwindow*, intptr_t, const _GLFWwndconfig*,const _GLFWctxconfig*,const _GLFWfbconfig*);
     void (*destroyWindow)(_GLFWwindow*);
     void (*setWindowTitle)(_GLFWwindow*,const char*);
     void (*setWindowIcon)(_GLFWwindow*,int,const GLFWimage*);

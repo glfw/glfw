@@ -171,6 +171,7 @@ information on what to include when reporting a bug.
  - Disabled tests and examples by default when built as a CMake subdirectory
  - Removed `GLFW_USE_OSMESA` CMake option enabling the Null platform (#1958)
  - Removed CMake generated configuration header
+ - Removed the limit of only reporting the 8 named mouse buttons
  - [Win32] Added a version info resource to the GLFW DLL
  - [Win32] Made hidden helper window use its own window class
  - [Win32] Bugfix: The foreground lock timeout was overridden, ignoring the user

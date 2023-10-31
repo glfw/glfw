@@ -348,20 +348,22 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
 {
     assert(window != NULL);
     assert(button >= 0);
-    assert(button <= GLFW_MOUSE_BUTTON_LAST);
     assert(action == GLFW_PRESS || action == GLFW_RELEASE);
     assert(mods == (mods & GLFW_MOD_MASK));
 
-    if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST)
+    if (button < 0)
         return;
 
     if (!window->lockKeyMods)
         mods &= ~(GLFW_MOD_CAPS_LOCK | GLFW_MOD_NUM_LOCK);
 
-    if (action == GLFW_RELEASE && window->stickyMouseButtons)
-        window->mouseButtons[button] = _GLFW_STICK;
-    else
-        window->mouseButtons[button] = (char) action;
+    if (button <= GLFW_MOUSE_BUTTON_LAST)
+    {
+        if (action == GLFW_RELEASE && window->stickyMouseButtons)
+            window->mouseButtons[button] = _GLFW_STICK;
+        else
+            window->mouseButtons[button] = (char) action;
+    }
 
     if (window->callbacks.mouseButton)
         window->callbacks.mouseButton((GLFWwindow*) window, button, action, mods);

@@ -152,6 +152,10 @@ if (GLFW_INSTALL)
     install(FILES "${GLFW_BINARY_DIR}/src/glfw3.pc"
             DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
+    export(EXPORT glfwTargets
+        FILE ${CMAKE_CURRENT_BINARY_DIR}/src/glfw3Targets.cmake
+        NAMESPACE "glfw3::")
+
     if (DOXYGEN_FOUND AND GLFW_BUILD_DOCS)
         install(DIRECTORY "${GLFW_BINARY_DIR}/docs/html"
                 DESTINATION "${CMAKE_INSTALL_DOCDIR}")

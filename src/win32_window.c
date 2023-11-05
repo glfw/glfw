@@ -2096,20 +2096,22 @@ void _glfwPollEventsWin32(void)
         }
     }
 
-    window = _glfw.win32.disabledCursorWindow;
-    if (window)
-    {
-        int width, height;
-        _glfwGetWindowSizeWin32(window, &width, &height);
+    // Fixing the problem where recentering the cursor when the mouse move breaks the lastCursorPosX and lastCursorPosY
+    // and the coordinates sent in _glfwInputCursorPos are completly wrong.
+    //window = _glfw.win32.disabledCursorWindow;
+    //if (window)
+    //{
+    //    int width, height;
+    //    _glfwGetWindowSizeWin32(window, &width, &height);
 
-        // NOTE: Re-center the cursor only if it has moved since the last call,
-        //       to avoid breaking glfwWaitEvents with WM_MOUSEMOVE
-        if (window->win32.lastCursorPosX != width / 2 ||
-            window->win32.lastCursorPosY != height / 2)
-        {
-            _glfwSetCursorPosWin32(window, width / 2, height / 2);
-        }
-    }
+    //    // NOTE: Re-center the cursor only if it has moved since the last call,
+    //    //       to avoid breaking glfwWaitEvents with WM_MOUSEMOVE
+    //    if (window->win32.lastCursorPosX != width / 2 ||
+    //        window->win32.lastCursorPosY != height / 2)
+    //    {
+    //        _glfwSetCursorPosWin32(window, width / 2, height / 2);
+    //    }
+    //}
 }
 
 void _glfwWaitEventsWin32(void)

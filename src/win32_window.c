@@ -36,6 +36,7 @@
 #include <string.h>
 #include <windowsx.h>
 #include <shellapi.h>
+#include <stdio.h>
 
 // Returns the window style for the specified window
 //
@@ -234,7 +235,9 @@ static void updateCursorImage(_GLFWwindow* window)
             SetCursor(LoadCursorW(NULL, IDC_ARROW));
     }
     else
-        SetCursor(NULL);
+        //Connected via Remote Desktop, NULL cursor will present SetCursorPos the move the cursor.
+        //using a blank cursor fix that.
+        SetCursor(window->win32.blankCursor);
 }
 
 // Sets the cursor clip rect to the window content area
@@ -926,8 +929,27 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             data = _glfw.win32.rawInput;
             if (data->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
             {
-                dx = data->data.mouse.lLastX - window->win32.lastCursorPosX;
-                dy = data->data.mouse.lLastY - window->win32.lastCursorPosY;
+                // As per https://github.com/Microsoft/DirectXTK/commit/ef56b63f3739381e451f7a5a5bd2c9779d2a7555
+                // MOUSE_MOVE_ABSOLUTE is a range from 0 through 65535, based on the screen size.
+                // As far as I can tell, absolute mode only occurs over RDP though.
+                const int width = GetSystemMetrics((data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) ? SM_CXVIRTUALSCREEN : SM_CXSCREEN);
+                const int height = GetSystemMetrics((data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) ? SM_CYVIRTUALSCREEN : SM_CYSCREEN);
+                POINT pos;
+                pos.x = (int)((data->data.mouse.lLastX / 65535.0f) * width);
+                pos.y = (int)((data->data.mouse.lLastY / 65535.0f) * height);
+                ScreenToClient(window->win32.handle, &pos);
+
+                int window_width, window_height;
+                _glfwGetWindowSizeWin32(window, &window_width, &window_height);
+
+                // One other unfortunate thing is that re-centering the cursor will still fire an
+                // input event; assume that any motion to the center is our re-centering and ignore it
+                if (pos.x == window_width / 2 && pos.y == window_height / 2)
+                    break;
+
+                dx = pos.x - window->win32.lastCursorPosX;
+                dy = pos.y - window->win32.lastCursorPosY;
+
             }
             else
             {
@@ -1434,6 +1456,19 @@ static int createNativeWindow(_GLFWwindow* window,
         window->win32.transparent = GLFW_TRUE;
     }
 
+    // HACK: Create a transparent cursor as using the NULL cursor breaks
+    //       using SetCursorPos when connected over RDP
+    int cursorWidth = GetSystemMetrics(SM_CXCURSOR);
+    int cursorHeight = GetSystemMetrics(SM_CYCURSOR);
+    unsigned char* andMask = calloc(cursorWidth * cursorHeight / 8, sizeof(unsigned char));
+    memset(andMask, 0xFF, cursorWidth * cursorHeight / 8);
+    unsigned char* xorMask = calloc(cursorWidth * cursorHeight / 8, sizeof(unsigned char));
+    // Cursor creation might fail, but that's fine as we get NULL in that case,
+    // which serves as an acceptable fallback blank cursor (other than on RDP)
+    window->win32.blankCursor = CreateCursor(NULL, 0, 0, cursorWidth, cursorHeight, andMask, xorMask);
+    free(andMask);
+    free(xorMask);
+
     _glfwGetWindowSizeWin32(window, &window->win32.width, &window->win32.height);
 
     return GLFW_TRUE;
@@ -1527,6 +1562,9 @@ void _glfwDestroyWindowWin32(_GLFWwindow* window)
 
     if (window->win32.smallIcon)
         DestroyIcon(window->win32.smallIcon);
+
+    if (window->win32.blankCursor)
+        DestroyCursor(window->win32.blankCursor);
 }
 
 void _glfwSetWindowTitleWin32(_GLFWwindow* window, const char* title)
@@ -2096,22 +2134,21 @@ void _glfwPollEventsWin32(void)
         }
     }
 
-    // Fixing the problem where recentering the cursor when the mouse move breaks the lastCursorPosX and lastCursorPosY
-    // and the coordinates sent in _glfwInputCursorPos are completly wrong.
-    //window = _glfw.win32.disabledCursorWindow;
-    //if (window)
-    //{
-    //    int width, height;
-    //    _glfwGetWindowSizeWin32(window, &width, &height);
+    window = _glfw.win32.disabledCursorWindow;
+    if (window)
+    {
+        int width, height;
+        _glfwGetWindowSizeWin32(window, &width, &height);
 
-    //    // NOTE: Re-center the cursor only if it has moved since the last call,
-    //    //       to avoid breaking glfwWaitEvents with WM_MOUSEMOVE
-    //    if (window->win32.lastCursorPosX != width / 2 ||
-    //        window->win32.lastCursorPosY != height / 2)
-    //    {
-    //        _glfwSetCursorPosWin32(window, width / 2, height / 2);
-    //    }
-    //}
+        // NOTE: Re-center the cursor only if it has moved since the last call,
+        //       to avoid breaking glfwWaitEvents with WM_MOUSEMOVE
+        // The recenter is important to prevent the mouse cursor to stop at the edges of the screen.
+        if (window->win32.lastCursorPosX != width / 2 ||
+            window->win32.lastCursorPosY != height / 2)
+        {
+            _glfwSetCursorPosWin32(window, width / 2, height / 2);
+        }
+    }
 }
 
 void _glfwWaitEventsWin32(void)

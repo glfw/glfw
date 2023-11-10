@@ -403,6 +403,32 @@ static void updateFramebufferTransparency(const _GLFWwindow* window)
     }
 }
 
+
+// Creates the blank cursor
+//
+static void createBlankCursor(_GLFWwindow* window)
+{
+    // HACK: Create a transparent cursor as using the NULL cursor breaks
+    //       using SetCursorPos when connected over RDP
+    int cursorWidth = GetSystemMetrics(SM_CXCURSOR);
+    int cursorHeight = GetSystemMetrics(SM_CYCURSOR);
+    unsigned char* andMask = calloc(cursorWidth * cursorHeight / 8, sizeof(unsigned char));
+    unsigned char* xorMask = calloc(cursorWidth * cursorHeight / 8, sizeof(unsigned char));
+
+    if (andMask != NULL && xorMask != NULL) {
+
+        memset(andMask, 0xFF, (size_t)(cursorWidth * cursorHeight / 8));
+
+        // Cursor creation might fail, but that's fine as we get NULL in that case,
+        // which serves as an acceptable fallback blank cursor (other than on RDP)
+        window->win32.blankCursor = CreateCursor(NULL, 0, 0, cursorWidth, cursorHeight, andMask, xorMask);
+
+        free(andMask);
+        free(xorMask);
+    }
+
+}
+
 // Retrieves and translates modifier keys
 //
 static int getKeyMods(void)
@@ -902,6 +928,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             HRAWINPUT ri = (HRAWINPUT) lParam;
             RAWINPUT* data = NULL;
             int dx, dy;
+            int width, height;
+            int window_width, window_height;
+            POINT pos;
 
             if (_glfw.win32.disabledCursorWindow != window)
                 break;
@@ -932,14 +961,14 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                 // As per https://github.com/Microsoft/DirectXTK/commit/ef56b63f3739381e451f7a5a5bd2c9779d2a7555
                 // MOUSE_MOVE_ABSOLUTE is a range from 0 through 65535, based on the screen size.
                 // As far as I can tell, absolute mode only occurs over RDP though.
-                const int width = GetSystemMetrics((data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) ? SM_CXVIRTUALSCREEN : SM_CXSCREEN);
-                const int height = GetSystemMetrics((data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) ? SM_CYVIRTUALSCREEN : SM_CYSCREEN);
-                POINT pos;
+                width = GetSystemMetrics((data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) ? SM_CXVIRTUALSCREEN : SM_CXSCREEN);
+                height = GetSystemMetrics((data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) ? SM_CYVIRTUALSCREEN : SM_CYSCREEN);
+                
                 pos.x = (int)((data->data.mouse.lLastX / 65535.0f) * width);
                 pos.y = (int)((data->data.mouse.lLastY / 65535.0f) * height);
                 ScreenToClient(window->win32.handle, &pos);
 
-                int window_width, window_height;
+                
                 _glfwGetWindowSizeWin32(window, &window_width, &window_height);
 
                 // One other unfortunate thing is that re-centering the cursor will still fire an
@@ -1456,23 +1485,13 @@ static int createNativeWindow(_GLFWwindow* window,
         window->win32.transparent = GLFW_TRUE;
     }
 
-    // HACK: Create a transparent cursor as using the NULL cursor breaks
-    //       using SetCursorPos when connected over RDP
-    int cursorWidth = GetSystemMetrics(SM_CXCURSOR);
-    int cursorHeight = GetSystemMetrics(SM_CYCURSOR);
-    unsigned char* andMask = calloc(cursorWidth * cursorHeight / 8, sizeof(unsigned char));
-    memset(andMask, 0xFF, cursorWidth * cursorHeight / 8);
-    unsigned char* xorMask = calloc(cursorWidth * cursorHeight / 8, sizeof(unsigned char));
-    // Cursor creation might fail, but that's fine as we get NULL in that case,
-    // which serves as an acceptable fallback blank cursor (other than on RDP)
-    window->win32.blankCursor = CreateCursor(NULL, 0, 0, cursorWidth, cursorHeight, andMask, xorMask);
-    free(andMask);
-    free(xorMask);
+    createBlankCursor(window);
 
     _glfwGetWindowSizeWin32(window, &window->win32.width, &window->win32.height);
 
     return GLFW_TRUE;
 }
+
 
 GLFWbool _glfwCreateWindowWin32(_GLFWwindow* window,
                                 const _GLFWwndconfig* wndconfig,

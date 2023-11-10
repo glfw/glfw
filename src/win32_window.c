@@ -36,7 +36,6 @@
 #include <string.h>
 #include <windowsx.h>
 #include <shellapi.h>
-#include <stdio.h>
 
 // Returns the window style for the specified window
 //

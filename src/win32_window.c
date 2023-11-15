@@ -2113,7 +2113,7 @@ void _glfwPlatformWaitEvents(void)
 
 void _glfwPlatformWaitEventsTimeout(double timeout)
 {
-    MsgWaitForMultipleObjects(0, NULL, FALSE, (DWORD) (timeout * 1e3), QS_ALLEVENTS);
+    MsgWaitForMultipleObjects(0, NULL, FALSE, (DWORD) (timeout * 1e3), QS_ALLINPUT);
 
     _glfwPlatformPollEvents();
 }

@@ -168,6 +168,7 @@ if (BUILD_SHARED_LIBS)
             # Add a suffix to the import library to avoid naming conflicts
             set_target_properties(glfw PROPERTIES IMPORT_SUFFIX "dll.lib")
         endif()
+        set (GLFW_LIB_NAME_SUFFIX "dll")
 
         target_compile_definitions(glfw INTERFACE GLFW_DLL)
     elseif (APPLE)

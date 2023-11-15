@@ -45,6 +45,7 @@ if (BUILD_SHARED_LIBS AND UNIX)
 else()
     set(GLFW_LIB_NAME glfw3)
 endif()
+set(GLFW_LIB_NAME_SUFFIX "")
 
 if (GLFW_VULKAN_STATIC)
     if (BUILD_SHARED_LIBS)
@@ -195,6 +196,10 @@ if (_GLFW_WIN32)
 
     if (GLFW_USE_HYBRID_HPG)
         set(_GLFW_USE_HYBRID_HPG 1)
+    endif()
+
+    if (BUILD_SHARED_LIBS)
+        set (GLFW_LIB_NAME_SUFFIX "dll")
     endif()
 endif()
 

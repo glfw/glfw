@@ -150,6 +150,7 @@ video tutorials.
  - Alexander Monakov
  - Pierre Morel
  - Jon Morton
+ - moritz-h
  - Pierre Moulon
  - Martins Mozeiko
  - Pascal Muetschard
@@ -247,6 +248,7 @@ video tutorials.
  - Corentin Wallez
  - Torsten Walluhn
  - Patrick Walton
+ - Jim Wang
  - Xo Wang
  - Andre Weissflog
  - Jay Weisskopf

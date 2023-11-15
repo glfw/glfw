@@ -183,6 +183,7 @@ information on what to include when reporting a bug.
  - Bugfix: `glfwMakeContextCurrent` would access TLS slot before initialization
  - Bugfix: `glfwSetGammaRamp` could emit `GLFW_INVALID_VALUE` before initialization
  - Bugfix: `glfwGetJoystickUserPointer` returned `NULL` during disconnection (#2092)
+ - [Win32] Fix pkg-config for dynamic library on Windows (#2386, #2420)
  - [Win32] Added the `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access
            to the window menu
  - [Win32] Added a version info resource to the GLFW DLL

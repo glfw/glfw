@@ -81,6 +81,7 @@ video tutorials.
  - Stephen Gutekanst
  - Jonathan Hale
  - hdf89shfdfs
+ - Moritz Heinemann
  - Sylvain Hellegouarch
  - Björn Hempel
  - Matthew Henry
@@ -148,7 +149,6 @@ video tutorials.
  - Alexander Monakov
  - Pierre Morel
  - Jon Morton
- - moritz-h
  - Pierre Moulon
  - Martins Mozeiko
  - James Murphy

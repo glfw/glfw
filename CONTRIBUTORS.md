@@ -206,6 +206,7 @@ video tutorials.
  - Dmitri Shuralyov
  - Joao da Silva
  - Daniel Sieger
+ - Michael Skec
  - Daniel Skorupski
  - Slemmie
  - Bradley Smith

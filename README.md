@@ -133,6 +133,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Joysticks connected after `glfwInit` were not detected (#2198)
  - [Wayland] Bugfix: Fallback decorations emitted `GLFW_CURSOR_UNAVAILABLE` errors
  - [Linux] Bugfix: Joysticks without buttons were ignored (#2042,#2043)
+ - [Linux] Bugfix: A small amount of memory could leak if initialization failed (#2229)
    [EGL] Added loading of glvnd `libOpenGL.so.0` where available for OpenGL
  - [GLX] Added loading of glvnd `libGLX.so.0` where available
 

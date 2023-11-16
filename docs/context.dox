@@ -88,9 +88,10 @@ window, even if none of them are visible.
 @subsection context_less Windows without contexts
 
 You can disable context creation by setting the
-[GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint) hint to `GLFW_NO_API`.  Windows
-without contexts must not be passed to @ref glfwMakeContextCurrent or @ref
-glfwSwapBuffers.
+[GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint) hint to `GLFW_NO_API`.
+
+Windows without contexts should not be passed to @ref glfwMakeContextCurrent or
+@ref glfwSwapBuffers.  Doing this generates a @ref GLFW_NO_WINDOW_CONTEXT error.
 
 
 @section context_current Current context

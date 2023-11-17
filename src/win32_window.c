@@ -1762,6 +1762,20 @@ void _glfwRequestWindowAttentionWin32(_GLFWwindow* window)
     FlashWindow(window->win32.handle, TRUE);
 }
 
+_GLFWmonitor* _glfwGetMonitorDisplayingWindowWin32(_GLFWwindow* window)
+{
+    int i;
+    HMONITOR monitor = MonitorFromWindow(window->win32.handle, MONITOR_DEFAULTTONEAREST);
+
+    for(i = 0; i < _glfw.monitorCount; ++i)
+    {
+        if(_glfw.monitors[i]->win32.handle == monitor)
+            return _glfw.monitors[i];
+    }
+
+    return NULL;
+}
+
 void _glfwFocusWindowWin32(_GLFWwindow* window)
 {
     BringWindowToTop(window->win32.handle);

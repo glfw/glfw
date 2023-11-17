@@ -822,6 +822,16 @@ GLFWAPI void glfwRequestWindowAttention(GLFWwindow* handle)
     _glfw.platform.requestWindowAttention(window);
 }
 
+GLFWAPI GLFWmonitor* glfwGetMonitorDisplayingWindow(GLFWwindow* handle)
+{
+    _GLFWwindow* const window = (_GLFWwindow*) handle;
+    assert(handle != NULL);
+    
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+    return (GLFWmonitor*)_glfw.platform.getMonitorDisplayingWindow(window);
+}
+
 GLFWAPI void glfwHideWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;

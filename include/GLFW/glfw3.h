@@ -3898,6 +3898,26 @@ GLFWAPI void glfwFocusWindow(GLFWwindow* window);
  */
 GLFWAPI void glfwRequestWindowAttention(GLFWwindow* window);
 
+/*! @brief Returns the monitor on which the window is being currently displayed.
+ *
+ *  The window should not be NULL.
+ *
+ *  @param[in] window The window to query.
+ *  @return The monitor, or `NULL` if the window is NULL or an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_monitor
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup window
+ */
+GLFWAPI GLFWmonitor* glfwGetMonitorDisplayingWindow(GLFWwindow* window);
+
 /*! @brief Returns the monitor that the window uses for full screen mode.
  *
  *  This function returns the handle of the monitor that the specified window is

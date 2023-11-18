@@ -83,6 +83,7 @@ video tutorials.
  - Stephen Gutekanst
  - Jonathan Hale
  - hdf89shfdfs
+ - Moritz Heinemann
  - Sylvain Hellegouarch
  - Björn Hempel
  - Matthew Henry
@@ -141,6 +142,7 @@ video tutorials.
  - Marcel Metz
  - Liam Middlebrook
  - Ave Milia
+ - Icyllis Milica
  - Jonathan Miller
  - Kenneth Miller
  - Bruce Mitchener
@@ -214,6 +216,7 @@ video tutorials.
  - Dmitri Shuralyov
  - Joao da Silva
  - Daniel Sieger
+ - Michael Skec
  - Daniel Skorupski
  - Slemmie
  - Anthony Smith
@@ -248,6 +251,7 @@ video tutorials.
  - Corentin Wallez
  - Torsten Walluhn
  - Patrick Walton
+ - Jim Wang
  - Xo Wang
  - Andre Weissflog
  - Jay Weisskopf

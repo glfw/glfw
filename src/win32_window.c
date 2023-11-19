@@ -1814,7 +1814,7 @@ static HICON GenerateTextBadgeIcon(HWND hWnd, WCHAR* text)
     //Create and set font
     badgeData.hFont = CreateFont(fontSize, 0, 0, 0, weight, FALSE, FALSE, FALSE, 0,
                                  OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
-                                 DEFAULT_PITCH | FF_DONTCARE, TEXT("Segeo UI"));
+                                 DEFAULT_PITCH | FF_DONTCARE, TEXT("Segoe UI"));
     if(!badgeData.hFont)
     {
         CleanupBadgeData(hWnd, &badgeData);

@@ -215,6 +215,7 @@ video tutorials.
  - Dmitri Shuralyov
  - Joao da Silva
  - Daniel Sieger
+ - Daljit Singh
  - Michael Skec
  - Daniel Skorupski
  - Slemmie

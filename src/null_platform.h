@@ -239,7 +239,6 @@ void _glfwSetRawMouseMotionNull(_GLFWwindow *window, GLFWbool enabled);
 GLFWbool _glfwRawMouseMotionSupportedNull(void);
 void _glfwShowWindowNull(_GLFWwindow* window);
 void _glfwRequestWindowAttentionNull(_GLFWwindow* window);
-void _glfwRequestWindowAttentionNull(_GLFWwindow* window);
 void _glfwHideWindowNull(_GLFWwindow* window);
 void _glfwFocusWindowNull(_GLFWwindow* window);
 GLFWbool _glfwWindowFocusedNull(_GLFWwindow* window);

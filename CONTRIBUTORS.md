@@ -207,6 +207,7 @@ video tutorials.
  - Brandon Schaefer
  - Sebastian Schuberth
  - Jan Schuerkamp
+ - Scr3amer
  - Christian Sdunek
  - Matt Sealey
  - Steve Sexton
@@ -216,6 +217,7 @@ video tutorials.
  - Dmitri Shuralyov
  - Joao da Silva
  - Daniel Sieger
+ - Daljit Singh
  - Michael Skec
  - Daniel Skorupski
  - Slemmie

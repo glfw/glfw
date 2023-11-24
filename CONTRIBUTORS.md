@@ -78,6 +78,7 @@ video tutorials.
  - Kovid Goyal
  - Kevin Grandemange
  - Eloi Marín Gratacós
+ - Grzesiek11
  - Stefan Gustavson
  - Andrew Gutekanst
  - Stephen Gutekanst
@@ -269,7 +270,6 @@ video tutorials.
  - Jonas Ådahl
  - Lasse Öörni
  - Leonard König
- - Grzesiek11
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

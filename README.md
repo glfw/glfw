@@ -183,7 +183,6 @@ information on what to include when reporting a bug.
  - Bugfix: `glfwMakeContextCurrent` would access TLS slot before initialization
  - Bugfix: `glfwSetGammaRamp` could emit `GLFW_INVALID_VALUE` before initialization
  - Bugfix: `glfwGetJoystickUserPointer` returned `NULL` during disconnection (#2092)
- - [Win32] Fix pkg-config for dynamic library on Windows (#2386, #2420)
  - [Win32] Added the `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access
            to the window menu
  - [Win32] Added a version info resource to the GLFW DLL
@@ -231,6 +230,7 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: The OSMesa library was not unloaded on termination
  - [Win32] Bugfix: Right shift emitted `GLFW_KEY_UNKNOWN` when using a CJK IME (#2050)
  - [Win32] Bugfix: `glfwWaitEventsTimeout` did not return for some sent messages (#2408)
+ - [Win32] Bugfix: Fix pkg-config for dynamic library on Windows (#2386, #2420)
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)

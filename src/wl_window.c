@@ -750,6 +750,11 @@ static GLFWbool createLibdecorFrame(_GLFWwindow* window)
         return GLFW_FALSE;
     }
 
+    struct libdecor_state* frameState =
+        libdecor_state_new(window->wl.width, window->wl.height);
+    libdecor_frame_commit(window->wl.libdecor.frame, frameState, NULL);
+    libdecor_state_free(frameState);
+
     if (strlen(window->wl.appId))
         libdecor_frame_set_app_id(window->wl.libdecor.frame, window->wl.appId);
 

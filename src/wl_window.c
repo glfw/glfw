@@ -774,6 +774,10 @@ static const struct libdecor_frame_interface libdecorFrameInterface =
 
 static GLFWbool createLibdecorFrame(_GLFWwindow* window)
 {
+    // Allow libdecor to finish initialization of itself and its plugin
+    while (!_glfw.wl.libdecor.ready)
+        _glfwPlatformWaitEvents();
+
     window->wl.libdecor.frame = libdecor_decorate(_glfw.wl.libdecor.context,
                                                   window->wl.surface,
                                                   &libdecorFrameInterface,
@@ -812,12 +816,6 @@ static GLFWbool createLibdecorFrame(_GLFWwindow* window)
 
     if (window->monitor)
     {
-        // HACK: Allow libdecor to finish initialization of itself and its
-        //       plugin so it will create the xdg_toplevel for the frame
-        //       This needs to exist when setting the frame to fullscreen
-        while (!libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame))
-            _glfwPlatformWaitEvents();
-
         libdecor_frame_set_fullscreen(window->wl.libdecor.frame,
                                       window->monitor->wl.output);
         setIdleInhibitor(window, GLFW_TRUE);

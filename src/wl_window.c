@@ -1149,7 +1149,10 @@ static void handleEvents(double* timeout)
     while (!event)
     {
         while (wl_display_prepare_read(_glfw.wl.display) != 0)
-            wl_display_dispatch_pending(_glfw.wl.display);
+        {
+            if (wl_display_dispatch_pending(_glfw.wl.display) > 0)
+                return;
+        }
 
         // If an error other than EAGAIN happens, we have likely been disconnected
         // from the Wayland session; try to handle that the best we can.
@@ -1207,14 +1210,14 @@ static void handleEvents(double* timeout)
             uint64_t repeats;
 
             if (read(_glfw.wl.cursorTimerfd, &repeats, sizeof(repeats)) == 8)
-            {
                 incrementCursorImage(_glfw.wl.pointerFocus);
-                event = GLFW_TRUE;
-            }
         }
 
         if (fds[3].revents & POLLIN)
-            libdecor_dispatch(_glfw.wl.libdecor.context, 0);
+        {
+            if (libdecor_dispatch(_glfw.wl.libdecor.context, 0) > 0)
+                event = GLFW_TRUE;
+        }
     }
 }
 

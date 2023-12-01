@@ -721,7 +721,7 @@ GLFWAPI int glfwGetKeyScancode(int key)
     if (key < GLFW_KEY_SPACE || key > GLFW_KEY_LAST)
     {
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid key %i", key);
-        return GLFW_RELEASE;
+        return -1;
     }
 
     return _glfw.platform.getKeyScancode(key);

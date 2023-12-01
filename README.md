@@ -123,6 +123,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - Bugfix: `glfwGetKeyScancode` returned `0` on error when initialized instead of `-1`
  - [Win32] Fix pkg-config for dynamic library on Windows (#2386, #2420)
  - [Win32] Bugfix: `glfwWaitEventsTimeout` did not return for some sent messages (#2408)
  - [Wayland] Added improved fallback window decorations via libdecor (#1639,#1693)

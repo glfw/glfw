@@ -565,7 +565,10 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
     [self interpretKeyEvents:@[event]];
 }
-
+- (BOOL)_wantsKeyDownForEvent:(NSEvent*)event {
+  // COPIED FROM https://bugreports.qt.io/browse/QTBUG-8596
+  return YES;
+}
 - (void)flagsChanged:(NSEvent *)event
 {
     int action;

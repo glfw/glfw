@@ -202,6 +202,7 @@ video tutorials.
  - Matt Sealey
  - Steve Sexton
  - Arkady Shapkin
+ - Mingjie Shen
  - Ali Sherief
  - Yoshiki Shibukawa
  - Dmitri Shuralyov

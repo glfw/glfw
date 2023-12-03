@@ -5959,12 +5959,15 @@ GLFWAPI uint64_t glfwGetTimerFrequency(void);
  *  thread.
  *
  *  This function makes the OpenGL or OpenGL ES context of the specified window
- *  current on the calling thread.  A context must only be made current on
- *  a single thread at a time and each thread can have only a single current
- *  context at a time.
+ *  current on the calling thread.  It can also detach the current context from
+ *  the calling thread without making a new one current by passing in `NULL`.
  *
- *  When moving a context between threads, you must make it non-current on the
- *  old thread before making it current on the new one.
+ *  A context must only be made current on a single thread at a time and each
+ *  thread can have only a single current context at a time.  Making a context
+ *  current detaches any previously current context on the calling thread.
+ *
+ *  When moving a context between threads, you must detach it (make it
+ *  non-current) on the old thread before making it current on the new one.
  *
  *  By default, making a context non-current implicitly forces a pipeline flush.
  *  On machines that support `GL_KHR_context_flush_control`, you can control
@@ -5978,6 +5981,10 @@ GLFWAPI uint64_t glfwGetTimerFrequency(void);
  *
  *  @param[in] window The window whose context to make current, or `NULL` to
  *  detach the current context.
+ *
+ *  @remarks If the previously current context was created via a different
+ *  context creation API than the one passed to this function, GLFW will still
+ *  detach the previous one from its API before making the new one current.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_NO_WINDOW_CONTEXT and @ref GLFW_PLATFORM_ERROR.

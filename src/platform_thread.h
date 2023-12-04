@@ -1,8 +1,7 @@
 //========================================================================
-// GLFW 3.4 POSIX - www.glfw.org
+// GLFW 3.4 - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2017 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2023 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -25,32 +24,25 @@
 //
 //========================================================================
 
-#include <pthread.h>
+#if defined(GLFW_BUILD_WIN32_THREAD) || \
+    defined(GLFW_BUILD_POSIX_THREAD)
+ #error "You must not define these; define zero or more _GLFW_<platform> macros instead"
+#endif
 
-#define GLFW_POSIX_TLS_STATE      _GLFWtlsPOSIX     posix;
-#define GLFW_POSIX_MUTEX_STATE    _GLFWmutexPOSIX   posix;
-#define GLFW_POSIX_CONDVAR_STATE  _GLFWcondvarPOSIX posix;
+#if defined(_WIN32)
+ #define GLFW_BUILD_WIN32_THREAD
+#else
+ #define GLFW_BUILD_POSIX_THREAD
+#endif
 
-
-// POSIX-specific thread local storage data
-//
-typedef struct _GLFWtlsPOSIX
-{
-    GLFWbool        allocated;
-    pthread_key_t   key;
-} _GLFWtlsPOSIX;
-
-// POSIX-specific mutex data
-//
-typedef struct _GLFWmutexPOSIX
-{
-    GLFWbool        allocated;
-    pthread_mutex_t handle;
-} _GLFWmutexPOSIX;
-
-// POSIX-specific conditional variable data
-typedef struct _GLFWcondvarPOSIX
-{
-    GLFWbool        allocated;
-    pthread_cond_t  handle;
-} _GLFWcondvarPOSIX;
+#if defined(GLFW_BUILD_WIN32_THREAD)
+ #include "win32_thread.h"
+ #define GLFW_PLATFORM_TLS_STATE    GLFW_WIN32_TLS_STATE
+ #define GLFW_PLATFORM_MUTEX_STATE  GLFW_WIN32_MUTEX_STATE
+ #define GLFW_PLATFORM_CONDVAR_STATE  GLFW_WIN32_CONDVAR_STATE
+#elif defined(GLFW_BUILD_POSIX_THREAD)
+ #include "posix_thread.h"
+ #define GLFW_PLATFORM_TLS_STATE    GLFW_POSIX_TLS_STATE
+ #define GLFW_PLATFORM_MUTEX_STATE  GLFW_POSIX_MUTEX_STATE
+ #define GLFW_PLATFORM_CONDVAR_STATE  GLFW_POSIX_CONDVAR_STATE
+#endif

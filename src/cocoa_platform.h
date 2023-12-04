@@ -37,8 +37,10 @@
 
 #if defined(__OBJC__)
 #import <Cocoa/Cocoa.h>
+#import <CoreVideo/CoreVideo.h>
 #else
 typedef void* id;
+typedef void* CVDisplayLinkRef;
 #endif
 
 // NOTE: Many Cocoa enum values have been renamed and we need to build across
@@ -124,6 +126,11 @@ typedef struct _GLFWcontextNSGL
 {
     id                pixelFormat;
     id                object;
+    int               swapInterval;
+    int               swapIntervalsPassed;
+    _GLFWmutex        swapIntervalLock;
+    _GLFWcondvar      swapIntervalCond;
+    CVDisplayLinkRef  displayLink;
 } _GLFWcontextNSGL;
 
 // NSGL-specific global data
@@ -299,4 +306,5 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                 const _GLFWctxconfig* ctxconfig,
                                 const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContextNSGL(_GLFWwindow* window);
+void _glfwUpdateDisplayLinkNSGL(_GLFWwindow* window);
 

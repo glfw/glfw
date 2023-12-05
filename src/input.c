@@ -462,10 +462,11 @@ void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value)
     assert(hat >= 0);
     assert(hat < js->hatCount);
 
-    // Valid hat values only use the least significant nibble and have at most two bits
-    // set, which can be considered adjacent plus an arbitrary rotation within the nibble
+    // Valid hat values only use the least significant nibble
     assert((value & 0xf0) == 0);
-    assert((value & ((value << 2) | (value >> 2))) == 0);
+    // Valid hat values do not have both bits of an axis set
+    assert((value & GLFW_HAT_LEFT) == 0 || (value & GLFW_HAT_RIGHT) == 0);
+    assert((value & GLFW_HAT_UP) == 0 || (value & GLFW_HAT_DOWN) == 0);
 
     base = js->buttonCount + hat * 4;
 

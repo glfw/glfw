@@ -100,54 +100,45 @@ has sole responsibility for interacting well with every compositor in use on
 Unix-like systems.  Most of the features are provided by the core protocol,
 while cursor support is provided by the libwayland-cursor helper library, EGL
 integration by libwayland-egl, and keyboard handling by
-[libxkbcommon](https://xkbcommon.org/).  In addition, GLFW uses some protocols
-from wayland-protocols to provide additional features if the compositor
-supports them.
+[libxkbcommon](https://xkbcommon.org/).  In addition, GLFW uses some additional
+Wayland protocols to implement certain features if the compositor supports them.
 
 GLFW uses xkbcommon 0.5.0 to provide key and text input support.  Earlier
 versions are not supported.
 
-GLFW uses the [xdg-shell
-protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/stable/xdg-shell/xdg-shell.xml)
-to provide better window management.  This protocol is part of
-wayland-protocols 1.12, and is mandatory for GLFW to display a window.
+GLFW uses the [xdg-shell protocol](https://wayland.app/protocols/xdg-shell)
+to provide better window management.  This protocol is mandatory for GLFW to
+display a window.
 
-GLFW uses the [relative pointer
-protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/unstable/relative-pointer/relative-pointer-unstable-v1.xml)
-alongside the [pointer constraints
-protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml)
-to implement disabled cursor.  These two protocols are part of
-wayland-protocols 1.1, and mandatory at build time.  If the running compositor
-does not support both of these protocols, disabling the cursor will have no
-effect.
+GLFW uses the
+[relative pointer protocol](https://wayland.app/protocols/relative-pointer-unstable-v1)
+alongside the
+[pointer constraints protocol](https://wayland.app/protocols/pointer-constraints-unstable-v1)
+to implement disabled cursor.  If the running compositor does not support both
+of these protocols, disabling the cursor will have no effect.
 
-GLFW uses the [idle inhibit
-protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/unstable/idle-inhibit/idle-inhibit-unstable-v1.xml)
-to prohibit the screensaver from starting.  This protocol is part of
-wayland-protocols 1.6, and mandatory at build time.  If the running compositor
-does not support this protocol, the screensaver may start even for full screen
-windows.
+GLFW uses the
+[idle inhibit protocol](https://wayland.app/protocols/idle-inhibit-unstable-v1)
+to prohibit the screensaver from starting.  If the running compositor does not
+support this protocol, the screensaver may start even for full screen windows.
 
-GLFW uses the [libdecor library](https://gitlab.freedesktop.org/libdecor/libdecor)
-for window decorations, where available.  This in turn provides good quality
-client-side decorations (drawn by the application) on desktop systems that do
-not support server-side decorations (drawn by the window manager).  On systems
-that do not provide either libdecor or xdg-decoration, very basic window
-decorations are provided.  These do not include the window title or any caption
-buttons.
+GLFW uses the
+[libdecor library](https://gitlab.freedesktop.org/libdecor/libdecor) for window
+decorations, where available.  This in turn provides good quality client-side
+decorations (drawn by the application) on desktop systems that do not support
+server-side decorations (drawn by the window manager).  On systems that do not
+provide either libdecor or xdg-decoration, very basic window decorations are
+provided.  These do not include the window title or any caption buttons.
 
-GLFW uses the [xdg-decoration
-protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml)
+GLFW uses the
+[xdg-decoration protocol](https://wayland.app/protocols/xdg-decoration-unstable-v1)
 to request decorations to be drawn around its windows.  This protocol is part
 of wayland-protocols 1.15, and mandatory at build time.  If the running
 compositor does not support this protocol, a very simple frame will be drawn by
-GLFW itself, using the [viewporter
-protocol](https://cgit.freedesktop.org/wayland/wayland-protocols/tree/stable/viewporter/viewporter.xml)
-alongside
-[subsurfaces](https://cgit.freedesktop.org/wayland/wayland/tree/protocol/wayland.xml#n2598).
-This protocol is part of wayland-protocols 1.4, and mandatory at build time.
-If the running compositor does not support this protocol either, no decorations
-will be drawn around windows.
+GLFW itself, using the
+[viewporter protocol](https://wayland.app/protocols/viewporter)
+alongside subsurfaces.  If the running compositor does not support these
+protocols either, no decorations will be drawn around windows.
 
 
 @section compat_glx GLX extensions

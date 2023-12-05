@@ -223,6 +223,14 @@ the XDG-Shell protocol.  If your Wayland compositor does not support XDG-Shell
 then GLFW will fail to initialize.
 
 
+@subsubsection macos_trackpad_34 Support for trackpad zoom and rotate on macOS
+
+Trackpad zoom and rotate events are now supported on macOS using
+@ref glfwSetTrackpadZoomCallback and @ref glfwSetTrackpadRotateCallback. These
+events have not yet been implemented and currently will not emit anything on
+Windows, X11, and Wayland.
+
+
 @subsection symbols_34 New symbols in version 3.4
 
 @subsubsection functions_34 New functions in version 3.4
@@ -231,6 +239,8 @@ then GLFW will fail to initialize.
  - @ref glfwGetPlatform
  - @ref glfwPlatformSupported
  - @ref glfwInitVulkanLoader
+ - @ref glfwSetTrackpadZoomCallback
+ - @ref glfwSetTrackpadRotateCallback
 
 
 @subsubsection types_34 New types in version 3.4
@@ -239,6 +249,8 @@ then GLFW will fail to initialize.
  - @ref GLFWallocatefun
  - @ref GLFWreallocatefun
  - @ref GLFWdeallocatefun
+ - @ref GLFWtrackpadzoomfun
+ - @ref GLFWtrackpadrotatefun
 
 
 @subsubsection constants_34 New constants in version 3.4

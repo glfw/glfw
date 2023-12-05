@@ -128,6 +128,8 @@ information on what to include when reporting a bug.
  - [Win32] Fix pkg-config for dynamic library on Windows (#2386, #2420)
  - [Win32] Bugfix: `glfwWaitEventsTimeout` did not return for some sent messages (#2408)
  - [Win32] Bugfix: XInput could reportedly provide invalid DPad bit masks (#2291)
+ - [Cocoa] Bugfix: Compilation failed on OS X 10.8 due to unconditional use of 10.9+
+   symbols (#2161)
  - [Wayland] Added improved fallback window decorations via libdecor (#1639,#1693)
  - [Wayland] Bugfix: Connecting a mouse after `glfwInit` would segfault (#1450)
  - [Wayland] Disabled alpha channel for opaque windows on systems lacking

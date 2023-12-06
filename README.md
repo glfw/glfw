@@ -184,6 +184,7 @@ information on what to include when reporting a bug.
  - Bugfix: `glfwSetGammaRamp` could emit `GLFW_INVALID_VALUE` before initialization
  - Bugfix: `glfwGetJoystickUserPointer` returned `NULL` during disconnection (#2092)
  - Bugfix: `glfwGetKeyScancode` returned `0` on error when initialized instead of `-1`
+ - Bugfix: Failure to make a newly created context current could cause segfault (#2327)
  - [Win32] Added the `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access
            to the window menu
  - [Win32] Added a version info resource to the GLFW DLL

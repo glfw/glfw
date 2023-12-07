@@ -140,6 +140,7 @@ information on what to include when reporting a bug.
  - [Linux] Bugfix: Joysticks without buttons were ignored (#2042,#2043)
  - [Linux] Bugfix: A small amount of memory could leak if initialization failed (#2229)
    [EGL] Added loading of glvnd `libOpenGL.so.0` where available for OpenGL
+ - [EGL] Bugfix: `EGL_EXT_present_opaque` caused issues on X11 with Nvidia blob (#2365)
  - [GLX] Added loading of glvnd `libGLX.so.0` where available
 
 

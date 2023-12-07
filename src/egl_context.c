@@ -651,8 +651,10 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
     if (!fbconfig->doublebuffer)
         setAttrib(EGL_RENDER_BUFFER, EGL_SINGLE_BUFFER);
 
+#if defined(_GLFW_WAYLAND)
     if (_glfw.egl.EXT_present_opaque)
         setAttrib(EGL_PRESENT_OPAQUE_EXT, !fbconfig->transparent);
+#endif // _GLFW_WAYLAND
 
     setAttrib(EGL_NONE, EGL_NONE);
 

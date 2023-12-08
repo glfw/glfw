@@ -462,10 +462,11 @@ void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value)
     assert(hat >= 0);
     assert(hat < js->hatCount);
 
-    // Valid hat values only use the least significant nibble and have at most two bits
-    // set, which can be considered adjacent plus an arbitrary rotation within the nibble
+    // Valid hat values only use the least significant nibble
     assert((value & 0xf0) == 0);
-    assert((value & ((value << 2) | (value >> 2))) == 0);
+    // Valid hat values do not have both bits of an axis set
+    assert((value & GLFW_HAT_LEFT) == 0 || (value & GLFW_HAT_RIGHT) == 0);
+    assert((value & GLFW_HAT_UP) == 0 || (value & GLFW_HAT_DOWN) == 0);
 
     base = js->buttonCount + hat * 4;
 
@@ -701,6 +702,12 @@ GLFWAPI const char* glfwGetKeyName(int key, int scancode)
 
     if (key != GLFW_KEY_UNKNOWN)
     {
+        if (key < GLFW_KEY_SPACE || key > GLFW_KEY_LAST)
+        {
+            _glfwInputError(GLFW_INVALID_ENUM, "Invalid key %i", key);
+            return NULL;
+        }
+
         if (key != GLFW_KEY_KP_EQUAL &&
             (key < GLFW_KEY_KP_0 || key > GLFW_KEY_KP_ADD) &&
             (key < GLFW_KEY_APOSTROPHE || key > GLFW_KEY_WORLD_2))
@@ -721,7 +728,7 @@ GLFWAPI int glfwGetKeyScancode(int key)
     if (key < GLFW_KEY_SPACE || key > GLFW_KEY_LAST)
     {
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid key %i", key);
-        return GLFW_RELEASE;
+        return -1;
     }
 
     return _glfw.platform.getKeyScancode(key);

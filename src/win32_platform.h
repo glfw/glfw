@@ -457,6 +457,7 @@ typedef struct _GLFWlibraryWin32
     RAWINPUT*           rawInput;
     int                 rawInputSize;
     UINT                mouseTrailSize;
+    UINT                emptyEventMessage;
 
     struct {
         HINSTANCE                       instance;

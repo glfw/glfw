@@ -1253,6 +1253,13 @@ GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun cbfun)
     return cbfun;
 }
 
+GLFWAPI GLFWemptyeventfun glfwSetEmptyEventCallback(GLFWemptyeventfun cbfun)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP(GLFWemptyeventfun, _glfw.callbacks.emptyEvent, cbfun);
+    return cbfun;
+}
+
 GLFWAPI int glfwUpdateGamepadMappings(const char* string)
 {
     int jid;

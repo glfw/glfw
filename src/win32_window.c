@@ -2128,7 +2128,7 @@ void _glfwWaitEventsTimeoutWin32(double timeout)
 
 void _glfwPostEmptyEventWin32(void)
 {
-    PostMessageW(_glfw.win32.helperWindowHandle, WM_NULL, 0, 0);
+    PostMessageW(_glfw.win32.helperWindowHandle, _glfw.win32.emptyEventMessage, 0, 0);
 }
 
 void _glfwGetCursorPosWin32(_GLFWwindow* window, double* xpos, double* ypos)

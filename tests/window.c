@@ -23,6 +23,16 @@
 //
 //========================================================================
 
+// TODO: Implement the postEmptyEvent test on multiple platforms. Works for Windows so far
+#ifdef WIN32
+#define USE_WIN32_THREAD_EMPTY_EVENT_TEST
+#endif // WIN32
+
+#ifdef USE_WIN32_THREAD_EMPTY_EVENT_TEST
+#include <Windows.h>
+#endif // USE_WIN32_THREAD_EMPTY_EVENT_TEST
+
+
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/gl.h>
 #define GLFW_INCLUDE_NONE
@@ -48,6 +58,35 @@
 #include <stdlib.h>
 #include <limits.h>
 
+#ifdef USE_WIN32_THREAD_EMPTY_EVENT_TEST
+
+DWORD WINAPI win32ThreadEmptyEventTest(void)
+{
+    // Sleep for 3 seconds, and then post an empty event. The onEmptyEventPosted
+    // method should then be fired shortly after, on the GLFW main thread.
+
+    Sleep(3000);
+    glfwPostEmptyEvent();
+    return 0;
+}
+
+void onEmptyEventPosted(void)
+{
+    // If you hold your LMB down on the window border (aka initialise the resize
+    // phase), you will see a big difference in stack trace here compared to
+    // when not resizing. This is because DefWindowProc seems to use its own
+    // message loop temporarily, and passes any unhandled messages back to the
+    // dummy window's wndproc, which detects the empty event message, firing the
+    // event callback.
+    // This is the only effective way to run code on the main thread during the
+    // window resize phase while the user isn't moving their mouse, apart from the
+    // actual resize events obviously
+    MessageBoxExW(NULL, L"Callback event received!", L"Empty Event Callback", NULL, NULL);
+    // printf("Empty event received! Put a break point here, and this will be fired on the main thread");
+}
+
+#endif // USE_WIN32_THREAD_EMPTY_EVENT_TEST
+
 int main(int argc, char** argv)
 {
     int windowed_x, windowed_y, windowed_width, windowed_height;
@@ -66,12 +105,14 @@ int main(int argc, char** argv)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
+    glfwSetEmptyEventCallback(onEmptyEventPosted);
+
     glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
     glfwWindowHint(GLFW_WIN32_KEYBOARD_MENU, GLFW_TRUE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    GLFWwindow* window = glfwCreateWindow(600, 600, "Window Features", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(750, 600, "Window Features", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -121,7 +162,7 @@ int main(int argc, char** argv)
         nk_glfw3_new_frame();
         if (nk_begin(nk, "main", area, 0))
         {
-            nk_layout_row_dynamic(nk, 30, 5);
+            nk_layout_row_dynamic(nk, 30, 6);
 
             if (nk_button_label(nk, "Toggle Fullscreen"))
             {
@@ -156,9 +197,15 @@ int main(int argc, char** argv)
                 const double time = glfwGetTime() + 3.0;
                 while (glfwGetTime() < time)
                     glfwWaitEventsTimeout(1.0);
-
                 glfwShowWindow(window);
             }
+
+#ifdef USE_WIN32_THREAD_EMPTY_EVENT_TEST
+            if (nk_button_label(nk, "Empty Event(3s)"))
+            {
+                CreateThread(NULL, 0, win32ThreadEmptyEventTest, NULL, 0, NULL);
+            }
+#endif // USE_WIN32_THREAD_EMPTY_EVENT_TEST
 
             nk_layout_row_dynamic(nk, 30, 1);
 

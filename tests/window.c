@@ -105,7 +105,9 @@ int main(int argc, char** argv)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
+#ifdef USE_WIN32_THREAD_EMPTY_EVENT_TEST
     glfwSetEmptyEventCallback(onEmptyEventPosted);
+#endif // USE_WIN32_THREAD_EMPTY_EVENT_TEST
 
     glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
     glfwWindowHint(GLFW_WIN32_KEYBOARD_MENU, GLFW_TRUE);

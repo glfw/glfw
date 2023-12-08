@@ -100,3 +100,6 @@ tests/title
 tests/triangle-vulkan
 tests/window
 tests/windows
+/.idea
+/cmake-build-debug
+/.gitignore

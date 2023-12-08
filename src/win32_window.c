@@ -236,6 +236,7 @@ static void updateCursorImage(_GLFWwindow* window)
     else
         //Connected via Remote Desktop, NULL cursor will present SetCursorPos the move the cursor.
         //using a blank cursor fix that.
+        //When not via Remote Desktop, win32.blankCursor should be NULL
         SetCursor(window->win32.blankCursor);
 }
 
@@ -426,6 +427,64 @@ static void createBlankCursor(_GLFWwindow* window)
         free(xorMask);
     }
 
+}
+
+// Check if the session was started in Remote Desktop
+// Reference: https://learn.microsoft.com/en-us/windows/win32/termserv/detecting-the-terminal-services-environment
+static BOOL isCurrentRemoteSession()
+{
+    BOOL fIsRemoteable = FALSE;
+
+    if (GetSystemMetrics(SM_REMOTESESSION))
+    {
+        fIsRemoteable = TRUE;
+    }
+    else
+    {
+        HKEY hRegKey = NULL;
+        LONG lResult;
+
+        lResult = RegOpenKeyEx(
+            HKEY_LOCAL_MACHINE,
+            TEXT("SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\"),
+            0, // ulOptions
+            KEY_READ,
+            &hRegKey
+        );
+
+        if (lResult == ERROR_SUCCESS)
+        {
+            DWORD dwGlassSessionId;
+            DWORD cbGlassSessionId = sizeof(dwGlassSessionId);
+            DWORD dwType;
+
+            lResult = RegQueryValueEx(
+                hRegKey,
+                TEXT("GlassSessionId"),
+                NULL, // lpReserved
+                &dwType,
+                (BYTE*)&dwGlassSessionId,
+                &cbGlassSessionId
+            );
+
+            if (lResult == ERROR_SUCCESS)
+            {
+                DWORD dwCurrentSessionId;
+
+                if (ProcessIdToSessionId(GetCurrentProcessId(), &dwCurrentSessionId))
+                {
+                    fIsRemoteable = (dwCurrentSessionId != dwGlassSessionId);
+                }
+            }
+        }
+
+        if (hRegKey)
+        {
+            RegCloseKey(hRegKey);
+        }
+    }
+
+    return fIsRemoteable;
 }
 
 // Retrieves and translates modifier keys
@@ -956,27 +1015,37 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
             data = _glfw.win32.rawInput;
             if (data->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
-            {
-                // As per https://github.com/Microsoft/DirectXTK/commit/ef56b63f3739381e451f7a5a5bd2c9779d2a7555
-                // MOUSE_MOVE_ABSOLUTE is a range from 0 through 65535, based on the screen size.
-                // As far as I can tell, absolute mode only occurs over RDP though.
-                width = GetSystemMetrics((data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) ? SM_CXVIRTUALSCREEN : SM_CXSCREEN);
-                height = GetSystemMetrics((data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) ? SM_CYVIRTUALSCREEN : SM_CYSCREEN);
-                
-                pos.x = (int)((data->data.mouse.lLastX / 65535.0f) * width);
-                pos.y = (int)((data->data.mouse.lLastY / 65535.0f) * height);
-                ScreenToClient(window->win32.handle, &pos);
+            {   
+                if (window->win32.isRemoteSession)
+                {
+                    //Remote Desktop Mode...
+                    // As per https://github.com/Microsoft/DirectXTK/commit/ef56b63f3739381e451f7a5a5bd2c9779d2a7555
+                    // MOUSE_MOVE_ABSOLUTE is a range from 0 through 65535, based on the screen size.
+                    // As far as I can tell, absolute mode only occurs over RDP though.
+                    width = GetSystemMetrics((data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) ? SM_CXVIRTUALSCREEN : SM_CXSCREEN);
+                    height = GetSystemMetrics((data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) ? SM_CYVIRTUALSCREEN : SM_CYSCREEN);
 
-                
-                _glfwGetWindowSizeWin32(window, &window_width, &window_height);
+                    pos.x = (int)((data->data.mouse.lLastX / 65535.0f) * width);
+                    pos.y = (int)((data->data.mouse.lLastY / 65535.0f) * height);
+                    ScreenToClient(window->win32.handle, &pos);
 
-                // One other unfortunate thing is that re-centering the cursor will still fire an
-                // input event; assume that any motion to the center is our re-centering and ignore it
-                if (pos.x == window_width / 2 && pos.y == window_height / 2)
-                    break;
 
-                dx = pos.x - window->win32.lastCursorPosX;
-                dy = pos.y - window->win32.lastCursorPosY;
+                    _glfwGetWindowSizeWin32(window, &window_width, &window_height);
+
+                    // One other unfortunate thing is that re-centering the cursor will still fire an
+                    // input event; assume that any motion to the center is our re-centering and ignore it
+                    if (pos.x == window_width / 2 && pos.y == window_height / 2)
+                        break;
+
+                    dx = pos.x - window->win32.lastCursorPosX;
+                    dy = pos.y - window->win32.lastCursorPosY;
+                }
+                else
+                {
+                    //Normal mode... We should have the right absolute coords in data.mouse
+                    dx = data->data.mouse.lLastX - window->win32.lastCursorPosX;
+                    dy = data->data.mouse.lLastY - window->win32.lastCursorPosY;
+                }
 
             }
             else
@@ -1484,7 +1553,16 @@ static int createNativeWindow(_GLFWwindow* window,
         window->win32.transparent = GLFW_TRUE;
     }
 
-    createBlankCursor(window);
+    //Check if the current progress was started with Remote Desktop.
+    window->win32.isRemoteSession = isCurrentRemoteSession();
+
+    //With Remote desktop, we need to create a blank cursor because of the cursor is Set to NULL
+    //if cannot be moved to center in capture mode. If not Remote Desktop win32.blankCursor stays NULL
+    //and will perform has before (normal).
+    if (window->win32.isRemoteSession)
+    {
+        createBlankCursor(window);
+    }
 
     _glfwGetWindowSizeWin32(window, &window->win32.width, &window->win32.height);
 

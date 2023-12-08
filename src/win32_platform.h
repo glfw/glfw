@@ -431,6 +431,9 @@ typedef struct _GLFWwindowWin32
     // The last received cursor position, regardless of source
     int                 lastCursorPosX, lastCursorPosY;
 
+    // Indicate if the process was started behind Remote Destop
+    BOOL                isRemoteSession;
+
     // An invisible cursor, needed for special cases (see WM_INPUT handler)
     HCURSOR             blankCursor;
 

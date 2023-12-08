@@ -351,7 +351,7 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
     assert(action == GLFW_PRESS || action == GLFW_RELEASE);
     assert(mods == (mods & GLFW_MOD_MASK));
 
-    if (button < 0)
+    if (button < 0 || (_glfw.hints.init.mouseButtonLimit && button > GLFW_MOUSE_BUTTON_LAST))
         return;
 
     if (!window->lockKeyMods)

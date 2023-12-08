@@ -119,6 +119,13 @@ The ANGLE platform type is specified via the `EGL_ANGLE_platform_angle`
 extension.  This extension is not used if this hint is
 `GLFW_ANGLE_PLATFORM_TYPE_NONE`, which is the default value.
 
+@anchor GLFW_MOUSE_BUTTON_LIMIT
+__GLFW_MOUSE_BUTTON_LIMIT__ specifies whether to limit reported mouse buttons to
+only the named buttons, for compatibility with earlier versions of GLFW that
+could only report buttons from the named set, as users might have assumed
+@ref GLFW_MOUSE_BUTTON_LAST to be the last possible mouse button, and not the
+last named mouse button. Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+
 
 @subsubsection init_hints_osx macOS specific init hints
 
@@ -160,6 +167,7 @@ Initialization hint              | Default value                   | Supported v
 @ref GLFW_PLATFORM               | `GLFW_ANY_PLATFORM`             | `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`, `GLFW_PLATFORM_X11`, `GLFW_PLATFORM_WAYLAND` or `GLFW_PLATFORM_NULL`
 @ref GLFW_JOYSTICK_HAT_BUTTONS   | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_ANGLE_PLATFORM_TYPE    | `GLFW_ANGLE_PLATFORM_TYPE_NONE` | `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGLES`, `GLFW_ANGLE_PLATFORM_TYPE_D3D9`, `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` or `GLFW_ANGLE_PLATFORM_TYPE_METAL`
+@ref GLFW_MOUSE_BUTTON_LIMIT     | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_COCOA_CHDIR_RESOURCES  | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_COCOA_MENUBAR          | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_X11_XCB_VULKAN_SURFACE | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`

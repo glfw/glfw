@@ -365,6 +365,7 @@ struct _GLFWinitconfig
     GLFWbool      hatButtons;
     int           angleType;
     int           platformID;
+    GLFWbool      mouseButtonLimit;
     PFN_vkGetInstanceProcAddr vulkanLoader;
     struct {
         GLFWbool  menubar;

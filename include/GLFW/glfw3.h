@@ -1297,6 +1297,11 @@ extern "C" {
  *  Platform selection [init hint](@ref GLFW_PLATFORM).
  */
 #define GLFW_PLATFORM               0x00050003
+/*! @brief Mouse button limit init hint.
+ *
+ *  Mouse button limit [init hint](@ref GLFW_PLATFORM).
+ */
+#define GLFW_MOUSE_BUTTON_LIMIT     0x00050004
 /*! @brief macOS specific init hint.
  *
  *  macOS specific [init hint](@ref GLFW_COCOA_CHDIR_RESOURCES_hint).

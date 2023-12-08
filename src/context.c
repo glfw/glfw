@@ -363,6 +363,8 @@ GLFWbool _glfwRefreshContextAttribs(_GLFWwindow* window,
 
     previous = _glfwPlatformGetTls(&_glfw.contextSlot);
     glfwMakeContextCurrent((GLFWwindow*) window);
+    if (_glfwPlatformGetTls(&_glfw.contextSlot) != window)
+        return GLFW_FALSE;
 
     window->context.GetIntegerv = (PFNGLGETINTEGERVPROC)
         window->context.getProcAddress("glGetIntegerv");

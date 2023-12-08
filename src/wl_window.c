@@ -735,6 +735,10 @@ static const struct libdecor_frame_interface libdecorFrameInterface =
 
 static GLFWbool createLibdecorFrame(_GLFWwindow* window)
 {
+    // Allow libdecor to finish initialization of itself and its plugin
+    while (!_glfw.wl.libdecor.ready)
+        _glfwWaitEventsWayland();
+
     window->wl.libdecor.frame = libdecor_decorate(_glfw.wl.libdecor.context,
                                                   window->wl.surface,
                                                   &libdecorFrameInterface,
@@ -745,6 +749,11 @@ static GLFWbool createLibdecorFrame(_GLFWwindow* window)
                         "Wayland: Failed to create libdecor frame");
         return GLFW_FALSE;
     }
+
+    struct libdecor_state* frameState =
+        libdecor_state_new(window->wl.width, window->wl.height);
+    libdecor_frame_commit(window->wl.libdecor.frame, frameState, NULL);
+    libdecor_state_free(frameState);
 
     if (strlen(window->wl.appId))
         libdecor_frame_set_app_id(window->wl.libdecor.frame, window->wl.appId);
@@ -776,12 +785,6 @@ static GLFWbool createLibdecorFrame(_GLFWwindow* window)
 
     if (window->monitor)
     {
-        // HACK: Allow libdecor to finish initialization of itself and its
-        //       plugin so it will create the xdg_toplevel for the frame
-        //       This needs to exist when setting the frame to fullscreen
-        while (!libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame))
-            _glfwWaitEventsWayland();
-
         libdecor_frame_set_fullscreen(window->wl.libdecor.frame,
                                       window->monitor->wl.output);
         setIdleInhibitor(window, GLFW_TRUE);
@@ -1115,7 +1118,10 @@ static void handleEvents(double* timeout)
     while (!event)
     {
         while (wl_display_prepare_read(_glfw.wl.display) != 0)
-            wl_display_dispatch_pending(_glfw.wl.display);
+        {
+            if (wl_display_dispatch_pending(_glfw.wl.display) > 0)
+                return;
+        }
 
         // If an error other than EAGAIN happens, we have likely been disconnected
         // from the Wayland session; try to handle that the best we can.
@@ -1173,14 +1179,14 @@ static void handleEvents(double* timeout)
             uint64_t repeats;
 
             if (read(_glfw.wl.cursorTimerfd, &repeats, sizeof(repeats)) == 8)
-            {
                 incrementCursorImage(_glfw.wl.pointerFocus);
-                event = GLFW_TRUE;
-            }
         }
 
         if (fds[3].revents & POLLIN)
-            libdecor_dispatch(_glfw.wl.libdecor.context, 0);
+        {
+            if (libdecor_dispatch(_glfw.wl.libdecor.context, 0) > 0)
+                event = GLFW_TRUE;
+        }
     }
 }
 

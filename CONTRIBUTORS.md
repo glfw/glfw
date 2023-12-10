@@ -34,6 +34,7 @@ video tutorials.
  - Arturo Castro
  - Chi-kwan Chan
  - TheChocolateOre
+ - Виктор Чернякин
  - Ali Chraghi
  - Joseph Chua
  - Ian Clarkson

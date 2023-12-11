@@ -5204,7 +5204,8 @@ GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmods
  *  [window focus callback](@ref glfwSetWindowFocusCallback) has been called.
  *
  *  The reported `button` value can be higher than `GLFW_MOUSE_BUTTON_LAST` if
- *  the button is not a [named button](@ref buttons).
+ *  the button is not a [named button](@ref buttons) and the
+ *  @ref GLFW_MOUSE_BUTTON_LIMIT init hint is set to `GLFW_FALSE`.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] callback The new callback, or `NULL` to remove the currently set

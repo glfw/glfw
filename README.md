@@ -133,6 +133,8 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: Full screen windows were resizable by the user (#2377,#2405)
  - [Cocoa] Bugfix: Full screen windows were miniaturized when clicked on macOS
    10.15 (#2377,#2405)
+ - [Cocoa] Bugfix: Querying joystick elements could reportedly segfault on macOS
+   13 Ventura (#2320)
  - [Wayland] Added improved fallback window decorations via libdecor (#1639,#1693)
  - [Wayland] Bugfix: Connecting a mouse after `glfwInit` would segfault (#1450)
  - [Wayland] Disabled alpha channel for opaque windows on systems lacking

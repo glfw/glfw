@@ -85,6 +85,7 @@ video tutorials.
  - Andrew Gutekanst
  - Stephen Gutekanst
  - Jonathan Hale
+ - Daniel Hauser
  - hdf89shfdfs
  - Moritz Heinemann
  - Sylvain Hellegouarch

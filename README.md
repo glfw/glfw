@@ -276,6 +276,8 @@ information on what to include when reporting a bug.
    subdirectory (#2113,#2120)
  - [Cocoa] Bugfix: Compilation failed on OS X 10.8 due to unconditional use of 10.9+
    symbols (#2161)
+ - [Cocoa] Bugfix: Querying joystick elements could reportedly segfault on macOS
+   13 Ventura (#2320)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)

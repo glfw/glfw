@@ -237,7 +237,7 @@ static void updateCursorImage(_GLFWwindow* window)
         //Connected via Remote Desktop, NULL cursor will present SetCursorPos the move the cursor.
         //using a blank cursor fix that.
         //When not via Remote Desktop, win32.blankCursor should be NULL
-        SetCursor(window->win32.blankCursor);
+        SetCursor(_glfw.win32.blankCursor);
 }
 
 // Sets the cursor clip rect to the window content area
@@ -401,90 +401,6 @@ static void updateFramebufferTransparency(const _GLFWwindow* window)
         bb.dwFlags = DWM_BB_ENABLE;
         DwmEnableBlurBehindWindow(window->win32.handle, &bb);
     }
-}
-
-
-// Creates the blank cursor
-//
-static void createBlankCursor(_GLFWwindow* window)
-{
-    // HACK: Create a transparent cursor as using the NULL cursor breaks
-    //       using SetCursorPos when connected over RDP
-    int cursorWidth = GetSystemMetrics(SM_CXCURSOR);
-    int cursorHeight = GetSystemMetrics(SM_CYCURSOR);
-    unsigned char* andMask = calloc(cursorWidth * cursorHeight / 8, sizeof(unsigned char));
-    unsigned char* xorMask = calloc(cursorWidth * cursorHeight / 8, sizeof(unsigned char));
-
-    if (andMask != NULL && xorMask != NULL) {
-
-        memset(andMask, 0xFF, (size_t)(cursorWidth * cursorHeight / 8));
-
-        // Cursor creation might fail, but that's fine as we get NULL in that case,
-        // which serves as an acceptable fallback blank cursor (other than on RDP)
-        window->win32.blankCursor = CreateCursor(NULL, 0, 0, cursorWidth, cursorHeight, andMask, xorMask);
-
-        free(andMask);
-        free(xorMask);
-    }
-
-}
-
-// Check if the session was started in Remote Desktop
-// Reference: https://learn.microsoft.com/en-us/windows/win32/termserv/detecting-the-terminal-services-environment
-static BOOL isCurrentRemoteSession()
-{
-    BOOL fIsRemoteable = FALSE;
-
-    if (GetSystemMetrics(SM_REMOTESESSION))
-    {
-        fIsRemoteable = TRUE;
-    }
-    else
-    {
-        HKEY hRegKey = NULL;
-        LONG lResult;
-
-        lResult = RegOpenKeyEx(
-            HKEY_LOCAL_MACHINE,
-            TEXT("SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\"),
-            0, // ulOptions
-            KEY_READ,
-            &hRegKey
-        );
-
-        if (lResult == ERROR_SUCCESS)
-        {
-            DWORD dwGlassSessionId;
-            DWORD cbGlassSessionId = sizeof(dwGlassSessionId);
-            DWORD dwType;
-
-            lResult = RegQueryValueEx(
-                hRegKey,
-                TEXT("GlassSessionId"),
-                NULL, // lpReserved
-                &dwType,
-                (BYTE*)&dwGlassSessionId,
-                &cbGlassSessionId
-            );
-
-            if (lResult == ERROR_SUCCESS)
-            {
-                DWORD dwCurrentSessionId;
-
-                if (ProcessIdToSessionId(GetCurrentProcessId(), &dwCurrentSessionId))
-                {
-                    fIsRemoteable = (dwCurrentSessionId != dwGlassSessionId);
-                }
-            }
-        }
-
-        if (hRegKey)
-        {
-            RegCloseKey(hRegKey);
-        }
-    }
-
-    return fIsRemoteable;
 }
 
 // Retrieves and translates modifier keys
@@ -1016,7 +932,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             data = _glfw.win32.rawInput;
             if (data->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
             {   
-                if (window->win32.isRemoteSession)
+                if (_glfw.win32.isRemoteSession)
                 {
                     //Remote Desktop Mode...
                     // As per https://github.com/Microsoft/DirectXTK/commit/ef56b63f3739381e451f7a5a5bd2c9779d2a7555
@@ -1553,16 +1469,6 @@ static int createNativeWindow(_GLFWwindow* window,
         window->win32.transparent = GLFW_TRUE;
     }
 
-    //Check if the current progress was started with Remote Desktop.
-    window->win32.isRemoteSession = isCurrentRemoteSession();
-
-    //With Remote desktop, we need to create a blank cursor because of the cursor is Set to NULL
-    //if cannot be moved to center in capture mode. If not Remote Desktop win32.blankCursor stays NULL
-    //and will perform has before (normal).
-    if (window->win32.isRemoteSession)
-    {
-        createBlankCursor(window);
-    }
 
     _glfwGetWindowSizeWin32(window, &window->win32.width, &window->win32.height);
 
@@ -1659,8 +1565,6 @@ void _glfwDestroyWindowWin32(_GLFWwindow* window)
     if (window->win32.smallIcon)
         DestroyIcon(window->win32.smallIcon);
 
-    if (window->win32.blankCursor)
-        DestroyCursor(window->win32.blankCursor);
 }
 
 void _glfwSetWindowTitleWin32(_GLFWwindow* window, const char* title)

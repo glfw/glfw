@@ -135,6 +135,7 @@ information on what to include when reporting a bug.
    10.15 (#2377,#2405)
  - [Cocoa] Bugfix: Querying joystick elements could reportedly segfault on macOS
    13 Ventura (#2320)
+ - [Cocoa] Bugfix: Print Screen key was not correctly reported (#1786,#2169)
  - [Wayland] Added improved fallback window decorations via libdecor (#1639,#1693)
  - [Wayland] Bugfix: Connecting a mouse after `glfwInit` would segfault (#1450)
  - [Wayland] Disabled alpha channel for opaque windows on systems lacking
@@ -142,6 +143,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Buffer would overrun when storing received drag offer (#2225)
  - [Wayland] Bugfix: Joysticks connected after `glfwInit` were not detected (#2198)
  - [Wayland] Bugfix: Fallback decorations emitted `GLFW_CURSOR_UNAVAILABLE` errors
+ - [Wayland] Bugfix: Some events could fail to end wait for new events (#2397)
  - [Linux] Bugfix: Joysticks without buttons were ignored (#2042,#2043)
  - [Linux] Bugfix: A small amount of memory could leak if initialization failed (#2229)
  - [EGL] Added loading of glvnd `libOpenGL.so.0` where available for OpenGL

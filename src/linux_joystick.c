@@ -128,7 +128,7 @@ static GLFWbool openJoystickDevice(const char* path)
 {
     for (int jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
-        if (!_glfw.joysticks[jid].present)
+        if (!_glfw.joysticks[jid].connected)
             continue;
         if (strcmp(_glfw.joysticks[jid].linjs.path, path) == 0)
             return GLFW_FALSE;
@@ -157,7 +157,7 @@ static GLFWbool openJoystickDevice(const char* path)
     }
 
     // Ensure this device supports the events expected of a joystick
-    if (!isBitSet(EV_KEY, evBits) || !isBitSet(EV_ABS, evBits))
+    if (!isBitSet(EV_ABS, evBits))
     {
         close(linjs.fd);
         return GLFW_FALSE;
@@ -245,9 +245,9 @@ static GLFWbool openJoystickDevice(const char* path)
 //
 static void closeJoystick(_GLFWjoystick* js)
 {
+    _glfwInputJoystick(js, GLFW_DISCONNECTED);
     close(js->linjs.fd);
     _glfwFreeJoystick(js);
-    _glfwInputJoystick(js, GLFW_DISCONNECTED);
 }
 
 // Lexically compare joysticks by name; used by qsort
@@ -283,7 +283,8 @@ GLFWbool _glfwInitJoysticksLinux(void)
 
     // Continue without device connection notifications if inotify fails
 
-    if (regcomp(&_glfw.linjs.regex, "^event[0-9]\\+$", 0) != 0)
+    _glfw.linjs.regexCompiled = (regcomp(&_glfw.linjs.regex, "^event[0-9]\\+$", 0) == 0);
+    if (!_glfw.linjs.regexCompiled)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Linux: Failed to compile regex");
         return GLFW_FALSE;
@@ -329,7 +330,7 @@ void _glfwTerminateJoysticksLinux(void)
     for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         _GLFWjoystick* js = _glfw.joysticks + jid;
-        if (js->present)
+        if (js->connected)
             closeJoystick(js);
     }
 
@@ -342,6 +343,9 @@ void _glfwTerminateJoysticksLinux(void)
 
         close(_glfw.linjs.inotify);
     }
+
+    if (_glfw.linjs.regexCompiled)
+        regfree(&_glfw.linjs.regex);
 }
 
 void _glfwDetectJoystickConnectionLinux(void)
@@ -424,7 +428,7 @@ int _glfwPlatformPollJoystick(_GLFWjoystick* js, int mode)
             handleAbsEvent(js, e.code, e.value);
     }
 
-    return js->present;
+    return js->connected;
 }
 
 void _glfwPlatformUpdateGamepadGUID(char* guid)

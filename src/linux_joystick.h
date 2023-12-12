@@ -53,6 +53,7 @@ typedef struct _GLFWlibraryLinux
     int                     inotify;
     int                     watch;
     regex_t                 regex;
+    GLFWbool                regexCompiled;
     GLFWbool                dropped;
 } _GLFWlibraryLinux;
 

@@ -37,6 +37,16 @@ SDK](https://vulkan.lunarg.com/).
 For more information see @ref vulkan_guide.
 
 
+@subsubsection wayland_libdecor_33 Wayland libdecor decorations
+
+GLFW now supports improved fallback window decorations via
+[libdecor](https://gitlab.freedesktop.org/libdecor/libdecor).
+
+Support for libdecor can be toggled before GLFW is initialized with the
+[GLFW_WAYLAND_LIBDECOR](@ref GLFW_WAYLAND_LIBDECOR_hint) init hint.  It is
+enabled by default.
+
+
 @subsubsection content_scale_33 Content scale queries for DPI-aware rendering
 
 GLFW now provides content scales for windows and monitors, i.e. the ratio
@@ -312,6 +322,19 @@ Starting with GLFW 3.3.7, events posted with @ref glfwPostEmptyEvent now use a s
 unnamed pipe instead of sending an X11 client event to the helper window.
 
 
+@subsubsection wayland_alpha_34 Frambuffer may lack alpha channel on older Wayland systems
+
+On Wayland, when creating an EGL context on a machine lacking the new
+`EGL_EXT_present_opaque` extension, the @ref GLFW_ALPHA_BITS window hint will be
+ignored and the framebuffer will have no alpha channel.  This is because some
+Wayland compositors treat any buffer with an alpha channel as per-pixel
+transparent.
+
+If you want a per-pixel transparent window, see the
+[GLFW_TRANSPARENT_FRAMEBUFFER](@ref GLFW_TRANSPARENT_FRAMEBUFFER_hint) window
+hint.
+
+
 @subsection deprecations_33 Deprecations in version 3.3
 
 @subsubsection charmods_callback_33 Character with modifiers callback
@@ -378,6 +401,13 @@ Existing projects and makefiles that set the `LIB_SUFFIX` option will use the
 suffix chosen by the GNUInstallDirs package and the option will be ignored.
 
 
+@subsubsection wl_shell_33 Support for the wl_shell protocol
+
+Support for the wl_shell protocol has been removed and GLFW now only supports
+the XDG-Shell protocol.  If your Wayland compositor does not support XDG-Shell
+then GLFW will fail to initialize.
+
+
 @subsubsection mir_removed_33 Mir support
 
 The experimental Mir support has been completely removed as the Mir project has
@@ -423,6 +453,9 @@ Use Wayland or X11 instead.
  - @ref GLFWwindowmaximizefun
  - @ref GLFWwindowcontentscalefun
  - @ref GLFWgamepadstate
+ - @ref GLFW_WAYLAND_LIBDECOR
+ - @ref GLFW_WAYLAND_PREFER_LIBDECOR
+ - @ref GLFW_WAYLAND_DISABLE_LIBDECOR
 
 
 @subsubsection constants_33 New constants in version 3.3

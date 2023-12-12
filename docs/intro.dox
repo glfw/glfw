@@ -102,6 +102,30 @@ a nib or manually, when the first window is created, which is when AppKit is
 initialized.  Set this with @ref glfwInitHint.
 
 
+@subsubsection init_hints_wayland Wayland specific init hints
+
+@anchor GLFW_WAYLAND_LIBDECOR_hint
+__GLFW_WAYLAND_LIBDECOR__ specifies whether to use
+[libdecor](https://gitlab.freedesktop.org/libdecor/libdecor) for window
+decorations where available.  Possible values are `GLFW_WAYLAND_PREFER_LIBDECOR`
+and `GLFW_WAYLAND_DISABLE_LIBDECOR`.  This is ignored on other platforms.
+
+@note This init hint was added in 3.3.9 and is not present in earlier patch releases.  It
+is safe to attempt to set this hint on earlier versions of GLFW 3.3 but it will emit
+a harmless @ref GLFW_INVALID_ENUM error.  If you need to avoid causing any errors, you can
+check the library version first with @ref glfwGetVersion.
+
+@note To set this hint while also building against earlier versions of GLFW 3.3, you can
+use the numerical constants directly.
+
+@note @code
+int minor, patch;
+glfwGetVersion(NULL, &minor, &patch);
+if (minor > 3 || (minor == 3 && patch >= 9))
+    glfwInitHint(0x00053001 /*GLFW_WAYLAND_LIBDECOR*/, 0x00038002 /*GLFW_WAYLAND_DISABLE_LIBDECOR*/);
+@endcode
+
+
 @subsubsection init_hints_values Supported and default values
 
 Initialization hint             | Default value | Supported values
@@ -109,6 +133,7 @@ Initialization hint             | Default value | Supported values
 @ref GLFW_JOYSTICK_HAT_BUTTONS  | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_COCOA_CHDIR_RESOURCES | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_COCOA_MENUBAR         | `GLFW_TRUE`   | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_WAYLAND_LIBDECOR      | `GLFW_WAYLAND_PREFER_LIBDECOR`  | `GLFW_WAYLAND_PREFER_LIBDECOR` or `GLFW_WAYLAND_DISABLE_LIBDECOR`
 
 
 @subsection intro_init_terminate Terminating GLFW
@@ -124,9 +149,9 @@ This will destroy any remaining window, monitor and cursor objects, restore any
 modified gamma ramps, re-enable the screensaver if it had been disabled and free
 any other resources allocated by GLFW.
 
-Once the library is terminated, it is as if it had never been initialized and
+Once the library is terminated, it is as if it had never been initialized, therefore
 you will need to initialize it again before being able to use GLFW.  If the
-library was not initialized or had already been terminated, it return
+library was not initialized or had already been terminated, it returns
 immediately.
 
 
@@ -246,14 +271,14 @@ which monitor the window is currently considered to be on.
 
 This section describes the conditions under which GLFW can be expected to
 function, barring bugs in the operating system or drivers.  Use of GLFW outside
-of these limits may work on some platforms, or on some machines, or some of the
+these limits may work on some platforms, or on some machines, or some of the
 time, or on some versions of GLFW, but it may break at any time and this will
 not be considered a bug.
 
 
 @subsection lifetime Pointer lifetimes
 
-GLFW will never free any pointer you provide to it and you must never free any
+GLFW will never free any pointer you provide to it, and you must never free any
 pointer it provides to you.
 
 Many GLFW functions return pointers to dynamically allocated structures, strings
@@ -444,11 +469,11 @@ The format of the string is as follows:
  - The name of the context creation API
  - Any additional options or APIs
 
-For example, when compiling GLFW 3.0 with MinGW using the Win32 and WGL
-back ends, the version string may look something like this:
+For example, when compiling GLFW 3.3.9 with MinGW for Windows, may result in
+a version string like this:
 
 @code
-3.0.0 Win32 WGL MinGW
+3.3.9 Win32 WGL EGL OSMesa MinGW
 @endcode
 
 */

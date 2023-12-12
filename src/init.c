@@ -54,7 +54,10 @@ static _GLFWinitconfig _glfwInitHints =
     {
         GLFW_TRUE,  // macOS menu bar
         GLFW_TRUE   // macOS bundle chdir
-    }
+    },
+    {
+        GLFW_WAYLAND_PREFER_LIBDECOR // Wayland libdecor mode
+    },
 };
 
 // Terminate the library
@@ -142,12 +145,75 @@ size_t _glfwEncodeUTF8(char* s, uint32_t codepoint)
     return count;
 }
 
+// Splits and translates a text/uri-list into separate file paths
+// NOTE: This function destroys the provided string
+//
+char** _glfwParseUriList(char* text, int* count)
+{
+    const char* prefix = "file://";
+    char** paths = NULL;
+    char* line;
+
+    *count = 0;
+
+    while ((line = strtok(text, "\r\n")))
+    {
+        char* path;
+
+        text = NULL;
+
+        if (line[0] == '#')
+            continue;
+
+        if (strncmp(line, prefix, strlen(prefix)) == 0)
+        {
+            line += strlen(prefix);
+            // TODO: Validate hostname
+            while (*line != '/')
+                line++;
+        }
+
+        (*count)++;
+
+        path = calloc(strlen(line) + 1, 1);
+        paths = realloc(paths, *count * sizeof(char*));
+        paths[*count - 1] = path;
+
+        while (*line)
+        {
+            if (line[0] == '%' && line[1] && line[2])
+            {
+                const char digits[3] = { line[1], line[2], '\0' };
+                *path = (char) strtol(digits, NULL, 16);
+                line += 2;
+            }
+            else
+                *path = *line;
+
+            path++;
+            line++;
+        }
+    }
+
+    return paths;
+}
+
 char* _glfw_strdup(const char* source)
 {
     const size_t length = strlen(source);
     char* result = calloc(length + 1, 1);
     strcpy(result, source);
     return result;
+}
+
+int _glfw_min(int a, int b)
+{
+    return a < b ? a : b;
+}
+
+int _glfw_max(int a, int b)
+{
+    return a > b ? a : b;
 }
 
 float _glfw_fminf(float a, float b)
@@ -305,6 +371,9 @@ GLFWAPI void glfwInitHint(int hint, int value)
             return;
         case GLFW_COCOA_MENUBAR:
             _glfwInitHints.ns.menubar = value;
+            return;
+        case GLFW_WAYLAND_LIBDECOR:
+            _glfwInitHints.wl.libdecorMode = value;
             return;
     }
 

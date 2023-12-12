@@ -42,9 +42,9 @@ The @ref GLFW_VULKAN_STATIC CMake option makes GLFW call the Vulkan loader
 directly instead of dynamically loading it at runtime.  Not linking against the
 Vulkan loader will then be a compile-time error.
 
-@macos Because the Vulkan loader and ICD are not installed globally on macOS,
-you need to set up the application bundle according to the LunarG SDK
-documentation.  This is explained in more detail in the
+@macos To make your application be redistributable you will need to set up the
+application bundle according to the LunarG SDK documentation.  This is explained
+in more detail in the
 [SDK documentation for macOS](https://vulkan.lunarg.com/doc/sdk/latest/mac/getting_started.html).
 
 
@@ -131,7 +131,7 @@ PFN_vkGetDeviceProcAddr pfnGetDeviceProcAddr = (PFN_vkGetDeviceProcAddr)
     glfwGetInstanceProcAddress(instance, "vkGetDeviceProcAddr");
 @endcode
 
-Device-specific functions may execute a little bit faster, due to not having to
+Device-specific functions may execute a little faster, due to not having to
 dispatch internally based on the device passed to them.  For more information
 about `vkGetDeviceProcAddr`, see the Vulkan documentation.
 
@@ -176,6 +176,13 @@ Additional extensions may be required by future versions of GLFW.  You should
 check whether any extensions you wish to enable are already in the returned
 array, as it is an error to specify an extension more than once in the
 `VkInstanceCreateInfo` struct.
+
+@macos MoltenVK is (as of July 2022) not yet a fully conformant implementation
+of Vulkan.  As of Vulkan SDK 1.3.216.0, this means you must also enable the
+`VK_KHR_portability_enumeration` instance extension and set the
+`VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR` bit in the instance creation
+info flags for MoltenVK to show up in the list of physical devices.  For more
+information, see the Vulkan and MoltenVK documentation.
 
 
 @section vulkan_present Querying for Vulkan presentation support

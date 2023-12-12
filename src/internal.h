@@ -244,6 +244,9 @@ struct _GLFWinitconfig
         GLFWbool  menubar;
         GLFWbool  chdir;
     } ns;
+    struct {
+        int       libdecorMode;
+    } wl;
 };
 
 // Window configuration
@@ -478,7 +481,8 @@ struct _GLFWmapping
 //
 struct _GLFWjoystick
 {
-    GLFWbool        present;
+    GLFWbool        allocated;
+    GLFWbool        connected;
     float*          axes;
     int             axisCount;
     unsigned char*  buttons;
@@ -775,8 +779,11 @@ void _glfwTerminateVulkan(void);
 const char* _glfwGetVulkanResultString(VkResult result);
 
 size_t _glfwEncodeUTF8(char* s, uint32_t codepoint);
+char** _glfwParseUriList(char* text, int* count);
 
 char* _glfw_strdup(const char* source);
+int _glfw_min(int a, int b);
+int _glfw_max(int a, int b);
 float _glfw_fminf(float a, float b);
 float _glfw_fmaxf(float a, float b);
 

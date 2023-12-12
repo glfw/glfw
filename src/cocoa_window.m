@@ -31,25 +31,9 @@
 #include <float.h>
 #include <string.h>
 
-// Returns the style mask corresponding to the window settings
-//
-static NSUInteger getStyleMask(_GLFWwindow* window)
-{
-    NSUInteger styleMask = NSWindowStyleMaskMiniaturizable;
-
-    if (window->monitor || !window->decorated)
-        styleMask |= NSWindowStyleMaskBorderless;
-    else
-    {
-        styleMask |= NSWindowStyleMaskTitled |
-                     NSWindowStyleMaskClosable;
-
-        if (window->resizable)
-            styleMask |= NSWindowStyleMaskResizable;
-    }
-
-    return styleMask;
-}
+// HACK: This enum value is missing from framework headers on OS X 10.11 despite
+//       having been (according to documentation) added in Mac OS X 10.7
+#define NSWindowCollectionBehaviorFullScreenNone (1 << 9)
 
 // Returns whether the cursor is in the content area of the specified window
 //
@@ -325,10 +309,15 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)windowDidChangeOcclusionState:(NSNotification* )notification
 {
-    if ([window->ns.object occlusionState] & NSWindowOcclusionStateVisible)
-        window->ns.occluded = GLFW_FALSE;
-    else
-        window->ns.occluded = GLFW_TRUE;
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1090
+    if ([window->ns.object respondsToSelector:@selector(occlusionState)])
+    {
+        if ([window->ns.object occlusionState] & NSWindowOcclusionStateVisible)
+            window->ns.occluded = GLFW_FALSE;
+        else
+            window->ns.occluded = GLFW_TRUE;
+    }
+#endif
 }
 
 @end
@@ -809,9 +798,21 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     else
         contentRect = NSMakeRect(0, 0, wndconfig->width, wndconfig->height);
 
+    NSUInteger styleMask = NSWindowStyleMaskMiniaturizable;
+
+    if (window->monitor || !window->decorated)
+        styleMask |= NSWindowStyleMaskBorderless;
+    else
+    {
+        styleMask |= (NSWindowStyleMaskTitled | NSWindowStyleMaskClosable);
+
+        if (window->resizable)
+            styleMask |= NSWindowStyleMaskResizable;
+    }
+
     window->ns.object = [[GLFWWindow alloc]
         initWithContentRect:contentRect
-                  styleMask:getStyleMask(window)
+                  styleMask:styleMask
                     backing:NSBackingStoreBuffered
                       defer:NO];
 
@@ -835,6 +836,12 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
             const NSWindowCollectionBehavior behavior =
                 NSWindowCollectionBehaviorFullScreenPrimary |
                 NSWindowCollectionBehaviorManaged;
+            [window->ns.object setCollectionBehavior:behavior];
+        }
+        else
+        {
+            const NSWindowCollectionBehavior behavior =
+                NSWindowCollectionBehaviorFullScreenNone;
             [window->ns.object setCollectionBehavior:behavior];
         }
 
@@ -934,6 +941,9 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
             if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }
+
+        if (!_glfwRefreshContextAttribs(window, ctxconfig))
+            return GLFW_FALSE;
     }
 
     if (window->monitor)
@@ -941,6 +951,18 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         _glfwPlatformShowWindow(window);
         _glfwPlatformFocusWindow(window);
         acquireMonitor(window);
+
+        if (wndconfig->centerCursor)
+            _glfwCenterCursorInContentArea(window);
+    }
+    else
+    {
+        if (wndconfig->visible)
+        {
+            _glfwPlatformShowWindow(window);
+            if (wndconfig->focused)
+                _glfwPlatformFocusWindow(window);
+        }
     }
 
     return GLFW_TRUE;
@@ -1219,9 +1241,10 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
         {
             const NSRect contentRect =
                 NSMakeRect(xpos, _glfwTransformYNS(ypos + height - 1), width, height);
+            const NSUInteger styleMask = [window->ns.object styleMask];
             const NSRect frameRect =
                 [window->ns.object frameRectForContentRect:contentRect
-                                                 styleMask:getStyleMask(window)];
+                                                 styleMask:styleMask];
 
             [window->ns.object setFrame:frameRect display:YES];
         }
@@ -1238,7 +1261,27 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
     // TODO: Solve this in a less terrible way
     _glfwPlatformPollEvents();
 
-    const NSUInteger styleMask = getStyleMask(window);
+    NSUInteger styleMask = [window->ns.object styleMask];
+
+    if (window->monitor)
+    {
+        styleMask &= ~(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable);
+        styleMask |= NSWindowStyleMaskBorderless;
+    }
+    else
+    {
+        if (window->decorated)
+        {
+            styleMask &= ~NSWindowStyleMaskBorderless;
+            styleMask |= (NSWindowStyleMaskTitled | NSWindowStyleMaskClosable);
+        }
+
+        if (window->resizable)
+            styleMask |= NSWindowStyleMaskResizable;
+        else
+            styleMask &= ~NSWindowStyleMaskResizable;
+    }
+
     [window->ns.object setStyleMask:styleMask];
     // HACK: Changing the style mask can cause the first responder to be cleared
     [window->ns.object makeFirstResponder:window->ns.view];
@@ -1284,6 +1327,20 @@ void _glfwPlatformSetWindowMonitor(_GLFWwindow* window,
         else
             [window->ns.object setLevel:NSNormalWindowLevel];
 
+        if (window->resizable)
+        {
+            const NSWindowCollectionBehavior behavior =
+                NSWindowCollectionBehaviorFullScreenPrimary |
+                NSWindowCollectionBehaviorManaged;
+            [window->ns.object setCollectionBehavior:behavior];
+        }
+        else
+        {
+            const NSWindowCollectionBehavior behavior =
+                NSWindowCollectionBehaviorFullScreenNone;
+            [window->ns.object setCollectionBehavior:behavior];
+        }
+
         [window->ns.object setHasShadow:YES];
         // HACK: Clearing NSWindowStyleMaskTitled resets and disables the window
         //       title property but the miniwindow title property is unaffected
@@ -1317,7 +1374,12 @@ int _glfwPlatformWindowVisible(_GLFWwindow* window)
 int _glfwPlatformWindowMaximized(_GLFWwindow* window)
 {
     @autoreleasepool {
-    return [window->ns.object isZoomed];
+
+    if (window->resizable)
+        return [window->ns.object isZoomed];
+    else
+        return GLFW_FALSE;
+
     } // autoreleasepool
 }
 
@@ -1349,15 +1411,46 @@ int _glfwPlatformFramebufferTransparent(_GLFWwindow* window)
 void _glfwPlatformSetWindowResizable(_GLFWwindow* window, GLFWbool enabled)
 {
     @autoreleasepool {
-    [window->ns.object setStyleMask:getStyleMask(window)];
+
+    const NSUInteger styleMask = [window->ns.object styleMask];
+    if (enabled)
+    {
+        [window->ns.object setStyleMask:(styleMask | NSWindowStyleMaskResizable)];
+        const NSWindowCollectionBehavior behavior =
+            NSWindowCollectionBehaviorFullScreenPrimary |
+            NSWindowCollectionBehaviorManaged;
+        [window->ns.object setCollectionBehavior:behavior];
+    }
+    else
+    {
+        [window->ns.object setStyleMask:(styleMask & ~NSWindowStyleMaskResizable)];
+        const NSWindowCollectionBehavior behavior =
+            NSWindowCollectionBehaviorFullScreenNone;
+        [window->ns.object setCollectionBehavior:behavior];
+    }
+
     } // autoreleasepool
 }
 
 void _glfwPlatformSetWindowDecorated(_GLFWwindow* window, GLFWbool enabled)
 {
     @autoreleasepool {
-    [window->ns.object setStyleMask:getStyleMask(window)];
+
+    NSUInteger styleMask = [window->ns.object styleMask];
+    if (enabled)
+    {
+        styleMask |= (NSWindowStyleMaskTitled | NSWindowStyleMaskClosable);
+        styleMask &= ~NSWindowStyleMaskBorderless;
+    }
+    else
+    {
+        styleMask |= NSWindowStyleMaskBorderless;
+        styleMask &= ~(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable);
+    }
+
+    [window->ns.object setStyleMask:styleMask];
     [window->ns.object makeFirstResponder:window->ns.view];
+
     } // autoreleasepool
 }
 

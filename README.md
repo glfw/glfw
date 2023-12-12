@@ -144,6 +144,7 @@ information on what to include when reporting a bug.
  - [Linux] Bugfix: A small amount of memory could leak if initialization failed (#2229)
  - [EGL] Added loading of glvnd `libOpenGL.so.0` where available for OpenGL
  - [EGL] Bugfix: `EGL_EXT_present_opaque` caused issues on X11 with Nvidia blob (#2365)
+ - [EGL] Bugfix: Setting `GLFW_CONTEXT_DEBUG` caused creation to fail (#2348)
  - [GLX] Added loading of glvnd `libGLX.so.0` where available
 
 

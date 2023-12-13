@@ -2535,8 +2535,7 @@ void _glfwSetCursorModeWayland(_GLFWwindow* window, int mode)
 
 const char* _glfwGetScancodeNameWayland(int scancode)
 {
-    if (scancode < 0 || scancode > 255 ||
-        _glfw.wl.keycodes[scancode] == GLFW_KEY_UNKNOWN)
+    if (scancode < 0 || scancode > 255)
     {
         _glfwInputError(GLFW_INVALID_VALUE,
                         "Wayland: Invalid scancode %i",
@@ -2545,6 +2544,9 @@ const char* _glfwGetScancodeNameWayland(int scancode)
     }
 
     const int key = _glfw.wl.keycodes[scancode];
+    if (key == GLFW_KEY_UNKNOWN)
+        return NULL;
+
     const xkb_keycode_t keycode = scancode + 8;
     const xkb_layout_index_t layout =
         xkb_state_key_get_layout(_glfw.wl.xkb.state, keycode);

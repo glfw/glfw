@@ -2901,14 +2901,16 @@ const char* _glfwGetScancodeNameX11(int scancode)
     if (!_glfw.x11.xkb.available)
         return NULL;
 
-    if (scancode < 0 || scancode > 0xff ||
-        _glfw.x11.keycodes[scancode] == GLFW_KEY_UNKNOWN)
+    if (scancode < 0 || scancode > 0xff)
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode %i", scancode);
         return NULL;
     }
 
     const int key = _glfw.x11.keycodes[scancode];
+    if (key == GLFW_KEY_UNKNOWN)
+        return NULL;
+
     const KeySym keysym = XkbKeycodeToKeysym(_glfw.x11.display,
                                              scancode, _glfw.x11.xkb.group, 0);
     if (keysym == NoSymbol)

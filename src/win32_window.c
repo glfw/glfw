@@ -2223,14 +2223,17 @@ void _glfwSetCursorModeWin32(_GLFWwindow* window, int mode)
 
 const char* _glfwGetScancodeNameWin32(int scancode)
 {
-    if (scancode < 0 || scancode > (KF_EXTENDED | 0xff) ||
-        _glfw.win32.keycodes[scancode] == GLFW_KEY_UNKNOWN)
+    if (scancode < 0 || scancode > (KF_EXTENDED | 0xff))
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode %i", scancode);
         return NULL;
     }
 
-    return _glfw.win32.keynames[_glfw.win32.keycodes[scancode]];
+    const int key = _glfw.win32.keycodes[scancode];
+    if (key == GLFW_KEY_UNKNOWN)
+        return NULL;
+
+    return _glfw.win32.keynames[key];
 }
 
 int _glfwGetKeyScancodeWin32(int key)

@@ -1635,14 +1635,15 @@ const char* _glfwPlatformGetScancodeName(int scancode)
 {
     @autoreleasepool {
 
-    if (scancode < 0 || scancode > 0xff ||
-        _glfw.ns.keycodes[scancode] == GLFW_KEY_UNKNOWN)
+    if (scancode < 0 || scancode > 0xff)
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode %i", scancode);
         return NULL;
     }
 
     const int key = _glfw.ns.keycodes[scancode];
+    if (key == GLFW_KEY_UNKNOWN)
+        return NULL;
 
     UInt32 deadKeyState = 0;
     UniChar characters[4];

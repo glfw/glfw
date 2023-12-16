@@ -17,7 +17,7 @@ jobs:
             CC: clang
             CFLAGS: -Werror
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Install dependencies
               run: |
                   sudo apt update
@@ -57,7 +57,7 @@ jobs:
             MACOSX_DEPLOYMENT_TARGET: 10.8
             CMAKE_OSX_ARCHITECTURES: x86_64;arm64
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
 
             - name: Configure Null shared library
               run: cmake -B build-null-shared -D GLFW_BUILD_COCOA=OFF -D BUILD_SHARED_LIBS=ON
@@ -81,7 +81,7 @@ jobs:
         env:
             CFLAGS: /WX
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
 
             - name: Configure Win32 shared x86 library
               run: cmake -B build-win32-shared-x86 -G "Visual Studio 17 2022" -A Win32 -D BUILD_SHARED_LIBS=ON

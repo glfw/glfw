@@ -121,7 +121,7 @@ guide](https://github.com/glfw/glfw/blob/master/docs/CONTRIBUTING.md) for
 information on what to include when reporting a bug.
 
 
-## Changelog
+## Changelog since 3.3.9
 
  - Added `GLFW_PLATFORM` init hint for runtime platform selection (#1958)
  - Added `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`,
@@ -155,6 +155,7 @@ information on what to include when reporting a bug.
    values to select ANGLE backend (#1380)
  - Added `GLFW_X11_XCB_VULKAN_SURFACE` init hint for selecting X11 Vulkan
    surface extension (#1793)
+ - Added `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access to the window menu
  - Added `GLFW_NATIVE_INCLUDE_NONE` for disabling inclusion of native headers (#1348)
  - Added `GLFW_BUILD_WIN32` CMake option for enabling Win32 support (#1958)
  - Added `GLFW_BUILD_COCOA` CMake option for enabling Cocoa support (#1958)
@@ -167,10 +168,33 @@ information on what to include when reporting a bug.
  - Made `GLFW_DOUBLEBUFFER` a read-only window attribute
  - Updated the minimum required CMake version to 3.1
  - Updated gamepad mappings from upstream
- - Disabled tests and examples by default when built as a CMake subdirectory
  - Renamed `GLFW_USE_WAYLAND` CMake option to `GLFW_BUILD_WAYLAND` (#1958)
+ - Disabled tests and examples by default when built as a CMake subdirectory
  - Removed `GLFW_USE_OSMESA` CMake option enabling the Null platform (#1958)
  - Removed CMake generated configuration header
+ - [Win32] Added a version info resource to the GLFW DLL
+ - [Win32] Made hidden helper window use its own window class
+ - [Win32] Bugfix: The foreground lock timeout was overridden, ignoring the user
+ - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)
+ - [Cocoa] Bugfix: Touching event queue from secondary thread before main thread
+   would abort (#1649)
+ - [Wayland] Added dynamic loading of all Wayland libraries
+ - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
+ - [X11] Bugfix: Termination would segfault if the IM had been destroyed
+ - [X11] Bugfix: Any IM started after initialization would not be detected
+ - [POSIX] Removed use of deprecated function `gettimeofday`
+ - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
+ - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)
+ - [NSGL] Removed enforcement of forward-compatible flag for core contexts
+ - [EGL] Added platform selection via the `EGL_EXT_platform_base` extension
+   (#442)
+ - [EGL] Added ANGLE backend selection via `EGL_ANGLE_platform_angle` extension
+   (#1380)
+
+
+## Changelog since 3.3
+
+ - Added `GLFW_WAYLAND_LIBDECOR` init hint for disabling libdecor support (#1639,#1693)
  - Bugfix: The CMake config-file package used an absolute path and was not
    relocatable (#1470)
  - Bugfix: Video modes with a duplicate screen area were discarded (#1555,#1556)
@@ -187,10 +211,6 @@ information on what to include when reporting a bug.
  - Bugfix: `glfwGetJoystickUserPointer` returned `NULL` during disconnection (#2092)
  - Bugfix: `glfwGetKeyScancode` returned `0` on error when initialized instead of `-1`
  - Bugfix: Failure to make a newly created context current could cause segfault (#2327)
- - [Win32] Added the `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access
-           to the window menu
- - [Win32] Added a version info resource to the GLFW DLL
- - [Win32] Made hidden helper window use its own window class
  - [Win32] Disabled framebuffer transparency on Windows 7 when DWM windows are
    opaque (#1512)
  - [Win32] Bugfix: `GLFW_INCLUDE_VULKAN` plus `VK_USE_PLATFORM_WIN32_KHR` caused
@@ -217,7 +237,6 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: `USE_MSVC_RUNTIME_LIBRARY_DLL` had no effect on CMake 3.15 or
    later (#1783,#1796)
  - [Win32] Bugfix: Compilation with LLVM for Windows failed (#1807,#1824,#1874)
- - [Win32] Bugfix: The foreground lock timeout was overridden, ignoring the user
  - [Win32] Bugfix: Content scale queries could fail silently (#1615)
  - [Win32] Bugfix: Content scales could have garbage values if monitor was recently
    disconnected (#1615)
@@ -240,7 +259,6 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: Disabled cursor mode doesn't work right when connected over RDP (#1276,#1279,#2431)
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
- - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)
  - [Cocoa] Changed `EGLNativeWindowType` from `NSView` to `CALayer` (#1169)
  - [Cocoa] Changed F13 key to report Print Screen for cross-platform consistency
    (#1786)
@@ -251,8 +269,6 @@ information on what to include when reporting a bug.
    (#1412)
  - [Cocoa] Bugfix: Event processing before window creation would assert (#1543)
  - [Cocoa] Bugfix: Undecorated windows could not be iconified on recent macOS
- - [Cocoa] Bugfix: Touching event queue from secondary thread before main thread
-   would abort (#1649)
  - [Cocoa] Bugfix: Non-BMP Unicode codepoint input was reported as UTF-16
    (#1635)
  - [Cocoa] Bugfix: Failing to retrieve the refresh rate of built-in displays
@@ -296,8 +312,6 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: `glfwFocusWindow` could terminate on older WMs or without a WM
  - [X11] Bugfix: Querying a disconnected monitor could segfault (#1602)
  - [X11] Bugfix: IME input of CJK was broken for "C" locale (#1587,#1636)
- - [X11] Bugfix: Termination would segfault if the IM had been destroyed
- - [X11] Bugfix: Any IM started after initialization would not be detected
  - [X11] Bugfix: Xlib errors caused by other parts of the application could be
    reported as GLFW errors
  - [X11] Bugfix: A handle race condition could cause a `BadWindow` error (#1633)
@@ -325,7 +339,6 @@ information on what to include when reporting a bug.
  - [X11] Bugfix: A malformed response during selection transfer could cause a segfault
  - [X11] Bugfix: Some calls would reset Xlib to the default error handler (#2108)
  - [Wayland] Added improved fallback window decorations via libdecor (#1639,#1693)
- - [Wayland] Added dynamic loading of all Wayland libraries
  - [Wayland] Added support for key names via xkbcommon
  - [Wayland] Added support for file path drop events (#2040)
  - [Wayland] Added support for more human-readable monitor names where available
@@ -333,7 +346,6 @@ information on what to include when reporting a bug.
    `EGL_EXT_present_opaque` (#1895)
  - [Wayland] Removed support for `wl_shell` (#1443)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
- - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
  - [Wayland] Bugfix: Repeated keys could be reported with `NULL` window (#1704)
  - [Wayland] Bugfix: Retrieving partial framebuffer size would segfault
  - [Wayland] Bugfix: Scrolling offsets were inverted compared to other platforms
@@ -398,21 +410,13 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Connecting a mouse after `glfwInit` would segfault (#1450)
  - [Wayland] Bugfix: Joysticks connected after `glfwInit` were not detected (#2198)
  - [Wayland] Bugfix: Fallback decorations emitted `GLFW_CURSOR_UNAVAILABLE` errors
- - [POSIX] Removed use of deprecated function `gettimeofday`
- - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [Linux] Bugfix: Joysticks without buttons were ignored (#2042,#2043)
  - [Linux] Bugfix: A small amount of memory could leak if initialization failed (#2229)
- - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)
- - [NSGL] Removed enforcement of forward-compatible flag for core contexts
  - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
    macOS versions (#1442)
  - [NSGL] Bugfix: Workaround for swap interval on 10.14 broke on 10.12 (#1483)
  - [NSGL] Bugfix: Defining `GL_SILENCE_DEPRECATION` externally caused
    a duplicate definition warning (#1840)
- - [EGL] Added platform selection via the `EGL_EXT_platform_base` extension
-   (#442)
- - [EGL] Added ANGLE backend selection via `EGL_ANGLE_platform_angle` extension
-   (#1380)
  - [EGL] Added loading of glvnd `libOpenGL.so.0` where available for OpenGL
  - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
  - [EGL] Bugfix: Setting `GLFW_CONTEXT_DEBUG` caused creation to fail (#2348)

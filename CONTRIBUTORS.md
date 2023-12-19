@@ -72,6 +72,7 @@ video tutorials.
  - Mário Freitas
  - GeO4d
  - Marcus Geelnard
+ - Gegy
  - ghuser404
  - Charles Giessen
  - Ryan C. Gordon
@@ -84,6 +85,7 @@ video tutorials.
  - Andrew Gutekanst
  - Stephen Gutekanst
  - Jonathan Hale
+ - Daniel Hauser
  - hdf89shfdfs
  - Moritz Heinemann
  - Sylvain Hellegouarch
@@ -126,11 +128,13 @@ video tutorials.
  - Anders Lindqvist
  - Leon Linhart
  - Marco Lizza
+ - lo-v-ol
  - Eyal Lotem
  - Aaron Loucks
  - Luflosi
  - lukect
  - Tristam MacDonald
+ - Jean-Luc Mackail
  - Hans Mackowiak
  - Ramiro Magno
  - Дмитри Малышев

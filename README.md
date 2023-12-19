@@ -277,6 +277,8 @@ information on what to include when reporting a bug.
    subdirectory (#2113,#2120)
  - [Cocoa] Bugfix: Compilation failed on OS X 10.8 due to unconditional use of 10.9+
    symbols (#2161)
+ - [Cocoa] Bugfix: Querying joystick elements could reportedly segfault on macOS
+   13 Ventura (#2320)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -408,8 +410,9 @@ information on what to include when reporting a bug.
    (#442)
  - [EGL] Added ANGLE backend selection via `EGL_ANGLE_platform_angle` extension
    (#1380)
-   [EGL] Added loading of glvnd `libOpenGL.so.0` where available for OpenGL
+ - [EGL] Added loading of glvnd `libOpenGL.so.0` where available for OpenGL
  - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
+ - [EGL] Bugfix: Setting `GLFW_CONTEXT_DEBUG` caused creation to fail (#2348)
  - [GLX] Added loading of glvnd `libGLX.so.0` where available
  - [GLX] Bugfix: Context creation failed if GLX 1.4 was not exported by GLX library
 

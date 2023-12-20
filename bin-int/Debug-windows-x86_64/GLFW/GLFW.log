@@ -1,0 +1,19 @@
+﻿cl : command line  warning D9002: ignoring unknown option '-std=c11'
+cl : command line  warning D9002: ignoring unknown option '-lgdi32'
+  context.c
+  egl_context.c
+  init.c
+  input.c
+  monitor.c
+  osmesa_context.c
+  vulkan.c
+  wgl_context.c
+  win32_init.c
+  win32_joystick.c
+  win32_monitor.c
+  win32_thread.c
+  win32_time.c
+  win32_window.c
+  window.c
+  Generating Code...
+  GLFW.vcxproj -> C:\Users\USER\Documents\C++\Hazel\Hazel\vendor\GLFW\bin\Debug-windows-x86_64\GLFW\GLFW.lib

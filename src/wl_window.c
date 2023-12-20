@@ -735,6 +735,10 @@ static const struct libdecor_frame_interface libdecorFrameInterface =
 
 static GLFWbool createLibdecorFrame(_GLFWwindow* window)
 {
+    // Allow libdecor to finish initialization of itself and its plugin
+    while (!_glfw.wl.libdecor.ready)
+        _glfwWaitEventsWayland();
+
     window->wl.libdecor.frame = libdecor_decorate(_glfw.wl.libdecor.context,
                                                   window->wl.surface,
                                                   &libdecorFrameInterface,
@@ -745,6 +749,11 @@ static GLFWbool createLibdecorFrame(_GLFWwindow* window)
                         "Wayland: Failed to create libdecor frame");
         return GLFW_FALSE;
     }
+
+    struct libdecor_state* frameState =
+        libdecor_state_new(window->wl.width, window->wl.height);
+    libdecor_frame_commit(window->wl.libdecor.frame, frameState, NULL);
+    libdecor_state_free(frameState);
 
     if (strlen(window->wl.appId))
         libdecor_frame_set_app_id(window->wl.libdecor.frame, window->wl.appId);
@@ -776,12 +785,6 @@ static GLFWbool createLibdecorFrame(_GLFWwindow* window)
 
     if (window->monitor)
     {
-        // HACK: Allow libdecor to finish initialization of itself and its
-        //       plugin so it will create the xdg_toplevel for the frame
-        //       This needs to exist when setting the frame to fullscreen
-        while (!libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame))
-            _glfwWaitEventsWayland();
-
         libdecor_frame_set_fullscreen(window->wl.libdecor.frame,
                                       window->monitor->wl.output);
         setIdleInhibitor(window, GLFW_TRUE);
@@ -1095,6 +1098,11 @@ static void inputText(_GLFWwindow* window, uint32_t scancode)
 
 static void handleEvents(double* timeout)
 {
+#if defined(GLFW_BUILD_LINUX_JOYSTICK)
+    if (_glfw.joysticksInitialized)
+        _glfwDetectJoystickConnectionLinux();
+#endif
+
     GLFWbool event = GLFW_FALSE;
     struct pollfd fds[4] =
     {
@@ -1110,7 +1118,10 @@ static void handleEvents(double* timeout)
     while (!event)
     {
         while (wl_display_prepare_read(_glfw.wl.display) != 0)
-            wl_display_dispatch_pending(_glfw.wl.display);
+        {
+            if (wl_display_dispatch_pending(_glfw.wl.display) > 0)
+                return;
+        }
 
         // If an error other than EAGAIN happens, we have likely been disconnected
         // from the Wayland session; try to handle that the best we can.
@@ -1168,14 +1179,14 @@ static void handleEvents(double* timeout)
             uint64_t repeats;
 
             if (read(_glfw.wl.cursorTimerfd, &repeats, sizeof(repeats)) == 8)
-            {
                 incrementCursorImage(_glfw.wl.pointerFocus);
-                event = GLFW_TRUE;
-            }
         }
 
         if (fds[3].revents & POLLIN)
-            libdecor_dispatch(_glfw.wl.libdecor.context, 0);
+        {
+            if (libdecor_dispatch(_glfw.wl.libdecor.context, 0) > 0)
+                event = GLFW_TRUE;
+        }
     }
 }
 
@@ -1303,51 +1314,6 @@ static void pointerHandleLeave(void* userData,
     _glfwInputCursorEnter(window, GLFW_FALSE);
 }
 
-static void setCursor(_GLFWwindow* window, const char* name)
-{
-    struct wl_buffer* buffer;
-    struct wl_cursor* cursor;
-    struct wl_cursor_image* image;
-    struct wl_surface* surface = _glfw.wl.cursorSurface;
-    struct wl_cursor_theme* theme = _glfw.wl.cursorTheme;
-    int scale = 1;
-
-    if (window->wl.contentScale > 1 && _glfw.wl.cursorThemeHiDPI)
-    {
-        // We only support up to scale=2 for now, since libwayland-cursor
-        // requires us to load a different theme for each size.
-        scale = 2;
-        theme = _glfw.wl.cursorThemeHiDPI;
-    }
-
-    cursor = wl_cursor_theme_get_cursor(theme, name);
-    if (!cursor)
-    {
-        _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
-                        "Wayland: Standard cursor shape unavailable");
-        return;
-    }
-    // TODO: handle animated cursors too.
-    image = cursor->images[0];
-
-    if (!image)
-        return;
-
-    buffer = wl_cursor_image_get_buffer(image);
-    if (!buffer)
-        return;
-    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial,
-                          surface,
-                          image->hotspot_x / scale,
-                          image->hotspot_y / scale);
-    wl_surface_set_buffer_scale(surface, scale);
-    wl_surface_attach(surface, buffer, 0, 0);
-    wl_surface_damage(surface, 0, 0,
-                      image->width, image->height);
-    wl_surface_commit(surface);
-    _glfw.wl.cursorPreviousName = name;
-}
-
 static void pointerHandleMotion(void* userData,
                                 struct wl_pointer* pointer,
                                 uint32_t time,
@@ -1355,47 +1321,47 @@ static void pointerHandleMotion(void* userData,
                                 wl_fixed_t sy)
 {
     _GLFWwindow* window = _glfw.wl.pointerFocus;
-    const char* cursorName = NULL;
-    double x, y;
-
     if (!window)
         return;
 
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
         return;
-    x = wl_fixed_to_double(sx);
-    y = wl_fixed_to_double(sy);
-    window->wl.cursorPosX = x;
-    window->wl.cursorPosY = y;
+
+    const double xpos = wl_fixed_to_double(sx);
+    const double ypos = wl_fixed_to_double(sy);
+    window->wl.cursorPosX = xpos;
+    window->wl.cursorPosY = ypos;
+
+    const char* cursorName = NULL;
 
     switch (window->wl.decorations.focus)
     {
         case GLFW_MAIN_WINDOW:
             _glfw.wl.cursorPreviousName = NULL;
-            _glfwInputCursorPos(window, x, y);
+            _glfwInputCursorPos(window, xpos, ypos);
             return;
         case GLFW_TOP_DECORATION:
-            if (y < GLFW_BORDER_SIZE)
+            if (ypos < GLFW_BORDER_SIZE)
                 cursorName = "n-resize";
             else
                 cursorName = "left_ptr";
             break;
         case GLFW_LEFT_DECORATION:
-            if (y < GLFW_BORDER_SIZE)
+            if (ypos < GLFW_BORDER_SIZE)
                 cursorName = "nw-resize";
             else
                 cursorName = "w-resize";
             break;
         case GLFW_RIGHT_DECORATION:
-            if (y < GLFW_BORDER_SIZE)
+            if (ypos < GLFW_BORDER_SIZE)
                 cursorName = "ne-resize";
             else
                 cursorName = "e-resize";
             break;
         case GLFW_BOTTOM_DECORATION:
-            if (x < GLFW_BORDER_SIZE)
+            if (xpos < GLFW_BORDER_SIZE)
                 cursorName = "sw-resize";
-            else if (x > window->wl.width + GLFW_BORDER_SIZE)
+            else if (xpos > window->wl.width + GLFW_BORDER_SIZE)
                 cursorName = "se-resize";
             else
                 cursorName = "s-resize";
@@ -1403,8 +1369,45 @@ static void pointerHandleMotion(void* userData,
         default:
             assert(0);
     }
+
     if (_glfw.wl.cursorPreviousName != cursorName)
-        setCursor(window, cursorName);
+    {
+        struct wl_surface* surface = _glfw.wl.cursorSurface;
+        struct wl_cursor_theme* theme = _glfw.wl.cursorTheme;
+        int scale = 1;
+
+        if (window->wl.contentScale > 1 && _glfw.wl.cursorThemeHiDPI)
+        {
+            // We only support up to scale=2 for now, since libwayland-cursor
+            // requires us to load a different theme for each size.
+            scale = 2;
+            theme = _glfw.wl.cursorThemeHiDPI;
+        }
+
+        struct wl_cursor* cursor = wl_cursor_theme_get_cursor(theme, cursorName);
+        if (!cursor)
+            return;
+
+        // TODO: handle animated cursors too.
+        struct wl_cursor_image* image = cursor->images[0];
+        if (!image)
+            return;
+
+        struct wl_buffer* buffer = wl_cursor_image_get_buffer(image);
+        if (!buffer)
+            return;
+
+        wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial,
+                              surface,
+                              image->hotspot_x / scale,
+                              image->hotspot_y / scale);
+        wl_surface_set_buffer_scale(surface, scale);
+        wl_surface_attach(surface, buffer, 0, 0);
+        wl_surface_damage(surface, 0, 0, image->width, image->height);
+        wl_surface_commit(surface);
+
+        _glfw.wl.cursorPreviousName = cursorName;
+    }
 }
 
 static void pointerHandleButton(void* userData,
@@ -2486,7 +2489,7 @@ void _glfwSetWindowMousePassthroughWayland(_GLFWwindow* window, GLFWbool enabled
         wl_region_destroy(region);
     }
     else
-        wl_surface_set_input_region(window->wl.surface, 0);
+        wl_surface_set_input_region(window->wl.surface, NULL);
 }
 
 float _glfwGetWindowOpacityWayland(_GLFWwindow* window)

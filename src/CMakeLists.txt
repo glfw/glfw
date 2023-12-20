@@ -126,6 +126,7 @@ if (UNIX AND GLFW_BUILD_SHARED_LIBRARY)
 else()
     set(GLFW_LIB_NAME glfw3)
 endif()
+set(GLFW_LIB_NAME_SUFFIX "")
 
 set_target_properties(glfw PROPERTIES
                       OUTPUT_NAME ${GLFW_LIB_NAME}
@@ -315,10 +316,8 @@ if (MSVC90)
 endif()
 
 # Workaround for -std=c99 on Linux disabling _DEFAULT_SOURCE (POSIX 2008 and more)
-if (GLFW_BUILD_X11 OR GLFW_BUILD_WAYLAND)
-    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-        target_compile_definitions(glfw PRIVATE _DEFAULT_SOURCE)
-    endif()
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    target_compile_definitions(glfw PRIVATE _DEFAULT_SOURCE)
 endif()
 
 if (GLFW_BUILD_SHARED_LIBRARY)
@@ -337,6 +336,7 @@ if (GLFW_BUILD_SHARED_LIBRARY)
             # Add a suffix to the import library to avoid naming conflicts
             set_target_properties(glfw PROPERTIES IMPORT_SUFFIX "dll.lib")
         endif()
+        set (GLFW_LIB_NAME_SUFFIX "dll")
 
         target_compile_definitions(glfw INTERFACE GLFW_DLL)
     endif()

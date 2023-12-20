@@ -332,6 +332,7 @@ static void swapBuffersWGL(_GLFWwindow* window)
 static void swapIntervalWGL(int interval)
 {
     _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
+    assert(window != NULL);
 
     window->context.wgl.interval = interval;
 

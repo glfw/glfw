@@ -66,11 +66,13 @@ video tutorials.
  - Nikita Fediuchin
  - Felipe Ferreira
  - Michael Fogleman
+ - forworldm
  - Jason Francis
  - Gerald Franz
  - Mário Freitas
  - GeO4d
  - Marcus Geelnard
+ - Gegy
  - ghuser404
  - Charles Giessen
  - Ryan C. Gordon
@@ -78,11 +80,14 @@ video tutorials.
  - Kovid Goyal
  - Kevin Grandemange
  - Eloi Marín Gratacós
+ - Grzesiek11
  - Stefan Gustavson
  - Andrew Gutekanst
  - Stephen Gutekanst
  - Jonathan Hale
+ - Daniel Hauser
  - hdf89shfdfs
+ - Moritz Heinemann
  - Sylvain Hellegouarch
  - Björn Hempel
  - Matthew Henry
@@ -100,6 +105,7 @@ video tutorials.
  - JannikGM
  - Erik S. V. Jansson
  - jjYBdx4IL
+ - Peter Johnson
  - Toni Jovanoski
  - Arseny Kapoulkine
  - Cem Karan
@@ -122,11 +128,13 @@ video tutorials.
  - Anders Lindqvist
  - Leon Linhart
  - Marco Lizza
+ - lo-v-ol
  - Eyal Lotem
  - Aaron Loucks
  - Luflosi
  - lukect
  - Tristam MacDonald
+ - Jean-Luc Mackail
  - Hans Mackowiak
  - Ramiro Magno
  - Дмитри Малышев
@@ -141,6 +149,7 @@ video tutorials.
  - Marcel Metz
  - Liam Middlebrook
  - Ave Milia
+ - Icyllis Milica
  - Jonathan Miller
  - Kenneth Miller
  - Bruce Mitchener
@@ -204,15 +213,19 @@ video tutorials.
  - Yoshinori Sano
  - Brandon Schaefer
  - Sebastian Schuberth
+ - Scr3amer
  - Christian Sdunek
  - Matt Sealey
  - Steve Sexton
  - Arkady Shapkin
+ - Mingjie Shen
  - Ali Sherief
  - Yoshiki Shibukawa
  - Dmitri Shuralyov
  - Joao da Silva
  - Daniel Sieger
+ - Daljit Singh
+ - Michael Skec
  - Daniel Skorupski
  - Slemmie
  - Anthony Smith
@@ -243,10 +256,12 @@ video tutorials.
  - Jari Vetoniemi
  - Ricardo Vieira
  - Nicholas Vitovitch
+ - Vladimír Vondruš
  - Simon Voordouw
  - Corentin Wallez
  - Torsten Walluhn
  - Patrick Walton
+ - Jim Wang
  - Xo Wang
  - Andre Weissflog
  - Jay Weisskopf

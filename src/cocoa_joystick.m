@@ -136,6 +136,14 @@ static void matchCallback(void* context,
             return;
     }
 
+    CFArrayRef elements =
+        IOHIDDeviceCopyMatchingElements(device, NULL, kIOHIDOptionsTypeNone);
+
+    // It is reportedly possible for this to fail on macOS 13 Ventura
+    // if the application does not have input monitoring permissions
+    if (!elements)
+        return;
+
     axes    = CFArrayCreateMutable(NULL, 0, NULL);
     buttons = CFArrayCreateMutable(NULL, 0, NULL);
     hats    = CFArrayCreateMutable(NULL, 0, NULL);
@@ -178,9 +186,6 @@ static void matchCallback(void* context,
                 name[4], name[5], name[6], name[7],
                 name[8], name[9], name[10]);
     }
-
-    CFArrayRef elements =
-        IOHIDDeviceCopyMatchingElements(device, NULL, kIOHIDOptionsTypeNone);
 
     for (CFIndex i = 0;  i < CFArrayGetCount(elements);  i++)
     {

@@ -1773,6 +1773,7 @@ void _glfwDragWindowWin32(_GLFWwindow* window)
 {
     ReleaseCapture();
     SendMessage(window->win32.handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE, getKeyMods());
 }
 
 void _glfwSetWindowMonitorWin32(_GLFWwindow* window,

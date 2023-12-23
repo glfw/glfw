@@ -229,6 +229,7 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: Instance-local operations used executable instance (#469,#1296,#1395)
  - [Win32] Bugfix: The OSMesa library was not unloaded on termination
  - [Win32] Bugfix: Right shift emitted `GLFW_KEY_UNKNOWN` when using a CJK IME (#2050)
+ - [Win32] Bugfix: Disabled cursor mode doesn't work right when connected over RDP (#1276)
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)

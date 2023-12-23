@@ -460,61 +460,9 @@ static void createBlankCursor(void)
 
 
 // Check if the session was started in Remote Desktop
-// Reference: https://learn.microsoft.com/en-us/windows/win32/termserv/detecting-the-terminal-services-environment
 static BOOL isCurrentRemoteSession()
 {
-    BOOL fIsRemoteable = FALSE;
-
-    if (GetSystemMetrics(SM_REMOTESESSION))
-    {
-        fIsRemoteable = TRUE;
-    }
-    else
-    {
-        HKEY hRegKey = NULL;
-        LONG lResult;
-
-        lResult = RegOpenKeyEx(
-            HKEY_LOCAL_MACHINE,
-            TEXT("SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\"),
-            0, // ulOptions
-            KEY_READ,
-            &hRegKey
-        );
-
-        if (lResult == ERROR_SUCCESS)
-        {
-            DWORD dwGlassSessionId;
-            DWORD cbGlassSessionId = sizeof(dwGlassSessionId);
-            DWORD dwType;
-
-            lResult = RegQueryValueEx(
-                hRegKey,
-                TEXT("GlassSessionId"),
-                NULL, // lpReserved
-                &dwType,
-                (BYTE*)&dwGlassSessionId,
-                &cbGlassSessionId
-            );
-
-            if (lResult == ERROR_SUCCESS)
-            {
-                DWORD dwCurrentSessionId;
-
-                if (ProcessIdToSessionId(GetCurrentProcessId(), &dwCurrentSessionId))
-                {
-                    fIsRemoteable = (dwCurrentSessionId != dwGlassSessionId);
-                }
-            }
-        }
-
-        if (hRegKey)
-        {
-            RegCloseKey(hRegKey);
-        }
-    }
-
-    return fIsRemoteable;
+    return GetSystemMetrics(SM_REMOTESESSION) > 0;
 }
 
 

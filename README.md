@@ -183,6 +183,8 @@ information on what to include when reporting a bug.
  - Bugfix: `glfwMakeContextCurrent` would access TLS slot before initialization
  - Bugfix: `glfwSetGammaRamp` could emit `GLFW_INVALID_VALUE` before initialization
  - Bugfix: `glfwGetJoystickUserPointer` returned `NULL` during disconnection (#2092)
+ - Bugfix: `glfwGetKeyScancode` returned `0` on error when initialized instead of `-1`
+ - Bugfix: Failure to make a newly created context current could cause segfault (#2327)
  - [Win32] Added the `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access
            to the window menu
  - [Win32] Added a version info resource to the GLFW DLL
@@ -229,6 +231,9 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: Instance-local operations used executable instance (#469,#1296,#1395)
  - [Win32] Bugfix: The OSMesa library was not unloaded on termination
  - [Win32] Bugfix: Right shift emitted `GLFW_KEY_UNKNOWN` when using a CJK IME (#2050)
+ - [Win32] Bugfix: `glfwWaitEventsTimeout` did not return for some sent messages (#2408)
+ - [Win32] Bugfix: Fix pkg-config for dynamic library on Windows (#2386, #2420)
+ - [Win32] Bugfix: XInput could reportedly provide invalid DPad bit masks (#2291)
  - [Win32] Bugfix: Disabled cursor mode doesn't work right when connected over RDP (#1276)
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
@@ -270,6 +275,10 @@ information on what to include when reporting a bug.
    application (#2110)
  - [Cocoa] Bugfix: The Vulkan loader was not loaded from the `Frameworks` bundle
    subdirectory (#2113,#2120)
+ - [Cocoa] Bugfix: Compilation failed on OS X 10.8 due to unconditional use of 10.9+
+   symbols (#2161)
+ - [Cocoa] Bugfix: Querying joystick elements could reportedly segfault on macOS
+   13 Ventura (#2320)
  - [X11] Bugfix: The CMake files did not check for the XInput headers (#1480)
  - [X11] Bugfix: Key names were not updated when the keyboard layout changed
    (#1462,#1528)
@@ -389,6 +398,7 @@ information on what to include when reporting a bug.
  - [POSIX] Removed use of deprecated function `gettimeofday`
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [Linux] Bugfix: Joysticks without buttons were ignored (#2042,#2043)
+ - [Linux] Bugfix: A small amount of memory could leak if initialization failed (#2229)
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
  - [NSGL] Bugfix: `GLFW_COCOA_RETINA_FRAMEBUFFER` had no effect on newer
@@ -400,8 +410,9 @@ information on what to include when reporting a bug.
    (#442)
  - [EGL] Added ANGLE backend selection via `EGL_ANGLE_platform_angle` extension
    (#1380)
-   [EGL] Added loading of glvnd `libOpenGL.so.0` where available for OpenGL
+ - [EGL] Added loading of glvnd `libOpenGL.so.0` where available for OpenGL
  - [EGL] Bugfix: The `GLFW_DOUBLEBUFFER` context attribute was ignored (#1843)
+ - [EGL] Bugfix: Setting `GLFW_CONTEXT_DEBUG` caused creation to fail (#2348)
  - [GLX] Added loading of glvnd `libGLX.so.0` where available
  - [GLX] Bugfix: Context creation failed if GLX 1.4 was not exported by GLX library
 

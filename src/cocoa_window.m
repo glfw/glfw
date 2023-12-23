@@ -311,10 +311,15 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)windowDidChangeOcclusionState:(NSNotification* )notification
 {
-    if ([window->ns.object occlusionState] & NSWindowOcclusionStateVisible)
-        window->ns.occluded = GLFW_FALSE;
-    else
-        window->ns.occluded = GLFW_TRUE;
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1090
+    if ([window->ns.object respondsToSelector:@selector(occlusionState)])
+    {
+        if ([window->ns.object occlusionState] & NSWindowOcclusionStateVisible)
+            window->ns.occluded = GLFW_FALSE;
+        else
+            window->ns.occluded = GLFW_TRUE;
+    }
+#endif
 }
 
 @end
@@ -1279,7 +1284,7 @@ void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
 
     if (window->monitor)
     {
-        styleMask &= ~(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable);
+        styleMask &= ~(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable);
         styleMask |= NSWindowStyleMaskBorderless;
     }
     else

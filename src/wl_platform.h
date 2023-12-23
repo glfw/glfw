@@ -550,6 +550,8 @@ typedef struct _GLFWlibraryWayland
     struct {
         void*                   handle;
         struct libdecor*        context;
+        struct wl_callback*     callback;
+        GLFWbool                ready;
         PFN_libdecor_new        libdecor_new_;
         PFN_libdecor_unref      libdecor_unref_;
         PFN_libdecor_get_fd     libdecor_get_fd_;

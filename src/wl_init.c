@@ -40,6 +40,7 @@
 #include <sys/timerfd.h>
 #include <unistd.h>
 #include <time.h>
+#include <assert.h>
 
 #include "wayland-client-protocol.h"
 #include "wayland-xdg-shell-client-protocol.h"
@@ -214,6 +215,22 @@ void libdecorHandleError(struct libdecor* context,
 static const struct libdecor_interface libdecorInterface =
 {
     libdecorHandleError
+};
+
+static void libdecorReadyCallback(void* userData,
+                                  struct wl_callback* callback,
+                                  uint32_t time)
+{
+    _glfw.wl.libdecor.ready = GLFW_TRUE;
+
+    assert(_glfw.wl.libdecor.callback == callback);
+    wl_callback_destroy(_glfw.wl.libdecor.callback);
+    _glfw.wl.libdecor.callback = NULL;
+}
+
+static const struct wl_callback_listener libdecorReadyListener =
+{
+    libdecorReadyCallback
 };
 
 // Create key code translation tables
@@ -775,10 +792,17 @@ int _glfwInitWayland(void)
     if (_glfw.wl.libdecor.handle)
     {
         _glfw.wl.libdecor.context = libdecor_new(_glfw.wl.display, &libdecorInterface);
-
-        // Allow libdecor to receive its globals before proceeding
         if (_glfw.wl.libdecor.context)
-            libdecor_dispatch(_glfw.wl.libdecor.context, 1);
+        {
+            // Perform an initial dispatch and flush to get the init started
+            libdecor_dispatch(_glfw.wl.libdecor.context, 0);
+
+            // Create sync point to "know" when libdecor is ready for use
+            _glfw.wl.libdecor.callback = wl_display_sync(_glfw.wl.display);
+            wl_callback_add_listener(_glfw.wl.libdecor.callback,
+                                     &libdecorReadyListener,
+                                     NULL);
+        }
     }
 
 #ifdef WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION
@@ -822,6 +846,8 @@ void _glfwTerminateWayland(void)
     _glfwTerminateEGL();
     _glfwTerminateOSMesa();
 
+    if (_glfw.wl.libdecor.callback)
+        wl_callback_destroy(_glfw.wl.libdecor.callback);
     if (_glfw.wl.libdecor.context)
         libdecor_unref(_glfw.wl.libdecor.context);
 

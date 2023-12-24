@@ -26,10 +26,11 @@
  * the rendering. Suspecting a trick, they began looking around the booth for
  * a hidden computer or VCR.
  *****************************************************************************/
-
+#ifdef _WIN32
 #if defined(_MSC_VER)
  // Make MS math.h define M_PI
  #define _USE_MATH_DEFINES
+#endif
 #endif
 
 #include <stdio.h>

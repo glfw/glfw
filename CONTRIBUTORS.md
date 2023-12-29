@@ -278,6 +278,7 @@ video tutorials.
  - Jonas Ådahl
  - Lasse Öörni
  - Leonard König
+ - Liam Malone
  - All the unmentioned and anonymous contributors in the GLFW community, for bug
    reports, patches, feedback, testing and encouragement
 

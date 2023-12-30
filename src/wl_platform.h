@@ -454,6 +454,7 @@ typedef struct _GLFWlibraryWayland
     int                         cursorTimerfd;
     uint32_t                    serial;
     uint32_t                    pointerEnterSerial;
+    GLFWbool                    scaleToMonitor;
 
     int                         keyRepeatTimerfd;
     int32_t                     keyRepeatRate;

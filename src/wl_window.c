@@ -1331,6 +1331,7 @@ static void pointerHandleMotion(void* userData,
     const double ypos = wl_fixed_to_double(sy);
     window->wl.cursorPosX = xpos;
     window->wl.cursorPosY = ypos;
+    int scale = _glfw.wl.scaleToMonitor ? window->wl.contentScale : 1;
 
     const char* cursorName = NULL;
 
@@ -1338,7 +1339,7 @@ static void pointerHandleMotion(void* userData,
     {
         case GLFW_MAIN_WINDOW:
             _glfw.wl.cursorPreviousName = NULL;
-            _glfwInputCursorPos(window, xpos, ypos);
+            _glfwInputCursorPos(window, xpos * scale, ypos * scale);
             return;
         case GLFW_TOP_DECORATION:
             if (ypos < GLFW_BORDER_SIZE)
@@ -2138,10 +2139,11 @@ void _glfwSetWindowPosWayland(_GLFWwindow* window, int xpos, int ypos)
 
 void _glfwGetWindowSizeWayland(_GLFWwindow* window, int* width, int* height)
 {
+    int scale = _glfw.wl.scaleToMonitor ? window->wl.contentScale : 1;
     if (width)
-        *width = window->wl.width;
+        *width = window->wl.width * scale;
     if (height)
-        *height = window->wl.height;
+        *height = window->wl.height * scale;
 }
 
 void _glfwSetWindowSizeWayland(_GLFWwindow* window, int width, int height)
@@ -2255,10 +2257,11 @@ void _glfwSetWindowAspectRatioWayland(_GLFWwindow* window, int numer, int denom)
 void _glfwGetFramebufferSizeWayland(_GLFWwindow* window, int* width, int* height)
 {
     _glfwGetWindowSizeWayland(window, width, height);
+    int scale = _glfw.wl.scaleToMonitor ? 1 : window->wl.contentScale;
     if (width)
-        *width *= window->wl.contentScale;
+        *width *= scale;
     if (height)
-        *height *= window->wl.contentScale;
+        *height *= scale;
 }
 
 void _glfwGetWindowFrameSizeWayland(_GLFWwindow* window,

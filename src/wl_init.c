@@ -366,6 +366,15 @@ static void createKeyTables(void)
     }
 }
 
+static GLFWbool getScaleSetting(void)
+{
+    const char* scaleEnvString = getenv("GLFW_SCALE_TO_MONITOR");
+    if (scaleEnvString)
+        return GLFW_TRUE;
+    else
+        return GLFW_FALSE;
+}
+
 static GLFWbool loadCursorTheme(void)
 {
     int cursorSize = 16;
@@ -829,6 +838,8 @@ int _glfwInitWayland(void)
 
     if (!loadCursorTheme())
         return GLFW_FALSE;
+
+    _glfw.wl.scaleToMonitor = getScaleSetting();
 
     if (_glfw.wl.seat && _glfw.wl.dataDeviceManager)
     {

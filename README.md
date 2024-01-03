@@ -123,6 +123,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
+ - [Wayland] Bugfix: Terminating the library before showing a window could segfault
  - [Linux] Bugfix: `regfree´ was called on invalid data (#2464)
 
 

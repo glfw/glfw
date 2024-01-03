@@ -121,10 +121,10 @@ extension.  This extension is not used if this hint is
 
 @anchor GLFW_MOUSE_BUTTON_LIMIT
 __GLFW_MOUSE_BUTTON_LIMIT__ specifies whether to limit reported mouse buttons to
-only the named buttons, for compatibility with earlier versions of GLFW that
-could only report buttons from the named set, as users might have assumed
+only the supported buttons, for compatibility with earlier versions of GLFW that
+could only report buttons from the supported set, as users might have assumed
 @ref GLFW_MOUSE_BUTTON_LAST to be the last possible mouse button, and not the
-last named mouse button. Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+last supported mouse button. Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 
 
 @subsubsection init_hints_osx macOS specific init hints

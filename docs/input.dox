@@ -494,8 +494,15 @@ a mouse button callback.
 glfwSetMouseButtonCallback(window, mouse_button_callback);
 @endcode
 
-The callback function receives the [mouse button](@ref buttons), button action
-and [modifier bits](@ref mods).
+To handle all mouse buttons, instead of only the [supported ones](@ref buttons),
+set the @ref GLFW_MOUSE_BUTTON_LIMIT initialization hint to `GLFW_FALSE`.
+
+@code
+glfwInitHint(GLFW_MOUSE_BUTTON_LIMIT, GLFW_FALSE);
+@endcode
+
+The callback function receives the mouse button, button action and
+[modifier bits](@ref mods).
 
 @code
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
@@ -504,6 +511,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
         popup_menu();
 }
 @endcode
+
+The mouse button is an integer that can be one of the
+[supported mouse buttons](@ref buttons) or, if @ref GLFW_MOUSE_BUTTON_LIMIT is
+set to `GLFW_FALSE`, any other value.
 
 The action is one of `GLFW_PRESS` or `GLFW_RELEASE`.
 

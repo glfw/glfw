@@ -549,6 +549,7 @@ int main(int argc, char** argv)
     int ch, i, width, height, count = 1;
 
     glfwSetErrorCallback(error_callback);
+    glfwInitHint(GLFW_MOUSE_BUTTON_LIMIT, GLFW_FALSE);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);

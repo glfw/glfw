@@ -2373,6 +2373,16 @@ const char* _glfwGetClipboardStringWin32(void)
     return _glfw.win32.clipboardString;
 }
 
+void _glfwSetWindowTabbingModeWin32(_GLFWwindow* window, char value)
+{
+    // Silently ignore
+}
+
+char _glfwWindowTabbingModeWin32(_GLFWwindow* window)
+{
+    return GLFW_NEVER;
+}
+
 EGLenum _glfwGetEGLPlatformWin32(EGLint** attribs)
 {
     if (_glfw.egl.ANGLE_platform_angle)

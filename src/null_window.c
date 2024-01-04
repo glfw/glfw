@@ -551,6 +551,15 @@ const char* _glfwGetClipboardStringNull(void)
     return _glfw.null.clipboardString;
 }
 
+void _glfwSetWindowTabbingModeNull(_GLFWwindow* window, char value)
+{
+}
+
+char _glfwWindowTabbingModeNull(_GLFWwindow* window)
+{
+    return GLFW_NEVER;
+}
+
 EGLenum _glfwGetEGLPlatformNull(EGLint** attribs)
 {
     return 0;

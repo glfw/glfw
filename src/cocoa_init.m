@@ -551,12 +551,14 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         _glfwWindowMaximizedCocoa,
         _glfwWindowHoveredCocoa,
         _glfwFramebufferTransparentCocoa,
+        _glfwWindowTabbingModeCocoa,
         _glfwGetWindowOpacityCocoa,
         _glfwSetWindowResizableCocoa,
         _glfwSetWindowDecoratedCocoa,
         _glfwSetWindowFloatingCocoa,
         _glfwSetWindowOpacityCocoa,
         _glfwSetWindowMousePassthroughCocoa,
+        _glfwSetWindowTabbingModeCocoa,
         _glfwPollEventsCocoa,
         _glfwWaitEventsCocoa,
         _glfwWaitEventsTimeoutCocoa,
@@ -639,6 +641,9 @@ int _glfwInitCocoa(void)
     // In case we are unbundled, make us a proper UI application
     if (_glfw.hints.init.ns.menubar)
         [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+        
+    if (!_glfw.hints.init.ns.autoTabbing)
+        [NSWindow setAllowsAutomaticWindowTabbing:NO];
 
     return GLFW_TRUE;
 

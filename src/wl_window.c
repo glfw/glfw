@@ -3063,6 +3063,16 @@ const char* _glfwGetClipboardStringWayland(void)
     return _glfw.wl.clipboardString;
 }
 
+void _glfwSetWindowTabbingModeWayland(_GLFWwindow* window, const char mode)
+{
+    // Silently ignore
+}
+
+char _glfwWindowTabbingModeWayland(_GLFWwindow* window)
+{
+    return GLFW_NEVER;
+}
+
 EGLenum _glfwGetEGLPlatformWayland(EGLint** attribs)
 {
     if (_glfw.egl.EXT_platform_base && _glfw.egl.EXT_platform_wayland)

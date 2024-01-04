@@ -3089,8 +3089,8 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_INVALID_ENUM, @ref GLFW_INVALID_VALUE, @ref GLFW_API_UNAVAILABLE, @ref
- *  GLFW_VERSION_UNAVAILABLE, @ref GLFW_FORMAT_UNAVAILABLE and @ref
- *  GLFW_PLATFORM_ERROR.
+ *  GLFW_VERSION_UNAVAILABLE, @ref GLFW_FORMAT_UNAVAILABLE, @ref
+ *  GLFW_NO_WINDOW_CONTEXT and @ref GLFW_PLATFORM_ERROR.
  *
  *  @remark @win32 Window creation will fail if the Microsoft GDI software
  *  OpenGL implementation is the only one available.

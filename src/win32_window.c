@@ -1374,6 +1374,10 @@ static int createNativeWindow(_GLFWwindow* window,
     int frameX, frameY, frameWidth, frameHeight;
     WCHAR* wideTitle;
     DWORD style = getWindowStyle(window);
+#ifdef ZD_GLFW_FORK
+    if (! window->decorated) 
+        style = aero_borderless;
+#endif
     DWORD exStyle = getWindowExStyle(window);
 
     if (!_glfw.win32.mainWindowClass)
@@ -1454,11 +1458,7 @@ static int createNativeWindow(_GLFWwindow* window,
     window->win32.handle = CreateWindowExW(exStyle,
                                            MAKEINTATOM(_glfw.win32.mainWindowClass),
                                            wideTitle,
-#ifdef ZD_GLFW_FORK 
-                                           window->decorated ? style : aero_borderless,
-#else
                                            style,
-#endif
                                            frameX, frameY,
                                            frameWidth, frameHeight,
                                            NULL, // No parent window

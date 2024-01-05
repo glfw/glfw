@@ -244,6 +244,8 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->maxheight   = GLFW_DONT_CARE;
     window->numer       = GLFW_DONT_CARE;
     window->denom       = GLFW_DONT_CARE;
+    
+    _glfwInitDefaultTheme(&window->theme.internal);
 
     if (!_glfw.platform.createWindow(window, &wndconfig, &ctxconfig, &fbconfig))
     {
@@ -1153,3 +1155,21 @@ GLFWAPI void glfwPostEmptyEvent(void)
     _glfw.platform.postEmptyEvent();
 }
 
+GLFWAPI void glfwSetTheme(GLFWwindow* handle, const GLFWtheme* theme)
+{
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+    
+    _GLFW_REQUIRE_INIT();
+    _glfw.platform.setTheme(window, (_GLFWtheme*) theme);
+}
+
+GLFWAPI GLFWtheme* glfwGetTheme(GLFWwindow* handle, int inlineDefaults)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+    
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    return (GLFWtheme*) _glfw.platform.getTheme(window, inlineDefaults);
+}

@@ -549,3 +549,25 @@ GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun)
     return cbfun;
 }
 
+GLFWAPI const GLFWtheme* glfwGetSystemDefaultTheme()
+{
+    _GLFWtheme* theme;
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    
+    theme = _glfw.platform.getSystemDefaultTheme();
+    assert(theme->variation != GLFW_THEME_DEFAULT);
+    
+    return (const GLFWtheme*) theme;
+}
+
+GLFWAPI GLFWthemefun glfwSetSystemThemeCallback(GLFWthemefun callback)
+{
+    
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    
+    //return _glfw.platform.setSystemThemeCallback(callback
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP(GLFWthemefun, _glfw.callbacks.theme, callback);
+    return callback;
+}

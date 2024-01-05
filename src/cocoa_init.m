@@ -175,6 +175,119 @@ static void createMenuBar(void)
     [NSApp performSelector:setAppleMenuSelector withObject:appMenu];
 }
 
+void _glfwNSAppearanceToTheme(NSAppearance* appearance, _GLFWtheme* theme)
+{
+    NSAppearanceName name;
+    
+    if (@available(macOS 10.14, *))
+    {
+        name = [appearance bestMatchFromAppearancesWithNames:@[
+            NSAppearanceNameAqua,
+            NSAppearanceNameDarkAqua,
+            NSAppearanceNameVibrantLight,
+            NSAppearanceNameVibrantDark,
+            NSAppearanceNameAccessibilityHighContrastAqua,
+            NSAppearanceNameAccessibilityHighContrastDarkAqua,
+        ]];
+    } else
+    {
+        name = appearance.name;
+    }
+    
+    if ([name isEqualToString:NSAppearanceNameAqua])
+    {
+        theme->variation = GLFW_THEME_LIGHT;
+        return;
+    }
+    
+    if (@available(macOS 10.10, *)) {
+        if ([name isEqualToString:NSAppearanceNameVibrantLight])
+        {
+            theme->variation = GLFW_THEME_LIGHT;
+            return;
+        }
+        if ([name isEqualToString:NSAppearanceNameVibrantDark])
+        {
+            theme->variation = GLFW_THEME_DARK;
+            return;
+        }
+    }
+    
+    if (@available(macOS 10.14, *))
+    {
+        if ([name isEqualToString:NSAppearanceNameDarkAqua])
+        {
+            theme->variation = GLFW_THEME_DARK;
+            return;
+        }
+        if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastAqua])
+        {
+            theme->variation = GLFW_THEME_LIGHT;
+            theme->flags |= GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST;
+            return;
+        }
+        if ([name isEqualToString:NSAppearanceNameAccessibilityHighContrastDarkAqua])
+        {
+            theme->variation = GLFW_THEME_DARK;
+            theme->flags |= GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST;
+            return;
+        }
+    }
+    
+    theme->variation = GLFW_THEME_LIGHT;
+}
+
+void _glfwGetSystemThemeCocoa(_GLFWtheme* theme)
+{
+    theme->variation = GLFW_THEME_LIGHT;
+    theme->flags = 0;
+    
+    if (@available(macOS 10.14, *))
+    {
+        // effectiveAppearance is actually not the system appearance, but the application appearance.
+        // As long as NSApplication.appearance is never set, using the effective appearance is fine
+        // to get and observe the system appearance.
+        _glfwNSAppearanceToTheme(NSApp.effectiveAppearance, theme);
+        
+        NSColor* color = [[NSColor controlAccentColor] colorUsingColorSpace:NSColorSpace.genericRGBColorSpace];
+        
+        theme->flags |= GLFW_THEME_COLOR_MAIN;
+        theme->color[0] = color.redComponent;
+        theme->color[1] = color.greenComponent;
+        theme->color[2] = color.blueComponent;
+        theme->color[3] = color.alphaComponent;
+    }
+    
+    // TODO: return the standard blue accent color if running in 10.13 or earlier.
+    
+    // TODO: optimize by reading multiple values at once.
+    
+    const CFStringRef applicationID = CFSTR("com.apple.universalaccess");
+    
+    Boolean keyIsValid = false;
+    Boolean highContrast = CFPreferencesGetAppBooleanValue(CFSTR("increaseContrast"),
+                                                           applicationID,
+                                                           &keyIsValid);
+    
+    if (keyIsValid && highContrast)
+        theme->flags |= GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST;
+    
+    keyIsValid = false;
+    Boolean reduceTransparency = CFPreferencesGetAppBooleanValue(CFSTR("reduceTransparency"),
+                                                                 applicationID,
+                                                                 &keyIsValid);
+    if (keyIsValid && reduceTransparency)
+        theme->flags |= GLFW_THEME_ATTRIBUTE_REDUCE_TRANSPARENCY;
+    
+    keyIsValid = false;
+    Boolean reduceMotion = CFPreferencesGetAppBooleanValue(CFSTR("reduceMotion"),
+                                                           applicationID,
+                                                           &keyIsValid);
+    
+    if (keyIsValid && reduceMotion)
+        theme->flags |= GLFW_THEME_ATTRIBUTE_REDUCE_MOTION;
+}
+
 // Create key code translation tables
 //
 static void createKeyTables(void)
@@ -393,6 +506,42 @@ static GLFWbool initializeTIS(void)
 - (void)doNothing:(id)object
 {
 }
+/*
+- (void)themeChanged:(NSNotification*)notification
+{
+    _glfwInputSystemTheme(NULL);
+}
+
+- (void)accentColorChanged
+{
+    _glfwInputSystemTheme(NULL);
+}*/
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101400
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+    // This class is never subclassed, so it's safe to ignore the context parameter
+    
+    _GLFWtheme theme;
+    _glfwGetSystemThemeCocoa(&theme);
+    
+    // The observer for the effective appearance is invoked more often than the appearance name itself changes.
+    // For instance, it's invoked when various accesibility settings are changed in the system preferences.
+    // Not all of these properties are included in the GLFW themes, so those updates must be filtered out.
+    if (glfwThemeEqual((GLFWtheme*) &theme, (GLFWtheme*) &_glfw.theme))
+        return;
+    
+    memcpy(&_glfw.theme, &theme, sizeof(_GLFWtheme));
+    _glfwInputSystemTheme(&theme);
+    
+    /*if ([keyPath isEqualToString:@"controlAccentColor"]) {
+        [self accentColorChanged];
+    }*/
+}
+#endif
 
 @end // GLFWHelper
 
@@ -496,8 +645,11 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
     const _GLFWplatform cocoa =
     {
         GLFW_PLATFORM_COCOA,
+        // Init
         _glfwInitCocoa,
         _glfwTerminateCocoa,
+        _glfwGetSystemDefaultThemeCocoa,
+        // Input
         _glfwGetCursorPosCocoa,
         _glfwSetCursorPosCocoa,
         _glfwSetCursorModeCocoa,
@@ -516,6 +668,7 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         _glfwPollJoystickCocoa,
         _glfwGetMappingNameCocoa,
         _glfwUpdateGamepadGUIDCocoa,
+        // Monitor
         _glfwFreeMonitorCocoa,
         _glfwGetMonitorPosCocoa,
         _glfwGetMonitorContentScaleCocoa,
@@ -524,6 +677,7 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         _glfwGetVideoModeCocoa,
         _glfwGetGammaRampCocoa,
         _glfwSetGammaRampCocoa,
+        // Window
         _glfwCreateWindowCocoa,
         _glfwDestroyWindowCocoa,
         _glfwSetWindowTitleCocoa,
@@ -557,13 +711,18 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         _glfwSetWindowFloatingCocoa,
         _glfwSetWindowOpacityCocoa,
         _glfwSetWindowMousePassthroughCocoa,
+        _glfwGetThemeCocoa,
+        _glfwSetThemeCocoa,
+        // Events
         _glfwPollEventsCocoa,
         _glfwWaitEventsCocoa,
         _glfwWaitEventsTimeoutCocoa,
         _glfwPostEmptyEventCocoa,
+        // EGL
         _glfwGetEGLPlatformCocoa,
         _glfwGetEGLNativeDisplayCocoa,
         _glfwGetEGLNativeWindowCocoa,
+        // Vulkan
         _glfwGetRequiredInstanceExtensionsCocoa,
         _glfwGetPhysicalDevicePresentationSupportCocoa,
         _glfwCreateWindowSurfaceCocoa,
@@ -632,6 +791,30 @@ int _glfwInitCocoa(void)
         return GLFW_FALSE;
 
     _glfwPollMonitorsCocoa();
+        
+    /*
+    [[NSNotificationCenter defaultCenter]
+        addObserver:_glfw.ns.helper
+           selector:@selector(themeChanged:)
+               name:@"AppleInterfaceThemeChangedNotification"
+             object:nil];
+    
+    [NSColor addObserver:_glfw.ns.helper
+              forKeyPath:@"controlAccentColor"
+                 options:0
+                 context:nil];
+    */
+        
+    _glfwInitDefaultTheme(&_glfw.theme);
+    
+    // TODO: add observer for properties other than effectiveAppearance, for observing prior to 10.14. I assume the accesibility options were available then.
+    if (@available(macOS 10.14, *))
+    {
+        [NSApp addObserver:_glfw.ns.helper
+                forKeyPath:@"effectiveAppearance"
+                   options:0
+                   context:nil];
+    }
 
     if (![[NSRunningApplication currentApplication] isFinishedLaunching])
         [NSApp run];
@@ -691,6 +874,14 @@ void _glfwTerminateCocoa(void)
     _glfwTerminateOSMesa();
 
     } // autoreleasepool
+}
+
+_GLFWtheme* _glfwGetSystemDefaultThemeCocoa(void)
+{
+    _GLFWtheme* theme = &_glfw.theme;
+    _glfwGetSystemThemeCocoa(theme);
+    
+    return theme;
 }
 
 #endif // _GLFW_COCOA

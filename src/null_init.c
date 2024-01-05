@@ -42,8 +42,11 @@ GLFWbool _glfwConnectNull(int platformID, _GLFWplatform* platform)
     const _GLFWplatform null =
     {
         GLFW_PLATFORM_NULL,
+        // Init
         _glfwInitNull,
         _glfwTerminateNull,
+        _glfwGetSystemDefaultThemeNull,
+        // Input
         _glfwGetCursorPosNull,
         _glfwSetCursorPosNull,
         _glfwSetCursorModeNull,
@@ -62,6 +65,7 @@ GLFWbool _glfwConnectNull(int platformID, _GLFWplatform* platform)
         _glfwPollJoystickNull,
         _glfwGetMappingNameNull,
         _glfwUpdateGamepadGUIDNull,
+        // Monitor
         _glfwFreeMonitorNull,
         _glfwGetMonitorPosNull,
         _glfwGetMonitorContentScaleNull,
@@ -70,6 +74,7 @@ GLFWbool _glfwConnectNull(int platformID, _GLFWplatform* platform)
         _glfwGetVideoModeNull,
         _glfwGetGammaRampNull,
         _glfwSetGammaRampNull,
+        // Window
         _glfwCreateWindowNull,
         _glfwDestroyWindowNull,
         _glfwSetWindowTitleNull,
@@ -103,13 +108,17 @@ GLFWbool _glfwConnectNull(int platformID, _GLFWplatform* platform)
         _glfwSetWindowFloatingNull,
         _glfwSetWindowOpacityNull,
         _glfwSetWindowMousePassthroughNull,
+        _glfwGetThemeNull,
+        _glfwSetThemeNull,
         _glfwPollEventsNull,
         _glfwWaitEventsNull,
         _glfwWaitEventsTimeoutNull,
         _glfwPostEmptyEventNull,
+        // EGL
         _glfwGetEGLPlatformNull,
         _glfwGetEGLNativeDisplayNull,
         _glfwGetEGLNativeWindowNull,
+        // Vulkan
         _glfwGetRequiredInstanceExtensionsNull,
         _glfwGetPhysicalDevicePresentationSupportNull,
         _glfwCreateWindowSurfaceNull,
@@ -264,3 +273,12 @@ void _glfwTerminateNull(void)
     _glfwTerminateEGL();
 }
 
+_GLFWtheme* _glfwGetSystemDefaultThemeNull(void)
+{
+    _glfwInitDefaultTheme(&_glfw.theme);
+    
+    // DEFAULT is not a valid return value.
+    _glfw.theme.variation = GLFW_THEME_LIGHT;
+    
+    return &_glfw.theme;
+}

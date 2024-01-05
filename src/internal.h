@@ -72,6 +72,7 @@ typedef struct _GLFWplatform    _GLFWplatform;
 typedef struct _GLFWlibrary     _GLFWlibrary;
 typedef struct _GLFWmonitor     _GLFWmonitor;
 typedef struct _GLFWcursor      _GLFWcursor;
+typedef struct _GLFWtheme       _GLFWtheme;
 typedef struct _GLFWmapelement  _GLFWmapelement;
 typedef struct _GLFWmapping     _GLFWmapping;
 typedef struct _GLFWjoystick    _GLFWjoystick;
@@ -518,6 +519,20 @@ struct _GLFWcontext
     GLFW_PLATFORM_CONTEXT_STATE
 };
 
+// Theme structure
+//
+struct _GLFWtheme
+{
+    // The light/dark variation. If set to DEFAULT, use the system theme variation.
+    int variation;
+    
+    int flags;
+    
+    // When applying a theme, ignore this color if the HAS_COLOR
+    // flag is unset, and use the system theme color instead.
+    float color[4];
+};
+
 // Window and context structure
 //
 struct _GLFWwindow
@@ -573,6 +588,14 @@ struct _GLFWwindow
         GLFWcharmodsfun           charmods;
         GLFWdropfun               drop;
     } callbacks;
+    
+    struct {
+        // Clients can mutate this theme data at any time
+        _GLFWtheme external;
+        
+        // The window's user-specified theme settings.
+        _GLFWtheme internal; // TODO: init to defaults on window creation. TODO: set in glfwSetTheme
+    } theme;
 
     // This is defined in platform.h
     GLFW_PLATFORM_WINDOW_STATE
@@ -673,10 +696,11 @@ struct _GLFWmutex
 struct _GLFWplatform
 {
     int platformID;
-    // init
+    // Init
     GLFWbool (*init)(void);
     void (*terminate)(void);
-    // input
+    _GLFWtheme* (*getSystemDefaultTheme)(void);
+    // Input
     void (*getCursorPos)(_GLFWwindow*,double*,double*);
     void (*setCursorPos)(_GLFWwindow*,double,double);
     void (*setCursorMode)(_GLFWwindow*,int);
@@ -695,7 +719,7 @@ struct _GLFWplatform
     GLFWbool (*pollJoystick)(_GLFWjoystick*,int);
     const char* (*getMappingName)(void);
     void (*updateGamepadGUID)(char*);
-    // monitor
+    // Monitor
     void (*freeMonitor)(_GLFWmonitor*);
     void (*getMonitorPos)(_GLFWmonitor*,int*,int*);
     void (*getMonitorContentScale)(_GLFWmonitor*,float*,float*);
@@ -704,7 +728,7 @@ struct _GLFWplatform
     void (*getVideoMode)(_GLFWmonitor*,GLFWvidmode*);
     GLFWbool (*getGammaRamp)(_GLFWmonitor*,GLFWgammaramp*);
     void (*setGammaRamp)(_GLFWmonitor*,const GLFWgammaramp*);
-    // window
+    // Window
     GLFWbool (*createWindow)(_GLFWwindow*,const _GLFWwndconfig*,const _GLFWctxconfig*,const _GLFWfbconfig*);
     void (*destroyWindow)(_GLFWwindow*);
     void (*setWindowTitle)(_GLFWwindow*,const char*);
@@ -738,6 +762,9 @@ struct _GLFWplatform
     void (*setWindowFloating)(_GLFWwindow*,GLFWbool);
     void (*setWindowOpacity)(_GLFWwindow*,float);
     void (*setWindowMousePassthrough)(_GLFWwindow*,GLFWbool);
+    _GLFWtheme* (*getTheme)(_GLFWwindow*,int);
+    void (*setTheme)(_GLFWwindow*,const _GLFWtheme*);
+    // Events
     void (*pollEvents)(void);
     void (*waitEvents)(void);
     void (*waitEventsTimeout)(double);
@@ -746,7 +773,7 @@ struct _GLFWplatform
     EGLenum (*getEGLPlatform)(EGLint**);
     EGLNativeDisplayType (*getEGLNativeDisplay)(void);
     EGLNativeWindowType (*getEGLNativeWindow)(_GLFWwindow*);
-    // vulkan
+    // Vulkan
     void (*getRequiredInstanceExtensions)(char**);
     GLFWbool (*getPhysicalDevicePresentationSupport)(VkInstance,VkPhysicalDevice,uint32_t);
     VkResult (*createWindowSurface)(VkInstance,_GLFWwindow*,const VkAllocationCallbacks*,VkSurfaceKHR*);
@@ -866,7 +893,10 @@ struct _GLFWlibrary
     struct {
         GLFWmonitorfun  monitor;
         GLFWjoystickfun joystick;
+        GLFWthemefun    theme;
     } callbacks;
+    
+    _GLFWtheme theme;
 
     // These are defined in platform.h
     GLFW_PLATFORM_LIBRARY_WINDOW_STATE
@@ -931,6 +961,8 @@ void _glfwInputJoystick(_GLFWjoystick* js, int event);
 void _glfwInputJoystickAxis(_GLFWjoystick* js, int axis, float value);
 void _glfwInputJoystickButton(_GLFWjoystick* js, int button, char value);
 void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value);
+
+void _glfwInputSystemTheme(_GLFWtheme* theme);
 
 void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement);
 void _glfwInputMonitorWindow(_GLFWmonitor* monitor, _GLFWwindow* window);
@@ -1010,3 +1042,4 @@ void* _glfw_calloc(size_t count, size_t size);
 void* _glfw_realloc(void* pointer, size_t size);
 void _glfw_free(void* pointer);
 
+void _glfwInitDefaultTheme(_GLFWtheme* theme);

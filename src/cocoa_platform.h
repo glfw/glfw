@@ -39,6 +39,12 @@
 #import <Cocoa/Cocoa.h>
 #else
 typedef void* id;
+typedef void NSAppearance;
+typedef id NSString;
+#endif
+
+#if MAC_OS_X_VERSION_MIN_REQUIRED < 101300
+typedef NSString *NSAppearanceName;
 #endif
 
 // NOTE: Many Cocoa enum values have been renamed and we need to build across
@@ -291,6 +297,9 @@ void _glfwRestoreVideoModeCocoa(_GLFWmonitor* monitor);
 
 float _glfwTransformYCocoa(float y);
 
+void _glfwNSAppearanceToTheme(NSAppearance* appearance, _GLFWtheme* theme);
+void _glfwGetSystemThemeCocoa(_GLFWtheme* theme);
+
 void* _glfwLoadLocalVulkanLoaderCocoa(void);
 
 GLFWbool _glfwInitNSGL(void);
@@ -300,3 +309,6 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                 const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContextNSGL(_GLFWwindow* window);
 
+_GLFWtheme* _glfwGetSystemDefaultThemeCocoa(void);
+void _glfwSetThemeCocoa(_GLFWwindow* window, const _GLFWtheme* theme);
+_GLFWtheme* _glfwGetThemeCocoa(_GLFWwindow* window, int inlineDefaults);

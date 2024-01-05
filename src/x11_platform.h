@@ -1002,3 +1002,6 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
                               const _GLFWfbconfig* fbconfig,
                               Visual** visual, int* depth);
 
+_GLFWtheme* _glfwGetSystemDefaultThemeX11(void);
+void _glfwSetThemeX11(_GLFWwindow* window, const _GLFWtheme* theme);
+_GLFWtheme* _glfwGetThemeX11(_GLFWwindow* window, int inlineDefaults);

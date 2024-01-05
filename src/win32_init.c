@@ -151,6 +151,8 @@ static GLFWbool loadLibraries(void)
             _glfwPlatformGetModuleSymbol(_glfw.win32.dwmapi.instance, "DwmEnableBlurBehindWindow");
         _glfw.win32.dwmapi.GetColorizationColor = (PFN_DwmGetColorizationColor)
             _glfwPlatformGetModuleSymbol(_glfw.win32.dwmapi.instance, "DwmGetColorizationColor");
+        _glfw.win32.dwmapi.SetWindowAttribute = (PFN_DwmSetWindowAttribute)
+                _glfwPlatformGetModuleSymbol(_glfw.win32.dwmapi.instance, "DwmSetWindowAttribute");
     }
 
     _glfw.win32.shcore.instance = _glfwPlatformLoadModule("shcore.dll");
@@ -167,6 +169,18 @@ static GLFWbool loadLibraries(void)
     {
         _glfw.win32.ntdll.RtlVerifyVersionInfo_ = (PFN_RtlVerifyVersionInfo)
             _glfwPlatformGetModuleSymbol(_glfw.win32.ntdll.instance, "RtlVerifyVersionInfo");
+    }
+
+    _glfw.win32.uxtheme.instance = _glfwPlatformLoadModule("uxtheme.dll");
+    if (_glfw.win32.uxtheme.instance)
+    {
+        _glfw.win32.uxtheme.ShouldAppsUseDarkMode = (ShouldAppsUseDarkModePtr)_glfwPlatformGetModuleSymbol(_glfw.win32.uxtheme.instance, MAKEINTRESOURCEA(132));
+        _glfw.win32.uxtheme.GetImmersiveColorFromColorSetEx = (GetImmersiveColorFromColorSetExPtr)_glfwPlatformGetModuleSymbol(_glfw.win32.uxtheme.instance, MAKEINTRESOURCEA(95));
+        _glfw.win32.uxtheme.GetImmersiveColorTypeFromName = (GetImmersiveColorTypeFromNamePtr)_glfwPlatformGetModuleSymbol(_glfw.win32.uxtheme.instance, MAKEINTRESOURCEA(96));
+        _glfw.win32.uxtheme.GetImmersiveUserColorSetPreference = (GetImmersiveUserColorSetPreferencePtr)_glfwPlatformGetModuleSymbol(_glfw.win32.uxtheme.instance, MAKEINTRESOURCEA(98));
+
+        _glfw.win32.uxtheme.uxThemeAvailable = _glfw.win32.uxtheme.ShouldAppsUseDarkMode && _glfw.win32.uxtheme.GetImmersiveColorFromColorSetEx && _glfw.win32.uxtheme.GetImmersiveColorTypeFromName && _glfw.win32.uxtheme.GetImmersiveUserColorSetPreference;
+        _glfw.win32.uxtheme.darkTitleAvailable = _glfwIsWindows10BuildOrGreaterWin32(22000);
     }
 
     return GLFW_TRUE;
@@ -193,6 +207,9 @@ static void freeLibraries(void)
 
     if (_glfw.win32.ntdll.instance)
         _glfwPlatformFreeModule(_glfw.win32.ntdll.instance);
+
+    if (_glfw.win32.uxtheme.instance)
+        _glfwPlatformFreeModule(_glfw.win32.uxtheme.instance);
 }
 
 // Create key code translation tables
@@ -606,8 +623,11 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
     const _GLFWplatform win32 =
     {
         GLFW_PLATFORM_WIN32,
+        // Init
         _glfwInitWin32,
         _glfwTerminateWin32,
+        _glfwGetSystemDefaultThemeWin32,
+        // Input
         _glfwGetCursorPosWin32,
         _glfwSetCursorPosWin32,
         _glfwSetCursorModeWin32,
@@ -626,6 +646,7 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         _glfwPollJoystickWin32,
         _glfwGetMappingNameWin32,
         _glfwUpdateGamepadGUIDWin32,
+        // Monitor
         _glfwFreeMonitorWin32,
         _glfwGetMonitorPosWin32,
         _glfwGetMonitorContentScaleWin32,
@@ -634,6 +655,7 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         _glfwGetVideoModeWin32,
         _glfwGetGammaRampWin32,
         _glfwSetGammaRampWin32,
+        // Window
         _glfwCreateWindowWin32,
         _glfwDestroyWindowWin32,
         _glfwSetWindowTitleWin32,
@@ -667,13 +689,18 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         _glfwSetWindowFloatingWin32,
         _glfwSetWindowOpacityWin32,
         _glfwSetWindowMousePassthroughWin32,
+        _glfwGetThemeWin32,
+        _glfwSetThemeWin32,
+        // Events
         _glfwPollEventsWin32,
         _glfwWaitEventsWin32,
         _glfwWaitEventsTimeoutWin32,
         _glfwPostEmptyEventWin32,
+        // EGL
         _glfwGetEGLPlatformWin32,
         _glfwGetEGLNativeDisplayWin32,
         _glfwGetEGLNativeWindowWin32,
+        // Vulkan
         _glfwGetRequiredInstanceExtensionsWin32,
         _glfwGetPhysicalDevicePresentationSupportWin32,
         _glfwCreateWindowSurfaceWin32,
@@ -727,5 +754,20 @@ void _glfwTerminateWin32(void)
     freeLibraries();
 }
 
-#endif // _GLFW_WIN32
+_GLFWtheme* _glfwGetSystemDefaultThemeWin32(void)
+{
+    _GLFWtheme* theme = &_glfw.theme;
 
+    theme->variation = GLFW_THEME_LIGHT;
+    theme->flags = 0;
+
+    if (_glfw.win32.uxtheme.uxThemeAvailable && _glfw.win32.uxtheme.darkTitleAvailable) {
+        if (_glfw.win32.uxtheme.ShouldAppsUseDarkMode() & 0x1) {
+            theme->variation = GLFW_THEME_DARK;
+        }
+    }
+
+    return theme;
+}
+
+#endif // _GLFW_WIN32

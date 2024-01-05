@@ -408,8 +408,11 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
     const _GLFWplatform wayland =
     {
         GLFW_PLATFORM_WAYLAND,
+        // Init
         _glfwInitWayland,
         _glfwTerminateWayland,
+        _glfwGetSystemDefaultThemeWayland,
+        // Input
         _glfwGetCursorPosWayland,
         _glfwSetCursorPosWayland,
         _glfwSetCursorModeWayland,
@@ -436,6 +439,7 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         _glfwGetMappingNameNull,
         _glfwUpdateGamepadGUIDNull,
 #endif
+        // Monitor
         _glfwFreeMonitorWayland,
         _glfwGetMonitorPosWayland,
         _glfwGetMonitorContentScaleWayland,
@@ -444,6 +448,7 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         _glfwGetVideoModeWayland,
         _glfwGetGammaRampWayland,
         _glfwSetGammaRampWayland,
+        // Window
         _glfwCreateWindowWayland,
         _glfwDestroyWindowWayland,
         _glfwSetWindowTitleWayland,
@@ -477,13 +482,18 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         _glfwSetWindowFloatingWayland,
         _glfwSetWindowOpacityWayland,
         _glfwSetWindowMousePassthroughWayland,
+        _glfwGetThemeWayland,
+        _glfwSetThemeWayland,
+        // Events
         _glfwPollEventsWayland,
         _glfwWaitEventsWayland,
         _glfwWaitEventsTimeoutWayland,
         _glfwPostEmptyEventWayland,
+        // EGL
         _glfwGetEGLPlatformWayland,
         _glfwGetEGLNativeDisplayWayland,
         _glfwGetEGLNativeWindowWayland,
+        // Vulkan
         _glfwGetRequiredInstanceExtensionsWayland,
         _glfwGetPhysicalDevicePresentationSupportWayland,
         _glfwCreateWindowSurfaceWayland,
@@ -942,6 +952,12 @@ void _glfwTerminateWayland(void)
         close(_glfw.wl.cursorTimerfd);
 
     _glfw_free(_glfw.wl.clipboardString);
+}
+
+_GLFWtheme* _glfwGetSystemDefaultThemeWayland(void)
+{
+    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED, NULL);
+    return NULL; // TODO: implement
 }
 
 #endif // _GLFW_WAYLAND

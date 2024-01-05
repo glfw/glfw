@@ -686,3 +686,6 @@ void _glfwUpdateContentScaleWayland(_GLFWwindow* window);
 void _glfwAddSeatListenerWayland(struct wl_seat* seat);
 void _glfwAddDataDeviceListenerWayland(struct wl_data_device* device);
 
+_GLFWtheme* _glfwGetSystemDefaultThemeWayland(void);
+void _glfwSetThemeWayland(_GLFWwindow* window, const _GLFWtheme* theme);
+_GLFWtheme* _glfwGetThemeWayland(_GLFWwindow* window, int inlineDefaults);

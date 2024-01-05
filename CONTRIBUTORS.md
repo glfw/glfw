@@ -33,6 +33,7 @@ video tutorials.
  - David Carlier
  - Arturo Castro
  - Chi-kwan Chan
+ - Haoyun Chen
  - TheChocolateOre
  - Ali Chraghi
  - Joseph Chua
@@ -103,6 +104,7 @@ video tutorials.
  - IntellectualKitty
  - Aaron Jacobs
  - JannikGM
+ - Andreas O. Jansen
  - Erik S. V. Jansson
  - jjYBdx4IL
  - Peter Johnson

@@ -1404,6 +1404,18 @@ typedef struct GLFWwindow GLFWwindow;
  */
 typedef struct GLFWcursor GLFWcursor;
 
+/*! @brief Opaque theme object.
+ *
+ *  Opaque theme object.
+ *
+ *  @see @ref theme_object
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup theme
+ */
+typedef struct GLFWtheme GLFWtheme;
+
 /*! @brief The function pointer type for memory allocation callbacks.
  *
  *  This is the function pointer type for memory allocation callbacks.  A memory
@@ -1973,6 +1985,28 @@ typedef void (* GLFWmonitorfun)(GLFWmonitor* monitor, int event);
  *  @ingroup input
  */
 typedef void (* GLFWjoystickfun)(int jid, int event);
+
+/*! @brief The function pointer type for system theme callbacks.
+ *
+ *  This is the function pointer type for system theme callbacks. A system
+ *  theme callback function has the following signature:
+ *  @code
+ *  void function_name(GLFWtheme* theme)
+ *  @endcode
+ *
+ *  @param[in] theme The new system theme.
+ *
+ *  @pointer_lifetime The theme is valid until the callback
+ *  function returns.
+ *
+ *  @sa @ref theme
+ *  @sa @ref glfwSetSystemThemeCallback
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup theme
+ */
+typedef void (* GLFWthemefun)(GLFWtheme* theme);
 
 /*! @brief Video mode type.
  *
@@ -5857,6 +5891,209 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  *  @ingroup input
  */
 GLFWAPI const char* glfwGetClipboardString(GLFWwindow* window);
+
+// TODO: consider requiring GLFW to be initialized for these GLFWTheme functions to work. That way, implementations can add extra data to the themes, and process them in a platform-specific way.
+
+GLFWAPI GLFWtheme* glfwCreateTheme(void);
+GLFWAPI void glfwDestroyTheme(GLFWtheme* theme);
+GLFWAPI void glfwCopyTheme(const GLFWtheme* source, GLFWtheme* target);
+GLFWAPI int glfwThemeEqual(const GLFWtheme* first, const GLFWtheme* second);
+
+GLFWAPI int glfwThemeGetVariation(const GLFWtheme* theme);
+GLFWAPI void glfwThemeSetVariation(GLFWtheme* theme, int value);
+
+GLFWAPI int glfwThemeGetAttribute(const GLFWtheme* theme, int attribute);
+GLFWAPI void glfwThemeSetAttribute(GLFWtheme* theme, int attribute, int value);
+
+// If the return value of glfwGetAttribute(specifier) is GLFW_FALSE, the return values of this function are undefined.
+GLFWAPI void glfwThemeGetColor(const GLFWtheme* theme,
+                               int specifier,
+                               float* red, float* green, float* blue, float* alpha);
+
+// Must execute glfwThemeSetAttribute(specifier, GLFW_TRUE) for this to have an effect.
+GLFWAPI void glfwThemeSetColor(GLFWtheme* theme,
+                               int specifier,
+                               float red, float green, float blue, float alpha);
+
+/*! @brief Theme variation type.
+ *
+ *  Specifies that a theme is of a dark variation.
+ *
+ *  @ingroup theme
+ */
+#define GLFW_THEME_DARK -1
+
+/*! @brief Theme variation type.
+ *
+ *  Specifies that a theme has no specific variation.
+ *  This is an invalid value for themes returned by GLFW, but this
+ *  variation can be set to make GLFW use the default system theme when
+ *  applying a user-specified theme.
+ *
+ *  @ingroup theme
+ */
+#define GLFW_THEME_DEFAULT 0
+
+/*! @brief Theme variation type.
+ *
+ *  Specifies that a theme is of a light variation.
+ *
+ *  @ingroup theme
+ */
+#define GLFW_THEME_LIGHT 1
+
+/*! @brief Theme attribute.
+ *
+ *  Specifies that a theme uses a high contrast mode.
+ *
+ *  @ingroup theme
+ */
+#define GLFW_THEME_ATTRIBUTE_HIGH_CONTRAST 1
+
+/*! @brief Theme attribute.
+ *
+ *  Specifies that a theme requests reduced transparency.
+ *
+ *  @ingroup theme
+ */
+#define GLFW_THEME_ATTRIBUTE_REDUCE_TRANSPARENCY 2
+
+/*! @brief Theme attribute.
+ *
+ *  Specifies that a theme requests reduced motion.
+ *
+ *  @ingroup theme
+ */
+#define GLFW_THEME_ATTRIBUTE_REDUCE_MOTION 4
+
+/*! @brief Theme color attribute.
+ *
+ *  This is both an attribute and color specifier. As an attribute, it specifies
+ *  if this color is present in the theme or not. If this attribute is set on a theme
+ *  returned by GLFW, that theme contains this color. If this attribute is set on a
+ *  theme supplied to GLFW, GLFW applies this color if the platform supports it.
+ *
+ *  @ingroup theme
+ */
+#define GLFW_THEME_COLOR_MAIN 8
+
+/*! @brief Sets the system theme callback.
+ *
+ *  This function sets the system theme callback, or removes the
+ *  currently set callback. This is called when the system theme changes,
+ *  either because the user edited it, or the system automatically changed it.
+ *
+ *  @param[in] callback The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  @callback_signature
+ *  @code
+ *  void function_name(GLFWtheme* theme)
+ *  @endcode
+ *  For more information about the callback parameters, see the
+ *  [function pointer type](@ref GLFWthemefun).
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref theme_event
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup theme
+ */
+GLFWAPI GLFWthemefun glfwSetSystemThemeCallback(GLFWthemefun callback);
+
+/*! @brief Sets the theme for a window.
+ *
+ *  @param[in] window The [window](@ref window) to set the theme for.
+ *  @param[in] theme The [theme](@ref theme) to set. Pass `NULL` to set it to the system default.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED,
+ *  and @ref GLFW_FEATURE_UNIMPLEMENTED.
+ *
+ *  @pointer_lifetime The returned theme is allocated and freed by GLFW. You
+ *  should not free it yourself. It is valid until this function or @ref glfwGetTheme
+ *  is called again for the specified window, or the window is destroyed.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref theme
+ *  @sa @ref glfwGetTheme
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup theme
+ */
+GLFWAPI void glfwSetTheme(GLFWwindow* handle, const GLFWtheme* theme);
+
+/*! @brief Returns the currently active system theme.
+ *
+ *  Executing this yields no changes to a window's theme settings:
+ *  @code
+ *  glfwSetTheme(window, glfwGetTheme(window, GLFW_FALSE))
+ *  @endcode
+ *
+ *  Executing this sets a window's theme to the current system theme, and disables
+ *  automatic changes to the window's theme for when the system changes its theme.
+ *  @code
+ *  glfwSetTheme(window, glfwGetTheme(window, GLFW_TRUE))
+ *  @endcode
+ *
+ *
+ *  @param[in] window The [window](@ref window) to retrieve the current theme for.
+ *  @param[in] inlineDefaults Specifies whether or not GLFW should replace unspecified
+ *  theme attributes with the currently active system ones.  If `GLFW_TRUE`, the returned
+ *  theme describes the active style of the window.  If `GLFW_FALSE`, the returned theme
+ *  describes the window's theme settings.
+ *
+ *  @return A mutable [theme](@ref theme) object, or `NULL` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED,
+ *  and @ref GLFW_FEATURE_UNIMPLEMENTED.
+ *
+ *  @pointer_lifetime The returned theme is allocated and freed by GLFW. You
+ *  should not free it yourself. It is valid until this function or @ref glfwSetTheme
+ *  is called again for the specified window, or the window is destroyed.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref theme
+ *  @sa @ref glfwSetTheme
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup theme
+ */
+GLFWAPI GLFWtheme* glfwGetTheme(GLFWwindow* handle, int inlineDefaults);
+
+/*! @brief Returns the currently active system theme.
+ *
+ *  @return A mutable [theme](@ref theme) object, or `NULL` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED,
+ *  and @ref GLFW_FEATURE_UNIMPLEMENTED.
+ *
+ *  @pointer_lifetime The returned theme is allocated and freed by GLFW. You
+ *  should not free it yourself. It is valid until this function is called
+ *  again, or the library is terminated.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref theme
+ *  @sa @ref glfwSetSystemThemeCallback
+ *  @sa @ref glfwSetTheme
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup theme
+ */
+GLFWAPI const GLFWtheme* glfwGetSystemDefaultTheme();
 
 /*! @brief Returns the GLFW time.
  *

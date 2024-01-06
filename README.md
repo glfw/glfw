@@ -155,6 +155,8 @@ information on what to include when reporting a bug.
  - Added `GLFW_X11_XCB_VULKAN_SURFACE` init hint for selecting X11 Vulkan
    surface extension (#1793)
  - Added `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access to the window menu
+ - Added `GLFW_MOUSE_BUTTON_LIMIT` init hint for removing the limit of reporting
+   only the 8 supported mouse buttons (#2423)
  - Added `GLFW_NATIVE_INCLUDE_NONE` for disabling inclusion of native headers (#1348)
  - Added `GLFW_BUILD_WIN32` CMake option for enabling Win32 support (#1958)
  - Added `GLFW_BUILD_COCOA` CMake option for enabling Cocoa support (#1958)
@@ -171,7 +173,6 @@ information on what to include when reporting a bug.
  - Disabled tests and examples by default when built as a CMake subdirectory
  - Removed `GLFW_USE_OSMESA` CMake option enabling the Null platform (#1958)
  - Removed CMake generated configuration header
- - Removed the limit of only reporting the 8 named mouse buttons
  - [Win32] Added a version info resource to the GLFW DLL
  - [Win32] Made hidden helper window use its own window class
  - [Win32] Bugfix: The foreground lock timeout was overridden, ignoring the user

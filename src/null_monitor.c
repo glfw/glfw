@@ -35,7 +35,7 @@
 
 // The the sole (fake) video mode of our (sole) fake monitor
 //
-static GLFWvidmode getVideoMode(void)
+static GLFWvidmode _glfwGetDefaultVideoModeNull(void)
 {
     GLFWvidmode mode;
     mode.width = 1920;
@@ -54,7 +54,7 @@ static GLFWvidmode getVideoMode(void)
 void _glfwPollMonitorsNull(void)
 {
     const float dpi = 141.f;
-    const GLFWvidmode mode = getVideoMode();
+    const GLFWvidmode mode = _glfwGetDefaultVideoModeNull();
     _GLFWmonitor* monitor = _glfwAllocMonitor("Null SuperNoop 0",
                                               (int) (mode.width * 25.4f / dpi),
                                               (int) (mode.height * 25.4f / dpi));
@@ -91,7 +91,7 @@ void _glfwGetMonitorWorkareaNull(_GLFWmonitor* monitor,
                                  int* xpos, int* ypos,
                                  int* width, int* height)
 {
-    const GLFWvidmode mode = getVideoMode();
+    const GLFWvidmode mode = _glfwGetDefaultVideoModeNull();
 
     if (xpos)
         *xpos = 0;
@@ -105,15 +105,15 @@ void _glfwGetMonitorWorkareaNull(_GLFWmonitor* monitor,
 
 GLFWvidmode* _glfwGetVideoModesNull(_GLFWmonitor* monitor, int* found)
 {
-    GLFWvidmode* mode = _glfw_calloc(1, sizeof(GLFWvidmode));
-    *mode = getVideoMode();
+    GLFWvidmode* mode = (GLFWvidmode*) _glfw_calloc(1, sizeof(GLFWvidmode));
+    *mode = _glfwGetDefaultVideoModeNull();
     *found = 1;
     return mode;
 }
 
 void _glfwGetVideoModeNull(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
-    *mode = getVideoMode();
+    *mode = _glfwGetDefaultVideoModeNull();
 }
 
 GLFWbool _glfwGetGammaRampNull(_GLFWmonitor* monitor, GLFWgammaramp* ramp)

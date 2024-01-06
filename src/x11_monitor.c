@@ -39,14 +39,14 @@
 
 // Check whether the display mode should be included in enumeration
 //
-static GLFWbool modeIsGood(const XRRModeInfo* mi)
+static GLFWbool _glfwModeIsGoodX11(const XRRModeInfo* mi)
 {
     return (mi->modeFlags & RR_Interlace) == 0;
 }
 
 // Calculates the refresh rate, in Hz, from the specified RandR mode info
 //
-static int calculateRefreshRate(const XRRModeInfo* mi)
+static int _glfwCalculateRefreshRateX11(const XRRModeInfo* mi)
 {
     if (mi->hTotal && mi->vTotal)
         return (int) round((double) mi->dotClock / ((double) mi->hTotal * (double) mi->vTotal));
@@ -56,7 +56,7 @@ static int calculateRefreshRate(const XRRModeInfo* mi)
 
 // Returns the mode info for a RandR mode XID
 //
-static const XRRModeInfo* getModeInfo(const XRRScreenResources* sr, RRMode id)
+static const XRRModeInfo* _glfwGetModeInfoX11(const XRRScreenResources* sr, RRMode id)
 {
     for (int i = 0;  i < sr->nmode;  i++)
     {
@@ -69,8 +69,8 @@ static const XRRModeInfo* getModeInfo(const XRRScreenResources* sr, RRMode id)
 
 // Convert RandR mode info to GLFW video mode
 //
-static GLFWvidmode vidmodeFromModeInfo(const XRRModeInfo* mi,
-                                       const XRRCrtcInfo* ci)
+static GLFWvidmode _glfwVidmodeFromModeInfoX11(const XRRModeInfo* mi,
+                                               const XRRCrtcInfo* ci)
 {
     GLFWvidmode mode;
 
@@ -85,7 +85,7 @@ static GLFWvidmode vidmodeFromModeInfo(const XRRModeInfo* mi,
         mode.height = mi->height;
     }
 
-    mode.refreshRate = calculateRefreshRate(mi);
+    mode.refreshRate = _glfwCalculateRefreshRateX11(mi);
 
     _glfwSplitBPP(DefaultDepth(_glfw.x11.display, _glfw.x11.screen),
                   &mode.redBits, &mode.greenBits, &mode.blueBits);
@@ -245,11 +245,11 @@ void _glfwSetVideoModeX11(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 
         for (int i = 0;  i < oi->nmode;  i++)
         {
-            const XRRModeInfo* mi = getModeInfo(sr, oi->modes[i]);
-            if (!modeIsGood(mi))
+            const XRRModeInfo* mi = _glfwGetModeInfoX11(sr, oi->modes[i]);
+            if (!_glfwModeIsGoodX11(mi))
                 continue;
 
-            const GLFWvidmode mode = vidmodeFromModeInfo(mi, ci);
+            const GLFWvidmode mode = _glfwVidmodeFromModeInfoX11(mi, ci);
             if (_glfwCompareVideoModes(best, &mode) == 0)
             {
                 native = mi->id;
@@ -362,7 +362,7 @@ void _glfwGetMonitorWorkareaX11(_GLFWmonitor* monitor,
         areaX = ci->x;
         areaY = ci->y;
 
-        const XRRModeInfo* mi = getModeInfo(sr, ci->mode);
+        const XRRModeInfo* mi = _glfwGetModeInfoX11(sr, ci->mode);
 
         if (ci->rotation == RR_Rotate_90 || ci->rotation == RR_Rotate_270)
         {
@@ -458,11 +458,11 @@ GLFWvidmode* _glfwGetVideoModesX11(_GLFWmonitor* monitor, int* count)
 
         for (int i = 0;  i < oi->nmode;  i++)
         {
-            const XRRModeInfo* mi = getModeInfo(sr, oi->modes[i]);
-            if (!modeIsGood(mi))
+            const XRRModeInfo* mi = _glfwGetModeInfoX11(sr, oi->modes[i]);
+            if (!_glfwModeIsGoodX11(mi))
                 continue;
 
-            const GLFWvidmode mode = vidmodeFromModeInfo(mi, ci);
+            const GLFWvidmode mode = _glfwVidmodeFromModeInfoX11(mi, ci);
             int j;
 
             for (j = 0;  j < *count;  j++)
@@ -503,9 +503,9 @@ void _glfwGetVideoModeX11(_GLFWmonitor* monitor, GLFWvidmode* mode)
 
         if (ci)
         {
-            const XRRModeInfo* mi = getModeInfo(sr, ci->mode);
+            const XRRModeInfo* mi = _glfwGetModeInfoX11(sr, ci->mode);
             if (mi)  // mi can be NULL if the monitor has been disconnected
-                *mode = vidmodeFromModeInfo(mi, ci);
+                *mode = _glfwVidmodeFromModeInfoX11(mi, ci);
 
             XRRFreeCrtcInfo(ci);
         }

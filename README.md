@@ -63,6 +63,10 @@ available for all supported compilers.
 See the [compilation guide](https://www.glfw.org/docs/latest/compile.html) for
 more information about how to compile GLFW yourself.
 
+Alternatively, you can `#include <GLFW/glfw3impl.h>` in exactly one compilation
+unit of a C or C++ project to compile the entire implementation directly into
+your application, avoiding the need to separately compile and link with GLFW.
+
 
 ## Using GLFW
 

@@ -37,12 +37,12 @@
 #include <wchar.h>
 
 
-// Callback for EnumDisplayMonitors in createMonitor
+// Callback for EnumDisplayMonitors in _glfwCreateMonitorWin32
 //
-static BOOL CALLBACK monitorCallback(HMONITOR handle,
-                                     HDC dc,
-                                     RECT* rect,
-                                     LPARAM data)
+static BOOL CALLBACK _glfwMonitorCallbackWin32(HMONITOR handle,
+                                               HDC dc,
+                                               RECT* rect,
+                                               LPARAM data)
 {
     MONITORINFOEXW mi;
     ZeroMemory(&mi, sizeof(mi));
@@ -60,8 +60,8 @@ static BOOL CALLBACK monitorCallback(HMONITOR handle,
 
 // Create monitor from an adapter and (optionally) a display
 //
-static _GLFWmonitor* createMonitor(DISPLAY_DEVICEW* adapter,
-                                   DISPLAY_DEVICEW* display)
+static _GLFWmonitor* _glfwCreateMonitorWin32(DISPLAY_DEVICEW* adapter,
+                                             DISPLAY_DEVICEW* display)
 {
     _GLFWmonitor* monitor;
     int widthMM, heightMM;
@@ -124,7 +124,7 @@ static _GLFWmonitor* createMonitor(DISPLAY_DEVICEW* adapter,
     rect.right  = dm.dmPosition.x + dm.dmPelsWidth;
     rect.bottom = dm.dmPosition.y + dm.dmPelsHeight;
 
-    EnumDisplayMonitors(NULL, &rect, monitorCallback, (LPARAM) monitor);
+    EnumDisplayMonitors(NULL, &rect, _glfwMonitorCallbackWin32, (LPARAM) monitor);
     return monitor;
 }
 
@@ -146,7 +146,7 @@ void _glfwPollMonitorsWin32(void)
     disconnectedCount = _glfw.monitorCount;
     if (disconnectedCount)
     {
-        disconnected = _glfw_calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
+        disconnected = (_GLFWmonitor**) _glfw_calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
         memcpy(disconnected,
                _glfw.monitors,
                _glfw.monitorCount * sizeof(_GLFWmonitor*));
@@ -187,7 +187,7 @@ void _glfwPollMonitorsWin32(void)
                 {
                     disconnected[i] = NULL;
                     // handle may have changed, update
-                    EnumDisplayMonitors(NULL, NULL, monitorCallback, (LPARAM) _glfw.monitors[i]);
+                    EnumDisplayMonitors(NULL, NULL, _glfwMonitorCallbackWin32, (LPARAM) _glfw.monitors[i]);
                     break;
                 }
             }
@@ -195,7 +195,7 @@ void _glfwPollMonitorsWin32(void)
             if (i < disconnectedCount)
                 continue;
 
-            monitor = createMonitor(&adapter, &display);
+            monitor = _glfwCreateMonitorWin32(&adapter, &display);
             if (!monitor)
             {
                 _glfw_free(disconnected);
@@ -225,7 +225,7 @@ void _glfwPollMonitorsWin32(void)
             if (i < disconnectedCount)
                 continue;
 
-            monitor = createMonitor(&adapter, NULL);
+            monitor = _glfwCreateMonitorWin32(&adapter, NULL);
             if (!monitor)
             {
                 _glfw_free(disconnected);
@@ -464,7 +464,7 @@ GLFWvidmode* _glfwGetVideoModesWin32(_GLFWmonitor* monitor, int* count)
     if (!*count)
     {
         // HACK: Report the current mode if no valid modes were found
-        result = _glfw_calloc(1, sizeof(GLFWvidmode));
+        result = (GLFWvidmode*) _glfw_calloc(1, sizeof(GLFWvidmode));
         _glfwGetVideoModeWin32(monitor, result);
         *count = 1;
     }

@@ -46,7 +46,7 @@
 // NOTE: This is only used as a fallback, in case the XKB method fails
 //       It is layout-dependent and will fail partially on most non-US layouts
 //
-static int translateKeySyms(const KeySym* keysyms, int width)
+static int _glfwTranslateKeySymsX11(const KeySym* keysyms, int width)
 {
     if (width > 1)
     {
@@ -212,7 +212,7 @@ static int translateKeySyms(const KeySym* keysyms, int width)
 
 // Create key code translation tables
 //
-static void createKeyTables(void)
+static void _glfwCreateKeyTablesX11(void)
 {
     int scancodeMin, scancodeMax;
 
@@ -426,7 +426,7 @@ static void createKeyTables(void)
         if (_glfw.x11.keycodes[scancode] < 0)
         {
             const size_t base = (scancode - scancodeMin) * width;
-            _glfw.x11.keycodes[scancode] = translateKeySyms(&keysyms[base], width);
+            _glfw.x11.keycodes[scancode] = _glfwTranslateKeySymsX11(&keysyms[base], width);
         }
 
         // Store the reverse translation for faster key name lookup
@@ -439,7 +439,7 @@ static void createKeyTables(void)
 
 // Check whether the IM has a usable style
 //
-static GLFWbool hasUsableInputMethodStyle(void)
+static GLFWbool _glfwHasUsableInputMethodStyleX11(void)
 {
     GLFWbool found = GLFW_FALSE;
     XIMStyles* styles = NULL;
@@ -460,14 +460,14 @@ static GLFWbool hasUsableInputMethodStyle(void)
     return found;
 }
 
-static void inputMethodDestroyCallback(XIM im, XPointer clientData, XPointer callData)
+static void _glfwInputMethodDestroyCallbackX11(XIM im, XPointer clientData, XPointer callData)
 {
     _glfw.x11.im = NULL;
 }
 
-static void inputMethodInstantiateCallback(Display* display,
-                                           XPointer clientData,
-                                           XPointer callData)
+static void _glfwInputMethodInstantiateCallbackX11(Display* display,
+                                                   XPointer clientData,
+                                                   XPointer callData)
 {
     if (_glfw.x11.im)
         return;
@@ -475,7 +475,7 @@ static void inputMethodInstantiateCallback(Display* display,
     _glfw.x11.im = XOpenIM(_glfw.x11.display, 0, NULL, NULL);
     if (_glfw.x11.im)
     {
-        if (!hasUsableInputMethodStyle())
+        if (!_glfwHasUsableInputMethodStyleX11())
         {
             XCloseIM(_glfw.x11.im);
             _glfw.x11.im = NULL;
@@ -485,7 +485,7 @@ static void inputMethodInstantiateCallback(Display* display,
     if (_glfw.x11.im)
     {
         XIMCallback callback;
-        callback.callback = (XIMProc) inputMethodDestroyCallback;
+        callback.callback = (XIMProc) _glfwInputMethodDestroyCallbackX11;
         callback.client_data = NULL;
         XSetIMValues(_glfw.x11.im, XNDestroyCallback, &callback, NULL);
 
@@ -496,7 +496,7 @@ static void inputMethodInstantiateCallback(Display* display,
 
 // Return the atom ID only if it is listed in the specified array
 //
-static Atom getAtomIfSupported(Atom* supportedAtoms,
+static Atom _glfwGetAtomIfSupportedX11(Atom* supportedAtoms,
                                unsigned long atomCount,
                                const char* atomName)
 {
@@ -513,7 +513,7 @@ static Atom getAtomIfSupported(Atom* supportedAtoms,
 
 // Check whether the running window manager is EWMH-compliant
 //
-static void detectEWMH(void)
+static void _glfwdetectEWMHX11(void)
 {
     // First we read the _NET_SUPPORTING_WM_CHECK property on the root window
 
@@ -570,33 +570,33 @@ static void detectEWMH(void)
     // See which of the atoms we support that are supported by the WM
 
     _glfw.x11.NET_WM_STATE =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_STATE");
     _glfw.x11.NET_WM_STATE_ABOVE =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_ABOVE");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_STATE_ABOVE");
     _glfw.x11.NET_WM_STATE_FULLSCREEN =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_FULLSCREEN");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_STATE_FULLSCREEN");
     _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_MAXIMIZED_VERT");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_STATE_MAXIMIZED_VERT");
     _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_MAXIMIZED_HORZ");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_STATE_MAXIMIZED_HORZ");
     _glfw.x11.NET_WM_STATE_DEMANDS_ATTENTION =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_DEMANDS_ATTENTION");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_STATE_DEMANDS_ATTENTION");
     _glfw.x11.NET_WM_FULLSCREEN_MONITORS =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_FULLSCREEN_MONITORS");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_FULLSCREEN_MONITORS");
     _glfw.x11.NET_WM_WINDOW_TYPE =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_WINDOW_TYPE");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_WINDOW_TYPE");
     _glfw.x11.NET_WM_WINDOW_TYPE_NORMAL =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_WINDOW_TYPE_NORMAL");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_WINDOW_TYPE_NORMAL");
     _glfw.x11.NET_WORKAREA =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WORKAREA");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WORKAREA");
     _glfw.x11.NET_CURRENT_DESKTOP =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_CURRENT_DESKTOP");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_CURRENT_DESKTOP");
     _glfw.x11.NET_ACTIVE_WINDOW =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_ACTIVE_WINDOW");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_ACTIVE_WINDOW");
     _glfw.x11.NET_FRAME_EXTENTS =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_FRAME_EXTENTS");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_FRAME_EXTENTS");
     _glfw.x11.NET_REQUEST_FRAME_EXTENTS =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_REQUEST_FRAME_EXTENTS");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_REQUEST_FRAME_EXTENTS");
 
     if (supportedAtoms)
         XFree(supportedAtoms);
@@ -604,7 +604,7 @@ static void detectEWMH(void)
 
 // Look for and initialize supported X11 extensions
 //
-static GLFWbool initExtensions(void)
+static GLFWbool _glfwInitExtensionsX11(void)
 {
 #if defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.vidmode.handle = _glfwPlatformLoadModule("libXxf86vm.so");
@@ -910,7 +910,7 @@ static GLFWbool initExtensions(void)
     // Update the key code LUT
     // FIXME: We should listen to XkbMapNotify events to track changes to
     // the keyboard mapping.
-    createKeyTables();
+    _glfwCreateKeyTablesX11();
 
     // String format atoms
     _glfw.x11.NULL_ = XInternAtom(_glfw.x11.display, "NULL", False);
@@ -948,7 +948,7 @@ static GLFWbool initExtensions(void)
 
     // ICCCM, EWMH and Motif window property atoms
     // These can be set safely even without WM support
-    // The EWMH atoms that require WM support are handled in detectEWMH
+    // The EWMH atoms that require WM support are handled in _glfwdetectEWMHX11
     _glfw.x11.WM_PROTOCOLS =
         XInternAtom(_glfw.x11.display, "WM_PROTOCOLS", False);
     _glfw.x11.WM_STATE =
@@ -984,14 +984,14 @@ static GLFWbool initExtensions(void)
     }
 
     // Detect whether an EWMH-conformant window manager is running
-    detectEWMH();
+    _glfwdetectEWMHX11();
 
     return GLFW_TRUE;
 }
 
 // Retrieve system content scale via folklore heuristics
 //
-static void getSystemContentScale(float* xscale, float* yscale)
+static void _glfwGetSystemContentScaleX11(float* xscale, float* yscale)
 {
     // Start by assuming the default X11 DPI
     // NOTE: Some desktop environments (KDE) may remove the Xft.dpi field when it
@@ -1026,7 +1026,7 @@ static void getSystemContentScale(float* xscale, float* yscale)
 
 // Create a blank cursor for hidden and disabled cursor modes
 //
-static Cursor createHiddenCursor(void)
+static Cursor _glfwCreateHiddenCursorX11(void)
 {
     unsigned char pixels[16 * 16 * 4] = { 0 };
     GLFWimage image = { 16, 16, pixels };
@@ -1035,7 +1035,7 @@ static Cursor createHiddenCursor(void)
 
 // Create a helper window for IPC
 //
-static Window createHelperWindow(void)
+static Window _glfwCreateHelperWindowX11(void)
 {
     XSetWindowAttributes wa;
     wa.event_mask = PropertyChangeMask;
@@ -1049,7 +1049,7 @@ static Window createHelperWindow(void)
 
 // Create the pipe for empty events without assumuing the OS has pipe2(2)
 //
-static GLFWbool createEmptyEventPipe(void)
+static GLFWbool _glfwCreateEmptyEventPipeX11(void)
 {
     if (pipe(_glfw.x11.emptyEventPipe) != 0)
     {
@@ -1080,7 +1080,7 @@ static GLFWbool createEmptyEventPipe(void)
 
 // X error handler
 //
-static int errorHandler(Display *display, XErrorEvent* event)
+static int _glfwErrorHandlerX11(Display *display, XErrorEvent* event)
 {
     if (_glfw.x11.display != display)
         return 0;
@@ -1100,7 +1100,7 @@ void _glfwGrabErrorHandlerX11(void)
 {
     assert(_glfw.x11.errorHandler == NULL);
     _glfw.x11.errorCode = Success;
-    _glfw.x11.errorHandler = XSetErrorHandler(errorHandler);
+    _glfw.x11.errorHandler = XSetErrorHandler(_glfwErrorHandlerX11);
 }
 
 // Clears the X error handler callback
@@ -1527,16 +1527,16 @@ int _glfwInitX11(void)
     _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
     _glfw.x11.context = XUniqueContext();
 
-    getSystemContentScale(&_glfw.x11.contentScaleX, &_glfw.x11.contentScaleY);
+    _glfwGetSystemContentScaleX11(&_glfw.x11.contentScaleX, &_glfw.x11.contentScaleY);
 
-    if (!createEmptyEventPipe())
+    if (!_glfwCreateEmptyEventPipeX11())
         return GLFW_FALSE;
 
-    if (!initExtensions())
+    if (!_glfwInitExtensionsX11())
         return GLFW_FALSE;
 
-    _glfw.x11.helperWindowHandle = createHelperWindow();
-    _glfw.x11.hiddenCursorHandle = createHiddenCursor();
+    _glfw.x11.helperWindowHandle = _glfwCreateHelperWindowX11();
+    _glfw.x11.hiddenCursorHandle = _glfwCreateHiddenCursorX11();
 
     if (XSupportsLocale() && _glfw.x11.xlib.utf8)
     {
@@ -1545,7 +1545,7 @@ int _glfwInitX11(void)
         // If an IM is already present our callback will be called right away
         XRegisterIMInstantiateCallback(_glfw.x11.display,
                                        NULL, NULL, NULL,
-                                       inputMethodInstantiateCallback,
+                                       _glfwInputMethodInstantiateCallbackX11,
                                        NULL);
     }
 
@@ -1578,7 +1578,7 @@ void _glfwTerminateX11(void)
 
     XUnregisterIMInstantiateCallback(_glfw.x11.display,
                                      NULL, NULL, NULL,
-                                     inputMethodInstantiateCallback,
+                                     _glfwInputMethodInstantiateCallbackX11,
                                      NULL);
 
     if (_glfw.x11.im)

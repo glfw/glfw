@@ -49,7 +49,7 @@
 
 // Apply an EV_KEY event to the specified joystick
 //
-static void handleKeyEvent(_GLFWjoystick* js, int code, int value)
+static void _glfwHandleKeyEventLinux(_GLFWjoystick* js, int code, int value)
 {
     _glfwInputJoystickButton(js,
                              js->linjs.keyMap[code - BTN_MISC],
@@ -58,7 +58,7 @@ static void handleKeyEvent(_GLFWjoystick* js, int code, int value)
 
 // Apply an EV_ABS event to the specified joystick
 //
-static void handleAbsEvent(_GLFWjoystick* js, int code, int value)
+static void _glfwHandleAbsEventLinux(_GLFWjoystick* js, int code, int value)
 {
     const int index = js->linjs.absMap[code];
 
@@ -106,7 +106,7 @@ static void handleAbsEvent(_GLFWjoystick* js, int code, int value)
 
 // Poll state of absolute axes
 //
-static void pollAbsState(_GLFWjoystick* js)
+static void _glfwPollAbsStateLinux(_GLFWjoystick* js)
 {
     for (int code = 0;  code < ABS_CNT;  code++)
     {
@@ -118,15 +118,15 @@ static void pollAbsState(_GLFWjoystick* js)
         if (ioctl(js->linjs.fd, EVIOCGABS(code), info) < 0)
             continue;
 
-        handleAbsEvent(js, code, info->value);
+        _glfwHandleAbsEventLinux(js, code, info->value);
     }
 }
 
-#define isBitSet(bit, arr) (arr[(bit) / 8] & (1 << ((bit) % 8)))
+#define _glfwIsBitSet(bit, arr) (arr[(bit) / 8] & (1 << ((bit) % 8)))
 
 // Attempt to open the specified joystick device
 //
-static GLFWbool openJoystickDevice(const char* path)
+static GLFWbool _glfwOpenJoystickDeviceLinux(const char* path)
 {
     for (int jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
@@ -159,7 +159,7 @@ static GLFWbool openJoystickDevice(const char* path)
     }
 
     // Ensure this device supports the events expected of a joystick
-    if (!isBitSet(EV_ABS, evBits))
+    if (!_glfwIsBitSet(EV_ABS, evBits))
     {
         close(linjs.fd);
         return GLFW_FALSE;
@@ -175,7 +175,7 @@ static GLFWbool openJoystickDevice(const char* path)
     // Generate a joystick GUID that matches the SDL 2.0.5+ one
     if (id.vendor && id.product && id.version)
     {
-        sprintf(guid, "%02x%02x0000%02x%02x0000%02x%02x0000%02x%02x0000",
+        snprintf(guid, sizeof(guid), "%02x%02x0000%02x%02x0000%02x%02x0000%02x%02x0000",
                 id.bustype & 0xff, id.bustype >> 8,
                 id.vendor & 0xff,  id.vendor >> 8,
                 id.product & 0xff, id.product >> 8,
@@ -183,7 +183,7 @@ static GLFWbool openJoystickDevice(const char* path)
     }
     else
     {
-        sprintf(guid, "%02x%02x0000%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x00",
+        snprintf(guid, sizeof(guid), "%02x%02x0000%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x00",
                 id.bustype & 0xff, id.bustype >> 8,
                 name[0], name[1], name[2], name[3],
                 name[4], name[5], name[6], name[7],
@@ -194,7 +194,7 @@ static GLFWbool openJoystickDevice(const char* path)
 
     for (int code = BTN_MISC;  code < KEY_CNT;  code++)
     {
-        if (!isBitSet(code, keyBits))
+        if (!_glfwIsBitSet(code, keyBits))
             continue;
 
         linjs.keyMap[code - BTN_MISC] = buttonCount;
@@ -204,7 +204,7 @@ static GLFWbool openJoystickDevice(const char* path)
     for (int code = 0;  code < ABS_CNT;  code++)
     {
         linjs.absMap[code] = -1;
-        if (!isBitSet(code, absBits))
+        if (!_glfwIsBitSet(code, absBits))
             continue;
 
         if (code >= ABS_HAT0X && code <= ABS_HAT3Y)
@@ -235,17 +235,17 @@ static GLFWbool openJoystickDevice(const char* path)
     strncpy(linjs.path, path, sizeof(linjs.path) - 1);
     memcpy(&js->linjs, &linjs, sizeof(linjs));
 
-    pollAbsState(js);
+    _glfwPollAbsStateLinux(js);
 
     _glfwInputJoystick(js, GLFW_CONNECTED);
     return GLFW_TRUE;
 }
 
-#undef isBitSet
+#undef _glfwIsBitSet
 
 // Frees all resources associated with the specified joystick
 //
-static void closeJoystick(_GLFWjoystick* js)
+static void _glfwCloseJoystickLinux(_GLFWjoystick* js)
 {
     _glfwInputJoystick(js, GLFW_DISCONNECTED);
     close(js->linjs.fd);
@@ -254,7 +254,7 @@ static void closeJoystick(_GLFWjoystick* js)
 
 // Lexically compare joysticks by name; used by qsort
 //
-static int compareJoysticks(const void* fp, const void* sp)
+static int _glfwCompareJoysticksLinux(const void* fp, const void* sp)
 {
     const _GLFWjoystick* fj = fp;
     const _GLFWjoystick* sj = sp;
@@ -289,14 +289,14 @@ void _glfwDetectJoystickConnectionLinux(void)
         snprintf(path, sizeof(path), "/dev/input/%s", e->name);
 
         if (e->mask & (IN_CREATE | IN_ATTRIB))
-            openJoystickDevice(path);
+            _glfwOpenJoystickDeviceLinux(path);
         else if (e->mask & IN_DELETE)
         {
             for (int jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
             {
                 if (strcmp(_glfw.joysticks[jid].linjs.path, path) == 0)
                 {
-                    closeJoystick(_glfw.joysticks + jid);
+                    _glfwCloseJoystickLinux(_glfw.joysticks + jid);
                     break;
                 }
             }
@@ -351,7 +351,7 @@ GLFWbool _glfwInitJoysticksLinux(void)
 
             snprintf(path, sizeof(path), "%s/%s", dirname, entry->d_name);
 
-            if (openJoystickDevice(path))
+            if (_glfwOpenJoystickDeviceLinux(path))
                 count++;
         }
 
@@ -360,7 +360,7 @@ GLFWbool _glfwInitJoysticksLinux(void)
 
     // Continue with no joysticks if enumeration fails
 
-    qsort(_glfw.joysticks, count, sizeof(_GLFWjoystick), compareJoysticks);
+    qsort(_glfw.joysticks, count, sizeof(_GLFWjoystick), _glfwCompareJoysticksLinux);
     return GLFW_TRUE;
 }
 
@@ -370,7 +370,7 @@ void _glfwTerminateJoysticksLinux(void)
     {
         _GLFWjoystick* js = _glfw.joysticks + jid;
         if (js->connected)
-            closeJoystick(js);
+            _glfwCloseJoystickLinux(js);
     }
 
     if (_glfw.linjs.inotify > 0)
@@ -397,7 +397,7 @@ GLFWbool _glfwPollJoystickLinux(_GLFWjoystick* js, int mode)
         {
             // Reset the joystick slot if the device was disconnected
             if (errno == ENODEV)
-                closeJoystick(js);
+                _glfwCloseJoystickLinux(js);
 
             break;
         }
@@ -409,7 +409,7 @@ GLFWbool _glfwPollJoystickLinux(_GLFWjoystick* js, int mode)
             else if (e.code == SYN_REPORT)
             {
                 _glfw.linjs.dropped = GLFW_FALSE;
-                pollAbsState(js);
+                _glfwPollAbsStateLinux(js);
             }
         }
 
@@ -417,9 +417,9 @@ GLFWbool _glfwPollJoystickLinux(_GLFWjoystick* js, int mode)
             continue;
 
         if (e.type == EV_KEY)
-            handleKeyEvent(js, e.code, e.value);
+            _glfwHandleKeyEventLinux(js, e.code, e.value);
         else if (e.type == EV_ABS)
-            handleAbsEvent(js, e.code, e.value);
+            _glfwHandleAbsEventLinux(js, e.code, e.value);
     }
 
     return js->connected;

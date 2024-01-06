@@ -34,7 +34,7 @@
 #include "internal.h"
 
 
-static void makeContextCurrentOSMesa(_GLFWwindow* window)
+static void _glfwMakeContextCurrentOSMesa(_GLFWwindow* window)
 {
     if (window)
     {
@@ -68,12 +68,12 @@ static void makeContextCurrentOSMesa(_GLFWwindow* window)
     _glfwPlatformSetTls(&_glfw.contextSlot, window);
 }
 
-static GLFWglproc getProcAddressOSMesa(const char* procname)
+static GLFWglproc _glfwGetProcAddressOSMesa(const char* procname)
 {
     return (GLFWglproc) OSMesaGetProcAddress(procname);
 }
 
-static void destroyContextOSMesa(_GLFWwindow* window)
+static void _glfwDestroyContextOSMesa(_GLFWwindow* window)
 {
     if (window->context.osmesa.handle)
     {
@@ -89,17 +89,17 @@ static void destroyContextOSMesa(_GLFWwindow* window)
     }
 }
 
-static void swapBuffersOSMesa(_GLFWwindow* window)
+static void _glfwSwapBuffersOSMesa(_GLFWwindow* window)
 {
     // No double buffering on OSMesa
 }
 
-static void swapIntervalOSMesa(int interval)
+static void _glfwSwapIntervalOSMesa(int interval)
 {
     // No swap interval on OSMesa
 }
 
-static int extensionSupportedOSMesa(const char* extension)
+static int _glfwExtensionSupportedOSMesa(const char* extension)
 {
     // OSMesa does not have extensions
     return GLFW_FALSE;
@@ -277,12 +277,12 @@ GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    window->context.makeCurrent = makeContextCurrentOSMesa;
-    window->context.swapBuffers = swapBuffersOSMesa;
-    window->context.swapInterval = swapIntervalOSMesa;
-    window->context.extensionSupported = extensionSupportedOSMesa;
-    window->context.getProcAddress = getProcAddressOSMesa;
-    window->context.destroy = destroyContextOSMesa;
+    window->context.makeCurrent = _glfwMakeContextCurrentOSMesa;
+    window->context.swapBuffers = _glfwSwapBuffersOSMesa;
+    window->context.swapInterval = _glfwSwapIntervalOSMesa;
+    window->context.extensionSupported = _glfwExtensionSupportedOSMesa;
+    window->context.getProcAddress = _glfwGetProcAddressOSMesa;
+    window->context.destroy = _glfwDestroyContextOSMesa;
 
     return GLFW_TRUE;
 }

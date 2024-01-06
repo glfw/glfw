@@ -83,23 +83,23 @@
 #include "wayland-idle-inhibit-unstable-v1-client-protocol-code.h"
 #undef types
 
-static void wmBaseHandlePing(void* userData,
-                             struct xdg_wm_base* wmBase,
-                             uint32_t serial)
+static void _glfwWmBaseHandlePingWayland(void* userData,
+                                         struct xdg_wm_base* wmBase,
+                                         uint32_t serial)
 {
     xdg_wm_base_pong(wmBase, serial);
 }
 
-static const struct xdg_wm_base_listener wmBaseListener =
+static const struct xdg_wm_base_listener _glfwWmBaseListenerWayland =
 {
-    wmBaseHandlePing
+    _glfwWmBaseHandlePingWayland
 };
 
-static void registryHandleGlobal(void* userData,
-                                 struct wl_registry* registry,
-                                 uint32_t name,
-                                 const char* interface,
-                                 uint32_t version)
+static void _glfwRegistryHandleGlobalWayland(void* userData,
+                                             struct wl_registry* registry,
+                                             uint32_t name,
+                                             const char* interface,
+                                             uint32_t version)
 {
     if (strcmp(interface, "wl_compositor") == 0)
     {
@@ -144,7 +144,7 @@ static void registryHandleGlobal(void* userData,
     {
         _glfw.wl.wmBase =
             wl_registry_bind(registry, name, &xdg_wm_base_interface, 1);
-        xdg_wm_base_add_listener(_glfw.wl.wmBase, &wmBaseListener, NULL);
+        xdg_wm_base_add_listener(_glfw.wl.wmBase, &_glfwWmBaseListenerWayland, NULL);
     }
     else if (strcmp(interface, "zxdg_decoration_manager_v1") == 0)
     {
@@ -181,9 +181,9 @@ static void registryHandleGlobal(void* userData,
     }
 }
 
-static void registryHandleGlobalRemove(void* userData,
-                                       struct wl_registry* registry,
-                                       uint32_t name)
+static void _glfwRegistryHandleGlobalRemoveWayland(void* userData,
+                                                   struct wl_registry* registry,
+                                                   uint32_t name)
 {
     for (int i = 0; i < _glfw.monitorCount; ++i)
     {
@@ -197,29 +197,29 @@ static void registryHandleGlobalRemove(void* userData,
 }
 
 
-static const struct wl_registry_listener registryListener =
+static const struct wl_registry_listener _glfwRegistryListenerWayland =
 {
-    registryHandleGlobal,
-    registryHandleGlobalRemove
+    _glfwRegistryHandleGlobalWayland,
+    _glfwRegistryHandleGlobalRemoveWayland
 };
 
-void libdecorHandleError(struct libdecor* context,
-                         enum libdecor_error error,
-                         const char* message)
+static void _glfwLibdecorHandleErrorWayland(struct libdecor* context,
+                                            enum libdecor_error error,
+                                            const char* message)
 {
     _glfwInputError(GLFW_PLATFORM_ERROR,
                     "Wayland: libdecor error %u: %s",
                     error, message);
 }
 
-static const struct libdecor_interface libdecorInterface =
+static const struct libdecor_interface _glfwLibdecorInterfaceWayland =
 {
-    libdecorHandleError
+    _glfwLibdecorHandleErrorWayland
 };
 
-static void libdecorReadyCallback(void* userData,
-                                  struct wl_callback* callback,
-                                  uint32_t time)
+static void _glfwLibdecorReadyCallbackWayland(void* userData,
+                                              struct wl_callback* callback,
+                                              uint32_t time)
 {
     _glfw.wl.libdecor.ready = GLFW_TRUE;
 
@@ -228,14 +228,14 @@ static void libdecorReadyCallback(void* userData,
     _glfw.wl.libdecor.callback = NULL;
 }
 
-static const struct wl_callback_listener libdecorReadyListener =
+static const struct wl_callback_listener _glfwLibdecorReadyListenerWayland =
 {
-    libdecorReadyCallback
+    _glfwLibdecorReadyCallbackWayland
 };
 
 // Create key code translation tables
 //
-static void createKeyTables(void)
+static void _glfwCreateKeyTablesWayland(void)
 {
     memset(_glfw.wl.keycodes, -1, sizeof(_glfw.wl.keycodes));
     memset(_glfw.wl.scancodes, -1, sizeof(_glfw.wl.scancodes));
@@ -366,7 +366,7 @@ static void createKeyTables(void)
     }
 }
 
-static GLFWbool loadCursorTheme(void)
+static GLFWbool _glfwLoadCursorThemeWayland(void)
 {
     int cursorSize = 16;
 
@@ -771,9 +771,9 @@ int _glfwInitWayland(void)
     }
 
     _glfw.wl.registry = wl_display_get_registry(_glfw.wl.display);
-    wl_registry_add_listener(_glfw.wl.registry, &registryListener, NULL);
+    wl_registry_add_listener(_glfw.wl.registry, &_glfwRegistryListenerWayland, NULL);
 
-    createKeyTables();
+    _glfwCreateKeyTablesWayland();
 
     _glfw.wl.xkb.context = xkb_context_new(0);
     if (!_glfw.wl.xkb.context)
@@ -791,7 +791,7 @@ int _glfwInitWayland(void)
 
     if (_glfw.wl.libdecor.handle)
     {
-        _glfw.wl.libdecor.context = libdecor_new(_glfw.wl.display, &libdecorInterface);
+        _glfw.wl.libdecor.context = libdecor_new(_glfw.wl.display, &_glfwLibdecorInterfaceWayland);
         if (_glfw.wl.libdecor.context)
         {
             // Perform an initial dispatch and flush to get the init started
@@ -800,7 +800,7 @@ int _glfwInitWayland(void)
             // Create sync point to "know" when libdecor is ready for use
             _glfw.wl.libdecor.callback = wl_display_sync(_glfw.wl.display);
             wl_callback_add_listener(_glfw.wl.libdecor.callback,
-                                     &libdecorReadyListener,
+                                     &_glfwLibdecorReadyListenerWayland,
                                      NULL);
         }
     }
@@ -827,7 +827,7 @@ int _glfwInitWayland(void)
         return GLFW_FALSE;
     }
 
-    if (!loadCursorTheme())
+    if (!_glfwLoadCursorThemeWayland())
         return GLFW_FALSE;
 
     if (_glfw.wl.seat && _glfw.wl.dataDeviceManager)

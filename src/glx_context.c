@@ -42,7 +42,7 @@
 
 // Returns the specified attribute of the specified GLXFBConfig
 //
-static int getGLXFBConfigAttrib(GLXFBConfig fbconfig, int attrib)
+static int _glfwGetConfigAttribGLX(GLXFBConfig fbconfig, int attrib)
 {
     int value;
     glXGetFBConfigAttrib(_glfw.x11.display, fbconfig, attrib, &value);
@@ -51,7 +51,7 @@ static int getGLXFBConfigAttrib(GLXFBConfig fbconfig, int attrib)
 
 // Return the GLXFBConfig most closely matching the specified hints
 //
-static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired,
+static GLFWbool _glfwChooseConfigGLX(const _GLFWfbconfig* desired,
                                   GLXFBConfig* result)
 {
     GLXFBConfig* nativeConfigs;
@@ -84,17 +84,17 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired,
         _GLFWfbconfig* u = usableConfigs + usableCount;
 
         // Only consider RGBA GLXFBConfigs
-        if (!(getGLXFBConfigAttrib(n, GLX_RENDER_TYPE) & GLX_RGBA_BIT))
+        if (!(_glfwGetConfigAttribGLX(n, GLX_RENDER_TYPE) & GLX_RGBA_BIT))
             continue;
 
         // Only consider window GLXFBConfigs
-        if (!(getGLXFBConfigAttrib(n, GLX_DRAWABLE_TYPE) & GLX_WINDOW_BIT))
+        if (!(_glfwGetConfigAttribGLX(n, GLX_DRAWABLE_TYPE) & GLX_WINDOW_BIT))
         {
             if (trustWindowBit)
                 continue;
         }
 
-        if (getGLXFBConfigAttrib(n, GLX_DOUBLEBUFFER) != desired->doublebuffer)
+        if (_glfwGetConfigAttribGLX(n, GLX_DOUBLEBUFFER) != desired->doublebuffer)
             continue;
 
         if (desired->transparent)
@@ -107,29 +107,29 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired,
             }
         }
 
-        u->redBits = getGLXFBConfigAttrib(n, GLX_RED_SIZE);
-        u->greenBits = getGLXFBConfigAttrib(n, GLX_GREEN_SIZE);
-        u->blueBits = getGLXFBConfigAttrib(n, GLX_BLUE_SIZE);
+        u->redBits = _glfwGetConfigAttribGLX(n, GLX_RED_SIZE);
+        u->greenBits = _glfwGetConfigAttribGLX(n, GLX_GREEN_SIZE);
+        u->blueBits = _glfwGetConfigAttribGLX(n, GLX_BLUE_SIZE);
 
-        u->alphaBits = getGLXFBConfigAttrib(n, GLX_ALPHA_SIZE);
-        u->depthBits = getGLXFBConfigAttrib(n, GLX_DEPTH_SIZE);
-        u->stencilBits = getGLXFBConfigAttrib(n, GLX_STENCIL_SIZE);
+        u->alphaBits = _glfwGetConfigAttribGLX(n, GLX_ALPHA_SIZE);
+        u->depthBits = _glfwGetConfigAttribGLX(n, GLX_DEPTH_SIZE);
+        u->stencilBits = _glfwGetConfigAttribGLX(n, GLX_STENCIL_SIZE);
 
-        u->accumRedBits = getGLXFBConfigAttrib(n, GLX_ACCUM_RED_SIZE);
-        u->accumGreenBits = getGLXFBConfigAttrib(n, GLX_ACCUM_GREEN_SIZE);
-        u->accumBlueBits = getGLXFBConfigAttrib(n, GLX_ACCUM_BLUE_SIZE);
-        u->accumAlphaBits = getGLXFBConfigAttrib(n, GLX_ACCUM_ALPHA_SIZE);
+        u->accumRedBits = _glfwGetConfigAttribGLX(n, GLX_ACCUM_RED_SIZE);
+        u->accumGreenBits = _glfwGetConfigAttribGLX(n, GLX_ACCUM_GREEN_SIZE);
+        u->accumBlueBits = _glfwGetConfigAttribGLX(n, GLX_ACCUM_BLUE_SIZE);
+        u->accumAlphaBits = _glfwGetConfigAttribGLX(n, GLX_ACCUM_ALPHA_SIZE);
 
-        u->auxBuffers = getGLXFBConfigAttrib(n, GLX_AUX_BUFFERS);
+        u->auxBuffers = _glfwGetConfigAttribGLX(n, GLX_AUX_BUFFERS);
 
-        if (getGLXFBConfigAttrib(n, GLX_STEREO))
+        if (_glfwGetConfigAttribGLX(n, GLX_STEREO))
             u->stereo = GLFW_TRUE;
 
         if (_glfw.glx.ARB_multisample)
-            u->samples = getGLXFBConfigAttrib(n, GLX_SAMPLES);
+            u->samples = _glfwGetConfigAttribGLX(n, GLX_SAMPLES);
 
         if (_glfw.glx.ARB_framebuffer_sRGB || _glfw.glx.EXT_framebuffer_sRGB)
-            u->sRGB = getGLXFBConfigAttrib(n, GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB);
+            u->sRGB = _glfwGetConfigAttribGLX(n, GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB);
 
         u->handle = (uintptr_t) n;
         usableCount++;
@@ -147,7 +147,7 @@ static GLFWbool chooseGLXFBConfig(const _GLFWfbconfig* desired,
 
 // Create the OpenGL context using legacy API
 //
-static GLXContext createLegacyContextGLX(_GLFWwindow* window,
+static GLXContext _glfwCreateLegacyContextGLX(_GLFWwindow* window,
                                          GLXFBConfig fbconfig,
                                          GLXContext share)
 {
@@ -158,7 +158,7 @@ static GLXContext createLegacyContextGLX(_GLFWwindow* window,
                                True);
 }
 
-static void makeContextCurrentGLX(_GLFWwindow* window)
+static void _glfwMakeContextCurrentGLX(_GLFWwindow* window)
 {
     if (window)
     {
@@ -184,12 +184,12 @@ static void makeContextCurrentGLX(_GLFWwindow* window)
     _glfwPlatformSetTls(&_glfw.contextSlot, window);
 }
 
-static void swapBuffersGLX(_GLFWwindow* window)
+static void _glfwSwapBuffersGLX(_GLFWwindow* window)
 {
     glXSwapBuffers(_glfw.x11.display, window->context.glx.window);
 }
 
-static void swapIntervalGLX(int interval)
+static void _glfwSwapIntervalGLX(int interval)
 {
     _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
     assert(window != NULL);
@@ -209,7 +209,7 @@ static void swapIntervalGLX(int interval)
     }
 }
 
-static int extensionSupportedGLX(const char* extension)
+static int _glfwExtensionSupportedGLX(const char* extension)
 {
     const char* extensions =
         glXQueryExtensionsString(_glfw.x11.display, _glfw.x11.screen);
@@ -222,7 +222,7 @@ static int extensionSupportedGLX(const char* extension)
     return GLFW_FALSE;
 }
 
-static GLFWglproc getProcAddressGLX(const char* procname)
+static GLFWglproc _glfwGetProcAddressGLX(const char* procname)
 {
     if (_glfw.glx.GetProcAddress)
         return _glfw.glx.GetProcAddress((const GLubyte*) procname);
@@ -235,7 +235,7 @@ static GLFWglproc getProcAddressGLX(const char* procname)
     }
 }
 
-static void destroyContextGLX(_GLFWwindow* window)
+static void _glfwDestroyContextGLX(_GLFWwindow* window)
 {
     if (window->context.glx.window)
     {
@@ -365,64 +365,64 @@ GLFWbool _glfwInitGLX(void)
         return GLFW_FALSE;
     }
 
-    if (extensionSupportedGLX("GLX_EXT_swap_control"))
+    if (_glfwExtensionSupportedGLX("GLX_EXT_swap_control"))
     {
         _glfw.glx.SwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC)
-            getProcAddressGLX("glXSwapIntervalEXT");
+            _glfwGetProcAddressGLX("glXSwapIntervalEXT");
 
         if (_glfw.glx.SwapIntervalEXT)
             _glfw.glx.EXT_swap_control = GLFW_TRUE;
     }
 
-    if (extensionSupportedGLX("GLX_SGI_swap_control"))
+    if (_glfwExtensionSupportedGLX("GLX_SGI_swap_control"))
     {
         _glfw.glx.SwapIntervalSGI = (PFNGLXSWAPINTERVALSGIPROC)
-            getProcAddressGLX("glXSwapIntervalSGI");
+            _glfwGetProcAddressGLX("glXSwapIntervalSGI");
 
         if (_glfw.glx.SwapIntervalSGI)
             _glfw.glx.SGI_swap_control = GLFW_TRUE;
     }
 
-    if (extensionSupportedGLX("GLX_MESA_swap_control"))
+    if (_glfwExtensionSupportedGLX("GLX_MESA_swap_control"))
     {
         _glfw.glx.SwapIntervalMESA = (PFNGLXSWAPINTERVALMESAPROC)
-            getProcAddressGLX("glXSwapIntervalMESA");
+            _glfwGetProcAddressGLX("glXSwapIntervalMESA");
 
         if (_glfw.glx.SwapIntervalMESA)
             _glfw.glx.MESA_swap_control = GLFW_TRUE;
     }
 
-    if (extensionSupportedGLX("GLX_ARB_multisample"))
+    if (_glfwExtensionSupportedGLX("GLX_ARB_multisample"))
         _glfw.glx.ARB_multisample = GLFW_TRUE;
 
-    if (extensionSupportedGLX("GLX_ARB_framebuffer_sRGB"))
+    if (_glfwExtensionSupportedGLX("GLX_ARB_framebuffer_sRGB"))
         _glfw.glx.ARB_framebuffer_sRGB = GLFW_TRUE;
 
-    if (extensionSupportedGLX("GLX_EXT_framebuffer_sRGB"))
+    if (_glfwExtensionSupportedGLX("GLX_EXT_framebuffer_sRGB"))
         _glfw.glx.EXT_framebuffer_sRGB = GLFW_TRUE;
 
-    if (extensionSupportedGLX("GLX_ARB_create_context"))
+    if (_glfwExtensionSupportedGLX("GLX_ARB_create_context"))
     {
         _glfw.glx.CreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC)
-            getProcAddressGLX("glXCreateContextAttribsARB");
+            _glfwGetProcAddressGLX("glXCreateContextAttribsARB");
 
         if (_glfw.glx.CreateContextAttribsARB)
             _glfw.glx.ARB_create_context = GLFW_TRUE;
     }
 
-    if (extensionSupportedGLX("GLX_ARB_create_context_robustness"))
+    if (_glfwExtensionSupportedGLX("GLX_ARB_create_context_robustness"))
         _glfw.glx.ARB_create_context_robustness = GLFW_TRUE;
 
-    if (extensionSupportedGLX("GLX_ARB_create_context_profile"))
+    if (_glfwExtensionSupportedGLX("GLX_ARB_create_context_profile"))
         _glfw.glx.ARB_create_context_profile = GLFW_TRUE;
 
-    if (extensionSupportedGLX("GLX_EXT_create_context_es2_profile"))
+    if (_glfwExtensionSupportedGLX("GLX_EXT_create_context_es2_profile"))
         _glfw.glx.EXT_create_context_es2_profile = GLFW_TRUE;
 
-    if (extensionSupportedGLX("GLX_ARB_create_context_no_error"))
+    if (_glfwExtensionSupportedGLX("GLX_ARB_create_context_no_error"))
         _glfw.glx.ARB_create_context_no_error = GLFW_TRUE;
 
-    if (extensionSupportedGLX("GLX_ARB_context_flush_control"))
+    if (_glfwExtensionSupportedGLX("GLX_ARB_context_flush_control"))
         _glfw.glx.ARB_context_flush_control = GLFW_TRUE;
 
     return GLFW_TRUE;
@@ -462,7 +462,7 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
     if (ctxconfig->share)
         share = ctxconfig->share->context.glx.handle;
 
-    if (!chooseGLXFBConfig(fbconfig, &native))
+    if (!_glfwChooseConfigGLX(fbconfig, &native))
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "GLX: Failed to find a suitable GLXFBConfig");
@@ -602,14 +602,14 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
                 ctxconfig->forward == GLFW_FALSE)
             {
                 window->context.glx.handle =
-                    createLegacyContextGLX(window, native, share);
+                    _glfwCreateLegacyContextGLX(window, native, share);
             }
         }
     }
     else
     {
         window->context.glx.handle =
-            createLegacyContextGLX(window, native, share);
+            _glfwCreateLegacyContextGLX(window, native, share);
     }
 
     _glfwReleaseErrorHandlerX11();
@@ -628,12 +628,12 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    window->context.makeCurrent = makeContextCurrentGLX;
-    window->context.swapBuffers = swapBuffersGLX;
-    window->context.swapInterval = swapIntervalGLX;
-    window->context.extensionSupported = extensionSupportedGLX;
-    window->context.getProcAddress = getProcAddressGLX;
-    window->context.destroy = destroyContextGLX;
+    window->context.makeCurrent = _glfwMakeContextCurrentGLX;
+    window->context.swapBuffers = _glfwSwapBuffersGLX;
+    window->context.swapInterval = _glfwSwapIntervalGLX;
+    window->context.extensionSupported = _glfwExtensionSupportedGLX;
+    window->context.getProcAddress = _glfwGetProcAddressGLX;
+    window->context.destroy = _glfwDestroyContextGLX;
 
     return GLFW_TRUE;
 }
@@ -650,7 +650,7 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
     GLXFBConfig native;
     XVisualInfo* result;
 
-    if (!chooseGLXFBConfig(fbconfig, &native))
+    if (!_glfwChooseConfigGLX(fbconfig, &native))
     {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "GLX: Failed to find a suitable GLXFBConfig");

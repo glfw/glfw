@@ -41,7 +41,7 @@
 
 // Get the name of the specified display, or NULL
 //
-static char* getMonitorName(CGDirectDisplayID displayID, NSScreen* screen)
+static char* _glfwGetMonitorNameCocoa(CGDirectDisplayID displayID, NSScreen* screen)
 {
     // IOKit doesn't work on Apple Silicon anymore
     // Luckily, 10.15 introduced -[NSScreen localizedName].
@@ -74,8 +74,10 @@ static char* getMonitorName(CGDirectDisplayID displayID, NSScreen* screen)
                                              kIODisplayOnlyPreferredName);
 
         CFNumberRef vendorIDRef =
+            (CFNumberRef)
             CFDictionaryGetValue(info, CFSTR(kDisplayVendorID));
         CFNumberRef productIDRef =
+            (CFNumberRef)
             CFDictionaryGetValue(info, CFSTR(kDisplayProductID));
         if (!vendorIDRef || !productIDRef)
         {
@@ -103,6 +105,7 @@ static char* getMonitorName(CGDirectDisplayID displayID, NSScreen* screen)
         return _glfw_strdup("Display");
 
     CFDictionaryRef names =
+        (CFDictionaryRef)
         CFDictionaryGetValue(info, CFSTR(kDisplayProductName));
 
     CFStringRef nameRef;
@@ -118,7 +121,7 @@ static char* getMonitorName(CGDirectDisplayID displayID, NSScreen* screen)
     const CFIndex size =
         CFStringGetMaximumSizeForEncoding(CFStringGetLength(nameRef),
                                           kCFStringEncodingUTF8);
-    char* name = _glfw_calloc(size + 1, 1);
+    char* name = (char*) _glfw_calloc(size + 1, 1);
     CFStringGetCString(nameRef, name, size, kCFStringEncodingUTF8);
 
     CFRelease(info);
@@ -127,7 +130,7 @@ static char* getMonitorName(CGDirectDisplayID displayID, NSScreen* screen)
 
 // Check whether the display mode should be included in enumeration
 //
-static GLFWbool modeIsGood(CGDisplayModeRef mode)
+static GLFWbool _glfwModeIsGoodCocoa(CGDisplayModeRef mode)
 {
     uint32_t flags = CGDisplayModeGetIOFlags(mode);
 
@@ -154,7 +157,7 @@ static GLFWbool modeIsGood(CGDisplayModeRef mode)
 
 // Convert Core Graphics display mode to GLFW video mode
 //
-static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode,
+static GLFWvidmode _glfwVidmodeFromCGDisplayModeCocoa(CGDisplayModeRef mode,
                                             double fallbackRefreshRate)
 {
     GLFWvidmode result;
@@ -189,7 +192,7 @@ static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode,
 
 // Starts reservation for display fading
 //
-static CGDisplayFadeReservationToken beginFadeReservation(void)
+static CGDisplayFadeReservationToken _glfwBeginFadeReservationCocoa(void)
 {
     CGDisplayFadeReservationToken token = kCGDisplayFadeReservationInvalidToken;
 
@@ -207,7 +210,7 @@ static CGDisplayFadeReservationToken beginFadeReservation(void)
 
 // Ends reservation for display fading
 //
-static void endFadeReservation(CGDisplayFadeReservationToken token)
+static void _glfwEndFadeReservationCocoa(CGDisplayFadeReservationToken token)
 {
     if (token != kCGDisplayFadeReservationInvalidToken)
     {
@@ -222,7 +225,7 @@ static void endFadeReservation(CGDisplayFadeReservationToken token)
 
 // Returns the display refresh rate queried from the I/O registry
 //
-static double getFallbackRefreshRate(CGDirectDisplayID displayID)
+static double _glfwGetFallbackRefreshRateCocoa(CGDirectDisplayID displayID)
 {
     double refreshRate = 60.0;
 
@@ -239,6 +242,7 @@ static double getFallbackRefreshRate(CGDirectDisplayID displayID)
     while ((service = IOIteratorNext(it)) != 0)
     {
         const CFNumberRef indexRef =
+            (CFNumberRef)
             IORegistryEntryCreateCFProperty(service,
                                             CFSTR("IOFramebufferOpenGLIndex"),
                                             kCFAllocatorDefault,
@@ -254,11 +258,13 @@ static double getFallbackRefreshRate(CGDirectDisplayID displayID)
             continue;
 
         const CFNumberRef clockRef =
+            (CFNumberRef)
             IORegistryEntryCreateCFProperty(service,
                                             CFSTR("IOFBCurrentPixelClock"),
                                             kCFAllocatorDefault,
                                             kNilOptions);
         const CFNumberRef countRef =
+            (CFNumberRef)
             IORegistryEntryCreateCFProperty(service,
                                             CFSTR("IOFBCurrentPixelCount"),
                                             kCFAllocatorDefault,
@@ -299,7 +305,7 @@ void _glfwPollMonitorsCocoa(void)
 {
     uint32_t displayCount;
     CGGetOnlineDisplayList(0, NULL, &displayCount);
-    CGDirectDisplayID* displays = _glfw_calloc(displayCount, sizeof(CGDirectDisplayID));
+    CGDirectDisplayID* displays = (CGDirectDisplayID*) _glfw_calloc(displayCount, sizeof(CGDirectDisplayID));
     CGGetOnlineDisplayList(displayCount, displays, &displayCount);
 
     for (int i = 0;  i < _glfw.monitorCount;  i++)
@@ -309,7 +315,7 @@ void _glfwPollMonitorsCocoa(void)
     uint32_t disconnectedCount = _glfw.monitorCount;
     if (disconnectedCount)
     {
-        disconnected = _glfw_calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
+        disconnected = (_GLFWmonitor**) _glfw_calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
         memcpy(disconnected,
                _glfw.monitors,
                _glfw.monitorCount * sizeof(_GLFWmonitor*));
@@ -352,7 +358,7 @@ void _glfwPollMonitorsCocoa(void)
             continue;
 
         const CGSize size = CGDisplayScreenSize(displays[i]);
-        char* name = getMonitorName(displays[i], screen);
+        char* name = _glfwGetMonitorNameCocoa(displays[i], screen);
         if (!name)
             continue;
 
@@ -365,7 +371,7 @@ void _glfwPollMonitorsCocoa(void)
 
         CGDisplayModeRef mode = CGDisplayCopyDisplayMode(displays[i]);
         if (CGDisplayModeGetRefreshRate(mode) == 0.0)
-            monitor->ns.fallbackRefreshRate = getFallbackRefreshRate(displays[i]);
+            monitor->ns.fallbackRefreshRate = _glfwGetFallbackRefreshRateCocoa(displays[i]);
         CGDisplayModeRelease(mode);
 
         _glfwInputMonitor(monitor, GLFW_CONNECTED, _GLFW_INSERT_LAST);
@@ -399,11 +405,11 @@ void _glfwSetVideoModeCocoa(_GLFWmonitor* monitor, const GLFWvidmode* desired)
     for (CFIndex i = 0;  i < count;  i++)
     {
         CGDisplayModeRef dm = (CGDisplayModeRef) CFArrayGetValueAtIndex(modes, i);
-        if (!modeIsGood(dm))
+        if (!_glfwModeIsGoodCocoa(dm))
             continue;
 
         const GLFWvidmode mode =
-            vidmodeFromCGDisplayMode(dm, monitor->ns.fallbackRefreshRate);
+            _glfwVidmodeFromCGDisplayModeCocoa(dm, monitor->ns.fallbackRefreshRate);
         if (_glfwCompareVideoModes(best, &mode) == 0)
         {
             native = dm;
@@ -416,9 +422,9 @@ void _glfwSetVideoModeCocoa(_GLFWmonitor* monitor, const GLFWvidmode* desired)
         if (monitor->ns.previousMode == NULL)
             monitor->ns.previousMode = CGDisplayCopyDisplayMode(monitor->ns.displayID);
 
-        CGDisplayFadeReservationToken token = beginFadeReservation();
+        CGDisplayFadeReservationToken token = _glfwBeginFadeReservationCocoa();
         CGDisplaySetDisplayMode(monitor->ns.displayID, native, NULL);
-        endFadeReservation(token);
+        _glfwEndFadeReservationCocoa(token);
     }
 
     CFRelease(modes);
@@ -430,10 +436,10 @@ void _glfwRestoreVideoModeCocoa(_GLFWmonitor* monitor)
 {
     if (monitor->ns.previousMode)
     {
-        CGDisplayFadeReservationToken token = beginFadeReservation();
+        CGDisplayFadeReservationToken token = _glfwBeginFadeReservationCocoa();
         CGDisplaySetDisplayMode(monitor->ns.displayID,
                                 monitor->ns.previousMode, NULL);
-        endFadeReservation(token);
+        _glfwEndFadeReservationCocoa(token);
 
         CGDisplayModeRelease(monitor->ns.previousMode);
         monitor->ns.previousMode = NULL;
@@ -519,16 +525,16 @@ GLFWvidmode* _glfwGetVideoModesCocoa(_GLFWmonitor* monitor, int* count)
 
     CFArrayRef modes = CGDisplayCopyAllDisplayModes(monitor->ns.displayID, NULL);
     const CFIndex found = CFArrayGetCount(modes);
-    GLFWvidmode* result = _glfw_calloc(found, sizeof(GLFWvidmode));
+    GLFWvidmode* result = (GLFWvidmode*) _glfw_calloc(found, sizeof(GLFWvidmode));
 
     for (CFIndex i = 0;  i < found;  i++)
     {
         CGDisplayModeRef dm = (CGDisplayModeRef) CFArrayGetValueAtIndex(modes, i);
-        if (!modeIsGood(dm))
+        if (!_glfwModeIsGoodCocoa(dm))
             continue;
 
         const GLFWvidmode mode =
-            vidmodeFromCGDisplayMode(dm, monitor->ns.fallbackRefreshRate);
+            _glfwVidmodeFromCGDisplayModeCocoa(dm, monitor->ns.fallbackRefreshRate);
         CFIndex j;
 
         for (j = 0;  j < *count;  j++)
@@ -556,7 +562,7 @@ void _glfwGetVideoModeCocoa(_GLFWmonitor* monitor, GLFWvidmode *mode)
     @autoreleasepool {
 
     CGDisplayModeRef native = CGDisplayCopyDisplayMode(monitor->ns.displayID);
-    *mode = vidmodeFromCGDisplayMode(native, monitor->ns.fallbackRefreshRate);
+    *mode = _glfwVidmodeFromCGDisplayModeCocoa(native, monitor->ns.fallbackRefreshRate);
     CGDisplayModeRelease(native);
 
     } // autoreleasepool
@@ -567,7 +573,7 @@ GLFWbool _glfwGetGammaRampCocoa(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
     @autoreleasepool {
 
     uint32_t size = CGDisplayGammaTableCapacity(monitor->ns.displayID);
-    CGGammaValue* values = _glfw_calloc(size * 3, sizeof(CGGammaValue));
+    CGGammaValue* values = (CGGammaValue*) _glfw_calloc(size * 3, sizeof(CGGammaValue));
 
     CGGetDisplayTransferByTable(monitor->ns.displayID,
                                 size,
@@ -595,7 +601,7 @@ void _glfwSetGammaRampCocoa(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 {
     @autoreleasepool {
 
-    CGGammaValue* values = _glfw_calloc(ramp->size * 3, sizeof(CGGammaValue));
+    CGGammaValue* values = (CGGammaValue*) _glfw_calloc(ramp->size * 3, sizeof(CGGammaValue));
 
     for (unsigned int i = 0;  i < ramp->size;  i++)
     {

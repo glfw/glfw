@@ -69,28 +69,28 @@ static _GLFWinitconfig _glfwInitHints =
 
 // The allocation function used when no custom allocator is set
 //
-static void* defaultAllocate(size_t size, void* user)
+static void* _glfwDefaultAllocate(size_t size, void* user)
 {
     return malloc(size);
 }
 
 // The deallocation function used when no custom allocator is set
 //
-static void defaultDeallocate(void* block, void* user)
+static void _glfwDefaultDeallocate(void* block, void* user)
 {
     free(block);
 }
 
 // The reallocation function used when no custom allocator is set
 //
-static void* defaultReallocate(void* block, size_t size, void* user)
+static void* _glfwDefaultReallocate(void* block, size_t size, void* user)
 {
     return realloc(block, size);
 }
 
 // Terminate the library
 //
-static void terminate(void)
+static void _glfwTerminate(void)
 {
     int i;
 
@@ -204,8 +204,8 @@ char** _glfwParseUriList(char* text, int* count)
 
         (*count)++;
 
-        path = _glfw_calloc(strlen(line) + 1, 1);
-        paths = _glfw_realloc(paths, *count * sizeof(char*));
+        path = (char*) _glfw_calloc(strlen(line) + 1, 1);
+        paths = (char**) _glfw_realloc(paths, *count * sizeof(char*));
         paths[*count - 1] = path;
 
         while (*line)
@@ -230,7 +230,7 @@ char** _glfwParseUriList(char* text, int* count)
 char* _glfw_strdup(const char* source)
 {
     const size_t length = strlen(source);
-    char* result = _glfw_calloc(length + 1, 1);
+    char* result = (char*) _glfw_calloc(length + 1, 1);
     strcpy(result, source);
     return result;
 }
@@ -380,10 +380,10 @@ void _glfwInputError(int code, const char* format, ...)
 
     if (_glfw.initialized)
     {
-        error = _glfwPlatformGetTls(&_glfw.errorSlot);
+        error = (_GLFWerror*) _glfwPlatformGetTls(&_glfw.errorSlot);
         if (!error)
         {
-            error = _glfw_calloc(1, sizeof(_GLFWerror));
+            error = (_GLFWerror*) _glfw_calloc(1, sizeof(_GLFWerror));
             _glfwPlatformSetTls(&_glfw.errorSlot, error);
             _glfwPlatformLockMutex(&_glfw.errorLock);
             error->next = _glfw.errorListHead;
@@ -417,9 +417,9 @@ GLFWAPI int glfwInit(void)
     _glfw.allocator = _glfwInitAllocator;
     if (!_glfw.allocator.allocate)
     {
-        _glfw.allocator.allocate   = defaultAllocate;
-        _glfw.allocator.reallocate = defaultReallocate;
-        _glfw.allocator.deallocate = defaultDeallocate;
+        _glfw.allocator.allocate   = _glfwDefaultAllocate;
+        _glfw.allocator.reallocate = _glfwDefaultReallocate;
+        _glfw.allocator.deallocate = _glfwDefaultDeallocate;
     }
 
     if (!_glfwSelectPlatform(_glfw.hints.init.platformID, &_glfw.platform))
@@ -427,7 +427,7 @@ GLFWAPI int glfwInit(void)
 
     if (!_glfw.platform.init())
     {
-        terminate();
+        _glfwTerminate();
         return GLFW_FALSE;
     }
 
@@ -435,7 +435,7 @@ GLFWAPI int glfwInit(void)
         !_glfwPlatformCreateTls(&_glfw.errorSlot) ||
         !_glfwPlatformCreateTls(&_glfw.contextSlot))
     {
-        terminate();
+        _glfwTerminate();
         return GLFW_FALSE;
     }
 
@@ -457,7 +457,7 @@ GLFWAPI void glfwTerminate(void)
     if (!_glfw.initialized)
         return;
 
-    terminate();
+    _glfwTerminate();
 }
 
 GLFWAPI void glfwInitHint(int hint, int value)
@@ -528,7 +528,7 @@ GLFWAPI int glfwGetError(const char** description)
         *description = NULL;
 
     if (_glfw.initialized)
-        error = _glfwPlatformGetTls(&_glfw.errorSlot);
+        error = (_GLFWerror*) _glfwPlatformGetTls(&_glfw.errorSlot);
     else
         error = &_glfwMainThreadError;
 

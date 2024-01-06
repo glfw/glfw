@@ -37,7 +37,7 @@
 
 // Change to our application bundle's resources directory, if present
 //
-static void changeToResourcesDirectory(void)
+static void _glfwChangeToResourcesDirectoryCocoa(void)
 {
     char resourcesPath[MAXPATHLEN];
 
@@ -76,7 +76,7 @@ static void changeToResourcesDirectory(void)
 // could go away at any moment, lots of stuff that really should be
 // localize(d|able), etc.  Add a nib to save us this horror.
 //
-static void createMenuBar(void)
+static void _glfwCreateMenuBarCocoa(void)
 {
     NSString* appName = nil;
     NSDictionary* bundleInfo = [[NSBundle mainBundle] infoDictionary];
@@ -177,7 +177,7 @@ static void createMenuBar(void)
 
 // Create key code translation tables
 //
-static void createKeyTables(void)
+static void _glfwCreateKeyTablesCocoa(void)
 {
     memset(_glfw.ns.keycodes, -1, sizeof(_glfw.ns.keycodes));
     memset(_glfw.ns.scancodes, -1, sizeof(_glfw.ns.scancodes));
@@ -307,7 +307,7 @@ static void createKeyTables(void)
 
 // Retrieve Unicode data for the current keyboard layout
 //
-static GLFWbool updateUnicodeData(void)
+static GLFWbool _glfwUpdateUnicodeDataCocoa(void)
 {
     if (_glfw.ns.inputSource)
     {
@@ -325,7 +325,8 @@ static GLFWbool updateUnicodeData(void)
     }
 
     _glfw.ns.unicodeData =
-        TISGetInputSourceProperty(_glfw.ns.inputSource,
+        (id)
+        TISGetInputSourceProperty((TISInputSourceRef) _glfw.ns.inputSource,
                                   kTISPropertyUnicodeKeyLayoutData);
     if (!_glfw.ns.unicodeData)
     {
@@ -339,7 +340,7 @@ static GLFWbool updateUnicodeData(void)
 
 // Load HIToolbox.framework and the TIS symbols we need from it
 //
-static GLFWbool initializeTIS(void)
+static GLFWbool _glfwInitializeTISCocoa(void)
 {
     // This works only because Cocoa has already loaded it properly
     _glfw.ns.tis.bundle =
@@ -352,15 +353,19 @@ static GLFWbool initializeTIS(void)
     }
 
     CFStringRef* kPropertyUnicodeKeyLayoutData =
+        (CFStringRef*)
         CFBundleGetDataPointerForName(_glfw.ns.tis.bundle,
                                       CFSTR("kTISPropertyUnicodeKeyLayoutData"));
     _glfw.ns.tis.CopyCurrentKeyboardLayoutInputSource =
+        (PFN_TISCopyCurrentKeyboardLayoutInputSource)
         CFBundleGetFunctionPointerForName(_glfw.ns.tis.bundle,
                                           CFSTR("TISCopyCurrentKeyboardLayoutInputSource"));
     _glfw.ns.tis.GetInputSourceProperty =
+        (PFN_TISGetInputSourceProperty)
         CFBundleGetFunctionPointerForName(_glfw.ns.tis.bundle,
                                           CFSTR("TISGetInputSourceProperty"));
     _glfw.ns.tis.GetKbdType =
+        (PFN_LMGetKbdType)
         CFBundleGetFunctionPointerForName(_glfw.ns.tis.bundle,
                                           CFSTR("LMGetKbdType"));
 
@@ -377,7 +382,7 @@ static GLFWbool initializeTIS(void)
     _glfw.ns.tis.kPropertyUnicodeKeyLayoutData =
         *kPropertyUnicodeKeyLayoutData;
 
-    return updateUnicodeData();
+    return _glfwUpdateUnicodeDataCocoa();
 }
 
 @interface GLFWHelper : NSObject
@@ -387,7 +392,7 @@ static GLFWbool initializeTIS(void)
 
 - (void)selectedKeyboardInputSourceChanged:(NSObject* )object
 {
-    updateUnicodeData();
+    _glfwUpdateUnicodeDataCocoa();
 }
 
 - (void)doNothing:(id)object
@@ -434,7 +439,7 @@ static GLFWbool initializeTIS(void)
                                 topLevelObjects:&_glfw.ns.nibObjects];
         }
         else
-            createMenuBar();
+            _glfwCreateMenuBarCocoa();
     }
 }
 
@@ -608,7 +613,7 @@ int _glfwInitCocoa(void)
                                               handler:block];
 
     if (_glfw.hints.init.ns.chdir)
-        changeToResourcesDirectory();
+        _glfwChangeToResourcesDirectoryCocoa();
 
     // Press and Hold prevents some keys from emitting repeated characters
     NSDictionary* defaults = @{@"ApplePressAndHoldEnabled":@NO};
@@ -620,7 +625,7 @@ int _glfwInitCocoa(void)
                name:NSTextInputContextKeyboardSelectionDidChangeNotification
              object:nil];
 
-    createKeyTables();
+    _glfwCreateKeyTablesCocoa();
 
     _glfw.ns.eventSource = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
     if (!_glfw.ns.eventSource)
@@ -628,7 +633,7 @@ int _glfwInitCocoa(void)
 
     CGEventSourceSetLocalEventsSuppressionInterval(_glfw.ns.eventSource, 0.0);
 
-    if (!initializeTIS())
+    if (!_glfwInitializeTISCocoa())
         return GLFW_FALSE;
 
     _glfwPollMonitorsCocoa();

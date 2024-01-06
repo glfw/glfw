@@ -39,16 +39,16 @@
 #include "wayland-client-protocol.h"
 
 
-static void outputHandleGeometry(void* userData,
-                                 struct wl_output* output,
-                                 int32_t x,
-                                 int32_t y,
-                                 int32_t physicalWidth,
-                                 int32_t physicalHeight,
-                                 int32_t subpixel,
-                                 const char* make,
-                                 const char* model,
-                                 int32_t transform)
+static void _glfwOutputHandleGeometryWayland(void* userData,
+                                             struct wl_output* output,
+                                             int32_t x,
+                                             int32_t y,
+                                             int32_t physicalWidth,
+                                             int32_t physicalHeight,
+                                             int32_t subpixel,
+                                             const char* make,
+                                             const char* model,
+                                             int32_t transform)
 {
     struct _GLFWmonitor* monitor = userData;
 
@@ -61,12 +61,12 @@ static void outputHandleGeometry(void* userData,
         snprintf(monitor->name, sizeof(monitor->name), "%s %s", make, model);
 }
 
-static void outputHandleMode(void* userData,
-                             struct wl_output* output,
-                             uint32_t flags,
-                             int32_t width,
-                             int32_t height,
-                             int32_t refresh)
+static void _glfwOutputHandleModeWayland(void* userData,
+                                         struct wl_output* output,
+                                         uint32_t flags,
+                                         int32_t width,
+                                         int32_t height,
+                                         int32_t refresh)
 {
     struct _GLFWmonitor* monitor = userData;
     GLFWvidmode mode;
@@ -87,7 +87,7 @@ static void outputHandleMode(void* userData,
         monitor->wl.currentMode = monitor->modeCount - 1;
 }
 
-static void outputHandleDone(void* userData, struct wl_output* output)
+static void _glfwOutputHandleDoneWayland(void* userData, struct wl_output* output)
 {
     struct _GLFWmonitor* monitor = userData;
 
@@ -108,9 +108,9 @@ static void outputHandleDone(void* userData, struct wl_output* output)
     _glfwInputMonitor(monitor, GLFW_CONNECTED, _GLFW_INSERT_LAST);
 }
 
-static void outputHandleScale(void* userData,
-                              struct wl_output* output,
-                              int32_t factor)
+static void _glfwOutputHandleScaleWayland(void* userData,
+                                          struct wl_output* output,
+                                          int32_t factor)
 {
     struct _GLFWmonitor* monitor = userData;
 
@@ -132,30 +132,30 @@ static void outputHandleScale(void* userData,
 
 #ifdef WL_OUTPUT_NAME_SINCE_VERSION
 
-void outputHandleName(void* userData, struct wl_output* wl_output, const char* name)
+static void _glfwOutputHandleNameWayland(void* userData, struct wl_output* wl_output, const char* name)
 {
     struct _GLFWmonitor* monitor = userData;
 
     strncpy(monitor->name, name, sizeof(monitor->name) - 1);
 }
 
-void outputHandleDescription(void* userData,
-                             struct wl_output* wl_output,
-                             const char* description)
+static void _glfwOutputHandleDescriptionWayland(void* userData,
+                                                struct wl_output* wl_output,
+                                                const char* description)
 {
 }
 
 #endif // WL_OUTPUT_NAME_SINCE_VERSION
 
-static const struct wl_output_listener outputListener =
+static const struct wl_output_listener _glfwOutputListenerWayland =
 {
-    outputHandleGeometry,
-    outputHandleMode,
-    outputHandleDone,
-    outputHandleScale,
+    _glfwOutputHandleGeometryWayland,
+    _glfwOutputHandleModeWayland,
+    _glfwOutputHandleDoneWayland,
+    _glfwOutputHandleScaleWayland,
 #ifdef WL_OUTPUT_NAME_SINCE_VERSION
-    outputHandleName,
-    outputHandleDescription,
+    _glfwOutputHandleNameWayland,
+    _glfwOutputHandleDescriptionWayland,
 #endif
 };
 
@@ -193,7 +193,7 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
     monitor->wl.name = name;
 
     wl_proxy_set_tag((struct wl_proxy*) output, &_glfw.wl.tag);
-    wl_output_add_listener(output, &outputListener, monitor);
+    wl_output_add_listener(output, &_glfwOutputListenerWayland, monitor);
 }
 
 

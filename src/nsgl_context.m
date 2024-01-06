@@ -33,7 +33,7 @@
 #include <unistd.h>
 #include <math.h>
 
-static void makeContextCurrentNSGL(_GLFWwindow* window)
+static void _glfwMakeContextCurrentNSGL(_GLFWwindow* window)
 {
     @autoreleasepool {
 
@@ -47,7 +47,7 @@ static void makeContextCurrentNSGL(_GLFWwindow* window)
     } // autoreleasepool
 }
 
-static void swapBuffersNSGL(_GLFWwindow* window)
+static void _glfwSwapBuffersNSGL(_GLFWwindow* window)
 {
     @autoreleasepool {
 
@@ -78,11 +78,11 @@ static void swapBuffersNSGL(_GLFWwindow* window)
     } // autoreleasepool
 }
 
-static void swapIntervalNSGL(int interval)
+static void _glfwSwapIntervalNSGL(int interval)
 {
     @autoreleasepool {
 
-    _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
+    _GLFWwindow* window = (_GLFWwindow*) _glfwPlatformGetTls(&_glfw.contextSlot);
     assert(window != NULL);
 
     [window->context.nsgl.object setValues:&interval
@@ -91,19 +91,19 @@ static void swapIntervalNSGL(int interval)
     } // autoreleasepool
 }
 
-static int extensionSupportedNSGL(const char* extension)
+static int _glfwExtensionSupportedNSGL(const char* extension)
 {
     // There are no NSGL extensions
     return GLFW_FALSE;
 }
 
-static GLFWglproc getProcAddressNSGL(const char* procname)
+static GLFWglproc _glfwGetProcAddressNSGL(const char* procname)
 {
     CFStringRef symbolName = CFStringCreateWithCString(kCFAllocatorDefault,
                                                        procname,
                                                        kCFStringEncodingASCII);
 
-    GLFWglproc symbol = CFBundleGetFunctionPointerForName(_glfw.nsgl.framework,
+    GLFWglproc symbol = (GLFWglproc) CFBundleGetFunctionPointerForName(_glfw.nsgl.framework,
                                                           symbolName);
 
     CFRelease(symbolName);
@@ -111,7 +111,7 @@ static GLFWglproc getProcAddressNSGL(const char* procname)
     return symbol;
 }
 
-static void destroyContextNSGL(_GLFWwindow* window)
+static void _glfwDestroyContextNSGL(_GLFWwindow* window)
 {
     @autoreleasepool {
 
@@ -339,12 +339,12 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
 
     [window->context.nsgl.object setView:window->ns.view];
 
-    window->context.makeCurrent = makeContextCurrentNSGL;
-    window->context.swapBuffers = swapBuffersNSGL;
-    window->context.swapInterval = swapIntervalNSGL;
-    window->context.extensionSupported = extensionSupportedNSGL;
-    window->context.getProcAddress = getProcAddressNSGL;
-    window->context.destroy = destroyContextNSGL;
+    window->context.makeCurrent = _glfwMakeContextCurrentNSGL;
+    window->context.swapBuffers = _glfwSwapBuffersNSGL;
+    window->context.swapInterval = _glfwSwapIntervalNSGL;
+    window->context.extensionSupported = _glfwExtensionSupportedNSGL;
+    window->context.getProcAddress = _glfwGetProcAddressNSGL;
+    window->context.destroy = _glfwDestroyContextNSGL;
 
     return GLFW_TRUE;
 }

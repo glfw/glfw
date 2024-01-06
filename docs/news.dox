@@ -103,6 +103,14 @@ Alt-and-then-Space shortcuts.  This may be useful for more GUI-oriented
 applications.
 
 
+@subsubsection features_34_disable_mouse_button_limit Allow disabling the mouse button limit
+
+GLFW now allows disabling the limit of reporting only 8
+[supported mouse buttons](@ref buttons). For compatibility with older versions,
+the @ref GLFW_MOUSE_BUTTON_LIMIT init hint needs to be set to `GLFW_FALSE` to
+make use of this.
+
+
 @subsection caveats Caveats for version 3.4
 
 @subsubsection native_34 Multiple sets of native access functions

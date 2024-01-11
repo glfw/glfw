@@ -292,20 +292,6 @@ if (MSVC OR CMAKE_C_SIMULATE_ID STREQUAL "MSVC")
     target_compile_definitions(glfw PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
 
-# Workaround for VS 2008 not shipping with stdint.h
-if (MSVC90)
-    target_include_directories(glfw PUBLIC "${GLFW_SOURCE_DIR}/deps/vs2008")
-endif()
-
-# Check for the DirectX 9 SDK as it is not included with VS 2008
-if (MSVC90)
-    include(CheckIncludeFile)
-    check_include_file(dinput.h DINPUT_H_FOUND)
-    if (NOT DINPUT_H_FOUND)
-        message(FATAL_ERROR "DirectX 9 headers not found; install DirectX 9 SDK")
-    endif()
-endif()
-
 # Workaround for -std=c99 on Linux disabling _DEFAULT_SOURCE (POSIX 2008 and more)
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     target_compile_definitions(glfw PRIVATE _DEFAULT_SOURCE)

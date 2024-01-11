@@ -1035,7 +1035,7 @@ void _glfwSetWindowTitlebarColorCocoa(_GLFWwindow* window, int r, int g, int b, 
         CGFloat blue = (CGFloat)b / 255.0; 
         CGFloat alpha = (CGFloat)a / 255.0; 
 
-        NSColor *color = [NSColor colorWithCalibratedRed:red green:green blue:blue alpha:alpha];
+        NSColor *color = [NSColor colorWithDeviceRed:red green:green blue:blue alpha:alpha];
 
         [window->ns.object setTitlebarAppearsTransparent:YES]; // gives it "flat" look
         [window->ns.object setBackgroundColor:color];

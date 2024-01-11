@@ -2101,6 +2101,9 @@ void _glfwSetWindowTitleX11(_GLFWwindow* window, const char* title)
 
     XFlush(_glfw.x11.display);
 }
+void _glfwSetWindowTitlebarColorX11(_GLFWwindow* window, int r, int g, int b, int a) {
+    
+}
 
 void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* images)
 {

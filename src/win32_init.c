@@ -637,6 +637,7 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         _glfwCreateWindowWin32,
         _glfwDestroyWindowWin32,
         _glfwSetWindowTitleWin32,
+        _glfwSetWindowTitlebarColorWin32,
         _glfwSetWindowIconWin32,
         _glfwGetWindowPosWin32,
         _glfwSetWindowPosWin32,

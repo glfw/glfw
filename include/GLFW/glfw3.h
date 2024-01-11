@@ -3312,6 +3312,8 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  */
 GLFWAPI void glfwSetWindowIcon(GLFWwindow* window, int count, const GLFWimage* images);
 
+GLFWAPI void glfwSetWindowTitlebarColor(GLFWwindow* window, int r, int g, int b, int a);
+
 /*! @brief Retrieves the position of the content area of the specified window.
  *
  *  This function retrieves the position, in screen coordinates, of the

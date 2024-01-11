@@ -1208,6 +1208,7 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
         _glfwCreateWindowX11,
         _glfwDestroyWindowX11,
         _glfwSetWindowTitleX11,
+        _glfwSetWindowTitlebarColorX11,
         _glfwSetWindowIconX11,
         _glfwGetWindowPosX11,
         _glfwSetWindowPosX11,

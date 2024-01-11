@@ -24,6 +24,7 @@
 //
 //========================================================================
 
+#include "internal.h"
 #include <wayland-client-core.h>
 #include <xkbcommon/xkbcommon.h>
 #include <xkbcommon/xkbcommon-compose.h>
@@ -612,6 +613,7 @@ void _glfwTerminateWayland(void);
 GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
 void _glfwDestroyWindowWayland(_GLFWwindow* window);
 void _glfwSetWindowTitleWayland(_GLFWwindow* window, const char* title);
+void _glfwSetWindowTitlebarColorWayland(_GLFWwindow* window, int r, int g, int b, int a);
 void _glfwSetWindowIconWayland(_GLFWwindow* window, int count, const GLFWimage* images);
 void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos);
 void _glfwSetWindowPosWayland(_GLFWwindow* window, int xpos, int ypos);

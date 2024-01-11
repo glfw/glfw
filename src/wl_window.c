@@ -2111,6 +2111,9 @@ void _glfwSetWindowTitleWayland(_GLFWwindow* window, const char* title)
     else if (window->wl.xdg.toplevel)
         xdg_toplevel_set_title(window->wl.xdg.toplevel, title);
 }
+void _glfwSetWindowTitlebarColorWayland(_GLFWwindow* window, int r, int g, int b, int a) {
+    
+}
 
 void _glfwSetWindowIconWayland(_GLFWwindow* window,
                                int count, const GLFWimage* images)

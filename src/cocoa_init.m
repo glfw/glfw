@@ -527,6 +527,7 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         _glfwCreateWindowCocoa,
         _glfwDestroyWindowCocoa,
         _glfwSetWindowTitleCocoa,
+        _glfwSetWindowTitlebarColorCocoa,
         _glfwSetWindowIconCocoa,
         _glfwGetWindowPosCocoa,
         _glfwSetWindowPosCocoa,

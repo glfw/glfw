@@ -1538,7 +1538,9 @@ void _glfwSetWindowTitleWin32(_GLFWwindow* window, const char* title)
     SetWindowTextW(window->win32.handle, wideTitle);
     _glfw_free(wideTitle);
 }
-
+void _glfwSetWindowTitlebarColorWin32(GLFWwindow* window, int r, int g, int b, int a) {
+    
+}
 void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* images)
 {
     HICON bigIcon = NULL, smallIcon = NULL;

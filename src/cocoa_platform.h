@@ -217,6 +217,7 @@ void _glfwTerminateCocoa(void);
 GLFWbool _glfwCreateWindowCocoa(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
 void _glfwDestroyWindowCocoa(_GLFWwindow* window);
 void _glfwSetWindowTitleCocoa(_GLFWwindow* window, const char* title);
+void _glfwSetWindowTitlebarColorCocoa(_GLFWwindow* window, int r, int g, int b, int a);
 void _glfwSetWindowIconCocoa(_GLFWwindow* window, int count, const GLFWimage* images);
 void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos);
 void _glfwSetWindowPosCocoa(_GLFWwindow* window, int xpos, int ypos);

@@ -182,6 +182,9 @@ void _glfwDestroyWindowNull(_GLFWwindow* window)
 void _glfwSetWindowTitleNull(_GLFWwindow* window, const char* title)
 {
 }
+void _glfwSetWindowTitlebarColorNull(_GLFWwindow* window, int r, int g, int b, int a) {
+    
+}
 
 void _glfwSetWindowIconNull(_GLFWwindow* window, int count, const GLFWimage* images)
 {

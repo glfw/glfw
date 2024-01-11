@@ -1027,6 +1027,20 @@ void _glfwSetWindowTitleCocoa(_GLFWwindow* window, const char* title)
     [window->ns.object setMiniwindowTitle:string];
     } // autoreleasepool
 }
+void _glfwSetWindowTitlebarColorCocoa(_GLFWwindow* window, int r, int g, int b, int a)
+{
+    @autoreleasepool {
+        CGFloat red = r/ 255;   
+        CGFloat green =g / 255; 
+        CGFloat blue = b / 255; 
+        CGFloat alpha = a / 255; 
+
+        NSColor *color = [NSColor colorWithCalibratedRed:red green:green blue:blue alpha:alpha];
+
+        [window->ns.object setTitlebarAppearsTransparent:YES]; // gives it "flat" look
+        [window->ns.object setBackgroundColor:color];
+    } // autoreleasepool
+}
 
 void _glfwSetWindowIconCocoa(_GLFWwindow* window,
                              int count, const GLFWimage* images)

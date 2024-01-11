@@ -447,6 +447,7 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         _glfwCreateWindowWayland,
         _glfwDestroyWindowWayland,
         _glfwSetWindowTitleWayland,
+        _glfwSetWindowTitlebarColorWayland,
         _glfwSetWindowIconWayland,
         _glfwGetWindowPosWayland,
         _glfwSetWindowPosWayland,

@@ -529,7 +529,7 @@ GLFWAPI void glfwSetWindowTitlebarColor(GLFWwindow* handle, int r, int g, int b,
     assert(window != NULL);
     assert(window != NULL);
     _GLFW_REQUIRE_INIT();
-    _glfw.platform.setWindowTitlebarColor(handle, r,g,b,a);
+    _glfw.platform.setWindowTitlebarColor(window, r,g,b,a);
 }
 GLFWAPI void glfwSetWindowIcon(GLFWwindow* handle,
                                int count, const GLFWimage* images)

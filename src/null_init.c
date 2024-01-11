@@ -73,6 +73,7 @@ GLFWbool _glfwConnectNull(int platformID, _GLFWplatform* platform)
         _glfwCreateWindowNull,
         _glfwDestroyWindowNull,
         _glfwSetWindowTitleNull,
+        _glfwSetWindowTitlebarColorNull,
         _glfwSetWindowIconNull,
         _glfwGetWindowPosNull,
         _glfwSetWindowPosNull,

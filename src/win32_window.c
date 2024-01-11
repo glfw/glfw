@@ -36,6 +36,7 @@
 #include <string.h>
 #include <windowsx.h>
 #include <shellapi.h>
+#include <dwmapi.h>
 
 // Returns the window style for the specified window
 //
@@ -1539,7 +1540,10 @@ void _glfwSetWindowTitleWin32(_GLFWwindow* window, const char* title)
     _glfw_free(wideTitle);
 }
 void _glfwSetWindowTitlebarColorWin32(GLFWwindow* window, int r, int g, int b, int a) {
-    
+    COLORREF color = RGB(r, g, b);
+   BOOL SET_CAPTION_COLOR = SUCCEEDED(DwmSetWindowAttribute(
+    window->win32.handle, DWMWINDOWATTRIBUTE::DWMWA_CAPTION_COLOR,
+    &color, sizeof(color))); 
 }
 void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* images)
 {

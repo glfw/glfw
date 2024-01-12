@@ -827,11 +827,11 @@ extern "C" {
 #define GLFW_FEATURE_UNIMPLEMENTED  0x0001000D
 /*! @brief Platform unavailable or no matching platform was found.
  *
- *  If emitted during initialization, no matching platform was found.  If @ref
- *  GLFW_PLATFORM is set to `GLFW_ANY_PLATFORM`, GLFW could not detect any of the
- *  platforms supported by this library binary, except for the Null platform.  If set to
- *  a specific platform, it is either not supported by this library binary or GLFW was not
- *  able to detect it.
+ *  If emitted during initialization, no matching platform was found.  If the @ref
+ *  GLFW_PLATFORM init hint was set to `GLFW_ANY_PLATFORM`, GLFW could not detect any of
+ *  the platforms supported by this library binary, except for the Null platform.  If the
+ *  init hint was set to a specific platform, it is either not supported by this library
+ *  binary or GLFW was not able to detect it.
  *
  *  If emitted by a native access function, GLFW was initialized for a different platform
  *  than the function is for.

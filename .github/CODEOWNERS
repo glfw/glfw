@@ -1,8 +1,6 @@
 
 *               @elmindreda
 
-src/wl_*        @linkmauve
-
 docs/*.css      @glfw/webdev
 docs/*.scss     @glfw/webdev
 docs/*.html     @glfw/webdev

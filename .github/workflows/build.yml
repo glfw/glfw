@@ -12,6 +12,7 @@ jobs:
     build-linux-x11-clang:
         name: X11 (Linux, Clang)
         runs-on: ubuntu-latest
+        timeout-minutes: 4
         env:
             CC: clang
             CFLAGS: -Werror
@@ -35,6 +36,7 @@ jobs:
     build-linux-wayland-clang:
         name: Wayland (Linux, Clang)
         runs-on: ubuntu-latest
+        timeout-minutes: 4
         env:
             CC: clang
             CFLAGS: -Werror
@@ -58,6 +60,7 @@ jobs:
     build-linux-null-clang:
         name: Null (Linux, Clang)
         runs-on: ubuntu-latest
+        timeout-minutes: 4
         env:
             CC: clang
             CFLAGS: -Werror
@@ -81,6 +84,7 @@ jobs:
     build-macos-cocoa-clang:
         name: Cocoa (macOS, Clang)
         runs-on: macos-latest
+        timeout-minutes: 4
         env:
             CFLAGS: -Werror
             MACOSX_DEPLOYMENT_TARGET: 10.8
@@ -100,6 +104,7 @@ jobs:
     build-windows-win32-vs2022:
         name: Win32 (Windows, VS2022)
         runs-on: windows-latest
+        timeout-minutes: 4
         env:
             CFLAGS: /WX
         steps:

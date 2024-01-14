@@ -123,7 +123,7 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
-There is nothing here yet.
+ - [Linux] Bugfix: `regfree´ was called on invalid data (#2464)
 
 
 ## Contact

@@ -334,8 +334,6 @@ void _glfwTerminateJoysticksLinux(void)
             closeJoystick(js);
     }
 
-    regfree(&_glfw.linjs.regex);
-
     if (_glfw.linjs.inotify > 0)
     {
         if (_glfw.linjs.watch > 0)

@@ -202,6 +202,7 @@ video tutorials.
  - Aleksey Rybalkin
  - Mikko Rytkönen
  - Riku Salminen
+ - Anton Samokhvalov
  - Brandon Schaefer
  - Sebastian Schuberth
  - Christian Sdunek

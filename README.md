@@ -79,6 +79,8 @@ more information.
 
 ## System requirements
 
+GLFW is written in C99 and does not support Visual Studio 2012 or earlier.
+
 GLFW supports Windows XP and later and macOS 10.8 and later.  Linux and other
 Unix-like systems running the X Window System are supported even without
 a desktop environment or modern extensions, although some features require

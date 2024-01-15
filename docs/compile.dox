@@ -7,6 +7,8 @@
 This is about compiling the GLFW library itself.  For information on how to
 build applications that use GLFW, see @ref build_guide.
 
+GLFW uses some C99 features and does not support Visual Studio 2012 and earlier.
+
 
 @section compile_cmake Using CMake
 

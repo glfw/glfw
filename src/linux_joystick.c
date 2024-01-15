@@ -388,6 +388,7 @@ void _glfwTerminateJoysticksLinux(void)
 GLFWbool _glfwPollJoystickLinux(_GLFWjoystick* js, int mode)
 {
     // Read all queued events (non-blocking)
+    GLFWbool event_valid = GLFW_FALSE;
     for (;;)
     {
         struct input_event e;
@@ -398,6 +399,8 @@ GLFWbool _glfwPollJoystickLinux(_GLFWjoystick* js, int mode)
             // Reset the joystick slot if the device was disconnected
             if (errno == ENODEV)
                 closeJoystick(js);
+            else if ((errno == EAGAIN) && (mode != _GLFW_POLL_PRESENCE))
+                return event_valid;
 
             break;
         }
@@ -409,6 +412,7 @@ GLFWbool _glfwPollJoystickLinux(_GLFWjoystick* js, int mode)
             else if (e.code == SYN_REPORT)
             {
                 _glfw.linjs.dropped = GLFW_FALSE;
+                event_valid = GLFW_TRUE;
                 pollAbsState(js);
             }
         }

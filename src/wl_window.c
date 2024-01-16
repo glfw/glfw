@@ -1537,24 +1537,14 @@ static void pointerHandleAxis(void* userData,
                               wl_fixed_t value)
 {
     _GLFWwindow* window = _glfw.wl.pointerFocus;
-    double x = 0.0, y = 0.0;
-    // Wayland scroll events are in pointer motion coordinate space (think two
-    // finger scroll).  The factor 10 is commonly used to convert to "scroll
-    // step means 1.0.
-    const double scrollFactor = 1.0 / 10.0;
-
     if (!window)
         return;
 
-    assert(axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL ||
-           axis == WL_POINTER_AXIS_VERTICAL_SCROLL);
-
+    // NOTE: 10 units of motion per mouse wheel step seems to be a common ratio
     if (axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL)
-        x = -wl_fixed_to_double(value) * scrollFactor;
+        _glfwInputScroll(window, -wl_fixed_to_double(value) / 10.0, 0.0);
     else if (axis == WL_POINTER_AXIS_VERTICAL_SCROLL)
-        y = -wl_fixed_to_double(value) * scrollFactor;
-
-    _glfwInputScroll(window, x, y);
+        _glfwInputScroll(window, 0.0, -wl_fixed_to_double(value) / 10.0);
 }
 
 static const struct wl_pointer_listener pointerListener =

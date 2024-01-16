@@ -1974,6 +1974,23 @@ typedef void (* GLFWmonitorfun)(GLFWmonitor* monitor, int event);
  */
 typedef void (* GLFWjoystickfun)(int jid, int event);
 
+/*! @brief The function pointer type for empty event callbacks.
+ *
+ *  This is the function pointer type for empty event callbacks.
+ *  An empty event callback function has the following signature:
+ *  @code
+ *  void function_name()
+ *  @endcode
+ *
+ *  @sa @ref empty_event
+ *  @sa @ref glfwSetEmptyEventCallback
+ *
+ *  @since Added in version 3.2.
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWemptyeventfun)(void);
+
 /*! @brief Video mode type.
  *
  *  This describes a single video mode.
@@ -5697,7 +5714,36 @@ GLFWAPI int glfwJoystickIsGamepad(int jid);
  *
  *  @ingroup input
  */
-GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun callback);
+GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun callback);/*! @brief Sets the joystick configuration callback.
+ *
+ *
+ *  This function sets the empty event callback, or removes the currently
+ *  set callback. This is called on the GLFW thread at some point in the future
+ *  when glfwPostEmptyEvent is called from any thread.
+ *
+ *  @param[in] callback The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  @callback_signature
+ *  @code
+ *  void function_name()
+ *  @endcode
+ *  For more information about the callback parameters, see the
+ *  [function pointer type](@ref GLFWemptyeventfun).
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function may be called from any thread
+ *
+ *  @sa @ref empty_event
+ *
+ *  @since Added in version TODO
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWemptyeventfun glfwSetEmptyEventCallback(GLFWemptyeventfun callback);
 
 /*! @brief Adds the specified SDL_GameControllerDB gamepad mappings.
  *

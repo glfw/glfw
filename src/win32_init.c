@@ -361,6 +361,19 @@ static LRESULT CALLBACK helperWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
             break;
         }
+
+        default:
+        {
+            // this check may not be necessary, but it checks just in case the message
+            // has not been registered. this skips having to check uMsg != WM_NULL
+            UINT emptyEventMsg = _glfw.win32.emptyEventMessage;
+            if (emptyEventMsg != 0 && uMsg == emptyEventMsg)
+            {
+                if (_glfw.callbacks.emptyEvent)
+                    _glfw.callbacks.emptyEvent();
+            }
+            break;
+        }
     }
 
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
@@ -400,6 +413,14 @@ static GLFWbool createHelperWindow(void)
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
                              "Win32: Failed to create helper window");
+        return GLFW_FALSE;
+    }
+
+    _glfw.win32.emptyEventMessage = RegisterWindowMessageW(L"GLFW.EmptyEventMessage");
+    if (!_glfw.win32.emptyEventMessage)
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to register empty event message");
         return GLFW_FALSE;
     }
 

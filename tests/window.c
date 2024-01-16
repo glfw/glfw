@@ -23,6 +23,15 @@
 //
 //========================================================================
 
+// TODO: Implement the postEmptyEvent test on multiple platforms. Works for Windows so far
+#ifdef WIN32
+#define USE_WIN32_THREAD_EMPTY_EVENT_TEST
+#endif // WIN32
+
+#ifdef USE_WIN32_THREAD_EMPTY_EVENT_TEST
+#include <Windows.h>
+#endif // USE_WIN32_THREAD_EMPTY_EVENT_TEST
+
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/gl.h>
 #define GLFW_INCLUDE_NONE
@@ -48,6 +57,35 @@
 #include <stdlib.h>
 #include <limits.h>
 
+#ifdef USE_WIN32_THREAD_EMPTY_EVENT_TEST
+
+DWORD WINAPI win32ThreadEmptyEventTest(LPVOID lpThreadParameter)
+{
+    // Sleep for 3 seconds, and then post an empty event. The onEmptyEventPosted
+    // method should then be fired shortly after, on the GLFW main thread.
+
+    Sleep(3000);
+    glfwPostEmptyEvent();
+    return 0;
+}
+
+void onEmptyEventPosted(void)
+{
+    // If you hold your LMB down on the window border (aka initialise the resize
+    // phase), you will see a big difference in stack trace here compared to
+    // when not resizing. This is because DefWindowProc seems to use its own
+    // message loop temporarily, and passes any unhandled messages back to the
+    // dummy window's wndproc, which detects the empty event message, firing the
+    // event callback.
+    // This is the only effective way to run code on the main thread during the
+    // window resize phase while the user isn't moving their mouse, apart from the
+    // actual resize events obviously
+    MessageBoxW((HWND)NULL, L"Callback event received!", L"Empty Event Callback", (UINT)0);
+    // printf("Empty event received! Put a break point here, and this will be fired on the main thread");
+}
+
+#endif // USE_WIN32_THREAD_EMPTY_EVENT_TEST
+
 int main(int argc, char** argv)
 {
     int windowed_x, windowed_y, windowed_width, windowed_height;
@@ -66,12 +104,16 @@ int main(int argc, char** argv)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
+#ifdef USE_WIN32_THREAD_EMPTY_EVENT_TEST
+    glfwSetEmptyEventCallback(onEmptyEventPosted);
+#endif // USE_WIN32_THREAD_EMPTY_EVENT_TEST
+
     glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
     glfwWindowHint(GLFW_WIN32_KEYBOARD_MENU, GLFW_TRUE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    GLFWwindow* window = glfwCreateWindow(600, 600, "Window Features", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(750, 600, "Window Features", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -115,21 +157,21 @@ int main(int argc, char** argv)
 
         glfwGetWindowSize(window, &width, &height);
 
-        struct nk_rect area = nk_rect(0.f, 0.f, (float) width, (float) height);
+        struct nk_rect area = nk_rect(0.f, 0.f, (float)width, (float)height);
         nk_window_set_bounds(nk, "main", area);
 
         nk_glfw3_new_frame();
         if (nk_begin(nk, "main", area, 0))
         {
-            nk_layout_row_dynamic(nk, 30, 5);
+            nk_layout_row_dynamic(nk, 30, 6);
 
             if (nk_button_label(nk, "Toggle Fullscreen"))
             {
                 if (glfwGetWindowMonitor(window))
                 {
                     glfwSetWindowMonitor(window, NULL,
-                                         windowed_x, windowed_y,
-                                         windowed_width, windowed_height, 0);
+                        windowed_x, windowed_y,
+                        windowed_width, windowed_height, 0);
                 }
                 else
                 {
@@ -138,8 +180,8 @@ int main(int argc, char** argv)
                     glfwGetWindowPos(window, &windowed_x, &windowed_y);
                     glfwGetWindowSize(window, &windowed_width, &windowed_height);
                     glfwSetWindowMonitor(window, monitor,
-                                         0, 0, mode->width, mode->height,
-                                         mode->refreshRate);
+                        0, 0, mode->width, mode->height,
+                        mode->refreshRate);
                 }
             }
 
@@ -156,9 +198,15 @@ int main(int argc, char** argv)
                 const double time = glfwGetTime() + 3.0;
                 while (glfwGetTime() < time)
                     glfwWaitEventsTimeout(1.0);
-
                 glfwShowWindow(window);
             }
+
+#ifdef USE_WIN32_THREAD_EMPTY_EVENT_TEST
+            if (nk_button_label(nk, "Empty Event(3s)"))
+            {
+                CreateThread(NULL, 0, win32ThreadEmptyEventTest, NULL, 0, NULL);
+            }
+#endif // USE_WIN32_THREAD_EMPTY_EVENT_TEST
 
             nk_layout_row_dynamic(nk, 30, 1);
 
@@ -174,8 +222,8 @@ int main(int argc, char** argv)
 
             nk_flags events;
             const nk_flags flags = NK_EDIT_FIELD |
-                                   NK_EDIT_SIG_ENTER |
-                                   NK_EDIT_GOTO_END_ON_ACTIVATE;
+                NK_EDIT_SIG_ENTER |
+                NK_EDIT_GOTO_END_ON_ACTIVATE;
 
             if (position_supported)
             {
@@ -186,8 +234,8 @@ int main(int argc, char** argv)
                 nk_label(nk, "Position", NK_TEXT_LEFT);
 
                 events = nk_edit_string_zero_terminated(nk, flags, xpos_buffer,
-                                                        sizeof(xpos_buffer),
-                                                        nk_filter_decimal);
+                    sizeof(xpos_buffer),
+                    nk_filter_decimal);
                 if (events & NK_EDIT_COMMITED)
                 {
                     xpos = atoi(xpos_buffer);
@@ -197,8 +245,8 @@ int main(int argc, char** argv)
                     sprintf(xpos_buffer, "%i", xpos);
 
                 events = nk_edit_string_zero_terminated(nk, flags, ypos_buffer,
-                                                        sizeof(ypos_buffer),
-                                                        nk_filter_decimal);
+                    sizeof(ypos_buffer),
+                    nk_filter_decimal);
                 if (events & NK_EDIT_COMMITED)
                 {
                     ypos = atoi(ypos_buffer);
@@ -217,8 +265,8 @@ int main(int argc, char** argv)
             nk_label(nk, "Size", NK_TEXT_LEFT);
 
             events = nk_edit_string_zero_terminated(nk, flags, width_buffer,
-                                                    sizeof(width_buffer),
-                                                    nk_filter_decimal);
+                sizeof(width_buffer),
+                nk_filter_decimal);
             if (events & NK_EDIT_COMMITED)
             {
                 width = atoi(width_buffer);
@@ -228,8 +276,8 @@ int main(int argc, char** argv)
                 sprintf(width_buffer, "%i", width);
 
             events = nk_edit_string_zero_terminated(nk, flags, height_buffer,
-                                                    sizeof(height_buffer),
-                                                    nk_filter_decimal);
+                sizeof(height_buffer),
+                nk_filter_decimal);
             if (events & NK_EDIT_COMMITED)
             {
                 height = atoi(height_buffer);
@@ -246,8 +294,8 @@ int main(int argc, char** argv)
                 update_ratio_limit = true;
 
             events = nk_edit_string_zero_terminated(nk, flags, numer_buffer,
-                                                    sizeof(numer_buffer),
-                                                    nk_filter_decimal);
+                sizeof(numer_buffer),
+                nk_filter_decimal);
             if (events & NK_EDIT_COMMITED)
             {
                 aspect_numer = abs(atoi(numer_buffer));
@@ -257,8 +305,8 @@ int main(int argc, char** argv)
                 sprintf(numer_buffer, "%i", aspect_numer);
 
             events = nk_edit_string_zero_terminated(nk, flags, denom_buffer,
-                                                    sizeof(denom_buffer),
-                                                    nk_filter_decimal);
+                sizeof(denom_buffer),
+                nk_filter_decimal);
             if (events & NK_EDIT_COMMITED)
             {
                 aspect_denom = abs(atoi(denom_buffer));
@@ -281,8 +329,8 @@ int main(int argc, char** argv)
                 update_size_limit = true;
 
             events = nk_edit_string_zero_terminated(nk, flags, min_width_buffer,
-                                                    sizeof(min_width_buffer),
-                                                    nk_filter_decimal);
+                sizeof(min_width_buffer),
+                nk_filter_decimal);
             if (events & NK_EDIT_COMMITED)
             {
                 min_width = abs(atoi(min_width_buffer));
@@ -292,8 +340,8 @@ int main(int argc, char** argv)
                 sprintf(min_width_buffer, "%i", min_width);
 
             events = nk_edit_string_zero_terminated(nk, flags, min_height_buffer,
-                                                    sizeof(min_height_buffer),
-                                                    nk_filter_decimal);
+                sizeof(min_height_buffer),
+                nk_filter_decimal);
             if (events & NK_EDIT_COMMITED)
             {
                 min_height = abs(atoi(min_height_buffer));
@@ -306,8 +354,8 @@ int main(int argc, char** argv)
                 update_size_limit = true;
 
             events = nk_edit_string_zero_terminated(nk, flags, max_width_buffer,
-                                                    sizeof(max_width_buffer),
-                                                    nk_filter_decimal);
+                sizeof(max_width_buffer),
+                nk_filter_decimal);
             if (events & NK_EDIT_COMMITED)
             {
                 max_width = abs(atoi(max_width_buffer));
@@ -317,8 +365,8 @@ int main(int argc, char** argv)
                 sprintf(max_width_buffer, "%i", max_width);
 
             events = nk_edit_string_zero_terminated(nk, flags, max_height_buffer,
-                                                    sizeof(max_height_buffer),
-                                                    nk_filter_decimal);
+                sizeof(max_height_buffer),
+                nk_filter_decimal);
             if (events & NK_EDIT_COMMITED)
             {
                 max_height = abs(atoi(max_height_buffer));
@@ -330,10 +378,10 @@ int main(int argc, char** argv)
             if (update_size_limit)
             {
                 glfwSetWindowSizeLimits(window,
-                                        limit_min_size ? min_width : GLFW_DONT_CARE,
-                                        limit_min_size ? min_height : GLFW_DONT_CARE,
-                                        limit_max_size ? max_width : GLFW_DONT_CARE,
-                                        limit_max_size ? max_height : GLFW_DONT_CARE);
+                    limit_min_size ? min_width : GLFW_DONT_CARE,
+                    limit_min_size ? min_height : GLFW_DONT_CARE,
+                    limit_max_size ? max_width : GLFW_DONT_CARE,
+                    limit_max_size ? max_height : GLFW_DONT_CARE);
             }
 
             int fb_width, fb_height;

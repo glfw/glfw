@@ -243,6 +243,13 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->numer       = GLFW_DONT_CARE;
     window->denom       = GLFW_DONT_CARE;
 
+    window->captionOffsetX  = GLFW_DONT_CARE;
+    window->captionOffsetY  = GLFW_DONT_CARE;
+    window->captionSizeX    = GLFW_DONT_CARE;
+    window->captionSizeY    = 16;
+
+    window->resizeBorderSize = 4;
+
     if (!_glfw.platform.createWindow(window, &wndconfig, &ctxconfig, &fbconfig))
     {
         glfwDestroyWindow((GLFWwindow*) window);
@@ -841,6 +848,58 @@ GLFWAPI void glfwFocusWindow(GLFWwindow* handle)
     _GLFW_REQUIRE_INIT();
 
     _glfw.platform.focusWindow(window);
+}
+
+GLFWAPI void glfwDragWindow(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT();
+
+    _glfw.platform.dragWindow(window);
+}
+
+GLFWAPI void glfwResizeWindow(GLFWwindow* handle, int border)
+{
+	_GLFWwindow* window = (_GLFWwindow*)handle;
+	assert(window != NULL);
+
+	_GLFW_REQUIRE_INIT();
+
+	if (border < GLFW_WINDOW_LEFT || border > GLFW_WINDOW_BOTTOMRIGHT)
+		return;
+
+    _glfw.platform.resizeWindow(window, border);
+}
+
+GLFWAPI void glfwSetWindowCaptionArea(GLFWwindow* handle, int offsetX, int offsetY, int sizeX, int sizeY)
+{
+    _GLFWwindow* window = (_GLFWwindow*)handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT();
+
+    if (offsetX < 0 || offsetY < 0 || sizeX < 1 || sizeY < 1)
+        return;
+
+    window->captionOffsetX = offsetX;
+    window->captionOffsetY = offsetY;
+    window->captionSizeX = sizeX;
+    window->captionSizeY = sizeY;
+}
+
+GLFWAPI void glfwSetWindowResizeBorderSize(GLFWwindow* handle, int size)
+{
+    _GLFWwindow* window = (_GLFWwindow*)handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT();
+
+    if (size < 1)
+        return;
+
+    window->resizeBorderSize = size;
 }
 
 GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)

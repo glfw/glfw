@@ -629,6 +629,8 @@ void _glfwShowWindowWayland(_GLFWwindow* window);
 void _glfwHideWindowWayland(_GLFWwindow* window);
 void _glfwRequestWindowAttentionWayland(_GLFWwindow* window);
 void _glfwFocusWindowWayland(_GLFWwindow* window);
+void _glfwDragWindowWayland(_GLFWwindow* window);
+void _glfwResizeWindowWayland(_GLFWwindow* window, int border);
 void _glfwSetWindowMonitorWayland(_GLFWwindow* window, _GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);
 GLFWbool _glfwWindowFocusedWayland(_GLFWwindow* window);
 GLFWbool _glfwWindowIconifiedWayland(_GLFWwindow* window);

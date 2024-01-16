@@ -34,6 +34,7 @@
 #include <string.h>
 #include <windowsx.h>
 #include <shellapi.h>
+#include <assert.h>
 
 // Returns the window style for the specified window
 //
@@ -55,7 +56,12 @@ static DWORD getWindowStyle(const _GLFWwindow* window)
                 style |= WS_MAXIMIZEBOX | WS_THICKFRAME;
         }
         else
+        {
             style |= WS_POPUP;
+
+            if (window->resizable)
+                style |= WS_MAXIMIZEBOX | WS_THICKFRAME;
+        }
     }
 
     return style;
@@ -521,6 +527,54 @@ static void maximizeWindowManually(_GLFWwindow* window)
                  rect.right - rect.left,
                  rect.bottom - rect.top,
                  SWP_NOACTIVATE | SWP_NOZORDER | SWP_FRAMECHANGED);
+}
+
+static int HitTest(_GLFWwindow* window, RECT windowRect, POINT cursor, POINT border)
+{
+    const int captionOffsetX = window->captionOffsetX != GLFW_DONT_CARE ? window->captionOffsetX : 0;
+    const int captionOffsetY = window->captionOffsetY != GLFW_DONT_CARE ? window->captionOffsetY : 0;
+    const int captionSizeX = window->captionSizeX != GLFW_DONT_CARE ? window->captionSizeX : windowRect.right - windowRect.left;
+    const int captionSizeY = window->captionSizeY;
+
+    const int clientAreaLeft = windowRect.left + border.x;
+    const int clientAreaRight = windowRect.right - border.x;
+    const int clientAreaTop = windowRect.top + border.y;
+    const int clientAreaBottom = windowRect.bottom - border.y;
+
+    const int cursorInCaption =
+        cursor.x > clientAreaLeft + captionOffsetX &&
+        cursor.x < clientAreaLeft + captionOffsetX + captionSizeX &&
+        cursor.y > clientAreaTop + captionOffsetY &&
+        cursor.y < clientAreaTop + captionOffsetY + captionSizeY;
+
+    enum region_mask
+    {
+        client = 0,
+        left = 1,
+        right = 2,
+        top = 4,
+        bottom = 8,
+    };
+
+    const int result =
+        left * (cursor.x < clientAreaLeft) |
+        right * (cursor.x >= clientAreaRight) |
+        top * (cursor.y < clientAreaTop) |
+        bottom * (cursor.y >= clientAreaBottom);
+
+    switch (result)
+    {
+    case left: return HTLEFT;
+    case right: return HTRIGHT;
+    case top: return HTTOP;
+    case bottom: return HTBOTTOM;
+    case top | left: return HTTOPLEFT;
+    case top | right: return HTTOPRIGHT;
+    case bottom | left: return HTBOTTOMLEFT;
+    case bottom | right: return HTBOTTOMRIGHT;
+    case client: return cursorInCaption ? HTCAPTION : HTCLIENT;
+    default: return HTNOWHERE;
+    }
 }
 
 // Window procedure for user-created windows
@@ -1240,6 +1294,38 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             DragFinish(drop);
             return 0;
         }
+
+        case WM_NCCALCSIZE:
+        {
+            if (wParam && !window->decorated)
+                return 0;
+
+            break;
+        }
+
+        case WM_NCHITTEST:
+        {
+            if (!window->decorated) 
+            {
+                POINT cursor = 
+                { 
+                    GET_X_LPARAM(lParam),
+                    GET_Y_LPARAM(lParam)
+                };
+                POINT border = 
+                { 
+                    window->resizable ? window->resizeBorderSize : 0,
+                    window->resizable ? window->resizeBorderSize : 0,
+                };
+
+                RECT rect;
+                if (!GetWindowRect(hWnd, &rect))
+                    return HTNOWHERE;
+
+                return HitTest(window, rect, cursor, border);
+            }
+            break;
+        }
     }
 
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
@@ -1765,6 +1851,55 @@ void _glfwFocusWindowWin32(_GLFWwindow* window)
     BringWindowToTop(window->win32.handle);
     SetForegroundWindow(window->win32.handle);
     SetFocus(window->win32.handle);
+}
+
+void _glfwDragWindowWin32(_GLFWwindow* window)
+{
+    ReleaseCapture();
+    SendMessage(window->win32.handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+
+    // Mouse button will be released after drag, so prepare released state here already
+    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_1, GLFW_RELEASE, 0);
+}
+
+void _glfwResizeWindowWin32(_GLFWwindow* window, int border)
+{
+    WPARAM wBorder;
+    switch (border)
+    {
+        case GLFW_WINDOW_LEFT:
+            wBorder = HTLEFT;
+            break;
+        case GLFW_WINDOW_TOP:
+            wBorder = HTTOP;
+            break;
+        case GLFW_WINDOW_RIGHT:
+            wBorder = HTRIGHT;
+            break;
+        case GLFW_WINDOW_BOTTOM:
+            wBorder = HTBOTTOM;
+            break;
+        case GLFW_WINDOW_TOPLEFT:
+            wBorder = HTTOPLEFT;
+            break;
+        case GLFW_WINDOW_TOPRIGHT:
+            wBorder = HTTOPRIGHT;
+            break;
+        case GLFW_WINDOW_BOTTOMLEFT:
+            wBorder = HTBOTTOMLEFT;
+            break;
+        case GLFW_WINDOW_BOTTOMRIGHT:
+            wBorder = HTBOTTOMRIGHT;
+			break;
+		default:
+            assert(GLFW_FALSE);
+            return;
+    }
+    ReleaseCapture();
+    SendMessage(window->win32.handle, WM_NCLBUTTONDOWN, wBorder, 0);
+
+    // Mouse button will be released after drag, so prepare released state here already
+    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_1, GLFW_RELEASE, 0);
 }
 
 void _glfwSetWindowMonitorWin32(_GLFWwindow* window,

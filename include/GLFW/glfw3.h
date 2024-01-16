@@ -1158,6 +1158,14 @@ extern "C" {
 #define GLFW_EGL_CONTEXT_API        0x00036002
 #define GLFW_OSMESA_CONTEXT_API     0x00036003
 
+#define GLFW_WINDOW_LEFT 0
+#define GLFW_WINDOW_TOP 1
+#define GLFW_WINDOW_RIGHT 2
+#define GLFW_WINDOW_BOTTOM 3
+#define GLFW_WINDOW_TOPLEFT 4
+#define GLFW_WINDOW_TOPRIGHT 5
+#define GLFW_WINDOW_BOTTOMLEFT 6
+#define GLFW_WINDOW_BOTTOMRIGHT 7
 #define GLFW_ANGLE_PLATFORM_TYPE_NONE    0x00037001
 #define GLFW_ANGLE_PLATFORM_TYPE_OPENGL  0x00037002
 #define GLFW_ANGLE_PLATFORM_TYPE_OPENGLES 0x00037003
@@ -3872,6 +3880,89 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
  *  @ingroup window
  */
 GLFWAPI void glfwFocusWindow(GLFWwindow* window);
+
+/*! @brief Starts drag operation to the specified window.
+ *
+ *  This function starts the drag operation of the specified window.
+ *
+ *  @param[in] window The window to start the dragging operation.
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_drag
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwDragWindow(GLFWwindow* window);
+
+/*! @brief Starts a resize operation with the specified window.
+ *
+ *  This function starts a resize operation on one of the borders of the
+ *  specified window.
+ *
+ *  this function must be called from a pointer or touch event callback,
+ *  otherwise it risks reacting to a different event.
+ *
+ *  The borders are [GLFW_WINDOW_LEFT](@ref GLFW_GLFW_WINDOW_LEFT),
+ *  [GLFW_WINDOW_TOP](@ref GLFW_WINDOW_TOP),
+ *  [GLFW_WINDOW_RIGHT](@ref GLFW_WINDOW_RIGHT),
+ *  [GLFW_WINDOW_BOTTOM](@ref GLFW_WINDOW_BOTTOM),
+ *  [GLFW_WINDOW_TOPLEFT](@ref GLFW_WINDOW_TOPLEFT),
+ *  [GLFW_WINDOW_TOPRIGHT](@ref GLFW_WINDOW_TOPRIGHT),
+ *  [GLFW_WINDOW_BOTTOMLEFT](@ref GLFW_WINDOW_BOTTOMLEFT) and
+ *  [GLFW_WINDOW_BOTTOMRIGHT](@ref GLFW_WINDOW_BOTTOMRIGHT).
+ *
+ *  @param[in] window The window to start the resize operation.
+ *  @param[in] border One of the window borders.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_resize
+ *
+ *  @since Added in version 3.3.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwResizeWindow(GLFWwindow* window, int border);
+
+/*! @brief Sets the caption area for the specified window.
+ *
+ *  This function sets the rectangle for the caption to drag the undecorated window.
+ *
+ *  @param[in] window The window to set the caption area for.
+ *  @param[in] offsetX The x offset from the top left of the window.
+ *  @param[in] offsetY The y offset from the top left of the window.
+ *  @param[in] sizeX The x size of the caption area.
+ *  @param[in] sizeY The y size of the caption area.
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_caption_area
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowCaptionArea(GLFWwindow* window, int offsetX, int offsetY, int sizeX, int sizeY);
+
+/*! @brief Sets the resize border size for the specified window.
+ *
+ *  This function sets the size of border where to start the resize operation.
+ *
+ *  @param[in] window The window to set the caption area for.
+ *  @param[in] size The size of the border.
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_border_size
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowResizeBorderSize(GLFWwindow* window, int size);
 
 /*! @brief Requests user attention to the specified window.
  *

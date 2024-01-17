@@ -29,6 +29,7 @@
 
 #include <stdint.h>
 #include <time.h>
+#include <sys/types.h>
 
 
 // POSIX-specific global timer data

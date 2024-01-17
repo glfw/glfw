@@ -316,10 +316,8 @@ if (MSVC90)
 endif()
 
 # Workaround for -std=c99 on Linux disabling _DEFAULT_SOURCE (POSIX 2008 and more)
-if (GLFW_BUILD_X11 OR GLFW_BUILD_WAYLAND)
-    if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-        target_compile_definitions(glfw PRIVATE _DEFAULT_SOURCE)
-    endif()
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    target_compile_definitions(glfw PRIVATE _DEFAULT_SOURCE)
 endif()
 
 if (GLFW_BUILD_SHARED_LIBRARY)

@@ -2041,9 +2041,6 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
 
 GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-    assert(window != NULL);
-
     _GLFW_REQUIRE_INIT_OR_RETURN(nil);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_COCOA)
@@ -2052,15 +2049,15 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
                         "Cocoa: Platform not initialized");
         return nil;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
 
     return window->ns.object;
 }
 
 GLFWAPI id glfwGetCocoaView(GLFWwindow* handle)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-    assert(window != NULL);
-
     _GLFW_REQUIRE_INIT_OR_RETURN(nil);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_COCOA)
@@ -2069,6 +2066,9 @@ GLFWAPI id glfwGetCocoaView(GLFWwindow* handle)
                         "Cocoa: Platform not initialized");
         return nil;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
 
     return window->ns.view;
 }

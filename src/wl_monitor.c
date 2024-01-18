@@ -259,9 +259,6 @@ void _glfwSetGammaRampWayland(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 
 GLFWAPI struct wl_output* glfwGetWaylandMonitor(GLFWmonitor* handle)
 {
-    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-    assert(monitor != NULL);
-
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
@@ -269,6 +266,9 @@ GLFWAPI struct wl_output* glfwGetWaylandMonitor(GLFWmonitor* handle)
         _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "Wayland: Platform not initialized");
         return NULL;
     }
+
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    assert(monitor != NULL);
 
     return monitor->wl.output;
 }

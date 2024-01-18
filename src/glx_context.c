@@ -677,9 +677,6 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
 
 GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* handle)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-    assert(window != NULL);
-
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_X11)
@@ -687,6 +684,9 @@ GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* handle)
         _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "GLX: Platform not initialized");
         return NULL;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
 
     if (window->context.source != GLFW_NATIVE_CONTEXT_API)
     {
@@ -699,9 +699,6 @@ GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* handle)
 
 GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* handle)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-    assert(window != NULL);
-
     _GLFW_REQUIRE_INIT_OR_RETURN(None);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_X11)
@@ -709,6 +706,9 @@ GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* handle)
         _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "GLX: Platform not initialized");
         return None;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
 
     if (window->context.source != GLFW_NATIVE_CONTEXT_API)
     {

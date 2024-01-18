@@ -540,9 +540,6 @@ void _glfwSetGammaRampWin32(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 
 GLFWAPI const char* glfwGetWin32Adapter(GLFWmonitor* handle)
 {
-    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-    assert(monitor != NULL);
-
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_WIN32)
@@ -550,15 +547,15 @@ GLFWAPI const char* glfwGetWin32Adapter(GLFWmonitor* handle)
         _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "Win32: Platform not initialized");
         return NULL;
     }
+
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    assert(monitor != NULL);
 
     return monitor->win32.publicAdapterName;
 }
 
 GLFWAPI const char* glfwGetWin32Monitor(GLFWmonitor* handle)
 {
-    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
-    assert(monitor != NULL);
-
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_WIN32)
@@ -566,6 +563,9 @@ GLFWAPI const char* glfwGetWin32Monitor(GLFWmonitor* handle)
         _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "Win32: Platform not initialized");
         return NULL;
     }
+
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    assert(monitor != NULL);
 
     return monitor->win32.publicDisplayName;
 }

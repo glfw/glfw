@@ -3297,9 +3297,6 @@ GLFWAPI struct wl_display* glfwGetWaylandDisplay(void)
 
 GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* handle)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-    assert(window != NULL);
-
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
@@ -3308,6 +3305,9 @@ GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* handle)
                         "Wayland: Platform not initialized");
         return NULL;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
 
     return window->wl.surface;
 }

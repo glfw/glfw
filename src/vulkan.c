@@ -274,10 +274,10 @@ GLFWAPI int glfwGetPhysicalDevicePresentationSupport(VkInstance instance,
                                                      VkPhysicalDevice device,
                                                      uint32_t queuefamily)
 {
+    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
+
     assert(instance != VK_NULL_HANDLE);
     assert(device != VK_NULL_HANDLE);
-
-    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
 
     if (!_glfwInitVulkan(_GLFW_REQUIRE_LOADER))
         return GLFW_FALSE;
@@ -299,14 +299,15 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance,
                                          const VkAllocationCallbacks* allocator,
                                          VkSurfaceKHR* surface)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-    assert(instance != VK_NULL_HANDLE);
-    assert(window != NULL);
     assert(surface != NULL);
 
     *surface = VK_NULL_HANDLE;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(VK_ERROR_INITIALIZATION_FAILED);
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+    assert(instance != VK_NULL_HANDLE);
 
     if (!_glfwInitVulkan(_GLFW_REQUIRE_LOADER))
         return VK_ERROR_INITIALIZATION_FAILED;

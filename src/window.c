@@ -740,7 +740,7 @@ GLFWAPI float glfwGetWindowOpacity(GLFWwindow* handle)
     _GLFWwindow* window = (_GLFWwindow*) handle;
     assert(window != NULL);
 
-    _GLFW_REQUIRE_INIT_OR_RETURN(1.f);
+    _GLFW_REQUIRE_INIT_OR_RETURN(0.f);
     return _glfw.platform.getWindowOpacity(window);
 }
 

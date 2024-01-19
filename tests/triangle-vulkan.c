@@ -2130,6 +2130,10 @@ int main(const int argc, const char *argv[]) {
     demo_create_window(&demo);
     demo_init_vk_swapchain(&demo);
 
+    glfwSetWindowAttrib(demo.window, GLFW_RESIZABLE, GLFW_TRUE);
+    glfwSetWindowAttrib(demo.window, GLFW_TITLEBAR, GLFW_FALSE);
+
+
     demo_prepare(&demo);
     demo_run(&demo);
 

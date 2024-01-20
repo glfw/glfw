@@ -24,8 +24,6 @@
 //    distribution.
 //
 //========================================================================
-// Please use C89 style variable declarations in this file because VS 2010
-//========================================================================
 
 #include "internal.h"
 
@@ -63,7 +61,7 @@ GLFWbool _glfwInitVulkan(int mode)
         _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.1.dylib");
         if (!_glfw.vk.handle)
             _glfw.vk.handle = _glfwLoadLocalVulkanLoaderCocoa();
-#elif defined(__OpenBSD__)
+#elif defined(__OpenBSD__) || defined(__NetBSD__)
         _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.so");
 #else
         _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.so.1");

@@ -24,10 +24,10 @@
 //    distribution.
 //
 //========================================================================
-// It is fine to use C99 in this file because it will not be built with VS
-//========================================================================
 
 #include "internal.h"
+
+#if defined(_GLFW_X11)
 
 #include <limits.h>
 #include <stdlib.h>
@@ -613,4 +613,6 @@ GLFWAPI RROutput glfwGetX11Monitor(GLFWmonitor* handle)
     _GLFW_REQUIRE_INIT_OR_RETURN(None);
     return monitor->x11.output;
 }
+
+#endif // _GLFW_X11
 

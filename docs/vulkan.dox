@@ -37,8 +37,8 @@ By default, GLFW will load the Vulkan loader dynamically at runtime via its stan
 `vulkan-1.dll` on Windows, `libvulkan.so.1` on Linux and other Unix-like systems and
 `libvulkan.1.dylib` on macOS.
 
-@macos GLFW will also look up and search the executable subdirectory of your application
-bundle.
+@macos GLFW will also look up and search the `Frameworks` subdirectory of your
+application bundle.
 
 If your code is using a Vulkan loader with a different name or in a non-standard location
 you will need to direct GLFW to it.  Pass your version of `vkGetInstanceProcAddr` to @ref
@@ -142,7 +142,7 @@ PFN_vkGetDeviceProcAddr pfnGetDeviceProcAddr = (PFN_vkGetDeviceProcAddr)
     glfwGetInstanceProcAddress(instance, "vkGetDeviceProcAddr");
 @endcode
 
-Device-specific functions may execute a little bit faster, due to not having to
+Device-specific functions may execute a little faster, due to not having to
 dispatch internally based on the device passed to them.  For more information
 about `vkGetDeviceProcAddr`, see the Vulkan documentation.
 
@@ -187,6 +187,13 @@ Additional extensions may be required by future versions of GLFW.  You should
 check whether any extensions you wish to enable are already in the returned
 array, as it is an error to specify an extension more than once in the
 `VkInstanceCreateInfo` struct.
+
+@macos MoltenVK is (as of July 2022) not yet a fully conformant implementation
+of Vulkan.  As of Vulkan SDK 1.3.216.0, this means you must also enable the
+`VK_KHR_portability_enumeration` instance extension and set the
+`VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR` bit in the instance creation
+info flags for MoltenVK to show up in the list of physical devices.  For more
+information, see the Vulkan and MoltenVK documentation.
 
 
 @section vulkan_present Querying for Vulkan presentation support

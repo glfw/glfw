@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.4 Cocoa - www.glfw.org
+// GLFW 3.4 POSIX - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2006-2017 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2022 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -24,26 +24,7 @@
 //
 //========================================================================
 
-#include <IOKit/IOKitLib.h>
-#include <IOKit/IOCFPlugIn.h>
-#include <IOKit/hid/IOHIDKeys.h>
+#include <poll.h>
 
-#define GLFW_COCOA_JOYSTICK_STATE         _GLFWjoystickNS ns;
-#define GLFW_COCOA_LIBRARY_JOYSTICK_STATE
-
-// Cocoa-specific per-joystick data
-//
-typedef struct _GLFWjoystickNS
-{
-    IOHIDDeviceRef      device;
-    CFMutableArrayRef   axes;
-    CFMutableArrayRef   buttons;
-    CFMutableArrayRef   hats;
-} _GLFWjoystickNS;
-
-GLFWbool _glfwInitJoysticksCocoa(void);
-void _glfwTerminateJoysticksCocoa(void);
-GLFWbool _glfwPollJoystickCocoa(_GLFWjoystick* js, int mode);
-const char* _glfwGetMappingNameCocoa(void);
-void _glfwUpdateGamepadGUIDCocoa(char* guid);
+GLFWbool _glfwPollPOSIX(struct pollfd* fds, nfds_t count, double* timeout);
 

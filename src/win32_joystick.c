@@ -24,10 +24,10 @@
 //    distribution.
 //
 //========================================================================
-// Please use C89 style variable declarations in this file because VS 2010
-//========================================================================
 
 #include "internal.h"
+
+#if defined(_GLFW_WIN32)
 
 #include <stdio.h>
 #include <math.h>
@@ -256,6 +256,8 @@ static GLFWbool supportsXInput(const GUID* guid)
 //
 static void closeJoystick(_GLFWjoystick* js)
 {
+    _glfwInputJoystick(js, GLFW_DISCONNECTED);
+
     if (js->win32.device)
     {
         IDirectInputDevice8_Unacquire(js->win32.device);
@@ -263,9 +265,7 @@ static void closeJoystick(_GLFWjoystick* js)
     }
 
     _glfw_free(js->win32.objects);
-
     _glfwFreeJoystick(js);
-    _glfwInputJoystick(js, GLFW_DISCONNECTED);
 }
 
 // DirectInput device object enumeration callback
@@ -357,7 +357,7 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
     for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         js = _glfw.joysticks + jid;
-        if (js->present)
+        if (js->connected)
         {
             if (memcmp(&js->win32.guid, &di->guidInstance, sizeof(GUID)) == 0)
                 return DIENUM_CONTINUE;
@@ -508,7 +508,7 @@ void _glfwDetectJoystickConnectionWin32(void)
 
             for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
             {
-                if (_glfw.joysticks[jid].present &&
+                if (_glfw.joysticks[jid].connected &&
                     _glfw.joysticks[jid].win32.device == NULL &&
                     _glfw.joysticks[jid].win32.index == index)
                 {
@@ -560,7 +560,7 @@ void _glfwDetectJoystickDisconnectionWin32(void)
     for (jid = 0;  jid <= GLFW_JOYSTICK_LAST;  jid++)
     {
         _GLFWjoystick* js = _glfw.joysticks + jid;
-        if (js->present)
+        if (js->connected)
             _glfwPollJoystickWin32(js, _GLFW_POLL_PRESENCE);
     }
 }
@@ -574,7 +574,7 @@ GLFWbool _glfwInitJoysticksWin32(void)
 {
     if (_glfw.win32.dinput8.instance)
     {
-        if (FAILED(DirectInput8Create(GetModuleHandle(NULL),
+        if (FAILED(DirectInput8Create(_glfw.win32.instance,
                                       DIRECTINPUT_VERSION,
                                       &IID_IDirectInput8W,
                                       (void**) &_glfw.win32.dinput8.api,
@@ -601,13 +601,13 @@ void _glfwTerminateJoysticksWin32(void)
         IDirectInput8_Release(_glfw.win32.dinput8.api);
 }
 
-int _glfwPollJoystickWin32(_GLFWjoystick* js, int mode)
+GLFWbool _glfwPollJoystickWin32(_GLFWjoystick* js, int mode)
 {
     if (js->win32.device)
     {
         int i, ai = 0, bi = 0, pi = 0;
         HRESULT result;
-        DIJOYSTATE state;
+        DIJOYSTATE state = {0};
 
         IDirectInputDevice8_Poll(js->win32.device);
         result = IDirectInputDevice8_GetDeviceState(js->win32.device,
@@ -734,6 +734,13 @@ int _glfwPollJoystickWin32(_GLFWjoystick* js, int mode)
         if (xis.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
             dpad |= GLFW_HAT_LEFT;
 
+        // Treat invalid combinations as neither being pressed
+        // while preserving what data can be preserved
+        if ((dpad & GLFW_HAT_RIGHT) && (dpad & GLFW_HAT_LEFT))
+            dpad &= ~(GLFW_HAT_RIGHT | GLFW_HAT_LEFT);
+        if ((dpad & GLFW_HAT_UP) && (dpad & GLFW_HAT_DOWN))
+            dpad &= ~(GLFW_HAT_UP | GLFW_HAT_DOWN);
+
         _glfwInputJoystickHat(js, 0, dpad);
     }
 
@@ -755,4 +762,6 @@ void _glfwUpdateGamepadGUIDWin32(char* guid)
                 original, original + 4);
     }
 }
+
+#endif // _GLFW_WIN32
 

@@ -44,7 +44,6 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
     glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 
     glfwGetMonitorWorkarea(glfwGetPrimaryMonitor(), &xpos, &ypos, NULL, &height);
@@ -66,6 +65,9 @@ int main(int argc, char** argv)
         if (i > 0)
             glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_FALSE);
 
+        glfwWindowHint(GLFW_POSITION_X, xpos + size * (1 + (i & 1)));
+        glfwWindowHint(GLFW_POSITION_Y, ypos + size * (1 + (i >> 1)));
+
         windows[i] = glfwCreateWindow(size, size, "Multi-Window Example", NULL, NULL);
         if (!windows[i])
         {
@@ -75,18 +77,12 @@ int main(int argc, char** argv)
             exit(EXIT_FAILURE);
         }
 
-        glfwSetWindowPos(windows[i],
-                         xpos + size * (1 + (i & 1)),
-                         ypos + size * (1 + (i >> 1)));
         glfwSetInputMode(windows[i], GLFW_STICKY_KEYS, GLFW_TRUE);
 
         glfwMakeContextCurrent(windows[i]);
         gladLoadGL(glfwGetProcAddress);
         glClearColor(colors[i].r, colors[i].g, colors[i].b, 1.f);
     }
-
-    for (int i = 0;  i < 4;  i++)
-        glfwShowWindow(windows[i]);
 
     for (;;)
     {

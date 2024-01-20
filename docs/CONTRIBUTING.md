@@ -327,7 +327,7 @@ a thousand line one, if that is the appropriate size for the fix.
 In addition to the code, a complete bug fix includes:
 
 - Change log entry in `README.md`, describing the incorrect behavior
-- Credits entries for all authors of the bug fix
+- Credits entries in `CONTRIBUTORS.md` for all authors of the bug fix
 
 Bug fixes will not be rejected because they don't include all the above parts,
 but please keep in mind that maintainer time is finite and that there are many
@@ -351,18 +351,18 @@ __Note:__ If you haven't already implemented the feature, check first if there
 already is an open issue for it and if it's already being developed in an
 [experimental branch](https://github.com/glfw/glfw/branches/all).
 
-__There is no preferred patch size__.  A one character change is just as welcome
-as one adding a thousand line one, if that is the appropriate size for the
+__There is no preferred patch size__.  A one-character change is just as welcome
+as one adding a thousand lines, if that is the appropriate size for the
 feature.
 
 In addition to the code, a complete feature includes:
 
 - Change log entry in `README.md`, listing all new symbols
-- News page entry, briefly describing the feature
-- Guide documentation, with minimal examples, in the relevant guide
+- News page entry in `docs/news.dox`, briefly describing the feature
+- Guide documentation, with minimal examples, in the relevant guide in the `docs` folder
 - Reference documentation, with all applicable tags
 - Cross-references and mentions in appropriate places
-- Credits entries for all authors of the feature
+- Credits entries in `CONTRIBUTORS.md` for all authors of the feature
 
 If the feature requires platform-specific code, at minimum stubs must be added
 for the new platform function to all supported and experimental platforms.

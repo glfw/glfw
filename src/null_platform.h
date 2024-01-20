@@ -170,6 +170,7 @@ typedef struct _GLFWwindowNull
     GLFWbool        maximized;
     GLFWbool        resizable;
     GLFWbool        decorated;
+    GLFWbool        titlebar;
     GLFWbool        floating;
     GLFWbool        transparent;
     float           opacity;
@@ -248,6 +249,10 @@ void _glfwPollEventsNull(void);
 void _glfwWaitEventsNull(void);
 void _glfwWaitEventsTimeoutNull(double timeout);
 void _glfwPostEmptyEventNull(void);
+
+// Hazel
+void _glfwSetWindowTitlebarNull(_GLFWwindow* window, GLFWbool enabled);
+
 void _glfwGetCursorPosNull(_GLFWwindow* window, double* xpos, double* ypos);
 void _glfwSetCursorPosNull(_GLFWwindow* window, double x, double y);
 void _glfwSetCursorModeNull(_GLFWwindow* window, int mode);

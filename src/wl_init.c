@@ -693,6 +693,32 @@ int _glfwInitWayland(void)
     _glfw.wl.xkb.compose_state_get_one_sym = (PFN_xkb_compose_state_get_one_sym)
         _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_compose_state_get_one_sym");
 
+    if (!_glfw.wl.xkb.context_new ||
+        !_glfw.wl.xkb.context_unref ||
+        !_glfw.wl.xkb.keymap_new_from_string ||
+        !_glfw.wl.xkb.keymap_unref ||
+        !_glfw.wl.xkb.keymap_mod_get_index ||
+        !_glfw.wl.xkb.keymap_key_repeats ||
+        !_glfw.wl.xkb.keymap_key_get_syms_by_level ||
+        !_glfw.wl.xkb.state_new ||
+        !_glfw.wl.xkb.state_unref ||
+        !_glfw.wl.xkb.state_key_get_syms ||
+        !_glfw.wl.xkb.state_update_mask ||
+        !_glfw.wl.xkb.state_key_get_layout ||
+        !_glfw.wl.xkb.state_mod_index_is_active ||
+        !_glfw.wl.xkb.compose_table_new_from_locale ||
+        !_glfw.wl.xkb.compose_table_unref ||
+        !_glfw.wl.xkb.compose_state_new ||
+        !_glfw.wl.xkb.compose_state_unref ||
+        !_glfw.wl.xkb.compose_state_feed ||
+        !_glfw.wl.xkb.compose_state_get_status ||
+        !_glfw.wl.xkb.compose_state_get_one_sym)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to load all entry points from libxkbcommon");
+        return GLFW_FALSE;
+    }
+
     if (_glfw.hints.init.wl.libdecorMode == GLFW_WAYLAND_PREFER_LIBDECOR)
         _glfw.wl.libdecor.handle = _glfwPlatformLoadModule("libdecor-0.so.0");
 

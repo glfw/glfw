@@ -79,24 +79,25 @@ static GLFWbool waitForX11Event(double* timeout)
 //
 static GLFWbool waitForAnyEvent(double* timeout)
 {
-    nfds_t count = 2;
-    struct pollfd fds[3] =
+    enum { XLIB_FD, PIPE_FD, INOTIFY_FD };
+    struct pollfd fds[] =
     {
-        { ConnectionNumber(_glfw.x11.display), POLLIN },
-        { _glfw.x11.emptyEventPipe[0], POLLIN }
+        [XLIB_FD] = { ConnectionNumber(_glfw.x11.display), POLLIN },
+        [PIPE_FD] = { _glfw.x11.emptyEventPipe[0], POLLIN },
+        [INOTIFY_FD] = { -1, POLLIN }
     };
 
 #if defined(GLFW_BUILD_LINUX_JOYSTICK)
     if (_glfw.joysticksInitialized)
-        fds[count++] = (struct pollfd) { _glfw.linjs.inotify, POLLIN };
+        fds[INOTIFY_FD].fd = _glfw.linjs.inotify;
 #endif
 
     while (!XPending(_glfw.x11.display))
     {
-        if (!_glfwPollPOSIX(fds, count, timeout))
+        if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), timeout))
             return GLFW_FALSE;
 
-        for (int i = 1; i < count; i++)
+        for (int i = 1; i < sizeof(fds) / sizeof(fds[0]); i++)
         {
             if (fds[i].revents & POLLIN)
                 return GLFW_TRUE;

@@ -1125,16 +1125,17 @@ static void handleEvents(double* timeout)
 #endif
 
     GLFWbool event = GLFW_FALSE;
-    struct pollfd fds[4] =
+    enum { DISPLAY_FD, KEYREPEAT_FD, CURSOR_FD, LIBDECOR_FD };
+    struct pollfd fds[] =
     {
-        { wl_display_get_fd(_glfw.wl.display), POLLIN },
-        { _glfw.wl.keyRepeatTimerfd, POLLIN },
-        { _glfw.wl.cursorTimerfd, POLLIN },
-        { -1, POLLIN }
+        [DISPLAY_FD] = { wl_display_get_fd(_glfw.wl.display), POLLIN },
+        [KEYREPEAT_FD] = { _glfw.wl.keyRepeatTimerfd, POLLIN },
+        [CURSOR_FD] = { _glfw.wl.cursorTimerfd, POLLIN },
+        [LIBDECOR_FD] = { -1, POLLIN }
     };
 
     if (_glfw.wl.libdecor.context)
-        fds[3].fd = libdecor_get_fd(_glfw.wl.libdecor.context);
+        fds[LIBDECOR_FD].fd = libdecor_get_fd(_glfw.wl.libdecor.context);
 
     while (!event)
     {
@@ -1166,7 +1167,7 @@ static void handleEvents(double* timeout)
             return;
         }
 
-        if (fds[0].revents & POLLIN)
+        if (fds[DISPLAY_FD].revents & POLLIN)
         {
             wl_display_read_events(_glfw.wl.display);
             if (wl_display_dispatch_pending(_glfw.wl.display) > 0)
@@ -1175,7 +1176,7 @@ static void handleEvents(double* timeout)
         else
             wl_display_cancel_read(_glfw.wl.display);
 
-        if (fds[1].revents & POLLIN)
+        if (fds[KEYREPEAT_FD].revents & POLLIN)
         {
             uint64_t repeats;
 
@@ -1195,7 +1196,7 @@ static void handleEvents(double* timeout)
             }
         }
 
-        if (fds[2].revents & POLLIN)
+        if (fds[CURSOR_FD].revents & POLLIN)
         {
             uint64_t repeats;
 
@@ -1203,7 +1204,7 @@ static void handleEvents(double* timeout)
                 incrementCursorImage(_glfw.wl.pointerFocus);
         }
 
-        if (fds[3].revents & POLLIN)
+        if (fds[LIBDECOR_FD].revents & POLLIN)
         {
             if (libdecor_dispatch(_glfw.wl.libdecor.context, 0) > 0)
                 event = GLFW_TRUE;

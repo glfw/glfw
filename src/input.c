@@ -1464,6 +1464,12 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* handle, const char* string)
     _glfw.platform.setClipboardString(string);
 }
 
+GLFWAPI void glfwSetClipboardBitmap(unsigned char * data, int width, int height)
+{
+    _GLFW_REQUIRE_INIT();
+    _glfw.platform.setClipboardBitmap();
+}
+
 GLFWAPI const char* glfwGetClipboardString(GLFWwindow* handle)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);

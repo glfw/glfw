@@ -2345,7 +2345,7 @@ static void xdgActivationHandleDone(void* userData,
 {
     _GLFWwindow* window = userData;
 
-    if(activationToken != window->wl.activationToken)
+    if (activationToken != window->wl.activationToken)
         return;
 
     xdg_activation_v1_activate(_glfw.wl.activationManager, token, window->wl.surface);
@@ -2360,15 +2360,18 @@ static const struct xdg_activation_token_v1_listener xdgActivationListener =
 
 void _glfwRequestWindowAttentionWayland(_GLFWwindow* window)
 {
-    if(!_glfw.wl.activationManager)
+    if (!_glfw.wl.activationManager)
         return;
 
-    //We're about to overwrite this with a new request
-    if(window->wl.activationToken)
+    // We're about to overwrite this with a new request
+    if (window->wl.activationToken)
         xdg_activation_token_v1_destroy(window->wl.activationToken);
 
-    window->wl.activationToken = xdg_activation_v1_get_activation_token(_glfw.wl.activationManager);
-    xdg_activation_token_v1_add_listener(window->wl.activationToken, &xdgActivationListener, window);
+    window->wl.activationToken =
+        xdg_activation_v1_get_activation_token(_glfw.wl.activationManager);
+    xdg_activation_token_v1_add_listener(window->wl.activationToken,
+                                         &xdgActivationListener,
+                                         window);
 
     xdg_activation_token_v1_commit(window->wl.activationToken);
 }

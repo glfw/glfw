@@ -25,12 +25,11 @@
 //
 //========================================================================
 
+#include "internal.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-
-#include "internal.h"
-
 
 static void makeContextCurrentOSMesa(_GLFWwindow* window)
 {

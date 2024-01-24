@@ -48,6 +48,7 @@
 #include "viewporter-client-protocol.h"
 #include "relative-pointer-unstable-v1-client-protocol.h"
 #include "pointer-constraints-unstable-v1-client-protocol.h"
+#include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
 
 #define GLFW_BORDER_SIZE    4
@@ -2054,6 +2055,9 @@ void _glfwDestroyWindowWayland(_GLFWwindow* window)
     if (window == _glfw.wl.keyboardFocus)
         _glfw.wl.keyboardFocus = NULL;
 
+    if (window->wl.activationToken)
+        xdg_activation_token_v1_destroy(window->wl.activationToken);
+
     if (window->wl.idleInhibitor)
         zwp_idle_inhibitor_v1_destroy(window->wl.idleInhibitor);
 
@@ -2335,11 +2339,38 @@ void _glfwHideWindowWayland(_GLFWwindow* window)
     }
 }
 
+static void xdgActivationHandleDone(void* userData,
+                                    struct xdg_activation_token_v1* activationToken,
+                                    const char* token)
+{
+    _GLFWwindow* window = userData;
+
+    if(activationToken != window->wl.activationToken)
+        return;
+
+    xdg_activation_v1_activate(_glfw.wl.activationManager, token, window->wl.surface);
+    xdg_activation_token_v1_destroy(window->wl.activationToken);
+    window->wl.activationToken = NULL;
+}
+
+static const struct xdg_activation_token_v1_listener xdgActivationListener =
+{
+    xdgActivationHandleDone
+};
+
 void _glfwRequestWindowAttentionWayland(_GLFWwindow* window)
 {
-    // TODO
-    _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
-                    "Wayland: Window attention request not implemented yet");
+    if(!_glfw.wl.activationManager)
+        return;
+
+    //We're about to overwrite this with a new request
+    if(window->wl.activationToken)
+        xdg_activation_token_v1_destroy(window->wl.activationToken);
+
+    window->wl.activationToken = xdg_activation_v1_get_activation_token(_glfw.wl.activationManager);
+    xdg_activation_token_v1_add_listener(window->wl.activationToken, &xdgActivationListener, window);
+
+    xdg_activation_token_v1_commit(window->wl.activationToken);
 }
 
 void _glfwFocusWindowWayland(_GLFWwindow* window)

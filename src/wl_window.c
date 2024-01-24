@@ -42,6 +42,7 @@
 #include <poll.h>
 #include <signal.h>
 #include <time.h>
+#include <linux/input-event-codes.h>
 
 #define GLFW_BORDER_SIZE    4
 #define GLFW_CAPTION_HEIGHT 24

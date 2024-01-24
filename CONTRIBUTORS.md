@@ -233,6 +233,7 @@ video tutorials.
  - Paul Sultana
  - Nathan Sweet
  - TTK-Bandit
+ - Nuno Teixeira
  - Sergey Tikhomirov
  - Arthur Tombs
  - TronicLabs

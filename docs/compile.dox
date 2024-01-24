@@ -97,11 +97,11 @@ On Fedora and derivatives like Red Hat you will need the `wayland-devel`,
 sudo dnf install wayland-devel libxkbcommon-devel wayland-protocols-devel extra-cmake-modules
 @endcode
 
-On FreeBSD you will need the `wayland`, `libxkbcommon`, `wayland-protocols` and
-`kf5-extra-cmake-modules` packages.
+On FreeBSD you will need the `wayland`, `libxkbcommon`, `wayland-protocols`,
+`evdev-proto` and `kf5-extra-cmake-modules` packages.
 
 @code{.sh}
-pkg install wayland libxkbcommon wayland-protocols kf5-extra-cmake-modules
+pkg install wayland libxkbcommon wayland-protocols evdev-proto kf5-extra-cmake-modules
 @endcode
 
 Once you have the required depdendencies, move on to @ref compile_generate.

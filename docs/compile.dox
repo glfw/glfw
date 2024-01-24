@@ -42,72 +42,47 @@ all necessary dependencies for compiling GLFW, but on Unix-like systems like
 Linux and FreeBSD you will need a few extra packages.
 
 
-@subsubsection compile_deps_x11 Dependencies for X11
-
-To compile GLFW for X11, you need to have the X11 development packages
-installed.  They are not needed to build or run programs that use GLFW.
-
-On Debian and derivatives like Ubuntu and Linux Mint the `xorg-dev` meta-package
-pulls in the development packages for all of X11.
-
-@code{.sh}
-sudo apt install xorg-dev
-@endcode
-
-On Fedora and derivatives like Red Hat the X11 extension packages
-`libXcursor-devel`, `libXi-devel`, `libXinerama-devel` and `libXrandr-devel`
-required by GLFW pull in all its other dependencies.
-
-@code{.sh}
-sudo dnf install libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel
-@endcode
-
-On FreeBSD the X11 headers are installed along the end-user X11 packages, so if
-you have an X server running you should have the headers as well.  If not,
-install the `xorgproto` package.
-
-@code{.sh}
-pkg install xorgproto
-@endcode
-
-On Cygwin the `libXcursor-devel`, `libXi-devel`, `libXinerama-devel`,
-`libXrandr-devel` and `libXrender-devel` packages in the Libs section of the GUI
-installer will install all the headers and other development related files GLFW
-requires for X11.
-
-Once you have the required dependencies, move on to @ref compile_generate.
-
-
 @subsubsection compile_deps_wayland Dependencies for Wayland and X11
 
+By default, both the Wayland and X11 backends are enabled on Linux and other Unix-like
+systems (except macOS).  To disable one or both of these, set the @ref GLFW_BUILD_WAYLAND
+or @ref GLFW_BUILD_X11 CMake options in the next step when generating build files.
+
 To compile GLFW for both Wayland and X11, you need to have the X11, Wayland and xkbcommon
-development packages installed.  They are not needed to build or run programs that use
-GLFW.  You will also need to set the @ref GLFW_BUILD_WAYLAND CMake option in the next
-step when generating build files.
+development packages installed.  On some systems a few other packages are also required.
+None of the development packages above are needed to build or run programs that use an
+already compiled GLFW library.
 
 On Debian and derivatives like Ubuntu and Linux Mint you will need the `libwayland-dev`
-and `libxkbcommon-dev` packages and the `xorg-dev` meta-package.  These will pull in all
-other dependencies.
+and `libxkbcommon-dev` packages to compile for Wayland and the `xorg-dev` meta-package to
+compile for X11.  These will pull in all other dependencies.
 
 @code{.sh}
 sudo apt install libwayland-dev libxkbcommon-dev xorg-dev
 @endcode
 
-On Fedora and derivatives like Red Hat you will need the `wayland-devel`,
-`libxkbcommon-devel`, `libXcursor-devel`, `libXi-devel`, `libXinerama-devel` and
-`libXrandr-devel` packages.  These will pull in all other dependencies.
+On Fedora and derivatives like Red Hat you will need the `wayland-devel` and
+`libxkbcommon-devel` packages to compile for Wayland and the `libXcursor-devel`,
+`libXi-devel`, `libXinerama-devel` and `libXrandr-devel` packages to compile for X11.
+These will pull in all other dependencies.
 
 @code{.sh}
 sudo dnf install wayland-devel libxkbcommon-devel libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel
 @endcode
 
-On FreeBSD you will need the `wayland`, `libxkbcommon` and `evdev-proto` packages.  The
-X11 headers are installed along the end-user X11 packages, so if you have an X server
-running you should have the headers as well.  If not, install the `xorgproto` package.
+On FreeBSD you will need the `wayland`, `libxkbcommon` and `evdev-proto` packages to
+compile for Wayland.  The X11 headers are installed along the end-user X11 packages, so if
+you have an X server running you should have the headers as well.  If not, install the
+`xorgproto` package to compile for X11.
 
 @code{.sh}
 pkg install wayland libxkbcommon evdev-proto xorgproto
 @endcode
+
+On Cygwin Wayland is not supported but you will need the `libXcursor-devel`,
+`libXi-devel`, `libXinerama-devel`, `libXrandr-devel` and `libXrender-devel` packages to
+compile for X11.  These can be found in the Libs section of the GUI installer and will
+pull in all other dependencies.
 
 Once you have the required dependencies, move on to @ref compile_generate.
 
@@ -143,9 +118,10 @@ If you wish change any CMake variables in the list, press _Configure_ and then
 _Generate_ to have the new values take effect.  The variable list will be
 populated after the first configure step.
 
-By default, GLFW will use X11 on Linux and other Unix-like systems other than macOS.  To
-include support for Wayland as well, set the @ref GLFW_BUILD_WAYLAND option in the GLFW
-section of the variable list, then apply the new value as described above.
+By default, GLFW will use Wayland and X11 on Linux and other Unix-like systems other than
+macOS.  To disable support for one or both of these, set the @ref GLFW_BUILD_WAYLAND
+and/or @ref GLFW_BUILD_X11 option in the GLFW section of the variable list, then apply the
+new value as described above.
 
 Once you have generated the project files or makefiles for your chosen
 development environment, move on to @ref compile_compile.
@@ -177,12 +153,12 @@ flag.
 cmake -S path/to/glfw -B path/to/build -G Xcode
 @endcode
 
-By default, GLFW will use X11 on Linux and other Unix-like systems other
-than macOS.  To also include support for Wayland, set the @ref GLFW_BUILD_WAYLAND CMake
-option.
+By default, GLFW will use Wayland and X11 on Linux and other Unix-like systems other than
+macOS.  To disable support for one or both of these, set the @ref GLFW_BUILD_WAYLAND
+and/or @ref GLFW_BUILD_X11 CMake option.
 
 @code{.sh}
-cmake -S path/to/glfw -B path/to/build -D GLFW_BUILD_WAYLAND=1
+cmake -S path/to/glfw -B path/to/build -D GLFW_BUILD_X11=0
 @endcode
 
 Once you have generated the project files or makefiles for your chosen
@@ -315,7 +291,7 @@ default.
 @anchor GLFW_BUILD_WAYLAND
 __GLFW_BUILD_WAYLAND__ determines whether to include support for Wayland when compiling
 the library.  This option is only available when compiling for Linux and other Unix-like
-systems other than macOS.  This is disabled by default.
+systems other than macOS.  This is enabled by default.
 
 @anchor GLFW_BUILD_X11
 __GLFW_BUILD_X11__ determines whether to include support for X11 when compiling the

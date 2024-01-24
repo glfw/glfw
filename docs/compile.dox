@@ -101,12 +101,12 @@ On Fedora and derivatives like Red Hat you will need the `wayland-devel`,
 sudo dnf install wayland-devel libxkbcommon-devel libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel
 @endcode
 
-On FreeBSD you will need the `wayland` and `libxkbcommon` packages.  The X11 headers are
-installed along the end-user X11 packages, so if you have an X server running you should
-have the headers as well.  If not, install the `xorgproto` package.
+On FreeBSD you will need the `wayland`, `libxkbcommon` and `evdev-proto` packages.  The
+X11 headers are installed along the end-user X11 packages, so if you have an X server
+running you should have the headers as well.  If not, install the `xorgproto` package.
 
 @code{.sh}
-pkg install wayland libxkbcommon xorgproto
+pkg install wayland libxkbcommon evdev-proto xorgproto
 @endcode
 
 Once you have the required dependencies, move on to @ref compile_generate.

@@ -24,8 +24,6 @@
 //    distribution.
 //
 //========================================================================
-// Please use C89 style variable declarations in this file because VS 2010
-//========================================================================
 
 #include "internal.h"
 
@@ -384,7 +382,7 @@ static GLFWbool createHelperWindow(void)
     if (!_glfw.win32.helperWindowClass)
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                             "WIn32: Failed to register helper window class");
+                             "Win32: Failed to register helper window class");
         return GLFW_FALSE;
     }
 

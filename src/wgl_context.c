@@ -24,8 +24,6 @@
 //    distribution.
 //
 //========================================================================
-// Please use C89 style variable declarations in this file because VS 2010
-//========================================================================
 
 #include "internal.h"
 
@@ -332,6 +330,7 @@ static void swapBuffersWGL(_GLFWwindow* window)
 static void swapIntervalWGL(int interval)
 {
     _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
+    assert(window != NULL);
 
     window->context.wgl.interval = interval;
 

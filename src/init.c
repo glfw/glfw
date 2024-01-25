@@ -24,8 +24,6 @@
 //    distribution.
 //
 //========================================================================
-// Please use C89 style variable declarations in this file because VS 2010
-//========================================================================
 
 #include "internal.h"
 
@@ -61,6 +59,9 @@ static _GLFWinitconfig _glfwInitHints =
     },
     {
         GLFW_TRUE,  // X11 XCB Vulkan surface
+    },
+    {
+        GLFW_WAYLAND_PREFER_LIBDECOR // Wayland libdecor mode
     },
 };
 
@@ -480,6 +481,9 @@ GLFWAPI void glfwInitHint(int hint, int value)
             return;
         case GLFW_X11_XCB_VULKAN_SURFACE:
             _glfwInitHints.x11.xcbVulkanSurface = value;
+            return;
+        case GLFW_WAYLAND_LIBDECOR:
+            _glfwInitHints.wl.libdecorMode = value;
             return;
     }
 

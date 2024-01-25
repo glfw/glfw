@@ -24,8 +24,6 @@
 //    distribution.
 //
 //========================================================================
-// Please use C89 style variable declarations in this file because VS 2010
-//========================================================================
 
 #include "internal.h"
 
@@ -311,6 +309,7 @@ static int extensionSupportedEGL(const char* extension)
 static GLFWglproc getProcAddressEGL(const char* procname)
 {
     _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
+    assert(window != NULL);
 
     if (window->context.egl.client)
     {
@@ -641,16 +640,16 @@ GLFWbool _glfwCreateContextForConfigEGL(EGLConfig eglConfig,
             flags |= EGL_CONTEXT_OPENGL_ROBUST_ACCESS_BIT_KHR;
         }
 
-        if (ctxconfig->noerror)
-        {
-            if (_glfw.egl.KHR_create_context_no_error)
-                SET_ATTRIB(EGL_CONTEXT_OPENGL_NO_ERROR_KHR, GLFW_TRUE);
-        }
-
         if (ctxconfig->major != 1 || ctxconfig->minor != 0)
         {
             SET_ATTRIB(EGL_CONTEXT_MAJOR_VERSION_KHR, ctxconfig->major);
             SET_ATTRIB(EGL_CONTEXT_MINOR_VERSION_KHR, ctxconfig->minor);
+        }
+
+        if (ctxconfig->noerror)
+        {
+            if (_glfw.egl.KHR_create_context_no_error)
+                SET_ATTRIB(EGL_CONTEXT_OPENGL_NO_ERROR_KHR, GLFW_TRUE);
         }
 
         if (mask)
@@ -726,8 +725,11 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
     if (!fbconfig->doublebuffer)
         SET_ATTRIB(EGL_RENDER_BUFFER, EGL_SINGLE_BUFFER);
 
-    if (_glfw.egl.EXT_present_opaque)
-        SET_ATTRIB(EGL_PRESENT_OPAQUE_EXT, !fbconfig->transparent);
+    if (_glfw.platform.platformID == GLFW_PLATFORM_WAYLAND)
+    {
+        if (_glfw.egl.EXT_present_opaque)
+            SET_ATTRIB(EGL_PRESENT_OPAQUE_EXT, !fbconfig->transparent);
+    }
 
     SET_ATTRIB(EGL_NONE, EGL_NONE);
 

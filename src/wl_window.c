@@ -1980,6 +1980,25 @@ const struct wl_data_device_listener dataDeviceListener =
     dataDeviceHandleSelection,
 };
 
+static void xdgActivationHandleDone(void* userData,
+                                    struct xdg_activation_token_v1* activationToken,
+                                    const char* token)
+{
+    _GLFWwindow* window = userData;
+
+    if (activationToken != window->wl.activationToken)
+        return;
+
+    xdg_activation_v1_activate(_glfw.wl.activationManager, token, window->wl.surface);
+    xdg_activation_token_v1_destroy(window->wl.activationToken);
+    window->wl.activationToken = NULL;
+}
+
+static const struct xdg_activation_token_v1_listener xdgActivationListener =
+{
+    xdgActivationHandleDone
+};
+
 void _glfwAddSeatListenerWayland(struct wl_seat* seat)
 {
     wl_seat_add_listener(seat, &seatListener, NULL);
@@ -2338,25 +2357,6 @@ void _glfwHideWindowWayland(_GLFWwindow* window)
         wl_surface_commit(window->wl.surface);
     }
 }
-
-static void xdgActivationHandleDone(void* userData,
-                                    struct xdg_activation_token_v1* activationToken,
-                                    const char* token)
-{
-    _GLFWwindow* window = userData;
-
-    if (activationToken != window->wl.activationToken)
-        return;
-
-    xdg_activation_v1_activate(_glfw.wl.activationManager, token, window->wl.surface);
-    xdg_activation_token_v1_destroy(window->wl.activationToken);
-    window->wl.activationToken = NULL;
-}
-
-static const struct xdg_activation_token_v1_listener xdgActivationListener =
-{
-    xdgActivationHandleDone
-};
 
 void _glfwRequestWindowAttentionWayland(_GLFWwindow* window)
 {

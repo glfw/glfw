@@ -2,12 +2,6 @@ cmake_minimum_required(VERSION 3.4...3.20 FATAL_ERROR)
 
 project(GLFW VERSION 3.4.0 LANGUAGES C)
 
-set(CMAKE_LEGACY_CYGWIN_WIN32 OFF)
-
-if (POLICY CMP0054)
-    cmake_policy(SET CMP0054 NEW)
-endif()
-
 if (POLICY CMP0069)
     cmake_policy(SET CMP0069 NEW)
 endif()
@@ -18,9 +12,7 @@ endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-    set(GLFW_STANDALONE TRUE)
-endif()
+string(COMPARE EQUAL "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}" GLFW_STANDALONE)
 
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ${GLFW_STANDALONE})

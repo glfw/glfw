@@ -361,10 +361,15 @@ extern "C" {
 #define GLFW_HAT_RIGHT_DOWN         (GLFW_HAT_RIGHT | GLFW_HAT_DOWN)
 #define GLFW_HAT_LEFT_UP            (GLFW_HAT_LEFT  | GLFW_HAT_UP)
 #define GLFW_HAT_LEFT_DOWN          (GLFW_HAT_LEFT  | GLFW_HAT_DOWN)
+
+/*! @ingroup input
+ */
+#define GLFW_KEY_UNKNOWN            -1
+
 /*! @} */
 
-/*! @defgroup keys Keyboard keys
- *  @brief Keyboard key IDs.
+/*! @defgroup keys Keyboard key tokens
+ *  @brief Keyboard key tokens.
  *
  *  See [key input](@ref input_key) for how these are used.
  *
@@ -386,9 +391,6 @@ extern "C" {
  *  @ingroup input
  *  @{
  */
-
-/* The unknown key */
-#define GLFW_KEY_UNKNOWN            -1
 
 /* Printable keys */
 #define GLFW_KEY_SPACE              32
@@ -825,11 +827,11 @@ extern "C" {
 #define GLFW_FEATURE_UNIMPLEMENTED  0x0001000D
 /*! @brief Platform unavailable or no matching platform was found.
  *
- *  If emitted during initialization, no matching platform was found.  If @ref
- *  GLFW_PLATFORM is set to `GLFW_ANY_PLATFORM`, GLFW could not detect any of the
- *  platforms supported by this library binary, except for the Null platform.  If set to
- *  a specific platform, it is either not supported by this library binary or GLFW was not
- *  able to detect it.
+ *  If emitted during initialization, no matching platform was found.  If the @ref
+ *  GLFW_PLATFORM init hint was set to `GLFW_ANY_PLATFORM`, GLFW could not detect any of
+ *  the platforms supported by this library binary, except for the Null platform.  If the
+ *  init hint was set to a specific platform, it is either not supported by this library
+ *  binary or GLFW was not able to detect it.
  *
  *  If emitted by a native access function, GLFW was initialized for a different platform
  *  than the function is for.
@@ -1164,6 +1166,9 @@ extern "C" {
 #define GLFW_ANGLE_PLATFORM_TYPE_VULKAN  0x00037007
 #define GLFW_ANGLE_PLATFORM_TYPE_METAL   0x00037008
 
+#define GLFW_WAYLAND_PREFER_LIBDECOR    0x00038001
+#define GLFW_WAYLAND_DISABLE_LIBDECOR   0x00038002
+
 #define GLFW_ANY_POSITION           0x80000000
 
 /*! @defgroup shapes Standard cursor shapes
@@ -1307,6 +1312,11 @@ extern "C" {
  *  X11 specific [init hint](@ref GLFW_X11_XCB_VULKAN_SURFACE_hint).
  */
 #define GLFW_X11_XCB_VULKAN_SURFACE 0x00052001
+/*! @brief Wayland specific init hint.
+ *
+ *  Wayland specific [init hint](@ref GLFW_WAYLAND_LIBDECOR_hint).
+ */
+#define GLFW_WAYLAND_LIBDECOR       0x00053001
 /*! @} */
 
 /*! @addtogroup init
@@ -3091,8 +3101,8 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_INVALID_ENUM, @ref GLFW_INVALID_VALUE, @ref GLFW_API_UNAVAILABLE, @ref
- *  GLFW_VERSION_UNAVAILABLE, @ref GLFW_FORMAT_UNAVAILABLE and @ref
- *  GLFW_PLATFORM_ERROR.
+ *  GLFW_VERSION_UNAVAILABLE, @ref GLFW_FORMAT_UNAVAILABLE, @ref
+ *  GLFW_NO_WINDOW_CONTEXT and @ref GLFW_PLATFORM_ERROR.
  *
  *  @remark @win32 Window creation will fail if the Microsoft GDI software
  *  OpenGL implementation is the only one available.
@@ -4722,8 +4732,8 @@ GLFWAPI int glfwRawMouseMotionSupported(void);
  *  @param[in] scancode The scancode of the key to query.
  *  @return The UTF-8 encoded, layout-specific name of the key, or `NULL`.
  *
- *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
- *  GLFW_PLATFORM_ERROR.
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_INVALID_VALUE, @ref GLFW_INVALID_ENUM and @ref GLFW_PLATFORM_ERROR.
  *
  *  @remark The contents of the returned string may change when a keyboard
  *  layout change event is received.
@@ -4745,15 +4755,18 @@ GLFWAPI const char* glfwGetKeyName(int key, int scancode);
  *
  *  This function returns the platform-specific scancode of the specified key.
  *
- *  If the key is `GLFW_KEY_UNKNOWN` or does not exist on the keyboard this
- *  method will return `-1`.
+ *  If the specified [key token](@ref keys) corresponds to a physical key not
+ *  supported on the current platform then this method will return `-1`.
+ *  Calling this function with anything other than a key token will return `-1`
+ *  and generate a @ref GLFW_INVALID_ENUM error.
  *
- *  @param[in] key Any [named key](@ref keys).
- *  @return The platform-specific scancode for the key, or `-1` if an
- *  [error](@ref error_handling) occurred.
+ *  @param[in] key Any [key token](@ref keys).
+ *  @return The platform-specific scancode for the key, or `-1` if the key is
+ *  not supported on the current platform or an [error](@ref error_handling)
+ *  occurred.
  *
- *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
- *  GLFW_INVALID_ENUM and @ref GLFW_PLATFORM_ERROR.
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_INVALID_ENUM.
  *
  *  @thread_safety This function may be called from any thread.
  *
@@ -5062,9 +5075,9 @@ GLFWAPI void glfwSetCursor(GLFWwindow* window, GLFWcursor* cursor);
  *  [character callback](@ref glfwSetCharCallback) instead.
  *
  *  When a window loses input focus, it will generate synthetic key release
- *  events for all pressed keys.  You can tell these events from user-generated
- *  events by the fact that the synthetic ones are generated after the focus
- *  loss event has been processed, i.e. after the
+ *  events for all pressed keys with associated key tokens.  You can tell these
+ *  events from user-generated events by the fact that the synthetic ones are
+ *  generated after the focus loss event has been processed, i.e. after the
  *  [window focus callback](@ref glfwSetWindowFocusCallback) has been called.
  *
  *  The scancode of a key is specific to that platform or sometimes even to that
@@ -5813,6 +5826,11 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
+ *  @remark @win32 The clipboard on Windows has a single global lock for reading and
+ *  writing.  GLFW tries to acquire it a few times, which is almost always enough.  If it
+ *  cannot acquire the lock then this function emits @ref GLFW_PLATFORM_ERROR and returns.
+ *  It is safe to try this multiple times.
+ *
  *  @pointer_lifetime The specified string is copied before this function
  *  returns.
  *
@@ -5840,6 +5858,11 @@ GLFWAPI void glfwSetClipboardString(GLFWwindow* window, const char* string);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_FORMAT_UNAVAILABLE and @ref GLFW_PLATFORM_ERROR.
+ *
+ *  @remark @win32 The clipboard on Windows has a single global lock for reading and
+ *  writing.  GLFW tries to acquire it a few times, which is almost always enough.  If it
+ *  cannot acquire the lock then this function emits @ref GLFW_PLATFORM_ERROR and returns.
+ *  It is safe to try this multiple times.
  *
  *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
  *  should not free it yourself.  It is valid until the next call to @ref
@@ -5963,15 +5986,18 @@ GLFWAPI uint64_t glfwGetTimerFrequency(void);
  *  thread.
  *
  *  This function makes the OpenGL or OpenGL ES context of the specified window
- *  current on the calling thread.  A context must only be made current on
- *  a single thread at a time and each thread can have only a single current
- *  context at a time.
+ *  current on the calling thread.  It can also detach the current context from
+ *  the calling thread without making a new one current by passing in `NULL`.
+ *
+ *  A context must only be made current on a single thread at a time and each
+ *  thread can have only a single current context at a time.  Making a context
+ *  current detaches any previously current context on the calling thread.
  *
  *  Making a context of a window current on a given thread will detach
  *  any user context which is current on that thread and visa versa.
  *
- *  When moving a context between threads, you must make it non-current on the
- *  old thread before making it current on the new one.
+ *  When moving a context between threads, you must detach it (make it
+ *  non-current) on the old thread before making it current on the new one.
  *
  *  By default, making a context non-current implicitly forces a pipeline flush.
  *  On machines that support `GL_KHR_context_flush_control`, you can control
@@ -5985,6 +6011,10 @@ GLFWAPI uint64_t glfwGetTimerFrequency(void);
  *
  *  @param[in] window The window whose context to make current, or `NULL` to
  *  detach the current context.
+ *
+ *  @remarks If the previously current context was created via a different
+ *  context creation API than the one passed to this function, GLFW will still
+ *  detach the previous one from its API before making the new one current.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_NO_WINDOW_CONTEXT and @ref GLFW_PLATFORM_ERROR.

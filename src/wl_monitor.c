@@ -23,8 +23,6 @@
 //    distribution.
 //
 //========================================================================
-// It is fine to use C99 in this file because it will not be built with VS
-//========================================================================
 
 #include "internal.h"
 
@@ -114,22 +112,21 @@ static void outputHandleScale(void* userData,
 {
     struct _GLFWmonitor* monitor = userData;
 
-    monitor->wl.scale = factor;
+    monitor->wl.contentScale = factor;
 
     for (_GLFWwindow* window = _glfw.windowListHead; window; window = window->next)
     {
-        for (int i = 0; i < window->wl.monitorsCount; i++)
+        for (int i = 0; i < window->wl.scaleCount; i++)
         {
-            if (window->wl.monitors[i] == monitor)
+            if (window->wl.scales[i].output == monitor->wl.output)
             {
+                window->wl.scales[i].factor = monitor->wl.contentScale;
                 _glfwUpdateContentScaleWayland(window);
                 break;
             }
         }
     }
 }
-
-#ifdef WL_OUTPUT_NAME_SINCE_VERSION
 
 void outputHandleName(void* userData, struct wl_output* wl_output, const char* name)
 {
@@ -144,18 +141,14 @@ void outputHandleDescription(void* userData,
 {
 }
 
-#endif // WL_OUTPUT_NAME_SINCE_VERSION
-
 static const struct wl_output_listener outputListener =
 {
     outputHandleGeometry,
     outputHandleMode,
     outputHandleDone,
     outputHandleScale,
-#ifdef WL_OUTPUT_NAME_SINCE_VERSION
     outputHandleName,
     outputHandleDescription,
-#endif
 };
 
 
@@ -172,11 +165,7 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
         return;
     }
 
-#ifdef WL_OUTPUT_NAME_SINCE_VERSION
     version = _glfw_min(version, WL_OUTPUT_NAME_SINCE_VERSION);
-#else
-    version = 2;
-#endif
 
     struct wl_output* output = wl_registry_bind(_glfw.wl.registry,
                                                 name,
@@ -187,10 +176,11 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
 
     // The actual name of this output will be set in the geometry handler
     _GLFWmonitor* monitor = _glfwAllocMonitor("", 0, 0);
-    monitor->wl.scale = 1;
+    monitor->wl.contentScale = 1;
     monitor->wl.output = output;
     monitor->wl.name = name;
 
+    wl_proxy_set_tag((struct wl_proxy*) output, &_glfw.wl.tag);
     wl_output_add_listener(output, &outputListener, monitor);
 }
 
@@ -217,9 +207,9 @@ void _glfwGetMonitorContentScaleWayland(_GLFWmonitor* monitor,
                                         float* xscale, float* yscale)
 {
     if (xscale)
-        *xscale = (float) monitor->wl.scale;
+        *xscale = (float) monitor->wl.contentScale;
     if (yscale)
-        *yscale = (float) monitor->wl.scale;
+        *yscale = (float) monitor->wl.contentScale;
 }
 
 void _glfwGetMonitorWorkareaWayland(_GLFWmonitor* monitor,

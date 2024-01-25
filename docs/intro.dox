@@ -144,6 +144,15 @@ the `VK_KHR_xlib_surface` extension.  Possible values are `GLFW_TRUE` and
 `GLFW_FALSE`.  This is ignored on other platforms.
 
 
+@subsubsection init_hints_wayland Wayland specific init hints
+
+@anchor GLFW_WAYLAND_LIBDECOR_hint
+__GLFW_WAYLAND_LIBDECOR__ specifies whether to use
+[libdecor](https://gitlab.freedesktop.org/libdecor/libdecor) for window
+decorations where available.  Possible values are `GLFW_WAYLAND_PREFER_LIBDECOR`
+and `GLFW_WAYLAND_DISABLE_LIBDECOR`.  This is ignored on other platforms.
+
+
 @subsubsection init_hints_values Supported and default values
 
 Initialization hint              | Default value                   | Supported values
@@ -154,6 +163,7 @@ Initialization hint              | Default value                   | Supported v
 @ref GLFW_COCOA_CHDIR_RESOURCES  | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_COCOA_MENUBAR          | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_X11_XCB_VULKAN_SURFACE | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_WAYLAND_LIBDECOR       | `GLFW_WAYLAND_PREFER_LIBDECOR`  | `GLFW_WAYLAND_PREFER_LIBDECOR` or `GLFW_WAYLAND_DISABLE_LIBDECOR`
 
 
 @subsection platform Runtime platform selection

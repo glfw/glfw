@@ -136,13 +136,12 @@ On [glfw.org](https://www.glfw.org/) you can find the latest version of GLFW, as
 well as news, documentation and other information about the project.
 
 If you have questions related to the use of GLFW, we have a
-[forum](https://discourse.glfw.org/), and the `#glfw` IRC channel on
-[Libera.Chat](https://libera.chat/).
+[forum](https://discourse.glfw.org/).
 
 If you have a bug to report, a patch to submit or a feature you'd like to
 request, please file it in the
 [issue tracker](https://github.com/glfw/glfw/issues) on GitHub.
 
 Finally, if you're interested in helping out with the development of GLFW or
-porting it to your favorite platform, join us on the forum, GitHub or IRC.
+porting it to your favorite platform, join us on the forum or GitHub.
 

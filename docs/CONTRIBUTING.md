@@ -23,13 +23,12 @@ Questions about how to use GLFW should be asked either in the [support
 section](https://discourse.glfw.org/c/support) of the forum, under the [Stack
 Overflow tag](https://stackoverflow.com/questions/tagged/glfw) or [Game
 Development tag](https://gamedev.stackexchange.com/questions/tagged/glfw) on
-Stack Exchange or in the IRC channel `#glfw` on
-[Libera.Chat](https://libera.chat/).
+Stack Exchange.
 
 Questions about the design or implementation of GLFW or about future plans
 should be asked in the [dev section](https://discourse.glfw.org/c/dev) of the
-forum or in the IRC channel.  Please don't open a GitHub issue to discuss design
-questions without first checking with a maintainer.
+forum.  Please don't open a GitHub issue to discuss design questions without
+first checking with a maintainer.
 
 
 ## Reporting a bug

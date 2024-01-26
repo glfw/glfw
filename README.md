@@ -1,11 +1,4 @@
-# GLFW
-
-This software was not created by me. The original repository is linked down below.
-
-[Original repository](https://github.com/glfw/glfw)
-
-## Borderless features
-
+# Borderless features
 
 ### New hint for Windows:
 - `GLFW_BORDERLESS_AREO` - When window is created it automatically becomes borderless but has all the area and animation features.

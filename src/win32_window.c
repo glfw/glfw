@@ -945,14 +945,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                     pos.y = (int)((data->data.mouse.lLastY / 65535.0f) * height);
                     ScreenToClient(window->win32.handle, &pos);
 
-
-                    _glfwGetWindowSizeWin32(window, &window_width, &window_height);
-
-                    // One other unfortunate thing is that re-centering the cursor will still fire an
-                    // input event; assume that any motion to the center is our re-centering and ignore it
-                    if (pos.x == window_width / 2 && pos.y == window_height / 2)
-                        break;
-
                     dx = pos.x - window->win32.lastCursorPosX;
                     dy = pos.y - window->win32.lastCursorPosY;
                 }
@@ -2142,7 +2134,7 @@ void _glfwPollEventsWin32(void)
 
         // NOTE: Re-center the cursor only if it has moved since the last call,
         //       to avoid breaking glfwWaitEvents with WM_MOUSEMOVE
-        // The recenter is important to prevent the mouse cursor to stop at the edges of the screen.
+        // The re-center is required in order to prevent the mouse cursor stopping at the edges of the screen.
         if (window->win32.lastCursorPosX != width / 2 ||
             window->win32.lastCursorPosY != height / 2)
         {

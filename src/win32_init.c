@@ -432,7 +432,6 @@ static GLFWbool createHelperWindow(void)
    return GLFW_TRUE;
 }
 
-
 // Creates the blank cursor
 //
 static void createBlankCursor(void)
@@ -458,16 +457,16 @@ static void createBlankCursor(void)
 
 }
 
-
 // Initialize for remote sessions
+//
 static void initRemoteSession(void)
 {
     //Check if the current progress was started with Remote Desktop.
     _glfw.win32.isRemoteSession = GetSystemMetrics(SM_REMOTESESSION) > 0;
 
-    //With Remote desktop, we need to create a blank cursor because of the cursor is Set to NULL
-    //if cannot be moved to center in capture mode. If not Remote Desktop win32.blankCursor stays NULL
-    //and will perform has before (normal).
+    // With Remote desktop, we need to create a blank cursor because of the cursor is Set to NULL
+    // if cannot be moved to center in capture mode. If not Remote Desktop win32.blankCursor stays NULL
+    // and will perform has before (normal).
     if (_glfw.win32.isRemoteSession)
     {
         createBlankCursor();

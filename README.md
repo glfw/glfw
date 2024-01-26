@@ -79,6 +79,8 @@ more information.
 
 ## System requirements
 
+GLFW is written in C99 and does not support Visual Studio 2012 or earlier.
+
 GLFW supports Windows XP and later and macOS 10.8 and later.  Linux and other
 Unix-like systems running the X Window System are supported even without
 a desktop environment or modern extensions, although some features require
@@ -235,6 +237,7 @@ information on what to include when reporting a bug.
  - [Win32] Bugfix: Fix pkg-config for dynamic library on Windows (#2386, #2420)
  - [Win32] Bugfix: XInput could reportedly provide invalid DPad bit masks (#2291)
  - [Win32] Bugfix: Disabled cursor mode doesn't work right when connected over RDP (#1276)
+ - [Win32] Bugfix: Rapid clipboard calls could fail due to Clipboard History
  - [Cocoa] Added support for `VK_EXT_metal_surface` (#1619)
  - [Cocoa] Added locating the Vulkan loader at runtime in an application bundle
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)

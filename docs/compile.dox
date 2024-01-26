@@ -7,6 +7,8 @@
 This is about compiling the GLFW library itself.  For information on how to
 build applications that use GLFW, see @ref build_guide.
 
+GLFW uses some C99 features and does not support Visual Studio 2012 and earlier.
+
 
 @section compile_cmake Using CMake
 
@@ -83,29 +85,28 @@ development packages installed.  They are not needed to build or run programs th
 GLFW.  You will also need to set the @ref GLFW_BUILD_WAYLAND CMake option in the next
 step when generating build files.
 
-On Debian and derivatives like Ubuntu and Linux Mint you will need the `libwayland-dev`,
-`libxkbcommon-dev` and `wayland-protocols` packages and the `xorg-dev` meta-package.
-These will pull in all other dependencies.
+On Debian and derivatives like Ubuntu and Linux Mint you will need the `libwayland-dev`
+and `libxkbcommon-dev` packages and the `xorg-dev` meta-package.  These will pull in all
+other dependencies.
 
 @code{.sh}
-sudo apt install libwayland-dev libxkbcommon-dev wayland-protocols xorg-dev
+sudo apt install libwayland-dev libxkbcommon-dev xorg-dev
 @endcode
 
 On Fedora and derivatives like Red Hat you will need the `wayland-devel`,
-`libxkbcommon-devel`, `wayland-protocols-devel`, `libXcursor-devel`, `libXi-devel`,
-`libXinerama-devel` and `libXrandr-devel` packages.  These will pull in all other
-dependencies.
+`libxkbcommon-devel`, `libXcursor-devel`, `libXi-devel`, `libXinerama-devel` and
+`libXrandr-devel` packages.  These will pull in all other dependencies.
 
 @code{.sh}
-sudo dnf install wayland-devel libxkbcommon-devel wayland-protocols-devel libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel
+sudo dnf install wayland-devel libxkbcommon-devel libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel
 @endcode
 
-On FreeBSD you will need the `wayland`, `libxkbcommon` and `wayland-protocols` packages.
-The X11 headers are installed along the end-user X11 packages, so if you have an X server
-running you should have the headers as well.  If not, install the `xorgproto` package.
+On FreeBSD you will need the `wayland` and `libxkbcommon` packages.  The X11 headers are
+installed along the end-user X11 packages, so if you have an X server running you should
+have the headers as well.  If not, install the `xorgproto` package.
 
 @code{.sh}
-pkg install wayland libxkbcommon wayland-protocols xorgproto
+pkg install wayland libxkbcommon xorgproto
 @endcode
 
 Once you have the required dependencies, move on to @ref compile_generate.

@@ -23,8 +23,6 @@
 //    distribution.
 //
 //========================================================================
-// It is fine to use C99 in this file because it will not be built with VS
-//========================================================================
 
 #define _GNU_SOURCE
 
@@ -44,12 +42,12 @@
 #include <poll.h>
 
 #include "wayland-client-protocol.h"
-#include "wayland-xdg-shell-client-protocol.h"
-#include "wayland-xdg-decoration-client-protocol.h"
-#include "wayland-viewporter-client-protocol.h"
-#include "wayland-relative-pointer-unstable-v1-client-protocol.h"
-#include "wayland-pointer-constraints-unstable-v1-client-protocol.h"
-#include "wayland-idle-inhibit-unstable-v1-client-protocol.h"
+#include "xdg-shell-client-protocol.h"
+#include "xdg-decoration-unstable-v1-client-protocol.h"
+#include "viewporter-client-protocol.h"
+#include "relative-pointer-unstable-v1-client-protocol.h"
+#include "pointer-constraints-unstable-v1-client-protocol.h"
+#include "idle-inhibit-unstable-v1-client-protocol.h"
 
 #define GLFW_BORDER_SIZE    4
 #define GLFW_CAPTION_HEIGHT 24
@@ -1756,7 +1754,6 @@ static void keyboardHandleModifiers(void* userData,
     }
 }
 
-#ifdef WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION
 static void keyboardHandleRepeatInfo(void* userData,
                                      struct wl_keyboard* keyboard,
                                      int32_t rate,
@@ -1768,7 +1765,6 @@ static void keyboardHandleRepeatInfo(void* userData,
     _glfw.wl.keyRepeatRate = rate;
     _glfw.wl.keyRepeatDelay = delay;
 }
-#endif
 
 static const struct wl_keyboard_listener keyboardListener =
 {
@@ -1777,9 +1773,7 @@ static const struct wl_keyboard_listener keyboardListener =
     keyboardHandleLeave,
     keyboardHandleKey,
     keyboardHandleModifiers,
-#ifdef WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION
     keyboardHandleRepeatInfo,
-#endif
 };
 
 static void seatHandleCapabilities(void* userData,

@@ -23,8 +23,6 @@
 //    distribution.
 //
 //========================================================================
-// It is fine to use C99 in this file because it will not be built with VS
-//========================================================================
 
 #include "internal.h"
 
@@ -130,8 +128,6 @@ static void outputHandleScale(void* userData,
     }
 }
 
-#ifdef WL_OUTPUT_NAME_SINCE_VERSION
-
 void outputHandleName(void* userData, struct wl_output* wl_output, const char* name)
 {
     struct _GLFWmonitor* monitor = userData;
@@ -145,18 +141,14 @@ void outputHandleDescription(void* userData,
 {
 }
 
-#endif // WL_OUTPUT_NAME_SINCE_VERSION
-
 static const struct wl_output_listener outputListener =
 {
     outputHandleGeometry,
     outputHandleMode,
     outputHandleDone,
     outputHandleScale,
-#ifdef WL_OUTPUT_NAME_SINCE_VERSION
     outputHandleName,
     outputHandleDescription,
-#endif
 };
 
 
@@ -173,11 +165,7 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
         return;
     }
 
-#ifdef WL_OUTPUT_NAME_SINCE_VERSION
     version = _glfw_min(version, WL_OUTPUT_NAME_SINCE_VERSION);
-#else
-    version = 2;
-#endif
 
     struct wl_output* output = wl_registry_bind(_glfw.wl.registry,
                                                 name,

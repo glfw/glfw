@@ -901,7 +901,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             RAWINPUT* data = NULL;
             int dx, dy;
             int width, height;
-            int window_width, window_height;
             POINT pos;
 
             if (_glfw.win32.disabledCursorWindow != window)

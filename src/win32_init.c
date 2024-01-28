@@ -438,8 +438,8 @@ static void createBlankCursor(void)
     //       using SetCursorPos when connected over RDP
     int cursorWidth = GetSystemMetrics(SM_CXCURSOR);
     int cursorHeight = GetSystemMetrics(SM_CYCURSOR);
-    unsigned char* andMask = calloc(cursorWidth * cursorHeight / 8, sizeof(unsigned char));
-    unsigned char* xorMask = calloc(cursorWidth * cursorHeight / 8, sizeof(unsigned char));
+    unsigned char* andMask = _glfw_calloc(cursorWidth * cursorHeight / 8, sizeof(unsigned char));
+    unsigned char* xorMask = _glfw_calloc(cursorWidth * cursorHeight / 8, sizeof(unsigned char));
 
     if (andMask != NULL && xorMask != NULL) {
 
@@ -449,8 +449,8 @@ static void createBlankCursor(void)
         // which serves as an acceptable fallback blank cursor (other than on RDP)
         _glfw.win32.blankCursor = CreateCursor(NULL, 0, 0, cursorWidth, cursorHeight, andMask, xorMask);
 
-        free(andMask);
-        free(xorMask);
+        _glfw_free(andMask);
+        _glfw_free(xorMask);
     }
 }
 
@@ -740,6 +740,12 @@ int _glfwInitWin32(void)
 
     //Some hacks are needed to support Remote Desktop...
     initRemoteSession();
+    if (_glfw.win32.isRemoteSession && _glfw.win32.blankCursor == NULL )
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "Win32: Failed to create blank cursor for remote session.");
+        return GLFW_FALSE;
+    }
 
     _glfwPollMonitorsWin32();
     return GLFW_TRUE;

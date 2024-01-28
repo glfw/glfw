@@ -232,7 +232,10 @@ static void updateCursorImage(_GLFWwindow* window)
             SetCursor(LoadCursorW(NULL, IDC_ARROW));
     }
     else
-        SetCursor(NULL);
+        //Connected via Remote Desktop, NULL cursor will present SetCursorPos the move the cursor.
+        //using a blank cursor fix that.
+        //When not via Remote Desktop, win32.blankCursor should be NULL
+        SetCursor(_glfw.win32.blankCursor);
 }
 
 // Sets the cursor clip rect to the window content area
@@ -897,6 +900,8 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             HRAWINPUT ri = (HRAWINPUT) lParam;
             RAWINPUT* data = NULL;
             int dx, dy;
+            int width, height;
+            POINT pos;
 
             if (_glfw.win32.disabledCursorWindow != window)
                 break;
@@ -923,9 +928,30 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
             data = _glfw.win32.rawInput;
             if (data->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
-            {
-                dx = data->data.mouse.lLastX - window->win32.lastCursorPosX;
-                dy = data->data.mouse.lLastY - window->win32.lastCursorPosY;
+            {   
+                if (_glfw.win32.isRemoteSession)
+                {
+                    //Remote Desktop Mode...
+                    // As per https://github.com/Microsoft/DirectXTK/commit/ef56b63f3739381e451f7a5a5bd2c9779d2a7555
+                    // MOUSE_MOVE_ABSOLUTE is a range from 0 through 65535, based on the screen size.
+                    // As far as I can tell, absolute mode only occurs over RDP though.
+                    width = GetSystemMetrics((data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) ? SM_CXVIRTUALSCREEN : SM_CXSCREEN);
+                    height = GetSystemMetrics((data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) ? SM_CYVIRTUALSCREEN : SM_CYSCREEN);
+
+                    pos.x = (int)((data->data.mouse.lLastX / 65535.0f) * width);
+                    pos.y = (int)((data->data.mouse.lLastY / 65535.0f) * height);
+                    ScreenToClient(window->win32.handle, &pos);
+
+                    dx = pos.x - window->win32.lastCursorPosX;
+                    dy = pos.y - window->win32.lastCursorPosY;
+                }
+                else
+                {
+                    //Normal mode... We should have the right absolute coords in data.mouse
+                    dx = data->data.mouse.lLastX - window->win32.lastCursorPosX;
+                    dy = data->data.mouse.lLastY - window->win32.lastCursorPosY;
+                }
+
             }
             else
             {
@@ -1432,10 +1458,12 @@ static int createNativeWindow(_GLFWwindow* window,
         window->win32.transparent = GLFW_TRUE;
     }
 
+
     _glfwGetWindowSizeWin32(window, &window->win32.width, &window->win32.height);
 
     return GLFW_TRUE;
 }
+
 
 GLFWbool _glfwCreateWindowWin32(_GLFWwindow* window,
                                 const _GLFWwndconfig* wndconfig,
@@ -1525,6 +1553,7 @@ void _glfwDestroyWindowWin32(_GLFWwindow* window)
 
     if (window->win32.smallIcon)
         DestroyIcon(window->win32.smallIcon);
+
 }
 
 void _glfwSetWindowTitleWin32(_GLFWwindow* window, const char* title)
@@ -2102,6 +2131,7 @@ void _glfwPollEventsWin32(void)
 
         // NOTE: Re-center the cursor only if it has moved since the last call,
         //       to avoid breaking glfwWaitEvents with WM_MOUSEMOVE
+        // The re-center is required in order to prevent the mouse cursor stopping at the edges of the screen.
         if (window->win32.lastCursorPosX != width / 2 ||
             window->win32.lastCursorPosY != height / 2)
         {

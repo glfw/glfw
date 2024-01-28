@@ -430,6 +430,7 @@ typedef struct _GLFWwindowWin32
 
     // The last received cursor position, regardless of source
     int                 lastCursorPosX, lastCursorPosY;
+
     // The last received high surrogate when decoding pairs of UTF-16 messages
     WCHAR               highSurrogate;
 } _GLFWwindowWin32;
@@ -457,6 +458,10 @@ typedef struct _GLFWlibraryWin32
     RAWINPUT*           rawInput;
     int                 rawInputSize;
     UINT                mouseTrailSize;
+    // Indicate if the process was started behind Remote Destop
+    BOOL                isRemoteSession;
+    // An invisible cursor, needed for special cases (see WM_INPUT handler)
+    HCURSOR             blankCursor;
 
     struct {
         HINSTANCE                       instance;

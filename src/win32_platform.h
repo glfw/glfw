@@ -430,7 +430,6 @@ typedef struct _GLFWwindowWin32
 
     // The last received cursor position, regardless of source
     int                 lastCursorPosX, lastCursorPosY;
-
     // The last received high surrogate when decoding pairs of UTF-16 messages
     WCHAR               highSurrogate;
 } _GLFWwindowWin32;

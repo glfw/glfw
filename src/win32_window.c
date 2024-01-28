@@ -951,7 +951,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                     dx = data->data.mouse.lLastX - window->win32.lastCursorPosX;
                     dy = data->data.mouse.lLastY - window->win32.lastCursorPosY;
                 }
-
             }
             else
             {
@@ -1458,12 +1457,10 @@ static int createNativeWindow(_GLFWwindow* window,
         window->win32.transparent = GLFW_TRUE;
     }
 
-
     _glfwGetWindowSizeWin32(window, &window->win32.width, &window->win32.height);
 
     return GLFW_TRUE;
 }
-
 
 GLFWbool _glfwCreateWindowWin32(_GLFWwindow* window,
                                 const _GLFWwndconfig* wndconfig,
@@ -1553,7 +1550,6 @@ void _glfwDestroyWindowWin32(_GLFWwindow* window)
 
     if (window->win32.smallIcon)
         DestroyIcon(window->win32.smallIcon);
-
 }
 
 void _glfwSetWindowTitleWin32(_GLFWwindow* window, const char* title)

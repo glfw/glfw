@@ -452,7 +452,6 @@ static void createBlankCursor(void)
         free(andMask);
         free(xorMask);
     }
-
 }
 
 // Initialize for remote sessions
@@ -469,7 +468,6 @@ static void initRemoteSession(void)
     {
         createBlankCursor();
     }
-
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -749,7 +747,6 @@ int _glfwInitWin32(void)
 
 void _glfwTerminateWin32(void)
 {
-
     if (_glfw.win32.blankCursor)
         DestroyCursor(_glfw.win32.blankCursor);
 

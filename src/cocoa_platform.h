@@ -215,6 +215,7 @@ int _glfwInitCocoa(void);
 void _glfwTerminateCocoa(void);
 
 GLFWbool _glfwCreateWindowCocoa(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
+GLFWbool _glfwAttachWindowCocoa(_GLFWwindow* window, intptr_t native, const _GLFWwndconfig* wndconfig, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
 void _glfwDestroyWindowCocoa(_GLFWwindow* window);
 void _glfwSetWindowTitleCocoa(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconCocoa(_GLFWwindow* window, int count, const GLFWimage* images);
@@ -299,4 +300,3 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                 const _GLFWctxconfig* ctxconfig,
                                 const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContextNSGL(_GLFWwindow* window);
-

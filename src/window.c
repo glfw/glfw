@@ -252,8 +252,55 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     return (GLFWwindow*) window;
 }
 
-void glfwDefaultWindowHints(void)
-{
+GLFWAPI GLFWwindow* glfwAttachWindow(intptr_t nativeWindow, GLFWwindow* share) {
+  _GLFWfbconfig fbconfig;
+  _GLFWctxconfig ctxconfig;
+  _GLFWwndconfig wndconfig;
+  _GLFWwindow* window;
+
+  _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+  fbconfig  = _glfw.hints.framebuffer;
+  ctxconfig = _glfw.hints.context;
+  wndconfig = _glfw.hints.window;
+
+  ctxconfig.share = (_GLFWwindow*) share;
+  if (ctxconfig.share)
+  {
+    if (ctxconfig.client == GLFW_NO_API ||
+      ctxconfig.share->context.client == GLFW_NO_API)
+    {
+      _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
+      return NULL;
+    }
+  }
+
+  if (!_glfwIsValidContextConfig(&ctxconfig))
+    return NULL;
+
+  window = calloc(1, sizeof(_GLFWwindow));
+  window->next = _glfw.windowListHead;
+  _glfw.windowListHead = window;
+
+  window->autoIconify = wndconfig.autoIconify;
+  window->cursorMode  = GLFW_CURSOR_NORMAL;
+  window->external    = GLFW_TRUE;
+
+  window->minwidth    = GLFW_DONT_CARE;
+  window->minheight   = GLFW_DONT_CARE;
+  window->maxwidth    = GLFW_DONT_CARE;
+  window->maxheight   = GLFW_DONT_CARE;
+  window->numer       = GLFW_DONT_CARE;
+  window->denom       = GLFW_DONT_CARE;
+
+  if (!_glfw.platform.attachWindow(window, nativeWindow, &wndconfig, &ctxconfig, &fbconfig))
+    return NULL;
+
+  return (GLFWwindow*) window;
+}
+
+void glfwDefaultWindowHints(void) {
+
     _GLFW_REQUIRE_INIT();
 
     // The default is OpenGL with minimum version 1.0
@@ -1150,4 +1197,3 @@ GLFWAPI void glfwPostEmptyEvent(void)
     _GLFW_REQUIRE_INIT();
     _glfw.platform.postEmptyEvent();
 }
-

@@ -610,6 +610,7 @@ int _glfwInitWayland(void);
 void _glfwTerminateWayland(void);
 
 GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
+GLFWbool _glfwAttachWindowWayland(_GLFWwindow* window, intptr_t native, const _GLFWwndconfig* wndconfig, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
 void _glfwDestroyWindowWayland(_GLFWwindow* window);
 void _glfwSetWindowTitleWayland(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconWayland(_GLFWwindow* window, int count, const GLFWimage* images);

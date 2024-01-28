@@ -1204,6 +1204,7 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
         _glfwGetGammaRampX11,
         _glfwSetGammaRampX11,
         _glfwCreateWindowX11,
+        _glfwAttachWindowX11,
         _glfwDestroyWindowX11,
         _glfwSetWindowTitleX11,
         _glfwSetWindowIconX11,
@@ -1653,4 +1654,3 @@ void _glfwTerminateX11(void)
 }
 
 #endif // _GLFW_X11
-

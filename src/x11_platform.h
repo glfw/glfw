@@ -902,6 +902,7 @@ int _glfwInitX11(void);
 void _glfwTerminateX11(void);
 
 GLFWbool _glfwCreateWindowX11(_GLFWwindow* window, const _GLFWwndconfig* wndconfig, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
+GLFWbool _glfwAttachWindowX11(_GLFWwindow* window, intptr_t native, const _GLFWwndconfig* wndconfig, const _GLFWctxconfig* ctxconfig, const _GLFWfbconfig* fbconfig);
 void _glfwDestroyWindowX11(_GLFWwindow* window);
 void _glfwSetWindowTitleX11(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* images);
@@ -1001,4 +1002,3 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
                               const _GLFWctxconfig* ctxconfig,
                               const _GLFWfbconfig* fbconfig,
                               Visual** visual, int* depth);
-

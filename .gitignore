@@ -102,3 +102,7 @@ tests/triangle-vulkan
 tests/window
 tests/windows
 
+# IDE caches
+.cache/
+.idea/
+.vscode/

@@ -2042,6 +2042,15 @@ GLFWbool _glfwCreateWindowX11(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
+GLFWbool _glfwAttachWindowX11(_GLFWwindow* window,
+                              intptr_t native,
+                              const _GLFWwndconfig* wndconfig,
+                              const _GLFWctxconfig* ctxconfig,
+                              const _GLFWfbconfig* fbconfig) {
+    _glfwInputError(GLFW_PLATFORM_ERROR, "X11 window attachment is not implemented");
+    return GLFW_FALSE;
+}
+
 void _glfwDestroyWindowX11(_GLFWwindow* window)
 {
     if (_glfw.x11.disabledCursorWindow == window)
@@ -3350,4 +3359,3 @@ GLFWAPI const char* glfwGetX11SelectionString(void)
 }
 
 #endif // _GLFW_X11
-

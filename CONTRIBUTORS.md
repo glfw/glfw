@@ -103,6 +103,7 @@ video tutorials.
  - IntellectualKitty
  - Aaron Jacobs
  - JannikGM
+ - Andreas O. Jansen
  - Erik S. V. Jansson
  - jjYBdx4IL
  - Peter Johnson
@@ -216,6 +217,7 @@ video tutorials.
  - Yoshinori Sano
  - Brandon Schaefer
  - Sebastian Schuberth
+ - Jan Schuerkamp
  - Scr3amer
  - Christian Sdunek
  - Matt Sealey

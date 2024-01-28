@@ -528,6 +528,9 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         _glfwDestroyWindowCocoa,
         _glfwSetWindowTitleCocoa,
         _glfwSetWindowIconCocoa,
+        _glfwSetWindowProgressIndicatorCocoa,
+        _glfwSetWindowBadgeCocoa,
+        _glfwSetWindowBadgeStringCocoa,
         _glfwGetWindowPosCocoa,
         _glfwSetWindowPosCocoa,
         _glfwGetWindowSizeCocoa,
@@ -648,6 +651,12 @@ int _glfwInitCocoa(void)
 void _glfwTerminateCocoa(void)
 {
     @autoreleasepool {
+        
+    if (_glfw.ns.dockProgressIndicator.view != nil)
+    {
+        [_glfw.ns.dockProgressIndicator.view removeFromSuperview];
+        [_glfw.ns.dockProgressIndicator.view release];
+    }
 
     if (_glfw.ns.inputSource)
     {

@@ -1314,6 +1314,34 @@ static int createNativeWindow(_GLFWwindow* window,
         }
     }
 
+    if (_glfw.win32.isRemoteSession)
+    {
+        // NOTE: On Remote Desktop, setting the cursor to NULL does not hide it
+        // HACK: Create a transparent cursor and always set that instead of NULL
+        //       When not on Remote Desktop, this handle is NULL and normal hiding is used
+        if (!_glfw.win32.blankCursor)
+        {
+            const int cursorWidth = GetSystemMetrics(SM_CXCURSOR);
+            const int cursorHeight = GetSystemMetrics(SM_CYCURSOR);
+
+            unsigned char* cursorPixels = _glfw_calloc(cursorWidth * cursorHeight, 4);
+            if (!cursorPixels)
+                return GLFW_FALSE;
+
+            // NOTE: Windows checks whether the image is fully transparent and if so
+            //       just ignores the alpha channel and makes the whole cursor opaque
+            // HACK: Make one pixel slightly less transparent
+            cursorPixels[3] = 1;
+
+            const GLFWimage cursorImage = { cursorWidth, cursorHeight, cursorPixels };
+            _glfw.win32.blankCursor = createIcon(&cursorImage, 0, 0, FALSE);
+            _glfw_free(cursorPixels);
+
+            if (!_glfw.win32.blankCursor)
+                return GLFW_FALSE;
+        }
+    }
+
     if (window->monitor)
     {
         MONITORINFO mi = { sizeof(mi) };

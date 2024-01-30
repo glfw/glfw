@@ -45,6 +45,7 @@ video tutorials.
  - Bailey Cosier
  - Noel Cower
  - CuriouserThing
+ - Bill Currie
  - Jason Daly
  - danhambleton
  - Jarrod Davis
@@ -162,6 +163,7 @@ video tutorials.
  - Martins Mozeiko
  - James Murphy
  - Julian Møller
+ - NateIsStalling
  - ndogxj
  - F. Nedelec
  - Kristian Nielsen

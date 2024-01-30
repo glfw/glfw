@@ -128,6 +128,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Terminating the library before showing a window could segfault
  - [Wayland] Bugfix: Compilation failed on FreeBSD (#2445)
  - [Linux] Bugfix: `regfree´ was called on invalid data (#2464)
+ - [WGL] Bugfix: Context creation failed in Parallels VM (#2191,#2406,#2467)
 
 
 ## Contact

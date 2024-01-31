@@ -2124,7 +2124,7 @@ void _glfwSetWindowIconWayland(_GLFWwindow* window,
                                int count, const GLFWimage* images)
 {
     _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                    "Wayland: The platform does not support setting the window icon");
+                    "Wayland: The platform does not support setting the window or application icon");
 }
 
 void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos)

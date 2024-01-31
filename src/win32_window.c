@@ -29,7 +29,6 @@
 
 #if defined(_GLFW_WIN32)
 
-#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 #include <windowsx.h>
@@ -71,28 +70,6 @@ static DWORD getWindowExStyle(const _GLFWwindow* window)
         style |= WS_EX_TOPMOST;
 
     return style;
-}
-
-// Returns the image whose area most closely matches the desired one
-//
-static const GLFWimage* chooseImage(int count, const GLFWimage* images,
-                                    int width, int height)
-{
-    int i, leastDiff = INT_MAX;
-    const GLFWimage* closest = NULL;
-
-    for (i = 0;  i < count;  i++)
-    {
-        const int currDiff = abs(images[i].width * images[i].height -
-                                 width * height);
-        if (currDiff < leastDiff)
-        {
-            closest = images + i;
-            leastDiff = currDiff;
-        }
-    }
-
-    return closest;
 }
 
 // Creates an RGBA icon or cursor
@@ -1565,15 +1542,23 @@ void _glfwSetWindowTitleWin32(_GLFWwindow* window, const char* title)
 void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* images)
 {
     HICON bigIcon = NULL, smallIcon = NULL;
+    
+    if (window == NULL)
+    {
+    
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Win32: Requires a valid window handle to set the icon. There is no application icon to set.");
+        return;
+    }
 
     if (count)
     {
-        const GLFWimage* bigImage = chooseImage(count, images,
-                                                GetSystemMetrics(SM_CXICON),
-                                                GetSystemMetrics(SM_CYICON));
-        const GLFWimage* smallImage = chooseImage(count, images,
-                                                  GetSystemMetrics(SM_CXSMICON),
-                                                  GetSystemMetrics(SM_CYSMICON));
+        const GLFWimage* bigImage = _glfwChooseImage(count, images,
+                                                     GetSystemMetrics(SM_CXICON),
+                                                     GetSystemMetrics(SM_CYICON));
+        const GLFWimage* smallImage = _glfwChooseImage(count, images,
+                                                       GetSystemMetrics(SM_CXSMICON),
+                                                       GetSystemMetrics(SM_CYSMICON));
 
         bigIcon = createIcon(bigImage, 0, 0, GLFW_TRUE);
         smallIcon = createIcon(smallImage, 0, 0, GLFW_TRUE);

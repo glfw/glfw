@@ -1416,15 +1416,24 @@ typedef struct GLFWcursor GLFWcursor;
  *  or `NULL` if allocation failed.  Note that not all parts of GLFW handle allocation
  *  failures gracefully yet.
  *
- *  This function may be called during @ref glfwInit but before the library is
- *  flagged as initialized, as well as during @ref glfwTerminate after the
- *  library is no longer flagged as initialized.
+ *  This function must support being called during @ref glfwInit but before the library is
+ *  flagged as initialized, as well as during @ref glfwTerminate after the library is no
+ *  longer flagged as initialized.
  *
- *  Any memory allocated by this function will be deallocated during library
- *  termination or earlier.
+ *  Any memory allocated via this function will be deallocated via the same allocator
+ *  during library termination or earlier.
+ *
+ *  Any memory allocated via this function must be suitably aligned for any object type.
+ *  If you are using C99 or earlier, this alignment is platform-dependent but will be the
+ *  same as what `malloc` provides.  If you are using C11 or later, this is the value of
+ *  `alignof(max_align_t)`.
  *
  *  The size will always be greater than zero.  Allocations of size zero are filtered out
  *  before reaching the custom allocator.
+ *
+ *  If this function returns `NULL`, GLFW will emit @ref GLFW_OUT_OF_MEMORY.
+ *
+ *  This function must not call any GLFW function.
  *
  *  @param[in] size The minimum size, in bytes, of the memory block.
  *  @param[in] user The user-defined pointer from the allocator.
@@ -1436,7 +1445,8 @@ typedef struct GLFWcursor GLFWcursor;
  *
  *  @reentrancy This function should not call any GLFW function.
  *
- *  @thread_safety This function may be called from any thread that calls GLFW functions.
+ *  @thread_safety This function must support being called from any thread that calls GLFW
+ *  functions.
  *
  *  @sa @ref init_allocator
  *  @sa @ref GLFWallocator
@@ -1459,16 +1469,26 @@ typedef void* (* GLFWallocatefun)(size_t size, void* user);
  *  `NULL` if allocation failed.  Note that not all parts of GLFW handle allocation
  *  failures gracefully yet.
  *
- *  This function may be called during @ref glfwInit but before the library is
- *  flagged as initialized, as well as during @ref glfwTerminate after the
- *  library is no longer flagged as initialized.
+ *  This function must support being called during @ref glfwInit but before the library is
+ *  flagged as initialized, as well as during @ref glfwTerminate after the library is no
+ *  longer flagged as initialized.
  *
- *  Any memory allocated by this function will be deallocated during library
- *  termination or earlier.
+ *  Any memory allocated via this function will be deallocated via the same allocator
+ *  during library termination or earlier.
+ *
+ *  Any memory allocated via this function must be suitably aligned for any object type.
+ *  If you are using C99 or earlier, this alignment is platform-dependent but will be the
+ *  same as what `realloc` provides.  If you are using C11 or later, this is the value of
+ *  `alignof(max_align_t)`.
  *
  *  The block address will never be `NULL` and the size will always be greater than zero.
- *  Reallocations of a block to size zero are converted into deallocations.  Reallocations
- *  of `NULL` to a non-zero size are converted into regular allocations.
+ *  Reallocations of a block to size zero are converted into deallocations before reaching
+ *  the custom allocator.  Reallocations of `NULL` to a non-zero size are converted into
+ *  regular allocations before reaching the custom allocator.
+ *
+ *  If this function returns `NULL`, GLFW will emit @ref GLFW_OUT_OF_MEMORY.
+ *
+ *  This function must not call any GLFW function.
  *
  *  @param[in] block The address of the memory block to reallocate.
  *  @param[in] size The new minimum size, in bytes, of the memory block.
@@ -1481,7 +1501,8 @@ typedef void* (* GLFWallocatefun)(size_t size, void* user);
  *
  *  @reentrancy This function should not call any GLFW function.
  *
- *  @thread_safety This function may be called from any thread that calls GLFW functions.
+ *  @thread_safety This function must support being called from any thread that calls GLFW
+ *  functions.
  *
  *  @sa @ref init_allocator
  *  @sa @ref GLFWallocator
@@ -1503,12 +1524,16 @@ typedef void* (* GLFWreallocatefun)(void* block, size_t size, void* user);
  *  This function may deallocate the specified memory block.  This memory block
  *  will have been allocated with the same allocator.
  *
- *  This function may be called during @ref glfwInit but before the library is
- *  flagged as initialized, as well as during @ref glfwTerminate after the
- *  library is no longer flagged as initialized.
+ *  This function must support being called during @ref glfwInit but before the library is
+ *  flagged as initialized, as well as during @ref glfwTerminate after the library is no
+ *  longer flagged as initialized.
  *
  *  The block address will never be `NULL`.  Deallocations of `NULL` are filtered out
  *  before reaching the custom allocator.
+ *
+ *  If this function returns `NULL`, GLFW will emit @ref GLFW_OUT_OF_MEMORY.
+ *
+ *  This function must not call any GLFW function.
  *
  *  @param[in] block The address of the memory block to deallocate.
  *  @param[in] user The user-defined pointer from the allocator.
@@ -1518,7 +1543,8 @@ typedef void* (* GLFWreallocatefun)(void* block, size_t size, void* user);
  *
  *  @reentrancy This function should not call any GLFW function.
  *
- *  @thread_safety This function may be called from any thread that calls GLFW functions.
+ *  @thread_safety This function must support being called from any thread that calls GLFW
+ *  functions.
  *
  *  @sa @ref init_allocator
  *  @sa @ref GLFWallocator
@@ -2086,7 +2112,10 @@ typedef struct GLFWgamepadstate
     float axes[6];
 } GLFWgamepadstate;
 
-/*! @brief
+/*! @brief Custom heap memory allocator.
+ *
+ *  This describes a custom heap memory allocator for GLFW.  To set an allocator, pass it
+ *  to @ref glfwInitAllocator before initializing the library.
  *
  *  @sa @ref init_allocator
  *  @sa @ref glfwInitAllocator
@@ -2097,9 +2126,21 @@ typedef struct GLFWgamepadstate
  */
 typedef struct GLFWallocator
 {
+    /*! The memory allocation function.  See @ref GLFWallocatefun for details about
+     *  allocation function.
+     */
     GLFWallocatefun allocate;
+    /*! The memory reallocation function.  See @ref GLFWreallocatefun for details about
+     *  reallocation function.
+     */
     GLFWreallocatefun reallocate;
+    /*! The memory deallocation function.  See @ref GLFWdeallocatefun for details about
+     *  deallocation function.
+     */
     GLFWdeallocatefun deallocate;
+    /*! The user pointer for this custom allocator.  This value will be passed to the
+     *  allocator functions.
+     */
     void* user;
 } GLFWallocator;
 
@@ -2232,8 +2273,12 @@ GLFWAPI void glfwInitHint(int hint, int value);
  *  To use the default allocator, call this function with a `NULL` argument.
  *
  *  If you specify an allocator struct, every member must be a valid function
- *  pointer.  If any member is `NULL`, this function emits @ref
- *  GLFW_INVALID_VALUE and the init allocator is unchanged.
+ *  pointer.  If any member is `NULL`, this function will emit @ref
+ *  GLFW_INVALID_VALUE and the init allocator will be unchanged.
+ *
+ *  The functions in the allocator must fulfil a number of requirements.  See the
+ *  documentation for @ref GLFWallocatefun, @ref GLFWreallocatefun and @ref
+ *  GLFWdeallocatefun for details.
  *
  *  @param[in] allocator The allocator to use at the next initialization, or
  *  `NULL` to use the default one.

@@ -223,9 +223,9 @@ allocator.user = NULL;
 glfwInitAllocator(&allocator);
 @endcode
 
-The allocator will be picked up at the beginning of initialization and will be
-used until GLFW has been fully terminated.  Any allocator set after
-initialization will be picked up only at the next initialization.
+The allocator will be made active at the beginning of initialization and will be used by
+GLFW until the library has been fully terminated.  Any allocator set after initialization
+will be picked up only at the next initialization.
 
 The allocator will only be used for allocations that would have been made with
 the C standard library.  Memory allocations that must be made with platform
@@ -242,6 +242,9 @@ void* my_malloc(size_t size, void* user)
 }
 @endcode
 
+The documentation for @ref GLFWallocatefun also lists the requirements and limitations for
+an allocation function.  If the active one does not meet all of these, GLFW may fail.
+
 The reallocation function must have a function signature matching @ref GLFWreallocatefun.
 It receives the memory block to be reallocated, the new desired size, in bytes, and the user
 pointer passed to @ref glfwInitAllocator and returns the address to the resized memory
@@ -254,6 +257,9 @@ void* my_realloc(void* block, size_t size, void* user)
 }
 @endcode
 
+The documentation for @ref GLFWreallocatefun also lists the requirements and limitations
+for a reallocation function.  If the active one does not meet all of these, GLFW may fail.
+
 The deallocation function must have a function signature matching @ref GLFWdeallocatefun.
 It receives the memory block to be deallocated and the user pointer passed to @ref
 glfwInitAllocator.
@@ -264,6 +270,9 @@ void my_free(void* block, void* user)
     ...
 }
 @endcode
+
+The documentation for @ref GLFWdeallocatefun also lists the requirements and limitations
+for a deallocation function.  If the active one does not meet all of these, GLFW may fail.
 
 
 @subsection intro_init_terminate Terminating GLFW

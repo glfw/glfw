@@ -1390,6 +1390,7 @@ static int createNativeWindow(_GLFWwindow* window,
 
     window->win32.scaleToMonitor = wndconfig->scaleToMonitor;
     window->win32.keymenu = wndconfig->win32.keymenu;
+    window->win32.showDefault = wndconfig->win32.showDefault;
 
     if (!window->monitor)
     {
@@ -1772,7 +1773,23 @@ void _glfwMaximizeWindowWin32(_GLFWwindow* window)
 
 void _glfwShowWindowWin32(_GLFWwindow* window)
 {
-    ShowWindow(window->win32.handle, SW_SHOWNA);
+    int showCommand = SW_SHOWNA;
+
+    if (window->win32.showDefault)
+    {
+        // NOTE: GLFW windows currently do not seem to match the Windows 10 definition of
+        //       a main window, so even SW_SHOWDEFAULT does nothing
+        //       This definition is undocumented and can change (source: Raymond Chen)
+        // HACK: Apply the STARTUPINFO show command manually if available
+        STARTUPINFOW si = { sizeof(si) };
+        GetStartupInfoW(&si);
+        if (si.dwFlags & STARTF_USESHOWWINDOW)
+            showCommand = si.wShowWindow;
+
+        window->win32.showDefault = GLFW_FALSE;
+    }
+
+    ShowWindow(window->win32.handle, showCommand);
 }
 
 void _glfwHideWindowWin32(_GLFWwindow* window)

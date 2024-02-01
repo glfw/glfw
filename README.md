@@ -155,6 +155,8 @@ information on what to include when reporting a bug.
  - Added `GLFW_X11_XCB_VULKAN_SURFACE` init hint for selecting X11 Vulkan
    surface extension (#1793)
  - Added `GLFW_WIN32_KEYBOARD_MENU` window hint for enabling access to the window menu
+ - Added `GLFW_WIN32_SHOWDEFAULT` window hint for applying the parent process
+   show command (#2359)
  - Added `GLFW_NATIVE_INCLUDE_NONE` for disabling inclusion of native headers (#1348)
  - Added `GLFW_BUILD_WIN32` CMake option for enabling Win32 support (#1958)
  - Added `GLFW_BUILD_COCOA` CMake option for enabling Cocoa support (#1958)

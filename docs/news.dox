@@ -103,6 +103,13 @@ Alt-and-then-Space shortcuts.  This may be useful for more GUI-oriented
 applications.
 
 
+@subsubsection features_34_win32_showdefault Support for applying STARTUPINFO show command
+
+GLFW now provides the [GLFW_WIN32_SHOWDEFAULT](@ref GLFW_WIN32_SHOWDEFAULT_hint) window
+hint for applying the show command in the program's `STARTUPINFO` when showing the window
+for the first time.  This may be useful for the main window of a windowed-mode tool.
+
+
 @subsection caveats Caveats for version 3.4
 
 @subsubsection native_34 Multiple sets of native access functions
@@ -261,6 +268,7 @@ then GLFW will fail to initialize.
  - @ref GLFW_NOT_ALLOWED_CURSOR
  - @ref GLFW_CURSOR_UNAVAILABLE
  - @ref GLFW_WIN32_KEYBOARD_MENU
+ - @ref GLFW_WIN32_SHOWDEFAULT
  - @ref GLFW_CONTEXT_DEBUG
  - @ref GLFW_FEATURE_UNAVAILABLE
  - @ref GLFW_FEATURE_UNIMPLEMENTED

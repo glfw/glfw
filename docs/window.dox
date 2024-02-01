@@ -462,6 +462,14 @@ __GLFW_WIN32_KEYBOARD_MENU__ specifies whether to allow access to the window
 menu via the Alt+Space and Alt-and-then-Space keyboard shortcuts.  This is
 ignored on other platforms.
 
+@anchor GLFW_WIN32_SHOWDEFAULT_hint
+__GLFW_WIN32_SHOWDEFAULT__ specifies whether to show the window the way
+specified in the program's `STARTUPINFO` when it is shown for the first time.
+This is the same information as the `Run` option in the shortcut properties
+window.  If this information was not specified when the program was started,
+GLFW behaves as if this hint was set to `GLFW_FALSE`.  Possible values are
+`GLFW_TRUE` and `GLFW_FALSE`.  This is ignored on other platforms.
+
 
 @subsubsection window_hints_osx macOS specific hints
 
@@ -553,6 +561,7 @@ GLFW_OPENGL_FORWARD_COMPAT    | `GLFW_FALSE`                | `GLFW_TRUE` or `GL
 GLFW_CONTEXT_DEBUG            | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_OPENGL_PROFILE           | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE`
 GLFW_WIN32_KEYBOARD_MENU      | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_WIN32_SHOWDEFAULT        | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_COCOA_RETINA_FRAMEBUFFER | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_COCOA_FRAME_NAME         | `""`                        | A UTF-8 encoded frame autosave name
 GLFW_COCOA_GRAPHICS_SWITCHING | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`

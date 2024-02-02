@@ -250,6 +250,7 @@ video tutorials.
  - Paul Sultana
  - Nathan Sweet
  - TTK-Bandit
+ - Nuno Teixeira
  - Jared Tiala
  - Sergey Tikhomirov
  - Arthur Tombs

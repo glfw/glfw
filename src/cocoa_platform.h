@@ -234,7 +234,7 @@ void _glfwShowWindowCocoa(_GLFWwindow* window);
 void _glfwHideWindowCocoa(_GLFWwindow* window);
 void _glfwRequestWindowAttentionCocoa(_GLFWwindow* window);
 void _glfwFocusWindowCocoa(_GLFWwindow* window);
-void _glfwSetWindowMonitorCocoa(_GLFWwindow* window, _GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);
+void _glfwSetWindowMonitorCocoa(_GLFWwindow* window, _GLFWmonitor* monitor, int xpos, int ypos, int width, int height, double refreshRate);
 GLFWbool _glfwWindowFocusedCocoa(_GLFWwindow* window);
 GLFWbool _glfwWindowIconifiedCocoa(_GLFWwindow* window);
 GLFWbool _glfwWindowVisibleCocoa(_GLFWwindow* window);
@@ -280,13 +280,13 @@ void _glfwFreeMonitorCocoa(_GLFWmonitor* monitor);
 void _glfwGetMonitorPosCocoa(_GLFWmonitor* monitor, int* xpos, int* ypos);
 void _glfwGetMonitorContentScaleCocoa(_GLFWmonitor* monitor, float* xscale, float* yscale);
 void _glfwGetMonitorWorkareaCocoa(_GLFWmonitor* monitor, int* xpos, int* ypos, int* width, int* height);
-GLFWvidmode* _glfwGetVideoModesCocoa(_GLFWmonitor* monitor, int* count);
-void _glfwGetVideoModeCocoa(_GLFWmonitor* monitor, GLFWvidmode* mode);
+_GLFWvideoMode* _glfwGetVideoModesCocoa(_GLFWmonitor* monitor, int* count);
+void _glfwGetVideoModeCocoa(_GLFWmonitor* monitor, _GLFWvideoMode* mode);
 GLFWbool _glfwGetGammaRampCocoa(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
 void _glfwSetGammaRampCocoa(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
 void _glfwPollMonitorsCocoa(void);
-void _glfwSetVideoModeCocoa(_GLFWmonitor* monitor, const GLFWvidmode* desired);
+void _glfwSetVideoModeCocoa(_GLFWmonitor* monitor, const _GLFWvideoMode* desired);
 void _glfwRestoreVideoModeCocoa(_GLFWmonitor* monitor);
 
 float _glfwTransformYCocoa(float y);

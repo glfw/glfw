@@ -425,12 +425,27 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_CONTEXT_RELEASE_BEHAVIOR:
             _glfw.hints.context.release = value;
             return;
+        // Supported as an integer hint for backwards-compatability
+        case GLFW_REFRESH_RATE:
+            _glfw.hints.refreshRate = (double) value;
+            return;
+    }
+
+    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint 0x%08X", hint);
+}
+
+GLFWAPI void glfwWindowHintDouble(int hint, double value)
+{
+    _GLFW_REQUIRE_INIT();
+
+    switch (hint)
+    {
         case GLFW_REFRESH_RATE:
             _glfw.hints.refreshRate = value;
             return;
     }
 
-    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint 0x%08X", hint);
+    _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint double 0x%08X", hint);
 }
 
 GLFWAPI void glfwWindowHintString(int hint, const char* value)
@@ -967,11 +982,18 @@ GLFWAPI void glfwSetWindowMonitor(GLFWwindow* wh,
                                   int width, int height,
                                   int refreshRate)
 {
+    glfwSetWindowMonitor2(wh, mh, xpos, ypos, width, height, refreshRate);
+}
+
+GLFWAPI void glfwSetWindowMonitor2(GLFWwindow* wh,
+                                   GLFWmonitor* mh,
+                                   int xpos, int ypos,
+                                   int width, int height,
+                                   double refreshRate)
+{
     _GLFWwindow* window = (_GLFWwindow*) wh;
     _GLFWmonitor* monitor = (_GLFWmonitor*) mh;
     assert(window != NULL);
-    assert(width >= 0);
-    assert(height >= 0);
 
     _GLFW_REQUIRE_INIT();
 
@@ -986,7 +1008,7 @@ GLFWAPI void glfwSetWindowMonitor(GLFWwindow* wh,
     if (refreshRate < 0 && refreshRate != GLFW_DONT_CARE)
     {
         _glfwInputError(GLFW_INVALID_VALUE,
-                        "Invalid refresh rate %i",
+                        "Invalid refresh rate %f",
                         refreshRate);
         return;
     }

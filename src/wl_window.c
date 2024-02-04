@@ -2386,7 +2386,7 @@ void _glfwSetWindowMonitorWayland(_GLFWwindow* window,
                                   _GLFWmonitor* monitor,
                                   int xpos, int ypos,
                                   int width, int height,
-                                  int refreshRate)
+                                  double refreshRate)
 {
     if (window->monitor == monitor)
     {

@@ -245,10 +245,10 @@ void _glfwPollMonitorsWin32(void)
 
 // Change the current video mode
 //
-void _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desired)
+void _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const _GLFWvideoMode* desired)
 {
-    GLFWvidmode current;
-    const GLFWvidmode* best;
+    _GLFWvideoMode current;
+    const _GLFWvideoMode* best;
     DEVMODEW dm;
     LONG result;
 
@@ -264,7 +264,7 @@ void _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desired)
     dm.dmPelsWidth        = best->width;
     dm.dmPelsHeight       = best->height;
     dm.dmBitsPerPel       = best->redBits + best->greenBits + best->blueBits;
-    dm.dmDisplayFrequency = best->refreshRate;
+    dm.dmDisplayFrequency = (int) best->refreshRate;
 
     if (dm.dmBitsPerPel < 15 || dm.dmBitsPerPel >= 24)
         dm.dmBitsPerPel = 32;
@@ -393,17 +393,17 @@ void _glfwGetMonitorWorkareaWin32(_GLFWmonitor* monitor,
         *height = mi.rcWork.bottom - mi.rcWork.top;
 }
 
-GLFWvidmode* _glfwGetVideoModesWin32(_GLFWmonitor* monitor, int* count)
+_GLFWvideoMode* _glfwGetVideoModesWin32(_GLFWmonitor* monitor, int* count)
 {
     int modeIndex = 0, size = 0;
-    GLFWvidmode* result = NULL;
+    _GLFWvideoMode* result = NULL;
 
     *count = 0;
 
     for (;;)
     {
         int i;
-        GLFWvidmode mode;
+        _GLFWvideoMode mode;
         DEVMODEW dm;
 
         ZeroMemory(&dm, sizeof(dm));
@@ -452,7 +452,7 @@ GLFWvidmode* _glfwGetVideoModesWin32(_GLFWmonitor* monitor, int* count)
         if (*count == size)
         {
             size += 128;
-            result = (GLFWvidmode*) _glfw_realloc(result, size * sizeof(GLFWvidmode));
+            result = (_GLFWvideoMode*) _glfw_realloc(result, size * sizeof(_GLFWvideoMode));
         }
 
         (*count)++;
@@ -462,7 +462,7 @@ GLFWvidmode* _glfwGetVideoModesWin32(_GLFWmonitor* monitor, int* count)
     if (!*count)
     {
         // HACK: Report the current mode if no valid modes were found
-        result = _glfw_calloc(1, sizeof(GLFWvidmode));
+        result = _glfw_calloc(1, sizeof(_GLFWvideoMode));
         _glfwGetVideoModeWin32(monitor, result);
         *count = 1;
     }
@@ -470,7 +470,7 @@ GLFWvidmode* _glfwGetVideoModesWin32(_GLFWmonitor* monitor, int* count)
     return result;
 }
 
-void _glfwGetVideoModeWin32(_GLFWmonitor* monitor, GLFWvidmode* mode)
+void _glfwGetVideoModeWin32(_GLFWmonitor* monitor, _GLFWvideoMode* mode)
 {
     DEVMODEW dm;
     ZeroMemory(&dm, sizeof(dm));
@@ -480,7 +480,7 @@ void _glfwGetVideoModeWin32(_GLFWmonitor* monitor, GLFWvidmode* mode)
 
     mode->width  = dm.dmPelsWidth;
     mode->height = dm.dmPelsHeight;
-    mode->refreshRate = dm.dmDisplayFrequency;
+    mode->refreshRate = (double) dm.dmDisplayFrequency;
     _glfwSplitBPP(dm.dmBitsPerPel,
                   &mode->redBits,
                   &mode->greenBits,

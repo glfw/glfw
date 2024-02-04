@@ -105,20 +105,20 @@ a full screen window, change its video mode or make a windowed one full
 screen, but it is sometimes useful to know exactly which video modes are
 supported.
 
-Video modes are represented as @ref GLFWvidmode structures.  You can get an
-array of the video modes supported by a monitor with @ref glfwGetVideoModes.
+Video modes are represented as @ref GLFWvideoMode objects.  You can get an
+array of the video modes supported by a monitor with @ref glfwGetVideoModes2.
 See the reference documentation for the lifetime of the returned array.
 
 @code
 int count;
-GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
+const GLFWvideoMode* const * modes = glfwGetVideoModes2(monitor, &count);
 @endcode
 
-To get the current video mode of a monitor call @ref glfwGetVideoMode.  See the
+To get the current video mode of a monitor call @ref glfwGetVideoMode2.  See the
 reference documentation for the lifetime of the returned pointer.
 
 @code
-const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+const GLFWvideoMode* mode = glfwGetVideoMode2(monitor);
 @endcode
 
 The resolution of a video mode is specified in

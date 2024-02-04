@@ -1104,7 +1104,7 @@ static void acquireMonitor(_GLFWwindow* window)
     if (window->x11.overrideRedirect)
     {
         int xpos, ypos;
-        GLFWvidmode mode;
+        _GLFWvideoMode mode;
 
         // Manually position the window over its monitor
         _glfwGetMonitorPosX11(window->monitor, &xpos, &ypos);
@@ -2468,7 +2468,7 @@ void _glfwSetWindowMonitorX11(_GLFWwindow* window,
                               _GLFWmonitor* monitor,
                               int xpos, int ypos,
                               int width, int height,
-                              int refreshRate)
+                              double refreshRate)
 {
     if (window->monitor == monitor)
     {

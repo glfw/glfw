@@ -104,6 +104,7 @@ video tutorials.
  - IntellectualKitty
  - Aaron Jacobs
  - JannikGM
+ - Andreas O. Jansen
  - Erik S. V. Jansson
  - jjYBdx4IL
  - Peter Johnson

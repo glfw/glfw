@@ -787,7 +787,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 
     if (window->monitor)
     {
-        GLFWvidmode mode;
+        _GLFWvideoMode mode;
         int xpos, ypos;
 
         _glfwGetVideoModeCocoa(window->monitor, &mode);
@@ -1243,7 +1243,7 @@ void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
                                 _GLFWmonitor* monitor,
                                 int xpos, int ypos,
                                 int width, int height,
-                                int refreshRate)
+                                double refreshRate)
 {
     @autoreleasepool {
 

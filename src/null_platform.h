@@ -204,8 +204,8 @@ void _glfwFreeMonitorNull(_GLFWmonitor* monitor);
 void _glfwGetMonitorPosNull(_GLFWmonitor* monitor, int* xpos, int* ypos);
 void _glfwGetMonitorContentScaleNull(_GLFWmonitor* monitor, float* xscale, float* yscale);
 void _glfwGetMonitorWorkareaNull(_GLFWmonitor* monitor, int* xpos, int* ypos, int* width, int* height);
-GLFWvidmode* _glfwGetVideoModesNull(_GLFWmonitor* monitor, int* found);
-void _glfwGetVideoModeNull(_GLFWmonitor* monitor, GLFWvidmode* mode);
+_GLFWvideoMode* _glfwGetVideoModesNull(_GLFWmonitor* monitor, int* found);
+void _glfwGetVideoModeNull(_GLFWmonitor* monitor, _GLFWvideoMode* mode);
 GLFWbool _glfwGetGammaRampNull(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
 void _glfwSetGammaRampNull(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
@@ -213,7 +213,7 @@ GLFWbool _glfwCreateWindowNull(_GLFWwindow* window, const _GLFWwndconfig* wndcon
 void _glfwDestroyWindowNull(_GLFWwindow* window);
 void _glfwSetWindowTitleNull(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconNull(_GLFWwindow* window, int count, const GLFWimage* images);
-void _glfwSetWindowMonitorNull(_GLFWwindow* window, _GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);
+void _glfwSetWindowMonitorNull(_GLFWwindow* window, _GLFWmonitor* monitor, int xpos, int ypos, int width, int height, double refreshRate);
 void _glfwGetWindowPosNull(_GLFWwindow* window, int* xpos, int* ypos);
 void _glfwSetWindowPosNull(_GLFWwindow* window, int xpos, int ypos);
 void _glfwGetWindowSizeNull(_GLFWwindow* window, int* width, int* height);

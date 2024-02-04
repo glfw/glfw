@@ -70,6 +70,7 @@ typedef struct _GLFWcontext     _GLFWcontext;
 typedef struct _GLFWwindow      _GLFWwindow;
 typedef struct _GLFWplatform    _GLFWplatform;
 typedef struct _GLFWlibrary     _GLFWlibrary;
+typedef struct _GLFWvideoMode   _GLFWvideoMode;
 typedef struct _GLFWmonitor     _GLFWmonitor;
 typedef struct _GLFWcursor      _GLFWcursor;
 typedef struct _GLFWmapelement  _GLFWmapelement;
@@ -512,6 +513,26 @@ struct _GLFWcontext
     GLFW_PLATFORM_CONTEXT_STATE
 };
 
+struct _GLFWvideoMode
+{
+    // The width, in screen coordinates, of the video mode.
+    int width;
+    // The height, in screen coordinates, of the video mode.
+    int height;
+    
+    // The bit depth of the red channel of the video mode.
+    int redBits;
+    // The bit depth of the green channel of the video mode.
+    int greenBits;
+    // The bit depth of the blue channel of the video mode.
+    int blueBits;
+    // The refresh rate, in Hz, of the video mode.
+    double refreshRate;
+    
+    // Update the comparison in glfwGetVideoModes if adding
+    // more independent fields here.
+};
+
 // Window and context structure
 //
 struct _GLFWwindow
@@ -528,7 +549,7 @@ struct _GLFWwindow
     GLFWbool            shouldClose;
     void*               userPointer;
     GLFWbool            doublebuffer;
-    GLFWvidmode         videoMode;
+    _GLFWvideoMode      videoMode;
     _GLFWmonitor*       monitor;
     _GLFWcursor*        cursor;
 
@@ -585,9 +606,17 @@ struct _GLFWmonitor
     // The window whose video mode is current on this monitor
     _GLFWwindow*    window;
 
-    GLFWvidmode*    modes;
+    // Deprecated; Use modes, modesCount and currentMode instead. External use only.
+    GLFWvidmode*    modesOld;
+    int             modeCountOld;
+    GLFWvidmode     currentModeOld;
+    
+    _GLFWvideoMode* modes;
     int             modeCount;
-    GLFWvidmode     currentMode;
+    
+    // An array of pointers to each element in modes. External use only.
+    GLFWvideoMode** modesPointers;
+    _GLFWvideoMode  currentMode;
 
     GLFWgammaramp   originalRamp;
     GLFWgammaramp   currentRamp;
@@ -694,8 +723,8 @@ struct _GLFWplatform
     void (*getMonitorPos)(_GLFWmonitor*,int*,int*);
     void (*getMonitorContentScale)(_GLFWmonitor*,float*,float*);
     void (*getMonitorWorkarea)(_GLFWmonitor*,int*,int*,int*,int*);
-    GLFWvidmode* (*getVideoModes)(_GLFWmonitor*,int*);
-    void (*getVideoMode)(_GLFWmonitor*,GLFWvidmode*);
+    _GLFWvideoMode* (*getVideoModes)(_GLFWmonitor*,int*); // TODO: reimplement for Wayland, X11, Win32
+    void (*getVideoMode)(_GLFWmonitor*,_GLFWvideoMode*); // TODO: reimplement for Wayland, X11, Win32
     GLFWbool (*getGammaRamp)(_GLFWmonitor*,GLFWgammaramp*);
     void (*setGammaRamp)(_GLFWmonitor*,const GLFWgammaramp*);
     // window
@@ -719,7 +748,7 @@ struct _GLFWplatform
     void (*hideWindow)(_GLFWwindow*);
     void (*requestWindowAttention)(_GLFWwindow*);
     void (*focusWindow)(_GLFWwindow*);
-    void (*setWindowMonitor)(_GLFWwindow*,_GLFWmonitor*,int,int,int,int,int);
+    void (*setWindowMonitor)(_GLFWwindow*,_GLFWmonitor*,int,int,int,int,double); // TODO: reimplement for Wayland, X11, Win32
     GLFWbool (*windowFocused)(_GLFWwindow*);
     GLFWbool (*windowIconified)(_GLFWwindow*);
     GLFWbool (*windowVisible)(_GLFWwindow*);
@@ -760,7 +789,7 @@ struct _GLFWlibrary
         _GLFWfbconfig   framebuffer;
         _GLFWwndconfig  window;
         _GLFWctxconfig  context;
-        int             refreshRate;
+        double          refreshRate;
     } hints;
 
     _GLFWerror*         errorListHead;
@@ -951,9 +980,9 @@ GLFWbool _glfwRefreshContextAttribs(_GLFWwindow* window,
                                     const _GLFWctxconfig* ctxconfig);
 GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig);
 
-const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
-                                        const GLFWvidmode* desired);
-int _glfwCompareVideoModes(const GLFWvidmode* first, const GLFWvidmode* second);
+const _GLFWvideoMode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
+                                        const _GLFWvideoMode* desired);
+int _glfwCompareVideoModes(const _GLFWvideoMode* first, const _GLFWvideoMode* second);
 _GLFWmonitor* _glfwAllocMonitor(const char* name, int widthMM, int heightMM);
 void _glfwFreeMonitor(_GLFWmonitor* monitor);
 void _glfwAllocGammaArrays(GLFWgammaramp* ramp, unsigned int size);

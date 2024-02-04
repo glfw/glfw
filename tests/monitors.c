@@ -41,6 +41,7 @@
 
 enum Mode
 {
+    LIST_MODE_OLD,
     LIST_MODE,
     TEST_MODE
 };
@@ -69,6 +70,32 @@ static const char* format_mode(const GLFWvidmode* mode)
              mode->width / gcd, mode->height / gcd,
              mode->redBits, mode->greenBits, mode->blueBits,
              mode->refreshRate);
+
+    buffer[sizeof(buffer) - 1] = '\0';
+    return buffer;
+}
+
+static const char* format_mode2(const GLFWvideoMode* mode)
+{
+    int width, height;
+    int r, g, b;
+    float rate;
+    
+    glfwVideoModeGetSize(mode, &width, &height);
+    glfwVideoModeGetColorDepth(mode, &r, &g, &b);
+    rate = glfwVideoModeGetRefreshRate(mode);
+    
+    static char buffer[512];
+    const int gcd = euclid(width, height);
+
+    snprintf(buffer,
+             sizeof(buffer),
+             "%i x %i x %i (%i:%i) (%i %i %i) %f Hz",
+             width, height,
+             r + g + b,
+             width / gcd, height / gcd,
+             r, g, b,
+             rate);
 
     buffer[sizeof(buffer) - 1] = '\0';
     return buffer;
@@ -131,36 +158,83 @@ static void list_modes(GLFWmonitor* monitor)
     }
 }
 
+static void list_modes2(GLFWmonitor* monitor)
+{
+    int width, height;
+    int count, x, y, width_mm, height_mm, i;
+    int workarea_x, workarea_y, workarea_width, workarea_height;
+    float xscale, yscale;
+
+    const GLFWvideoMode* mode = glfwGetVideoMode2(monitor);
+    const GLFWvideoMode* const* modes = glfwGetVideoModes2(monitor, &count);
+
+    glfwGetMonitorPos(monitor, &x, &y);
+    glfwGetMonitorPhysicalSize(monitor, &width_mm, &height_mm);
+    glfwGetMonitorContentScale(monitor, &xscale, &yscale);
+    glfwGetMonitorWorkarea(monitor, &workarea_x, &workarea_y, &workarea_width, &workarea_height);
+    glfwVideoModeGetSize(mode, &width, &height);
+
+    printf("Name: %s (%s)\n",
+           glfwGetMonitorName(monitor),
+           glfwGetPrimaryMonitor() == monitor ? "primary" : "secondary");
+    printf("Current mode: %s\n", format_mode2(mode));
+    printf("Virtual position: %i, %i\n", x, y);
+    printf("Content scale: %f x %f\n", xscale, yscale);
+
+    printf("Physical size: %i x %i mm (%0.2f dpi at %i x %i)\n",
+           width_mm, height_mm, width * 25.4f / width_mm, width, height);
+    printf("Monitor work area: %i x %i starting at %i, %i\n",
+            workarea_width, workarea_height, workarea_x, workarea_y);
+
+    printf("Modes:\n");
+
+    for (i = 0;  i < count;  i++)
+    {
+        printf("%3u: %s", (unsigned int) i, format_mode2(modes[i]));
+
+        if (glfwVideoModesEqual(mode, modes[i]))
+            printf(" (current mode)");
+
+        putchar('\n');
+    }
+}
+
 static void test_modes(GLFWmonitor* monitor)
 {
     int i, count;
     GLFWwindow* window;
-    const GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
+    const GLFWvideoMode* const* modes = glfwGetVideoModes2(monitor, &count);
 
     for (i = 0;  i < count;  i++)
     {
-        const GLFWvidmode* mode = modes + i;
-        GLFWvidmode current;
+        const GLFWvideoMode* mode = modes[i];
+        int width, height, currentWidth, currentHeight;
+        int red, green, blue, currentRed, currentGreen, currentBlue;
+        double refreshRate, currentRefreshRate;
+    
+        glfwVideoModeGetSize(mode, &width, &height);
+        glfwVideoModeGetColorDepth(mode, &red, &green, &blue);
+        refreshRate = glfwVideoModeGetRefreshRate(mode);
 
-        glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-        glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-        glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-        glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+        glfwWindowHint(GLFW_RED_BITS, red);
+        glfwWindowHint(GLFW_GREEN_BITS, green);
+        glfwWindowHint(GLFW_BLUE_BITS, blue);
+        glfwWindowHintDouble(GLFW_REFRESH_RATE, refreshRate);
 
         printf("Testing mode %u on monitor %s: %s\n",
                (unsigned int) i,
                glfwGetMonitorName(monitor),
-               format_mode(mode));
+               format_mode2(mode));
 
-        window = glfwCreateWindow(mode->width, mode->height,
+        window = glfwCreateWindow(width, height,
                                   "Video Mode Test",
-                                  glfwGetPrimaryMonitor(),
+                                  monitor,
                                   NULL);
         if (!window)
         {
             printf("Failed to enter mode %u: %s\n",
                    (unsigned int) i,
-                   format_mode(mode));
+                   format_mode2(mode));
             continue;
         }
 
@@ -188,26 +262,26 @@ static void test_modes(GLFWmonitor* monitor)
             }
         }
 
-        glGetIntegerv(GL_RED_BITS, &current.redBits);
-        glGetIntegerv(GL_GREEN_BITS, &current.greenBits);
-        glGetIntegerv(GL_BLUE_BITS, &current.blueBits);
+        glGetIntegerv(GL_RED_BITS, &currentRed);
+        glGetIntegerv(GL_GREEN_BITS, &currentGreen);
+        glGetIntegerv(GL_BLUE_BITS, &currentBlue);
 
-        glfwGetWindowSize(window, &current.width, &current.height);
+        glfwGetWindowSize(window, &currentWidth, &currentHeight);
 
-        if (current.redBits != mode->redBits ||
-            current.greenBits != mode->greenBits ||
-            current.blueBits != mode->blueBits)
+        if (currentRed != red ||
+            currentGreen != green ||
+            currentBlue != blue)
         {
             printf("*** Color bit mismatch: (%i %i %i) instead of (%i %i %i)\n",
-                   current.redBits, current.greenBits, current.blueBits,
-                   mode->redBits, mode->greenBits, mode->blueBits);
+                   currentRed, currentGreen, currentBlue,
+                   red, green, blue);
         }
 
-        if (current.width != mode->width || current.height != mode->height)
+        if (currentWidth != width || currentHeight != height)
         {
             printf("*** Size mismatch: %ix%i instead of %ix%i\n",
-                   current.width, current.height,
-                   mode->width, mode->height);
+                   currentWidth, currentHeight,
+                   width, height);
         }
 
         printf("Closing window\n");
@@ -224,13 +298,16 @@ int main(int argc, char** argv)
     int ch, i, count, mode = LIST_MODE;
     GLFWmonitor** monitors;
 
-    while ((ch = getopt(argc, argv, "th")) != -1)
+    while ((ch = getopt(argc, argv, "tho")) != -1)
     {
         switch (ch)
         {
             case 'h':
                 usage();
                 exit(EXIT_SUCCESS);
+            case 'o':
+                mode = LIST_MODE_OLD;
+                break;
             case 't':
                 mode = TEST_MODE;
                 break;
@@ -252,6 +329,8 @@ int main(int argc, char** argv)
     for (i = 0;  i < count;  i++)
     {
         if (mode == LIST_MODE)
+            list_modes2(monitors[i]);
+        else if (mode == LIST_MODE_OLD)
             list_modes(monitors[i]);
         else if (mode == TEST_MODE)
             test_modes(monitors[i]);

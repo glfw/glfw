@@ -364,6 +364,9 @@ GLFWbool _glfwRefreshContextAttribs(_GLFWwindow* window,
     if (_glfwPlatformGetTls(&_glfw.contextSlot) != window)
         return GLFW_FALSE;
 
+    if (window->swapInterval != -1)
+        window->context.swapInterval(window->swapInterval);
+
     window->context.GetIntegerv = (PFNGLGETINTEGERVPROC)
         window->context.getProcAddress("glGetIntegerv");
     window->context.GetString = (PFNGLGETSTRINGPROC)

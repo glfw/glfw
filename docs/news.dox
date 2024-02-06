@@ -105,10 +105,11 @@ applications.
 
 @subsubsection features_34_disable_mouse_button_limit Allow disabling the mouse button limit
 
-GLFW now allows disabling the limit of reporting only 8
-[supported mouse buttons](@ref buttons). For compatibility with older versions,
-the @ref GLFW_MOUSE_BUTTON_LIMIT init hint needs to be set to `GLFW_FALSE` to
-make use of this.
+GLFW now allows disabling the limit of reported mouse buttons to only those with
+associated [button tokens](@ref buttons). This allows using mouse buttons with
+values over 8. For compatibility with older versions, the
+@ref GLFW_MOUSE_BUTTON_LIMIT init hint needs to be set to `GLFW_FALSE` to make
+use of this.
 
 
 @subsection caveats Caveats for version 3.4

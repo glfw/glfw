@@ -494,8 +494,9 @@ a mouse button callback.
 glfwSetMouseButtonCallback(window, mouse_button_callback);
 @endcode
 
-To handle all mouse buttons, instead of only the [supported ones](@ref buttons),
-set the @ref GLFW_MOUSE_BUTTON_LIMIT initialization hint to `GLFW_FALSE`.
+To handle all mouse buttons, instead of only ones with associated
+[button tokens](@ref buttons), set the @ref GLFW_MOUSE_BUTTON_LIMIT
+initialization hint to `GLFW_FALSE`.
 
 @code
 glfwInitHint(GLFW_MOUSE_BUTTON_LIMIT, GLFW_FALSE);
@@ -513,12 +514,12 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 @endcode
 
 The mouse button is an integer that can be one of the
-[supported mouse buttons](@ref buttons) or, if @ref GLFW_MOUSE_BUTTON_LIMIT is
+[mouse button tokens](@ref buttons) or, if @ref GLFW_MOUSE_BUTTON_LIMIT is
 set to `GLFW_FALSE`, any other value.
 
 The action is one of `GLFW_PRESS` or `GLFW_RELEASE`.
 
-The last reported state for every [supported mouse button](@ref buttons) is also
+The last reported state for every [mouse button token](@ref buttons) is also
 saved in per-window state arrays that can be polled with @ref
 glfwGetMouseButton.
 
@@ -553,7 +554,7 @@ had been processed in the meantime, the state will reset to `GLFW_RELEASE`,
 otherwise it will remain `GLFW_PRESS`.
 
 The `GLFW_MOUSE_BUTTON_LAST` constant holds the highest value of any
-[supported mouse button](@ref buttons).
+[mouse button token](@ref buttons).
 
 
 @subsection scrolling Scroll input

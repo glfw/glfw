@@ -232,10 +232,12 @@ static void updateCursorImage(_GLFWwindow* window)
             SetCursor(LoadCursorW(NULL, IDC_ARROW));
     }
     else
-        //Connected via Remote Desktop, NULL cursor will present SetCursorPos the move the cursor.
-        //using a blank cursor fix that.
-        //When not via Remote Desktop, win32.blankCursor should be NULL
+    {
+        // NOTE: Via Remote Desktop, setting the cursor to NULL does not hide it.
+        // HACK: When running locally, it is set to NULL, but when connected via Remote
+        //       Desktop, this is a transparent cursor.
         SetCursor(_glfw.win32.blankCursor);
+    }
 }
 
 // Sets the cursor clip rect to the window content area
@@ -900,8 +902,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             HRAWINPUT ri = (HRAWINPUT) lParam;
             RAWINPUT* data = NULL;
             int dx, dy;
-            int width, height;
-            POINT pos;
 
             if (_glfw.win32.disabledCursorWindow != window)
                 break;
@@ -928,18 +928,29 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
             data = _glfw.win32.rawInput;
             if (data->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
-            {   
+            {
                 if (_glfw.win32.isRemoteSession)
                 {
-                    //Remote Desktop Mode...
-                    // As per https://github.com/Microsoft/DirectXTK/commit/ef56b63f3739381e451f7a5a5bd2c9779d2a7555
-                    // MOUSE_MOVE_ABSOLUTE is a range from 0 through 65535, based on the screen size.
-                    // As far as I can tell, absolute mode only occurs over RDP though.
-                    width = GetSystemMetrics((data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) ? SM_CXVIRTUALSCREEN : SM_CXSCREEN);
-                    height = GetSystemMetrics((data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP) ? SM_CYVIRTUALSCREEN : SM_CYSCREEN);
+                    // NOTE: According to DirectXTK, when running via Remote Desktop, raw
+                    //       mouse motion is provided as MOUSE_MOVE_ABSOLUTE and
+                    //       MOUSE_VIRTUAL_DESKTOP.
 
-                    pos.x = (int)((data->data.mouse.lLastX / 65535.0f) * width);
-                    pos.y = (int)((data->data.mouse.lLastY / 65535.0f) * height);
+                    int width, height;
+
+                    if (data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP)
+                    {
+                        width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+                        height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+                    }
+                    else
+                    {
+                        width = GetSystemMetrics(SM_CXSCREEN);
+                        height = GetSystemMetrics(SM_CYSCREEN);
+                    }
+
+                    POINT pos;
+                    pos.x = (int) ((data->data.mouse.lLastX / 65535.f) * width);
+                    pos.y = (int) ((data->data.mouse.lLastY / 65535.f) * height);
                     ScreenToClient(window->win32.handle, &pos);
 
                     dx = pos.x - window->win32.lastCursorPosX;
@@ -947,7 +958,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                 }
                 else
                 {
-                    //Normal mode... We should have the right absolute coords in data.mouse
                     dx = data->data.mouse.lLastX - window->win32.lastCursorPosX;
                     dy = data->data.mouse.lLastY - window->win32.lastCursorPosY;
                 }

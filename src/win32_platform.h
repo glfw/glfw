@@ -460,7 +460,7 @@ typedef struct _GLFWlibraryWin32
     UINT                mouseTrailSize;
     // Indicate if the process was started behind Remote Destop
     BOOL                isRemoteSession;
-    // An invisible cursor, needed for special cases (see WM_INPUT handler)
+    // The cursor handle to use to hide the cursor (NULL or a transparent cursor)
     HCURSOR             blankCursor;
 
     struct {

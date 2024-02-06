@@ -929,38 +929,28 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             data = _glfw.win32.rawInput;
             if (data->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
             {
-                if (_glfw.win32.isRemoteSession)
+                POINT pos = {0};
+                int width, height;
+
+                if (data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP)
                 {
-                    // NOTE: According to DirectXTK, when running via Remote Desktop, raw
-                    //       mouse motion is provided as MOUSE_MOVE_ABSOLUTE and
-                    //       MOUSE_VIRTUAL_DESKTOP.
-
-                    int width, height;
-
-                    if (data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP)
-                    {
-                        width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-                        height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
-                    }
-                    else
-                    {
-                        width = GetSystemMetrics(SM_CXSCREEN);
-                        height = GetSystemMetrics(SM_CYSCREEN);
-                    }
-
-                    POINT pos;
-                    pos.x = (int) ((data->data.mouse.lLastX / 65535.f) * width);
-                    pos.y = (int) ((data->data.mouse.lLastY / 65535.f) * height);
-                    ScreenToClient(window->win32.handle, &pos);
-
-                    dx = pos.x - window->win32.lastCursorPosX;
-                    dy = pos.y - window->win32.lastCursorPosY;
+                    pos.x += GetSystemMetrics(SM_XVIRTUALSCREEN);
+                    pos.y += GetSystemMetrics(SM_YVIRTUALSCREEN);
+                    width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+                    height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
                 }
                 else
                 {
-                    dx = data->data.mouse.lLastX - window->win32.lastCursorPosX;
-                    dy = data->data.mouse.lLastY - window->win32.lastCursorPosY;
+                    width = GetSystemMetrics(SM_CXSCREEN);
+                    height = GetSystemMetrics(SM_CYSCREEN);
                 }
+
+                pos.x += (int) ((data->data.mouse.lLastX / 65535.f) * width);
+                pos.y += (int) ((data->data.mouse.lLastY / 65535.f) * height);
+                ScreenToClient(window->win32.handle, &pos);
+
+                dx = pos.x - window->win32.lastCursorPosX;
+                dy = pos.y - window->win32.lastCursorPosY;
             }
             else
             {
@@ -1324,7 +1314,7 @@ static int createNativeWindow(_GLFWwindow* window,
         }
     }
 
-    if (_glfw.win32.isRemoteSession)
+    if (GetSystemMetrics(SM_REMOTESESSION))
     {
         // NOTE: On Remote Desktop, setting the cursor to NULL does not hide it
         // HACK: Create a transparent cursor and always set that instead of NULL

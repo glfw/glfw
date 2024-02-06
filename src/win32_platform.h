@@ -458,8 +458,6 @@ typedef struct _GLFWlibraryWin32
     RAWINPUT*           rawInput;
     int                 rawInputSize;
     UINT                mouseTrailSize;
-    // Indicate if the process was started behind Remote Destop
-    BOOL                isRemoteSession;
     // The cursor handle to use to hide the cursor (NULL or a transparent cursor)
     HCURSOR             blankCursor;
 

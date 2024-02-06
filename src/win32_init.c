@@ -698,9 +698,6 @@ int _glfwInitWin32(void)
     if (!createHelperWindow())
         return GLFW_FALSE;
 
-    // Check if the current process was started via Remote Desktop
-    _glfw.win32.isRemoteSession = GetSystemMetrics(SM_REMOTESESSION) > 0;
-
     _glfwPollMonitorsWin32();
     return GLFW_TRUE;
 }

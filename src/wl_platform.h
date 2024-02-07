@@ -406,14 +406,14 @@ typedef struct _GLFWwindowWayland
     struct zwp_locked_pointer_v1*   lockedPointer;
     struct zwp_confined_pointer_v1* confinedPointer;
 
-    struct zwp_idle_inhibitor_v1*          idleInhibitor;
-    struct xdg_activation_token_v1*        activationToken;
+    struct zwp_idle_inhibitor_v1*   idleInhibitor;
+    struct xdg_activation_token_v1* activationToken;
 
     struct {
         GLFWbool                    decorations;
-        struct wl_buffer*                  buffer;
-        _GLFWdecorationWayland             top, left, right, bottom;
-        _GLFWdecorationSideWayland         focus;
+        struct wl_buffer*           buffer;
+        _GLFWdecorationWayland      top, left, right, bottom;
+        _GLFWdecorationSideWayland  focus;
     } fallback;
 } _GLFWwindowWayland;
 

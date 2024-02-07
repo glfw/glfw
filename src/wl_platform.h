@@ -410,6 +410,7 @@ typedef struct _GLFWwindowWayland
     struct xdg_activation_token_v1*        activationToken;
 
     struct {
+        GLFWbool                    decorations;
         struct wl_buffer*                  buffer;
         _GLFWdecorationWayland             top, left, right, bottom;
         _GLFWdecorationSideWayland         focus;

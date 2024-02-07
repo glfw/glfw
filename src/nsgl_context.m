@@ -333,7 +333,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                   forParameter:NSOpenGLContextParameterSurfaceOpacity];
     }
 
-    [window->ns.view setWantsBestResolutionOpenGLSurface:window->ns.retina];
+    [window->ns.view setWantsBestResolutionOpenGLSurface:window->ns.scaleFramebuffer];
 
     [window->context.nsgl.object setView:window->ns.view];
 

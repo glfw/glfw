@@ -144,6 +144,7 @@ information on what to include when reporting a bug.
    content area (#58)
  - Added `GLFW_POSITION_X` and `GLFW_POSITION_Y` window hints for initial position
    (#1603,#1747)
+ - Added `GLFW_SCALE_FRAMEBUFFER` window hint for Wayland and macOS scaling (#2457)
  - Added `GLFW_ANY_POSITION` hint value for letting the window manager choose (#1603,#1747)
  - Added `GLFW_PLATFORM_UNAVAILABLE` error for platform detection failures (#1958)
  - Added `GLFW_FEATURE_UNAVAILABLE` error for platform limitations (#1692)

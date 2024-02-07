@@ -369,6 +369,9 @@ void _glfwUpdateBufferScaleFromOutputsWayland(_GLFWwindow* window)
         return;
     }
 
+    if (!window->wl.scaleFramebuffer)
+        return;
+
     // Get the scale factor from the highest scale monitor.
     int32_t maxScale = 1;
 
@@ -980,6 +983,7 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     window->wl.bufferScale = 1;
     window->wl.title = _glfw_strdup(wndconfig->title);
     window->wl.appId = _glfw_strdup(wndconfig->wl.appId);
+    window->wl.scaleFramebuffer = wndconfig->scaleFramebuffer;
 
     window->wl.maximized = wndconfig->maximized;
 

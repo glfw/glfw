@@ -85,6 +85,22 @@ function pointers corresponding to the standard library functions `malloc`,
 For more information see @ref init_allocator.
 
 
+#### Window hint for framebuffer scaling {#scale_framebuffer_34}
+
+GLFW now allows provides the
+[GLFW_SCALE_FRAMEBUFFER](@ref GLFW_SCALE_FRAMEBUFFER_hint) window hint for
+controlling framebuffer scaling on platforms that handle scaling by keeping the
+window size the same while resizing the framebuffer.  The default value is to
+allow framebuffer scaling.
+
+This was already possible on macOS via the
+[GLFW_COCOA_RETINA_FRAMEBUFFER](@ref GLFW_COCOA_RETINA_FRAMEBUFFER_hint) window
+hint.  This hint is now another name for
+[GLFW_SCALE_FRAMEBUFFER](@ref GLFW_SCALE_FRAMEBUFFER_hint).
+
+For more information, see @ref window_scale.
+
+
 #### Window hints for initial position {#features_34_position_hint}
 
 GLFW now provides the @ref GLFW_POSITION_X and @ref GLFW_POSITION_Y window hints for
@@ -288,6 +304,7 @@ then GLFW will fail to initialize.
  - @ref GLFW_WAYLAND_LIBDECOR
  - @ref GLFW_WAYLAND_PREFER_LIBDECOR
  - @ref GLFW_WAYLAND_DISABLE_LIBDECOR
+ - @ref GLFW_SCALE_FRAMEBUFFER
 
 
 ## Release notes for earlier versions {#news_archive}

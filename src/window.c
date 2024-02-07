@@ -274,6 +274,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.window.focusOnShow  = GLFW_TRUE;
     _glfw.hints.window.xpos         = GLFW_ANY_POSITION;
     _glfw.hints.window.ypos         = GLFW_ANY_POSITION;
+    _glfw.hints.window.scaleFramebuffer = GLFW_TRUE;
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
     // double buffered
@@ -288,9 +289,6 @@ void glfwDefaultWindowHints(void)
 
     // The default is to select the highest available refresh rate
     _glfw.hints.refreshRate = GLFW_DONT_CARE;
-
-    // The default is to use full Retina resolution framebuffers
-    _glfw.hints.window.ns.retina = GLFW_TRUE;
 }
 
 GLFWAPI void glfwWindowHint(int hint, int value)
@@ -374,9 +372,6 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_POSITION_Y:
             _glfw.hints.window.ypos = value;
             return;
-        case GLFW_COCOA_RETINA_FRAMEBUFFER:
-            _glfw.hints.window.ns.retina = value ? GLFW_TRUE : GLFW_FALSE;
-            return;
         case GLFW_WIN32_KEYBOARD_MENU:
             _glfw.hints.window.win32.keymenu = value ? GLFW_TRUE : GLFW_FALSE;
             return;
@@ -388,6 +383,10 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             return;
         case GLFW_SCALE_TO_MONITOR:
             _glfw.hints.window.scaleToMonitor = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
+        case GLFW_SCALE_FRAMEBUFFER:
+        case GLFW_COCOA_RETINA_FRAMEBUFFER:
+            _glfw.hints.window.scaleFramebuffer = value ? GLFW_TRUE : GLFW_FALSE;
             return;
         case GLFW_CENTER_CURSOR:
             _glfw.hints.window.centerCursor = value ? GLFW_TRUE : GLFW_FALSE;

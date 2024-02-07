@@ -355,6 +355,7 @@ typedef struct _GLFWwindowWayland
     GLFWbool                    fullscreen;
     GLFWbool                    hovered;
     GLFWbool                    transparent;
+    GLFWbool                    scaleFramebuffer;
     struct wl_surface*          surface;
     struct wl_callback*         callback;
 

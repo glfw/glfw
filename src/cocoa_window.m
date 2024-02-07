@@ -513,7 +513,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
     if (xscale != window->ns.xscale || yscale != window->ns.yscale)
     {
-        if (window->ns.retina && window->ns.layer)
+        if (window->ns.scaleFramebuffer && window->ns.layer)
             [window->ns.layer setContentsScale:[window->ns.object backingScaleFactor]];
 
         window->ns.xscale = xscale;
@@ -872,7 +872,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         [window->ns.object setFrameAutosaveName:@(wndconfig->ns.frameName)];
 
     window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
-    window->ns.retina = wndconfig->ns.retina;
+    window->ns.scaleFramebuffer = wndconfig->scaleFramebuffer;
 
     if (fbconfig->transparent)
     {
@@ -1969,7 +1969,7 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
         return VK_ERROR_EXTENSION_NOT_PRESENT;
     }
 
-    if (window->ns.retina)
+    if (window->ns.scaleFramebuffer)
         [window->ns.layer setContentsScale:[window->ns.object backingScaleFactor]];
 
     [window->ns.view setLayer:window->ns.layer];

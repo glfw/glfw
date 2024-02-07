@@ -402,8 +402,8 @@ struct _GLFWwndconfig
     GLFWbool      focusOnShow;
     GLFWbool      mousePassthrough;
     GLFWbool      scaleToMonitor;
+    GLFWbool      scaleFramebuffer;
     struct {
-        GLFWbool  retina;
         char      frameName[256];
     } ns;
     struct {

@@ -239,13 +239,28 @@ focus when @ref glfwShowWindow is called. Possible values are `GLFW_TRUE` and
 
 @anchor GLFW_SCALE_TO_MONITOR
 __GLFW_SCALE_TO_MONITOR__ specified whether the window content area should be
-resized based on the [monitor content scale](@ref monitor_scale) of any monitor
-it is placed on.  This includes the initial placement when the window is
-created.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
+resized based on [content scale](@ref window_scale) changes.  This can be
+because of a global user settings change or because the window was moved to
+a monitor with different scale settings.
 
 This hint only has an effect on platforms where screen coordinates and pixels
-always map 1:1 such as Windows and X11.  On platforms like macOS the resolution
-of the framebuffer is changed independently of the window size.
+always map 1:1, such as Windows and X11.  On platforms like macOS the resolution
+of the framebuffer can change independently of the window size.
+
+@anchor GLFW_SCALE_FRAMEBUFFER_hint
+@anchor GLFW_COCOA_RETINA_FRAMEBUFFER_hint
+__GLFW_SCALE_FRAMEBUFFER__ specifies whether the framebuffer should be resized
+based on [content scale](@ref window_scale) changes.  This can be
+because of a global user settings change or because the window was moved to
+a monitor with different scale settings.
+
+This hint only has an effect on platforms where screen coordinates can be scaled
+relative to pixel coordinates, such as macOS and Wayland.  On platforms like
+Windows and X11 the framebuffer and window content area sizes always map 1:1.
+
+This is the new name, introduced in GLFW 3.4.  The older
+`GLFW_COCOA_RETINA_FRAMEBUFFER` name is also available for compatibility.  Both
+names modify the same hint value.
 
 @anchor GLFW_MOUSE_PASSTHROUGH_hint
 __GLFW_MOUSE_PASSTHROUGH__ specifies whether the window is transparent to mouse
@@ -474,11 +489,6 @@ GLFW behaves as if this hint was set to `GLFW_FALSE`.  Possible values are
 
 #### macOS specific hints {#window_hints_osx}
 
-@anchor GLFW_COCOA_RETINA_FRAMEBUFFER_hint
-__GLFW_COCOA_RETINA_FRAMEBUFFER__ specifies whether to use full resolution
-framebuffers on Retina displays.  Possible values are `GLFW_TRUE` and
-`GLFW_FALSE`.  This is ignored on other platforms.
-
 @anchor GLFW_COCOA_FRAME_NAME_hint
 __GLFW_COCOA_FRAME_NAME__ specifies the UTF-8 encoded name to use for autosaving
 the window frame, or if empty disables frame autosaving for the window.  This is
@@ -533,6 +543,7 @@ GLFW_CENTER_CURSOR            | `GLFW_TRUE`                 | `GLFW_TRUE` or `GL
 GLFW_TRANSPARENT_FRAMEBUFFER  | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_FOCUS_ON_SHOW            | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_SCALE_TO_MONITOR         | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_SCALE_FRAMEBUFFER        | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_MOUSE_PASSTHROUGH        | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_POSITION_X               | `GLFW_ANY_POSITION`         | Any valid screen x-coordinate or `GLFW_ANY_POSITION`
 GLFW_POSITION_Y               | `GLFW_ANY_POSITION`         | Any valid screen y-coordinate or `GLFW_ANY_POSITION`
@@ -563,7 +574,6 @@ GLFW_CONTEXT_DEBUG            | `GLFW_FALSE`                | `GLFW_TRUE` or `GL
 GLFW_OPENGL_PROFILE           | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE`
 GLFW_WIN32_KEYBOARD_MENU      | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_WIN32_SHOWDEFAULT        | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_COCOA_RETINA_FRAMEBUFFER | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_COCOA_FRAME_NAME         | `""`                        | A UTF-8 encoded frame autosave name
 GLFW_COCOA_GRAPHICS_SWITCHING | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_X11_CLASS_NAME           | `""`                        | An ASCII encoded `WM_CLASS` class name
@@ -736,16 +746,21 @@ float xscale, yscale;
 glfwGetWindowContentScale(window, &xscale, &yscale);
 ```
 
-The content scale is the ratio between the current DPI and the platform's
-default DPI.  This is especially important for text and any UI elements.  If the
-pixel dimensions of your UI scaled by this look appropriate on your machine then
-it should appear at a reasonable size on other machines regardless of their DPI
-and scaling settings.  This relies on the system DPI and scaling settings being
-somewhat correct.
+The content scale can be thought of as the ratio between the current DPI and the
+platform's default DPI.  It is intended to be a scaling factor to apply to the
+pixel dimensions of text and other UI elements.  If the dimensions scaled by
+this factor looks appropriate on your machine then it should appear at
+a reasonable size on other machines with different DPI and scaling settings.
+
+This relies on the DPI and scaling settings on both machines being appropriate.
+
+The content scale may depend on both the monitor resolution and pixel density
+and on user settings like DPI or a scaling percentage.  It may be very different
+from the raw DPI calculated from the physical size and current resolution.
 
 On systems where each monitors can have its own content scale, the window
-content scale will depend on which monitor the system considers the window to be
-on.
+content scale will depend on which monitor or monitors the system considers the
+window to be "on".
 
 If you wish to be notified when the content scale of a window changes, whether
 because of a system setting change or because it was moved to a monitor with
@@ -769,6 +784,18 @@ will need to be resized to appear the same size when it is moved to a monitor
 with a different content scale.  To have this done automatically both when the
 window is created and when its content scale later changes, set the @ref
 GLFW_SCALE_TO_MONITOR window hint.
+
+On platforms where pixels do not necessarily equal screen coordinates, the
+framebuffer will instead need to be sized to provide a full resolution image
+for the window.  When the window moves between monitors with different content
+scales, the window size will remain the same but the framebuffer size will
+change.  This is done automatically by default.  To disable this resizing, set
+the @ref GLFW_SCALE_FRAMEBUFFER window hint.
+
+Both of these hints also apply when the window is created.  Every window starts
+out with a content scale of one.  A window with one or both of these hints set
+will adapt to the appropriate scale in the process of being created, set up and
+shown.
 
 
 ### Window size limits {#window_sizelimits}

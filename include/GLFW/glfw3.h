@@ -1098,8 +1098,15 @@ extern "C" {
  *  [window hint](@ref GLFW_SCALE_TO_MONITOR).
  */
 #define GLFW_SCALE_TO_MONITOR       0x0002200C
-/*! @brief macOS specific
- *  [window hint](@ref GLFW_COCOA_RETINA_FRAMEBUFFER_hint).
+/*! @brief Window framebuffer scaling
+ *  [window hint](@ref GLFW_SCALE_FRAMEBUFFER_hint).
+ */
+#define GLFW_SCALE_FRAMEBUFFER      0x0002200D
+/*! @brief Legacy name for compatibility.
+ *
+ *  This is an alias for the
+ *  [GLFW_SCALE_FRAMEBUFFER](@ref GLFW_SCALE_FRAMEBUFFER_hint) window hint for
+ *  compatibility with earlier versions.
  */
 #define GLFW_COCOA_RETINA_FRAMEBUFFER 0x00023001
 /*! @brief macOS specific
@@ -3167,7 +3174,7 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *
  *  @remark @macos On OS X 10.10 and later the window frame will not be rendered
  *  at full resolution on Retina displays unless the
- *  [GLFW_COCOA_RETINA_FRAMEBUFFER](@ref GLFW_COCOA_RETINA_FRAMEBUFFER_hint)
+ *  [GLFW_SCALE_FRAMEBUFFER](@ref GLFW_SCALE_FRAMEBUFFER_hint)
  *  hint is `GLFW_TRUE` and the `NSHighResolutionCapable` key is enabled in the
  *  application bundle's `Info.plist`.  For more information, see
  *  [High Resolution Guidelines for OS X][hidpi-guide] in the Mac Developer

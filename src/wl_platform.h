@@ -414,7 +414,7 @@ typedef struct _GLFWwindowWayland
         struct wl_buffer*                  buffer;
         _GLFWdecorationWayland             top, left, right, bottom;
         _GLFWdecorationSideWayland         focus;
-    } decorations;
+    } fallback;
 } _GLFWwindowWayland;
 
 // Wayland-specific global data

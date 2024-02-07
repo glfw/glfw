@@ -226,25 +226,25 @@ static void createFallbackDecorations(_GLFWwindow* window)
     if (!_glfw.wl.viewporter)
         return;
 
-    if (!window->wl.decorations.buffer)
-        window->wl.decorations.buffer = createShmBuffer(&image);
-    if (!window->wl.decorations.buffer)
+    if (!window->wl.fallback.buffer)
+        window->wl.fallback.buffer = createShmBuffer(&image);
+    if (!window->wl.fallback.buffer)
         return;
 
-    createFallbackDecoration(window, &window->wl.decorations.top, window->wl.surface,
-                             window->wl.decorations.buffer,
+    createFallbackDecoration(window, &window->wl.fallback.top, window->wl.surface,
+                             window->wl.fallback.buffer,
                              0, -GLFW_CAPTION_HEIGHT,
                              window->wl.width, GLFW_CAPTION_HEIGHT);
-    createFallbackDecoration(window, &window->wl.decorations.left, window->wl.surface,
-                             window->wl.decorations.buffer,
+    createFallbackDecoration(window, &window->wl.fallback.left, window->wl.surface,
+                             window->wl.fallback.buffer,
                              -GLFW_BORDER_SIZE, -GLFW_CAPTION_HEIGHT,
                              GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
-    createFallbackDecoration(window, &window->wl.decorations.right, window->wl.surface,
-                             window->wl.decorations.buffer,
+    createFallbackDecoration(window, &window->wl.fallback.right, window->wl.surface,
+                             window->wl.fallback.buffer,
                              window->wl.width, -GLFW_CAPTION_HEIGHT,
                              GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
-    createFallbackDecoration(window, &window->wl.decorations.bottom, window->wl.surface,
-                             window->wl.decorations.buffer,
+    createFallbackDecoration(window, &window->wl.fallback.bottom, window->wl.surface,
+                             window->wl.fallback.buffer,
                              -GLFW_BORDER_SIZE, window->wl.height,
                              window->wl.width + GLFW_BORDER_SIZE * 2, GLFW_BORDER_SIZE);
 }
@@ -264,10 +264,10 @@ static void destroyFallbackDecoration(_GLFWdecorationWayland* decoration)
 
 static void destroyFallbackDecorations(_GLFWwindow* window)
 {
-    destroyFallbackDecoration(&window->wl.decorations.top);
-    destroyFallbackDecoration(&window->wl.decorations.left);
-    destroyFallbackDecoration(&window->wl.decorations.right);
-    destroyFallbackDecoration(&window->wl.decorations.bottom);
+    destroyFallbackDecoration(&window->wl.fallback.top);
+    destroyFallbackDecoration(&window->wl.fallback.left);
+    destroyFallbackDecoration(&window->wl.fallback.right);
+    destroyFallbackDecoration(&window->wl.fallback.bottom);
 }
 
 static void xdgDecorationHandleConfigure(void* userData,
@@ -325,28 +325,28 @@ static void resizeWindow(_GLFWwindow* window)
 {
     resizeFramebuffer(window);
 
-    if (!window->wl.decorations.top.surface)
+    if (!window->wl.fallback.top.surface)
         return;
 
-    wp_viewport_set_destination(window->wl.decorations.top.viewport,
+    wp_viewport_set_destination(window->wl.fallback.top.viewport,
                                 window->wl.width, GLFW_CAPTION_HEIGHT);
-    wl_surface_commit(window->wl.decorations.top.surface);
+    wl_surface_commit(window->wl.fallback.top.surface);
 
-    wp_viewport_set_destination(window->wl.decorations.left.viewport,
+    wp_viewport_set_destination(window->wl.fallback.left.viewport,
                                 GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
-    wl_surface_commit(window->wl.decorations.left.surface);
+    wl_surface_commit(window->wl.fallback.left.surface);
 
-    wl_subsurface_set_position(window->wl.decorations.right.subsurface,
+    wl_subsurface_set_position(window->wl.fallback.right.subsurface,
                                window->wl.width, -GLFW_CAPTION_HEIGHT);
-    wp_viewport_set_destination(window->wl.decorations.right.viewport,
+    wp_viewport_set_destination(window->wl.fallback.right.viewport,
                                 GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
-    wl_surface_commit(window->wl.decorations.right.surface);
+    wl_surface_commit(window->wl.fallback.right.surface);
 
-    wl_subsurface_set_position(window->wl.decorations.bottom.subsurface,
+    wl_subsurface_set_position(window->wl.fallback.bottom.subsurface,
                                -GLFW_BORDER_SIZE, window->wl.height);
-    wp_viewport_set_destination(window->wl.decorations.bottom.viewport,
+    wp_viewport_set_destination(window->wl.fallback.bottom.viewport,
                                 window->wl.width + GLFW_BORDER_SIZE * 2, GLFW_BORDER_SIZE);
-    wl_surface_commit(window->wl.decorations.bottom.surface);
+    wl_surface_commit(window->wl.fallback.bottom.surface);
 }
 
 void _glfwUpdateContentScaleWayland(_GLFWwindow* window)
@@ -466,7 +466,7 @@ static void acquireMonitor(_GLFWwindow* window)
 
     setIdleInhibitor(window, GLFW_TRUE);
 
-    if (window->wl.decorations.top.surface)
+    if (window->wl.fallback.top.surface)
         destroyFallbackDecorations(window);
 }
 
@@ -522,7 +522,7 @@ static void xdgToplevelHandleConfigure(void* userData,
 
     if (width && height)
     {
-        if (window->wl.decorations.top.surface)
+        if (window->wl.fallback.top.surface)
         {
             window->wl.pending.width  = _glfw_max(0, width - GLFW_BORDER_SIZE * 2);
             window->wl.pending.height =
@@ -882,7 +882,7 @@ static GLFWbool createXdgShellObjects(_GLFWwindow* window)
         int minwidth  = window->minwidth;
         int minheight = window->minheight;
 
-        if (window->wl.decorations.top.surface)
+        if (window->wl.fallback.top.surface)
         {
             minwidth  += GLFW_BORDER_SIZE * 2;
             minheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
@@ -896,7 +896,7 @@ static GLFWbool createXdgShellObjects(_GLFWwindow* window)
         int maxwidth  = window->maxwidth;
         int maxheight = window->maxheight;
 
-        if (window->wl.decorations.top.surface)
+        if (window->wl.fallback.top.surface)
         {
             maxwidth  += GLFW_BORDER_SIZE * 2;
             maxheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
@@ -1025,7 +1025,7 @@ static void incrementCursorImage(_GLFWwindow* window)
 {
     _GLFWcursor* cursor;
 
-    if (!window || window->wl.decorations.focus != GLFW_MAIN_WINDOW)
+    if (!window || window->wl.fallback.focus != GLFW_MAIN_WINDOW)
         return;
 
     cursor = window->wl.currentCursor;
@@ -1276,16 +1276,16 @@ static void pointerHandleEnter(void* userData,
 
     _GLFWwindow* window = wl_surface_get_user_data(surface);
 
-    if (surface == window->wl.decorations.top.surface)
-        window->wl.decorations.focus = GLFW_TOP_DECORATION;
-    else if (surface == window->wl.decorations.left.surface)
-        window->wl.decorations.focus = GLFW_LEFT_DECORATION;
-    else if (surface == window->wl.decorations.right.surface)
-        window->wl.decorations.focus = GLFW_RIGHT_DECORATION;
-    else if (surface == window->wl.decorations.bottom.surface)
-        window->wl.decorations.focus = GLFW_BOTTOM_DECORATION;
+    if (surface == window->wl.fallback.top.surface)
+        window->wl.fallback.focus = GLFW_TOP_DECORATION;
+    else if (surface == window->wl.fallback.left.surface)
+        window->wl.fallback.focus = GLFW_LEFT_DECORATION;
+    else if (surface == window->wl.fallback.right.surface)
+        window->wl.fallback.focus = GLFW_RIGHT_DECORATION;
+    else if (surface == window->wl.fallback.bottom.surface)
+        window->wl.fallback.focus = GLFW_BOTTOM_DECORATION;
     else
-        window->wl.decorations.focus = GLFW_MAIN_WINDOW;
+        window->wl.fallback.focus = GLFW_MAIN_WINDOW;
 
     _glfw.wl.serial = serial;
     _glfw.wl.pointerEnterSerial = serial;
@@ -1340,7 +1340,7 @@ static void pointerHandleMotion(void* userData,
 
     const char* cursorName = NULL;
 
-    switch (window->wl.decorations.focus)
+    switch (window->wl.fallback.focus)
     {
         case GLFW_MAIN_WINDOW:
             _glfw.wl.cursorPreviousName = NULL;
@@ -1431,7 +1431,7 @@ static void pointerHandleButton(void* userData,
         return;
     if (button == BTN_LEFT)
     {
-        switch (window->wl.decorations.focus)
+        switch (window->wl.fallback.focus)
         {
             case GLFW_MAIN_WINDOW:
                 break;
@@ -1473,7 +1473,7 @@ static void pointerHandleButton(void* userData,
     }
     else if (button == BTN_RIGHT)
     {
-        if (window->wl.decorations.focus != GLFW_MAIN_WINDOW &&
+        if (window->wl.fallback.focus != GLFW_MAIN_WINDOW &&
             window->wl.xdg.toplevel)
         {
             xdg_toplevel_show_window_menu(window->wl.xdg.toplevel,
@@ -1485,7 +1485,7 @@ static void pointerHandleButton(void* userData,
     }
 
     // Don’t pass the button to the user if it was related to a decoration.
-    if (window->wl.decorations.focus != GLFW_MAIN_WINDOW)
+    if (window->wl.fallback.focus != GLFW_MAIN_WINDOW)
         return;
 
     _glfw.wl.serial = serial;
@@ -2100,8 +2100,8 @@ void _glfwDestroyWindowWayland(_GLFWwindow* window)
 
     destroyShellObjects(window);
 
-    if (window->wl.decorations.buffer)
-        wl_buffer_destroy(window->wl.decorations.buffer);
+    if (window->wl.fallback.buffer)
+        wl_buffer_destroy(window->wl.fallback.buffer);
 
     if (window->wl.egl.window)
         wl_egl_window_destroy(window->wl.egl.window);
@@ -2205,7 +2205,7 @@ void _glfwSetWindowSizeLimitsWayland(_GLFWwindow* window,
             minwidth = minheight = 0;
         else
         {
-            if (window->wl.decorations.top.surface)
+            if (window->wl.fallback.top.surface)
             {
                 minwidth  += GLFW_BORDER_SIZE * 2;
                 minheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
@@ -2216,7 +2216,7 @@ void _glfwSetWindowSizeLimitsWayland(_GLFWwindow* window,
             maxwidth = maxheight = 0;
         else
         {
-            if (window->wl.decorations.top.surface)
+            if (window->wl.fallback.top.surface)
             {
                 maxwidth  += GLFW_BORDER_SIZE * 2;
                 maxheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
@@ -2279,7 +2279,7 @@ void _glfwGetWindowFrameSizeWayland(_GLFWwindow* window,
                                     int* left, int* top,
                                     int* right, int* bottom)
 {
-    if (window->wl.decorations.top.surface)
+    if (window->wl.fallback.top.surface)
     {
         if (top)
             *top = GLFW_CAPTION_HEIGHT;
@@ -2926,7 +2926,7 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
     // If we're not in the correct window just save the cursor
     // the next time the pointer enters the window the cursor will change
     if (window != _glfw.wl.pointerFocus ||
-        window->wl.decorations.focus != GLFW_MAIN_WINDOW)
+        window->wl.fallback.focus != GLFW_MAIN_WINDOW)
     {
         return;
     }

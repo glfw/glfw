@@ -919,6 +919,15 @@ If you are using C++11 or C11, you can use a UTF-8 string literal.
 glfwSetWindowTitle(window, u8"This is always a UTF-8 string");
 ```
 
+The window title can be retrieved with @ref glfwGetWindowTitle.
+
+```c
+const char* title = glfwGetWindowTitle(window);
+```
+
+The title returned is an internally managed copy of the title set
+by @ref glfwCreateWindow or @ref glfwSetWindowTitle. It does not
+include any additional text which may be appended by the platform.
 
 ### Window icon {#window_icon}
 

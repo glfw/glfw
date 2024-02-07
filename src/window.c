@@ -242,6 +242,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->maxheight   = GLFW_DONT_CARE;
     window->numer       = GLFW_DONT_CARE;
     window->denom       = GLFW_DONT_CARE;
+    window->title       = _glfw_strdup(title);
 
     if (!_glfw.platform.createWindow(window, &wndconfig, &ctxconfig, &fbconfig))
     {
@@ -493,7 +494,7 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
 
         *prev = window->next;
     }
-
+    _glfw_free(window->title);
     _glfw_free(window);
 }
 
@@ -515,6 +516,16 @@ GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* handle, int value)
     window->shouldClose = value;
 }
 
+GLFWAPI const char* glfwGetWindowTitle(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+    return window->title;
+}
+
 GLFWAPI void glfwSetWindowTitle(GLFWwindow* handle, const char* title)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
@@ -522,7 +533,12 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* handle, const char* title)
     assert(title != NULL);
 
     _GLFW_REQUIRE_INIT();
+
+    char* prev = window->title;
+    window->title = _glfw_strdup(title);
+
     _glfw.platform.setWindowTitle(window, title);
+    _glfw_free(prev);
 }
 
 GLFWAPI void glfwSetWindowIcon(GLFWwindow* handle,

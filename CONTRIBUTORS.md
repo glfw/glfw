@@ -15,6 +15,7 @@ video tutorials.
  - Keith Bauer
  - John Bartholomew
  - Coşku Baş
+ - Bayemite
  - Niklas Behrens
  - Andrew Belt
  - Nevyn Bengtsson

@@ -532,6 +532,7 @@ struct _GLFWwindow
     GLFWvidmode         videoMode;
     _GLFWmonitor*       monitor;
     _GLFWcursor*        cursor;
+    char*               title;
 
     int                 minwidth, minheight;
     int                 maxwidth, maxheight;

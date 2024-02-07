@@ -3305,6 +3305,30 @@ GLFWAPI int glfwWindowShouldClose(GLFWwindow* window);
  */
 GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int value);
 
+/*! @brief Retrieves the title of the specified window.
+ *
+ *  This function gets the window title, encoded as UTF-8, of the specified
+ *  window.
+ *
+ *  @param[in] window The window to query.
+ *  @return A copy of the UTF-8 encoded window title, as set by glfwCreateWindow
+ *  or glfwSetWindowTitle, or NULL if there is an error.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED
+ *
+ *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is valid until the next call to @ref
+ *  glfwSetWindowTitle, or until the library is terminated.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_title
+ *  @sa @ref glfwSetWindowTitle
+ *
+ *  @ingroup window
+ */
+GLFWAPI const char* glfwGetWindowTitle(GLFWwindow* window);
+
 /*! @brief Sets the title of the specified window.
  *
  *  This function sets the window title, encoded as UTF-8, of the specified

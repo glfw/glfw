@@ -41,6 +41,12 @@ to whatever window is behind it.  This can also be changed after window
 creation with the matching [window attribute](@ref GLFW_MOUSE_PASSTHROUGH_attrib).
 
 
+#### Ability to get a window's title {#features_34_get_window_title}
+
+GLFW now supports retrieving a window's title with the @ref glfwGetWindowTitle
+function.
+
+
 #### Wayland libdecor decorations {#wayland_libdecor_34}
 
 GLFW now supports improved fallback window decorations via
@@ -253,6 +259,7 @@ then GLFW will fail to initialize.
  - @ref glfwGetPlatform
  - @ref glfwPlatformSupported
  - @ref glfwInitVulkanLoader
+ - @ref glfwGetWindowTitle
 
 
 #### New types in version 3.4 {#types_34}

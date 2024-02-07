@@ -167,6 +167,7 @@ information on what to include when reporting a bug.
  - Added support for `XDG_SESSION_TYPE` environment variable
  - Added `GLFW_PKG_CONFIG_REQUIRES_PRIVATE` and `GLFW_PKG_CONFIG_LIBS_PRIVATE` CMake
    variables exposing pkg-config dependencies (#1307)
+ - Added `glfwGetWindowTitle` function for GLFWwindow for querying window titles (#1448,#1909)
  - Made joystick subsystem initialize at first use (#1284,#1646)
  - Made `GLFW_DOUBLEBUFFER` a read-only window attribute
  - Updated the minimum required CMake version to 3.1

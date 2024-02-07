@@ -128,7 +128,7 @@ GLFWbool _glfwGetGammaRampNull(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
             float value;
             value = i / (float) (monitor->null.ramp.size - 1);
             value = powf(value, 1.f / gamma) * 65535.f + 0.5f;
-            value = _glfw_fminf(value, 65535.f);
+            value = fminf(value, 65535.f);
 
             monitor->null.ramp.red[i]   = (unsigned short) value;
             monitor->null.ramp.green[i] = (unsigned short) value;

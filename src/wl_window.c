@@ -1431,9 +1431,6 @@ static void pointerHandleButton(void* userData,
                                 uint32_t state)
 {
     _GLFWwindow* window = _glfw.wl.pointerFocus;
-    int glfwButton;
-    uint32_t edges = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
-
     if (!window)
         return;
 
@@ -1441,21 +1438,17 @@ static void pointerHandleButton(void* userData,
     {
         _glfw.wl.serial = serial;
 
-        /* Makes left, right and middle 0, 1 and 2. Overall order follows evdev
-        * codes. */
-        glfwButton = button - BTN_LEFT;
-
         _glfwInputMouseClick(window,
-                            glfwButton,
-                            state == WL_POINTER_BUTTON_STATE_PRESSED
-                                    ? GLFW_PRESS
-                                    : GLFW_RELEASE,
-                            _glfw.wl.xkb.modifiers);
+                             button - BTN_LEFT,
+                             state == WL_POINTER_BUTTON_STATE_PRESSED,
+                             _glfw.wl.xkb.modifiers);
         return;
     }
 
     if (button == BTN_LEFT)
     {
+        uint32_t edges = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
+
         switch (window->wl.fallback.focus)
         {
             case GLFW_TOP_DECORATION:
@@ -1484,8 +1477,6 @@ static void pointerHandleButton(void* userData,
                 else
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM;
                 break;
-            default:
-                assert(0);
         }
         if (edges != XDG_TOPLEVEL_RESIZE_EDGE_NONE)
         {

@@ -306,8 +306,7 @@ static void setContentAreaOpaque(_GLFWwindow* window)
     wl_region_destroy(region);
 }
 
-
-static void resizeWindow(_GLFWwindow* window)
+static void resizeFramebuffer(_GLFWwindow* window)
 {
     int scale = window->wl.contentScale;
     int scaledWidth = window->wl.width * scale;
@@ -315,9 +314,16 @@ static void resizeWindow(_GLFWwindow* window)
 
     if (window->wl.egl.window)
         wl_egl_window_resize(window->wl.egl.window, scaledWidth, scaledHeight, 0, 0);
+
     if (!window->wl.transparent)
         setContentAreaOpaque(window);
+
     _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
+}
+
+static void resizeWindow(_GLFWwindow* window)
+{
+    resizeFramebuffer(window);
 
     if (!window->wl.decorations.top.surface)
         return;
@@ -363,7 +369,7 @@ void _glfwUpdateContentScaleWayland(_GLFWwindow* window)
         window->wl.contentScale = maxScale;
         wl_surface_set_buffer_scale(window->wl.surface, maxScale);
         _glfwInputWindowContentScale(window, maxScale, maxScale);
-        resizeWindow(window);
+        resizeFramebuffer(window);
 
         if (window->wl.visible)
             _glfwInputWindowDamage(window);

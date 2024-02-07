@@ -1025,7 +1025,7 @@ static void incrementCursorImage(_GLFWwindow* window)
 {
     _GLFWcursor* cursor;
 
-    if (!window || window->wl.fallback.focus != GLFW_MAIN_WINDOW)
+    if (!window || !window->wl.hovered)
         return;
 
     cursor = window->wl.currentCursor;
@@ -1276,7 +1276,9 @@ static void pointerHandleEnter(void* userData,
 
     _GLFWwindow* window = wl_surface_get_user_data(surface);
 
-    if (surface == window->wl.fallback.top.surface)
+    if (surface == window->wl.surface)
+        window->wl.hovered = GLFW_TRUE;
+    else if (surface == window->wl.fallback.top.surface)
         window->wl.fallback.focus = GLFW_TOP_DECORATION;
     else if (surface == window->wl.fallback.left.surface)
         window->wl.fallback.focus = GLFW_LEFT_DECORATION;
@@ -1284,17 +1286,16 @@ static void pointerHandleEnter(void* userData,
         window->wl.fallback.focus = GLFW_RIGHT_DECORATION;
     else if (surface == window->wl.fallback.bottom.surface)
         window->wl.fallback.focus = GLFW_BOTTOM_DECORATION;
-    else
-        window->wl.fallback.focus = GLFW_MAIN_WINDOW;
 
     _glfw.wl.serial = serial;
     _glfw.wl.pointerEnterSerial = serial;
     _glfw.wl.pointerFocus = window;
 
-    window->wl.hovered = GLFW_TRUE;
-
-    _glfwSetCursorWayland(window, window->wl.currentCursor);
-    _glfwInputCursorEnter(window, GLFW_TRUE);
+    if (window->wl.hovered)
+    {
+        _glfwSetCursorWayland(window, window->wl.currentCursor);
+        _glfwInputCursorEnter(window, GLFW_TRUE);
+    }
 }
 
 static void pointerHandleLeave(void* userData,
@@ -1312,12 +1313,15 @@ static void pointerHandleLeave(void* userData,
     if (!window)
         return;
 
-    window->wl.hovered = GLFW_FALSE;
-
     _glfw.wl.serial = serial;
     _glfw.wl.pointerFocus = NULL;
     _glfw.wl.cursorPreviousName = NULL;
-    _glfwInputCursorEnter(window, GLFW_FALSE);
+
+    if (window->wl.hovered)
+    {
+        window->wl.hovered = GLFW_FALSE;
+        _glfwInputCursorEnter(window, GLFW_FALSE);
+    }
 }
 
 static void pointerHandleMotion(void* userData,
@@ -1338,14 +1342,17 @@ static void pointerHandleMotion(void* userData,
     window->wl.cursorPosX = xpos;
     window->wl.cursorPosY = ypos;
 
+    if (window->wl.hovered)
+    {
+        _glfw.wl.cursorPreviousName = NULL;
+        _glfwInputCursorPos(window, xpos, ypos);
+        return;
+    }
+
     const char* cursorName = NULL;
 
     switch (window->wl.fallback.focus)
     {
-        case GLFW_MAIN_WINDOW:
-            _glfw.wl.cursorPreviousName = NULL;
-            _glfwInputCursorPos(window, xpos, ypos);
-            return;
         case GLFW_TOP_DECORATION:
             if (ypos < GLFW_BORDER_SIZE)
                 cursorName = "n-resize";
@@ -1429,12 +1436,28 @@ static void pointerHandleButton(void* userData,
 
     if (!window)
         return;
+
+    if (window->wl.hovered)
+    {
+        _glfw.wl.serial = serial;
+
+        /* Makes left, right and middle 0, 1 and 2. Overall order follows evdev
+        * codes. */
+        glfwButton = button - BTN_LEFT;
+
+        _glfwInputMouseClick(window,
+                            glfwButton,
+                            state == WL_POINTER_BUTTON_STATE_PRESSED
+                                    ? GLFW_PRESS
+                                    : GLFW_RELEASE,
+                            _glfw.wl.xkb.modifiers);
+        return;
+    }
+
     if (button == BTN_LEFT)
     {
         switch (window->wl.fallback.focus)
         {
-            case GLFW_MAIN_WINDOW:
-                break;
             case GLFW_TOP_DECORATION:
                 if (window->wl.cursorPosY < GLFW_BORDER_SIZE)
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP;
@@ -1468,38 +1491,18 @@ static void pointerHandleButton(void* userData,
         {
             xdg_toplevel_resize(window->wl.xdg.toplevel, _glfw.wl.seat,
                                 serial, edges);
-            return;
         }
     }
     else if (button == BTN_RIGHT)
     {
-        if (window->wl.fallback.focus != GLFW_MAIN_WINDOW &&
-            window->wl.xdg.toplevel)
+        if (window->wl.xdg.toplevel)
         {
             xdg_toplevel_show_window_menu(window->wl.xdg.toplevel,
                                           _glfw.wl.seat, serial,
                                           window->wl.cursorPosX,
                                           window->wl.cursorPosY);
-            return;
         }
     }
-
-    // Don’t pass the button to the user if it was related to a decoration.
-    if (window->wl.fallback.focus != GLFW_MAIN_WINDOW)
-        return;
-
-    _glfw.wl.serial = serial;
-
-    /* Makes left, right and middle 0, 1 and 2. Overall order follows evdev
-     * codes. */
-    glfwButton = button - BTN_LEFT;
-
-    _glfwInputMouseClick(window,
-                         glfwButton,
-                         state == WL_POINTER_BUTTON_STATE_PRESSED
-                                ? GLFW_PRESS
-                                : GLFW_RELEASE,
-                         _glfw.wl.xkb.modifiers);
 }
 
 static void pointerHandleAxis(void* userData,
@@ -2925,11 +2928,8 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
 
     // If we're not in the correct window just save the cursor
     // the next time the pointer enters the window the cursor will change
-    if (window != _glfw.wl.pointerFocus ||
-        window->wl.fallback.focus != GLFW_MAIN_WINDOW)
-    {
+    if (!window->wl.hovered)
         return;
-    }
 
     // Update pointer lock to match cursor mode
     if (window->cursorMode == GLFW_CURSOR_DISABLED)

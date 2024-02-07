@@ -325,7 +325,6 @@ typedef void (* PFN_libdecor_state_free)(struct libdecor_state*);
 
 typedef enum _GLFWdecorationSideWayland
 {
-    GLFW_MAIN_WINDOW,
     GLFW_TOP_DECORATION,
     GLFW_LEFT_DECORATION,
     GLFW_RIGHT_DECORATION,

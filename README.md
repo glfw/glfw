@@ -181,6 +181,8 @@ information on what to include when reporting a bug.
  - [Wayland] Added support for `glfwFocusWindow`
  - [Wayland] Added dynamic loading of all Wayland libraries
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
+ - [Wayland] Bugfix: `GLFW_HOVERED` was true when the cursor was over any
+   fallback window decoration
  - [X11] Bugfix: Termination would segfault if the IM had been destroyed
  - [X11] Bugfix: Any IM started after initialization would not be detected
  - [POSIX] Removed use of deprecated function `gettimeofday`

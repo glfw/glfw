@@ -192,29 +192,28 @@ static struct wl_buffer* createShmBuffer(const GLFWimage* image)
     return buffer;
 }
 
-static void createFallbackDecoration(_GLFWwindow* window,
-                                     _GLFWdecorationWayland* decoration,
-                                     struct wl_surface* parent,
-                                     struct wl_buffer* buffer,
-                                     int x, int y,
-                                     int width, int height)
+static void createFallbackEdge(_GLFWwindow* window,
+                               _GLFWfallbackEdgeWayland* edge,
+                               struct wl_surface* parent,
+                               struct wl_buffer* buffer,
+                               int x, int y,
+                               int width, int height)
 {
-    decoration->surface = wl_compositor_create_surface(_glfw.wl.compositor);
-    wl_surface_set_user_data(decoration->surface, window);
-    wl_proxy_set_tag((struct wl_proxy*) decoration->surface, &_glfw.wl.tag);
-    decoration->subsurface =
-        wl_subcompositor_get_subsurface(_glfw.wl.subcompositor,
-                                        decoration->surface, parent);
-    wl_subsurface_set_position(decoration->subsurface, x, y);
-    decoration->viewport = wp_viewporter_get_viewport(_glfw.wl.viewporter,
-                                                      decoration->surface);
-    wp_viewport_set_destination(decoration->viewport, width, height);
-    wl_surface_attach(decoration->surface, buffer, 0, 0);
+    edge->surface = wl_compositor_create_surface(_glfw.wl.compositor);
+    wl_surface_set_user_data(edge->surface, window);
+    wl_proxy_set_tag((struct wl_proxy*) edge->surface, &_glfw.wl.tag);
+    edge->subsurface = wl_subcompositor_get_subsurface(_glfw.wl.subcompositor,
+                                                       edge->surface, parent);
+    wl_subsurface_set_position(edge->subsurface, x, y);
+    edge->viewport = wp_viewporter_get_viewport(_glfw.wl.viewporter,
+                                                edge->surface);
+    wp_viewport_set_destination(edge->viewport, width, height);
+    wl_surface_attach(edge->surface, buffer, 0, 0);
 
     struct wl_region* region = wl_compositor_create_region(_glfw.wl.compositor);
     wl_region_add(region, 0, 0, width, height);
-    wl_surface_set_opaque_region(decoration->surface, region);
-    wl_surface_commit(decoration->surface);
+    wl_surface_set_opaque_region(edge->surface, region);
+    wl_surface_commit(edge->surface);
     wl_region_destroy(region);
 }
 
@@ -231,47 +230,48 @@ static void createFallbackDecorations(_GLFWwindow* window)
     if (!window->wl.fallback.buffer)
         return;
 
-    createFallbackDecoration(window, &window->wl.fallback.top, window->wl.surface,
-                             window->wl.fallback.buffer,
-                             0, -GLFW_CAPTION_HEIGHT,
-                             window->wl.width, GLFW_CAPTION_HEIGHT);
-    createFallbackDecoration(window, &window->wl.fallback.left, window->wl.surface,
-                             window->wl.fallback.buffer,
-                             -GLFW_BORDER_SIZE, -GLFW_CAPTION_HEIGHT,
-                             GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
-    createFallbackDecoration(window, &window->wl.fallback.right, window->wl.surface,
-                             window->wl.fallback.buffer,
-                             window->wl.width, -GLFW_CAPTION_HEIGHT,
-                             GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
-    createFallbackDecoration(window, &window->wl.fallback.bottom, window->wl.surface,
-                             window->wl.fallback.buffer,
-                             -GLFW_BORDER_SIZE, window->wl.height,
-                             window->wl.width + GLFW_BORDER_SIZE * 2, GLFW_BORDER_SIZE);
+    createFallbackEdge(window, &window->wl.fallback.top, window->wl.surface,
+                       window->wl.fallback.buffer,
+                       0, -GLFW_CAPTION_HEIGHT,
+                       window->wl.width, GLFW_CAPTION_HEIGHT);
+    createFallbackEdge(window, &window->wl.fallback.left, window->wl.surface,
+                       window->wl.fallback.buffer,
+                       -GLFW_BORDER_SIZE, -GLFW_CAPTION_HEIGHT,
+                       GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
+    createFallbackEdge(window, &window->wl.fallback.right, window->wl.surface,
+                       window->wl.fallback.buffer,
+                       window->wl.width, -GLFW_CAPTION_HEIGHT,
+                       GLFW_BORDER_SIZE, window->wl.height + GLFW_CAPTION_HEIGHT);
+    createFallbackEdge(window, &window->wl.fallback.bottom, window->wl.surface,
+                       window->wl.fallback.buffer,
+                       -GLFW_BORDER_SIZE, window->wl.height,
+                       window->wl.width + GLFW_BORDER_SIZE * 2, GLFW_BORDER_SIZE);
 
     window->wl.fallback.decorations = GLFW_TRUE;
 }
 
-static void destroyFallbackDecoration(_GLFWdecorationWayland* decoration)
+static void destroyFallbackEdge(_GLFWfallbackEdgeWayland* edge)
 {
-    if (decoration->subsurface)
-        wl_subsurface_destroy(decoration->subsurface);
-    if (decoration->surface)
-        wl_surface_destroy(decoration->surface);
-    if (decoration->viewport)
-        wp_viewport_destroy(decoration->viewport);
-    decoration->surface = NULL;
-    decoration->subsurface = NULL;
-    decoration->viewport = NULL;
+    if (edge->subsurface)
+        wl_subsurface_destroy(edge->subsurface);
+    if (edge->surface)
+        wl_surface_destroy(edge->surface);
+    if (edge->viewport)
+        wp_viewport_destroy(edge->viewport);
+
+    edge->surface = NULL;
+    edge->subsurface = NULL;
+    edge->viewport = NULL;
 }
 
 static void destroyFallbackDecorations(_GLFWwindow* window)
 {
     window->wl.fallback.decorations = GLFW_FALSE;
 
-    destroyFallbackDecoration(&window->wl.fallback.top);
-    destroyFallbackDecoration(&window->wl.fallback.left);
-    destroyFallbackDecoration(&window->wl.fallback.right);
-    destroyFallbackDecoration(&window->wl.fallback.bottom);
+    destroyFallbackEdge(&window->wl.fallback.top);
+    destroyFallbackEdge(&window->wl.fallback.left);
+    destroyFallbackEdge(&window->wl.fallback.right);
+    destroyFallbackEdge(&window->wl.fallback.bottom);
 }
 
 static void xdgDecorationHandleConfigure(void* userData,

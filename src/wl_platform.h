@@ -323,12 +323,12 @@ typedef void (* PFN_libdecor_state_free)(struct libdecor_state*);
 #define libdecor_state_new _glfw.wl.libdecor.libdecor_state_new_
 #define libdecor_state_free _glfw.wl.libdecor.libdecor_state_free_
 
-typedef struct _GLFWdecorationWayland
+typedef struct _GLFWfallbackEdgeWayland
 {
     struct wl_surface*          surface;
     struct wl_subsurface*       subsurface;
     struct wp_viewport*         viewport;
-} _GLFWdecorationWayland;
+} _GLFWfallbackEdgeWayland;
 
 typedef struct _GLFWofferWayland
 {
@@ -404,7 +404,7 @@ typedef struct _GLFWwindowWayland
     struct {
         GLFWbool                    decorations;
         struct wl_buffer*           buffer;
-        _GLFWdecorationWayland      top, left, right, bottom;
+        _GLFWfallbackEdgeWayland    top, left, right, bottom;
         struct wl_surface*          focus;
     } fallback;
 } _GLFWwindowWayland;

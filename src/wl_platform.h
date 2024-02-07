@@ -323,14 +323,6 @@ typedef void (* PFN_libdecor_state_free)(struct libdecor_state*);
 #define libdecor_state_new _glfw.wl.libdecor.libdecor_state_new_
 #define libdecor_state_free _glfw.wl.libdecor.libdecor_state_free_
 
-typedef enum _GLFWdecorationSideWayland
-{
-    GLFW_TOP_DECORATION,
-    GLFW_LEFT_DECORATION,
-    GLFW_RIGHT_DECORATION,
-    GLFW_BOTTOM_DECORATION
-} _GLFWdecorationSideWayland;
-
 typedef struct _GLFWdecorationWayland
 {
     struct wl_surface*          surface;
@@ -413,7 +405,7 @@ typedef struct _GLFWwindowWayland
         GLFWbool                    decorations;
         struct wl_buffer*           buffer;
         _GLFWdecorationWayland      top, left, right, bottom;
-        _GLFWdecorationSideWayland  focus;
+        struct wl_surface*          focus;
     } fallback;
 } _GLFWwindowWayland;
 

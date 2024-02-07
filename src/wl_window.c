@@ -1284,18 +1284,6 @@ static void pointerHandleEnter(void* userData,
 
     _GLFWwindow* window = wl_surface_get_user_data(surface);
 
-    if (window->wl.fallback.decorations)
-    {
-        if (surface == window->wl.fallback.top.surface)
-            window->wl.fallback.focus = GLFW_TOP_DECORATION;
-        else if (surface == window->wl.fallback.left.surface)
-            window->wl.fallback.focus = GLFW_LEFT_DECORATION;
-        else if (surface == window->wl.fallback.right.surface)
-            window->wl.fallback.focus = GLFW_RIGHT_DECORATION;
-        else if (surface == window->wl.fallback.bottom.surface)
-            window->wl.fallback.focus = GLFW_BOTTOM_DECORATION;
-    }
-
     _glfw.wl.serial = serial;
     _glfw.wl.pointerEnterSerial = serial;
     _glfw.wl.pointerFocus = window;
@@ -1305,6 +1293,11 @@ static void pointerHandleEnter(void* userData,
         window->wl.hovered = GLFW_TRUE;
         _glfwSetCursorWayland(window, window->wl.currentCursor);
         _glfwInputCursorEnter(window, GLFW_TRUE);
+    }
+    else
+    {
+        if (window->wl.fallback.decorations)
+            window->wl.fallback.focus = surface;
     }
 }
 
@@ -1331,6 +1324,11 @@ static void pointerHandleLeave(void* userData,
     {
         window->wl.hovered = GLFW_FALSE;
         _glfwInputCursorEnter(window, GLFW_FALSE);
+    }
+    else
+    {
+        if (window->wl.fallback.decorations)
+            window->wl.fallback.focus = NULL;
     }
 }
 
@@ -1363,36 +1361,35 @@ static void pointerHandleMotion(void* userData,
     {
         const char* cursorName = NULL;
 
-        switch (window->wl.fallback.focus)
+        if (window->wl.fallback.focus == window->wl.fallback.top.surface)
         {
-            case GLFW_TOP_DECORATION:
-                if (ypos < GLFW_BORDER_SIZE)
-                    cursorName = "n-resize";
-                else
-                    cursorName = "left_ptr";
-                break;
-            case GLFW_LEFT_DECORATION:
-                if (ypos < GLFW_BORDER_SIZE)
-                    cursorName = "nw-resize";
-                else
-                    cursorName = "w-resize";
-                break;
-            case GLFW_RIGHT_DECORATION:
-                if (ypos < GLFW_BORDER_SIZE)
-                    cursorName = "ne-resize";
-                else
-                    cursorName = "e-resize";
-                break;
-            case GLFW_BOTTOM_DECORATION:
-                if (xpos < GLFW_BORDER_SIZE)
-                    cursorName = "sw-resize";
-                else if (xpos > window->wl.width + GLFW_BORDER_SIZE)
-                    cursorName = "se-resize";
-                else
-                    cursorName = "s-resize";
-                break;
-            default:
-                assert(0);
+            if (ypos < GLFW_BORDER_SIZE)
+                cursorName = "n-resize";
+            else
+                cursorName = "left_ptr";
+        }
+        else if (window->wl.fallback.focus == window->wl.fallback.left.surface)
+        {
+            if (ypos < GLFW_BORDER_SIZE)
+                cursorName = "nw-resize";
+            else
+                cursorName = "w-resize";
+        }
+        else if (window->wl.fallback.focus == window->wl.fallback.right.surface)
+        {
+            if (ypos < GLFW_BORDER_SIZE)
+                cursorName = "ne-resize";
+            else
+                cursorName = "e-resize";
+        }
+        else if (window->wl.fallback.focus == window->wl.fallback.bottom.surface)
+        {
+            if (xpos < GLFW_BORDER_SIZE)
+                cursorName = "sw-resize";
+            else if (xpos > window->wl.width + GLFW_BORDER_SIZE)
+                cursorName = "se-resize";
+            else
+                cursorName = "s-resize";
         }
 
         if (_glfw.wl.cursorPreviousName != cursorName)
@@ -1464,35 +1461,37 @@ static void pointerHandleButton(void* userData,
         {
             uint32_t edges = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
 
-            switch (window->wl.fallback.focus)
+            if (window->wl.fallback.focus == window->wl.fallback.top.surface)
             {
-                case GLFW_TOP_DECORATION:
-                    if (window->wl.cursorPosY < GLFW_BORDER_SIZE)
-                        edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP;
-                    else
-                        xdg_toplevel_move(window->wl.xdg.toplevel, _glfw.wl.seat, serial);
-                    break;
-                case GLFW_LEFT_DECORATION:
-                    if (window->wl.cursorPosY < GLFW_BORDER_SIZE)
-                        edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT;
-                    else
-                        edges = XDG_TOPLEVEL_RESIZE_EDGE_LEFT;
-                    break;
-                case GLFW_RIGHT_DECORATION:
-                    if (window->wl.cursorPosY < GLFW_BORDER_SIZE)
-                        edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT;
-                    else
-                        edges = XDG_TOPLEVEL_RESIZE_EDGE_RIGHT;
-                    break;
-                case GLFW_BOTTOM_DECORATION:
-                    if (window->wl.cursorPosX < GLFW_BORDER_SIZE)
-                        edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT;
-                    else if (window->wl.cursorPosX > window->wl.width + GLFW_BORDER_SIZE)
-                        edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT;
-                    else
-                        edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM;
-                    break;
+                if (window->wl.cursorPosY < GLFW_BORDER_SIZE)
+                    edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP;
+                else
+                    xdg_toplevel_move(window->wl.xdg.toplevel, _glfw.wl.seat, serial);
             }
+            else if (window->wl.fallback.focus == window->wl.fallback.left.surface)
+            {
+                if (window->wl.cursorPosY < GLFW_BORDER_SIZE)
+                    edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT;
+                else
+                    edges = XDG_TOPLEVEL_RESIZE_EDGE_LEFT;
+            }
+            else if (window->wl.fallback.focus == window->wl.fallback.right.surface)
+            {
+                if (window->wl.cursorPosY < GLFW_BORDER_SIZE)
+                    edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT;
+                else
+                    edges = XDG_TOPLEVEL_RESIZE_EDGE_RIGHT;
+            }
+            else if (window->wl.fallback.focus == window->wl.fallback.bottom.surface)
+            {
+                if (window->wl.cursorPosX < GLFW_BORDER_SIZE)
+                    edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT;
+                else if (window->wl.cursorPosX > window->wl.width + GLFW_BORDER_SIZE)
+                    edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT;
+                else
+                    edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM;
+            }
+
             if (edges != XDG_TOPLEVEL_RESIZE_EDGE_NONE)
             {
                 xdg_toplevel_resize(window->wl.xdg.toplevel, _glfw.wl.seat,

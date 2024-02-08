@@ -116,7 +116,7 @@ static void outputHandleScale(void* userData,
 
     for (_GLFWwindow* window = _glfw.windowListHead; window; window = window->next)
     {
-        for (int i = 0; i < window->wl.outputScaleCount; i++)
+        for (size_t i = 0; i < window->wl.outputScaleCount; i++)
         {
             if (window->wl.outputScales[i].output == monitor->wl.output)
             {

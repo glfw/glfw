@@ -340,7 +340,7 @@ typedef struct _GLFWofferWayland
 typedef struct _GLFWscaleWayland
 {
     struct wl_output*           output;
-    int                         factor;
+    int32_t                     factor;
 } _GLFWscaleWayland;
 
 // Wayland-specific per-window data
@@ -389,10 +389,10 @@ typedef struct _GLFWwindowWayland
 
     // We need to track the monitors the window spans on to calculate the
     // optimal scaling factor.
-    int                         bufferScale;
+    int32_t                     bufferScale;
     _GLFWscaleWayland*          outputScales;
-    int                         outputScaleCount;
-    int                         outputScaleSize;
+    size_t                      outputScaleCount;
+    size_t                      outputScaleSize;
 
     struct zwp_relative_pointer_v1* relativePointer;
     struct zwp_locked_pointer_v1*   lockedPointer;
@@ -586,7 +586,7 @@ typedef struct _GLFWmonitorWayland
 
     int                         x;
     int                         y;
-    int                         scale;
+    int32_t                     scale;
 } _GLFWmonitorWayland;
 
 // Wayland-specific per-cursor data

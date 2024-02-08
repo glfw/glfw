@@ -312,7 +312,7 @@ static void setContentAreaOpaque(_GLFWwindow* window)
 
 static void resizeFramebuffer(_GLFWwindow* window)
 {
-    int scale = window->wl.bufferScale;
+    int32_t scale = window->wl.bufferScale;
     int scaledWidth = window->wl.width * scale;
     int scaledHeight = window->wl.height * scale;
 
@@ -366,9 +366,9 @@ void _glfwUpdateBufferScaleFromOutputsWayland(_GLFWwindow* window)
     }
 
     // Get the scale factor from the highest scale monitor.
-    int maxScale = 1;
+    int32_t maxScale = 1;
 
-    for (int i = 0; i < window->wl.outputScaleCount; i++)
+    for (size_t i = 0; i < window->wl.outputScaleCount; i++)
         maxScale = _glfw_max(window->wl.outputScales[i].factor, maxScale);
 
     // Only change the framebuffer size if the scale changed.
@@ -420,7 +420,7 @@ static void surfaceHandleLeave(void* userData,
 
     _GLFWwindow* window = userData;
 
-    for (int i = 0; i < window->wl.outputScaleCount; i++)
+    for (size_t i = 0; i < window->wl.outputScaleCount; i++)
     {
         if (window->wl.outputScales[i].output == output)
         {

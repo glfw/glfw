@@ -312,17 +312,21 @@ static void setContentAreaOpaque(_GLFWwindow* window)
 
 static void resizeFramebuffer(_GLFWwindow* window)
 {
-    int32_t scale = window->wl.bufferScale;
-    int scaledWidth = window->wl.width * scale;
-    int scaledHeight = window->wl.height * scale;
+    window->wl.fbWidth = window->wl.width * window->wl.bufferScale;
+    window->wl.fbHeight = window->wl.height * window->wl.bufferScale;
 
     if (window->wl.egl.window)
-        wl_egl_window_resize(window->wl.egl.window, scaledWidth, scaledHeight, 0, 0);
+    {
+        wl_egl_window_resize(window->wl.egl.window,
+                             window->wl.fbWidth,
+                             window->wl.fbHeight,
+                             0, 0);
+    }
 
     if (!window->wl.transparent)
         setContentAreaOpaque(window);
 
-    _glfwInputFramebufferSize(window, scaledWidth, scaledHeight);
+    _glfwInputFramebufferSize(window, window->wl.fbWidth, window->wl.fbHeight);
 }
 
 static void resizeWindow(_GLFWwindow* window)
@@ -971,6 +975,8 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
 
     window->wl.width = wndconfig->width;
     window->wl.height = wndconfig->height;
+    window->wl.fbWidth = wndconfig->width;
+    window->wl.fbHeight = wndconfig->height;
     window->wl.bufferScale = 1;
     window->wl.title = _glfw_strdup(wndconfig->title);
     window->wl.appId = _glfw_strdup(wndconfig->wl.appId);
@@ -2044,8 +2050,8 @@ GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
             ctxconfig->source == GLFW_NATIVE_CONTEXT_API)
         {
             window->wl.egl.window = wl_egl_window_create(window->wl.surface,
-                                                         wndconfig->width,
-                                                         wndconfig->height);
+                                                         window->wl.fbWidth,
+                                                         window->wl.fbHeight);
             if (!window->wl.egl.window)
             {
                 _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -2278,11 +2284,10 @@ void _glfwSetWindowAspectRatioWayland(_GLFWwindow* window, int numer, int denom)
 
 void _glfwGetFramebufferSizeWayland(_GLFWwindow* window, int* width, int* height)
 {
-    _glfwGetWindowSizeWayland(window, width, height);
     if (width)
-        *width *= window->wl.bufferScale;
+        *width = window->wl.fbWidth;
     if (height)
-        *height *= window->wl.bufferScale;
+        *height = window->wl.fbHeight;
 }
 
 void _glfwGetWindowFrameSizeWayland(_GLFWwindow* window,

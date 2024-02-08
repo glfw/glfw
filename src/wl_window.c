@@ -50,6 +50,7 @@
 #include "pointer-constraints-unstable-v1-client-protocol.h"
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
+#include "fractional-scale-v1-client-protocol.h"
 
 #define GLFW_BORDER_SIZE    4
 #define GLFW_CAPTION_HEIGHT 24
@@ -312,8 +313,16 @@ static void setContentAreaOpaque(_GLFWwindow* window)
 
 static void resizeFramebuffer(_GLFWwindow* window)
 {
-    window->wl.fbWidth = window->wl.width * window->wl.bufferScale;
-    window->wl.fbHeight = window->wl.height * window->wl.bufferScale;
+    if (window->wl.fractionalScale)
+    {
+        window->wl.fbWidth = (window->wl.width * window->wl.scalingNumerator) / 120;
+        window->wl.fbHeight = (window->wl.height * window->wl.scalingNumerator) / 120;
+    }
+    else
+    {
+        window->wl.fbWidth = window->wl.width * window->wl.bufferScale;
+        window->wl.fbHeight = window->wl.height * window->wl.bufferScale;
+    }
 
     if (window->wl.egl.window)
     {
@@ -332,6 +341,13 @@ static void resizeFramebuffer(_GLFWwindow* window)
 static void resizeWindow(_GLFWwindow* window)
 {
     resizeFramebuffer(window);
+
+    if (window->wl.scalingViewport)
+    {
+        wp_viewport_set_destination(window->wl.scalingViewport,
+                                    window->wl.width,
+                                    window->wl.height);
+    }
 
     if (window->wl.fallback.decorations)
     {
@@ -370,6 +386,10 @@ void _glfwUpdateBufferScaleFromOutputsWayland(_GLFWwindow* window)
     }
 
     if (!window->wl.scaleFramebuffer)
+        return;
+
+    // When using fractional scaling, the buffer scale should remain at 1
+    if (window->wl.fractionalScale)
         return;
 
     // Get the scale factor from the highest scale monitor.
@@ -504,6 +524,25 @@ static void releaseMonitor(_GLFWwindow* window)
             createFallbackDecorations(window);
     }
 }
+
+void fractionalScaleHandlePreferredScale(void* userData,
+                                         struct wp_fractional_scale_v1* fractionalScale,
+                                         uint32_t numerator)
+{
+    _GLFWwindow* window = userData;
+
+    window->wl.scalingNumerator = numerator;
+    _glfwInputWindowContentScale(window, numerator / 120.f, numerator / 120.f);
+    resizeFramebuffer(window);
+
+    if (window->wl.visible)
+        _glfwInputWindowDamage(window);
+}
+
+const struct wp_fractional_scale_v1_listener fractionalScaleListener =
+{
+    fractionalScaleHandlePreferredScale,
+};
 
 static void xdgToplevelHandleConfigure(void* userData,
                                        struct xdg_toplevel* toplevel,
@@ -980,9 +1019,11 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     window->wl.height = wndconfig->height;
     window->wl.fbWidth = wndconfig->width;
     window->wl.fbHeight = wndconfig->height;
-    window->wl.bufferScale = 1;
     window->wl.title = _glfw_strdup(wndconfig->title);
     window->wl.appId = _glfw_strdup(wndconfig->wl.appId);
+
+    window->wl.bufferScale = 1;
+    window->wl.scalingNumerator = 120;
     window->wl.scaleFramebuffer = wndconfig->scaleFramebuffer;
 
     window->wl.maximized = wndconfig->maximized;
@@ -990,6 +1031,28 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     window->wl.transparent = fbconfig->transparent;
     if (!window->wl.transparent)
         setContentAreaOpaque(window);
+
+    if (_glfw.wl.fractionalScaleManager)
+    {
+        if (window->wl.scaleFramebuffer)
+        {
+            window->wl.scalingViewport =
+                wp_viewporter_get_viewport(_glfw.wl.viewporter, window->wl.surface);
+
+            wp_viewport_set_destination(window->wl.scalingViewport,
+                                        window->wl.width,
+                                        window->wl.height);
+
+            window->wl.fractionalScale =
+                wp_fractional_scale_manager_v1_get_fractional_scale(
+                    _glfw.wl.fractionalScaleManager,
+                    window->wl.surface);
+
+            wp_fractional_scale_v1_add_listener(window->wl.fractionalScale,
+                                                &fractionalScaleListener,
+                                                window);
+        }
+    }
 
     return GLFW_TRUE;
 }
@@ -2315,10 +2378,20 @@ void _glfwGetWindowFrameSizeWayland(_GLFWwindow* window,
 void _glfwGetWindowContentScaleWayland(_GLFWwindow* window,
                                        float* xscale, float* yscale)
 {
-    if (xscale)
-        *xscale = (float) window->wl.bufferScale;
-    if (yscale)
-        *yscale = (float) window->wl.bufferScale;
+    if (window->wl.fractionalScale)
+    {
+        if (xscale)
+            *xscale = (float) window->wl.scalingNumerator / 120.f;
+        if (yscale)
+            *yscale = (float) window->wl.scalingNumerator / 120.f;
+    }
+    else
+    {
+        if (xscale)
+            *xscale = (float) window->wl.bufferScale;
+        if (yscale)
+            *yscale = (float) window->wl.bufferScale;
+    }
 }
 
 void _glfwIconifyWindowWayland(_GLFWwindow* window)

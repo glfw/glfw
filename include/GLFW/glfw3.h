@@ -2705,6 +2705,9 @@ GLFWAPI void glfwGetMonitorPhysicalSize(GLFWmonitor* monitor, int* widthMM, int*
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
+ *  @remark @wayland Fractional scaling information is not yet available for
+ *  monitors, so this function only returns integer content scales.
+ *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref monitor_scale

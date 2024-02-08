@@ -150,6 +150,14 @@ window focus and attention requests do nothing.
 
 [xdg-activation-v1]: https://wayland.app/protocols/xdg-activation-v1
 
+GLFW uses the [fractional-scale-v1][] protocol to implement fine-grained
+framebuffer scaling.  If the running compositor does not support this protocol,
+the @ref GLFW_SCALE_FRAMEBUFFER window hint will only be able to scale the
+framebuffer by integer scales.  This will typically be the smallest integer not
+less than the actual scale.
+
+[fractional-scale-v1]: https://wayland.app/protocols/fractional-scale-v1
+
 
 ## GLX extensions {#compat_glx}
 

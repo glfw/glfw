@@ -312,7 +312,7 @@ static void setContentAreaOpaque(_GLFWwindow* window)
 
 static void resizeFramebuffer(_GLFWwindow* window)
 {
-    int scale = window->wl.contentScale;
+    int scale = window->wl.bufferScale;
     int scaledWidth = window->wl.width * scale;
     int scaledHeight = window->wl.height * scale;
 
@@ -357,7 +357,7 @@ static void resizeWindow(_GLFWwindow* window)
     }
 }
 
-void _glfwUpdateContentScaleWayland(_GLFWwindow* window)
+void _glfwUpdateBufferScaleFromOutputsWayland(_GLFWwindow* window)
 {
     if (wl_compositor_get_version(_glfw.wl.compositor) <
         WL_SURFACE_SET_BUFFER_SCALE_SINCE_VERSION)
@@ -368,13 +368,13 @@ void _glfwUpdateContentScaleWayland(_GLFWwindow* window)
     // Get the scale factor from the highest scale monitor.
     int maxScale = 1;
 
-    for (int i = 0; i < window->wl.scaleCount; i++)
-        maxScale = _glfw_max(window->wl.scales[i].factor, maxScale);
+    for (int i = 0; i < window->wl.outputScaleCount; i++)
+        maxScale = _glfw_max(window->wl.outputScales[i].factor, maxScale);
 
     // Only change the framebuffer size if the scale changed.
-    if (window->wl.contentScale != maxScale)
+    if (window->wl.bufferScale != maxScale)
     {
-        window->wl.contentScale = maxScale;
+        window->wl.bufferScale = maxScale;
         wl_surface_set_buffer_scale(window->wl.surface, maxScale);
         _glfwInputWindowContentScale(window, maxScale, maxScale);
         resizeFramebuffer(window);
@@ -396,19 +396,19 @@ static void surfaceHandleEnter(void* userData,
     if (!window || !monitor)
         return;
 
-    if (window->wl.scaleCount + 1 > window->wl.scaleSize)
+    if (window->wl.outputScaleCount + 1 > window->wl.outputScaleSize)
     {
-        window->wl.scaleSize++;
-        window->wl.scales =
-            _glfw_realloc(window->wl.scales,
-                          window->wl.scaleSize * sizeof(_GLFWscaleWayland));
+        window->wl.outputScaleSize++;
+        window->wl.outputScales =
+            _glfw_realloc(window->wl.outputScales,
+                          window->wl.outputScaleSize * sizeof(_GLFWscaleWayland));
     }
 
-    window->wl.scaleCount++;
-    window->wl.scales[window->wl.scaleCount - 1].factor = monitor->wl.contentScale;
-    window->wl.scales[window->wl.scaleCount - 1].output = output;
+    window->wl.outputScaleCount++;
+    window->wl.outputScales[window->wl.outputScaleCount - 1] =
+        (_GLFWscaleWayland) { output, monitor->wl.scale };
 
-    _glfwUpdateContentScaleWayland(window);
+    _glfwUpdateBufferScaleFromOutputsWayland(window);
 }
 
 static void surfaceHandleLeave(void* userData,
@@ -420,17 +420,18 @@ static void surfaceHandleLeave(void* userData,
 
     _GLFWwindow* window = userData;
 
-    for (int i = 0; i < window->wl.scaleCount; i++)
+    for (int i = 0; i < window->wl.outputScaleCount; i++)
     {
-        if (window->wl.scales[i].output == output)
+        if (window->wl.outputScales[i].output == output)
         {
-            window->wl.scales[i] = window->wl.scales[window->wl.scaleCount - 1];
-            window->wl.scaleCount--;
+            window->wl.outputScales[i] =
+                window->wl.outputScales[window->wl.outputScaleCount - 1];
+            window->wl.outputScaleCount--;
             break;
         }
     }
 
-    _glfwUpdateContentScaleWayland(window);
+    _glfwUpdateBufferScaleFromOutputsWayland(window);
 }
 
 static const struct wl_surface_listener surfaceListener =
@@ -970,7 +971,7 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
 
     window->wl.width = wndconfig->width;
     window->wl.height = wndconfig->height;
-    window->wl.contentScale = 1;
+    window->wl.bufferScale = 1;
     window->wl.title = _glfw_strdup(wndconfig->title);
     window->wl.appId = _glfw_strdup(wndconfig->wl.appId);
 
@@ -997,7 +998,7 @@ static void setCursorImage(_GLFWwindow* window,
         buffer = cursorWayland->buffer;
     else
     {
-        if (window->wl.contentScale > 1 && cursorWayland->cursorHiDPI)
+        if (window->wl.bufferScale > 1 && cursorWayland->cursorHiDPI)
         {
             wlCursor = cursorWayland->cursorHiDPI;
             scale = 2;
@@ -1398,7 +1399,7 @@ static void pointerHandleMotion(void* userData,
             struct wl_cursor_theme* theme = _glfw.wl.cursorTheme;
             int scale = 1;
 
-            if (window->wl.contentScale > 1 && _glfw.wl.cursorThemeHiDPI)
+            if (window->wl.bufferScale > 1 && _glfw.wl.cursorThemeHiDPI)
             {
                 // We only support up to scale=2 for now, since libwayland-cursor
                 // requires us to load a different theme for each size.
@@ -2120,7 +2121,7 @@ void _glfwDestroyWindowWayland(_GLFWwindow* window)
 
     _glfw_free(window->wl.title);
     _glfw_free(window->wl.appId);
-    _glfw_free(window->wl.scales);
+    _glfw_free(window->wl.outputScales);
 }
 
 void _glfwSetWindowTitleWayland(_GLFWwindow* window, const char* title)
@@ -2279,9 +2280,9 @@ void _glfwGetFramebufferSizeWayland(_GLFWwindow* window, int* width, int* height
 {
     _glfwGetWindowSizeWayland(window, width, height);
     if (width)
-        *width *= window->wl.contentScale;
+        *width *= window->wl.bufferScale;
     if (height)
-        *height *= window->wl.contentScale;
+        *height *= window->wl.bufferScale;
 }
 
 void _glfwGetWindowFrameSizeWayland(_GLFWwindow* window,
@@ -2305,9 +2306,9 @@ void _glfwGetWindowContentScaleWayland(_GLFWwindow* window,
                                        float* xscale, float* yscale)
 {
     if (xscale)
-        *xscale = (float) window->wl.contentScale;
+        *xscale = (float) window->wl.bufferScale;
     if (yscale)
-        *yscale = (float) window->wl.contentScale;
+        *yscale = (float) window->wl.bufferScale;
 }
 
 void _glfwIconifyWindowWayland(_GLFWwindow* window)

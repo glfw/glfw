@@ -389,10 +389,10 @@ typedef struct _GLFWwindowWayland
 
     // We need to track the monitors the window spans on to calculate the
     // optimal scaling factor.
-    int                         contentScale;
-    _GLFWscaleWayland*          scales;
-    int                         scaleCount;
-    int                         scaleSize;
+    int                         bufferScale;
+    _GLFWscaleWayland*          outputScales;
+    int                         outputScaleCount;
+    int                         outputScaleSize;
 
     struct zwp_relative_pointer_v1* relativePointer;
     struct zwp_locked_pointer_v1*   lockedPointer;
@@ -586,7 +586,7 @@ typedef struct _GLFWmonitorWayland
 
     int                         x;
     int                         y;
-    int                         contentScale;
+    int                         scale;
 } _GLFWmonitorWayland;
 
 // Wayland-specific per-cursor data
@@ -677,7 +677,7 @@ GLFWbool _glfwGetGammaRampWayland(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
 void _glfwSetGammaRampWayland(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
 void _glfwAddOutputWayland(uint32_t name, uint32_t version);
-void _glfwUpdateContentScaleWayland(_GLFWwindow* window);
+void _glfwUpdateBufferScaleFromOutputsWayland(_GLFWwindow* window);
 
 void _glfwAddSeatListenerWayland(struct wl_seat* seat);
 void _glfwAddDataDeviceListenerWayland(struct wl_data_device* device);

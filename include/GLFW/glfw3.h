@@ -3856,11 +3856,11 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
  *
  *  @param[in] window The window to give input focus.
  *
- *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
- *  GLFW_PLATFORM_ERROR and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
  *
- *  @remark @wayland It is not possible for an application to set the input
- *  focus.  This function will emit @ref GLFW_FEATURE_UNAVAILABLE.
+ *  @remark @wayland The compositor will likely ignore focus requests unless
+ *  another window created by the same application already has input focus.
  *
  *  @thread_safety This function must only be called from the main thread.
  *

@@ -142,9 +142,8 @@ protocols either, no decorations will be drawn around windows.
 
 GLFW uses the [xdg-activation
 protocol](https://wayland.app/protocols/xdg-activation-v1)
-to enable attention requests.  This protocol is part of
-wayland-protocols staging, and mandatory at build time.  If the running compositor
-does not support this protocol, the attention requests do nothing.
+to implement window focus and attention requests.  If the running compositor
+does not support this protocol, window focus and attention requests do nothing.
 
 
 @section compat_glx GLX extensions

@@ -2378,8 +2378,36 @@ void _glfwRequestWindowAttentionWayland(_GLFWwindow* window)
 
 void _glfwFocusWindowWayland(_GLFWwindow* window)
 {
-    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                    "Wayland: The platform does not support setting the input focus");
+    if (!_glfw.wl.activationManager)
+        return;
+
+    if (window->wl.activationToken)
+        xdg_activation_token_v1_destroy(window->wl.activationToken);
+
+    window->wl.activationToken =
+        xdg_activation_v1_get_activation_token(_glfw.wl.activationManager);
+    xdg_activation_token_v1_add_listener(window->wl.activationToken,
+                                         &xdgActivationListener,
+                                         window);
+
+    xdg_activation_token_v1_set_serial(window->wl.activationToken,
+                                       _glfw.wl.serial,
+                                       _glfw.wl.seat);
+
+    _GLFWwindow* requester = _glfw.wl.keyboardFocus;
+    if (requester)
+    {
+        xdg_activation_token_v1_set_surface(window->wl.activationToken,
+                                            requester->wl.surface);
+
+        if (requester->wl.appId)
+        {
+            xdg_activation_token_v1_set_app_id(window->wl.activationToken,
+                                               requester->wl.appId);
+        }
+    }
+
+    xdg_activation_token_v1_commit(window->wl.activationToken);
 }
 
 void _glfwSetWindowMonitorWayland(_GLFWwindow* window,

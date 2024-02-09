@@ -178,6 +178,7 @@ information on what to include when reporting a bug.
  - [Cocoa] Bugfix: Touching event queue from secondary thread before main thread
    would abort (#1649)
  - [Wayland] Added support for `glfwRequestWindowAttention` (#2287)
+   [Wayland] Added support for `glfwFocusWindow`
  - [Wayland] Added dynamic loading of all Wayland libraries
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
  - [X11] Bugfix: Termination would segfault if the IM had been destroyed

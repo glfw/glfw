@@ -35,6 +35,12 @@ are still available.
 For more information see @ref cursor_standard.
 
 
+@subsubsection features_34_get_window_title Ability to get a window's title
+
+GLFW now supports retrieving a window's title with the @ref glfwGetWindowTitle
+function.
+
+
 @subsubsection mouse_passthrough_34 Mouse event passthrough
 
 GLFW now provides the [GLFW_MOUSE_PASSTHROUGH](@ref GLFW_MOUSE_PASSTHROUGH_hint)
@@ -231,6 +237,7 @@ then GLFW will fail to initialize.
  - @ref glfwGetPlatform
  - @ref glfwPlatformSupported
  - @ref glfwInitVulkanLoader
+ - @ref glfwGetWindowTitle
 
 
 @subsubsection types_34 New types in version 3.4

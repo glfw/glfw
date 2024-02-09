@@ -9,6 +9,13 @@
 
 @subsection features_34 New features in version 3.4
 
+
+@subsubsection features_34_get_window_title Ability to get a window's title
+
+GLFW now supports retrieving a window's title with the @ref glfwGetWindowTitle
+function.
+
+
 @subsubsection runtime_platform_34 Runtime platform selection
 
 GLFW now supports being compiled for multiple backends and selecting between
@@ -33,12 +40,6 @@ cursor is now referred to as @ref GLFW_POINTING_HAND_CURSOR.  The older names
 are still available.
 
 For more information see @ref cursor_standard.
-
-
-@subsubsection features_34_get_window_title Ability to get a window's title
-
-GLFW now supports retrieving a window's title with the @ref glfwGetWindowTitle
-function.
 
 
 @subsubsection mouse_passthrough_34 Mouse event passthrough

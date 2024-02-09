@@ -71,7 +71,7 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    GLFWwindow* window = glfwCreateWindow(600, 600, "Window Features", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(600, 630, "Window Features", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -169,6 +169,8 @@ int main(int argc, char** argv)
                 if (glfwGetKey(window, GLFW_KEY_H))
                     glfwSetWindowAttrib(window, GLFW_MOUSE_PASSTHROUGH, false);
             }
+
+            nk_labelf(nk, NK_TEXT_CENTERED, "Window Title: %s", glfwGetWindowTitle(window));
 
             nk_label(nk, "Press Enter in a text field to set value", NK_TEXT_CENTERED);
 

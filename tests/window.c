@@ -71,7 +71,7 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    GLFWwindow* window = glfwCreateWindow(600, 600, "Window Features", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(600, 630, "Window Features", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -121,17 +121,20 @@ int main(int argc, char** argv)
         nk_glfw3_new_frame();
         if (nk_begin(nk, "main", area, 0))
         {
-            nk_layout_row_dynamic(nk, 30, 5);
+            nk_layout_row_dynamic(nk, 30, 4);
 
-            if (nk_button_label(nk, "Toggle Fullscreen"))
+            if (glfwGetWindowMonitor(window))
             {
-                if (glfwGetWindowMonitor(window))
+                if (nk_button_label(nk, "Make Windowed"))
                 {
                     glfwSetWindowMonitor(window, NULL,
                                          windowed_x, windowed_y,
                                          windowed_width, windowed_height, 0);
                 }
-                else
+            }
+            else
+            {
+                if (nk_button_label(nk, "Make Fullscreen"))
                 {
                     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
                     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -149,7 +152,10 @@ int main(int argc, char** argv)
                 glfwIconifyWindow(window);
             if (nk_button_label(nk, "Restore"))
                 glfwRestoreWindow(window);
-            if (nk_button_label(nk, "Hide (briefly)"))
+
+            nk_layout_row_dynamic(nk, 30, 2);
+
+            if (nk_button_label(nk, "Hide (for 3s)"))
             {
                 glfwHideWindow(window);
 
@@ -158,6 +164,16 @@ int main(int argc, char** argv)
                     glfwWaitEventsTimeout(1.0);
 
                 glfwShowWindow(window);
+            }
+            if (nk_button_label(nk, "Request Attention (after 3s)"))
+            {
+                glfwIconifyWindow(window);
+
+                const double time = glfwGetTime() + 3.0;
+                while (glfwGetTime() < time)
+                    glfwWaitEventsTimeout(1.0);
+
+                glfwRequestWindowAttention(window);
             }
 
             nk_layout_row_dynamic(nk, 30, 1);
@@ -211,7 +227,7 @@ int main(int argc, char** argv)
                 last_ypos = ypos;
             }
             else
-                nk_label(nk, "Position not supported", NK_TEXT_LEFT);
+                nk_label(nk, "Platform does not support window position", NK_TEXT_LEFT);
 
             nk_layout_row_dynamic(nk, 30, 3);
             nk_label(nk, "Size", NK_TEXT_LEFT);

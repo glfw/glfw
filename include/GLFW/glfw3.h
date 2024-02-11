@@ -1139,12 +1139,12 @@ extern "C" {
 #define GLFW_OPENGL_CORE_PROFILE    0x00032001
 #define GLFW_OPENGL_COMPAT_PROFILE  0x00032002
 
-#define GLFW_CURSOR                 0x00033001
-#define GLFW_STICKY_KEYS            0x00033002
-#define GLFW_STICKY_MOUSE_BUTTONS   0x00033003
-#define GLFW_LOCK_KEY_MODS          0x00033004
-#define GLFW_RAW_MOUSE_MOTION       0x00033005
-#define GLFW_MOUSE_BUTTON_LIMIT     0x00033006
+#define GLFW_CURSOR                     0x00033001
+#define GLFW_STICKY_KEYS                0x00033002
+#define GLFW_STICKY_MOUSE_BUTTONS       0x00033003
+#define GLFW_LOCK_KEY_MODS              0x00033004
+#define GLFW_RAW_MOUSE_MOTION           0x00033005
+#define GLFW_DISABLE_MOUSE_BUTTON_LIMIT 0x00033006
 
 #define GLFW_CURSOR_NORMAL          0x00034001
 #define GLFW_CURSOR_HIDDEN          0x00034002
@@ -5202,7 +5202,7 @@ GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmods
  *
  *  The reported `button` value can be higher than `GLFW_MOUSE_BUTTON_LAST` if
  *  the button does not have an associated [button token](@ref buttons) and the
- *  @ref GLFW_MOUSE_BUTTON_LIMIT init hint is set to `GLFW_FALSE`.
+ *  @ref GLFW_MOUSE_BUTTON_LIMIT input mode is set.
  *
  *  @param[in] window The window whose callback to set.
  *  @param[in] callback The new callback, or `NULL` to remove the currently set

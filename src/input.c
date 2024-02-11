@@ -351,7 +351,7 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
     assert(action == GLFW_PRESS || action == GLFW_RELEASE);
     assert(mods == (mods & GLFW_MOD_MASK));
 
-    if (button < 0 || (window->mouseButtonLimit && button > GLFW_MOUSE_BUTTON_LAST))
+    if (button < 0 || (!window->disableMouseButtonLimit && button > GLFW_MOUSE_BUTTON_LAST))
         return;
 
     if (!window->lockKeyMods)
@@ -578,8 +578,8 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* handle, int mode)
             return window->lockKeyMods;
         case GLFW_RAW_MOUSE_MOTION:
             return window->rawMouseMotion;
-        case GLFW_MOUSE_BUTTON_LIMIT:
-            return window->mouseButtonLimit;
+        case GLFW_DISABLE_MOUSE_BUTTON_LIMIT:
+            return window->disableMouseButtonLimit;
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode 0x%08X", mode);
@@ -688,9 +688,9 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
             return;
         }
 
-        case GLFW_MOUSE_BUTTON_LIMIT:
+        case GLFW_DISABLE_MOUSE_BUTTON_LIMIT:
         {
-            window->mouseButtonLimit = value ? GLFW_TRUE : GLFW_FALSE;
+            window->disableMouseButtonLimit = value ? GLFW_TRUE : GLFW_FALSE;
             return;
         }
     }

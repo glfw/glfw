@@ -539,7 +539,7 @@ struct _GLFWwindow
     GLFWbool            stickyKeys;
     GLFWbool            stickyMouseButtons;
     GLFWbool            lockKeyMods;
-    GLFWbool            mouseButtonLimit;
+    GLFWbool            disableMouseButtonLimit;
     int                 cursorMode;
     char                mouseButtons[GLFW_MOUSE_BUTTON_LAST + 1];
     char                keys[GLFW_KEY_LAST + 1];

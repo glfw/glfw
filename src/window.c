@@ -233,7 +233,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->focusOnShow      = wndconfig.focusOnShow;
     window->mousePassthrough = wndconfig.mousePassthrough;
     window->cursorMode       = GLFW_CURSOR_NORMAL;
-    window->mouseButtonLimit = GLFW_TRUE;
 
     window->doublebuffer = fbconfig.doublebuffer;
 

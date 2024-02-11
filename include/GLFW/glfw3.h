@@ -3252,6 +3252,10 @@ GLFWAPI void glfwSetWindowShouldClose(GLFWwindow* window, int value);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED
  *
+ *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is valid until the next call to @ref
+ *  glfwSetWindowTitle, or until the library is terminated.
+ *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_title

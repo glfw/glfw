@@ -173,15 +173,6 @@ void _glfwInputWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor)
     window->monitor = monitor;
 }
 
-// Notifies shared code that a window has new title
-//
-void _glfwInputWindowTitle(_GLFWwindow* window, const char* title)
-{
-    size_t size = strlen( title ) + 1;
-    window->title = _glfw_realloc(window->title, size);
-    memcpy( window->title, title, size );
-}
-
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW public API                       //////
 //////////////////////////////////////////////////////////////////////////
@@ -251,7 +242,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->maxheight   = GLFW_DONT_CARE;
     window->numer       = GLFW_DONT_CARE;
     window->denom       = GLFW_DONT_CARE;
-    _glfwInputWindowTitle(window, title);
+    window->title       = _glfw_strdup(title);
 
     if (!_glfw.platform.createWindow(window, &wndconfig, &ctxconfig, &fbconfig))
     {
@@ -541,7 +532,9 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* handle, const char* title)
 
     _GLFW_REQUIRE_INIT();
 
-    _glfwInputWindowTitle(window, title);
+    _glfw_free(window->title);
+    window->title = _glfw_strdup(title);
+
     _glfw.platform.setWindowTitle(window, title);
 }
 

@@ -502,8 +502,8 @@ initialization hint to `GLFW_FALSE`.
 glfwInitHint(GLFW_MOUSE_BUTTON_LIMIT, GLFW_FALSE);
 @endcode
 
-The callback function receives the mouse button, button action and
-[modifier bits](@ref mods).
+The callback function receives the [mouse button](@ref buttons), button action
+and [modifier bits](@ref mods).
 
 @code
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)

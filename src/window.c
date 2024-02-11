@@ -534,9 +534,9 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* handle, const char* title)
 
     char* prev = window->title;
     window->title = _glfw_strdup(title);
-    _glfw_free(prev);
 
     _glfw.platform.setWindowTitle(window, title);
+    _glfw_free(prev);
 }
 
 GLFWAPI void glfwSetWindowIcon(GLFWwindow* handle,

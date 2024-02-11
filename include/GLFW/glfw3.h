@@ -3079,7 +3079,7 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *  This must be greater than zero.
  *  @param[in] height The desired height, in screen coordinates, of the window.
  *  This must be greater than zero.
- *  @param[in] title The initial, UTF-8 encoded window title.
+ *  @param[in] title The initial, UTF-8 encoded, non-NULL window title.
  *  @param[in] monitor The monitor to use for full screen mode, or `NULL` for
  *  windowed mode.
  *  @param[in] share The window whose context to share resources with, or `NULL`

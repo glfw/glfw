@@ -860,7 +860,8 @@ glfwGetWindowPos(window, &xpos, &ypos);
 
 All GLFW windows have a title, although undecorated or full screen windows may
 not display it or only display it in a task bar or similar interface.  You can
-set a UTF-8 encoded window title with @ref glfwSetWindowTitle.
+set a UTF-8 encoded window title with @ref glfwSetWindowTitle. The set title
+should not be `NULL`.
 
 @code
 glfwSetWindowTitle(window, "My Window");

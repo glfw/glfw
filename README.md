@@ -122,6 +122,7 @@ information on what to include when reporting a bug.
 
 ## Changelog since 3.3.9
 
+ - Added clarification for `glfwCreateWindow` title parameter to documentation (#2232, #2379)
  - Added `GLFW_PLATFORM` init hint for runtime platform selection (#1958)
  - Added `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`,
    `GLFW_PLATFORM_WAYLAND`, `GLFW_PLATFORM_X11` and `GLFW_PLATFORM_NULL` symbols to

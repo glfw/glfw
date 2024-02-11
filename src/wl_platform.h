@@ -379,7 +379,6 @@ typedef struct _GLFWwindowWayland
 
     struct {
         struct libdecor_frame*  frame;
-        int                     mode;
     } libdecor;
 
     _GLFWcursor*                currentCursor;

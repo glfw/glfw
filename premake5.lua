@@ -17,7 +17,7 @@ project "GLFW"
 		}
 
 		filter "system:windows"
-		buildoptions {"-std=c11", "lgdi32"}
+		buildoptions {"-std=c11", "-lgdi32"}
 		systemversion "latest"
 		staticruntime "On"
 
@@ -39,4 +39,4 @@ project "GLFW"
 		}
 
 		filter { "system:windows","configurations:Release"}
-		buildopptions "/MT"
+		buildoptions "/MT"

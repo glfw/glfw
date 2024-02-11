@@ -1,0 +1,20 @@
+﻿cl : command line  warning D9002: ignoring unknown option '-std=c11'
+  lgdi32
+  context.c
+/lgdi32(1,1): error C1083: Cannot open source file: 'lgdi32': No such file or directory
+  (compiling source file '/lgdi32')
+  
+  egl_context.c
+  init.c
+  monitor.c
+  osmesa_context.c
+  vulkan.c
+  wgl_context.c
+  win32_init.c
+  win32_joystick.c
+  win32_monitor.c
+  win32_thread.c
+  win32_time.c
+  win32_window.c
+  window.c
+  Generating Code...

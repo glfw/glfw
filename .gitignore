@@ -9,6 +9,10 @@ _ReSharper*
 *.dir
 *.vcxproj*
 *.sln
+*.lib
+*.obj
+*.tlog
+*.log
 .vs
 CMakeSettings.json
 Win32

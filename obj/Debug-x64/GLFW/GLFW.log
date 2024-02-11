@@ -1,9 +1,6 @@
 ﻿cl : command line  warning D9002: ignoring unknown option '-std=c11'
-  lgdi32
+cl : command line  warning D9002: ignoring unknown option '-lgdi32'
   context.c
-/lgdi32(1,1): error C1083: Cannot open source file: 'lgdi32': No such file or directory
-  (compiling source file '/lgdi32')
-  
   egl_context.c
   init.c
   monitor.c
@@ -18,3 +15,4 @@
   win32_window.c
   window.c
   Generating Code...
+  GLFW.vcxproj -> C:\Users\Harman\Documents\C++\Pulse\Pulse\vendor\GLFW\bin\Debug-x64\GLFW\GLFW.lib

@@ -62,6 +62,7 @@ int main(int argc, char** argv)
     char min_width_buffer[12] = "", min_height_buffer[12] = "";
     char max_width_buffer[12] = "", max_height_buffer[12] = "";
     int may_close = true;
+    char window_title[64] = "";
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
@@ -108,6 +109,11 @@ int main(int argc, char** argv)
     struct nk_font_atlas* atlas;
     nk_glfw3_font_stash_begin(&atlas);
     nk_glfw3_font_stash_end();
+
+    // test setting title with result from glfwGetWindowTitle
+    glfwSetWindowTitle(window, glfwGetWindowTitle(window));
+
+    strncpy( window_title, glfwGetWindowTitle(window), sizeof(window_title));
 
     while (!(may_close && glfwWindowShouldClose(window)))
     {
@@ -170,14 +176,26 @@ int main(int argc, char** argv)
                     glfwSetWindowAttrib(window, GLFW_MOUSE_PASSTHROUGH, false);
             }
 
-            nk_labelf(nk, NK_TEXT_CENTERED, "Window Title: %s", glfwGetWindowTitle(window));
-
             nk_label(nk, "Press Enter in a text field to set value", NK_TEXT_CENTERED);
+
+
 
             nk_flags events;
             const nk_flags flags = NK_EDIT_FIELD |
                                    NK_EDIT_SIG_ENTER |
                                    NK_EDIT_GOTO_END_ON_ACTIVATE;
+
+            nk_layout_row_dynamic(nk, 30, 2);
+            nk_label(nk, "Window Title:", NK_TEXT_LEFT);
+
+            events = nk_edit_string_zero_terminated( nk, flags, window_title, sizeof(window_title), NULL );
+
+            if (events & NK_EDIT_COMMITED)
+            {
+                glfwSetWindowTitle(window, window_title);
+                // we do not need to call glfwGetWindowTitle as we already store the title, but using it here for testing purposes
+                strncpy( window_title, glfwGetWindowTitle(window), sizeof(window_title));
+            }
 
             if (position_supported)
             {

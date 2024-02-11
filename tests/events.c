@@ -549,7 +549,6 @@ int main(int argc, char** argv)
     int ch, i, width, height, count = 1;
 
     glfwSetErrorCallback(error_callback);
-    glfwInitHint(GLFW_MOUSE_BUTTON_LIMIT, GLFW_FALSE);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
@@ -631,6 +630,7 @@ int main(int argc, char** argv)
             glfwTerminate();
             exit(EXIT_FAILURE);
         }
+        glfwSetInputMode(slots[i].window, GLFW_MOUSE_BUTTON_LIMIT, GLFW_FALSE);
 
         glfwSetWindowUserPointer(slots[i].window, slots + i);
 

@@ -365,7 +365,6 @@ struct _GLFWinitconfig
     GLFWbool      hatButtons;
     int           angleType;
     int           platformID;
-    GLFWbool      mouseButtonLimit;
     PFN_vkGetInstanceProcAddr vulkanLoader;
     struct {
         GLFWbool  menubar;
@@ -540,6 +539,7 @@ struct _GLFWwindow
     GLFWbool            stickyKeys;
     GLFWbool            stickyMouseButtons;
     GLFWbool            lockKeyMods;
+    GLFWbool            mouseButtonLimit;
     int                 cursorMode;
     char                mouseButtons[GLFW_MOUSE_BUTTON_LAST + 1];
     char                keys[GLFW_KEY_LAST + 1];

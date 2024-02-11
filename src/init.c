@@ -53,7 +53,6 @@ static _GLFWinitconfig _glfwInitHints =
     .angleType = GLFW_ANGLE_PLATFORM_TYPE_NONE,
     .platformID = GLFW_ANY_PLATFORM,
     .vulkanLoader = NULL,
-    .mouseButtonLimit = GLFW_TRUE,
     .ns =
     {
         .menubar = GLFW_TRUE,
@@ -474,9 +473,6 @@ GLFWAPI void glfwInitHint(int hint, int value)
             return;
         case GLFW_PLATFORM:
             _glfwInitHints.platformID = value;
-            return;
-        case GLFW_MOUSE_BUTTON_LIMIT:
-            _glfwInitHints.mouseButtonLimit = value;
             return;
         case GLFW_COCOA_CHDIR_RESOURCES:
             _glfwInitHints.ns.chdir = value;

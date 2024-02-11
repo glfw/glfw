@@ -1144,6 +1144,7 @@ extern "C" {
 #define GLFW_STICKY_MOUSE_BUTTONS   0x00033003
 #define GLFW_LOCK_KEY_MODS          0x00033004
 #define GLFW_RAW_MOUSE_MOTION       0x00033005
+#define GLFW_MOUSE_BUTTON_LIMIT     0x00033006
 
 #define GLFW_CURSOR_NORMAL          0x00034001
 #define GLFW_CURSOR_HIDDEN          0x00034002
@@ -1297,11 +1298,6 @@ extern "C" {
  *  Platform selection [init hint](@ref GLFW_PLATFORM).
  */
 #define GLFW_PLATFORM               0x00050003
-/*! @brief Mouse button limit init hint.
- *
- *  Mouse button limit [init hint](@ref GLFW_PLATFORM).
- */
-#define GLFW_MOUSE_BUTTON_LIMIT     0x00050004
 /*! @brief macOS specific init hint.
  *
  *  macOS specific [init hint](@ref GLFW_COCOA_CHDIR_RESOURCES_hint).

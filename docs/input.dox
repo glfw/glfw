@@ -494,13 +494,20 @@ a mouse button callback.
 glfwSetMouseButtonCallback(window, mouse_button_callback);
 @endcode
 
+@anchor GLFW_MOUSE_BUTTON_LIMIT
 To handle all mouse buttons, instead of only ones with associated
 [button tokens](@ref buttons), set the @ref GLFW_MOUSE_BUTTON_LIMIT
-initialization hint to `GLFW_FALSE`.
+input mode to `GLFW_FALSE`.
 
 @code
-glfwInitHint(GLFW_MOUSE_BUTTON_LIMIT, GLFW_FALSE);
+glfwSetInputMode(window, GLFW_MOUSE_BUTTON_LIMIT, GLFW_FALSE);
 @endcode
+
+This input mode specifies whether to limit reported mouse buttons to only those
+that have an associated button token, for compatibility with earlier versions of
+GLFW that would only report buttons with an associated button token: users may
+have assumed that reported buttons always are in the range of
+@ref GLFW_MOUSE_BUTTON_1 to @ref GLFW_MOUSE_BUTTON_LAST.
 
 The callback function receives the [mouse button](@ref buttons), button action
 and [modifier bits](@ref mods).

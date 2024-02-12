@@ -322,7 +322,7 @@ Starting with GLFW 3.3.7, events posted with @ref glfwPostEmptyEvent now use a s
 unnamed pipe instead of sending an X11 client event to the helper window.
 
 
-@subsubsection wayland_alpha_34 Frambuffer may lack alpha channel on older Wayland systems
+@subsubsection wayland_alpha_33 Framebuffer may lack alpha channel on older Wayland systems
 
 On Wayland, when creating an EGL context on a machine lacking the new
 `EGL_EXT_present_opaque` extension, the @ref GLFW_ALPHA_BITS window hint will be

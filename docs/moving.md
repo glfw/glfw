@@ -20,14 +20,14 @@ Unix-like systems, where it uses the
 [soname](https://en.wikipedia.org/wiki/soname) `libglfw.so.3`.
 
 @par Old syntax
-@code{.c}
+```c
 #include <GL/glfw.h>
-@endcode
+```
 
 @par New syntax
-@code{.c}
+```c
 #include <GLFW/glfw3.h>
-@endcode
+```
 
 
 ### Removal of threading functions {#moving_threads}
@@ -93,14 +93,14 @@ the creation of DLLs and DLL link libraries, as there's no need to explicitly
 disable `@n` entry point suffixes.
 
 @par Old syntax
-@code{.c}
+```c
 void GLFWCALL callback_function(...);
-@endcode
+```
 
 @par New syntax
-@code{.c}
+```c
 void callback_function(...);
-@endcode
+```
 
 
 ### Window handle parameters {#moving_window_handles}
@@ -112,14 +112,14 @@ a newly created window is returned by @ref glfwCreateWindow (formerly
 [opaque](https://en.wikipedia.org/wiki/Opaque_data_type) type @ref GLFWwindow.
 
 @par Old syntax
-@code{.c}
+```c
 glfwSetWindowTitle("New Window Title");
-@endcode
+```
 
 @par New syntax
-@code{.c}
+```c
 glfwSetWindowTitle(window, "New Window Title");
-@endcode
+```
 
 
 ### Explicit monitor selection {#moving_monitor}
@@ -132,14 +132,14 @@ GLFW 2 would have selected, but there are many other
 [opaque](https://en.wikipedia.org/wiki/Opaque_data_type) type @ref GLFWmonitor.
 
 @par Old basic full screen
-@code{.c}
+```c
 glfwOpenWindow(640, 480, 8, 8, 8, 0, 24, 0, GLFW_FULLSCREEN);
-@endcode
+```
 
 @par New basic full screen
-@code{.c}
+```c
 window = glfwCreateWindow(640, 480, "My Window", glfwGetPrimaryMonitor(), NULL);
-@endcode
+```
 
 @note The framebuffer bit depth parameters of `glfwOpenWindow` have been turned
 into [window hints](@ref window_hints), but as they have been given
@@ -154,17 +154,17 @@ buffer swap, which acts on a single window, the event processing functions act
 on all windows at once.
 
 @par Old basic main loop
-@code{.c}
+```c
 while (...)
 {
     // Process input
     // Render output
     glfwSwapBuffers();
 }
-@endcode
+```
 
 @par New basic main loop
-@code{.c}
+```c
 while (...)
 {
     // Process input
@@ -172,7 +172,7 @@ while (...)
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
-@endcode
+```
 
 
 ### Explicit context management {#moving_context}
@@ -196,16 +196,16 @@ glfwGetFramebufferSize function.  A framebuffer size callback has also been
 added, which can be set with @ref glfwSetFramebufferSizeCallback.
 
 @par Old basic viewport setup
-@code{.c}
+```c
 glfwGetWindowSize(&width, &height);
 glViewport(0, 0, width, height);
-@endcode
+```
 
 @par New basic viewport setup
-@code{.c}
+```c
 glfwGetFramebufferSize(window, &width, &height);
 glViewport(0, 0, width, height);
-@endcode
+```
 
 
 ### Window closing changes {#moving_window_close}
@@ -225,20 +225,20 @@ You can query the close flag at any time with @ref glfwWindowShouldClose and set
 it at any time with @ref glfwSetWindowShouldClose.
 
 @par Old basic main loop
-@code{.c}
+```c
 while (glfwGetWindowParam(GLFW_OPENED))
 {
     ...
 }
-@endcode
+```
 
 @par New basic main loop
-@code{.c}
+```c
 while (!glfwWindowShouldClose(window))
 {
     ...
 }
-@endcode
+```
 
 The close callback no longer returns a value.  Instead, it is called after the
 close flag has been set, so it can optionally override its value, before
@@ -246,14 +246,14 @@ event processing completes.  You may however not call @ref glfwDestroyWindow
 from the close callback (or any other window related callback).
 
 @par Old syntax
-@code{.c}
+```c
 int GLFWCALL window_close_callback(void);
-@endcode
+```
 
 @par New syntax
-@code{.c}
+```c
 void window_close_callback(GLFWwindow* window);
-@endcode
+```
 
 @note GLFW never clears the close flag to `GLFW_FALSE`, meaning you can use it
 for other reasons to close the window as well, for example the user choosing
@@ -287,14 +287,14 @@ produce characters with diacritical marks. Even the Swedish keyboard layout
 requires this for uncommon cases like ü.
 
 @par Old syntax
-@code{.c}
+```c
 void GLFWCALL character_callback(int character, int action);
-@endcode
+```
 
 @par New syntax
-@code{.c}
+```c
 void character_callback(GLFWwindow* window, int character);
-@endcode
+```
 
 
 ### Cursor position changes {#moving_cursorpos}
@@ -322,14 +322,14 @@ two-dimensional floating point scroll offsets.  This allows you to receive
 precise scroll data from for example modern touchpads.
 
 @par Old syntax
-@code{.c}
+```c
 void GLFWCALL mouse_wheel_callback(int position);
-@endcode
+```
 
 @par New syntax
-@code{.c}
+```c
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-@endcode
+```
 
 @par Removed functions
 `glfwGetMouseWheel`
@@ -435,15 +435,15 @@ has been moved to GLFW 3, you can request that the GLFW header includes it by
 defining @ref GLFW_INCLUDE_GLU before the inclusion of the GLFW header.
 
 @par Old syntax
-@code{.c}
+```c
 #include <GL/glfw.h>
-@endcode
+```
 
 @par New syntax
-@code{.c}
+```c
 #define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
-@endcode
+```
 
 There are many libraries that offer replacements for the functionality offered
 by GLU.  For the matrix helper functions, see math libraries like

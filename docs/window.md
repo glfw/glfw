@@ -30,9 +30,9 @@ A window and its OpenGL or OpenGL ES context are created with @ref
 glfwCreateWindow, which returns a handle to the created window object.  For
 example, this creates a 640 by 480 windowed mode window:
 
-@code{.c}
+```c
 GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
-@endcode
+```
 
 If window creation fails, `NULL` will be returned, so it is necessary to check
 the return value.
@@ -48,9 +48,9 @@ To create a full screen window, you need to specify which monitor the window
 should use.  In most cases, the user's primary monitor is a good choice.
 For more information about retrieving monitors, see @ref monitor_monitors.
 
-@code{.c}
+```c
 GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", glfwGetPrimaryMonitor(), NULL);
-@endcode
+```
 
 Full screen windows cover the entire display area of a monitor, have no border
 or decorations.
@@ -99,7 +99,7 @@ switching much smoother.  This is sometimes called _windowed full screen_ or
 _borderless full screen_ window and counts as a full screen window.  To create
 such a window, request the current video mode.
 
-@code{.c}
+```c
 const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
 glfwWindowHint(GLFW_RED_BITS, mode->redBits);
@@ -108,15 +108,15 @@ glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
 GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "My Title", monitor, NULL);
-@endcode
+```
 
 This also works for windowed mode windows that are made full screen.
 
-@code{.c}
+```c
 const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
 glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-@endcode
+```
 
 Note that @ref glfwGetVideoMode returns the _current_ video mode of a monitor,
 so if you already have a full screen window on that monitor that you want to
@@ -127,9 +127,9 @@ make windowed full screen, you need to have saved the desktop resolution before.
 
 When a window is no longer needed, destroy it with @ref glfwDestroyWindow.
 
-@code{.c}
+```c
 glfwDestroyWindow(window);
-@endcode
+```
 
 Window destruction always succeeds.  Before the actual destruction, all
 callbacks are removed so no further events will be delivered for the window.
@@ -596,7 +596,7 @@ The current state of the close flag is returned by @ref glfwWindowShouldClose
 and can be set or cleared directly with @ref glfwSetWindowShouldClose.  A common
 pattern is to use the close flag as a main loop condition.
 
-@code{.c}
+```c
 while (!glfwWindowShouldClose(window))
 {
     render(window);
@@ -604,26 +604,26 @@ while (!glfwWindowShouldClose(window))
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
-@endcode
+```
 
 If you wish to be notified when the user attempts to close a window, set a close
 callback.
 
-@code{.c}
+```c
 glfwSetWindowCloseCallback(window, window_close_callback);
-@endcode
+```
 
 The callback function is called directly _after_ the close flag has been set.
 It can be used for example to filter close requests and clear the close flag
 again unless certain conditions are met.
 
-@code{.c}
+```c
 void window_close_callback(GLFWwindow* window)
 {
     if (!time_to_close)
         glfwSetWindowShouldClose(window, GLFW_FALSE);
 }
-@endcode
+```
 
 
 ### Window size {#window_size}
@@ -633,9 +633,9 @@ mode windows, this sets the size, in
 [screen coordinates](@ref coordinate_systems) of the _content area_ or _content
 area_ of the window.  The window system may impose limits on window size.
 
-@code{.c}
+```c
 glfwSetWindowSize(window, 640, 480);
-@endcode
+```
 
 For full screen windows, the specified size becomes the new resolution of the
 window's desired video mode.  The video mode most closely matching the new
@@ -645,26 +645,26 @@ resolution of the set video mode.
 If you wish to be notified when a window is resized, whether by the user, the
 system or your own code, set a size callback.
 
-@code{.c}
+```c
 glfwSetWindowSizeCallback(window, window_size_callback);
-@endcode
+```
 
 The callback function receives the new size, in screen coordinates, of the
 content area of the window when the window is resized.
 
-@code{.c}
+```c
 void window_size_callback(GLFWwindow* window, int width, int height)
 {
 }
-@endcode
+```
 
 There is also @ref glfwGetWindowSize for directly retrieving the current size of
 a window.
 
-@code{.c}
+```c
 int width, height;
 glfwGetWindowSize(window, &width, &height);
-@endcode
+```
 
 @note Do not pass the window size to `glViewport` or other pixel-based OpenGL
 calls.  The window size is in screen coordinates, not pixels.  Use the
@@ -675,10 +675,10 @@ The above functions work with the size of the content area, but decorated
 windows typically have title bars and window frames around this rectangle.  You
 can retrieve the extents of these with @ref glfwGetWindowFrameSize.
 
-@code{.c}
+```c
 int left, top, right, bottom;
 glfwGetWindowFrameSize(window, &left, &top, &right, &bottom);
-@endcode
+```
 
 The returned values are the distances, in screen coordinates, from the edges of
 the content area to the corresponding edges of the full window.  As they are
@@ -696,28 +696,28 @@ pixels, of the framebuffer of a window.
 If you wish to be notified when the framebuffer of a window is resized, whether
 by the user or the system, set a size callback.
 
-@code{.c}
+```c
 glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-@endcode
+```
 
 The callback function receives the new size of the framebuffer when it is
 resized, which can for example be used to update the OpenGL viewport.
 
-@code{.c}
+```c
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
-@endcode
+```
 
 There is also @ref glfwGetFramebufferSize for directly retrieving the current
 size of the framebuffer of a window.
 
-@code{.c}
+```c
 int width, height;
 glfwGetFramebufferSize(window, &width, &height);
 glViewport(0, 0, width, height);
-@endcode
+```
 
 The size of a framebuffer may change independently of the size of a window, for
 example if the window is dragged between a regular monitor and a high-DPI one.
@@ -728,10 +728,10 @@ example if the window is dragged between a regular monitor and a high-DPI one.
 The content scale for a window can be retrieved with @ref
 glfwGetWindowContentScale.
 
-@code{.c}
+```c
 float xscale, yscale;
 glfwGetWindowContentScale(window, &xscale, &yscale);
-@endcode
+```
 
 The content scale is the ratio between the current DPI and the platform's
 default DPI.  This is especially important for text and any UI elements.  If the
@@ -748,18 +748,18 @@ If you wish to be notified when the content scale of a window changes, whether
 because of a system setting change or because it was moved to a monitor with
 a different scale, set a content scale callback.
 
-@code{.c}
+```c
 glfwSetWindowContentScaleCallback(window, window_content_scale_callback);
-@endcode
+```
 
 The callback function receives the new content scale of the window.
 
-@code{.c}
+```c
 void window_content_scale_callback(GLFWwindow* window, float xscale, float yscale)
 {
     set_interface_scale(xscale, yscale);
 }
-@endcode
+```
 
 On platforms where pixels and screen coordinates always map 1:1, the window
 will need to be resized to appear the same size when it is moved to a monitor
@@ -775,16 +775,16 @@ be enforced with @ref glfwSetWindowSizeLimits.  The user may resize the window
 to any size and aspect ratio within the specified limits, unless the aspect
 ratio is also set.
 
-@code{.c}
+```c
 glfwSetWindowSizeLimits(window, 200, 200, 400, 400);
-@endcode
+```
 
 To specify only a minimum size or only a maximum one, set the other pair to
 `GLFW_DONT_CARE`.
 
-@code{.c}
+```c
 glfwSetWindowSizeLimits(window, 640, 480, GLFW_DONT_CARE, GLFW_DONT_CARE);
-@endcode
+```
 
 To disable size limits for a window, set them all to `GLFW_DONT_CARE`.
 
@@ -793,19 +793,19 @@ with @ref glfwSetWindowAspectRatio.  The user may resize the window freely
 unless size limits are also set, but the size will be constrained to maintain
 the aspect ratio.
 
-@code{.c}
+```c
 glfwSetWindowAspectRatio(window, 16, 9);
-@endcode
+```
 
 The aspect ratio is specified as a numerator and denominator, corresponding to
 the width and height, respectively.  If you want a window to maintain its
 current aspect ratio, use its current size as the ratio.
 
-@code{.c}
+```c
 int width, height;
 glfwGetWindowSize(window, &width, &height);
 glfwSetWindowAspectRatio(window, width, height);
-@endcode
+```
 
 To disable the aspect ratio limit for a window, set both terms to
 `GLFW_DONT_CARE`.
@@ -822,10 +822,10 @@ This is most often the right choice.  If you need to create a window at
 a specific position, you can set the desired position with the @ref
 GLFW_POSITION_X and @ref GLFW_POSITION_Y window hints.
 
-@code{.c}
+```c
 glfwWindowHint(GLFW_POSITION_X, 70);
 glfwWindowHint(GLFW_POSITION_Y, 83);
-@endcode
+```
 
 To restore the previous behavior, set these hints to `GLFW_ANY_POSITION`.
 
@@ -834,33 +834,33 @@ glfwSetWindowPos.  This moves the window so that the upper-left corner of its
 content area has the specified [screen coordinates](@ref coordinate_systems).
 The window system may put limitations on window placement.
 
-@code{.c}
+```c
 glfwSetWindowPos(window, 100, 100);
-@endcode
+```
 
 If you wish to be notified when a window is moved, whether by the user, the
 system or your own code, set a position callback.
 
-@code{.c}
+```c
 glfwSetWindowPosCallback(window, window_pos_callback);
-@endcode
+```
 
 The callback function receives the new position, in screen coordinates, of the
 upper-left corner of the content area when the window is moved.
 
-@code{.c}
+```c
 void window_pos_callback(GLFWwindow* window, int xpos, int ypos)
 {
 }
-@endcode
+```
 
 There is also @ref glfwGetWindowPos for directly retrieving the current position
 of the content area of the window.
 
-@code{.c}
+```c
 int xpos, ypos;
 glfwGetWindowPos(window, &xpos, &ypos);
-@endcode
+```
 
 
 ### Window title {#window_title}
@@ -869,9 +869,9 @@ All GLFW windows have a title, although undecorated or full screen windows may
 not display it or only display it in a task bar or similar interface.  You can
 set a UTF-8 encoded window title with @ref glfwSetWindowTitle.
 
-@code{.c}
+```c
 glfwSetWindowTitle(window, "My Window");
-@endcode
+```
 
 The specified string is copied before the function returns, so there is no need
 to keep it around.
@@ -879,15 +879,15 @@ to keep it around.
 As long as your source file is encoded as UTF-8, you can use any Unicode
 characters directly in the source.
 
-@code{.c}
+```c
 glfwSetWindowTitle(window, "ラストエグザイル");
-@endcode
+```
 
 If you are using C++11 or C11, you can use a UTF-8 string literal.
 
-@code{.c}
+```c
 glfwSetWindowTitle(window, u8"This is always a UTF-8 string");
-@endcode
+```
 
 
 ### Window icon {#window_icon}
@@ -895,13 +895,13 @@ glfwSetWindowTitle(window, u8"This is always a UTF-8 string");
 Decorated windows have icons on some platforms.  You can set this icon by
 specifying a list of candidate images with @ref glfwSetWindowIcon.
 
-@code{.c}
+```c
 GLFWimage images[2];
 images[0] = load_icon("my_icon.png");
 images[1] = load_icon("my_icon_small.png");
 
 glfwSetWindowIcon(window, 2, images);
-@endcode
+```
 
 The image data is 32-bit, little-endian, non-premultiplied RGBA, i.e. eight bits
 per channel with the red channel first.  The pixels are arranged canonically as
@@ -909,9 +909,9 @@ sequential rows, starting from the top-left corner.
 
 To revert to the default window icon, pass in an empty image array.
 
-@code{.c}
+```c
 glfwSetWindowIcon(window, 0, NULL);
-@endcode
+```
 
 
 ### Window monitor {#window_monitor}
@@ -919,9 +919,9 @@ glfwSetWindowIcon(window, 0, NULL);
 Full screen windows are associated with a specific monitor.  You can get the
 handle for this monitor with @ref glfwGetWindowMonitor.
 
-@code{.c}
+```c
 GLFWmonitor* monitor = glfwGetWindowMonitor(window);
-@endcode
+```
 
 This monitor handle is one of those returned by @ref glfwGetMonitors.
 
@@ -933,18 +933,18 @@ with @ref glfwSetWindowMonitor.  When making a window full screen on the same or
 on a different monitor, specify the desired monitor, resolution and refresh
 rate.  The position arguments are ignored.
 
-@code{.c}
+```c
 const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 
 glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-@endcode
+```
 
 When making the window windowed, specify the desired position and size.  The
 refresh rate argument is ignored.
 
-@code{.c}
+```c
 glfwSetWindowMonitor(window, NULL, xpos, ypos, width, height, 0);
-@endcode
+```
 
 This restores any previous window settings such as whether it is decorated,
 floating, resizable, has size or aspect ratio limits, etc..  To restore a window
@@ -956,9 +956,9 @@ before making it full screen and then pass them in as above.
 
 Windows can be iconified (i.e. minimized) with @ref glfwIconifyWindow.
 
-@code{.c}
+```c
 glfwIconifyWindow(window);
-@endcode
+```
 
 When a full screen window is iconified, the original video mode of its monitor
 is restored until the user or application restores the window.
@@ -966,9 +966,9 @@ is restored until the user or application restores the window.
 Iconified windows can be restored with @ref glfwRestoreWindow.  This function
 also restores windows from maximization.
 
-@code{.c}
+```c
 glfwRestoreWindow(window);
-@endcode
+```
 
 When a full screen window is restored, the desired video mode is restored to its
 monitor as well.
@@ -976,13 +976,13 @@ monitor as well.
 If you wish to be notified when a window is iconified or restored, whether by
 the user, system or your own code, set an iconify callback.
 
-@code{.c}
+```c
 glfwSetWindowIconifyCallback(window, window_iconify_callback);
-@endcode
+```
 
 The callback function receives changes in the iconification state of the window.
 
-@code{.c}
+```c
 void window_iconify_callback(GLFWwindow* window, int iconified)
 {
     if (iconified)
@@ -994,22 +994,22 @@ void window_iconify_callback(GLFWwindow* window, int iconified)
         // The window was restored
     }
 }
-@endcode
+```
 
 You can also get the current iconification state with @ref glfwGetWindowAttrib.
 
-@code{.c}
+```c
 int iconified = glfwGetWindowAttrib(window, GLFW_ICONIFIED);
-@endcode
+```
 
 
 ### Window maximization {#window_maximize}
 
 Windows can be maximized (i.e. zoomed) with @ref glfwMaximizeWindow.
 
-@code{.c}
+```c
 glfwMaximizeWindow(window);
-@endcode
+```
 
 Full screen windows cannot be maximized and passing a full screen window to this
 function does nothing.
@@ -1017,20 +1017,20 @@ function does nothing.
 Maximized windows can be restored with @ref glfwRestoreWindow.  This function
 also restores windows from iconification.
 
-@code{.c}
+```c
 glfwRestoreWindow(window);
-@endcode
+```
 
 If you wish to be notified when a window is maximized or restored, whether by
 the user, system or your own code, set a maximize callback.
 
-@code{.c}
+```c
 glfwSetWindowMaximizeCallback(window, window_maximize_callback);
-@endcode
+```
 
 The callback function receives changes in the maximization state of the window.
 
-@code{.c}
+```c
 void window_maximize_callback(GLFWwindow* window, int maximized)
 {
     if (maximized)
@@ -1042,30 +1042,30 @@ void window_maximize_callback(GLFWwindow* window, int maximized)
         // The window was restored
     }
 }
-@endcode
+```
 
 You can also get the current maximization state with @ref glfwGetWindowAttrib.
 
-@code{.c}
+```c
 int maximized = glfwGetWindowAttrib(window, GLFW_MAXIMIZED);
-@endcode
+```
 
 By default, newly created windows are not maximized.  You can change this
 behavior by setting the [GLFW_MAXIMIZED](@ref GLFW_MAXIMIZED_hint) window hint
 before creating the window.
 
-@code{.c}
+```c
 glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
-@endcode
+```
 
 
 ### Window visibility {#window_hide}
 
 Windowed mode windows can be hidden with @ref glfwHideWindow.
 
-@code{.c}
+```c
 glfwHideWindow(window);
-@endcode
+```
 
 This makes the window completely invisible to the user, including removing it
 from the task bar, dock or window list.  Full screen windows cannot be hidden
@@ -1073,9 +1073,9 @@ and calling @ref glfwHideWindow on a full screen window does nothing.
 
 Hidden windows can be shown with @ref glfwShowWindow.
 
-@code{.c}
+```c
 glfwShowWindow(window);
-@endcode
+```
 
 By default, this function will also set the input focus to that window. Set
 the [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_hint) window hint to change
@@ -1084,17 +1084,17 @@ existing window with @ref glfwSetWindowAttrib.
 
 You can also get the current visibility state with @ref glfwGetWindowAttrib.
 
-@code{.c}
+```c
 int visible = glfwGetWindowAttrib(window, GLFW_VISIBLE);
-@endcode
+```
 
 By default, newly created windows are visible.  You can change this behavior by
 setting the [GLFW_VISIBLE](@ref GLFW_VISIBLE_hint) window hint before creating
 the window.
 
-@code{.c}
+```c
 glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-@endcode
+```
 
 Windows created hidden are completely invisible to the user until shown.  This
 can be useful if you need to set up your window further before showing it, for
@@ -1106,9 +1106,9 @@ example moving it to a specific location.
 Windows can be given input focus and brought to the front with @ref
 glfwFocusWindow.
 
-@code{.c}
+```c
 glfwFocusWindow(window);
-@endcode
+```
 
 Keep in mind that it can be very disruptive to the user when a window is forced
 to the top.  For a less disruptive way of getting the user's attention, see
@@ -1117,13 +1117,13 @@ to the top.  For a less disruptive way of getting the user's attention, see
 If you wish to be notified when a window gains or loses input focus, whether by
 the user, system or your own code, set a focus callback.
 
-@code{.c}
+```c
 glfwSetWindowFocusCallback(window, window_focus_callback);
-@endcode
+```
 
 The callback function receives changes in the input focus state of the window.
 
-@code{.c}
+```c
 void window_focus_callback(GLFWwindow* window, int focused)
 {
     if (focused)
@@ -1135,21 +1135,21 @@ void window_focus_callback(GLFWwindow* window, int focused)
         // The window lost input focus
     }
 }
-@endcode
+```
 
 You can also get the current input focus state with @ref glfwGetWindowAttrib.
 
-@code{.c}
+```c
 int focused = glfwGetWindowAttrib(window, GLFW_FOCUSED);
-@endcode
+```
 
 By default, newly created windows are given input focus.  You can change this
 behavior by setting the [GLFW_FOCUSED](@ref GLFW_FOCUSED_hint) window hint
 before creating the window.
 
-@code{.c}
+```c
 glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
-@endcode
+```
 
 
 ### Window attention request {#window_attention}
@@ -1157,9 +1157,9 @@ glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
 If you wish to notify the user of an event without interrupting, you can request
 attention with @ref glfwRequestWindowAttention.
 
-@code{.c}
+```c
 glfwRequestWindowAttention(window);
-@endcode
+```
 
 The system will highlight the specified window, or on platforms where this is
 not supported, the application as a whole.  Once the user has given it
@@ -1171,20 +1171,20 @@ attention, the system will automatically end the request.
 If you wish to be notified when the contents of a window is damaged and needs
 to be refreshed, set a window refresh callback.
 
-@code{.c}
+```c
 glfwSetWindowRefreshCallback(m_handle, window_refresh_callback);
-@endcode
+```
 
 The callback function is called when the contents of the window needs to be
 refreshed.
 
-@code{.c}
+```c
 void window_refresh_callback(GLFWwindow* window)
 {
     draw_editor_ui(window);
     glfwSwapBuffers(window);
 }
-@endcode
+```
 
 @note On compositing window systems such as Aero, Compiz or Aqua, where the
 window contents are saved off-screen, this callback might only be called when
@@ -1205,9 +1205,9 @@ Window framebuffers can be made transparent on a per-pixel per-frame basis with
 the [GLFW_TRANSPARENT_FRAMEBUFFER](@ref GLFW_TRANSPARENT_FRAMEBUFFER_hint)
 window hint.
 
-@code{.c}
+```c
 glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-@endcode
+```
 
 If supported by the system, the window content area will be composited with the
 background using the framebuffer per-pixel alpha channel.  This requires desktop
@@ -1218,21 +1218,21 @@ with the
 [GLFW_TRANSPARENT_FRAMEBUFFER](@ref GLFW_TRANSPARENT_FRAMEBUFFER_attrib)
 window attribute.
 
-@code{.c}
+```c
 if (glfwGetWindowAttrib(window, GLFW_TRANSPARENT_FRAMEBUFFER))
 {
     // window framebuffer is currently transparent
 }
-@endcode
+```
 
 GLFW comes with an example that enabled framebuffer transparency called `gears`.
 
 The opacity of the whole window, including any decorations, can be set with @ref
 glfwSetWindowOpacity.
 
-@code{.c}
+```c
 glfwSetWindowOpacity(window, 0.5f);
-@endcode
+```
 
 The opacity (or alpha) value is a positive finite number between zero and one,
 where 0 (zero) is fully transparent and 1 (one) is fully opaque.  The initial
@@ -1240,9 +1240,9 @@ opacity value for newly created windows is 1.
 
 The current opacity of a window can be queried with @ref glfwGetWindowOpacity.
 
-@code{.c}
+```c
 float opacity = glfwGetWindowOpacity(window);
-@endcode
+```
 
 If the system does not support whole window transparency, this function always
 returns one.
@@ -1263,12 +1263,12 @@ interaction, (e.g. whether it has input focus), while others reflect inherent
 properties of the window (e.g. what kind of border it has).  Some are related to
 the window and others to its OpenGL or OpenGL ES context.
 
-@code{.c}
+```c
 if (glfwGetWindowAttrib(window, GLFW_FOCUSED))
 {
     // window has input focus
 }
-@endcode
+```
 
 The [GLFW_DECORATED](@ref GLFW_DECORATED_attrib),
 [GLFW_RESIZABLE](@ref GLFW_RESIZABLE_attrib),
@@ -1277,9 +1277,9 @@ The [GLFW_DECORATED](@ref GLFW_DECORATED_attrib),
 [GLFW_FOCUS_ON_SHOW](@ref GLFW_FOCUS_ON_SHOW_attrib) window attributes can be
 changed with @ref glfwSetWindowAttrib.
 
-@code{.c}
+```c
 glfwSetWindowAttrib(window, GLFW_RESIZABLE, GLFW_FALSE);
-@endcode
+```
 
 
 
@@ -1463,18 +1463,18 @@ When the entire frame has been rendered, it is time to swap the back and the
 front buffers in order to display what has been rendered and begin rendering
 a new frame.  This is done with @ref glfwSwapBuffers.
 
-@code{.c}
+```c
 glfwSwapBuffers(window);
-@endcode
+```
 
 Sometimes it can be useful to select when the buffer swap will occur.  With the
 function @ref glfwSwapInterval it is possible to select the minimum number of
 monitor refreshes the driver should wait from the time @ref glfwSwapBuffers was
 called before swapping the buffers:
 
-@code{.c}
+```c
 glfwSwapInterval(1);
-@endcode
+```
 
 If the interval is zero, the swap will take place immediately when @ref
 glfwSwapBuffers is called without waiting for a refresh.  Otherwise at least

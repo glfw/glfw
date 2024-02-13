@@ -55,27 +55,27 @@ On Debian and derivatives like Ubuntu and Linux Mint you will need the `libwayla
 and `libxkbcommon-dev` packages to compile for Wayland and the `xorg-dev` meta-package to
 compile for X11.  These will pull in all other dependencies.
 
-@code{.sh}
+```sh
 sudo apt install libwayland-dev libxkbcommon-dev xorg-dev
-@endcode
+```
 
 On Fedora and derivatives like Red Hat you will need the `wayland-devel` and
 `libxkbcommon-devel` packages to compile for Wayland and the `libXcursor-devel`,
 `libXi-devel`, `libXinerama-devel` and `libXrandr-devel` packages to compile for X11.
 These will pull in all other dependencies.
 
-@code{.sh}
+```sh
 sudo dnf install wayland-devel libxkbcommon-devel libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel
-@endcode
+```
 
 On FreeBSD you will need the `wayland`, `libxkbcommon` and `evdev-proto` packages to
 compile for Wayland.  The X11 headers are installed along the end-user X11 packages, so if
 you have an X server running you should have the headers as well.  If not, install the
 `xorgproto` package to compile for X11.
 
-@code{.sh}
+```sh
 pkg install wayland libxkbcommon evdev-proto xorgproto
-@endcode
+```
 
 On Cygwin Wayland is not supported but you will need the `libXcursor-devel`,
 `libXi-devel`, `libXinerama-devel`, `libXrandr-devel` and `libXrender-devel` packages to
@@ -131,33 +131,33 @@ To make a build directory, pass the source and build directories to the `cmake`
 command.  These can be relative or absolute paths.  The build directory is
 created if it doesn't already exist.
 
-@code{.sh}
+```sh
 cmake -S path/to/glfw -B path/to/build
-@endcode
+```
 
 It is common to name the build directory `build` and place it in the root of the
 source tree when only planning to build a single configuration.
 
-@code{.sh}
+```sh
 cd path/to/glfw
 cmake -S . -B build
-@endcode
+```
 
 Without other flags these will generate Visual Studio project files on Windows
 and makefiles on other platforms.  You can choose other targets using the `-G`
 flag.
 
-@code{.sh}
+```sh
 cmake -S path/to/glfw -B path/to/build -G Xcode
-@endcode
+```
 
 By default, GLFW will use Wayland and X11 on Linux and other Unix-like systems other than
 macOS.  To disable support for one or both of these, set the @ref GLFW_BUILD_WAYLAND
 and/or @ref GLFW_BUILD_X11 CMake option.
 
-@code{.sh}
+```sh
 cmake -S path/to/glfw -B path/to/build -D GLFW_BUILD_X11=0
-@endcode
+```
 
 Once you have generated the project files or makefiles for your chosen
 development environment, move on to @ref compile_compile.
@@ -174,24 +174,24 @@ With Visual Studio open `GLFW.sln` and use the Build menu.  With Xcode open
 
 With Linux, macOS and other forms of Unix, run `make`.
 
-@code{.sh}
+```sh
 cd path/to/build
 make
-@endcode
+```
 
 With MinGW, it is `mingw32-make`.
 
-@code{.sh}
+```sh
 cd path/to/build
 mingw32-make
-@endcode
+```
 
 Any CMake build directory can also be built with the `cmake` command and the
 `--build` flag.
 
-@code{.sh}
+```sh
 cmake --build path/to/build
-@endcode
+```
 
 This will run the platform specific build tool the directory was generated for.
 
@@ -214,9 +214,9 @@ distributions based on Debian GNU/Linux have this tool in a separate
 Finally, if you don't want to use any GUI, you can set options from the `cmake`
 command-line with the `-D` flag.
 
-@code{.sh}
+```sh
 cmake -S path/to/glfw -B path/to/build -D BUILD_SHARED_LIBS=ON
-@endcode
+```
 
 
 ### Shared CMake options {#compile_options_shared}
@@ -309,9 +309,9 @@ cross-compilation of Windows binaries.  To use these files you set the
 `CMAKE_TOOLCHAIN_FILE` CMake variable with the `-D` flag add an option when
 configuring and generating the build files.
 
-@code{.sh}
+```sh
 cmake -S path/to/glfw -B path/to/build -D CMAKE_TOOLCHAIN_FILE=path/to/file
-@endcode
+```
 
 The exact toolchain file to use depends on the prefix used by the MinGW or
 MinGW-w64 binaries on your system.  You can usually see this in the /usr
@@ -319,9 +319,9 @@ directory.  For example, both the Ubuntu and Cygwin MinGW-w64 packages have
 `/usr/x86_64-w64-mingw32` for the 64-bit compilers, so the correct invocation
 would be:
 
-@code{.sh}
+```sh
 cmake -S path/to/glfw -B path/to/build -D CMAKE_TOOLCHAIN_FILE=CMake/x86_64-w64-mingw32.cmake
-@endcode
+```
 
 The path to the toolchain file is relative to the path to the GLFW source tree
 passed to the `-S` flag, not to the current directory.

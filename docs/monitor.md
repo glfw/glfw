@@ -40,17 +40,17 @@ The primary monitor is returned by @ref glfwGetPrimaryMonitor.  It is the user's
 preferred monitor and is usually the one with global UI elements like task bar
 or menu bar.
 
-@code{.c}
+```c
 GLFWmonitor* primary = glfwGetPrimaryMonitor();
-@endcode
+```
 
 You can retrieve all currently connected monitors with @ref glfwGetMonitors.
 See the reference documentation for the lifetime of the returned array.
 
-@code{.c}
+```c
 int count;
 GLFWmonitor** monitors = glfwGetMonitors(&count);
-@endcode
+```
 
 The primary monitor is always the first monitor in the returned array, but other
 monitors may be moved to a different index when a monitor is connected or
@@ -62,14 +62,14 @@ disconnected.
 If you wish to be notified when a monitor is connected or disconnected, set
 a monitor callback.
 
-@code{.c}
+```c
 glfwSetMonitorCallback(monitor_callback);
-@endcode
+```
 
 The callback function receives the handle for the monitor that has been
 connected or disconnected and the event that occurred.
 
-@code{.c}
+```c
 void monitor_callback(GLFWmonitor* monitor, int event)
 {
     if (event == GLFW_CONNECTED)
@@ -81,7 +81,7 @@ void monitor_callback(GLFWmonitor* monitor, int event)
         // The monitor was disconnected
     }
 }
-@endcode
+```
 
 If a monitor is disconnected, all windows that are full screen on it will be
 switched to windowed mode before the callback is called.  Only @ref
@@ -107,17 +107,17 @@ Video modes are represented as @ref GLFWvidmode structures.  You can get an
 array of the video modes supported by a monitor with @ref glfwGetVideoModes.
 See the reference documentation for the lifetime of the returned array.
 
-@code{.c}
+```c
 int count;
 GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
-@endcode
+```
 
 To get the current video mode of a monitor call @ref glfwGetVideoMode.  See the
 reference documentation for the lifetime of the returned pointer.
 
-@code{.c}
+```c
 const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-@endcode
+```
 
 The resolution of a video mode is specified in
 [screen coordinates](@ref coordinate_systems), not pixels.
@@ -130,10 +130,10 @@ retrieved with @ref glfwGetMonitorPhysicalSize.  This has no relation to its
 current _resolution_, i.e. the width and height of its current
 [video mode](@ref monitor_modes).
 
-@code{.c}
+```c
 int width_mm, height_mm;
 glfwGetMonitorPhysicalSize(monitor, &width_mm, &height_mm);
-@endcode
+```
 
 While this can be used to calculate the raw DPI of a monitor, this is often not
 useful.  Instead, use the [monitor content scale](@ref monitor_scale) and
@@ -145,10 +145,10 @@ useful.  Instead, use the [monitor content scale](@ref monitor_scale) and
 The content scale for a monitor can be retrieved with @ref
 glfwGetMonitorContentScale.
 
-@code{.c}
+```c
 float xscale, yscale;
 glfwGetMonitorContentScale(monitor, &xscale, &yscale);
-@endcode
+```
 
 The content scale is the ratio between the current DPI and the platform's
 default DPI.  This is especially important for text and any UI elements.  If the
@@ -168,10 +168,10 @@ The position of the monitor on the virtual desktop, in
 [screen coordinates](@ref coordinate_systems), can be retrieved with @ref
 glfwGetMonitorPos.
 
-@code{.c}
+```c
 int xpos, ypos;
 glfwGetMonitorPos(monitor, &xpos, &ypos);
-@endcode
+```
 
 
 ### Work area {#monitor_workarea}
@@ -180,10 +180,10 @@ The area of a monitor not occupied by global task bars or menu bars is the work
 area.  This is specified in [screen coordinates](@ref coordinate_systems) and
 can be retrieved with @ref glfwGetMonitorWorkarea.
 
-@code{.c}
+```c
 int xpos, ypos, width, height;
 glfwGetMonitorWorkarea(monitor, &xpos, &ypos, &width, &height);
-@endcode
+```
 
 
 ### Human-readable name {#monitor_name}
@@ -192,9 +192,9 @@ The human-readable, UTF-8 encoded name of a monitor is returned by @ref
 glfwGetMonitorName.  See the reference documentation for the lifetime of the
 returned string.
 
-@code{.c}
+```c
 const char* name = glfwGetMonitorName(monitor);
-@endcode
+```
 
 Monitor names are not guaranteed to be unique.  Two monitors of the same model
 and make may have the same name.  Only the monitor handle is guaranteed to be
@@ -217,7 +217,7 @@ The initial value of the pointer is `NULL`.
 The gamma ramp of a monitor can be set with @ref glfwSetGammaRamp, which accepts
 a monitor handle and a pointer to a @ref GLFWgammaramp structure.
 
-@code{.c}
+```c
 GLFWgammaramp ramp;
 unsigned short red[256], green[256], blue[256];
 
@@ -232,7 +232,7 @@ for (i = 0;  i < ramp.size;  i++)
 }
 
 glfwSetGammaRamp(monitor, &ramp);
-@endcode
+```
 
 The gamma ramp data is copied before the function returns, so there is no need
 to keep it around once the ramp has been set.
@@ -243,17 +243,17 @@ ramp for that monitor.
 The current gamma ramp for a monitor is returned by @ref glfwGetGammaRamp.  See
 the reference documentation for the lifetime of the returned structure.
 
-@code{.c}
+```c
 const GLFWgammaramp* ramp = glfwGetGammaRamp(monitor);
-@endcode
+```
 
 If you wish to set a regular gamma ramp, you can have GLFW calculate it for you
 from the desired exponent with @ref glfwSetGamma, which in turn calls @ref
 glfwSetGammaRamp with the resulting ramp.
 
-@code{.c}
+```c
 glfwSetGamma(monitor, 1.0);
-@endcode
+```
 
 To experiment with gamma correction via the @ref glfwSetGamma function, run the
 `gamma` test program.

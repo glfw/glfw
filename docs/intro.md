@@ -46,12 +46,12 @@ GLFW_NOT_INITIALIZED error.
 The library is initialized with @ref glfwInit, which returns `GLFW_FALSE` if an
 error occurred.
 
-@code{.c}
+```c
 if (!glfwInit())
 {
     // Handle initialization failure
 }
-@endcode
+```
 
 If any part of initialization fails, any parts that succeeded are terminated as
 if @ref glfwTerminate had been called.  The library only needs to be initialized
@@ -74,9 +74,9 @@ hint.
 Initialization hints are set before @ref glfwInit and affect how the library
 behaves until termination.  Hints are set with @ref glfwInitHint.
 
-@code{.c}
+```c
 glfwInitHint(GLFW_JOYSTICK_HAT_BUTTONS, GLFW_FALSE);
-@endcode
+```
 
 The values you set hints to are never reset by GLFW, but they only take effect
 during initialization.  Once GLFW has been initialized, any values you set will
@@ -174,32 +174,32 @@ default, this is set to @ref GLFW_ANY_PLATFORM, which will look for supported wi
 systems in order of priority and select the first one it finds.  It can also be set to any
 specific platform to have GLFW only look for that one.
 
-@code{.c}
+```c
 glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
-@endcode
+```
 
 This mechanism also provides the Null platform, which is always supported but needs to be
 explicitly requested.  This platform is effectively a stub, emulating a window system on
 a single 1080p monitor, but will not interact with any actual window system.
 
-@code{.c}
+```c
 glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_NULL);
-@endcode
+```
 
 You can test whether a library binary was compiled with support for a specific platform
 with @ref glfwPlatformSupported.
 
-@code{.c}
+```c
 if (glfwPlatformSupported(GLFW_PLATFORM_WAYLAND))
     glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_WAYLAND);
-@endcode
+```
 
 Once GLFW has been initialized, you can query which platform was selected with @ref
 glfwGetPlatform.
 
-@code{.c}
+```c
 int platform = glfwGetPlatform();
-@endcode
+```
 
 If you are using any [native access functions](@ref native), especially on Linux and other
 Unix-like systems, then you may need to check that you are calling the ones matching the
@@ -211,7 +211,7 @@ selected platform.
 The heap memory allocator can be customized before initialization with @ref
 glfwInitAllocator.
 
-@code{.c}
+```c
 GLFWallocator allocator;
 allocator.allocate = my_malloc;
 allocator.reallocate = my_realloc;
@@ -219,7 +219,7 @@ allocator.deallocate = my_free;
 allocator.user = NULL;
 
 glfwInitAllocator(&allocator);
-@endcode
+```
 
 The allocator will be made active at the beginning of initialization and will be used by
 GLFW until the library has been fully terminated.  Any allocator set after initialization
@@ -233,12 +233,12 @@ The allocation function must have a signature matching @ref GLFWallocatefun.  It
 the desired size, in bytes, and the user pointer passed to @ref glfwInitAllocator and
 returns the address to the allocated memory block.
 
-@code{.c}
+```c
 void* my_malloc(size_t size, void* user)
 {
     ...
 }
-@endcode
+```
 
 The documentation for @ref GLFWallocatefun also lists the requirements and limitations for
 an allocation function.  If the active one does not meet all of these, GLFW may fail.
@@ -248,12 +248,12 @@ It receives the memory block to be reallocated, the new desired size, in bytes, 
 pointer passed to @ref glfwInitAllocator and returns the address to the resized memory
 block.
 
-@code{.c}
+```c
 void* my_realloc(void* block, size_t size, void* user)
 {
     ...
 }
-@endcode
+```
 
 The documentation for @ref GLFWreallocatefun also lists the requirements and limitations
 for a reallocation function.  If the active one does not meet all of these, GLFW may fail.
@@ -262,12 +262,12 @@ The deallocation function must have a function signature matching @ref GLFWdeall
 It receives the memory block to be deallocated and the user pointer passed to @ref
 glfwInitAllocator.
 
-@code{.c}
+```c
 void my_free(void* block, void* user)
 {
     ...
 }
-@endcode
+```
 
 The documentation for @ref GLFWdeallocatefun also lists the requirements and limitations
 for a deallocation function.  If the active one does not meet all of these, GLFW may fail.
@@ -278,9 +278,9 @@ for a deallocation function.  If the active one does not meet all of these, GLFW
 Before your application exits, you should terminate the GLFW library if it has
 been initialized.  This is done with @ref glfwTerminate.
 
-@code{.c}
+```c
 glfwTerminate();
-@endcode
+```
 
 This will destroy any remaining window, monitor and cursor objects, restore any
 modified gamma ramps, re-enable the screensaver if it had been disabled and free
@@ -303,12 +303,12 @@ values.
 The last [error code](@ref errors) for the calling thread can be queried at any
 time with @ref glfwGetError.
 
-@code{.c}
+```c
 int code = glfwGetError(NULL);
 
 if (code != GLFW_NO_ERROR)
     handle_error(code);
-@endcode
+```
 
 If no error has occurred since the last call, @ref GLFW_NO_ERROR (zero) is
 returned.  The error is cleared before the function returns.
@@ -322,13 +322,13 @@ can retrieve a UTF-8 encoded human-readable description along with the error
 code.  If no error has occurred since the last call, the description is set to
 `NULL`.
 
-@code{.c}
+```c
 const char* description;
 int code = glfwGetError(&description);
 
 if (description)
     display_error_message(code, description);
-@endcode
+```
 
 The retrieved description string is only valid until the next error occurs.
 This means you must make a copy of it if you want to keep it.
@@ -336,19 +336,19 @@ This means you must make a copy of it if you want to keep it.
 You can also set an error callback, which will be called each time an error
 occurs.  It is set with @ref glfwSetErrorCallback.
 
-@code{.c}
+```c
 glfwSetErrorCallback(error_callback);
-@endcode
+```
 
 The error callback receives the same error code and human-readable description
 returned by @ref glfwGetError.
 
-@code{.c}
+```c
 void error_callback(int code, const char* description)
 {
     display_error_message(code, description);
 }
-@endcode
+```
 
 The error callback is called after the error is stored, so calling @ref
 glfwGetError from within the error callback returns the same values as the
@@ -570,12 +570,12 @@ this to verify that the library binary is compatible with your application.
 The compile-time version of GLFW is provided by the GLFW header with the
 `GLFW_VERSION_MAJOR`, `GLFW_VERSION_MINOR` and `GLFW_VERSION_REVISION` macros.
 
-@code{.c}
+```c
 printf("Compiled against GLFW %i.%i.%i\n",
        GLFW_VERSION_MAJOR,
        GLFW_VERSION_MINOR,
        GLFW_VERSION_REVISION);
-@endcode
+```
 
 
 ### Run-time version {#intro_version_runtime}
@@ -583,12 +583,12 @@ printf("Compiled against GLFW %i.%i.%i\n",
 The run-time version can be retrieved with @ref glfwGetVersion, a function that
 may be called regardless of whether GLFW is initialized.
 
-@code{.c}
+```c
 int major, minor, revision;
 glfwGetVersion(&major, &minor, &revision);
 
 printf("Running against GLFW %i.%i.%i\n", major, minor, revision);
-@endcode
+```
 
 
 ### Version string {#intro_version_string}
@@ -622,14 +622,14 @@ The format of the string is as follows:
 For example, compiling GLFW 3.4 with MinGW as a DLL for Windows, may result in a version string
 like this:
 
-@code{.c}
+```c
 3.4.0 Win32 WGL Null EGL OSMesa MinGW DLL
-@endcode
+```
 
 Compiling GLFW as a static library for Linux, with both Wayland and X11 enabled, may
 result in a version string like this:
 
-@code{.c}
+```c
 3.4.0 Wayland X11 GLX Null EGL OSMesa monotonic
-@endcode
+```
 

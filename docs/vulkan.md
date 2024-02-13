@@ -43,9 +43,9 @@ you will need to direct GLFW to it.  Pass your version of `vkGetInstanceProcAddr
 glfwInitVulkanLoader before initializing GLFW and it will use that function for all Vulkan
 entry point retrieval.  This prevents GLFW from dynamically loading the Vulkan loader.
 
-@code{.c}
+```c
 glfwInitVulkanLoader(vkGetInstanceProcAddr);
-@endcode
+```
 
 @macos To make your application be redistributable you will need to set up the application
 bundle according to the LunarG SDK documentation.  This is explained in more detail in the
@@ -57,18 +57,18 @@ bundle according to the LunarG SDK documentation.  This is explained in more det
 To have GLFW include the Vulkan header, define @ref GLFW_INCLUDE_VULKAN before including
 the GLFW header.
 
-@code{.c}
+```c
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-@endcode
+```
 
 If you instead want to include the Vulkan header from a custom location or use
 your own custom Vulkan header then do this before the GLFW header.
 
-@code{.c}
+```c
 #include <path/to/vulkan.h>
 #include <GLFW/glfw3.h>
-@endcode
+```
 
 Unless a Vulkan header is included, either by the GLFW header or above it, the following
 GLFW functions will not be declared, as depend on Vulkan types.
@@ -92,12 +92,12 @@ If you are loading the Vulkan loader dynamically instead of linking directly
 against it, you can check for the availability of a loader and ICD with @ref
 glfwVulkanSupported.
 
-@code{.c}
+```c
 if (glfwVulkanSupported())
 {
     // Vulkan is available, at least for compute
 }
-@endcode
+```
 
 This function returns `GLFW_TRUE` if the Vulkan loader and any minimally
 functional ICD was found.
@@ -112,18 +112,18 @@ To load any Vulkan core or extension function from the found loader, call @ref
 glfwGetInstanceProcAddress.  To load functions needed for instance creation,
 pass `NULL` as the instance.
 
-@code{.c}
+```c
 PFN_vkCreateInstance pfnCreateInstance = (PFN_vkCreateInstance)
     glfwGetInstanceProcAddress(NULL, "vkCreateInstance");
-@endcode
+```
 
 Once you have created an instance, you can load from it all other Vulkan core
 functions and functions from any instance extensions you enabled.
 
-@code{.c}
+```c
 PFN_vkCreateDevice pfnCreateDevice = (PFN_vkCreateDevice)
     glfwGetInstanceProcAddress(instance, "vkCreateDevice");
-@endcode
+```
 
 This function in turn calls `vkGetInstanceProcAddr`.  If that fails, the
 function falls back to a platform-specific query of the Vulkan loader (i.e.
@@ -135,10 +135,10 @@ Vulkan also provides `vkGetDeviceProcAddr` for loading device-specific versions
 of Vulkan function.  This function can be retrieved from an instance with @ref
 glfwGetInstanceProcAddress.
 
-@code{.c}
+```c
 PFN_vkGetDeviceProcAddr pfnGetDeviceProcAddr = (PFN_vkGetDeviceProcAddr)
     glfwGetInstanceProcAddress(instance, "vkGetDeviceProcAddr");
-@endcode
+```
 
 Device-specific functions may execute a little faster, due to not having to
 dispatch internally based on the device passed to them.  For more information
@@ -154,10 +154,10 @@ GLFW requires to create Vulkan surfaces.
 To query the instance extensions required, call @ref
 glfwGetRequiredInstanceExtensions.
 
-@code{.c}
+```c
 uint32_t count;
 const char** extensions = glfwGetRequiredInstanceExtensions(&count);
-@endcode
+```
 
 These extensions must all be enabled when creating instances that are going to
 be passed to @ref glfwGetPhysicalDevicePresentationSupport and @ref
@@ -172,14 +172,14 @@ If successful the returned array will always include `VK_KHR_surface`, so if
 you don't require any additional extensions you can pass this list directly to
 the `VkInstanceCreateInfo` struct.
 
-@code{.c}
+```c
 VkInstanceCreateInfo ici;
 
 memset(&ici, 0, sizeof(ici));
 ici.enabledExtensionCount = count;
 ici.ppEnabledExtensionNames = extensions;
 ...
-@endcode
+```
 
 Additional extensions may be required by future versions of GLFW.  You should
 check whether any extensions you wish to enable are already in the returned
@@ -201,12 +201,12 @@ To check whether a specific queue family of a physical device supports image
 presentation without first having to create a window and surface, call @ref
 glfwGetPhysicalDevicePresentationSupport.
 
-@code{.c}
+```c
 if (glfwGetPhysicalDevicePresentationSupport(instance, physical_device, queue_family_index))
 {
     // Queue family supports image presentation
 }
-@endcode
+```
 
 The `VK_KHR_surface` extension additionally provides the
 `vkGetPhysicalDeviceSurfaceSupportKHR` function, which performs the same test on
@@ -219,10 +219,10 @@ Unless you will be using OpenGL or OpenGL ES with the same window as Vulkan,
 there is no need to create a context.  You can disable context creation with the
 [GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint) hint.
 
-@code{.c}
+```c
 glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 GLFWwindow* window = glfwCreateWindow(640, 480, "Window Title", NULL, NULL);
-@endcode
+```
 
 See @ref context_less for more information.
 
@@ -232,14 +232,14 @@ See @ref context_less for more information.
 You can create a Vulkan surface (as defined by the `VK_KHR_surface` extension)
 for a GLFW window with @ref glfwCreateWindowSurface.
 
-@code{.c}
+```c
 VkSurfaceKHR surface;
 VkResult err = glfwCreateWindowSurface(instance, window, NULL, &surface);
 if (err)
 {
     // Window surface creation failed
 }
-@endcode
+```
 
 If an OpenGL or OpenGL ES context was created on the window, the context has
 ownership of the presentation on the window and a Vulkan surface cannot be

@@ -161,11 +161,11 @@ a subdirectory of another CMake project.  To enable these, set the @ref
 GLFW_BUILD_TESTS and @ref GLFW_BUILD_EXAMPLES cache variables before adding the
 GLFW subdirectory.
 
-@code{.cmake}
+```cmake
 set(GLFW_BUILD_EXAMPLES ON CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS ON CACHE BOOL "" FORCE)
 add_subdirectory(path/to/glfw)
-@endcode
+```
 
 
 #### macOS main menu now created at initialization {#initmenu_34}

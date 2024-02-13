@@ -1,6 +1,6 @@
 # Internal structure {#internals_guide}
 
-@tableofcontents
+[TOC]
 
 There are several interfaces inside GLFW.  Each interface has its own area of
 responsibility and its own naming conventions.

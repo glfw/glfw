@@ -1,6 +1,6 @@
 # Monitor guide {#monitor_guide}
 
-@tableofcontents
+[TOC]
 
 This guide introduces the monitor related functions of GLFW.  For details on
 a specific function in this category, see the @ref monitor.  There are also

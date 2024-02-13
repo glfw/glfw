@@ -1,6 +1,6 @@
 # Getting started {#quick_guide}
 
-@tableofcontents
+[TOC]
 
 This guide takes you through writing a small application using GLFW 3.  The
 application will create a window and OpenGL context, render a rotating triangle

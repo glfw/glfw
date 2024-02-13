@@ -1,6 +1,6 @@
 # Introduction to the API {#intro_guide}
 
-@tableofcontents
+[TOC]
 
 This guide introduces the basic concepts of GLFW and describes initialization,
 error handling and API guarantees and limitations.  For a broad but shallow

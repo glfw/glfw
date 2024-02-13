@@ -1,6 +1,6 @@
 # Building applications {#build_guide}
 
-@tableofcontents
+[TOC]
 
 This is about compiling and linking applications that use GLFW.  For information on
 how to write such applications, start with the

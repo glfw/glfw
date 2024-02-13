@@ -1,6 +1,6 @@
 # Standards conformance {#compat_guide}
 
-@tableofcontents
+[TOC]
 
 This guide describes the various API extensions used by this version of GLFW.
 It lists what are essentially implementation details, but which are nonetheless

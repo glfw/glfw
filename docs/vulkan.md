@@ -1,6 +1,6 @@
 # Vulkan guide {#vulkan_guide}
 
-@tableofcontents
+[TOC]
 
 This guide is intended to fill the gaps between the official [Vulkan
 resources](https://www.khronos.org/vulkan/) and the rest of the GLFW

@@ -1,6 +1,6 @@
 # Release notes {#news}
 
-@tableofcontents
+[TOC]
 
 
 ## Release notes for version 3.4 {#news_34}

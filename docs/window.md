@@ -1,6 +1,6 @@
 # Window guide {#window_guide}
 
-@tableofcontents
+[TOC]
 
 This guide introduces the window related functions of GLFW.  For details on
 a specific function in this category, see the @ref window.  There are also

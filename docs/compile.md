@@ -1,6 +1,6 @@
 # Compiling GLFW {#compile_guide}
 
-@tableofcontents
+[TOC]
 
 This is about compiling the GLFW library itself.  For information on how to
 build applications that use GLFW, see @ref build_guide.

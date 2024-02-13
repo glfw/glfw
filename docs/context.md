@@ -1,6 +1,6 @@
 # Context guide {#context_guide}
 
-@tableofcontents
+[TOC]
 
 This guide introduces the OpenGL and OpenGL ES context related functions of
 GLFW.  For details on a specific function in this category, see the @ref

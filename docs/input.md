@@ -1,6 +1,6 @@
 # Input guide {#input_guide}
 
-@tableofcontents
+[TOC]
 
 This guide introduces the input related functions of GLFW.  For details on
 a specific function in this category, see the @ref input.  There are also guides

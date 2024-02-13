@@ -1,6 +1,6 @@
 # Moving from GLFW 2 to 3 {#moving_guide}
 
-@tableofcontents
+[TOC]
 
 This is a transition guide for moving from GLFW 2 to 3.  It describes what has
 changed or been removed, but does _not_ include

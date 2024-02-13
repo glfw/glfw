@@ -19,12 +19,12 @@ avoid collisions with the headers of other major versions.  Similarly, the GLFW
 Unix-like systems, where it uses the
 [soname](https://en.wikipedia.org/wiki/soname) `libglfw.so.3`.
 
-@par Old syntax
+__Old syntax__
 ```c
 #include <GL/glfw.h>
 ```
 
-@par New syntax
+__New syntax__
 ```c
 #include <GLFW/glfw3.h>
 ```
@@ -53,14 +53,14 @@ However, GLFW 3 has better support for _use from multiple threads_ than GLFW
 thread at a time, and the documentation explicitly states which functions may be
 used from any thread and which must only be used from the main thread.
 
-@par Removed functions
-`glfwSleep`, `glfwCreateThread`, `glfwDestroyThread`, `glfwWaitThread`,
-`glfwGetThreadID`, `glfwCreateMutex`, `glfwDestroyMutex`, `glfwLockMutex`,
-`glfwUnlockMutex`, `glfwCreateCond`, `glfwDestroyCond`, `glfwWaitCond`,
-`glfwSignalCond`, `glfwBroadcastCond` and `glfwGetNumberOfProcessors`.
+__Removed functions__
+> `glfwSleep`, `glfwCreateThread`, `glfwDestroyThread`, `glfwWaitThread`,
+> `glfwGetThreadID`, `glfwCreateMutex`, `glfwDestroyMutex`, `glfwLockMutex`,
+> `glfwUnlockMutex`, `glfwCreateCond`, `glfwDestroyCond`, `glfwWaitCond`,
+> `glfwSignalCond`, `glfwBroadcastCond` and `glfwGetNumberOfProcessors`.
 
-@par Removed types
-`GLFWthreadfun`
+__Removed types__
+> `GLFWthreadfun`
 
 
 ### Removal of image and texture loading {#moving_image}
@@ -77,9 +77,9 @@ As there already are libraries doing this, it is unnecessary both to duplicate
 the work and to tie the duplicate to GLFW.  The resulting library would also be
 platform-independent, as both OpenGL and stdio are available wherever GLFW is.
 
-@par Removed functions
-`glfwReadImage`, `glfwReadMemoryImage`, `glfwFreeImage`, `glfwLoadTexture2D`,
-`glfwLoadMemoryTexture2D` and `glfwLoadTextureImage2D`.
+__Removed functions__
+> `glfwReadImage`, `glfwReadMemoryImage`, `glfwFreeImage`, `glfwLoadTexture2D`,
+> `glfwLoadMemoryTexture2D` and `glfwLoadTextureImage2D`.
 
 
 ### Removal of GLFWCALL macro {#moving_stdcall}
@@ -92,12 +92,12 @@ requirement to mark all callback functions with `GLFWCALL`.  It also simplifies
 the creation of DLLs and DLL link libraries, as there's no need to explicitly
 disable `@n` entry point suffixes.
 
-@par Old syntax
+__Old syntax__
 ```c
 void GLFWCALL callback_function(...);
 ```
 
-@par New syntax
+__New syntax__
 ```c
 void callback_function(...);
 ```
@@ -111,12 +111,12 @@ a newly created window is returned by @ref glfwCreateWindow (formerly
 `glfwOpenWindow`).  Window handles are pointers to the
 [opaque](https://en.wikipedia.org/wiki/Opaque_data_type) type @ref GLFWwindow.
 
-@par Old syntax
+__Old syntax__
 ```c
 glfwSetWindowTitle("New Window Title");
 ```
 
-@par New syntax
+__New syntax__
 ```c
 glfwSetWindowTitle(window, "New Window Title");
 ```
@@ -131,12 +131,12 @@ GLFW 2 would have selected, but there are many other
 [monitor functions](@ref monitor_guide).  Monitor handles are pointers to the
 [opaque](https://en.wikipedia.org/wiki/Opaque_data_type) type @ref GLFWmonitor.
 
-@par Old basic full screen
+__Old basic full screen__
 ```c
 glfwOpenWindow(640, 480, 8, 8, 8, 0, 24, 0, GLFW_FULLSCREEN);
 ```
 
-@par New basic full screen
+__New basic full screen__
 ```c
 window = glfwCreateWindow(640, 480, "My Window", glfwGetPrimaryMonitor(), NULL);
 ```
@@ -153,7 +153,7 @@ you need to call @ref glfwPollEvents or @ref glfwWaitEvents yourself.  Unlike
 buffer swap, which acts on a single window, the event processing functions act
 on all windows at once.
 
-@par Old basic main loop
+__Old basic main loop__
 ```c
 while (...)
 {
@@ -163,7 +163,7 @@ while (...)
 }
 ```
 
-@par New basic main loop
+__New basic main loop__
 ```c
 while (...)
 {
@@ -195,13 +195,13 @@ been added.  You can retrieve the size of the framebuffer of a window with @ref
 glfwGetFramebufferSize function.  A framebuffer size callback has also been
 added, which can be set with @ref glfwSetFramebufferSizeCallback.
 
-@par Old basic viewport setup
+__Old basic viewport setup__
 ```c
 glfwGetWindowSize(&width, &height);
 glViewport(0, 0, width, height);
 ```
 
-@par New basic viewport setup
+__New basic viewport setup__
 ```c
 glfwGetFramebufferSize(window, &width, &height);
 glViewport(0, 0, width, height);
@@ -224,7 +224,7 @@ the window, take some other action or ignore the request.
 You can query the close flag at any time with @ref glfwWindowShouldClose and set
 it at any time with @ref glfwSetWindowShouldClose.
 
-@par Old basic main loop
+__Old basic main loop__
 ```c
 while (glfwGetWindowParam(GLFW_OPENED))
 {
@@ -232,7 +232,7 @@ while (glfwGetWindowParam(GLFW_OPENED))
 }
 ```
 
-@par New basic main loop
+__New basic main loop__
 ```c
 while (!glfwWindowShouldClose(window))
 {
@@ -245,12 +245,12 @@ close flag has been set, so it can optionally override its value, before
 event processing completes.  You may however not call @ref glfwDestroyWindow
 from the close callback (or any other window related callback).
 
-@par Old syntax
+__Old syntax__
 ```c
 int GLFWCALL window_close_callback(void);
 ```
 
-@par New syntax
+__New syntax__
 ```c
 void window_close_callback(GLFWwindow* window);
 ```
@@ -286,12 +286,12 @@ English by a Swede.  However, many keyboard layouts require more than one key to
 produce characters with diacritical marks. Even the Swedish keyboard layout
 requires this for uncommon cases like ü.
 
-@par Old syntax
+__Old syntax__
 ```c
 void GLFWCALL character_callback(int character, int action);
 ```
 
-@par New syntax
+__New syntax__
 ```c
 void character_callback(GLFWwindow* window, int character);
 ```
@@ -321,18 +321,18 @@ replaced by a [scroll callback](@ref GLFWscrollfun) that receives
 two-dimensional floating point scroll offsets.  This allows you to receive
 precise scroll data from for example modern touchpads.
 
-@par Old syntax
+__Old syntax__
 ```c
 void GLFWCALL mouse_wheel_callback(int position);
 ```
 
-@par New syntax
+__New syntax__
 ```c
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 ```
 
-@par Removed functions
-`glfwGetMouseWheel`
+__Removed functions__
+> `glfwGetMouseWheel`
 
 
 ### Key repeat action {#moving_repeat}
@@ -434,12 +434,12 @@ projects should not use GLU__, but if you need it for legacy code that
 has been moved to GLFW 3, you can request that the GLFW header includes it by
 defining @ref GLFW_INCLUDE_GLU before the inclusion of the GLFW header.
 
-@par Old syntax
+__Old syntax__
 ```c
 #include <GL/glfw.h>
 ```
 
-@par New syntax
+__New syntax__
 ```c
 #define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>

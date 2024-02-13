@@ -1382,7 +1382,6 @@ OpenGL forward-compatible one, or `GLFW_FALSE` otherwise.
 __GLFW_CONTEXT_DEBUG__ is `GLFW_TRUE` if the window's context is in debug
 mode, or `GLFW_FALSE` otherwise.
 
-@par
 This is the new name, introduced in GLFW 3.4.  The older
 `GLFW_OPENGL_DEBUG_CONTEXT` name is also available for compatibility.
 

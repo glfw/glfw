@@ -21,7 +21,7 @@ the documentation for your development environment.
 You should include the GLFW header in the source files where you use OpenGL or
 GLFW.
 
-@code
+@code{.c}
 #include <GLFW/glfw3.h>
 @endcode
 
@@ -50,7 +50,7 @@ ES header or extension loader header included before it and will then disable
 the inclusion of the default OpenGL header.  Most extension loaders also define
 macros that disable similar headers below it.
 
-@code
+@code{.c}
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 @endcode
@@ -61,7 +61,7 @@ macro.  If yours doesn't or you don't know which one your users will pick, the
 including the OpenGL header.  This will also allow you to include the two
 headers in any order.
 
-@code
+@code{.c}
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <glad/gl.h>

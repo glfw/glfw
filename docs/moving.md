@@ -85,7 +85,7 @@ platform-independent, as both OpenGL and stdio are available wherever GLFW is.
 ### Removal of GLFWCALL macro {#moving_stdcall}
 
 The `GLFWCALL` macro, which made callback functions use
-[__stdcall](https://msdn.microsoft.com/en-us/library/zxk0tw93.aspx) on Windows,
+[\_\_stdcall](https://msdn.microsoft.com/en-us/library/zxk0tw93.aspx) on Windows,
 has been removed.  GLFW is written in C, not Pascal.  Removing this macro means
 there's one less thing for application programmers to remember, i.e. the
 requirement to mark all callback functions with `GLFWCALL`.  It also simplifies

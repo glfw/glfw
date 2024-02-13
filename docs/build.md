@@ -1,5 +1,3 @@
-/*!
-
 @page build_guide Building applications
 
 @tableofcontents
@@ -335,4 +333,3 @@ against it from the command-line.
 @note Your machine may have `libGL.*.dylib` style OpenGL library, but that is
 for the X Window System and will not work with the macOS native version of GLFW.
 
-*/

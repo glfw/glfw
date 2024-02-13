@@ -1,5 +1,3 @@
-/*!
-
 @page monitor_guide Monitor guide
 
 @tableofcontents
@@ -265,4 +263,3 @@ hardware gamma correction, which today is typically an approximation of sRGB
 gamma.  This means that setting a perfectly linear ramp, or gamma 1.0, will
 produce the default (usually sRGB-like) behavior.
 
-*/

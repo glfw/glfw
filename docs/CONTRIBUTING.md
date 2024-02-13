@@ -357,7 +357,7 @@ feature.
 In addition to the code, a complete feature includes:
 
 - Change log entry in `README.md`, listing all new symbols
-- News page entry in `docs/news.dox`, briefly describing the feature
+- News page entry in `docs/news.md`, briefly describing the feature
 - Guide documentation, with minimal examples, in the relevant guide in the `docs` folder
 - Reference documentation, with all applicable tags
 - Cross-references and mentions in appropriate places
@@ -373,7 +373,7 @@ If it adds a new monitor property, support for it must be added to
 
 If it adds a new OpenGL, OpenGL ES or Vulkan option or extension, support
 for it must be added to `tests/glfwinfo.c` and the behavior of the library when
-the extension is missing documented in `docs/compat.dox`.
+the extension is missing documented in `docs/compat.md`.
 
 If you haven't already, read the excellent article [How to Write a Git Commit
 Message](https://chris.beams.io/posts/git-commit/).

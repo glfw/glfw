@@ -2,20 +2,20 @@
 # NOTE: The order of this list determines the order of items in the Guides
 #       (i.e. Pages) list in the generated documentation
 set(source_files
-    main.dox
-    news.dox
-    quick.dox
-    moving.dox
-    compile.dox
-    build.dox
-    intro.dox
-    context.dox
-    monitor.dox
-    window.dox
-    input.dox
-    vulkan.dox
-    compat.dox
-    internal.dox)
+    main.md
+    news.md
+    quick.md
+    moving.md
+    compile.md
+    build.md
+    intro.md
+    context.md
+    monitor.md
+    window.md
+    input.md
+    vulkan.md
+    compat.md
+    internal.md)
 
 set(extra_files DoxygenLayout.xml header.html footer.html extra.css spaces.svg)
 

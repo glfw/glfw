@@ -1,5 +1,3 @@
-/*!
-
 @page moving_guide Moving from GLFW 2 to 3
 
 @tableofcontents
@@ -510,4 +508,3 @@ tessellation functions, see for example
 | `GLFW_KEY_RALT`             | `GLFW_KEY_RIGHT_ALT`         |       |
 | `GLFW_KEY_RSUPER`           | `GLFW_KEY_RIGHT_SUPER`       |       |
 
-*/

@@ -1,5 +1,3 @@
-/*!
-
 @page intro_guide Introduction to the API
 
 @tableofcontents
@@ -635,4 +633,3 @@ result in a version string like this:
 3.4.0 Wayland X11 GLX Null EGL OSMesa monotonic
 @endcode
 
-*/

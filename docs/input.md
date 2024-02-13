@@ -1,5 +1,3 @@
-/*!
-
 @page input_guide Input guide
 
 @tableofcontents
@@ -980,4 +978,3 @@ The path array and its strings are only valid until the file drop callback
 returns, as they may have been generated specifically for that event.  You need
 to make a deep copy of the array if you want to keep the paths.
 
-*/

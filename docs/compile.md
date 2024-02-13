@@ -1,5 +1,3 @@
-/*!
-
 @page compile_guide Compiling GLFW
 
 @tableofcontents
@@ -368,4 +366,3 @@ _GLFW_GLESV2_LIBRARY.  Otherwise, GLFW will use the built-in default names.
 GLFW.  If you define any of these in your build files, make sure they are not
 applied to the GLFW sources.
 
-*/

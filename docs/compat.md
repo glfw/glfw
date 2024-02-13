@@ -1,5 +1,3 @@
-/*!
-
 @page compat_guide Standards conformance
 
 @tableofcontents
@@ -285,4 +283,3 @@ surfaces on Wayland.  If any of these extensions are not available, @ref
 glfwGetRequiredInstanceExtensions will return an empty list and window surface
 creation will fail.
 
-*/

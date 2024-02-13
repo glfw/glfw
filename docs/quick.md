@@ -1,5 +1,3 @@
-/*!
-
 @page quick_guide Getting started
 
 @tableofcontents
@@ -364,4 +362,3 @@ environment you are using and is best explained by the documentation for that
 environment.  To learn about the details that are specific to GLFW, see
 @ref build_guide.
 
-*/

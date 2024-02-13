@@ -1,5 +1,3 @@
-/*!
-
 @page window_guide Window guide
 
 @tableofcontents
@@ -1495,4 +1493,3 @@ which allows the driver to swap immediately even if a frame arrives a little bit
 late.  This trades the risk of visible tears for greater framerate stability.
 You can check for these extensions with @ref glfwExtensionSupported.
 
-*/

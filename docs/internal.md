@@ -1,5 +1,3 @@
-/*!
-
 @page internals_guide Internal structure
 
 @tableofcontents
@@ -120,4 +118,3 @@ with a leading underscore.
 
 Examples: `_GLFW_WIN32`, `_GLFW_BUILD_DLL`
 
-*/

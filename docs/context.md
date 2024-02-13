@@ -1,5 +1,3 @@
-/*!
-
 @page context_guide Context guide
 
 @tableofcontents
@@ -340,4 +338,3 @@ void some_function(void)
 }
 @endcode
 
-*/

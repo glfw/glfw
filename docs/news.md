@@ -1,5 +1,3 @@
-/*!
-
 @page news Release notes
 
 @tableofcontents
@@ -298,4 +296,3 @@ then GLFW will fail to initialize.
 - [Release notes for 3.1](https://www.glfw.org/docs/3.1/news.html)
 - [Release notes for 3.0](https://www.glfw.org/docs/3.0/news.html)
 
-*/

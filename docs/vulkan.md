@@ -1,5 +1,3 @@
-/*!
-
 @page vulkan_guide Vulkan guide
 
 @tableofcontents
@@ -250,4 +248,3 @@ created.
 It is your responsibility to destroy the surface.  GLFW does not destroy it for
 you.  Call `vkDestroySurfaceKHR` function from the same extension to destroy it.
 
-*/

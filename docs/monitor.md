@@ -1,4 +1,4 @@
-@page monitor_guide Monitor guide
+# Monitor guide {#monitor_guide}
 
 @tableofcontents
 
@@ -13,7 +13,7 @@ guides for the other areas of GLFW.
  - @ref input_guide
 
 
-@section monitor_object Monitor objects
+## Monitor objects {#monitor_object}
 
 A monitor object represents a currently connected monitor and is represented as
 a pointer to the [opaque](https://en.wikipedia.org/wiki/Opaque_data_type) type
@@ -34,7 +34,7 @@ To see how GLFW views your monitor setup and its available video modes, run the
 `monitors` test program.
 
 
-@subsection monitor_monitors Retrieving monitors
+### Retrieving monitors {#monitor_monitors}
 
 The primary monitor is returned by @ref glfwGetPrimaryMonitor.  It is the user's
 preferred monitor and is usually the one with global UI elements like task bar
@@ -57,7 +57,7 @@ monitors may be moved to a different index when a monitor is connected or
 disconnected.
 
 
-@subsection monitor_event Monitor configuration changes
+### Monitor configuration changes {#monitor_event}
 
 If you wish to be notified when a monitor is connected or disconnected, set
 a monitor callback.
@@ -89,14 +89,14 @@ glfwGetMonitorName and @ref glfwGetMonitorUserPointer will return useful values
 for a disconnected monitor and only before the monitor callback returns.
 
 
-@section monitor_properties Monitor properties
+## Monitor properties {#monitor_properties}
 
 Each monitor has a current video mode, a list of supported video modes,
 a virtual position, a content scale, a human-readable name, a user pointer, an
 estimated physical size and a gamma ramp.
 
 
-@subsection monitor_modes Video modes
+### Video modes {#monitor_modes}
 
 GLFW generally does a good job selecting a suitable video mode when you create
 a full screen window, change its video mode or make a windowed one full
@@ -123,7 +123,7 @@ The resolution of a video mode is specified in
 [screen coordinates](@ref coordinate_systems), not pixels.
 
 
-@subsection monitor_size Physical size
+### Physical size {#monitor_size}
 
 The physical size of a monitor in millimetres, or an estimation of it, can be
 retrieved with @ref glfwGetMonitorPhysicalSize.  This has no relation to its
@@ -140,7 +140,7 @@ useful.  Instead, use the [monitor content scale](@ref monitor_scale) and
 [window content scale](@ref window_scale) to scale your content.
 
 
-@subsection monitor_scale Content scale
+### Content scale {#monitor_scale}
 
 The content scale for a monitor can be retrieved with @ref
 glfwGetMonitorContentScale.
@@ -162,7 +162,7 @@ and on user settings.  It may be very different from the raw DPI calculated from
 the physical size and current resolution.
 
 
-@subsection monitor_pos Virtual position
+### Virtual position {#monitor_pos}
 
 The position of the monitor on the virtual desktop, in
 [screen coordinates](@ref coordinate_systems), can be retrieved with @ref
@@ -174,7 +174,7 @@ glfwGetMonitorPos(monitor, &xpos, &ypos);
 @endcode
 
 
-@subsection monitor_workarea Work area
+### Work area {#monitor_workarea}
 
 The area of a monitor not occupied by global task bars or menu bars is the work
 area.  This is specified in [screen coordinates](@ref coordinate_systems) and
@@ -186,7 +186,7 @@ glfwGetMonitorWorkarea(monitor, &xpos, &ypos, &width, &height);
 @endcode
 
 
-@subsection monitor_name Human-readable name
+### Human-readable name {#monitor_name}
 
 The human-readable, UTF-8 encoded name of a monitor is returned by @ref
 glfwGetMonitorName.  See the reference documentation for the lifetime of the
@@ -201,7 +201,7 @@ and make may have the same name.  Only the monitor handle is guaranteed to be
 unique, and only until that monitor is disconnected.
 
 
-@subsection monitor_userptr User pointer
+### User pointer {#monitor_userptr}
 
 Each monitor has a user pointer that can be set with @ref
 glfwSetMonitorUserPointer and queried with @ref glfwGetMonitorUserPointer.  This
@@ -212,7 +212,7 @@ terminated.
 The initial value of the pointer is `NULL`.
 
 
-@subsection monitor_gamma Gamma ramp
+### Gamma ramp {#monitor_gamma}
 
 The gamma ramp of a monitor can be set with @ref glfwSetGammaRamp, which accepts
 a monitor handle and a pointer to a @ref GLFWgammaramp structure.

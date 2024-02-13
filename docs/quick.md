@@ -1,4 +1,4 @@
-@page quick_guide Getting started
+# Getting started {#quick_guide}
 
 @tableofcontents
 
@@ -12,9 +12,9 @@ have used GLFW 2 in the past, read @ref moving_guide, as some functions
 behave differently in GLFW 3.
 
 
-@section quick_steps Step by step
+## Step by step {#quick_steps}
 
-@subsection quick_include Including the GLFW header
+### Including the GLFW header {#quick_include}
 
 In the source files of your application where you use GLFW, you need to include
 its header file.
@@ -53,7 +53,7 @@ in any order.
 @endcode
 
 
-@subsection quick_init_term Initializing and terminating GLFW
+### Initializing and terminating GLFW {#quick_init_term}
 
 Before you can use most GLFW functions, the library must be initialized.  On
 successful initialization, `GLFW_TRUE` is returned.  If an error occurred,
@@ -80,7 +80,7 @@ GLFW.  After this call, you must initialize GLFW again before using any GLFW
 functions that require it.
 
 
-@subsection quick_capture_error Setting an error callback
+### Setting an error callback {#quick_capture_error}
 
 Most events are reported through callbacks, whether it's a key being pressed,
 a GLFW window being moved, or an error occurring.  Callbacks are C functions (or
@@ -107,7 +107,7 @@ glfwSetErrorCallback(error_callback);
 @endcode
 
 
-@subsection quick_create_window Creating a window and context
+### Creating a window and context {#quick_create_window}
 
 The window and its OpenGL context are created with a single call to @ref
 glfwCreateWindow, which returns a handle to the created combined window and
@@ -157,7 +157,7 @@ Once this function is called, no more events will be delivered for that window
 and its handle becomes invalid.
 
 
-@subsection quick_context_current Making the OpenGL context current
+### Making the OpenGL context current {#quick_context_current}
 
 Before you can use the OpenGL API, you must have a current OpenGL context.
 
@@ -179,7 +179,7 @@ gladLoadGL(glfwGetProcAddress);
 @endcode
 
 
-@subsection quick_window_close Checking the window close flag
+### Checking the window close flag {#quick_window_close}
 
 Each window has a flag indicating whether the window should be closed.
 
@@ -205,7 +205,7 @@ useful if you want to interpret other kinds of input as closing the window, like
 for example pressing the _Escape_ key.
 
 
-@subsection quick_key_input Receiving input events
+### Receiving input events {#quick_key_input}
 
 Each window has a large number of callbacks that can be set to receive all the
 various kinds of events.  To receive key press and release events, create a key
@@ -229,7 +229,7 @@ In order for event callbacks to be called when events occur, you need to process
 events as described below.
 
 
-@subsection quick_render Rendering with OpenGL
+### Rendering with OpenGL {#quick_render}
 
 Once you have a current OpenGL context, you can use OpenGL normally.  In this
 tutorial, a multicolored rotating triangle will be rendered.  The framebuffer
@@ -256,7 +256,7 @@ These all happen to use GLFW, but OpenGL itself works the same whatever API you
 use to create the window and context.
 
 
-@subsection quick_timer Reading the timer
+### Reading the timer {#quick_timer}
 
 To create smooth animation, a time source is needed.  GLFW provides a timer that
 returns the number of seconds since initialization.  The time source used is the
@@ -268,7 +268,7 @@ double time = glfwGetTime();
 @endcode
 
 
-@subsection quick_swap_buffers Swapping buffers
+### Swapping buffers {#quick_swap_buffers}
 
 GLFW windows by default use double buffering.  That means that each window has
 two rendering buffers; a front buffer and a back buffer.  The front buffer is
@@ -302,7 +302,7 @@ This function acts on the current context and will fail unless a context is
 current.
 
 
-@subsection quick_process_events Processing events
+### Processing events {#quick_process_events}
 
 GLFW needs to communicate regularly with the window system both in order to
 receive events and to show that the application hasn't locked up.  Event
@@ -325,7 +325,7 @@ all received events.  This saves a great deal of CPU cycles and is useful for,
 for example, many kinds of editing tools.
 
 
-@section quick_example Putting it together
+## Putting it together {#quick_example}
 
 Now that you know how to initialize GLFW, create a window and poll for
 keyboard input, it's possible to create a small program.

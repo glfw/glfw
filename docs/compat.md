@@ -1,4 +1,4 @@
-@page compat_guide Standards conformance
+# Standards conformance {#compat_guide}
 
 @tableofcontents
 
@@ -13,7 +13,7 @@ part of this information may change in future versions of GLFW and that will not
 be considered a breaking API change.
 
 
-@section compat_x11 X11 extensions, protocols and IPC standards
+## X11 extensions, protocols and IPC standards {#compat_x11}
 
 As GLFW uses Xlib directly, without any intervening toolkit
 library, it has sole responsibility for interacting well with the many and
@@ -91,7 +91,7 @@ conventions, the `GLFW_RESIZE_NWSE_CURSOR`, `GLFW_RESIZE_NESW_CURSOR` and
 legacy images.
 
 
-@section compat_wayland Wayland protocols and IPC standards
+## Wayland protocols and IPC standards {#compat_wayland}
 
 As GLFW uses libwayland directly, without any intervening toolkit library, it
 has sole responsibility for interacting well with every compositor in use on
@@ -144,7 +144,7 @@ to implement window focus and attention requests.  If the running compositor
 does not support this protocol, window focus and attention requests do nothing.
 
 
-@section compat_glx GLX extensions
+## GLX extensions {#compat_glx}
 
 The GLX API is the default API used to create OpenGL contexts on Unix-like
 systems using the X Window System.
@@ -184,7 +184,7 @@ extensions to provide support for sRGB framebuffers.  Where both of these
 extensions are unavailable, the `GLFW_SRGB_CAPABLE` hint will have no effect.
 
 
-@section compat_wgl WGL extensions
+## WGL extensions {#compat_wgl}
 
 The WGL API is used to create OpenGL contexts on Microsoft Windows and other
 implementations of the Win32 API, such as Wine.
@@ -225,7 +225,7 @@ extensions to provide support for sRGB framebuffers.  When both of these
 extensions are unavailable, the `GLFW_SRGB_CAPABLE` hint will have no effect.
 
 
-@section compat_osx OpenGL on macOS
+## OpenGL on macOS {#compat_osx}
 
 Support for OpenGL 3.2 and above was introduced with OS X 10.7 and even then
 only forward-compatible, core profile contexts are supported.  Support for
@@ -247,7 +247,7 @@ a non-default value will cause @ref glfwCreateWindow to fail and the
 `GLFW_CONTEXT_DEBUG` hint is ignored.
 
 
-@section compat_vulkan Vulkan loader and API
+## Vulkan loader and API {#compat_vulkan}
 
 By default, GLFW uses the standard system-wide Vulkan loader to access the
 Vulkan API on all platforms except macOS.  This is installed by both graphics
@@ -257,7 +257,7 @@ all other Vulkan-related functions will fail with an @ref GLFW_API_UNAVAILABLE
 error.
 
 
-@section compat_wsi Vulkan WSI extensions
+## Vulkan WSI extensions {#compat_wsi}
 
 The Vulkan WSI extensions are used to create Vulkan surfaces for GLFW windows on
 all supported platforms.

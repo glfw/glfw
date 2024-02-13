@@ -1,4 +1,4 @@
-@page context_guide Context guide
+# Context guide {#context_guide}
 
 @tableofcontents
 
@@ -13,7 +13,7 @@ context.  There are also guides for the other areas of the GLFW API.
  - @ref input_guide
 
 
-@section context_object Context objects
+## Context objects {#context_object}
 
 A window object encapsulates both a top-level window and an OpenGL or OpenGL ES
 context.  It is created with @ref glfwCreateWindow and destroyed with @ref
@@ -32,14 +32,14 @@ context creation by setting the [GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint)
 hint to `GLFW_NO_API`.  For more information, see the @ref vulkan_guide.
 
 
-@subsection context_hints Context creation hints
+### Context creation hints {#context_hints}
 
 There are a number of hints, specified using @ref glfwWindowHint, related to
 what kind of context is created.  See
 [context related hints](@ref window_hints_ctx) in the window guide.
 
 
-@subsection context_sharing Context object sharing
+### Context object sharing {#context_sharing}
 
 When creating a window and its OpenGL or OpenGL ES context with @ref
 glfwCreateWindow, you can specify another window whose context the new one
@@ -62,7 +62,7 @@ Contexts_.
 GLFW comes with a bare-bones object sharing example program called `sharing`.
 
 
-@subsection context_offscreen Offscreen contexts
+### Offscreen contexts {#context_offscreen}
 
 GLFW doesn't support creating contexts without an associated window.  However,
 contexts with hidden windows can be created with the
@@ -83,7 +83,7 @@ You should still [process events](@ref events) as long as you have at least one
 window, even if none of them are visible.
 
 
-@subsection context_less Windows without contexts
+### Windows without contexts {#context_less}
 
 You can disable context creation by setting the
 [GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint) hint to `GLFW_NO_API`.
@@ -92,7 +92,7 @@ Windows without contexts should not be passed to @ref glfwMakeContextCurrent or
 @ref glfwSwapBuffers.  Doing this generates a @ref GLFW_NO_WINDOW_CONTEXT error.
 
 
-@section context_current Current context
+## Current context {#context_current}
 
 Before you can make OpenGL or OpenGL ES calls, you need to have a current
 context of the correct type.  A context can only be current for a single thread
@@ -122,12 +122,12 @@ error.
  - @ref glfwGetProcAddress
 
 
-@section context_swap Buffer swapping
+## Buffer swapping {#context_swap}
 
 See @ref buffer_swap in the window guide.
 
 
-@section context_glext OpenGL and OpenGL ES extensions
+## OpenGL and OpenGL ES extensions {#context_glext}
 
 One of the benefits of OpenGL and OpenGL ES is their extensibility.
 Hardware vendors may include extensions in their implementations that extend the
@@ -150,7 +150,7 @@ their specifications, can be found at the
 [OpenGL ES Registry](https://www.khronos.org/registry/gles/).
 
 
-@subsection context_glext_auto Loading extension with a loader library
+### Loading extension with a loader library {#context_glext_auto}
 
 An extension loader library is the easiest and best way to access both OpenGL and
 OpenGL ES extensions and modern versions of the core OpenGL or OpenGL ES APIs.
@@ -231,7 +231,7 @@ if (GLAD_GL_ARB_gl_spirv)
 @endcode
 
 
-@subsection context_glext_manual Loading extensions manually
+### Loading extensions manually {#context_glext_manual}
 
 __Do not use this technique__ unless it is absolutely necessary.  An
 [extension loader library](@ref context_glext_auto) will save you a ton of
@@ -246,7 +246,7 @@ This section will demonstrate manual loading of OpenGL extensions.  The loading
 of OpenGL ES extensions is identical except for the name of the extension header.
 
 
-@subsubsection context_glext_header The glext.h header
+#### The glext.h header {#context_glext_header}
 
 The `glext.h` extension header is a continually updated file that defines the
 interfaces for all OpenGL extensions.  The latest version of this can always be
@@ -271,7 +271,7 @@ the GLFW header.
 @endcode
 
 
-@subsubsection context_glext_string Checking for extensions
+#### Checking for extensions {#context_glext_string}
 
 A given machine may not actually support the extension (it may have older
 drivers or a graphics card that lacks the necessary hardware features), so it
@@ -290,7 +290,7 @@ extension is supported, @ref glfwExtensionSupported returns `GLFW_TRUE`,
 otherwise it returns `GLFW_FALSE`.
 
 
-@subsubsection context_glext_proc Fetching function pointers
+#### Fetching function pointers {#context_glext_proc}
 
 Many extensions, though not all, require the use of new OpenGL functions.
 These functions often do not have entry points in the client API libraries of

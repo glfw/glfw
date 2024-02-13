@@ -1,4 +1,4 @@
-@page vulkan_guide Vulkan guide
+# Vulkan guide {#vulkan_guide}
 
 @tableofcontents
 
@@ -27,7 +27,7 @@ are also guides for the other areas of the GLFW API.
  - @ref input_guide
 
 
-@section vulkan_loader Finding the Vulkan loader
+## Finding the Vulkan loader {#vulkan_loader}
 
 GLFW itself does not ever need to be linked against the Vulkan loader.
 
@@ -52,7 +52,7 @@ bundle according to the LunarG SDK documentation.  This is explained in more det
 [SDK documentation for macOS](https://vulkan.lunarg.com/doc/sdk/latest/mac/getting_started.html).
 
 
-@section vulkan_include Including the Vulkan header file
+## Including the Vulkan header file {#vulkan_include}
 
 To have GLFW include the Vulkan header, define @ref GLFW_INCLUDE_VULKAN before including
 the GLFW header.
@@ -82,7 +82,7 @@ The `VK_USE_PLATFORM_*_KHR` macros do not need to be defined for the Vulkan part
 of GLFW to work.  Define them only if you are using these extensions directly.
 
 
-@section vulkan_support Querying for Vulkan support
+## Querying for Vulkan support {#vulkan_support}
 
 If you are linking directly against the Vulkan loader then you can skip this
 section.  The canonical desktop loader library exports all Vulkan core and
@@ -106,7 +106,7 @@ If one or both were not found, calling any other Vulkan related GLFW function
 will generate a @ref GLFW_API_UNAVAILABLE error.
 
 
-@subsection vulkan_proc Querying Vulkan function pointers
+### Querying Vulkan function pointers {#vulkan_proc}
 
 To load any Vulkan core or extension function from the found loader, call @ref
 glfwGetInstanceProcAddress.  To load functions needed for instance creation,
@@ -145,7 +145,7 @@ dispatch internally based on the device passed to them.  For more information
 about `vkGetDeviceProcAddr`, see the Vulkan documentation.
 
 
-@section vulkan_ext Querying required Vulkan extensions
+## Querying required Vulkan extensions {#vulkan_ext}
 
 To do anything useful with Vulkan you need to create an instance.  If you want
 to use Vulkan to render to a window, you must enable the instance extensions
@@ -194,7 +194,7 @@ info flags for MoltenVK to show up in the list of physical devices.  For more
 information, see the Vulkan and MoltenVK documentation.
 
 
-@section vulkan_present Querying for Vulkan presentation support
+## Querying for Vulkan presentation support {#vulkan_present}
 
 Not every queue family of every Vulkan device can present images to surfaces.
 To check whether a specific queue family of a physical device supports image
@@ -213,7 +213,7 @@ The `VK_KHR_surface` extension additionally provides the
 an existing Vulkan surface.
 
 
-@section vulkan_window Creating the window
+## Creating the window {#vulkan_window}
 
 Unless you will be using OpenGL or OpenGL ES with the same window as Vulkan,
 there is no need to create a context.  You can disable context creation with the
@@ -227,7 +227,7 @@ GLFWwindow* window = glfwCreateWindow(640, 480, "Window Title", NULL, NULL);
 See @ref context_less for more information.
 
 
-@section vulkan_surface Creating a Vulkan window surface
+## Creating a Vulkan window surface {#vulkan_surface}
 
 You can create a Vulkan surface (as defined by the `VK_KHR_surface` extension)
 for a GLFW window with @ref glfwCreateWindowSurface.

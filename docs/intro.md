@@ -1,4 +1,4 @@
-@page intro_guide Introduction to the API
+# Introduction to the API {#intro_guide}
 
 @tableofcontents
 
@@ -16,7 +16,7 @@ There are also guides for the other areas of GLFW.
  - @ref input_guide
 
 
-@section intro_init Initialization and termination
+## Initialization and termination {#intro_init}
 
 Before most GLFW functions may be called, the library must be initialized.
 This initialization checks what features are available on the machine,
@@ -41,7 +41,7 @@ Calling any other function before successful initialization will cause a @ref
 GLFW_NOT_INITIALIZED error.
 
 
-@subsection intro_init_init Initializing GLFW
+### Initializing GLFW {#intro_init_init}
 
 The library is initialized with @ref glfwInit, which returns `GLFW_FALSE` if an
 error occurred.
@@ -69,7 +69,7 @@ main menu and dock icon can be disabled with the @ref GLFW_COCOA_MENUBAR init
 hint.
 
 
-@subsection init_hints Initialization hints
+### Initialization hints {#init_hints}
 
 Initialization hints are set before @ref glfwInit and affect how the library
 behaves until termination.  Hints are set with @ref glfwInitHint.
@@ -87,7 +87,7 @@ will only affect their specific platform.  Other platforms will ignore them.
 Setting these hints requires no platform specific headers or functions.
 
 
-@subsubsection init_hints_shared Shared init hints
+#### Shared init hints {#init_hints_shared}
 
 @anchor GLFW_PLATFORM
 __GLFW_PLATFORM__ specifies the platform to use for windowing and input.
@@ -118,7 +118,7 @@ extension.  This extension is not used if this hint is
 `GLFW_ANGLE_PLATFORM_TYPE_NONE`, which is the default value.
 
 
-@subsubsection init_hints_osx macOS specific init hints
+#### macOS specific init hints {#init_hints_osx}
 
 @anchor GLFW_COCOA_CHDIR_RESOURCES_hint
 __GLFW_COCOA_CHDIR_RESOURCES__ specifies whether to set the current directory to
@@ -133,7 +133,7 @@ a nib or manually by GLFW.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 This is ignored on other platforms.
 
 
-@subsubsection init_hints_x11 X11 specific init hints
+#### X11 specific init hints {#init_hints_x11}
 
 @anchor GLFW_X11_XCB_VULKAN_SURFACE_hint
 __GLFW_X11_XCB_VULKAN_SURFACE__ specifies whether to prefer the
@@ -142,7 +142,7 @@ the `VK_KHR_xlib_surface` extension.  Possible values are `GLFW_TRUE` and
 `GLFW_FALSE`.  This is ignored on other platforms.
 
 
-@subsubsection init_hints_wayland Wayland specific init hints
+#### Wayland specific init hints {#init_hints_wayland}
 
 @anchor GLFW_WAYLAND_LIBDECOR_hint
 __GLFW_WAYLAND_LIBDECOR__ specifies whether to use
@@ -151,7 +151,7 @@ decorations where available.  Possible values are `GLFW_WAYLAND_PREFER_LIBDECOR`
 and `GLFW_WAYLAND_DISABLE_LIBDECOR`.  This is ignored on other platforms.
 
 
-@subsubsection init_hints_values Supported and default values
+#### Supported and default values {#init_hints_values}
 
 Initialization hint              | Default value                   | Supported values
 -------------------------------- | ------------------------------- | ----------------
@@ -164,7 +164,7 @@ Initialization hint              | Default value                   | Supported v
 @ref GLFW_WAYLAND_LIBDECOR       | `GLFW_WAYLAND_PREFER_LIBDECOR`  | `GLFW_WAYLAND_PREFER_LIBDECOR` or `GLFW_WAYLAND_DISABLE_LIBDECOR`
 
 
-@subsection platform Runtime platform selection
+### Runtime platform selection {#platform}
 
 GLFW can be compiled for more than one platform (window system) at once.  This lets
 a single library binary support both X11 and Wayland on Linux and other Unix-like systems.
@@ -206,7 +206,7 @@ Unix-like systems, then you may need to check that you are calling the ones matc
 selected platform.
 
 
-@subsection init_allocator Custom heap memory allocator
+### Custom heap memory allocator {#init_allocator}
 
 The heap memory allocator can be customized before initialization with @ref
 glfwInitAllocator.
@@ -273,7 +273,7 @@ The documentation for @ref GLFWdeallocatefun also lists the requirements and lim
 for a deallocation function.  If the active one does not meet all of these, GLFW may fail.
 
 
-@subsection intro_init_terminate Terminating GLFW
+### Terminating GLFW {#intro_init_terminate}
 
 Before your application exits, you should terminate the GLFW library if it has
 been initialized.  This is done with @ref glfwTerminate.
@@ -292,7 +292,7 @@ library was not initialized or had already been terminated, it returns
 immediately.
 
 
-@section error_handling Error handling
+## Error handling {#error_handling}
 
 Some GLFW functions have return values that indicate an error, but this is often
 not very helpful when trying to figure out what happened or why it occurred.
@@ -367,7 +367,7 @@ Do not rely on a currently invalid call to generate a specific error, as in the
 future that same call may generate a different error or become valid.
 
 
-@section coordinate_systems Coordinate systems
+## Coordinate systems {#coordinate_systems}
 
 GLFW has two primary coordinate systems: the _virtual screen_ and the window
 _content area_ or _content area_.  Both use the same unit: _virtual screen
@@ -404,7 +404,7 @@ between screen coordinates and pixels may also change at run-time depending on
 which monitor the window is currently considered to be on.
 
 
-@section guarantees_limitations Guarantees and limitations
+## Guarantees and limitations {#guarantees_limitations}
 
 This section describes the conditions under which GLFW can be expected to
 function, barring bugs in the operating system or drivers.  Use of GLFW outside
@@ -413,7 +413,7 @@ time, or on some versions of GLFW, but it may break at any time and this will
 not be considered a bug.
 
 
-@subsection lifetime Pointer lifetimes
+### Pointer lifetimes {#lifetime}
 
 GLFW will never free any pointer you provide to it, and you must never free any
 pointer it provides to you.
@@ -433,7 +433,7 @@ Pointer lifetimes are guaranteed not to be shortened in future minor or patch
 releases.
 
 
-@subsection reentrancy Reentrancy
+### Reentrancy {#reentrancy}
 
 GLFW event processing and object destruction are not reentrant.  This means that
 the following functions must not be called from any callback function:
@@ -449,7 +449,7 @@ These functions may be made reentrant in future minor or patch releases, but
 functions not on this list will not be made non-reentrant.
 
 
-@subsection thread_safety Thread safety
+### Thread safety {#thread_safety}
 
 Most GLFW functions must only be called from the main thread (the thread that
 calls main), but some may be called from any thread once the library has been
@@ -530,7 +530,7 @@ but functions that are currently limited to the main thread may be updated to
 allow calls from any thread in future releases.
 
 
-@subsection compatibility Version compatibility
+### Version compatibility {#compatibility}
 
 GLFW uses [Semantic Versioning](https://semver.org/).  This guarantees source
 and binary backward compatibility with earlier minor versions of the API.  This
@@ -550,14 +550,14 @@ fixed in the next release.  The reference documentation will also take
 precedence over anything stated in a guide.
 
 
-@subsection event_order Event order
+### Event order {#event_order}
 
 The order of arrival of related events is not guaranteed to be consistent
 across platforms.  The exception is synthetic key and mouse button release
 events, which are always delivered after the window defocus event.
 
 
-@section intro_version Version management
+## Version management {#intro_version}
 
 GLFW provides mechanisms for identifying what version of GLFW your application
 was compiled against as well as what version it is currently running against.
@@ -565,7 +565,7 @@ If you are loading GLFW dynamically (not just linking dynamically), you can use
 this to verify that the library binary is compatible with your application.
 
 
-@subsection intro_version_compile Compile-time version
+### Compile-time version {#intro_version_compile}
 
 The compile-time version of GLFW is provided by the GLFW header with the
 `GLFW_VERSION_MAJOR`, `GLFW_VERSION_MINOR` and `GLFW_VERSION_REVISION` macros.
@@ -578,7 +578,7 @@ printf("Compiled against GLFW %i.%i.%i\n",
 @endcode
 
 
-@subsection intro_version_runtime Run-time version
+### Run-time version {#intro_version_runtime}
 
 The run-time version can be retrieved with @ref glfwGetVersion, a function that
 may be called regardless of whether GLFW is initialized.
@@ -591,7 +591,7 @@ printf("Running against GLFW %i.%i.%i\n", major, minor, revision);
 @endcode
 
 
-@subsection intro_version_string Version string
+### Version string {#intro_version_string}
 
 GLFW 3 also provides a compile-time generated version string that describes the
 version, platform, compiler and any platform-specific compile-time options.

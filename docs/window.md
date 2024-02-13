@@ -1,4 +1,4 @@
-@page window_guide Window guide
+# Window guide {#window_guide}
 
 @tableofcontents
 
@@ -13,7 +13,7 @@ guides for the other areas of GLFW.
  - @ref input_guide
 
 
-@section window_object Window objects
+## Window objects {#window_object}
 
 The @ref GLFWwindow object encapsulates both a window and a context.  They are
 created with @ref glfwCreateWindow and destroyed with @ref glfwDestroyWindow, or
@@ -24,7 +24,7 @@ To see the event stream provided to the various window related callbacks, run
 the `events` test program.
 
 
-@subsection window_creation Window creation
+### Window creation {#window_creation}
 
 A window and its OpenGL or OpenGL ES context are created with @ref
 glfwCreateWindow, which returns a handle to the created window object.  For
@@ -42,7 +42,7 @@ along with all input events, so event handlers can tell which window received
 the event.
 
 
-@subsubsection window_full_screen Full screen windows
+#### Full screen windows {#window_full_screen}
 
 To create a full screen window, you need to specify which monitor the window
 should use.  In most cases, the user's primary monitor is a good choice.
@@ -91,7 +91,7 @@ If a monitor is disconnected, all windows that are full screen on that monitor
 will be switched to windowed mode.  See @ref monitor_event for more information.
 
 
-@subsubsection window_windowed_full_screen "Windowed full screen" windows
+#### "Windowed full screen" windows {#window_windowed_full_screen}
 
 If the closest match for the desired video mode is the current one, the video
 mode will not be changed, making window creation faster and application
@@ -123,7 +123,7 @@ so if you already have a full screen window on that monitor that you want to
 make windowed full screen, you need to have saved the desktop resolution before.
 
 
-@subsection window_destruction Window destruction
+### Window destruction {#window_destruction}
 
 When a window is no longer needed, destroy it with @ref glfwDestroyWindow.
 
@@ -139,7 +139,7 @@ When a full screen window is destroyed, the original video mode of its monitor
 is restored, but the gamma ramp is left untouched.
 
 
-@subsection window_hints Window creation hints
+### Window creation hints {#window_hints}
 
 There are a number of hints that can be set before the creation of a window and
 context.  Some affect the window itself, others affect the framebuffer or
@@ -158,7 +158,7 @@ you wish to have the specified attributes.  They function as additional
 arguments to @ref glfwCreateWindow.
 
 
-@subsubsection window_hints_hard Hard and soft constraints
+#### Hard and soft constraints {#window_hints_hard}
 
 Some window hints are hard constraints.  These must match the available
 capabilities _exactly_ for window and context creation to succeed.  Hints
@@ -177,7 +177,7 @@ context, but are ignored when requesting an OpenGL ES context:
 - [GLFW_OPENGL_PROFILE](@ref GLFW_OPENGL_PROFILE_hint)
 
 
-@subsubsection window_hints_wnd Window related hints
+#### Window related hints {#window_hints_wnd}
 
 @anchor GLFW_RESIZABLE_hint
 __GLFW_RESIZABLE__ specifies whether the windowed mode window will be resizable
@@ -263,7 +263,7 @@ manager will position the window where it thinks the user will prefer it.
 Possible values are any valid screen coordinates and `GLFW_ANY_POSITION`.
 
 
-@subsubsection window_hints_fb Framebuffer related hints
+#### Framebuffer related hints {#window_hints_fb}
 
 @anchor GLFW_RED_BITS
 @anchor GLFW_GREEN_BITS
@@ -322,7 +322,7 @@ buffered.  You nearly always want to use double buffering.  This is a hard
 constraint.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 
 
-@subsubsection window_hints_mtr Monitor related hints
+#### Monitor related hints {#window_hints_mtr}
 
 @anchor GLFW_REFRESH_RATE
 __GLFW_REFRESH_RATE__ specifies the desired refresh rate for full screen
@@ -330,7 +330,7 @@ windows.  A value of `GLFW_DONT_CARE` means the highest available refresh rate
 will be used.  This hint is ignored for windowed mode windows.
 
 
-@subsubsection window_hints_ctx Context related hints
+#### Context related hints {#window_hints_ctx}
 
 @anchor GLFW_CLIENT_API_hint
 __GLFW_CLIENT_API__ specifies which client API to create the context for.
@@ -453,7 +453,7 @@ The no error mode for OpenGL and OpenGL ES is described in detail by the
 extension.
 
 
-@subsubsection window_hints_win32 Win32 specific hints
+#### Win32 specific hints {#window_hints_win32}
 
 @anchor GLFW_WIN32_KEYBOARD_MENU_hint
 __GLFW_WIN32_KEYBOARD_MENU__ specifies whether to allow access to the window
@@ -469,7 +469,7 @@ GLFW behaves as if this hint was set to `GLFW_FALSE`.  Possible values are
 `GLFW_TRUE` and `GLFW_FALSE`.  This is ignored on other platforms.
 
 
-@subsubsection window_hints_osx macOS specific hints
+#### macOS specific hints {#window_hints_osx}
 
 @anchor GLFW_COCOA_RETINA_FRAMEBUFFER_hint
 __GLFW_COCOA_RETINA_FRAMEBUFFER__ specifies whether to use full resolution
@@ -498,7 +498,7 @@ should also declare this in its `Info.plist` by setting the
 `NSSupportsAutomaticGraphicsSwitching` key to `true`.
 
 
-@subsubsection window_hints_x11 X11 specific window hints
+#### X11 specific window hints {#window_hints_x11}
 
 @anchor GLFW_X11_CLASS_NAME_hint
 @anchor GLFW_X11_INSTANCE_NAME_hint
@@ -507,7 +507,7 @@ ASCII encoded class and instance parts of the ICCCM `WM_CLASS` window property. 
 hints need to be set to something other than an empty string for them to take effect.
 These are set with @ref glfwWindowHintString.
 
-@subsubsection window_hints_wayland Wayland specific window hints
+#### Wayland specific window hints {#window_hints_wayland}
 
 @anchor GLFW_WAYLAND_APP_ID_hint
 __GLFW_WAYLAND_APP_ID__ specifies the Wayland app_id for a window, used
@@ -515,7 +515,7 @@ by window managers to identify types of windows. This is set with
 @ref glfwWindowHintString.
 
 
-@subsubsection window_hints_values Supported and default values
+#### Supported and default values {#window_hints_values}
 
 Window hint                   | Default value               | Supported values
 ----------------------------- | --------------------------- | ----------------
@@ -568,14 +568,14 @@ GLFW_X11_INSTANCE_NAME        | `""`                        | An ASCII encoded `
 GLFW_WAYLAND_APP_ID           | `""`                        | An ASCII encoded Wayland `app_id` name
 
 
-@section window_events Window event processing
+## Window event processing {#window_events}
 
 See @ref events.
 
 
-@section window_properties Window properties and events
+## Window properties and events {#window_properties}
 
-@subsection window_userptr User pointer
+### User pointer {#window_userptr}
 
 Each window has a user pointer that can be set with @ref
 glfwSetWindowUserPointer and queried with @ref glfwGetWindowUserPointer.  This
@@ -585,7 +585,7 @@ the life-time of the window.
 The initial value of the pointer is `NULL`.
 
 
-@subsection window_close Window closing and close flag
+### Window closing and close flag {#window_close}
 
 When the user attempts to close the window, for example by clicking the close
 widget or using a key chord like Alt+F4, the _close flag_ of the window is set.
@@ -626,7 +626,7 @@ void window_close_callback(GLFWwindow* window)
 @endcode
 
 
-@subsection window_size Window size
+### Window size {#window_size}
 
 The size of a window can be changed with @ref glfwSetWindowSize.  For windowed
 mode windows, this sets the size, in
@@ -685,7 +685,7 @@ the content area to the corresponding edges of the full window.  As they are
 distances and not coordinates, they are always zero or positive.
 
 
-@subsection window_fbsize Framebuffer size
+### Framebuffer size {#window_fbsize}
 
 While the size of a window is measured in screen coordinates, OpenGL works with
 pixels.  The size you pass into `glViewport`, for example, should be in pixels.
@@ -723,7 +723,7 @@ The size of a framebuffer may change independently of the size of a window, for
 example if the window is dragged between a regular monitor and a high-DPI one.
 
 
-@subsection window_scale Window content scale
+### Window content scale {#window_scale}
 
 The content scale for a window can be retrieved with @ref
 glfwGetWindowContentScale.
@@ -768,7 +768,7 @@ window is created and when its content scale later changes, set the @ref
 GLFW_SCALE_TO_MONITOR window hint.
 
 
-@subsection window_sizelimits Window size limits
+### Window size limits {#window_sizelimits}
 
 The minimum and maximum size of the content area of a windowed mode window can
 be enforced with @ref glfwSetWindowSizeLimits.  The user may resize the window
@@ -814,7 +814,7 @@ You can have both size limits and aspect ratio set for a window, but the results
 are undefined if they conflict.
 
 
-@subsection window_pos Window position
+### Window position {#window_pos}
 
 By default, the window manager chooses the position of new windowed mode
 windows, based on its size and which monitor the user appears to be working on.
@@ -863,7 +863,7 @@ glfwGetWindowPos(window, &xpos, &ypos);
 @endcode
 
 
-@subsection window_title Window title
+### Window title {#window_title}
 
 All GLFW windows have a title, although undecorated or full screen windows may
 not display it or only display it in a task bar or similar interface.  You can
@@ -890,7 +890,7 @@ glfwSetWindowTitle(window, u8"This is always a UTF-8 string");
 @endcode
 
 
-@subsection window_icon Window icon
+### Window icon {#window_icon}
 
 Decorated windows have icons on some platforms.  You can set this icon by
 specifying a list of candidate images with @ref glfwSetWindowIcon.
@@ -914,7 +914,7 @@ glfwSetWindowIcon(window, 0, NULL);
 @endcode
 
 
-@subsection window_monitor Window monitor
+### Window monitor {#window_monitor}
 
 Full screen windows are associated with a specific monitor.  You can get the
 handle for this monitor with @ref glfwGetWindowMonitor.
@@ -952,7 +952,7 @@ that was originally windowed to its original size and position, save these
 before making it full screen and then pass them in as above.
 
 
-@subsection window_iconify Window iconification
+### Window iconification {#window_iconify}
 
 Windows can be iconified (i.e. minimized) with @ref glfwIconifyWindow.
 
@@ -1003,7 +1003,7 @@ int iconified = glfwGetWindowAttrib(window, GLFW_ICONIFIED);
 @endcode
 
 
-@subsection window_maximize Window maximization
+### Window maximization {#window_maximize}
 
 Windows can be maximized (i.e. zoomed) with @ref glfwMaximizeWindow.
 
@@ -1059,7 +1059,7 @@ glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 @endcode
 
 
-@subsection window_hide Window visibility
+### Window visibility {#window_hide}
 
 Windowed mode windows can be hidden with @ref glfwHideWindow.
 
@@ -1101,7 +1101,7 @@ can be useful if you need to set up your window further before showing it, for
 example moving it to a specific location.
 
 
-@subsection window_focus Window input focus
+### Window input focus {#window_focus}
 
 Windows can be given input focus and brought to the front with @ref
 glfwFocusWindow.
@@ -1152,7 +1152,7 @@ glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
 @endcode
 
 
-@subsection window_attention Window attention request
+### Window attention request {#window_attention}
 
 If you wish to notify the user of an event without interrupting, you can request
 attention with @ref glfwRequestWindowAttention.
@@ -1166,7 +1166,7 @@ not supported, the application as a whole.  Once the user has given it
 attention, the system will automatically end the request.
 
 
-@subsection window_refresh Window damage and refresh
+### Window damage and refresh {#window_refresh}
 
 If you wish to be notified when the contents of a window is damaged and needs
 to be refreshed, set a window refresh callback.
@@ -1191,7 +1191,7 @@ window contents are saved off-screen, this callback might only be called when
 the window or framebuffer is resized.
 
 
-@subsection window_transparency Window transparency
+### Window transparency {#window_transparency}
 
 GLFW supports two kinds of transparency for windows; framebuffer transparency
 and whole window transparency.  A single window may not use both methods.  The
@@ -1255,7 +1255,7 @@ overlay like for example a notification, the @ref GLFW_FLOATING and @ref
 GLFW_MOUSE_PASSTHROUGH window hints and attributes may be useful.
 
 
-@subsection window_attribs Window attributes
+### Window attributes {#window_attribs}
 
 Windows have a number of attributes that can be returned using @ref
 glfwGetWindowAttrib.  Some reflect state that may change as a result of user
@@ -1283,7 +1283,7 @@ glfwSetWindowAttrib(window, GLFW_RESIZABLE, GLFW_FALSE);
 
 
 
-@subsubsection window_attribs_wnd Window related attributes
+#### Window related attributes {#window_attribs_wnd}
 
 @anchor GLFW_FOCUSED_attrib
 __GLFW_FOCUSED__ indicates whether the specified window has input focus.  See
@@ -1351,7 +1351,7 @@ with @ref glfwSetWindowAttrib.  This is only supported for undecorated windows.
 Decorated windows with this enabled will behave differently between platforms.
 
 
-@subsubsection window_attribs_ctx Context related attributes
+#### Context related attributes {#window_attribs_ctx}
 
 @anchor GLFW_CLIENT_API_attrib
 __GLFW_CLIENT_API__ indicates the client API provided by the window's context;
@@ -1415,7 +1415,7 @@ context.  This is `GLFW_LOSE_CONTEXT_ON_RESET` or `GLFW_NO_RESET_NOTIFICATION`
 if the window's context supports robustness, or `GLFW_NO_ROBUSTNESS` otherwise.
 
 
-@subsubsection window_attribs_fb Framebuffer related attributes
+#### Framebuffer related attributes {#window_attribs_fb}
 
 GLFW does not expose most attributes of the default framebuffer (i.e. the
 framebuffer attached to the window) as these can be queried directly with either
@@ -1453,7 +1453,7 @@ when rendering with OpenGL or OpenGL ES.  This can be set before creation with
 the [GLFW_DOUBLEBUFFER](@ref GLFW_DOUBLEBUFFER_hint) window hint.
 
 
-@section buffer_swap Buffer swapping
+## Buffer swapping {#buffer_swap}
 
 GLFW windows are by default double buffered.  That means that you have two
 rendering buffers; a front buffer and a back buffer.  The front buffer is

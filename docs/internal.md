@@ -1,4 +1,4 @@
-@page internals_guide Internal structure
+# Internal structure {#internals_guide}
 
 @tableofcontents
 
@@ -6,7 +6,7 @@ There are several interfaces inside GLFW.  Each interface has its own area of
 responsibility and its own naming conventions.
 
 
-@section internals_public Public interface
+## Public interface {#internals_public}
 
 The most well-known is the public interface, described in the glfw3.h header
 file.  This is implemented in source files shared by all platforms and these
@@ -20,7 +20,7 @@ it use headless camel case.
 Examples: `glfwCreateWindow`, `GLFWwindow`, `GLFW_RED_BITS`
 
 
-@section internals_native Native interface
+## Native interface {#internals_native}
 
 The [native interface](@ref native) is a small set of publicly available
 but platform-specific functions, described in the glfw3native.h header file and
@@ -34,7 +34,7 @@ from.
 Examples: `glfwGetX11Window`, `glfwGetWGLContext`
 
 
-@section internals_internal Internal interface
+## Internal interface {#internals_internal}
 
 The internal interface consists of utility functions used by all other
 interfaces.  It is shared code implemented in the same shared source files as
@@ -50,7 +50,7 @@ global names have a leading underscore.
 Examples: `_glfwIsValidContextConfig`, `_GLFWwindow`, `_glfw.monitorCount`
 
 
-@section internals_platform Platform interface
+## Platform interface {#internals_platform}
 
 The platform interface implements all platform-specific operations as a service
 to the public interface.  This includes event processing.  The platform
@@ -88,7 +88,7 @@ prevents shared code from accidentally using these members.
 Examples: `window->win32.handle`, `_glfw.x11.display`
 
 
-@section internals_event Event interface
+## Event interface {#internals_event}
 
 The event interface is implemented in the same shared source files as the public
 interface and is responsible for delivering the events it receives to the
@@ -100,7 +100,7 @@ ObjectEvent pattern.
 Examples: `_glfwInputWindowFocus`, `_glfwInputCursorPos`
 
 
-@section internals_static Static functions
+## Static functions {#internals_static}
 
 Static functions may be used by any interface and have no prefixes or suffixes.
 These use headless camel case.
@@ -108,7 +108,7 @@ These use headless camel case.
 Examples: `isValidElementForJoystick`
 
 
-@section internals_config Configuration macros
+## Configuration macros {#internals_config}
 
 GLFW uses a number of configuration macros to select at compile time which
 interfaces and code paths to use.  They are defined in the GLFW CMake target.

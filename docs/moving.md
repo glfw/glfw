@@ -1,4 +1,4 @@
-@page moving_guide Moving from GLFW 2 to 3
+# Moving from GLFW 2 to 3 {#moving_guide}
 
 @tableofcontents
 
@@ -9,9 +9,9 @@ base onto the new API.  For example, the new multi-monitor functions are
 required to create full screen windows with GLFW 3.
 
 
-@section moving_removed Changed and removed features
+## Changed and removed features {#moving_removed}
 
-@subsection moving_renamed_files Renamed library and header file
+### Renamed library and header file {#moving_renamed_files}
 
 The GLFW 3 header is named @ref glfw3.h and moved to the `GLFW` directory, to
 avoid collisions with the headers of other major versions.  Similarly, the GLFW
@@ -30,7 +30,7 @@ Unix-like systems, where it uses the
 @endcode
 
 
-@subsection moving_threads Removal of threading functions
+### Removal of threading functions {#moving_threads}
 
 The threading functions have been removed, including the per-thread sleep
 function.  They were fairly primitive, under-used, poorly integrated and took
@@ -63,7 +63,7 @@ used from any thread and which must only be used from the main thread.
 `GLFWthreadfun`
 
 
-@subsection moving_image Removal of image and texture loading
+### Removal of image and texture loading {#moving_image}
 
 The image and texture loading functions have been removed.  They only supported
 the Targa image format, making them mostly useful for beginner level examples.
@@ -82,7 +82,7 @@ platform-independent, as both OpenGL and stdio are available wherever GLFW is.
 `glfwLoadMemoryTexture2D` and `glfwLoadTextureImage2D`.
 
 
-@subsection moving_stdcall Removal of GLFWCALL macro
+### Removal of GLFWCALL macro {#moving_stdcall}
 
 The `GLFWCALL` macro, which made callback functions use
 [__stdcall](https://msdn.microsoft.com/en-us/library/zxk0tw93.aspx) on Windows,
@@ -103,7 +103,7 @@ void callback_function(...);
 @endcode
 
 
-@subsection moving_window_handles Window handle parameters
+### Window handle parameters {#moving_window_handles}
 
 Because GLFW 3 supports multiple windows, window handle parameters have been
 added to all window-related GLFW functions and callbacks.  The handle of
@@ -122,7 +122,7 @@ glfwSetWindowTitle(window, "New Window Title");
 @endcode
 
 
-@subsection moving_monitor Explicit monitor selection
+### Explicit monitor selection {#moving_monitor}
 
 GLFW 3 provides support for multiple monitors.  To request a full screen mode window,
 instead of passing `GLFW_FULLSCREEN` you specify which monitor you wish the
@@ -146,7 +146,7 @@ into [window hints](@ref window_hints), but as they have been given
 [sane defaults](@ref window_hints_values) you rarely need to set these hints.
 
 
-@subsection moving_autopoll Removal of automatic event polling
+### Removal of automatic event polling {#moving_autopoll}
 
 GLFW 3 does not automatically poll for events in @ref glfwSwapBuffers, meaning
 you need to call @ref glfwPollEvents or @ref glfwWaitEvents yourself.  Unlike
@@ -175,7 +175,7 @@ while (...)
 @endcode
 
 
-@subsection moving_context Explicit context management
+### Explicit context management {#moving_context}
 
 Each GLFW 3 window has its own OpenGL context and only you, the application
 programmer, can know which context should be current on which thread at any
@@ -185,7 +185,7 @@ This means that you need to call @ref glfwMakeContextCurrent after creating
 a window before you can call any OpenGL functions.
 
 
-@subsection moving_hidpi Separation of window and framebuffer sizes
+### Separation of window and framebuffer sizes {#moving_hidpi}
 
 Window positions and sizes now use screen coordinates, which may not be the same
 as pixels on machines with high-DPI monitors.  This is important as OpenGL uses
@@ -208,7 +208,7 @@ glViewport(0, 0, width, height);
 @endcode
 
 
-@subsection moving_window_close Window closing changes
+### Window closing changes {#moving_window_close}
 
 The `GLFW_OPENED` window parameter has been removed.  As long as the window has
 not been destroyed, whether through @ref glfwDestroyWindow or @ref
@@ -260,7 +260,7 @@ for other reasons to close the window as well, for example the user choosing
 Quit from an in-game menu.
 
 
-@subsection moving_hints Persistent window hints
+### Persistent window hints {#moving_hints}
 
 The `glfwOpenWindowHint` function has been renamed to @ref glfwWindowHint.
 
@@ -269,7 +269,7 @@ instead retain their values until modified by @ref glfwWindowHint or @ref
 glfwDefaultWindowHints, or until the library is terminated and re-initialized.
 
 
-@subsection moving_video_modes Video mode enumeration
+### Video mode enumeration {#moving_video_modes}
 
 Video mode enumeration is now per-monitor.  The @ref glfwGetVideoModes function
 now returns all available modes for a specific monitor instead of requiring you
@@ -278,7 +278,7 @@ had poorly defined behavior, has been replaced by @ref glfwGetVideoMode, which
 returns the current mode of a monitor.
 
 
-@subsection moving_char_up Removal of character actions
+### Removal of character actions {#moving_char_up}
 
 The action parameter of the [character callback](@ref GLFWcharfun) has been
 removed.  This was an artefact of the origin of GLFW, i.e. being developed in
@@ -297,7 +297,7 @@ void character_callback(GLFWwindow* window, int character);
 @endcode
 
 
-@subsection moving_cursorpos Cursor position changes
+### Cursor position changes {#moving_cursorpos}
 
 The `glfwGetMousePos` function has been renamed to @ref glfwGetCursorPos,
 `glfwSetMousePos` to @ref glfwSetCursorPos and `glfwSetMousePosCallback` to @ref
@@ -313,7 +313,7 @@ glfwSetCursorPos (formerly `glfwSetMousePos`) when that window is active.
 Unless the window is active, the function fails silently.
 
 
-@subsection moving_wheel Wheel position replaced by scroll offsets
+### Wheel position replaced by scroll offsets {#moving_wheel}
 
 The `glfwGetMouseWheel` function has been removed.  Scrolling is the input of
 offsets and has no absolute position.  The mouse wheel callback has been
@@ -335,7 +335,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 `glfwGetMouseWheel`
 
 
-@subsection moving_repeat Key repeat action
+### Key repeat action {#moving_repeat}
 
 The `GLFW_KEY_REPEAT` enable has been removed and key repeat is always enabled
 for both keys and characters.  A new key action, `GLFW_REPEAT`, has been added
@@ -344,7 +344,7 @@ from a repeat.  Note that @ref glfwGetKey still returns only `GLFW_PRESS` or
 `GLFW_RELEASE`.
 
 
-@subsection moving_keys Physical key input
+### Physical key input {#moving_keys}
 
 GLFW 3 key tokens map to physical keys, unlike in GLFW 2 where they mapped to
 the values generated by the current keyboard layout.  The tokens are named
@@ -364,7 +364,7 @@ having to remember whether to check for `a` or `A`, you now check for
 @ref GLFW_KEY_A.
 
 
-@subsection moving_joystick Joystick function changes
+### Joystick function changes {#moving_joystick}
 
 The `glfwGetJoystickPos` function has been renamed to @ref glfwGetJoystickAxes.
 
@@ -374,7 +374,7 @@ function as well as axis and button counts returned by the @ref
 glfwGetJoystickAxes and @ref glfwGetJoystickButtons functions.
 
 
-@subsection moving_mbcs Win32 MBCS support
+### Win32 MBCS support {#moving_mbcs}
 
 The Win32 port of GLFW 3 will not compile in
 [MBCS mode](https://msdn.microsoft.com/en-us/library/5z097dxa.aspx).
@@ -385,7 +385,7 @@ Therefore, even if an application using GLFW has MBCS mode code, there's no need
 for GLFW itself to support it.
 
 
-@subsection moving_windows Support for versions of Windows older than XP
+### Support for versions of Windows older than XP {#moving_windows}
 
 All explicit support for version of Windows older than XP has been removed.
 There is no code that actively prevents GLFW 3 from running on these earlier
@@ -405,7 +405,7 @@ runtime checking for a number of functions that are present only on modern
 version of Windows.
 
 
-@subsection moving_syskeys Capture of system-wide hotkeys
+### Capture of system-wide hotkeys {#moving_syskeys}
 
 The ability to disable and capture system-wide hotkeys like Alt+Tab has been
 removed.  Modern applications, whether they're games, scientific visualisations
@@ -413,7 +413,7 @@ or something else, are nowadays expected to be good desktop citizens and allow
 these hotkeys to function even when running in full screen mode.
 
 
-@subsection moving_terminate Automatic termination
+### Automatic termination {#moving_terminate}
 
 GLFW 3 does not register @ref glfwTerminate with `atexit` at initialization,
 because `exit` calls registered functions from the calling thread and while it
@@ -426,7 +426,7 @@ destroys all windows not already destroyed with @ref glfwDestroyWindow,
 invalidating any window handles you may still have.
 
 
-@subsection moving_glu GLU header inclusion
+### GLU header inclusion {#moving_glu}
 
 GLFW 3 does not by default include the GLU header and GLU itself has been
 deprecated by [Khronos](https://en.wikipedia.org/wiki/Khronos_Group).  __New
@@ -453,10 +453,10 @@ tessellation functions, see for example
 [libtess2](https://github.com/memononen/libtess2).
 
 
-@section moving_tables Name change tables
+## Name change tables {#moving_tables}
 
 
-@subsection moving_renamed_functions Renamed functions
+### Renamed functions {#moving_renamed_functions}
 
 | GLFW 2                      | GLFW 3                        | Notes |
 | --------------------------- | ----------------------------- | ----- |
@@ -476,7 +476,7 @@ tessellation functions, see for example
 | `glfwGetJoystickParam`      | @ref glfwJoystickPresent      | The axis and button counts are provided by @ref glfwGetJoystickAxes and @ref glfwGetJoystickButtons |
 
 
-@subsection moving_renamed_types Renamed types
+### Renamed types {#moving_renamed_types}
 
 | GLFW 2              | GLFW 3                | Notes |
 | ------------------- | --------------------- |       |
@@ -484,7 +484,7 @@ tessellation functions, see for example
 | `GLFWmouseposfun`   | @ref GLFWcursorposfun |       |
 
 
-@subsection moving_renamed_tokens Renamed tokens
+### Renamed tokens {#moving_renamed_tokens}
 
 | GLFW 2                      | GLFW 3                       | Notes |
 | --------------------------- | ---------------------------- | ----- |

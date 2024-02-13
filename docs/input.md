@@ -1,4 +1,4 @@
-@page input_guide Input guide
+# Input guide {#input_guide}
 
 @tableofcontents
 
@@ -27,7 +27,7 @@ out all arguments provided for every event, along with time and sequence
 information.
 
 
-@section events Event processing
+## Event processing {#events}
 
 GLFW needs to poll the window system for events both to provide input to the
 application and to prove to the window system that the application hasn't locked
@@ -89,7 +89,7 @@ a [window size callback](@ref window_size) GLFW will call it in turn with the
 new size before everything returns back out of the @ref glfwSetWindowSize call.
 
 
-@section input_keyboard Keyboard input
+## Keyboard input {#input_keyboard}
 
 GLFW divides keyboard input into two categories; key events and character
 events.  Key events relate to actual physical keyboard keys, whereas character
@@ -101,7 +101,7 @@ may not be the case on your machine, but your users are likely not all using the
 same keyboard layout, input method or even operating system as you.
 
 
-@subsection input_key Key input
+### Key input {#input_key}
 
 If you wish to be notified when a physical key is pressed or released or when it
 repeats, set a key callback.
@@ -201,7 +201,7 @@ The `GLFW_KEY_LAST` constant holds the highest value of any
 [key token](@ref keys).
 
 
-@subsection input_char Text input
+### Text input {#input_char}
 
 GLFW supports text input in the form of a stream of
 [Unicode code points](https://en.wikipedia.org/wiki/Unicode), as produced by the
@@ -230,7 +230,7 @@ void character_callback(GLFWwindow* window, unsigned int codepoint)
 @endcode
 
 
-@subsection input_key_name Key names
+### Key names {#input_key_name}
 
 If you wish to refer to keys by name, you can query the keyboard layout
 dependent name of printable keys with @ref glfwGetKeyName.
@@ -246,14 +246,14 @@ ignored.  This matches the behavior of the key callback, meaning the callback
 arguments can always be passed unmodified to this function.
 
 
-@section input_mouse Mouse input
+## Mouse input {#input_mouse}
 
 Mouse input comes in many forms, including mouse motion, button presses and
 scrolling offsets.  The cursor appearance can also be changed, either to
 a custom image or a standard cursor shape from the system theme.
 
 
-@subsection cursor_pos Cursor position
+### Cursor position {#cursor_pos}
 
 If you wish to be notified when the cursor moves over the window, set a cursor
 position callback.
@@ -281,7 +281,7 @@ glfwGetCursorPos(window, &xpos, &ypos);
 @endcode
 
 
-@subsection cursor_mode Cursor mode
+### Cursor mode {#cursor_mode}
 
 @anchor GLFW_CURSOR
 The `GLFW_CURSOR` input mode provides several cursor modes for special forms of
@@ -336,7 +336,7 @@ If the cursor was disabled, this will move it back to its last visible position.
 
 
 @anchor GLFW_RAW_MOUSE_MOTION
-@subsection raw_mouse_motion Raw mouse motion
+### Raw mouse motion {#raw_mouse_motion}
 
 When the cursor is disabled, raw (unscaled and unaccelerated) mouse motion can
 be enabled if available.
@@ -360,7 +360,7 @@ If supported, raw mouse motion can be enabled or disabled per-window and at any
 time but it will only be provided when the cursor is disabled.
 
 
-@subsection cursor_object Cursor objects
+### Cursor objects {#cursor_object}
 
 GLFW supports creating both custom and system theme cursor images, encapsulated
 as @ref GLFWcursor objects.  They are created with @ref glfwCreateCursor or @ref
@@ -368,7 +368,7 @@ glfwCreateStandardCursor and destroyed with @ref glfwDestroyCursor, or @ref
 glfwTerminate, if any remain.
 
 
-@subsubsection cursor_custom Custom cursor creation
+#### Custom cursor creation {#cursor_custom}
 
 A custom cursor is created with @ref glfwCreateCursor, which returns a handle to
 the created cursor object.  For example, this creates a 16x16 white square
@@ -394,7 +394,7 @@ per channel with the red channel first.  The pixels are arranged canonically as
 sequential rows, starting from the top-left corner.
 
 
-@subsubsection cursor_standard Standard cursor creation
+#### Standard cursor creation {#cursor_standard}
 
 A cursor with a [standard shape](@ref shapes) from the current system cursor
 theme can be created with @ref glfwCreateStandardCursor.
@@ -410,7 +410,7 @@ A few of these shapes are not available everywhere.  If a shape is unavailable,
 `NULL` is returned.  See @ref glfwCreateStandardCursor for details.
 
 
-@subsubsection cursor_destruction Cursor destruction
+#### Cursor destruction {#cursor_destruction}
 
 When a cursor is no longer needed, destroy it with @ref glfwDestroyCursor.
 
@@ -423,7 +423,7 @@ that window will revert to the default cursor.  This does not affect the cursor
 mode.  All remaining cursors are destroyed when @ref glfwTerminate is called.
 
 
-@subsubsection cursor_set Cursor setting
+#### Cursor setting {#cursor_set}
 
 A cursor can be set as current for a window with @ref glfwSetCursor.
 
@@ -447,7 +447,7 @@ When a cursor is destroyed, any window that has it set will revert to the
 default cursor.  This does not affect the cursor mode.
 
 
-@subsection cursor_enter Cursor enter/leave events
+### Cursor enter/leave events {#cursor_enter}
 
 If you wish to be notified when the cursor enters or leaves the content area of
 a window, set a cursor enter/leave callback.
@@ -483,7 +483,7 @@ if (glfwGetWindowAttrib(window, GLFW_HOVERED))
 @endcode
 
 
-@subsection input_mouse_button Mouse button input
+### Mouse button input {#input_mouse_button}
 
 If you wish to be notified when a mouse button is pressed or released, set
 a mouse button callback.
@@ -543,7 +543,7 @@ The `GLFW_MOUSE_BUTTON_LAST` constant holds the highest value of any
 [supported mouse button](@ref buttons).
 
 
-@subsection scrolling Scroll input
+### Scroll input {#scrolling}
 
 If you wish to be notified when the user scrolls, whether with a mouse wheel or
 touchpad gesture, set a scroll callback.
@@ -563,7 +563,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 A normal mouse wheel, being vertical, provides offsets along the Y-axis.
 
 
-@section joystick Joystick input
+## Joystick input {#joystick}
 
 The joystick functions expose connected joysticks and controllers, with both
 referred to as joysticks.  It supports up to sixteen joysticks, ranging from
@@ -593,7 +593,7 @@ To see all the properties of all connected joysticks in real-time, run the
 `joysticks` test program.
 
 
-@subsection joystick_axis Joystick axis states
+### Joystick axis states {#joystick_axis}
 
 The positions of all axes of a joystick are returned by @ref
 glfwGetJoystickAxes.  See the reference documentation for the lifetime of the
@@ -607,7 +607,7 @@ const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_5, &count);
 Each element in the returned array is a value between -1.0 and 1.0.
 
 
-@subsection joystick_button Joystick button states
+### Joystick button states {#joystick_button}
 
 The states of all buttons of a joystick are returned by @ref
 glfwGetJoystickButtons.  See the reference documentation for the lifetime of the
@@ -625,7 +625,7 @@ glfwGetJoystickHats, the button array by default also includes all hats.  See
 the reference documentation for @ref glfwGetJoystickButtons for details.
 
 
-@subsection joystick_hat Joystick hat states
+### Joystick hat states {#joystick_hat}
 
 The states of all hats are returned by @ref glfwGetJoystickHats.  See the
 reference documentation for the lifetime of the returned array.
@@ -665,7 +665,7 @@ glfwGetJoystickHats, all hats are by default also included in the button array.
 See the reference documentation for @ref glfwGetJoystickButtons for details.
 
 
-@subsection joystick_name Joystick name
+### Joystick name {#joystick_name}
 
 The human-readable, UTF-8 encoded name of a joystick is returned by @ref
 glfwGetJoystickName.  See the reference documentation for the lifetime of the
@@ -680,7 +680,7 @@ and make may have the same name.  Only the [joystick ID](@ref joysticks) is
 guaranteed to be unique, and only until that joystick is disconnected.
 
 
-@subsection joystick_userptr Joystick user pointer
+### Joystick user pointer {#joystick_userptr}
 
 Each joystick has a user pointer that can be set with @ref
 glfwSetJoystickUserPointer and queried with @ref glfwGetJoystickUserPointer.
@@ -691,7 +691,7 @@ terminated.
 The initial value of the pointer is `NULL`.
 
 
-@subsection joystick_event Joystick configuration changes
+### Joystick configuration changes {#joystick_event}
 
 If you wish to be notified when a joystick is connected or disconnected, set
 a joystick callback.
@@ -728,7 +728,7 @@ useful values for a disconnected joystick and only before the monitor callback
 returns.
 
 
-@subsection gamepad Gamepad input
+### Gamepad input {#gamepad}
 
 The joystick functions provide unlabeled axes, buttons and hats, with no
 indication of where they are located on the device.  Their order may also vary
@@ -809,7 +809,7 @@ The `GLFW_GAMEPAD_BUTTON_LAST` and `GLFW_GAMEPAD_AXIS_LAST` constants equal
 the largest available index for each array.
 
 
-@subsection gamepad_mapping Gamepad mappings
+### Gamepad mappings {#gamepad_mapping}
 
 GLFW contains a copy of the mappings available in
 [SDL_GameControllerDB](https://github.com/gabomdq/SDL_GameControllerDB) at the
@@ -892,7 +892,7 @@ were recently added to SDL.  The input modifiers `+`, `-` and `~` are supported
 and described above.
 
 
-@section time Time input
+## Time input {#time}
 
 GLFW provides high-resolution time input, in seconds, with @ref glfwGetTime.
 
@@ -929,7 +929,7 @@ uint64_t frequency = glfwGetTimerFrequency();
 @endcode
 
 
-@section clipboard Clipboard input and output
+## Clipboard input and output {#clipboard}
 
 If the system clipboard contains a UTF-8 encoded string or if it can be
 converted to one, you can retrieve it with @ref glfwGetClipboardString.  See the
@@ -954,7 +954,7 @@ glfwSetClipboardString(NULL, "A string with words in it");
 @endcode
 
 
-@section path_drop Path drop input
+## Path drop input {#path_drop}
 
 If you wish to receive the paths of files and/or directories dropped on
 a window, set a file drop callback.

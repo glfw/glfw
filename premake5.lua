@@ -25,7 +25,8 @@ project "GLFW"
 			"src/window.c",
 		}
 
-		filter "system:windows"			
+		filter "system:windows"	
+			buildoptions { "-std=c11", "-lgdi32"}
 			systemversion "latest"
 			staticruntime "On"
 
@@ -33,7 +34,7 @@ project "GLFW"
 			{
 				"src/win32_init.c",
 				"src/win32_joystick.c",
-				"src/win32_module.c",
+				"src/win32_module.c", --this was originally missing
 				"src/win32_monitor.c",
 				"src/win32_time.c",
 				"src/win32_thread.c",

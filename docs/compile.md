@@ -19,8 +19,8 @@ GLFW uses [CMake](https://cmake.org/) to generate project files or makefiles
 for your chosen development environment.  To compile GLFW, first generate these
 files with CMake and then use them to compile the GLFW library. 
 
-If you are on Windows and macOS you can
-[download CMake](https://cmake.org/download/) from their site.
+If you are on Windows and macOS you can [download
+CMake](https://cmake.org/download/) from their site.
 
 If you are on a Unix-like system such as Linux, FreeBSD or Cygwin or have
 a package system like Fink, MacPorts or Homebrew, you can install its CMake
@@ -28,9 +28,10 @@ package.
 
 CMake is a complex tool and this guide will only show a few of the possible ways
 to set up and compile GLFW.  The CMake project has their own much more detailed
-[CMake user guide](https://cmake.org/cmake/help/latest/guide/user-interaction/)
-that includes everything in this guide not specific to GLFW.  It may be a useful
-companion to this one.
+[CMake user guide][cmake-guide] that includes everything in this guide not
+specific to GLFW.  It may be a useful companion to this one.
+
+[cmake-guide]: https://cmake.org/cmake/help/latest/guide/user-interaction/
 
 
 ### Installing dependencies {#compile_deps}
@@ -263,9 +264,10 @@ __USE_MSVC_RUNTIME_LIBRARY_DLL__ determines whether to use the DLL version or th
 static library version of the Visual C++ runtime library.  When enabled, the
 DLL version of the Visual C++ library is used.  This is enabled by default.
 
-On CMake 3.15 and later you can set the standard CMake
-[CMAKE_MSVC_RUNTIME_LIBRARY](https://cmake.org/cmake/help/latest/variable/CMAKE_MSVC_RUNTIME_LIBRARY.html)
+On CMake 3.15 and later you can set the standard CMake [CMAKE_MSVC_RUNTIME_LIBRARY][]
 variable instead of this GLFW-specific option.
+
+[CMAKE_MSVC_RUNTIME_LIBRARY]: https://cmake.org/cmake/help/latest/variable/CMAKE_MSVC_RUNTIME_LIBRARY.html
 
 @anchor GLFW_USE_HYBRID_HPG
 __GLFW_USE_HYBRID_HPG__ determines whether to export the `NvOptimusEnablement` and
@@ -326,8 +328,9 @@ cmake -S path/to/glfw -B path/to/build -D CMAKE_TOOLCHAIN_FILE=CMake/x86_64-w64-
 The path to the toolchain file is relative to the path to the GLFW source tree
 passed to the `-S` flag, not to the current directory.
 
-For more details see the
-[CMake toolchain guide](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html).
+For more details see the [CMake toolchain guide][cmake-toolchains].
+
+[cmake-toolchains]: https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html
 
 
 ## Compiling GLFW manually {#compile_manual}

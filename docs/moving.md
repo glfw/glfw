@@ -16,8 +16,9 @@ required to create full screen windows with GLFW 3.
 The GLFW 3 header is named @ref glfw3.h and moved to the `GLFW` directory, to
 avoid collisions with the headers of other major versions.  Similarly, the GLFW
 3 library is named `glfw3,` except when it's installed as a shared library on
-Unix-like systems, where it uses the
-[soname](https://en.wikipedia.org/wiki/soname) `libglfw.so.3`.
+Unix-like systems, where it uses the [soname][] `libglfw.so.3`.
+
+[soname]: https://en.wikipedia.org/wiki/soname
 
 __Old syntax__
 ```c
@@ -36,17 +37,19 @@ The threading functions have been removed, including the per-thread sleep
 function.  They were fairly primitive, under-used, poorly integrated and took
 time away from the focus of GLFW (i.e.  context, input and window).  There are
 better threading libraries available and native threading support is available
-in both [C++11](https://en.cppreference.com/w/cpp/thread) and
-[C11](https://en.cppreference.com/w/c/thread), both of which are gaining
-traction.
+in both [C++11][] and [C11][], both of which are gaining traction.
+
+[C++11]: https://en.cppreference.com/w/cpp/thread
+[C11]: https://en.cppreference.com/w/c/thread
 
 If you wish to use the C++11 or C11 facilities but your compiler doesn't yet
-support them, see the
-[TinyThread++](https://gitorious.org/tinythread/tinythreadpp) and
-[TinyCThread](https://github.com/tinycthread/tinycthread) projects created by
+support them, see the [TinyThread++][] and [TinyCThread][] projects created by
 the original author of GLFW.  These libraries implement a usable subset of the
 threading APIs in C++11 and C11, and in fact some GLFW 3 test programs use
 TinyCThread.
+
+[TinyThread++]: https://gitorious.org/tinythread/tinythreadpp
+[TinyCThread]: https://github.com/tinycthread/tinycthread
 
 However, GLFW 3 has better support for _use from multiple threads_ than GLFW
 2 had.  Contexts can be made current on any thread, although only a single
@@ -84,13 +87,14 @@ __Removed functions__
 
 ### Removal of GLFWCALL macro {#moving_stdcall}
 
-The `GLFWCALL` macro, which made callback functions use
-[\_\_stdcall](https://msdn.microsoft.com/en-us/library/zxk0tw93.aspx) on Windows,
-has been removed.  GLFW is written in C, not Pascal.  Removing this macro means
-there's one less thing for application programmers to remember, i.e. the
-requirement to mark all callback functions with `GLFWCALL`.  It also simplifies
-the creation of DLLs and DLL link libraries, as there's no need to explicitly
-disable `@n` entry point suffixes.
+The `GLFWCALL` macro, which made callback functions use [\_\_stdcall][stdcall]
+on Windows, has been removed.  GLFW is written in C, not Pascal.  Removing this
+macro means there's one less thing for application programmers to remember, i.e.
+the requirement to mark all callback functions with `GLFWCALL`.  It also
+simplifies the creation of DLLs and DLL link libraries, as there's no need to
+explicitly disable `@n` entry point suffixes.
+
+[stdcall]: https://msdn.microsoft.com/en-us/library/zxk0tw93.aspx
 
 __Old syntax__
 ```c
@@ -109,7 +113,9 @@ Because GLFW 3 supports multiple windows, window handle parameters have been
 added to all window-related GLFW functions and callbacks.  The handle of
 a newly created window is returned by @ref glfwCreateWindow (formerly
 `glfwOpenWindow`).  Window handles are pointers to the
-[opaque](https://en.wikipedia.org/wiki/Opaque_data_type) type @ref GLFWwindow.
+[opaque][opaque-type] type @ref GLFWwindow.
+
+[opaque-type]: https://en.wikipedia.org/wiki/Opaque_data_type
 
 __Old syntax__
 ```c
@@ -129,7 +135,7 @@ instead of passing `GLFW_FULLSCREEN` you specify which monitor you wish the
 window to use.  The @ref glfwGetPrimaryMonitor function returns the monitor that
 GLFW 2 would have selected, but there are many other
 [monitor functions](@ref monitor_guide).  Monitor handles are pointers to the
-[opaque](https://en.wikipedia.org/wiki/Opaque_data_type) type @ref GLFWmonitor.
+[opaque][opaque-type] type @ref GLFWmonitor.
 
 __Old basic full screen__
 ```c
@@ -376,13 +382,14 @@ glfwGetJoystickAxes and @ref glfwGetJoystickButtons functions.
 
 ### Win32 MBCS support {#moving_mbcs}
 
-The Win32 port of GLFW 3 will not compile in
-[MBCS mode](https://msdn.microsoft.com/en-us/library/5z097dxa.aspx).
-However, because the use of the Unicode version of the Win32 API doesn't affect
-the process as a whole, but only those windows created using it, it's perfectly
+The Win32 port of GLFW 3 will not compile in [MBCS mode][MBCS].  However,
+because the use of the Unicode version of the Win32 API doesn't affect the
+process as a whole, but only those windows created using it, it's perfectly
 possible to call MBCS functions from other parts of the same application.
 Therefore, even if an application using GLFW has MBCS mode code, there's no need
 for GLFW itself to support it.
+
+[MBCS]: https://msdn.microsoft.com/en-us/library/5z097dxa.aspx
 
 
 ### Support for versions of Windows older than XP {#moving_windows}
@@ -429,10 +436,12 @@ invalidating any window handles you may still have.
 ### GLU header inclusion {#moving_glu}
 
 GLFW 3 does not by default include the GLU header and GLU itself has been
-deprecated by [Khronos](https://en.wikipedia.org/wiki/Khronos_Group).  __New
-projects should not use GLU__, but if you need it for legacy code that
-has been moved to GLFW 3, you can request that the GLFW header includes it by
-defining @ref GLFW_INCLUDE_GLU before the inclusion of the GLFW header.
+deprecated by [Khronos][].  __New projects should not use GLU__, but if you need
+it for legacy code that has been moved to GLFW 3, you can request that the GLFW
+header includes it by defining @ref GLFW_INCLUDE_GLU before the inclusion of the
+GLFW header.
+
+[Khronos]: https://en.wikipedia.org/wiki/Khronos_Group
 
 __Old syntax__
 ```c
@@ -446,11 +455,13 @@ __New syntax__
 ```
 
 There are many libraries that offer replacements for the functionality offered
-by GLU.  For the matrix helper functions, see math libraries like
-[GLM](https://github.com/g-truc/glm) (for C++),
-[linmath.h](https://github.com/datenwolf/linmath.h) (for C) and others.  For the
-tessellation functions, see for example
-[libtess2](https://github.com/memononen/libtess2).
+by GLU.  For the matrix helper functions, see math libraries like [GLM][] (for
+C++), [linmath.h][] (for C) and others.  For the tessellation functions, see for
+example [libtess2][].
+
+[GLM]: https://github.com/g-truc/glm
+[linmath.h]: https://github.com/datenwolf/linmath.h
+[libtess2]: https://github.com/memononen/libtess2
 
 
 ## Name change tables {#moving_tables}

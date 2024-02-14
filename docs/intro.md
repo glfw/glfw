@@ -105,13 +105,14 @@ glfwGetJoystickHats.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 
 @anchor GLFW_ANGLE_PLATFORM_TYPE_hint
 __GLFW_ANGLE_PLATFORM_TYPE__ specifies the platform type (rendering backend) to
-request when using OpenGL ES and EGL via
-[ANGLE](https://chromium.googlesource.com/angle/angle/).  If the requested
-platform type is unavailable, ANGLE will use its default. Possible values are
-one of `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`,
+request when using OpenGL ES and EGL via [ANGLE][].  If the requested platform
+type is unavailable, ANGLE will use its default. Possible values are one of
+`GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`,
 `GLFW_ANGLE_PLATFORM_TYPE_OPENGLES`, `GLFW_ANGLE_PLATFORM_TYPE_D3D9`,
 `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` and
 `GLFW_ANGLE_PLATFORM_TYPE_METAL`.
+
+[ANGLE]: https://chromium.googlesource.com/angle/angle/
 
 The ANGLE platform type is specified via the `EGL_ANGLE_platform_angle`
 extension.  This extension is not used if this hint is
@@ -145,10 +146,11 @@ the `VK_KHR_xlib_surface` extension.  Possible values are `GLFW_TRUE` and
 #### Wayland specific init hints {#init_hints_wayland}
 
 @anchor GLFW_WAYLAND_LIBDECOR_hint
-__GLFW_WAYLAND_LIBDECOR__ specifies whether to use
-[libdecor](https://gitlab.freedesktop.org/libdecor/libdecor) for window
+__GLFW_WAYLAND_LIBDECOR__ specifies whether to use [libdecor][] for window
 decorations where available.  Possible values are `GLFW_WAYLAND_PREFER_LIBDECOR`
 and `GLFW_WAYLAND_DISABLE_LIBDECOR`.  This is ignored on other platforms.
+
+[libdecor]: https://gitlab.freedesktop.org/libdecor/libdecor
 
 
 #### Supported and default values {#init_hints_values}

@@ -61,9 +61,10 @@ GLFW now supports specifying the app_id for a Wayland window using the
 
 GLFW now provides the
 [GLFW_ANGLE_PLATFORM_TYPE](@ref GLFW_ANGLE_PLATFORM_TYPE_hint) init hint for
-requesting a specific rendering backend when using
-[ANGLE](https://chromium.googlesource.com/angle/angle/) to create OpenGL ES
+requesting a specific rendering backend when using [ANGLE][] to create OpenGL ES
 contexts.
+
+[ANGLE]: https://chromium.googlesource.com/angle/angle/
 
 
 #### Captured cursor mode {#captured_cursor_34}

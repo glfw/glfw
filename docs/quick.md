@@ -336,12 +336,13 @@ presses _Escape_ or closes the window.
 
 @snippet triangle-opengl.c code
 
-The program above can be found in the
-[source package](https://www.glfw.org/download.html) as
+The program above can be found in the [source package][download] as
 `examples/triangle-opengl.c` and is compiled along with all other examples when
 you build GLFW.  If you built GLFW from the source package then you already have
 this as `triangle-opengl.exe` on Windows, `triangle-opengl` on Linux or
 `triangle-opengl.app` on macOS.
+
+[download]: https://www.glfw.org/download.html
 
 This tutorial used only a few of the many functions GLFW provides.  There are
 guides for each of the areas covered by GLFW.  Each guide will introduce all the

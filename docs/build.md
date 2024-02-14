@@ -41,12 +41,13 @@ In other words:
  - Do not include window system headers unless you will use those APIs directly
  - If you do need such headers, include them before the GLFW header
 
-If you are using an OpenGL extension loading library such as
-[glad](https://github.com/Dav1dde/glad), the extension loader header should
-be included before the GLFW one.  GLFW attempts to detect any OpenGL or OpenGL
-ES header or extension loader header included before it and will then disable
-the inclusion of the default OpenGL header.  Most extension loaders also define
-macros that disable similar headers below it.
+If you are using an OpenGL extension loading library such as [glad][], the
+extension loader header should be included before the GLFW one.  GLFW attempts
+to detect any OpenGL or OpenGL ES header or extension loader header included
+before it and will then disable the inclusion of the default OpenGL header.
+Most extension loaders also define macros that disable similar headers below it.
+
+[glad]: https://github.com/Dav1dde/glad
 
 ```c
 #include <glad/gl.h>
@@ -80,8 +81,9 @@ Only one of these may be defined at a time.
 
 @note GLFW does not provide any of the API headers mentioned below.  They are
 provided by your development environment or your OpenGL, OpenGL ES or Vulkan
-SDK, and most of them can be downloaded from the
-[Khronos Registry](https://www.khronos.org/registry/).
+SDK, and most of them can be downloaded from the [Khronos Registry][registry].
+
+[registry]: https://www.khronos.org/registry/
 
 @anchor GLFW_INCLUDE_GLCOREARB
 __GLFW_INCLUDE_GLCOREARB__ makes the GLFW header include the modern
@@ -153,9 +155,10 @@ hard-coded into your build environment.  See the section for your development
 environment below.  On Linux and other Unix-like operating systems, the list
 varies but can be retrieved in various ways as described below.
 
-A good general introduction to linking is
-[Beginner's Guide to Linkers](https://www.lurklurk.org/linkers/linkers.html) by
-David Drysdale.
+A good general introduction to linking is [Beginner's Guide to
+Linkers][linker_guide] by David Drysdale.
+
+[linker_guide]: https://www.lurklurk.org/linkers/linkers.html
 
 
 ### With MinGW or Visual C++ on Windows {#build_link_win32}
@@ -217,7 +220,9 @@ target_link_libraries(myapp OpenGL::GL)
 ```
 
 For a minimal example of a program and GLFW sources built with CMake, see the
-[GLFW CMake Starter](https://github.com/juliettef/GLFW-CMake-starter) on GitHub.
+[GLFW CMake Starter][cmake_starter] on GitHub.
+
+[cmake_starter]: https://github.com/juliettef/GLFW-CMake-starter
 
 
 ### With CMake and installed GLFW binaries {#build_link_cmake_package}
@@ -261,12 +266,13 @@ target_link_libraries(myapp OpenGL::GL)
 
 ### With makefiles and pkg-config on Unix {#build_link_pkgconfig}
 
-GLFW supports [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/),
-and the `glfw3.pc` pkg-config file is generated when the GLFW library is built
-and is installed along with it.  A pkg-config file describes all necessary
-compile-time and link-time flags and dependencies needed to use a library.  When
-they are updated or if they differ between systems, you will get the correct
-ones automatically.
+GLFW supports [pkg-config][], and the `glfw3.pc` pkg-config file is generated
+when the GLFW library is built and is installed along with it.  A pkg-config
+file describes all necessary compile-time and link-time flags and dependencies
+needed to use a library.  When they are updated or if they differ between
+systems, you will get the correct ones automatically.
+
+[pkg-config]: https://www.freedesktop.org/wiki/Software/pkg-config/
 
 A typical compile and link command-line when using the static version of the
 GLFW library may look like this:

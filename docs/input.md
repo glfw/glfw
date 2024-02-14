@@ -735,8 +735,10 @@ indication of where they are located on the device.  Their order may also vary
 between platforms even with the same device.
 
 To solve this problem the SDL community crowdsourced the
-[SDL_GameControllerDB](https://github.com/gabomdq/SDL_GameControllerDB) project,
-a database of mappings from many different devices to an Xbox-like gamepad.
+[SDL_GameControllerDB][] project, a database of mappings from many different
+devices to an Xbox-like gamepad.
+
+[SDL_GameControllerDB]: https://github.com/gabomdq/SDL_GameControllerDB
 
 GLFW supports this mapping format and contains a copy of the mappings
 available at the time of release.  See @ref gamepad_mapping for how to update
@@ -811,9 +813,8 @@ the largest available index for each array.
 
 ### Gamepad mappings {#gamepad_mapping}
 
-GLFW contains a copy of the mappings available in
-[SDL_GameControllerDB](https://github.com/gabomdq/SDL_GameControllerDB) at the
-time of release.  Newer ones can be added at runtime with @ref
+GLFW contains a copy of the mappings available in [SDL_GameControllerDB][] at
+the time of release.  Newer ones can be added at runtime with @ref
 glfwUpdateGamepadMappings.
 
 ```c

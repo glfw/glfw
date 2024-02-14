@@ -2648,9 +2648,10 @@ GLFWAPI void glfwGetMonitorWorkarea(GLFWmonitor* monitor, int* xpos, int* ypos, 
  *  specified monitor.
  *
  *  Some platforms do not provide accurate monitor size information, either
- *  because the monitor
- *  [EDID](https://en.wikipedia.org/wiki/Extended_display_identification_data)
- *  data is incorrect or because the driver does not report it accurately.
+ *  because the monitor [EDID][] data is incorrect or because the driver does
+ *  not report it accurately.
+ *
+ *  [EDID]: https://en.wikipedia.org/wiki/Extended_display_identification_data
  *
  *  Any or all of the size arguments may be `NULL`.  If an error occurs, all
  *  non-`NULL` size arguments will be set to zero.
@@ -3160,18 +3161,21 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *  @remark @macos The GLFW window has no icon, as it is not a document
  *  window, but the dock icon will be the same as the application bundle's icon.
  *  For more information on bundles, see the
- *  [Bundle Programming Guide](https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/)
- *  in the Mac Developer Library.
+ *  [Bundle Programming Guide][bundle-guide] in the Mac Developer Library.
+ *
+ *  [bundle-guide]: https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/
  *
  *  @remark @macos On OS X 10.10 and later the window frame will not be rendered
  *  at full resolution on Retina displays unless the
  *  [GLFW_COCOA_RETINA_FRAMEBUFFER](@ref GLFW_COCOA_RETINA_FRAMEBUFFER_hint)
  *  hint is `GLFW_TRUE` and the `NSHighResolutionCapable` key is enabled in the
  *  application bundle's `Info.plist`.  For more information, see
- *  [High Resolution Guidelines for OS X](https://developer.apple.com/library/mac/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Explained/Explained.html)
- *  in the Mac Developer Library.  The GLFW test and example programs use
- *  a custom `Info.plist` template for this, which can be found as
- *  `CMake/Info.plist.in` in the source tree.
+ *  [High Resolution Guidelines for OS X][hidpi-guide] in the Mac Developer
+ *  Library.  The GLFW test and example programs use a custom `Info.plist`
+ *  template for this, which can be found as `CMake/Info.plist.in` in the source
+ *  tree.
+ *
+ *  [hidpi-guide]: https://developer.apple.com/library/mac/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/Explained/Explained.html
  *
  *  @remark @macos When activating frame autosaving with
  *  [GLFW_COCOA_FRAME_NAME](@ref GLFW_COCOA_FRAME_NAME_hint), the specified
@@ -3345,8 +3349,9 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *  @remark @macos Regular windows do not have icons on macOS.  This function
  *  will emit @ref GLFW_FEATURE_UNAVAILABLE.  The dock icon will be the same as
  *  the application bundle's icon.  For more information on bundles, see the
- *  [Bundle Programming Guide](https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/)
- *  in the Mac Developer Library.
+ *  [Bundle Programming Guide][bundle-guide] in the Mac Developer Library.
+ *
+ *  [bundle-guide]: https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/
  *
  *  @remark @wayland There is no existing protocol to change an icon, the
  *  window will thus inherit the one defined in the application's desktop file.

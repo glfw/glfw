@@ -112,16 +112,16 @@ static void outputHandleScale(void* userData,
 {
     struct _GLFWmonitor* monitor = userData;
 
-    monitor->wl.contentScale = factor;
+    monitor->wl.scale = factor;
 
     for (_GLFWwindow* window = _glfw.windowListHead; window; window = window->next)
     {
-        for (int i = 0; i < window->wl.scaleCount; i++)
+        for (size_t i = 0; i < window->wl.outputScaleCount; i++)
         {
-            if (window->wl.scales[i].output == monitor->wl.output)
+            if (window->wl.outputScales[i].output == monitor->wl.output)
             {
-                window->wl.scales[i].factor = monitor->wl.contentScale;
-                _glfwUpdateContentScaleWayland(window);
+                window->wl.outputScales[i].factor = monitor->wl.scale;
+                _glfwUpdateBufferScaleFromOutputsWayland(window);
                 break;
             }
         }
@@ -176,7 +176,7 @@ void _glfwAddOutputWayland(uint32_t name, uint32_t version)
 
     // The actual name of this output will be set in the geometry handler
     _GLFWmonitor* monitor = _glfwAllocMonitor("", 0, 0);
-    monitor->wl.contentScale = 1;
+    monitor->wl.scale = 1;
     monitor->wl.output = output;
     monitor->wl.name = name;
 
@@ -207,9 +207,9 @@ void _glfwGetMonitorContentScaleWayland(_GLFWmonitor* monitor,
                                         float* xscale, float* yscale)
 {
     if (xscale)
-        *xscale = (float) monitor->wl.contentScale;
+        *xscale = (float) monitor->wl.scale;
     if (yscale)
-        *yscale = (float) monitor->wl.contentScale;
+        *yscale = (float) monitor->wl.scale;
 }
 
 void _glfwGetMonitorWorkareaWayland(_GLFWmonitor* monitor,

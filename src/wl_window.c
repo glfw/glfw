@@ -338,8 +338,14 @@ static void resizeFramebuffer(_GLFWwindow* window)
     _glfwInputFramebufferSize(window, window->wl.fbWidth, window->wl.fbHeight);
 }
 
-static void resizeWindow(_GLFWwindow* window)
+static GLFWbool resizeWindow(_GLFWwindow* window, int width, int height)
 {
+    if (width == window->wl.width && height == window->wl.height)
+        return GLFW_FALSE;
+
+    window->wl.width = width;
+    window->wl.height = height;
+
     resizeFramebuffer(window);
 
     if (window->wl.scalingViewport)
@@ -375,6 +381,8 @@ static void resizeWindow(_GLFWwindow* window)
                                     GLFW_BORDER_SIZE);
         wl_surface_commit(window->wl.fallback.bottom.surface);
     }
+
+    return GLFW_TRUE;
 }
 
 void _glfwUpdateBufferScaleFromOutputsWayland(_GLFWwindow* window)
@@ -651,13 +659,9 @@ static void xdgSurfaceHandleConfigure(void* userData,
         }
     }
 
-    if (width != window->wl.width || height != window->wl.height)
+    if (resizeWindow(window, width, height))
     {
-        window->wl.width = width;
-        window->wl.height = height;
-        resizeWindow(window);
-
-        _glfwInputWindowSize(window, width, height);
+        _glfwInputWindowSize(window, window->wl.width, window->wl.height);
 
         if (window->wl.visible)
             _glfwInputWindowDamage(window);
@@ -752,13 +756,9 @@ void libdecorFrameHandleConfigure(struct libdecor_frame* frame,
         damaged = GLFW_TRUE;
     }
 
-    if (width != window->wl.width || height != window->wl.height)
+    if (resizeWindow(window, width, height))
     {
-        window->wl.width = width;
-        window->wl.height = height;
-        resizeWindow(window);
-
-        _glfwInputWindowSize(window, width, height);
+        _glfwInputWindowSize(window, window->wl.width, window->wl.height);
         damaged = GLFW_TRUE;
     }
 
@@ -2250,13 +2250,13 @@ void _glfwSetWindowSizeWayland(_GLFWwindow* window, int width, int height)
     }
     else
     {
-        window->wl.width = width;
-        window->wl.height = height;
-        resizeWindow(window);
+        if (!resizeWindow(window, width, height))
+            return;
 
         if (window->wl.libdecor.frame)
         {
-            struct libdecor_state* frameState = libdecor_state_new(width, height);
+            struct libdecor_state* frameState =
+                libdecor_state_new(window->wl.width, window->wl.height);
             libdecor_frame_commit(window->wl.libdecor.frame, frameState, NULL);
             libdecor_state_free(frameState);
         }
@@ -2330,20 +2330,17 @@ void _glfwSetWindowAspectRatioWayland(_GLFWwindow* window, int numer, int denom)
             width *= targetRatio;
     }
 
-    if (width != window->wl.width || height != window->wl.height)
+    if (resizeWindow(window, width, height))
     {
-        window->wl.width = width;
-        window->wl.height = height;
-        resizeWindow(window);
-
         if (window->wl.libdecor.frame)
         {
-            struct libdecor_state* frameState = libdecor_state_new(width, height);
+            struct libdecor_state* frameState =
+                libdecor_state_new(window->wl.width, window->wl.height);
             libdecor_frame_commit(window->wl.libdecor.frame, frameState, NULL);
             libdecor_state_free(frameState);
         }
 
-        _glfwInputWindowSize(window, width, height);
+        _glfwInputWindowSize(window, window->wl.width, window->wl.height);
 
         if (window->wl.visible)
             _glfwInputWindowDamage(window);

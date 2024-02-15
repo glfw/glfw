@@ -340,6 +340,9 @@ static void resizeFramebuffer(_GLFWwindow* window)
 
 static GLFWbool resizeWindow(_GLFWwindow* window, int width, int height)
 {
+    width = _glfw_max(width, 1);
+    height = _glfw_max(height, 1);
+
     if (width == window->wl.width && height == window->wl.height)
         return GLFW_FALSE;
 

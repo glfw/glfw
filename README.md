@@ -187,6 +187,8 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled
  - [Wayland] Bugfix: `GLFW_HOVERED` was true when the cursor was over any
    fallback window decoration
+ - [Wayland] Bugfix: Fallback decorations allowed resizing to invalid size
+   (#2204)
  - [X11] Bugfix: Termination would segfault if the IM had been destroyed
  - [X11] Bugfix: Any IM started after initialization would not be detected
  - [Linux] Bugfix: Joystick evdev fds remained open in forks (#2446)

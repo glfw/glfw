@@ -2199,6 +2199,13 @@ typedef struct GLFWallocator
  *  application locale according to the current environment if that category is
  *  still "C".  This is because the "C" locale breaks Unicode text input.
  *
+ *  @remark __Wayland, X11:__ If the library was compiled with support for both
+ *  Wayland and X11, and the @ref GLFW_PLATFORM init hint is set to
+ *  `GLFW_ANY_PLATFORM`, the `XDG_SESSION_TYPE` environment variable affects
+ *  which platform is picked.  If the environment variable is not set, or is set
+ *  to something other than `wayland` or `x11`, the regular detection mechanism
+ *  will be used instead.
+ *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref intro_init

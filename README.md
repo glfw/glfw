@@ -164,6 +164,7 @@ information on what to include when reporting a bug.
  - Added `GLFW_BUILD_X11` CMake option for enabling X11 support (#1958)
  - Added `GLFW_LIBRARY_TYPE` CMake variable for overriding the library type
    (#279,#1307,#1497,#1574,#1928)
+ - Added support for `XDG_SESSION_TYPE` environment variable
  - Added `GLFW_PKG_CONFIG_REQUIRES_PRIVATE` and `GLFW_PKG_CONFIG_LIBS_PRIVATE` CMake
    variables exposing pkg-config dependencies (#1307)
  - Made joystick subsystem initialize at first use (#1284,#1646)

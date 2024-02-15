@@ -869,6 +869,50 @@ static GLFWbool createLibdecorFrame(_GLFWwindow* window)
     return GLFW_TRUE;
 }
 
+static void updateXdgSizeLimits(_GLFWwindow* window)
+{
+    int minwidth, minheight, maxwidth, maxheight;
+
+    if (window->resizable)
+    {
+        if (window->minwidth == GLFW_DONT_CARE || window->minheight == GLFW_DONT_CARE)
+            minwidth = minheight = 0;
+        else
+        {
+            minwidth  = window->minwidth;
+            minheight = window->minheight;
+
+            if (window->wl.fallback.decorations)
+            {
+                minwidth  += GLFW_BORDER_SIZE * 2;
+                minheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
+            }
+        }
+
+        if (window->maxwidth == GLFW_DONT_CARE || window->maxheight == GLFW_DONT_CARE)
+            maxwidth = maxheight = 0;
+        else
+        {
+            maxwidth  = window->maxwidth;
+            maxheight = window->maxheight;
+
+            if (window->wl.fallback.decorations)
+            {
+                maxwidth  += GLFW_BORDER_SIZE * 2;
+                maxheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
+            }
+        }
+    }
+    else
+    {
+        minwidth = maxwidth = window->wl.width;
+        minheight = maxheight = window->wl.height;
+    }
+
+    xdg_toplevel_set_min_size(window->wl.xdg.toplevel, minwidth, minheight);
+    xdg_toplevel_set_max_size(window->wl.xdg.toplevel, maxwidth, maxheight);
+}
+
 static GLFWbool createXdgShellObjects(_GLFWwindow* window)
 {
     window->wl.xdg.surface = xdg_wm_base_get_xdg_surface(_glfw.wl.wmBase,
@@ -935,33 +979,7 @@ static GLFWbool createXdgShellObjects(_GLFWwindow* window)
             createFallbackDecorations(window);
     }
 
-    if (window->minwidth != GLFW_DONT_CARE && window->minheight != GLFW_DONT_CARE)
-    {
-        int minwidth  = window->minwidth;
-        int minheight = window->minheight;
-
-        if (window->wl.fallback.decorations)
-        {
-            minwidth  += GLFW_BORDER_SIZE * 2;
-            minheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
-        }
-
-        xdg_toplevel_set_min_size(window->wl.xdg.toplevel, minwidth, minheight);
-    }
-
-    if (window->maxwidth != GLFW_DONT_CARE && window->maxheight != GLFW_DONT_CARE)
-    {
-        int maxwidth  = window->maxwidth;
-        int maxheight = window->maxheight;
-
-        if (window->wl.fallback.decorations)
-        {
-            maxwidth  += GLFW_BORDER_SIZE * 2;
-            maxheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
-        }
-
-        xdg_toplevel_set_max_size(window->wl.xdg.toplevel, maxwidth, maxheight);
-    }
+    updateXdgSizeLimits(window);
 
     wl_surface_commit(window->wl.surface);
     wl_display_roundtrip(_glfw.wl.display);
@@ -1437,37 +1455,38 @@ static void pointerHandleMotion(void* userData,
 
     if (window->wl.fallback.decorations)
     {
-        const char* cursorName = NULL;
+        const char* cursorName = "left_ptr";
 
-        if (window->wl.fallback.focus == window->wl.fallback.top.surface)
+        if (window->resizable)
         {
-            if (ypos < GLFW_BORDER_SIZE)
-                cursorName = "n-resize";
-            else
-                cursorName = "left_ptr";
-        }
-        else if (window->wl.fallback.focus == window->wl.fallback.left.surface)
-        {
-            if (ypos < GLFW_BORDER_SIZE)
-                cursorName = "nw-resize";
-            else
-                cursorName = "w-resize";
-        }
-        else if (window->wl.fallback.focus == window->wl.fallback.right.surface)
-        {
-            if (ypos < GLFW_BORDER_SIZE)
-                cursorName = "ne-resize";
-            else
-                cursorName = "e-resize";
-        }
-        else if (window->wl.fallback.focus == window->wl.fallback.bottom.surface)
-        {
-            if (xpos < GLFW_BORDER_SIZE)
-                cursorName = "sw-resize";
-            else if (xpos > window->wl.width + GLFW_BORDER_SIZE)
-                cursorName = "se-resize";
-            else
-                cursorName = "s-resize";
+            if (window->wl.fallback.focus == window->wl.fallback.top.surface)
+            {
+                if (ypos < GLFW_BORDER_SIZE)
+                    cursorName = "n-resize";
+            }
+            else if (window->wl.fallback.focus == window->wl.fallback.left.surface)
+            {
+                if (ypos < GLFW_BORDER_SIZE)
+                    cursorName = "nw-resize";
+                else
+                    cursorName = "w-resize";
+            }
+            else if (window->wl.fallback.focus == window->wl.fallback.right.surface)
+            {
+                if (ypos < GLFW_BORDER_SIZE)
+                    cursorName = "ne-resize";
+                else
+                    cursorName = "e-resize";
+            }
+            else if (window->wl.fallback.focus == window->wl.fallback.bottom.surface)
+            {
+                if (xpos < GLFW_BORDER_SIZE)
+                    cursorName = "sw-resize";
+                else if (xpos > window->wl.width + GLFW_BORDER_SIZE)
+                    cursorName = "se-resize";
+                else
+                    cursorName = "s-resize";
+            }
         }
 
         if (_glfw.wl.cursorPreviousName != cursorName)
@@ -2287,33 +2306,7 @@ void _glfwSetWindowSizeLimitsWayland(_GLFWwindow* window,
                                             maxwidth, maxheight);
     }
     else if (window->wl.xdg.toplevel)
-    {
-        if (minwidth == GLFW_DONT_CARE || minheight == GLFW_DONT_CARE)
-            minwidth = minheight = 0;
-        else
-        {
-            if (window->wl.fallback.decorations)
-            {
-                minwidth  += GLFW_BORDER_SIZE * 2;
-                minheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
-            }
-        }
-
-        if (maxwidth == GLFW_DONT_CARE || maxheight == GLFW_DONT_CARE)
-            maxwidth = maxheight = 0;
-        else
-        {
-            if (window->wl.fallback.decorations)
-            {
-                maxwidth  += GLFW_BORDER_SIZE * 2;
-                maxheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
-            }
-        }
-
-        xdg_toplevel_set_min_size(window->wl.xdg.toplevel, minwidth, minheight);
-        xdg_toplevel_set_max_size(window->wl.xdg.toplevel, maxwidth, maxheight);
-        wl_surface_commit(window->wl.surface);
-    }
+        updateXdgSizeLimits(window);
 }
 
 void _glfwSetWindowAspectRatioWayland(_GLFWwindow* window, int numer, int denom)
@@ -2581,12 +2574,8 @@ void _glfwSetWindowResizableWayland(_GLFWwindow* window, GLFWbool enabled)
                                               LIBDECOR_ACTION_RESIZE);
         }
     }
-    else
-    {
-        // TODO
-        _glfwInputError(GLFW_FEATURE_UNIMPLEMENTED,
-                        "Wayland: Window attribute setting not implemented yet");
-    }
+    else if (window->wl.xdg.toplevel)
+        updateXdgSizeLimits(window);
 }
 
 void _glfwSetWindowDecoratedWayland(_GLFWwindow* window, GLFWbool enabled)

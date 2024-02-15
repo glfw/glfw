@@ -182,6 +182,7 @@ information on what to include when reporting a bug.
    would abort (#1649)
  - [Wayland] Added support for `glfwRequestWindowAttention` (#2287)
  - [Wayland] Added support for `glfwFocusWindow`
+ - [Wayland] Added support for `GLFW_RESIZABLE` (#2203)
  - [Wayland] Added support for fractional scaling of window contents
  - [Wayland] Added dynamic loading of all Wayland libraries
  - [Wayland] Bugfix: `CLOCK_MONOTONIC` was not correctly enabled

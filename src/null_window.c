@@ -259,6 +259,7 @@ void _glfwSetWindowSizeNull(_GLFWwindow* window, int width, int height)
         window->null.width = width;
         window->null.height = height;
         _glfwInputFramebufferSize(window, width, height);
+        _glfwInputWindowDamage(window);
         _glfwInputWindowSize(window, width, height);
     }
 }

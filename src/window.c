@@ -494,6 +494,7 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
 
         *prev = window->next;
     }
+
     _glfw_free(window->title);
     _glfw_free(window);
 }

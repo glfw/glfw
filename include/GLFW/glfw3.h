@@ -3198,6 +3198,15 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *  [GLFW_COCOA_FRAME_NAME](@ref GLFW_COCOA_FRAME_NAME_hint), the specified
  *  window size and position may be overridden by previously saved values.
  *
+ *  @remark @wayland GLFW uses [libdecor][] where available to create its window
+ *  decorations.  This in turn uses server-side XDG decorations where available
+ *  and provides high quality client-side decorations on compositors like GNOME.
+ *  If both XDG decorations and libdecor are unavailable, GLFW falls back to
+ *  a very simple set of window decorations that only support moving, resizing
+ *  and the window manager's right-click menu.
+ *
+ *  [libdecor]: https://gitlab.freedesktop.org/libdecor/libdecor
+ *
  *  @remark @x11 Some window managers will not respect the placement of
  *  initially hidden windows.
  *
@@ -3213,20 +3222,6 @@ GLFWAPI void glfwWindowHintString(int hint, const char* value);
  *  [GLFW_X11_CLASS_NAME](@ref GLFW_X11_CLASS_NAME_hint) and
  *  [GLFW_X11_INSTANCE_NAME](@ref GLFW_X11_INSTANCE_NAME_hint) window hints to
  *  override this.
- *
- *  @remark @wayland Compositors should implement the xdg-decoration protocol
- *  for GLFW to decorate the window properly.  If this protocol isn't
- *  supported, or if the compositor prefers client-side decorations, a very
- *  simple fallback frame will be drawn using the wp_viewporter protocol.  A
- *  compositor can still emit close, maximize or fullscreen events, using for
- *  instance a keybind mechanism.  If neither of these protocols is supported,
- *  the window won't be decorated.
- *
- *  @remark @wayland A full screen window will not attempt to change the mode,
- *  no matter what the requested size or refresh rate.
- *
- *  @remark @wayland Screensaver inhibition requires the idle-inhibit protocol
- *  to be implemented in the user's compositor.
  *
  *  @thread_safety This function must only be called from the main thread.
  *

@@ -168,6 +168,7 @@ video tutorials.
  - Pascal Muetschard
  - James Murphy
  - Julian Møller
+ - Julius Häger
  - Nat
  - NateIsStalling
  - ndogxj

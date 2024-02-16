@@ -132,6 +132,7 @@ information on what to include when reporting a bug.
  - Added `glfwInitAllocator` for setting a custom memory allocator (#544,#1628,#1947)
  - Added `GLFWallocator` struct and `GLFWallocatefun`, `GLFWreallocatefun` and
    `GLFWdeallocatefun` types (#544,#1628,#1947)
+ - Added `glfwGetWindowTitle` function for querying window title (#1448,#1909,#2482)
  - Added `glfwInitVulkanLoader` for using a non-default Vulkan loader (#1374,#1890)
  - Added `GLFW_RESIZE_NWSE_CURSOR`, `GLFW_RESIZE_NESW_CURSOR`,
    `GLFW_RESIZE_ALL_CURSOR` and `GLFW_NOT_ALLOWED_CURSOR` cursor shapes (#427)
@@ -167,7 +168,6 @@ information on what to include when reporting a bug.
  - Added support for `XDG_SESSION_TYPE` environment variable
  - Added `GLFW_PKG_CONFIG_REQUIRES_PRIVATE` and `GLFW_PKG_CONFIG_LIBS_PRIVATE` CMake
    variables exposing pkg-config dependencies (#1307)
- - Added `glfwGetWindowTitle` function for GLFWwindow for querying window titles (#1448,#1909)
  - Made joystick subsystem initialize at first use (#1284,#1646)
  - Made `GLFW_DOUBLEBUFFER` a read-only window attribute
  - Updated the minimum required CMake version to 3.1

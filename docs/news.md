@@ -15,7 +15,7 @@ selected platform can be queried with @ref glfwGetPlatform.  You can check if
 support for a given platform is compiled in with @ref glfwPlatformSupported.
 
 
-#### More standard cursors {#standard_cursors_34}
+#### More standard cursor shapes {#standard_cursors_34}
 
 GLFW now provides the standard cursor shapes @ref GLFW_RESIZE_NWSE_CURSOR and
 @ref GLFW_RESIZE_NESW_CURSOR for diagonal resizing, @ref GLFW_RESIZE_ALL_CURSOR
@@ -49,32 +49,6 @@ function.
 For more information see @ref window_title.
 
 
-#### Wayland libdecor decorations {#wayland_libdecor_34}
-
-GLFW now supports improved fallback window decorations via
-[libdecor](https://gitlab.freedesktop.org/libdecor/libdecor).
-
-Support for libdecor can be toggled before GLFW is initialized with the
-[GLFW_WAYLAND_LIBDECOR](@ref GLFW_WAYLAND_LIBDECOR_hint) init hint.  It is
-enabled by default.
-
-
-#### Wayland app_id specification {#wayland_app_id_34}
-
-GLFW now supports specifying the app_id for a Wayland window using the
-[GLFW_WAYLAND_APP_ID](@ref GLFW_WAYLAND_APP_ID_hint) window hint string.
-
-
-#### Support for ANGLE rendering backend selection {#features_34_angle_backend}
-
-GLFW now provides the
-[GLFW_ANGLE_PLATFORM_TYPE](@ref GLFW_ANGLE_PLATFORM_TYPE_hint) init hint for
-requesting a specific rendering backend when using [ANGLE][] to create OpenGL ES
-contexts.
-
-[ANGLE]: https://chromium.googlesource.com/angle/angle/
-
-
 #### Captured cursor mode {#captured_cursor_34}
 
 GLFW now supports confining the cursor to the window content area with the @ref
@@ -83,7 +57,7 @@ GLFW_CURSOR_CAPTURED cursor mode.
 For more information see @ref cursor_mode.
 
 
-#### Support for custom memory allocator {#features_34_init_allocator}
+#### Support for custom heap memory allocator {#features_34_init_allocator}
 
 GLFW now supports plugging a custom memory allocator at initialization with @ref
 glfwInitAllocator.  The allocator is a struct of type @ref GLFWallocator with
@@ -106,15 +80,17 @@ This was already possible on macOS via the
 hint.  This hint is now another name for
 [GLFW_SCALE_FRAMEBUFFER](@ref GLFW_SCALE_FRAMEBUFFER_hint).
 
-For more information, see @ref window_scale.
+For more information see @ref window_scale.
 
 
-#### Window hints for initial position {#features_34_position_hint}
+#### Window hints for initial window position {#features_34_position_hint}
 
 GLFW now provides the @ref GLFW_POSITION_X and @ref GLFW_POSITION_Y window hints for
 specifying the initial position of the window.  This removes the need to create a hidden
 window, move it and then show it.  The default value of these hints is
 `GLFW_ANY_POSITION`, which selects the previous behavior.
+
+For more information see @ref window_pos.
 
 
 #### Support for keyboard access to Windows window menu {#features_34_win32_keymenu}
@@ -131,6 +107,32 @@ applications.
 GLFW now provides the [GLFW_WIN32_SHOWDEFAULT](@ref GLFW_WIN32_SHOWDEFAULT_hint) window
 hint for applying the show command in the program's `STARTUPINFO` when showing the window
 for the first time.  This may be useful for the main window of a windowed-mode tool.
+
+
+#### Wayland libdecor decorations {#wayland_libdecor_34}
+
+GLFW now supports improved fallback window decorations via
+[libdecor](https://gitlab.freedesktop.org/libdecor/libdecor).
+
+Support for libdecor can be toggled before GLFW is initialized with the
+[GLFW_WAYLAND_LIBDECOR](@ref GLFW_WAYLAND_LIBDECOR_hint) init hint.  It is
+enabled by default.
+
+
+#### Window hint for Wayland app_id {#wayland_app_id_34}
+
+GLFW now supports specifying the app_id for a Wayland window using the
+[GLFW_WAYLAND_APP_ID](@ref GLFW_WAYLAND_APP_ID_hint) window hint string.
+
+
+#### Support for ANGLE rendering backend selection {#features_34_angle_backend}
+
+GLFW now provides the
+[GLFW_ANGLE_PLATFORM_TYPE](@ref GLFW_ANGLE_PLATFORM_TYPE_hint) init hint for
+requesting a specific rendering backend when using [ANGLE][] to create OpenGL ES
+contexts.
+
+[ANGLE]: https://chromium.googlesource.com/angle/angle/
 
 
 ### Caveats for version 3.4 {#caveats}

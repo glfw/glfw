@@ -170,7 +170,7 @@ video tutorials.
  - James Murphy
  - Julian Møller
  - Julius Häger
- - Nat
+ - Nat!
  - NateIsStalling
  - ndogxj
  - F. Nedelec

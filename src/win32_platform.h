@@ -424,6 +424,7 @@ typedef struct _GLFWwindowWin32
     GLFWbool            transparent;
     GLFWbool            scaleToMonitor;
     GLFWbool            keymenu;
+    GLFWbool            showDefault;
 
     // Cached size used to filter out duplicate events
     int                 width, height;
@@ -457,6 +458,8 @@ typedef struct _GLFWlibraryWin32
     RAWINPUT*           rawInput;
     int                 rawInputSize;
     UINT                mouseTrailSize;
+    // The cursor handle to use to hide the cursor (NULL or a transparent cursor)
+    HCURSOR             blankCursor;
 
     struct {
         HINSTANCE                       instance;

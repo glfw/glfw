@@ -24,8 +24,6 @@
 //    distribution.
 //
 //========================================================================
-// It is fine to use C99 in this file because it will not be built with VS
-//========================================================================
 
 #include "internal.h"
 
@@ -260,8 +258,9 @@ void _glfwSetWindowSizeNull(_GLFWwindow* window, int width, int height)
     {
         window->null.width = width;
         window->null.height = height;
-        _glfwInputWindowSize(window, width, height);
         _glfwInputFramebufferSize(window, width, height);
+        _glfwInputWindowDamage(window);
+        _glfwInputWindowSize(window, width, height);
     }
 }
 

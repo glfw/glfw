@@ -1,8 +1,6 @@
-/*!
+# Building applications {#build_guide}
 
-@page build_guide Building applications
-
-@tableofcontents
+[TOC]
 
 This is about compiling and linking applications that use GLFW.  For information on
 how to write such applications, start with the
@@ -16,14 +14,14 @@ and linking process should be explained in your C programming material and in
 the documentation for your development environment.
 
 
-@section build_include Including the GLFW header file
+## Including the GLFW header file {#build_include}
 
 You should include the GLFW header in the source files where you use OpenGL or
 GLFW.
 
-@code
+```c
 #include <GLFW/glfw3.h>
-@endcode
+```
 
 This header defines all the constants and declares all the types and function
 prototypes of the GLFW API.  By default, it also includes the OpenGL header from
@@ -43,17 +41,18 @@ In other words:
  - Do not include window system headers unless you will use those APIs directly
  - If you do need such headers, include them before the GLFW header
 
-If you are using an OpenGL extension loading library such as
-[glad](https://github.com/Dav1dde/glad), the extension loader header should
-be included before the GLFW one.  GLFW attempts to detect any OpenGL or OpenGL
-ES header or extension loader header included before it and will then disable
-the inclusion of the default OpenGL header.  Most extension loaders also define
-macros that disable similar headers below it.
+If you are using an OpenGL extension loading library such as [glad][], the
+extension loader header should be included before the GLFW one.  GLFW attempts
+to detect any OpenGL or OpenGL ES header or extension loader header included
+before it and will then disable the inclusion of the default OpenGL header.
+Most extension loaders also define macros that disable similar headers below it.
 
-@code
+[glad]: https://github.com/Dav1dde/glad
+
+```c
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
-@endcode
+```
 
 Both of these mechanisms depend on the extension loader header defining a known
 macro.  If yours doesn't or you don't know which one your users will pick, the
@@ -61,14 +60,14 @@ macro.  If yours doesn't or you don't know which one your users will pick, the
 including the OpenGL header.  This will also allow you to include the two
 headers in any order.
 
-@code
+```c
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include <glad/gl.h>
-@endcode
+```
 
 
-@subsection build_macros GLFW header option macros
+### GLFW header option macros {#build_macros}
 
 These macros may be defined before the inclusion of the GLFW header and affect
 its behavior.
@@ -82,8 +81,9 @@ Only one of these may be defined at a time.
 
 @note GLFW does not provide any of the API headers mentioned below.  They are
 provided by your development environment or your OpenGL, OpenGL ES or Vulkan
-SDK, and most of them can be downloaded from the
-[Khronos Registry](https://www.khronos.org/registry/).
+SDK, and most of them can be downloaded from the [Khronos Registry][registry].
+
+[registry]: https://www.khronos.org/registry/
 
 @anchor GLFW_INCLUDE_GLCOREARB
 __GLFW_INCLUDE_GLCOREARB__ makes the GLFW header include the modern
@@ -142,7 +142,7 @@ If your build includes GLFW and you define any these in your build files, make
 sure they are not applied to the GLFW sources.
 
 
-@section build_link Link with the right libraries
+## Link with the right libraries {#build_link}
 
 GLFW is essentially a wrapper of various platform-specific APIs and therefore
 needs to link against many different system libraries.  If you are using GLFW as
@@ -155,12 +155,13 @@ hard-coded into your build environment.  See the section for your development
 environment below.  On Linux and other Unix-like operating systems, the list
 varies but can be retrieved in various ways as described below.
 
-A good general introduction to linking is
-[Beginner's Guide to Linkers](https://www.lurklurk.org/linkers/linkers.html) by
-David Drysdale.
+A good general introduction to linking is [Beginner's Guide to
+Linkers][linker_guide] by David Drysdale.
+
+[linker_guide]: https://www.lurklurk.org/linkers/linkers.html
 
 
-@subsection build_link_win32 With MinGW or Visual C++ on Windows
+### With MinGW or Visual C++ on Windows {#build_link_win32}
 
 The static version of the GLFW library is named `glfw3`.  When using this
 version, it is also necessary to link with some libraries that GLFW uses.
@@ -176,7 +177,7 @@ GLFW_DLL macro _before_ any inclusion of the GLFW header.  This can be done
 either with a compiler switch or by defining it in your source code.
 
 
-@subsection build_link_cmake_source With CMake and GLFW source
+### With CMake and GLFW source {#build_link_cmake_source}
 
 This section is about using CMake to compile and link GLFW along with your
 application.  If you want to use an installed binary instead, see @ref
@@ -188,18 +189,18 @@ built along with your application.
 Add the root directory of the GLFW source tree to your project.  This will add
 the `glfw` target to your project.
 
-@code{.cmake}
+```cmake
 add_subdirectory(path/to/glfw)
-@endcode
+```
 
 Once GLFW has been added, link your application against the `glfw` target.
 This adds the GLFW library and its link-time dependencies as it is currently
 configured, the include directory for the GLFW header and, when applicable, the
 @ref GLFW_DLL macro.
 
-@code{.cmake}
+```cmake
 target_link_libraries(myapp glfw)
-@endcode
+```
 
 Note that the `glfw` target does not depend on OpenGL, as GLFW loads any OpenGL,
 OpenGL ES or Vulkan libraries it needs at runtime.  If your application calls
@@ -207,22 +208,24 @@ OpenGL directly, instead of using a modern
 [extension loader library](@ref context_glext_auto), use the OpenGL CMake
 package.
 
-@code{.cmake}
+```cmake
 find_package(OpenGL REQUIRED)
-@endcode
+```
 
 If OpenGL is found, the `OpenGL::GL` target is added to your project, containing
 library and include directory paths.  Link against this like any other library.
 
-@code{.cmake}
+```cmake
 target_link_libraries(myapp OpenGL::GL)
-@endcode
+```
 
 For a minimal example of a program and GLFW sources built with CMake, see the
-[GLFW CMake Starter](https://github.com/juliettef/GLFW-CMake-starter) on GitHub.
+[GLFW CMake Starter][cmake_starter] on GitHub.
+
+[cmake_starter]: https://github.com/juliettef/GLFW-CMake-starter
 
 
-@subsection build_link_cmake_package With CMake and installed GLFW binaries
+### With CMake and installed GLFW binaries {#build_link_cmake_package}
 
 This section is about using CMake to link GLFW after it has been built and
 installed.  If you want to build it along with your application instead, see
@@ -231,17 +234,17 @@ installed.  If you want to build it along with your application instead, see
 With a few changes to your `CMakeLists.txt` you can locate the package and
 target files generated when GLFW is installed.
 
-@code{.cmake}
+```cmake
 find_package(glfw3 3.4 REQUIRED)
-@endcode
+```
 
 Once GLFW has been added to the project, link against it with the `glfw` target.
 This adds the GLFW library and its link-time dependencies, the include directory
 for the GLFW header and, when applicable, the @ref GLFW_DLL macro.
 
-@code{.cmake}
+```cmake
 target_link_libraries(myapp glfw)
-@endcode
+```
 
 Note that the `glfw` target does not depend on OpenGL, as GLFW loads any OpenGL,
 OpenGL ES or Vulkan libraries it needs at runtime.  If your application calls
@@ -249,47 +252,48 @@ OpenGL directly, instead of using a modern
 [extension loader library](@ref context_glext_auto), use the OpenGL CMake
 package.
 
-@code{.cmake}
+```cmake
 find_package(OpenGL REQUIRED)
-@endcode
+```
 
 If OpenGL is found, the `OpenGL::GL` target is added to your project, containing
 library and include directory paths.  Link against this like any other library.
 
-@code{.cmake}
+```cmake
 target_link_libraries(myapp OpenGL::GL)
-@endcode
+```
 
 
-@subsection build_link_pkgconfig With makefiles and pkg-config on Unix
+### With makefiles and pkg-config on Unix {#build_link_pkgconfig}
 
-GLFW supports [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/),
-and the `glfw3.pc` pkg-config file is generated when the GLFW library is built
-and is installed along with it.  A pkg-config file describes all necessary
-compile-time and link-time flags and dependencies needed to use a library.  When
-they are updated or if they differ between systems, you will get the correct
-ones automatically.
+GLFW supports [pkg-config][], and the `glfw3.pc` pkg-config file is generated
+when the GLFW library is built and is installed along with it.  A pkg-config
+file describes all necessary compile-time and link-time flags and dependencies
+needed to use a library.  When they are updated or if they differ between
+systems, you will get the correct ones automatically.
+
+[pkg-config]: https://www.freedesktop.org/wiki/Software/pkg-config/
 
 A typical compile and link command-line when using the static version of the
 GLFW library may look like this:
 
-@code{.sh}
+```sh
 cc $(pkg-config --cflags glfw3) -o myprog myprog.c $(pkg-config --static --libs glfw3)
-@endcode
+```
 
 If you are using the shared version of the GLFW library, omit the `--static`
 flag.
 
-@code{.sh}
+```sh
 cc $(pkg-config --cflags glfw3) -o myprog myprog.c $(pkg-config --libs glfw3)
-@endcode
+```
 
 You can also use the `glfw3.pc` file without installing it first, by using the
 `PKG_CONFIG_PATH` environment variable.
 
-@code{.sh}
+```sh
 env PKG_CONFIG_PATH=path/to/glfw/src cc $(pkg-config --cflags glfw3) -o myprog myprog.c $(pkg-config --libs glfw3)
-@endcode
+```
 
 The dependencies do not include OpenGL, as GLFW loads any OpenGL, OpenGL ES or
 Vulkan libraries it needs at runtime.  If your application calls OpenGL
@@ -297,12 +301,12 @@ directly, instead of using a modern
 [extension loader library](@ref context_glext_auto), you should add the `gl`
 pkg-config package.
 
-@code{.sh}
+```sh
 cc $(pkg-config --cflags glfw3 gl) -o myprog myprog.c $(pkg-config --libs glfw3 gl)
-@endcode
+```
 
 
-@subsection build_link_xcode With Xcode on macOS
+### With Xcode on macOS {#build_link_xcode}
 
 If you are using the dynamic library version of GLFW, add it to the project
 dependencies.
@@ -312,7 +316,7 @@ OpenGL and IOKit frameworks to the project as dependencies.  They can all be
 found in `/System/Library/Frameworks`.
 
 
-@subsection build_link_osx With command-line on macOS
+### With command-line on macOS {#build_link_osx}
 
 It is recommended that you use [pkg-config](@ref build_link_pkgconfig) when
 building from the command line on macOS.  That way you will get any new
@@ -322,9 +326,9 @@ the `-l` and `-framework` switches.
 
 If you are using the dynamic GLFW library, which is named `libglfw.3.dylib`, do:
 
-@code{.sh}
+```sh
 cc -o myprog myprog.c -lglfw -framework Cocoa -framework OpenGL -framework IOKit
-@endcode
+```
 
 If you are using the static library, named `libglfw3.a`, substitute `-lglfw3`
 for `-lglfw`.
@@ -335,4 +339,3 @@ against it from the command-line.
 @note Your machine may have `libGL.*.dylib` style OpenGL library, but that is
 for the X Window System and will not work with the macOS native version of GLFW.
 
-*/

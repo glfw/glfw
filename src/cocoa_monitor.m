@@ -24,8 +24,6 @@
 //    distribution.
 //
 //========================================================================
-// It is fine to use C99 in this file because it will not be built with VS
-//========================================================================
 
 #include "internal.h"
 
@@ -624,6 +622,13 @@ GLFWAPI CGDirectDisplayID glfwGetCocoaMonitor(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(kCGNullDirectDisplay);
+
+    if (_glfw.platform.platformID != GLFW_PLATFORM_COCOA)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "Cocoa: Platform not initialized");
+        return kCGNullDirectDisplay;
+    }
+
     return monitor->ns.displayID;
 }
 

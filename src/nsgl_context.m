@@ -23,8 +23,6 @@
 //    distribution.
 //
 //========================================================================
-// It is fine to use C99 in this file because it will not be built with VS
-//========================================================================
 
 #include "internal.h"
 
@@ -83,11 +81,10 @@ static void swapIntervalNSGL(int interval)
     @autoreleasepool {
 
     _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
-    if (window)
-    {
-        [window->context.nsgl.object setValues:&interval
-                                  forParameter:NSOpenGLContextParameterSwapInterval];
-    }
+    assert(window != NULL);
+
+    [window->context.nsgl.object setValues:&interval
+                              forParameter:NSOpenGLContextParameterSwapInterval];
 
     } // autoreleasepool
 }
@@ -336,7 +333,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                   forParameter:NSOpenGLContextParameterSurfaceOpacity];
     }
 
-    [window->ns.view setWantsBestResolutionOpenGLSurface:window->ns.retina];
+    [window->ns.view setWantsBestResolutionOpenGLSurface:window->ns.scaleFramebuffer];
 
     [window->context.nsgl.object setView:window->ns.view];
 

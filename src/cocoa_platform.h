@@ -145,7 +145,7 @@ typedef struct _GLFWwindowNS
 
     GLFWbool        maximized;
     GLFWbool        occluded;
-    GLFWbool        retina;
+    GLFWbool        scaleFramebuffer;
 
     // Cached window properties to filter out duplicate events
     int             width, height;

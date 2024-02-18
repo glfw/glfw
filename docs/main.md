@@ -1,8 +1,4 @@
-/*!
-
-@mainpage notitle
-
-@section main_intro Introduction
+# Introduction {#mainpage}
 
 GLFW is a free, Open Source, multi-platform library for OpenGL, OpenGL ES and
 Vulkan application development.  It provides a simple, platform-independent API
@@ -43,4 +39,3 @@ This documentation was generated with Doxygen.  The sources for it are available
 in both the [source distribution](https://www.glfw.org/download.html) and
 [GitHub repository](https://github.com/glfw/glfw).
 
-*/

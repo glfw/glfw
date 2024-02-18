@@ -164,7 +164,6 @@ typedef struct _GLFWwindowNull
     int             ypos;
     int             width;
     int             height;
-    char*           title;
     GLFWbool        visible;
     GLFWbool        iconified;
     GLFWbool        maximized;

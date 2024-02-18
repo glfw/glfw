@@ -822,8 +822,7 @@ static GLFWbool createLibdecorFrame(_GLFWwindow* window)
     if (strlen(window->wl.appId))
         libdecor_frame_set_app_id(window->wl.libdecor.frame, window->wl.appId);
 
-    if (strlen(window->wl.title))
-        libdecor_frame_set_title(window->wl.libdecor.frame, window->wl.title);
+    libdecor_frame_set_title(window->wl.libdecor.frame, window->title);
 
     if (window->minwidth != GLFW_DONT_CARE &&
         window->minheight != GLFW_DONT_CARE)
@@ -939,8 +938,7 @@ static GLFWbool createXdgShellObjects(_GLFWwindow* window)
     if (window->wl.appId)
         xdg_toplevel_set_app_id(window->wl.xdg.toplevel, window->wl.appId);
 
-    if (window->wl.title)
-        xdg_toplevel_set_title(window->wl.xdg.toplevel, window->wl.title);
+    xdg_toplevel_set_title(window->wl.xdg.toplevel, window->title);
 
     if (window->monitor)
     {
@@ -1040,7 +1038,6 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     window->wl.height = wndconfig->height;
     window->wl.fbWidth = wndconfig->width;
     window->wl.fbHeight = wndconfig->height;
-    window->wl.title = _glfw_strdup(wndconfig->title);
     window->wl.appId = _glfw_strdup(wndconfig->wl.appId);
 
     window->wl.bufferScale = 1;
@@ -2215,17 +2212,12 @@ void _glfwDestroyWindowWayland(_GLFWwindow* window)
     if (window->wl.surface)
         wl_surface_destroy(window->wl.surface);
 
-    _glfw_free(window->wl.title);
     _glfw_free(window->wl.appId);
     _glfw_free(window->wl.outputScales);
 }
 
 void _glfwSetWindowTitleWayland(_GLFWwindow* window, const char* title)
 {
-    char* copy = _glfw_strdup(title);
-    _glfw_free(window->wl.title);
-    window->wl.title = copy;
-
     if (window->wl.libdecor.frame)
         libdecor_frame_set_title(window->wl.libdecor.frame, title);
     else if (window->wl.xdg.toplevel)

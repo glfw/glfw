@@ -414,6 +414,13 @@ typedef struct _GLFWwindowWayland
         _GLFWfallbackEdgeWayland    top, left, right, bottom;
         struct wl_surface*          focus;
     } fallback;
+
+    struct zwp_text_input_v1* textInputV1;
+    struct zwp_text_input_v3* textInputV3;
+    struct {
+        char* preeditText;
+        char* commitTextOnReset;
+    } textInputV1Context;
 } _GLFWwindowWayland;
 
 // Wayland-specific global data
@@ -438,6 +445,8 @@ typedef struct _GLFWlibraryWayland
     struct zwp_idle_inhibit_manager_v1*     idleInhibitManager;
     struct xdg_activation_v1*               activationManager;
     struct wp_fractional_scale_manager_v1*  fractionalScaleManager;
+    struct zwp_text_input_manager_v1*       textInputManagerV1;
+    struct zwp_text_input_manager_v3*       textInputManagerV3;
 
     _GLFWofferWayland*          offers;
     unsigned int                offerCount;

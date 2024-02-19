@@ -101,6 +101,7 @@ video tutorials.
  - Warren Hu
  - Charles Huber
  - Brent Huisman
+ - Florian Hülsmann
  - illustris
  - InKryption
  - IntellectualKitty

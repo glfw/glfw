@@ -11,7 +11,7 @@ application development.  It provides a simple, platform-independent API for
 creating windows, contexts and surfaces, reading input, handling events, etc.
 
 GLFW natively supports Windows, macOS and Linux and other Unix-like systems.  On
-Linux both X11 and Wayland are supported.
+Linux both Wayland and X11 are supported.
 
 GLFW is licensed under the [zlib/libpng
 license](https://www.glfw.org/license.html).
@@ -170,6 +170,7 @@ information on what to include when reporting a bug.
    variables exposing pkg-config dependencies (#1307)
  - Made joystick subsystem initialize at first use (#1284,#1646)
  - Made `GLFW_DOUBLEBUFFER` a read-only window attribute
+ - Made Wayland the preferred platform over X11 if both are available (#2035)
  - Updated the minimum required CMake version to 3.1
  - Updated gamepad mappings from upstream
  - Renamed `GLFW_USE_WAYLAND` CMake option to `GLFW_BUILD_WAYLAND` (#1958)
@@ -358,7 +359,6 @@ information on what to include when reporting a bug.
  - [Wayland] Disabled alpha channel for opaque windows on systems lacking
    `EGL_EXT_present_opaque` (#1895)
  - [Wayland] Removed support for `wl_shell` (#1443)
- - [Wayland] Prefer Wayland over X11 if both are available (#2035)
  - [Wayland] Bugfix: The `GLFW_HAND_CURSOR` shape used the wrong image (#1432)
  - [Wayland] Bugfix: Repeated keys could be reported with `NULL` window (#1704)
  - [Wayland] Bugfix: Retrieving partial framebuffer size would segfault

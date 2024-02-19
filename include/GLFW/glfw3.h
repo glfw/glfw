@@ -1230,11 +1230,11 @@ extern "C" {
  *  @note @macos This shape is provided by a private system API and may fail
  *  with @ref GLFW_CURSOR_UNAVAILABLE in the future.
  *
- *  @note @x11 This shape is provided by a newer standard not supported by all
- *  cursor themes.
- *
  *  @note @wayland This shape is provided by a newer standard not supported by
  *  all cursor themes.
+ *
+ *  @note @x11 This shape is provided by a newer standard not supported by all
+ *  cursor themes.
  */
 #define GLFW_RESIZE_NWSE_CURSOR     0x00036007
 /*! @brief The top-right to bottom-left diagonal resize/move arrow shape.
@@ -1245,11 +1245,11 @@ extern "C" {
  *  @note @macos This shape is provided by a private system API and may fail
  *  with @ref GLFW_CURSOR_UNAVAILABLE in the future.
  *
- *  @note @x11 This shape is provided by a newer standard not supported by all
- *  cursor themes.
- *
  *  @note @wayland This shape is provided by a newer standard not supported by
  *  all cursor themes.
+ *
+ *  @note @x11 This shape is provided by a newer standard not supported by all
+ *  cursor themes.
  */
 #define GLFW_RESIZE_NESW_CURSOR     0x00036008
 /*! @brief The omni-directional resize/move cursor shape.
@@ -1263,11 +1263,11 @@ extern "C" {
  *  The operation-not-allowed shape.  This is usually a circle with a diagonal
  *  line through it.
  *
- *  @note @x11 This shape is provided by a newer standard not supported by all
- *  cursor themes.
- *
  *  @note @wayland This shape is provided by a newer standard not supported by
  *  all cursor themes.
+ *
+ *  @note @x11 This shape is provided by a newer standard not supported by all
+ *  cursor themes.
  */
 #define GLFW_NOT_ALLOWED_CURSOR     0x0003600A
 /*! @brief Legacy name for compatibility.
@@ -2195,16 +2195,16 @@ typedef struct GLFWallocator
  *  and dock icon can be disabled entirely with the @ref GLFW_COCOA_MENUBAR init
  *  hint.
  *
- *  @remark @x11 This function will set the `LC_CTYPE` category of the
- *  application locale according to the current environment if that category is
- *  still "C".  This is because the "C" locale breaks Unicode text input.
- *
  *  @remark __Wayland, X11:__ If the library was compiled with support for both
  *  Wayland and X11, and the @ref GLFW_PLATFORM init hint is set to
  *  `GLFW_ANY_PLATFORM`, the `XDG_SESSION_TYPE` environment variable affects
  *  which platform is picked.  If the environment variable is not set, or is set
  *  to something other than `wayland` or `x11`, the regular detection mechanism
  *  will be used instead.
+ *
+ *  @remark @x11 This function will set the `LC_CTYPE` category of the
+ *  application locale according to the current environment if that category is
+ *  still "C".  This is because the "C" locale breaks Unicode text input.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -3620,9 +3620,6 @@ GLFWAPI void glfwSetWindowAspectRatio(GLFWwindow* window, int numer, int denom);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
- *  @remark @wayland A full screen window will not attempt to change the mode,
- *  no matter what the requested size.
- *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_size
@@ -4062,9 +4059,6 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *
  *  @remark @wayland The desired window position is ignored, as there is no way
  *  for an application to set this property.
- *
- *  @remark @wayland Setting the window to full screen will not attempt to
- *  change the mode, no matter what the requested size or refresh rate.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -5446,8 +5440,6 @@ GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun ca
  *  [function pointer type](@ref GLFWdropfun).
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
- *
- *  @remark @wayland File drop is currently unimplemented.
  *
  *  @thread_safety This function must only be called from the main thread.
  *

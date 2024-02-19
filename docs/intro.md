@@ -92,7 +92,7 @@ Setting these hints requires no platform specific headers or functions.
 @anchor GLFW_PLATFORM
 __GLFW_PLATFORM__ specifies the platform to use for windowing and input.
 Possible values are `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`,
-`GLFW_PLATFORM_COCOA`, `GLFW_PLATFORM_X11`, `GLFW_PLATFORM_WAYLAND` and
+`GLFW_PLATFORM_COCOA`, `GLFW_PLATFORM_WAYLAND`, `GLFW_PLATFORM_X11` and
 `GLFW_PLATFORM_NULL`.  The default value is `GLFW_ANY_PLATFORM`, which will
 choose any platform the library includes support for except for the Null
 backend.
@@ -134,15 +134,6 @@ a nib or manually by GLFW.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 This is ignored on other platforms.
 
 
-#### X11 specific init hints {#init_hints_x11}
-
-@anchor GLFW_X11_XCB_VULKAN_SURFACE_hint
-__GLFW_X11_XCB_VULKAN_SURFACE__ specifies whether to prefer the
-`VK_KHR_xcb_surface` extension for creating Vulkan surfaces, or whether to use
-the `VK_KHR_xlib_surface` extension.  Possible values are `GLFW_TRUE` and
-`GLFW_FALSE`.  This is ignored on other platforms.
-
-
 #### Wayland specific init hints {#init_hints_wayland}
 
 @anchor GLFW_WAYLAND_LIBDECOR_hint
@@ -153,23 +144,32 @@ and `GLFW_WAYLAND_DISABLE_LIBDECOR`.  This is ignored on other platforms.
 [libdecor]: https://gitlab.freedesktop.org/libdecor/libdecor
 
 
+#### X11 specific init hints {#init_hints_x11}
+
+@anchor GLFW_X11_XCB_VULKAN_SURFACE_hint
+__GLFW_X11_XCB_VULKAN_SURFACE__ specifies whether to prefer the
+`VK_KHR_xcb_surface` extension for creating Vulkan surfaces, or whether to use
+the `VK_KHR_xlib_surface` extension.  Possible values are `GLFW_TRUE` and
+`GLFW_FALSE`.  This is ignored on other platforms.
+
+
 #### Supported and default values {#init_hints_values}
 
 Initialization hint              | Default value                   | Supported values
 -------------------------------- | ------------------------------- | ----------------
-@ref GLFW_PLATFORM               | `GLFW_ANY_PLATFORM`             | `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`, `GLFW_PLATFORM_X11`, `GLFW_PLATFORM_WAYLAND` or `GLFW_PLATFORM_NULL`
+@ref GLFW_PLATFORM               | `GLFW_ANY_PLATFORM`             | `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`, `GLFW_PLATFORM_WAYLAND`, `GLFW_PLATFORM_X11` or `GLFW_PLATFORM_NULL`
 @ref GLFW_JOYSTICK_HAT_BUTTONS   | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_ANGLE_PLATFORM_TYPE    | `GLFW_ANGLE_PLATFORM_TYPE_NONE` | `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGLES`, `GLFW_ANGLE_PLATFORM_TYPE_D3D9`, `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` or `GLFW_ANGLE_PLATFORM_TYPE_METAL`
 @ref GLFW_COCOA_CHDIR_RESOURCES  | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_COCOA_MENUBAR          | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_X11_XCB_VULKAN_SURFACE | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
 @ref GLFW_WAYLAND_LIBDECOR       | `GLFW_WAYLAND_PREFER_LIBDECOR`  | `GLFW_WAYLAND_PREFER_LIBDECOR` or `GLFW_WAYLAND_DISABLE_LIBDECOR`
+@ref GLFW_X11_XCB_VULKAN_SURFACE | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
 
 
 ### Runtime platform selection {#platform}
 
 GLFW can be compiled for more than one platform (window system) at once.  This lets
-a single library binary support both X11 and Wayland on Linux and other Unix-like systems.
+a single library binary support both Wayland and X11 on Linux and other Unix-like systems.
 
 You can control platform selection via the @ref GLFW_PLATFORM initialization hint.  By
 default, this is set to @ref GLFW_ANY_PLATFORM, which will look for supported window

@@ -511,6 +511,14 @@ should also declare this in its `Info.plist` by setting the
 `NSSupportsAutomaticGraphicsSwitching` key to `true`.
 
 
+#### Wayland specific window hints {#window_hints_wayland}
+
+@anchor GLFW_WAYLAND_APP_ID_hint
+__GLFW_WAYLAND_APP_ID__ specifies the Wayland app_id for a window, used
+by window managers to identify types of windows. This is set with
+@ref glfwWindowHintString.
+
+
 #### X11 specific window hints {#window_hints_x11}
 
 @anchor GLFW_X11_CLASS_NAME_hint
@@ -519,13 +527,6 @@ __GLFW_X11_CLASS_NAME__ and __GLFW_X11_INSTANCE_NAME__ specifies the desired
 ASCII encoded class and instance parts of the ICCCM `WM_CLASS` window property.  Both
 hints need to be set to something other than an empty string for them to take effect.
 These are set with @ref glfwWindowHintString.
-
-#### Wayland specific window hints {#window_hints_wayland}
-
-@anchor GLFW_WAYLAND_APP_ID_hint
-__GLFW_WAYLAND_APP_ID__ specifies the Wayland app_id for a window, used
-by window managers to identify types of windows. This is set with
-@ref glfwWindowHintString.
 
 
 #### Supported and default values {#window_hints_values}
@@ -576,9 +577,9 @@ GLFW_WIN32_KEYBOARD_MENU      | `GLFW_FALSE`                | `GLFW_TRUE` or `GL
 GLFW_WIN32_SHOWDEFAULT        | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_COCOA_FRAME_NAME         | `""`                        | A UTF-8 encoded frame autosave name
 GLFW_COCOA_GRAPHICS_SWITCHING | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_WAYLAND_APP_ID           | `""`                        | An ASCII encoded Wayland `app_id` name
 GLFW_X11_CLASS_NAME           | `""`                        | An ASCII encoded `WM_CLASS` class name
 GLFW_X11_INSTANCE_NAME        | `""`                        | An ASCII encoded `WM_CLASS` instance name
-GLFW_WAYLAND_APP_ID           | `""`                        | An ASCII encoded Wayland `app_id` name
 
 
 ## Window event processing {#window_events}

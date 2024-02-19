@@ -350,8 +350,8 @@ clipboard.  The options are:
 
  - @b _GLFW_COCOA to use the Cocoa frameworks
  - @b _GLFW_WIN32 to use the Win32 API
+ - @b _GLFW_WAYLAND to use the Wayland protocol
  - @b _GLFW_X11 to use the X Window System
- - @b _GLFW_WAYLAND to use the Wayland API (incomplete)
 
 The @b _GLFW_WAYLAND and @b _GLFW_X11 macros may be combined and produces a library that
 attempts to detect the appropriate platform at initialization.

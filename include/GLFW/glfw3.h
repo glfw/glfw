@@ -5257,6 +5257,8 @@ GLFWAPI void glfwSetPreeditCursorRectangle(GLFWwindow* window, int x, int y, int
  *  @remark @x11 Since over-the-spot style is used by default, you don't need
  *  to use this function.
  *
+ *  @remark @wayland This function is currently not supported.
+ *
  *  @par Thread Safety
  *  This function may only be called from the main thread.
  *
@@ -5463,7 +5465,7 @@ GLFWAPI GLFWpreeditfun glfwSetPreeditCallback(GLFWwindow* window, GLFWpreeditfun
  *  For more information about the callback parameters, see the
  *  [function pointer type](@ref GLFWimestatusfun).
  *
- *  @remark @x11 Don't support this function.  The callback is not called.
+ *  @remark @x11 @wayland Don't support this function.  The callback is not called.
  *
  *  @par Thread Safety
  *  This function may only be called from the main thread.

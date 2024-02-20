@@ -168,10 +168,10 @@ static int choosePixelFormatWGL(_GLFWwindow* window,
             if (FIND_ATTRIB_VALUE(WGL_PIXEL_TYPE_ARB) != WGL_TYPE_RGBA_ARB)
                 continue;
 
-            acceleration = FIND_ATTRIB_VALUE(WGL_ACCELERATION_ARB);
-
             if (FIND_ATTRIB_VALUE(WGL_DOUBLE_BUFFER_ARB) != fbconfig->doublebuffer)
                 continue;
+
+            acceleration = FIND_ATTRIB_VALUE(WGL_ACCELERATION_ARB);
 
             u->redBits = FIND_ATTRIB_VALUE(WGL_RED_BITS_ARB);
             u->greenBits = FIND_ATTRIB_VALUE(WGL_GREEN_BITS_ARB);

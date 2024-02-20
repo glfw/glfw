@@ -141,6 +141,16 @@ contexts.
 [ANGLE]: https://chromium.googlesource.com/angle/angle/
 
 
+#### Window hint for hardware acceleration {#acceleration_34}
+
+You can use window hint [GLFW_ACCELERATION](@ref GLFW_ACCELERATION_hint) to
+specify whether hardware acceleration is preferred or not.  The default value
+is to prefer hardware acceleration.  You can get whether hardware acceleration
+is enabled with the window attribute
+[GLFW_ACCELERATION](@ref GLFW_ACCELERATION_attrib).  This feature is only
+available on WGL currently.
+
+
 ### Caveats for version 3.4 {#caveats}
 
 #### Multiple sets of native access functions {#native_34}
@@ -225,6 +235,13 @@ GLFW_TRANSPARENT_FRAMEBUFFER on Windows 7 if DWM transparency is off
 
 Events posted with @ref glfwPostEmptyEvent now use a separate unnamed pipe
 instead of sending an X11 client event to the helper window.
+
+
+#### Microsoft GDI software OpenGL ICD support {#gdi_opengl_icd_34}
+
+GLFW now supports creating window when the Microsoft GDI software OpenGL ICD is
+the only available implementation.
+See [GLFW_ACCELERATION](@ref GLFW_ACCELERATION_hint) for more details.
 
 
 ### Deprecations in version 3.4 {#deprecations_34}
@@ -322,6 +339,7 @@ then GLFW will fail to initialize.
  - @ref GLFW_WAYLAND_PREFER_LIBDECOR
  - @ref GLFW_WAYLAND_DISABLE_LIBDECOR
  - @ref GLFW_SCALE_FRAMEBUFFER
+ - @ref GLFW_ACCELERATION
 
 
 ## Release notes for earlier versions {#news_archive}

@@ -312,6 +312,9 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
 
             if (desired->sRGB && !current->sRGB)
                 extraDiff++;
+
+            if (desired->acceleration && !current->acceleration)
+                extraDiff++;
         }
 
         // Figure out if the current one is better than the best one found so far

@@ -161,20 +161,95 @@ Linkers][linker_guide] by David Drysdale.
 [linker_guide]: https://www.lurklurk.org/linkers/linkers.html
 
 
-### With MinGW or Visual C++ on Windows {#build_link_win32}
+### With Visual C++ and GLFW binaries {#build_link_win32}
 
-The static version of the GLFW library is named `glfw3`.  When using this
-version, it is also necessary to link with some libraries that GLFW uses.
+If you are using a downloaded [binary
+archive](https://www.glfw.org/download.html), first make sure you have the
+archive matching the architecture you are building for (32-bit or 64-bit), or
+you will get link errors.  Also make sure you are using the binaries for your
+version of Visual C++ or you may get other link errors.
 
-When using MinGW to link an application with the static version of GLFW, you
-must also explicitly link with `gdi32`. Other toolchains including MinGW-w64
-include it in the set of default libraries along with other dependencies like
-`user32` and `kernel32`.
+There are two version of the static GLFW library in the binary archive, because
+it needs to use the same base run-time library variant as the rest of your
+executable.
 
-The link library for the GLFW DLL is named `glfw3dll`.  When compiling an
-application that uses the DLL version of GLFW, you need to define the @ref
-GLFW_DLL macro _before_ any inclusion of the GLFW header.  This can be done
-either with a compiler switch or by defining it in your source code.
+One is named `glfw3.lib` and is for projects with the _Runtime Library_ project
+option set to _Multi-threaded DLL_ or _Multi-threaded Debug DLL_.  The other is
+named `glfw3_mt.lib` and is for projects with _Runtime Library_ set to
+_Multi-threaded_ or _Multi-threaded Debug_.  To use the static GLFW library you
+will need to add `path/to/glfw3.lib` or `path/to/glfw3_mt.lib` to the
+_Additional Dependencies_ project option.
+
+If you compiled a GLFW static library yourself then there will only be one,
+named `glfw3.lib`, and you have to make sure the run-time library variant
+matches.
+
+The DLL version of the GLFW library is named `glfw3.dll`, but you will be
+linking against the `glfw3dll.lib` link library.  To use the DLL you will need
+to add `path/to/glfw3dll.lib` to the _Additional Dependencies_ project option.
+All of its dependencies are already listed there by default, but when building
+with the DLL version of GLFW, you also need to define the @ref GLFW_DLL.  This
+can be done either in the _Preprocessor Definitions_ project option or by
+defining it in your source code before including the GLFW header.
+
+```c
+#define GLFW_DLL
+#include <GLFW/glfw3.h>
+```
+
+All link-time dependencies for GLFW are already listed in the _Additional
+Dependencies_ option by default.
+
+
+### With MinGW-w64 and GLFW binaries {#build_link_mingw}
+
+This is intended for building a program from the command-line or by writing
+a makefile, on Windows with [MinGW-w64][] and GLFW binaries.  These can be from
+a downloaded and extracted [binary archive](https://www.glfw.org/download.html)
+or by compiling GLFW yourself.  The paths below assume a binary archive is used.
+
+If you are using a downloaded binary archive, first make sure you have the
+archive matching the architecture you are building for (32-bit or 64-bit) or you
+will get link errors.
+
+Note that the order of source files and libraries matter for GCC.  Dependencies
+must be listed after the files that depend on them.  Any source files that
+depend on GLFW must be listed before the GLFW library.  GLFW in turn depends on
+`gdi32` and must be listed before it.
+
+[MinGW-w64]: https://www.mingw-w64.org/
+
+If you are using the static version of the GLFW library, which is named
+`libglfw3.a`, do:
+
+```sh
+gcc -o myprog myprog.c -I path/to/glfw/include path/to/glfw/lib-mingw-w64/libglfw3.a -lgdi32
+```
+
+If you are using the DLL version of the GLFW library, which is named
+`glfw3.dll`, you will need to use the `libglfw3dll.a` link library.
+
+```sh
+gcc -o myprog myprog.c -I path/to/glfw/include path/to/glfw/lib-mingw-w64/libglfw3dll.a -lgdi32
+```
+
+The resulting executable will need to find `glfw3.dll` to run, typically by
+keeping both files in the same directory.
+
+When you are building with the DLL version of GLFW, you will also need to define
+the @ref GLFW_DLL macro.  This can be done in your source files, as long as it
+done before including the GLFW header:
+
+```c
+#define GLFW_DLL
+#include <GLFW/glfw3.h>
+```
+
+It can also be done on the command-line:
+
+```sh
+gcc -o myprog myprog.c -D GLFW_DLL -I path/to/glfw/include path/to/glfw/lib-mingw-w64/libglfw3dll.a -lgdi32
+```
 
 
 ### With CMake and GLFW source {#build_link_cmake_source}
@@ -264,7 +339,10 @@ target_link_libraries(myapp OpenGL::GL)
 ```
 
 
-### With makefiles and pkg-config on Unix {#build_link_pkgconfig}
+### With pkg-config and GLFW binaries on Unix {#build_link_pkgconfig}
+
+This is intended for building a program from the command-line or by writing
+a makefile, on macOS or any Unix-like system like Linux, FreeBSD and Cygwin.
 
 GLFW supports [pkg-config][], and the `glfw3.pc` pkg-config file is generated
 when the GLFW library is built and is installed along with it.  A pkg-config
@@ -316,13 +394,13 @@ OpenGL and IOKit frameworks to the project as dependencies.  They can all be
 found in `/System/Library/Frameworks`.
 
 
-### With command-line on macOS {#build_link_osx}
+### With command-line or makefile on macOS {#build_link_osx}
 
 It is recommended that you use [pkg-config](@ref build_link_pkgconfig) when
-building from the command line on macOS.  That way you will get any new
-dependencies added automatically.  If you still wish to build manually, you need
-to add the required frameworks and libraries to your command-line yourself using
-the `-l` and `-framework` switches.
+using installed GLFW binaries from the command line on macOS.  That way you will
+get any new dependencies added automatically.  If you still wish to build
+manually, you need to add the required frameworks and libraries to your
+command-line yourself using the `-l` and `-framework` switches.
 
 If you are using the dynamic GLFW library, which is named `libglfw.3.dylib`, do:
 

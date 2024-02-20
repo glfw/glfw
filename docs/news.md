@@ -7,6 +7,12 @@
 
 ### New features in version 3.4 {#features_34}
 
+#### Cocoa NSView native access function {#native_cocoa_nsview_34}
+
+GLFW now provides the @ref glfwGetCocoaView native access function
+for returning the Cocoa NSView.
+
+
 #### Runtime platform selection {#runtime_platform_34}
 
 GLFW now supports being compiled for multiple backends and selecting between

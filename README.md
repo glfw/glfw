@@ -180,6 +180,7 @@ information on what to include when reporting a bug.
  - [Win32] Added a version info resource to the GLFW DLL
  - [Win32] Made hidden helper window use its own window class
  - [Win32] Bugfix: The foreground lock timeout was overridden, ignoring the user
+ - [Cocoa] Added `glfwGetCocoaView` native access function (#2235)
  - [Cocoa] Moved main menu creation to GLFW initialization time (#1649)
  - [Cocoa] Bugfix: Touching event queue from secondary thread before main thread
    would abort (#1649)

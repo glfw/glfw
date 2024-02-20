@@ -436,6 +436,7 @@ information on what to include when reporting a bug.
  - [EGL] Bugfix: Setting `GLFW_CONTEXT_DEBUG` caused creation to fail (#2348)
  - [GLX] Added loading of glvnd `libGLX.so.0` where available
  - [GLX] Bugfix: Context creation failed if GLX 1.4 was not exported by GLX library
+ - [X11] Bugfix: Inconsistency for Key Event Modifiers between Windows and Linux/X11
 
 
 ## Contact

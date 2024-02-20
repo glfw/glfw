@@ -205,7 +205,7 @@ information on what to include when reporting a bug.
    (#442)
  - [EGL] Added ANGLE backend selection via `EGL_ANGLE_platform_angle` extension
    (#1380)
- - Added `GLFW_ACCELERATION` window hint for hardware acceleration (#TODO)
+ - Added `GLFW_ACCELERATION` window hint for hardware acceleration (#2491)
 
 
 ## Changelog since 3.3

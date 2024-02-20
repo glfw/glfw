@@ -491,24 +491,31 @@ GLFWvidmode* _glfwGetVideoModesX11(_GLFWmonitor* monitor, int* count)
     return result;
 }
 
-void _glfwGetVideoModeX11(_GLFWmonitor* monitor, GLFWvidmode* mode)
+GLFWbool _glfwGetVideoModeX11(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
     if (_glfw.x11.randr.available && !_glfw.x11.randr.monitorBroken)
     {
         XRRScreenResources* sr =
             XRRGetScreenResourcesCurrent(_glfw.x11.display, _glfw.x11.root);
-        XRRCrtcInfo* ci = XRRGetCrtcInfo(_glfw.x11.display, sr, monitor->x11.crtc);
+        const XRRModeInfo* mi = NULL;
 
+        XRRCrtcInfo* ci = XRRGetCrtcInfo(_glfw.x11.display, sr, monitor->x11.crtc);
         if (ci)
         {
-            const XRRModeInfo* mi = getModeInfo(sr, ci->mode);
-            if (mi)  // mi can be NULL if the monitor has been disconnected
+            mi = getModeInfo(sr, ci->mode);
+            if (mi)
                 *mode = vidmodeFromModeInfo(mi, ci);
 
             XRRFreeCrtcInfo(ci);
         }
 
         XRRFreeScreenResources(sr);
+
+        if (!mi)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Failed to query video mode");
+            return GLFW_FALSE;
+        }
     }
     else
     {
@@ -519,6 +526,8 @@ void _glfwGetVideoModeX11(_GLFWmonitor* monitor, GLFWvidmode* mode)
         _glfwSplitBPP(DefaultDepth(_glfw.x11.display, _glfw.x11.screen),
                       &mode->redBits, &mode->greenBits, &mode->blueBits);
     }
+
+    return GLFW_TRUE;
 }
 
 GLFWbool _glfwGetGammaRampX11(_GLFWmonitor* monitor, GLFWgammaramp* ramp)

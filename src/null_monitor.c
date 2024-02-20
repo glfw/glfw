@@ -109,9 +109,10 @@ GLFWvidmode* _glfwGetVideoModesNull(_GLFWmonitor* monitor, int* found)
     return mode;
 }
 
-void _glfwGetVideoModeNull(_GLFWmonitor* monitor, GLFWvidmode* mode)
+GLFWbool _glfwGetVideoModeNull(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
     *mode = getVideoMode();
+    return GLFW_TRUE;
 }
 
 GLFWbool _glfwGetGammaRampNull(_GLFWmonitor* monitor, GLFWgammaramp* ramp)

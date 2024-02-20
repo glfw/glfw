@@ -450,7 +450,9 @@ GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* handle)
 
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
-    _glfw.platform.getVideoMode(monitor, &monitor->currentMode);
+    if (!_glfw.platform.getVideoMode(monitor, &monitor->currentMode))
+        return NULL;
+
     return &monitor->currentMode;
 }
 

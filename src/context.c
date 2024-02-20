@@ -28,10 +28,10 @@
 #include "internal.h"
 
 #include <assert.h>
+#include <limits.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include <limits.h>
-#include <stdio.h>
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -185,6 +185,7 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
                                          unsigned int count)
 {
     unsigned int i;
+    bool accelerationMatch, closestAccelerationMatch = false;
     unsigned int missing, leastMissing = UINT_MAX;
     unsigned int colorDiff, leastColorDiff = UINT_MAX;
     unsigned int extraDiff, leastExtraDiff = UINT_MAX;
@@ -200,6 +201,8 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
             // Stereo is a hard constraint
             continue;
         }
+
+        accelerationMatch = desired->acceleration == current->acceleration;
 
         // Count number of missing buffers
         {
@@ -312,16 +315,13 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
 
             if (desired->sRGB && !current->sRGB)
                 extraDiff++;
-
-            if (desired->acceleration && !current->acceleration)
-                extraDiff++;
         }
 
         // Figure out if the current one is better than the best one found so far
         // Least number of missing buffers is the most important heuristic,
         // then color buffer size match and lastly size match for other buffers
 
-        if (missing < leastMissing)
+        if ((accelerationMatch && !closestAccelerationMatch) || missing < leastMissing)
             closest = current;
         else if (missing == leastMissing)
         {
@@ -334,6 +334,7 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
 
         if (current == closest)
         {
+            closestAccelerationMatch = accelerationMatch;
             leastMissing = missing;
             leastColorDiff = colorDiff;
             leastExtraDiff = extraDiff;

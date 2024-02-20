@@ -321,14 +321,19 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
         // Least number of missing buffers is the most important heuristic,
         // then color buffer size match and lastly size match for other buffers
 
-        if ((accelerationMatch && !closestAccelerationMatch) || missing < leastMissing)
+        if (accelerationMatch && !closestAccelerationMatch)
             closest = current;
-        else if (missing == leastMissing)
+        else if (accelerationMatch == closestAccelerationMatch)
         {
-            if ((colorDiff < leastColorDiff) ||
-                (colorDiff == leastColorDiff && extraDiff < leastExtraDiff))
-            {
+            if (missing < leastMissing)
                 closest = current;
+            else if (missing == leastMissing)
+            {
+                if ((colorDiff < leastColorDiff) ||
+                    (colorDiff == leastColorDiff && extraDiff < leastExtraDiff))
+                {
+                    closest = current;
+                }
             }
         }
 

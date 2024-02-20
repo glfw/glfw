@@ -175,6 +175,13 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         }
     }
 
+    if (ctxconfig->major >= 3 && ctxconfig->profile == GLFW_OPENGL_COMPAT_PROFILE)
+    {
+        _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+                        "NSGL: The compatibility profile is not available on macOS");
+        return GLFW_FALSE;
+    }
+
     // Context robustness modes (GL_KHR_robustness) are not yet supported by
     // macOS but are not a hard constraint, so ignore and continue
 

@@ -201,6 +201,8 @@ information on what to include when reporting a bug.
  - [POSIX] Bugfix: `CLOCK_MONOTONIC` was not correctly tested for or enabled
  - [WGL] Disabled the DWM swap interval hack for Windows 8 and later (#1072)
  - [NSGL] Removed enforcement of forward-compatible flag for core contexts
+ - [NSGL] Bugfix: A core profile OpenGL context was returned if 3.2+
+   compatibility profile was requested
  - [EGL] Added platform selection via the `EGL_EXT_platform_base` extension
    (#442)
  - [EGL] Added ANGLE backend selection via `EGL_ANGLE_platform_angle` extension

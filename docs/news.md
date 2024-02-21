@@ -287,6 +287,7 @@ then GLFW will fail to initialize.
  - @ref glfwPlatformSupported
  - @ref glfwInitVulkanLoader
  - @ref glfwGetWindowTitle
+ - @ref glfwGetCocoaView
 
 
 #### New types in version 3.4 {#types_34}

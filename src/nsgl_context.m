@@ -161,7 +161,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     if (ctxconfig->client == GLFW_OPENGL_ES_API)
     {
         _glfwInputError(GLFW_API_UNAVAILABLE,
-                        "NSGL: OpenGL ES is not available on macOS");
+                        "NSGL: OpenGL ES is not available via NSGL");
         return GLFW_FALSE;
     }
 
@@ -173,6 +173,13 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                             "NSGL: The targeted version of macOS does not support OpenGL 3.0 or 3.1 but may support 3.2 and above");
             return GLFW_FALSE;
         }
+    }
+
+    if (ctxconfig->major >= 3 && ctxconfig->profile == GLFW_OPENGL_COMPAT_PROFILE)
+    {
+        _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+                        "NSGL: The compatibility profile is not available on macOS");
+        return GLFW_FALSE;
     }
 
     // Context robustness modes (GL_KHR_robustness) are not yet supported by

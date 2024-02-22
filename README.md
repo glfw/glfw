@@ -16,9 +16,9 @@ GLFW is licensed under the [zlib/libpng
 license](https://www.glfw.org/license.html).
 
 You can [download](https://www.glfw.org/download.html) the latest stable release
-as source or Windows binaries, or fetch the `latest` branch from GitHub.  Each
-release starting with 3.0 also has a corresponding [annotated
-tag](https://github.com/glfw/glfw/releases) with source and binary archives.
+as source or Windows binaries.  Each release starting with 3.0 also has
+a corresponding [annotated tag](https://github.com/glfw/glfw/releases) with
+source and binary archives.
 
 The [documentation](https://www.glfw.org/docs/latest/) is available online and is
 included in all source and binary archives.  See the [release
@@ -170,7 +170,7 @@ information on what to include when reporting a bug.
  - Made joystick subsystem initialize at first use (#1284,#1646)
  - Made `GLFW_DOUBLEBUFFER` a read-only window attribute
  - Made Wayland the preferred platform over X11 if both are available (#2035)
- - Updated the minimum required CMake version to 3.1
+ - Updated the minimum required CMake version to 3.4
  - Updated gamepad mappings from upstream
  - Renamed `GLFW_USE_WAYLAND` CMake option to `GLFW_BUILD_WAYLAND` (#1958)
  - Disabled tests and examples by default when built as a CMake subdirectory

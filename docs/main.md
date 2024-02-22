@@ -29,9 +29,6 @@ use the new API.
 There is a section on @ref guarantees_limitations for pointer lifetimes,
 reentrancy, thread safety, event order and backward and forward compatibility.
 
-The [FAQ](https://www.glfw.org/faq.html) answers many common questions about the
-design, implementation and use of GLFW.
-
 Finally, @ref compat_guide explains what APIs, standards and protocols GLFW uses
 and what happens when they are not present on a given machine.
 

@@ -2,7 +2,6 @@
 
 [![Build status](https://github.com/glfw/glfw/actions/workflows/build.yml/badge.svg)](https://github.com/glfw/glfw/actions)
 [![Build status](https://ci.appveyor.com/api/projects/status/0kf0ct9831i5l6sp/branch/master?svg=true)](https://ci.appveyor.com/project/elmindreda/glfw)
-[![Coverity Scan](https://scan.coverity.com/projects/4884/badge.svg)](https://scan.coverity.com/projects/glfw-glfw)
 
 ## Introduction
 
@@ -123,33 +122,12 @@ information on what to include when reporting a bug.
 
 ## Changelog
 
- - Bugfix: `glfwGetKeyScancode` returned `0` on error when initialized instead of `-1`
- - Bugfix: Failure to make a newly created context current could cause segfault (#2327)
- - [Win32] Fix pkg-config for dynamic library on Windows (#2386, #2420)
- - [Win32] Bugfix: `glfwWaitEventsTimeout` did not return for some sent messages (#2408)
- - [Win32] Bugfix: XInput could reportedly provide invalid DPad bit masks (#2291)
- - [Cocoa] Bugfix: Compilation failed on OS X 10.8 due to unconditional use of 10.9+
-   symbols (#2161)
- - [Cocoa] Bugfix: Full screen windows were resizable by the user (#2377,#2405)
- - [Cocoa] Bugfix: Full screen windows were miniaturized when clicked on macOS
-   10.15 (#2377,#2405)
- - [Cocoa] Bugfix: Querying joystick elements could reportedly segfault on macOS
-   13 Ventura (#2320)
- - [Cocoa] Bugfix: Print Screen key was not correctly reported (#1786,#2169)
- - [Wayland] Added improved fallback window decorations via libdecor (#1639,#1693)
- - [Wayland] Bugfix: Connecting a mouse after `glfwInit` would segfault (#1450)
- - [Wayland] Disabled alpha channel for opaque windows on systems lacking
-   `EGL_EXT_present_opaque` (#1895)
- - [Wayland] Bugfix: Buffer would overrun when storing received drag offer (#2225)
- - [Wayland] Bugfix: Joysticks connected after `glfwInit` were not detected (#2198)
- - [Wayland] Bugfix: Fallback decorations emitted `GLFW_CURSOR_UNAVAILABLE` errors
- - [Wayland] Bugfix: Some events could fail to end wait for new events (#2397)
- - [Linux] Bugfix: Joysticks without buttons were ignored (#2042,#2043)
- - [Linux] Bugfix: A small amount of memory could leak if initialization failed (#2229)
- - [EGL] Added loading of glvnd `libOpenGL.so.0` where available for OpenGL
- - [EGL] Bugfix: `EGL_EXT_present_opaque` caused issues on X11 with Nvidia blob (#2365)
- - [EGL] Bugfix: Setting `GLFW_CONTEXT_DEBUG` caused creation to fail (#2348)
- - [GLX] Added loading of glvnd `libGLX.so.0` where available
+ - Bugfix: `glfwGetKeyName` emitted `GLFW_INVALID_VALUE` for scancodes with no
+   key token (#1785,#2214)
+ - [Wayland] Bugfix: Terminating the library before showing a window could segfault
+ - [Wayland] Bugfix: Compilation failed on FreeBSD (#2445)
+ - [Linux] Bugfix: `regfree´ was called on invalid data (#2464)
+ - [WGL] Bugfix: Context creation failed in Parallels VM (#2191,#2406,#2467)
 
 
 ## Contact
@@ -158,13 +136,12 @@ On [glfw.org](https://www.glfw.org/) you can find the latest version of GLFW, as
 well as news, documentation and other information about the project.
 
 If you have questions related to the use of GLFW, we have a
-[forum](https://discourse.glfw.org/), and the `#glfw` IRC channel on
-[Libera.Chat](https://libera.chat/).
+[forum](https://discourse.glfw.org/).
 
 If you have a bug to report, a patch to submit or a feature you'd like to
 request, please file it in the
 [issue tracker](https://github.com/glfw/glfw/issues) on GitHub.
 
 Finally, if you're interested in helping out with the development of GLFW or
-porting it to your favorite platform, join us on the forum, GitHub or IRC.
+porting it to your favorite platform, join us on the forum or GitHub.
 

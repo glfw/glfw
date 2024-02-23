@@ -637,10 +637,15 @@ void _glfwPlatformTerminate(void)
     _glfwTerminateEGL();
     _glfwTerminateOSMesa();
 
-    if (_glfw.wl.libdecor.callback)
-        wl_callback_destroy(_glfw.wl.libdecor.callback);
     if (_glfw.wl.libdecor.context)
+    {
+        // Allow libdecor to finish receiving all its requested globals
+        // and ensure the associated sync callback object is destroyed
+        while (!_glfw.wl.libdecor.ready)
+            _glfwPlatformWaitEvents();
+
         libdecor_unref(_glfw.wl.libdecor.context);
+    }
 
     if (_glfw.wl.libdecor.handle)
     {

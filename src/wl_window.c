@@ -42,6 +42,7 @@
 #include <poll.h>
 #include <signal.h>
 #include <time.h>
+#include <linux/input-event-codes.h>
 
 #define GLFW_BORDER_SIZE    4
 #define GLFW_CAPTION_HEIGHT 24
@@ -1537,24 +1538,14 @@ static void pointerHandleAxis(void* userData,
                               wl_fixed_t value)
 {
     _GLFWwindow* window = _glfw.wl.pointerFocus;
-    double x = 0.0, y = 0.0;
-    // Wayland scroll events are in pointer motion coordinate space (think two
-    // finger scroll).  The factor 10 is commonly used to convert to "scroll
-    // step means 1.0.
-    const double scrollFactor = 1.0 / 10.0;
-
     if (!window)
         return;
 
-    assert(axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL ||
-           axis == WL_POINTER_AXIS_VERTICAL_SCROLL);
-
+    // NOTE: 10 units of motion per mouse wheel step seems to be a common ratio
     if (axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL)
-        x = -wl_fixed_to_double(value) * scrollFactor;
+        _glfwInputScroll(window, -wl_fixed_to_double(value) / 10.0, 0.0);
     else if (axis == WL_POINTER_AXIS_VERTICAL_SCROLL)
-        y = -wl_fixed_to_double(value) * scrollFactor;
-
-    _glfwInputScroll(window, x, y);
+        _glfwInputScroll(window, 0.0, -wl_fixed_to_double(value) / 10.0);
 }
 
 static const struct wl_pointer_listener pointerListener =
@@ -2563,8 +2554,7 @@ void _glfwPlatformSetCursorMode(_GLFWwindow* window, int mode)
 
 const char* _glfwPlatformGetScancodeName(int scancode)
 {
-    if (scancode < 0 || scancode > 255 ||
-        _glfw.wl.keycodes[scancode] == GLFW_KEY_UNKNOWN)
+    if (scancode < 0 || scancode > 255)
     {
         _glfwInputError(GLFW_INVALID_VALUE,
                         "Wayland: Invalid scancode %i",
@@ -2573,6 +2563,9 @@ const char* _glfwPlatformGetScancodeName(int scancode)
     }
 
     const int key = _glfw.wl.keycodes[scancode];
+    if (key == GLFW_KEY_UNKNOWN)
+        return NULL;
+
     const xkb_keycode_t keycode = scancode + 8;
     const xkb_layout_index_t layout =
         xkb_state_key_get_layout(_glfw.wl.xkb.state, keycode);

@@ -45,6 +45,7 @@ video tutorials.
  - Bailey Cosier
  - Noel Cower
  - CuriouserThing
+ - Bill Currie
  - Jason Daly
  - danhambleton
  - Jarrod Davis
@@ -129,6 +130,7 @@ video tutorials.
  - lo-v-ol
  - Eyal Lotem
  - Aaron Loucks
+ - Ned Loynd
  - Luflosi
  - lukect
  - Tristam MacDonald
@@ -161,6 +163,7 @@ video tutorials.
  - Martins Mozeiko
  - James Murphy
  - Julian Møller
+ - NateIsStalling
  - ndogxj
  - F. Nedelec
  - Kristian Nielsen
@@ -202,6 +205,7 @@ video tutorials.
  - Aleksey Rybalkin
  - Mikko Rytkönen
  - Riku Salminen
+ - Anton Samokhvalov
  - Brandon Schaefer
  - Sebastian Schuberth
  - Christian Sdunek
@@ -231,6 +235,7 @@ video tutorials.
  - Paul Sultana
  - Nathan Sweet
  - TTK-Bandit
+ - Nuno Teixeira
  - Sergey Tikhomirov
  - Arthur Tombs
  - TronicLabs
@@ -253,6 +258,7 @@ video tutorials.
  - Jay Weisskopf
  - Frank Wille
  - Richard A. Wilkes
+ - Andy Williams
  - Tatsuya Yatagawa
  - Ryogo Yoshimura
  - Rácz Zalán

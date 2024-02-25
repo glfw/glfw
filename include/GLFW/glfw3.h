@@ -1129,6 +1129,7 @@ extern "C" {
 /*! @brief Win32 specific [window hint](@ref GLFW_WIN32_SHOWDEFAULT_hint).
  */
 #define GLFW_WIN32_SHOWDEFAULT      0x00025002
+#define GLFW_WIN32_HWND_PARENT      0x00025003
 /*! @brief Wayland specific
  *  [window hint](@ref GLFW_WAYLAND_APP_ID_hint).
  *  
@@ -3051,6 +3052,14 @@ GLFWAPI void glfwDefaultWindowHints(void);
  *  @ingroup window
  */
 GLFWAPI void glfwWindowHint(int hint, int value);
+
+/*! @brief Sets the specified window hint to the desired value.
+ * 
+ *  @since Added in version 3.4.x.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwWindowHintPointer(int hint, void* value);
 
 /*! @brief Sets the specified window hint to the desired value.
  *

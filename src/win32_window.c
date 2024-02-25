@@ -45,17 +45,22 @@ static DWORD getWindowStyle(const _GLFWwindow* window)
         style |= WS_POPUP;
     else
     {
-        style |= WS_SYSMENU | WS_MINIMIZEBOX;
-
-        if (window->decorated)
+        if (!window->win32.handleParent)
         {
-            style |= WS_CAPTION;
+            style |= WS_SYSMENU | WS_MINIMIZEBOX;
 
-            if (window->resizable)
-                style |= WS_MAXIMIZEBOX | WS_THICKFRAME;
+            if (window->decorated)
+            {
+                style |= WS_CAPTION;
+
+                if (window->resizable)
+                    style |= WS_MAXIMIZEBOX | WS_THICKFRAME;
+            }
+            else
+                style |= WS_POPUP;
         }
         else
-            style |= WS_POPUP;
+            style |= WS_CHILD;
     }
 
     return style;
@@ -1384,13 +1389,14 @@ static int createNativeWindow(_GLFWwindow* window,
     if (!wideTitle)
         return GLFW_FALSE;
 
+    window->win32.handleParent = wndconfig->win32.handleParent;
     window->win32.handle = CreateWindowExW(exStyle,
                                            MAKEINTATOM(_glfw.win32.mainWindowClass),
                                            wideTitle,
                                            style,
                                            frameX, frameY,
                                            frameWidth, frameHeight,
-                                           NULL, // No parent window
+                                           (HWND)wndconfig->win32.handleParent,
                                            NULL, // No window menu
                                            _glfw.win32.instance,
                                            (LPVOID) wndconfig);

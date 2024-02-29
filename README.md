@@ -90,7 +90,7 @@ in the documentation for more information.
 
 ## Dependencies
 
-GLFW itself needs only CMake 3.1 or later and the headers and libraries for your
+GLFW itself needs only CMake 3.4 or later and the headers and libraries for your
 OS and window system.
 
 The examples and test programs depend on a number of tiny libraries.  These are

@@ -2513,7 +2513,7 @@ EGLNativeWindowType _glfwGetEGLNativeWindowWin32(_GLFWwindow* window)
     return window->win32.handle;
 }
 
-void _glfwGetRequiredInstanceExtensionsWin32(char** extensions)
+void _glfwGetRequiredInstanceExtensionsWin32(const char** extensions)
 {
     if (!_glfw.vk.KHR_surface || !_glfw.vk.KHR_win32_surface)
         return;

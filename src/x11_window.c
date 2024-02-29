@@ -3133,7 +3133,7 @@ EGLNativeWindowType _glfwGetEGLNativeWindowX11(_GLFWwindow* window)
         return (EGLNativeWindowType) window->x11.handle;
 }
 
-void _glfwGetRequiredInstanceExtensionsX11(char** extensions)
+void _glfwGetRequiredInstanceExtensionsX11(const char** extensions)
 {
     if (!_glfw.vk.KHR_surface)
         return;

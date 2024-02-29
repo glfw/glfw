@@ -959,7 +959,7 @@ EGLenum _glfwGetEGLPlatformX11(EGLint** attribs);
 EGLNativeDisplayType _glfwGetEGLNativeDisplayX11(void);
 EGLNativeWindowType _glfwGetEGLNativeWindowX11(_GLFWwindow* window);
 
-void _glfwGetRequiredInstanceExtensionsX11(char** extensions);
+void _glfwGetRequiredInstanceExtensionsX11(const char** extensions);
 GLFWbool _glfwGetPhysicalDevicePresentationSupportX11(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
 VkResult _glfwCreateWindowSurfaceX11(VkInstance instance, _GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
 

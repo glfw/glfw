@@ -231,7 +231,7 @@ static void createKeyTables(void)
         const struct
         {
             int key;
-            char* name;
+            const char* name;
         } keymap[] =
         {
             { GLFW_KEY_GRAVE_ACCENT, "TLDE" },

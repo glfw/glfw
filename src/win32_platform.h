@@ -600,7 +600,7 @@ EGLenum _glfwGetEGLPlatformWin32(EGLint** attribs);
 EGLNativeDisplayType _glfwGetEGLNativeDisplayWin32(void);
 EGLNativeWindowType _glfwGetEGLNativeWindowWin32(_GLFWwindow* window);
 
-void _glfwGetRequiredInstanceExtensionsWin32(char** extensions);
+void _glfwGetRequiredInstanceExtensionsWin32(const char** extensions);
 GLFWbool _glfwGetPhysicalDevicePresentationSupportWin32(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
 VkResult _glfwCreateWindowSurfaceWin32(VkInstance instance, _GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
 

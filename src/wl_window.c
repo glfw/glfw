@@ -3207,7 +3207,7 @@ EGLNativeWindowType _glfwGetEGLNativeWindowWayland(_GLFWwindow* window)
     return window->wl.egl.window;
 }
 
-void _glfwGetRequiredInstanceExtensionsWayland(char** extensions)
+void _glfwGetRequiredInstanceExtensionsWayland(const char** extensions)
 {
     if (!_glfw.vk.KHR_surface || !_glfw.vk.KHR_wayland_surface)
         return;

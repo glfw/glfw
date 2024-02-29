@@ -1,5 +1,5 @@
 /*************************************************************************
- * GLFW 3.4 - www.glfw.org
+ * GLFW 3.5 - www.glfw.org
  * A library for OpenGL, window and input
  *------------------------------------------------------------------------
  * Copyright (c) 2002-2006 Marcus Geelnard

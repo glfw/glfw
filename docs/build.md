@@ -310,7 +310,7 @@ With a few changes to your `CMakeLists.txt` you can locate the package and
 target files generated when GLFW is installed.
 
 ```cmake
-find_package(glfw3 3.4 REQUIRED)
+find_package(glfw3 3.5 REQUIRED)
 ```
 
 Once GLFW has been added to the project, link against it with the `glfw` target.

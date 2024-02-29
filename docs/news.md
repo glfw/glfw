@@ -5,6 +5,15 @@
 
 ## New features {#features}
 
+### Unlimited mouse buttons {#unlimited_mouse_buttons}
+
+GLFW now has an input mode which allows an unlimited number of mouse buttons to
+be reported by the mouse buttton callback, rather than just the associated
+[mouse button tokens](@ref buttons). This allows using mouse buttons with
+values over 8. For compatibility with older versions, the
+@ref GLFW_UNLIMITED_MOUSE_BUTTONS input mode needs to be set to make use of
+this.
+
 ## Caveats {#caveats}
 
 ## Deprecations {#deprecations}
@@ -18,6 +27,8 @@
 ### New types {#new_types}
 
 ### New constants {#new_constants}
+
+- @ref GLFW_UNLIMITED_MOUSE_BUTTONS
 
 ## Release notes for earlier versions {#news_archive}
 

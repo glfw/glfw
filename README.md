@@ -121,6 +121,9 @@ information on what to include when reporting a bug.
 
 ## Changelog since 3.4
 
+ - Added `GLFW_UNLIMITED_MOUSE_BUTTONS` input mode that allows mouse buttons beyond
+   the limit of the mouse button tokens to be reported (#2423)
+
 
 ## Contact
 

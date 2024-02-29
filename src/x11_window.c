@@ -62,7 +62,7 @@
 //
 static GLFWbool waitForX11Event(double* timeout)
 {
-    struct pollfd fd = { ConnectionNumber(_glfw.x11.display), POLLIN };
+    struct pollfd fd = { .fd = ConnectionNumber(_glfw.x11.display), .events = POLLIN };
 
     while (!XPending(_glfw.x11.display))
     {

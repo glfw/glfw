@@ -474,8 +474,8 @@ static void surfaceHandleLeave(void* userData,
 
 static const struct wl_surface_listener surfaceListener =
 {
-    surfaceHandleEnter,
-    surfaceHandleLeave
+    .enter = surfaceHandleEnter,
+    .leave = surfaceHandleLeave
 };
 
 static void setIdleInhibitor(_GLFWwindow* window, GLFWbool enable)
@@ -616,8 +616,8 @@ static void xdgToplevelHandleClose(void* userData,
 
 static const struct xdg_toplevel_listener xdgToplevelListener =
 {
-    xdgToplevelHandleConfigure,
-    xdgToplevelHandleClose
+    .configure = xdgToplevelHandleConfigure,
+    .close = xdgToplevelHandleClose
 };
 
 static void xdgSurfaceHandleConfigure(void* userData,
@@ -791,10 +791,10 @@ void libdecorFrameHandleDismissPopup(struct libdecor_frame* frame,
 
 static const struct libdecor_frame_interface libdecorFrameInterface =
 {
-    libdecorFrameHandleConfigure,
-    libdecorFrameHandleClose,
-    libdecorFrameHandleCommit,
-    libdecorFrameHandleDismissPopup
+    .configure = libdecorFrameHandleConfigure,
+    .close = libdecorFrameHandleClose,
+    .commit = libdecorFrameHandleCommit,
+    .dismiss_popup = libdecorFrameHandleDismissPopup
 };
 
 static GLFWbool createLibdecorFrame(_GLFWwindow* window)
@@ -1144,7 +1144,7 @@ static GLFWbool flushDisplay(void)
         if (errno != EAGAIN)
             return GLFW_FALSE;
 
-        struct pollfd fd = { wl_display_get_fd(_glfw.wl.display), POLLOUT };
+        struct pollfd fd = { .fd = wl_display_get_fd(_glfw.wl.display), POLLOUT };
 
         while (poll(&fd, 1, -1) == -1)
         {
@@ -1624,11 +1624,11 @@ static void pointerHandleAxis(void* userData,
 
 static const struct wl_pointer_listener pointerListener =
 {
-    pointerHandleEnter,
-    pointerHandleLeave,
-    pointerHandleMotion,
-    pointerHandleButton,
-    pointerHandleAxis,
+    .enter = pointerHandleEnter,
+    .leave = pointerHandleLeave,
+    .motion = pointerHandleMotion,
+    .button = pointerHandleButton,
+    .axis = pointerHandleAxis,
 };
 
 static void keyboardHandleKeymap(void* userData,
@@ -1936,7 +1936,7 @@ static void dataOfferHandleOffer(void* userData,
 
 static const struct wl_data_offer_listener dataOfferListener =
 {
-    dataOfferHandleOffer
+    .offer = dataOfferHandleOffer
 };
 
 static void dataDeviceHandleDataOffer(void* userData,
@@ -1955,7 +1955,7 @@ static void dataDeviceHandleDataOffer(void* userData,
     _glfw.wl.offers = offers;
     _glfw.wl.offerCount++;
 
-    _glfw.wl.offers[_glfw.wl.offerCount - 1] = (_GLFWofferWayland) { offer };
+    _glfw.wl.offers[_glfw.wl.offerCount - 1] = (_GLFWofferWayland) { .offer = offer };
     wl_data_offer_add_listener(offer, &dataOfferListener, NULL);
 }
 
@@ -3131,9 +3131,9 @@ static void dataSourceHandleCancelled(void* userData,
 
 static const struct wl_data_source_listener dataSourceListener =
 {
-    dataSourceHandleTarget,
-    dataSourceHandleSend,
-    dataSourceHandleCancelled,
+    .target = dataSourceHandleTarget,
+    .send = dataSourceHandleSend,
+    .cancelled = dataSourceHandleCancelled,
 };
 
 void _glfwSetClipboardStringWayland(const char* string)

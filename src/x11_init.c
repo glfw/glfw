@@ -366,7 +366,7 @@ static void createKeyTables(void)
             // keyboard layout. Because function keys aren't mapped correctly
             // when using traditional KeySym translations, they are mapped
             // here instead.
-            for (int i = 0;  i < sizeof(keymap) / sizeof(keymap[0]);  i++)
+            for (size_t i = 0;  i < sizeof(keymap) / sizeof(keymap[0]);  i++)
             {
                 if (strncmp(desc->names->keys[scancode].name,
                             keymap[i].name,
@@ -390,7 +390,7 @@ static void createKeyTables(void)
                     continue;
                 }
 
-                for (int j = 0;  j < sizeof(keymap) / sizeof(keymap[0]);  j++)
+                for (size_t j = 0;  j < sizeof(keymap) / sizeof(keymap[0]);  j++)
                 {
                     if (strncmp(desc->names->key_aliases[i].alias,
                                 keymap[j].name,

@@ -1179,7 +1179,7 @@ extern "C" {
 #define GLFW_WAYLAND_PREFER_LIBDECOR    0x00038001
 #define GLFW_WAYLAND_DISABLE_LIBDECOR   0x00038002
 
-#define GLFW_ANY_POSITION           0x80000000
+#define GLFW_ANY_POSITION           0x7FFFFFFF
 
 /*! @defgroup shapes Standard cursor shapes
  *  @brief Standard system cursor shapes.

@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 Wayland - www.glfw.org
+// GLFW 3.5 Wayland - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -46,6 +46,8 @@
 #include "viewporter-client-protocol.h"
 #include "relative-pointer-unstable-v1-client-protocol.h"
 #include "pointer-constraints-unstable-v1-client-protocol.h"
+#include "fractional-scale-v1-client-protocol.h"
+#include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
 
 // NOTE: Versions of wayland-scanner prior to 1.17.91 named every global array of
@@ -75,6 +77,14 @@
 
 #define types _glfw_pointer_constraints_types
 #include "pointer-constraints-unstable-v1-client-protocol-code.h"
+#undef types
+
+#define types _glfw_fractional_scale_types
+#include "fractional-scale-v1-client-protocol-code.h"
+#undef types
+
+#define types _glfw_xdg_activation_types
+#include "xdg-activation-v1-client-protocol-code.h"
 #undef types
 
 #define types _glfw_idle_inhibit_types
@@ -175,6 +185,20 @@ static void registryHandleGlobal(void* userData,
         _glfw.wl.idleInhibitManager =
             wl_registry_bind(registry, name,
                              &zwp_idle_inhibit_manager_v1_interface,
+                             1);
+    }
+    else if (strcmp(interface, "xdg_activation_v1") == 0)
+    {
+        _glfw.wl.activationManager =
+            wl_registry_bind(registry, name,
+                             &xdg_activation_v1_interface,
+                             1);
+    }
+    else if (strcmp(interface, "wp_fractional_scale_manager_v1") == 0)
+    {
+        _glfw.wl.fractionalScaleManager =
+            wl_registry_bind(registry, name,
+                             &wp_fractional_scale_manager_v1_interface,
                              1);
     }
 }
@@ -405,87 +429,87 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
 {
     const _GLFWplatform wayland =
     {
-        GLFW_PLATFORM_WAYLAND,
-        _glfwInitWayland,
-        _glfwTerminateWayland,
-        _glfwGetCursorPosWayland,
-        _glfwSetCursorPosWayland,
-        _glfwSetCursorModeWayland,
-        _glfwSetRawMouseMotionWayland,
-        _glfwRawMouseMotionSupportedWayland,
-        _glfwCreateCursorWayland,
-        _glfwCreateStandardCursorWayland,
-        _glfwDestroyCursorWayland,
-        _glfwSetCursorWayland,
-        _glfwGetScancodeNameWayland,
-        _glfwGetKeyScancodeWayland,
-        _glfwSetClipboardStringWayland,
-        _glfwGetClipboardStringWayland,
+        .platformID = GLFW_PLATFORM_WAYLAND,
+        .init = _glfwInitWayland,
+        .terminate = _glfwTerminateWayland,
+        .getCursorPos = _glfwGetCursorPosWayland,
+        .setCursorPos = _glfwSetCursorPosWayland,
+        .setCursorMode = _glfwSetCursorModeWayland,
+        .setRawMouseMotion = _glfwSetRawMouseMotionWayland,
+        .rawMouseMotionSupported = _glfwRawMouseMotionSupportedWayland,
+        .createCursor = _glfwCreateCursorWayland,
+        .createStandardCursor = _glfwCreateStandardCursorWayland,
+        .destroyCursor = _glfwDestroyCursorWayland,
+        .setCursor = _glfwSetCursorWayland,
+        .getScancodeName = _glfwGetScancodeNameWayland,
+        .getKeyScancode = _glfwGetKeyScancodeWayland,
+        .setClipboardString = _glfwSetClipboardStringWayland,
+        .getClipboardString = _glfwGetClipboardStringWayland,
 #if defined(GLFW_BUILD_LINUX_JOYSTICK)
-        _glfwInitJoysticksLinux,
-        _glfwTerminateJoysticksLinux,
-        _glfwPollJoystickLinux,
-        _glfwGetMappingNameLinux,
-        _glfwUpdateGamepadGUIDLinux,
+        .initJoysticks = _glfwInitJoysticksLinux,
+        .terminateJoysticks = _glfwTerminateJoysticksLinux,
+        .pollJoystick = _glfwPollJoystickLinux,
+        .getMappingName = _glfwGetMappingNameLinux,
+        .updateGamepadGUID = _glfwUpdateGamepadGUIDLinux,
 #else
-        _glfwInitJoysticksNull,
-        _glfwTerminateJoysticksNull,
-        _glfwPollJoystickNull,
-        _glfwGetMappingNameNull,
-        _glfwUpdateGamepadGUIDNull,
+        .initJoysticks = _glfwInitJoysticksNull,
+        .terminateJoysticks = _glfwTerminateJoysticksNull,
+        .pollJoystick = _glfwPollJoystickNull,
+        .getMappingName = _glfwGetMappingNameNull,
+        .updateGamepadGUID = _glfwUpdateGamepadGUIDNull,
 #endif
-        _glfwFreeMonitorWayland,
-        _glfwGetMonitorPosWayland,
-        _glfwGetMonitorContentScaleWayland,
-        _glfwGetMonitorWorkareaWayland,
-        _glfwGetVideoModesWayland,
-        _glfwGetVideoModeWayland,
-        _glfwGetGammaRampWayland,
-        _glfwSetGammaRampWayland,
-        _glfwCreateWindowWayland,
-        _glfwDestroyWindowWayland,
-        _glfwSetWindowTitleWayland,
-        _glfwSetWindowIconWayland,
-        _glfwGetWindowPosWayland,
-        _glfwSetWindowPosWayland,
-        _glfwGetWindowSizeWayland,
-        _glfwSetWindowSizeWayland,
-        _glfwSetWindowSizeLimitsWayland,
-        _glfwSetWindowAspectRatioWayland,
-        _glfwGetFramebufferSizeWayland,
-        _glfwGetWindowFrameSizeWayland,
-        _glfwGetWindowContentScaleWayland,
-        _glfwIconifyWindowWayland,
-        _glfwRestoreWindowWayland,
-        _glfwMaximizeWindowWayland,
-        _glfwShowWindowWayland,
-        _glfwHideWindowWayland,
-        _glfwRequestWindowAttentionWayland,
-        _glfwFocusWindowWayland,
-        _glfwSetWindowMonitorWayland,
-        _glfwWindowFocusedWayland,
-        _glfwWindowIconifiedWayland,
-        _glfwWindowVisibleWayland,
-        _glfwWindowMaximizedWayland,
-        _glfwWindowHoveredWayland,
-        _glfwFramebufferTransparentWayland,
-        _glfwGetWindowOpacityWayland,
-        _glfwSetWindowResizableWayland,
-        _glfwSetWindowDecoratedWayland,
-        _glfwSetWindowFloatingWayland,
-        _glfwSetWindowOpacityWayland,
-        _glfwSetWindowMousePassthroughWayland,
-        _glfwPollEventsWayland,
-        _glfwWaitEventsWayland,
-        _glfwWaitEventsTimeoutWayland,
-        _glfwPostEmptyEventWayland,
-		_glfwCreateUserContextWayland,
-        _glfwGetEGLPlatformWayland,
-        _glfwGetEGLNativeDisplayWayland,
-        _glfwGetEGLNativeWindowWayland,
-        _glfwGetRequiredInstanceExtensionsWayland,
-        _glfwGetPhysicalDevicePresentationSupportWayland,
-        _glfwCreateWindowSurfaceWayland,
+        .freeMonitor = _glfwFreeMonitorWayland,
+        .getMonitorPos = _glfwGetMonitorPosWayland,
+        .getMonitorContentScale = _glfwGetMonitorContentScaleWayland,
+        .getMonitorWorkarea = _glfwGetMonitorWorkareaWayland,
+        .getVideoModes = _glfwGetVideoModesWayland,
+        .getVideoMode = _glfwGetVideoModeWayland,
+        .getGammaRamp = _glfwGetGammaRampWayland,
+        .setGammaRamp = _glfwSetGammaRampWayland,
+        .createWindow = _glfwCreateWindowWayland,
+        .destroyWindow = _glfwDestroyWindowWayland,
+        .setWindowTitle = _glfwSetWindowTitleWayland,
+        .setWindowIcon = _glfwSetWindowIconWayland,
+        .getWindowPos = _glfwGetWindowPosWayland,
+        .setWindowPos = _glfwSetWindowPosWayland,
+        .getWindowSize = _glfwGetWindowSizeWayland,
+        .setWindowSize = _glfwSetWindowSizeWayland,
+        .setWindowSizeLimits = _glfwSetWindowSizeLimitsWayland,
+        .setWindowAspectRatio = _glfwSetWindowAspectRatioWayland,
+        .getFramebufferSize = _glfwGetFramebufferSizeWayland,
+        .getWindowFrameSize = _glfwGetWindowFrameSizeWayland,
+        .getWindowContentScale = _glfwGetWindowContentScaleWayland,
+        .iconifyWindow = _glfwIconifyWindowWayland,
+        .restoreWindow = _glfwRestoreWindowWayland,
+        .maximizeWindow = _glfwMaximizeWindowWayland,
+        .showWindow = _glfwShowWindowWayland,
+        .hideWindow = _glfwHideWindowWayland,
+        .requestWindowAttention = _glfwRequestWindowAttentionWayland,
+        .focusWindow = _glfwFocusWindowWayland,
+        .setWindowMonitor = _glfwSetWindowMonitorWayland,
+        .windowFocused = _glfwWindowFocusedWayland,
+        .windowIconified = _glfwWindowIconifiedWayland,
+        .windowVisible = _glfwWindowVisibleWayland,
+        .windowMaximized = _glfwWindowMaximizedWayland,
+        .windowHovered = _glfwWindowHoveredWayland,
+        .framebufferTransparent = _glfwFramebufferTransparentWayland,
+        .getWindowOpacity = _glfwGetWindowOpacityWayland,
+        .setWindowResizable = _glfwSetWindowResizableWayland,
+        .setWindowDecorated = _glfwSetWindowDecoratedWayland,
+        .setWindowFloating = _glfwSetWindowFloatingWayland,
+        .setWindowOpacity = _glfwSetWindowOpacityWayland,
+        .setWindowMousePassthrough = _glfwSetWindowMousePassthroughWayland,
+        .pollEvents = _glfwPollEventsWayland,
+        .waitEvents = _glfwWaitEventsWayland,
+        .waitEventsTimeout = _glfwWaitEventsTimeoutWayland,
+        .postEmptyEvent = _glfwPostEmptyEventWayland,
+        .createUserContext = _glfwCreateUserContextWayland,
+        .getEGLPlatform = _glfwGetEGLPlatformWayland,
+        .getEGLNativeDisplay = _glfwGetEGLNativeDisplayWayland,
+        .getEGLNativeWindow = _glfwGetEGLNativeWindowWayland,
+        .getRequiredInstanceExtensions = _glfwGetRequiredInstanceExtensionsWayland,
+        .getPhysicalDevicePresentationSupport = _glfwGetPhysicalDevicePresentationSupportWayland,
+        .createWindowSurface = _glfwCreateWindowSurfaceWayland
     };
 
     void* module = _glfwPlatformLoadModule("libwayland-client.so.0");
@@ -681,6 +705,32 @@ int _glfwInitWayland(void)
         _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_compose_state_get_status");
     _glfw.wl.xkb.compose_state_get_one_sym = (PFN_xkb_compose_state_get_one_sym)
         _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_compose_state_get_one_sym");
+
+    if (!_glfw.wl.xkb.context_new ||
+        !_glfw.wl.xkb.context_unref ||
+        !_glfw.wl.xkb.keymap_new_from_string ||
+        !_glfw.wl.xkb.keymap_unref ||
+        !_glfw.wl.xkb.keymap_mod_get_index ||
+        !_glfw.wl.xkb.keymap_key_repeats ||
+        !_glfw.wl.xkb.keymap_key_get_syms_by_level ||
+        !_glfw.wl.xkb.state_new ||
+        !_glfw.wl.xkb.state_unref ||
+        !_glfw.wl.xkb.state_key_get_syms ||
+        !_glfw.wl.xkb.state_update_mask ||
+        !_glfw.wl.xkb.state_key_get_layout ||
+        !_glfw.wl.xkb.state_mod_index_is_active ||
+        !_glfw.wl.xkb.compose_table_new_from_locale ||
+        !_glfw.wl.xkb.compose_table_unref ||
+        !_glfw.wl.xkb.compose_state_new ||
+        !_glfw.wl.xkb.compose_state_unref ||
+        !_glfw.wl.xkb.compose_state_feed ||
+        !_glfw.wl.xkb.compose_state_get_status ||
+        !_glfw.wl.xkb.compose_state_get_one_sym)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to load all entry points from libxkbcommon");
+        return GLFW_FALSE;
+    }
 
     if (_glfw.hints.init.wl.libdecorMode == GLFW_WAYLAND_PREFER_LIBDECOR)
         _glfw.wl.libdecor.handle = _glfwPlatformLoadModule("libdecor-0.so.0");
@@ -930,6 +980,10 @@ void _glfwTerminateWayland(void)
         zwp_pointer_constraints_v1_destroy(_glfw.wl.pointerConstraints);
     if (_glfw.wl.idleInhibitManager)
         zwp_idle_inhibit_manager_v1_destroy(_glfw.wl.idleInhibitManager);
+    if (_glfw.wl.activationManager)
+        xdg_activation_v1_destroy(_glfw.wl.activationManager);
+    if (_glfw.wl.fractionalScaleManager)
+        wp_fractional_scale_manager_v1_destroy(_glfw.wl.fractionalScaleManager);
     if (_glfw.wl.registry)
         wl_registry_destroy(_glfw.wl.registry);
     if (_glfw.wl.display)

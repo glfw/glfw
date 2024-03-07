@@ -1,8 +1,6 @@
-/*!
+# Standards conformance {#compat_guide}
 
-@page compat_guide Standards conformance
-
-@tableofcontents
+[TOC]
 
 This guide describes the various API extensions used by this version of GLFW.
 It lists what are essentially implementation details, but which are nonetheless
@@ -15,18 +13,18 @@ part of this information may change in future versions of GLFW and that will not
 be considered a breaking API change.
 
 
-@section compat_x11 X11 extensions, protocols and IPC standards
+## X11 extensions, protocols and IPC standards {#compat_x11}
 
-As GLFW uses Xlib directly, without any intervening toolkit
-library, it has sole responsibility for interacting well with the many and
-varied window managers in use on Unix-like systems.  In order for applications
-and window managers to work well together, a number of standards and
-conventions have been developed that regulate behavior outside the scope of the
-X11 API; most importantly the
-[Inter-Client Communication Conventions Manual](https://www.tronche.com/gui/x/icccm/)
-(ICCCM) and
-[Extended Window Manager Hints](https://standards.freedesktop.org/wm-spec/wm-spec-latest.html)
-(EWMH) standards.
+As GLFW uses Xlib directly, without any intervening toolkit library, it has sole
+responsibility for interacting well with the many and varied window managers in
+use on Unix-like systems.  In order for applications and window managers to work
+well together, a number of standards and conventions have been developed that
+regulate behavior outside the scope of the X11 API; most importantly the
+[Inter-Client Communication Conventions Manual][ICCCM] (ICCCM) and [Extended
+Window Manager Hints][EWMH] (EWMH) standards.
+
+[ICCCM]: https://www.tronche.com/gui/x/icccm/
+[EWMH]: https://standards.freedesktop.org/wm-spec/wm-spec-latest.html
 
 GLFW uses the `_MOTIF_WM_HINTS` window property to support borderless windows.
 If the running window manager does not support this property, the
@@ -52,16 +50,18 @@ compositing window manager to un-redirect full screen GLFW windows.  If the
 running window manager uses compositing but does not support this property then
 additional copying may be performed for each buffer swap of full screen windows.
 
-GLFW uses the
-[clipboard manager protocol](https://www.freedesktop.org/wiki/ClipboardManager/)
-to push a clipboard string (i.e. selection) owned by a GLFW window about to be
-destroyed to the clipboard manager.  If there is no running clipboard manager,
-the clipboard string will be unavailable once the window has been destroyed.
+GLFW uses the [clipboard manager protocol][ClipboardManager] to push a clipboard
+string (i.e. selection) owned by a GLFW window about to be destroyed to the
+clipboard manager.  If there is no running clipboard manager, the clipboard
+string will be unavailable once the window has been destroyed.
 
-GLFW uses the
-[X drag-and-drop protocol](https://www.freedesktop.org/wiki/Specifications/XDND/)
-to provide file drop events.  If the application originating the drag does not
-support this protocol, drag and drop will not work.
+[clipboardManager]: https://www.freedesktop.org/wiki/ClipboardManager/
+
+GLFW uses the [X drag-and-drop protocol][XDND] to provide file drop events.  If
+the application originating the drag does not support this protocol, drag and
+drop will not work.
+
+[XDND]: https://www.freedesktop.org/wiki/Specifications/XDND/
 
 GLFW uses the XRandR 1.3 extension to provide multi-monitor support.  If the
 running X server does not support this version of this extension, multi-monitor
@@ -93,7 +93,7 @@ conventions, the `GLFW_RESIZE_NWSE_CURSOR`, `GLFW_RESIZE_NESW_CURSOR` and
 legacy images.
 
 
-@section compat_wayland Wayland protocols and IPC standards
+## Wayland protocols and IPC standards {#compat_wayland}
 
 As GLFW uses libwayland directly, without any intervening toolkit library, it
 has sole responsibility for interacting well with every compositor in use on
@@ -106,42 +106,60 @@ Wayland protocols to implement certain features if the compositor supports them.
 GLFW uses xkbcommon 0.5.0 to provide key and text input support.  Earlier
 versions are not supported.
 
-GLFW uses the [xdg-shell protocol](https://wayland.app/protocols/xdg-shell)
-to provide better window management.  This protocol is mandatory for GLFW to
-display a window.
+GLFW uses the [xdg-shell][] protocol to provide better window management.  This
+protocol is mandatory for GLFW to display a window.
 
-GLFW uses the
-[relative pointer protocol](https://wayland.app/protocols/relative-pointer-unstable-v1)
-alongside the
-[pointer constraints protocol](https://wayland.app/protocols/pointer-constraints-unstable-v1)
-to implement disabled cursor.  If the running compositor does not support both
-of these protocols, disabling the cursor will have no effect.
+[xdg-shell]: https://wayland.app/protocols/xdg-shell
 
-GLFW uses the
-[idle inhibit protocol](https://wayland.app/protocols/idle-inhibit-unstable-v1)
-to prohibit the screensaver from starting.  If the running compositor does not
-support this protocol, the screensaver may start even for full screen windows.
+GLFW uses the [relative-pointer-unstable-v1][] protocol alongside the
+[pointer-constraints-unstable-v1][] protocol to implement disabled cursor.  If
+the running compositor does not support both of these protocols, disabling the
+cursor will have no effect.
 
-GLFW uses the
-[libdecor library](https://gitlab.freedesktop.org/libdecor/libdecor) for window
-decorations, where available.  This in turn provides good quality client-side
-decorations (drawn by the application) on desktop systems that do not support
-server-side decorations (drawn by the window manager).  On systems that do not
-provide either libdecor or xdg-decoration, very basic window decorations are
-provided.  These do not include the window title or any caption buttons.
+[relative-pointer-unstable-v1]: https://wayland.app/protocols/relative-pointer-unstable-v1
+[pointer-constraints-unstable-v1]: https://wayland.app/protocols/pointer-constraints-unstable-v1
 
-GLFW uses the
-[xdg-decoration protocol](https://wayland.app/protocols/xdg-decoration-unstable-v1)
-to request decorations to be drawn around its windows.  This protocol is part
-of wayland-protocols 1.15, and mandatory at build time.  If the running
-compositor does not support this protocol, a very simple frame will be drawn by
-GLFW itself, using the
-[viewporter protocol](https://wayland.app/protocols/viewporter)
-alongside subsurfaces.  If the running compositor does not support these
-protocols either, no decorations will be drawn around windows.
+GLFW uses the [idle-inhibit-unstable-v1][] protocol to prohibit the screensaver
+from starting.  If the running compositor does not support this protocol, the
+screensaver may start even for full screen windows.
+
+[idle-inhibit-unstable-v1]: https://wayland.app/protocols/idle-inhibit-unstable-v1
+
+GLFW uses the [libdecor][] library for window decorations, where available.
+This in turn provides good quality client-side decorations (drawn by the
+application) on desktop systems that do not support server-side decorations
+(drawn by the window manager).  On systems that do not provide either libdecor
+or xdg-decoration, very basic window decorations are provided.  These do not
+include the window title or any caption buttons.
+
+[libdecor]: https://gitlab.freedesktop.org/libdecor/libdecor
+
+GLFW uses the [xdg-decoration-unstable-v1][] protocol to request decorations to
+be drawn around its windows.  This protocol is part of wayland-protocols 1.15,
+and mandatory at build time.  If the running compositor does not support this
+protocol, a very simple frame will be drawn by GLFW itself, using the
+[viewporter][] protocol alongside subsurfaces.  If the running compositor does
+not support these protocols either, no decorations will be drawn around windows.
+
+[xdg-decoration-unstable-v1]: https://wayland.app/protocols/xdg-decoration-unstable-v1
+[viewporter]: https://wayland.app/protocols/viewporter
+
+GLFW uses the [xdg-activation-v1][] protocol to implement window focus and
+attention requests.  If the running compositor does not support this protocol,
+window focus and attention requests do nothing.
+
+[xdg-activation-v1]: https://wayland.app/protocols/xdg-activation-v1
+
+GLFW uses the [fractional-scale-v1][] protocol to implement fine-grained
+framebuffer scaling.  If the running compositor does not support this protocol,
+the @ref GLFW_SCALE_FRAMEBUFFER window hint will only be able to scale the
+framebuffer by integer scales.  This will typically be the smallest integer not
+less than the actual scale.
+
+[fractional-scale-v1]: https://wayland.app/protocols/fractional-scale-v1
 
 
-@section compat_glx GLX extensions
+## GLX extensions {#compat_glx}
 
 The GLX API is the default API used to create OpenGL contexts on Unix-like
 systems using the X Window System.
@@ -181,7 +199,7 @@ extensions to provide support for sRGB framebuffers.  Where both of these
 extensions are unavailable, the `GLFW_SRGB_CAPABLE` hint will have no effect.
 
 
-@section compat_wgl WGL extensions
+## WGL extensions {#compat_wgl}
 
 The WGL API is used to create OpenGL contexts on Microsoft Windows and other
 implementations of the Win32 API, such as Wine.
@@ -222,7 +240,7 @@ extensions to provide support for sRGB framebuffers.  When both of these
 extensions are unavailable, the `GLFW_SRGB_CAPABLE` hint will have no effect.
 
 
-@section compat_osx OpenGL on macOS
+## OpenGL on macOS {#compat_osx}
 
 Support for OpenGL 3.2 and above was introduced with OS X 10.7 and even then
 only forward-compatible, core profile contexts are supported.  Support for
@@ -244,7 +262,7 @@ a non-default value will cause @ref glfwCreateWindow to fail and the
 `GLFW_CONTEXT_DEBUG` hint is ignored.
 
 
-@section compat_vulkan Vulkan loader and API
+## Vulkan loader and API {#compat_vulkan}
 
 By default, GLFW uses the standard system-wide Vulkan loader to access the
 Vulkan API on all platforms except macOS.  This is installed by both graphics
@@ -254,7 +272,7 @@ all other Vulkan-related functions will fail with an @ref GLFW_API_UNAVAILABLE
 error.
 
 
-@section compat_wsi Vulkan WSI extensions
+## Vulkan WSI extensions {#compat_wsi}
 
 The Vulkan WSI extensions are used to create Vulkan surfaces for GLFW windows on
 all supported platforms.
@@ -280,4 +298,3 @@ surfaces on Wayland.  If any of these extensions are not available, @ref
 glfwGetRequiredInstanceExtensions will return an empty list and window surface
 creation will fail.
 
-*/

@@ -909,6 +909,8 @@ GLFWAPI EGLDisplay glfwGetEGLDisplay(void)
 GLFWAPI EGLContext glfwGetEGLContext(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
     _GLFW_REQUIRE_INIT_OR_RETURN(EGL_NO_CONTEXT);
 
     if (window->context.source != GLFW_EGL_CONTEXT_API)
@@ -923,6 +925,8 @@ GLFWAPI EGLContext glfwGetEGLContext(GLFWwindow* handle)
 GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
     _GLFW_REQUIRE_INIT_OR_RETURN(EGL_NO_SURFACE);
 
     if (window->context.source != GLFW_EGL_CONTEXT_API)

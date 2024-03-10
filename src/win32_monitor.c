@@ -33,6 +33,7 @@
 #include <string.h>
 #include <limits.h>
 #include <wchar.h>
+#include <assert.h>
 
 
 // Callback for EnumDisplayMonitors in createMonitor
@@ -540,6 +541,8 @@ void _glfwSetGammaRampWin32(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 GLFWAPI const char* glfwGetWin32Adapter(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    assert(monitor != NULL);
+
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_WIN32)
@@ -554,6 +557,8 @@ GLFWAPI const char* glfwGetWin32Adapter(GLFWmonitor* handle)
 GLFWAPI const char* glfwGetWin32Monitor(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    assert(monitor != NULL);
+
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_WIN32)

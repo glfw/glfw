@@ -30,6 +30,7 @@
 
 #include <float.h>
 #include <string.h>
+#include <assert.h>
 
 // HACK: This enum value is missing from framework headers on OS X 10.11 despite
 //       having been (according to documentation) added in Mac OS X 10.7
@@ -2041,6 +2042,8 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
 GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
     _GLFW_REQUIRE_INIT_OR_RETURN(nil);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_COCOA)
@@ -2056,6 +2059,8 @@ GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
 GLFWAPI id glfwGetCocoaView(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
     _GLFW_REQUIRE_INIT_OR_RETURN(nil);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_COCOA)

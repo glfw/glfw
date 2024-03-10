@@ -33,6 +33,7 @@
 #include <string.h>
 #include <errno.h>
 #include <math.h>
+#include <assert.h>
 
 #include "wayland-client-protocol.h"
 
@@ -259,6 +260,8 @@ void _glfwSetGammaRampWayland(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 GLFWAPI struct wl_output* glfwGetWaylandMonitor(GLFWmonitor* handle)
 {
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    assert(monitor != NULL);
+
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)

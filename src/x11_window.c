@@ -3303,6 +3303,8 @@ GLFWAPI Display* glfwGetX11Display(void)
 GLFWAPI Window glfwGetX11Window(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
     _GLFW_REQUIRE_INIT_OR_RETURN(None);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_X11)
@@ -3316,6 +3318,8 @@ GLFWAPI Window glfwGetX11Window(GLFWwindow* handle)
 
 GLFWAPI void glfwSetX11SelectionString(const char* string)
 {
+    assert(string != NULL);
+
     _GLFW_REQUIRE_INIT();
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_X11)

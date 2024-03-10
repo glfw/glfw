@@ -678,6 +678,8 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
 GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_X11)
@@ -698,6 +700,8 @@ GLFWAPI GLXContext glfwGetGLXContext(GLFWwindow* handle)
 GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* handle)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
     _GLFW_REQUIRE_INIT_OR_RETURN(None);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_X11)

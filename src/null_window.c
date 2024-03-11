@@ -553,12 +553,15 @@ const char* _glfwGetClipboardStringNull(void)
 
 EGLenum _glfwGetEGLPlatformNull(EGLint** attribs)
 {
-    return 0;
+    if (_glfw.egl.EXT_platform_base && _glfw.egl.MESA_platform_surfaceless)
+        return EGL_PLATFORM_SURFACELESS_MESA;
+    else
+        return 0;
 }
 
 EGLNativeDisplayType _glfwGetEGLNativeDisplayNull(void)
 {
-    return 0;
+    return EGL_DEFAULT_DISPLAY;
 }
 
 EGLNativeWindowType _glfwGetEGLNativeWindowNull(_GLFWwindow* window)

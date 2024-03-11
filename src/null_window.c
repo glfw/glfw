@@ -28,6 +28,7 @@
 #include "internal.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
 {
@@ -699,13 +700,18 @@ int _glfwGetKeyScancodeNull(int key)
 
 void _glfwGetRequiredInstanceExtensionsNull(char** extensions)
 {
+    if (!_glfw.vk.KHR_surface || !_glfw.vk.EXT_headless_surface)
+        return;
+
+    extensions[0] = "VK_KHR_surface";
+    extensions[1] = "VK_EXT_headless_surface";
 }
 
 GLFWbool _glfwGetPhysicalDevicePresentationSupportNull(VkInstance instance,
                                                        VkPhysicalDevice device,
                                                        uint32_t queuefamily)
 {
-    return GLFW_FALSE;
+    return GLFW_TRUE;
 }
 
 VkResult _glfwCreateWindowSurfaceNull(VkInstance instance,
@@ -713,7 +719,28 @@ VkResult _glfwCreateWindowSurfaceNull(VkInstance instance,
                                       const VkAllocationCallbacks* allocator,
                                       VkSurfaceKHR* surface)
 {
-    // This seems like the most appropriate error to return here
-    return VK_ERROR_EXTENSION_NOT_PRESENT;
+    PFN_vkCreateHeadlessSurfaceEXT vkCreateHeadlessSurfaceEXT =
+        (PFN_vkCreateHeadlessSurfaceEXT)
+        vkGetInstanceProcAddr(instance, "vkCreateHeadlessSurfaceEXT");
+    if (!vkCreateHeadlessSurfaceEXT)
+    {
+        _glfwInputError(GLFW_API_UNAVAILABLE,
+                        "Null: Vulkan instance missing VK_EXT_headless_surface extension");
+        return VK_ERROR_EXTENSION_NOT_PRESENT;
+    }
+
+    VkHeadlessSurfaceCreateInfoEXT sci;
+    memset(&sci, 0, sizeof(sci));
+    sci.sType = VK_STRUCTURE_TYPE_HEADLESS_SURFACE_CREATE_INFO_EXT;
+
+    const VkResult err = vkCreateHeadlessSurfaceEXT(instance, &sci, allocator, surface);
+    if (err)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Null: Failed to create Vulkan surface: %s",
+                        _glfwGetVulkanResultString(err));
+    }
+
+    return err;
 }
 

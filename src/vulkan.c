@@ -142,6 +142,8 @@ GLFWbool _glfwInitVulkan(int mode)
             _glfw.vk.KHR_xcb_surface = GLFW_TRUE;
         else if (strcmp(ep[i].extensionName, "VK_KHR_wayland_surface") == 0)
             _glfw.vk.KHR_wayland_surface = GLFW_TRUE;
+        else if (strcmp(ep[i].extensionName, "VK_EXT_headless_surface") == 0)
+            _glfw.vk.EXT_headless_surface = GLFW_TRUE;
     }
 
     _glfw_free(ep);

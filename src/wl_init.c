@@ -135,7 +135,7 @@ static void registryHandleGlobal(void* userData,
         {
             _glfw.wl.seat =
                 wl_registry_bind(registry, name, &wl_seat_interface,
-                                 _glfw_min(4, version));
+                                 _glfw_min(5, version));
             _glfwAddSeatListenerWayland(_glfw.wl.seat);
         }
     }

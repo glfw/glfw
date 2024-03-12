@@ -697,7 +697,7 @@ int _glfwGetKeyScancodeNull(int key)
     return _glfw.null.scancodes[key];
 }
 
-void _glfwGetRequiredInstanceExtensionsNull(char** extensions)
+void _glfwGetRequiredInstanceExtensionsNull(const char** extensions)
 {
 }
 

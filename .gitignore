@@ -53,19 +53,15 @@ src/glfw_config.h
 src/glfw3.pc
 src/glfw3Config.cmake
 src/glfw3ConfigVersion.cmake
-src/wayland-pointer-constraints-unstable-v1-client-protocol.h
-src/wayland-pointer-constraints-unstable-v1-protocol.c
-src/wayland-relative-pointer-unstable-v1-client-protocol.h
-src/wayland-relative-pointer-unstable-v1-protocol.c
 
 # Compiled binaries
 src/libglfw.so
 src/libglfw.so.3
-src/libglfw.so.3.3
+src/libglfw.so.3.4
 src/libglfw.dylib
 src/libglfw.dylib
 src/libglfw.3.dylib
-src/libglfw.3.3.dylib
+src/libglfw.3.4.dylib
 src/libglfw3.a
 src/glfw3.lib
 src/glfw3.dll
@@ -80,8 +76,9 @@ examples/offscreen
 examples/particles
 examples/splitview
 examples/sharing
-examples/simple
+examples/triangle-opengl
 examples/wave
+examples/windows
 tests/*.app
 tests/*.exe
 tests/clipboard
@@ -92,6 +89,7 @@ tests/gamma
 tests/glfwinfo
 tests/icon
 tests/iconify
+tests/inputlag
 tests/joysticks
 tests/monitors
 tests/msaa
@@ -101,5 +99,6 @@ tests/threads
 tests/timeout
 tests/title
 tests/triangle-vulkan
+tests/window
 tests/windows
 

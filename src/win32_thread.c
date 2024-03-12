@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 Win32 - www.glfw.org
+// GLFW 3.4 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2017 Camilla Löwy <elmindreda@glfw.org>
@@ -24,10 +24,10 @@
 //    distribution.
 //
 //========================================================================
-// Please use C89 style variable declarations in this file because VS 2010
-//========================================================================
 
 #include "internal.h"
+
+#if defined(GLFW_BUILD_WIN32_THREAD)
 
 #include <assert.h>
 
@@ -43,8 +43,7 @@ GLFWbool _glfwPlatformCreateTls(_GLFWtls* tls)
     tls->win32.index = TlsAlloc();
     if (tls->win32.index == TLS_OUT_OF_INDEXES)
     {
-        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                             "Win32: Failed to allocate TLS index");
+        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to allocate TLS index");
         return GLFW_FALSE;
     }
 
@@ -96,4 +95,6 @@ void _glfwPlatformUnlockMutex(_GLFWmutex* mutex)
     assert(mutex->win32.allocated == GLFW_TRUE);
     LeaveCriticalSection(&mutex->win32.section);
 }
+
+#endif // GLFW_BUILD_WIN32_THREAD
 

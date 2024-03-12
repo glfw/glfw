@@ -41,6 +41,7 @@
 #include <windows.h>
 #endif
 
+#define GLAD_VULKAN_IMPLEMENTATION
 #include <glad/vulkan.h>
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -1246,7 +1247,7 @@ static void demo_prepare_pipeline(struct demo *demo) {
     VkPipelineDepthStencilStateCreateInfo ds;
     VkPipelineViewportStateCreateInfo vp;
     VkPipelineMultisampleStateCreateInfo ms;
-    VkDynamicState dynamicStateEnables[2];
+    VkDynamicState dynamicStateEnables[(VK_DYNAMIC_STATE_STENCIL_REFERENCE - VK_DYNAMIC_STATE_VIEWPORT + 1)];
     VkPipelineDynamicStateCreateInfo dynamicState;
 
     VkResult U_ASSERT_ONLY err;

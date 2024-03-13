@@ -3,9 +3,10 @@ add_library(glfw ${GLFW_LIBRARY_TYPE}
                  "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"
                  "${GLFW_SOURCE_DIR}/include/GLFW/glfw3native.h"
                  internal.h platform.h mappings.h
-                 context.c init.c input.c monitor.c platform.c vulkan.c window.c
-                 egl_context.c osmesa_context.c null_platform.h null_joystick.h
-                 null_init.c null_monitor.c null_window.c null_joystick.c)
+                 context.c init.c input.c monitor.c platform.c vulkan.c webgpu.c
+                 window.c egl_context.c osmesa_context.c null_platform.h
+                 null_joystick.h null_init.c null_monitor.c null_window.c
+                 null_joystick.c)
 
 # The time, thread and module code is shared between all backends on a given OS,
 # including the null backend, which still needs those bits to be functional
@@ -287,6 +288,14 @@ endif()
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     target_compile_definitions(glfw PRIVATE _DEFAULT_SOURCE)
 endif()
+
+if (GLFW_BUILD_WEBGPU)
+    target_compile_definitions(glfw PRIVATE _GLFW_BUILD_WEBGPU)
+    if (APPLE)
+      target_compile_options(glfw PRIVATE -x objective-c)
+      target_link_libraries(glfw PRIVATE "-framework Cocoa" "-framework CoreVideo" "-framework IOKit" "-framework QuartzCore")
+    endif ()
+endif ()
 
 if (GLFW_BUILD_SHARED_LIBRARY)
     if (WIN32)

@@ -36,6 +36,7 @@ video tutorials.
  - Chi-kwan Chan
  - Victor Chernyakin
  - TheChocolateOre
+ - Виктор Чернякин
  - Ali Chraghi
  - Joseph Chua
  - Ian Clarkson

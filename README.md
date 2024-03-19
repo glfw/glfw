@@ -123,6 +123,7 @@ information on what to include when reporting a bug.
 
  - Added `GLFW_UNLIMITED_MOUSE_BUTTONS` input mode that allows mouse buttons beyond
    the limit of the mouse button tokens to be reported (#2423)
+ - Added `GLFW_ANGLE_PLATFORM_TYPE_D3D11ON12` init hint for D3D11on12 support
 
 
 ## Contact

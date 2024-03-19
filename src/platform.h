@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 - www.glfw.org
+// GLFW 3.5 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2018 Camilla Löwy <elmindreda@glfw.org>
@@ -38,9 +38,13 @@
 #endif
 
 #include "null_platform.h"
+#define GLFW_EXPOSE_NATIVE_EGL
+#define GLFW_EXPOSE_NATIVE_OSMESA
 
 #if defined(_GLFW_WIN32)
  #include "win32_platform.h"
+ #define GLFW_EXPOSE_NATIVE_WIN32
+ #define GLFW_EXPOSE_NATIVE_WGL
 #else
  #define GLFW_WIN32_WINDOW_STATE
  #define GLFW_WIN32_MONITOR_STATE
@@ -52,6 +56,8 @@
 
 #if defined(_GLFW_COCOA)
  #include "cocoa_platform.h"
+ #define GLFW_EXPOSE_NATIVE_COCOA
+ #define GLFW_EXPOSE_NATIVE_NSGL
 #else
  #define GLFW_COCOA_WINDOW_STATE
  #define GLFW_COCOA_MONITOR_STATE
@@ -63,6 +69,7 @@
 
 #if defined(_GLFW_WAYLAND)
  #include "wl_platform.h"
+ #define GLFW_EXPOSE_NATIVE_WAYLAND
 #else
  #define GLFW_WAYLAND_WINDOW_STATE
  #define GLFW_WAYLAND_MONITOR_STATE
@@ -72,6 +79,8 @@
 
 #if defined(_GLFW_X11)
  #include "x11_platform.h"
+ #define GLFW_EXPOSE_NATIVE_X11
+ #define GLFW_EXPOSE_NATIVE_GLX
 #else
  #define GLFW_X11_WINDOW_STATE
  #define GLFW_X11_MONITOR_STATE

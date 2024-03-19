@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 GLX - www.glfw.org
+// GLFW 3.5 GLX - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
@@ -23,8 +23,6 @@
 // 3. This notice may not be removed or altered from any source
 //    distribution.
 //
-//========================================================================
-// It is fine to use C99 in this file because it will not be built with VS
 //========================================================================
 
 #include "internal.h"
@@ -192,6 +190,7 @@ static void swapBuffersGLX(_GLFWwindow* window)
 static void swapIntervalGLX(int interval)
 {
     _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
+    assert(window != NULL);
 
     if (_glfw.glx.EXT_swap_control)
     {

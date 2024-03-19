@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 - www.glfw.org
+// GLFW 3.5 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2016 Google Inc.
 // Copyright (c) 2016-2019 Camilla Löwy <elmindreda@glfw.org>
@@ -23,8 +23,6 @@
 // 3. This notice may not be removed or altered from any source
 //    distribution.
 //
-//========================================================================
-// It is fine to use C99 in this file because it will not be built with VS
 //========================================================================
 
 #include "internal.h"
@@ -260,8 +258,9 @@ void _glfwSetWindowSizeNull(_GLFWwindow* window, int width, int height)
     {
         window->null.width = width;
         window->null.height = height;
-        _glfwInputWindowSize(window, width, height);
         _glfwInputFramebufferSize(window, width, height);
+        _glfwInputWindowDamage(window);
+        _glfwInputWindowSize(window, width, height);
     }
 }
 

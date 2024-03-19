@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 - www.glfw.org
+// GLFW 3.5 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2016 Google Inc.
 // Copyright (c) 2016-2017 Camilla Löwy <elmindreda@glfw.org>
@@ -164,7 +164,6 @@ typedef struct _GLFWwindowNull
     int             ypos;
     int             width;
     int             height;
-    char*           title;
     GLFWbool        visible;
     GLFWbool        iconified;
     GLFWbool        maximized;
@@ -205,7 +204,7 @@ void _glfwGetMonitorPosNull(_GLFWmonitor* monitor, int* xpos, int* ypos);
 void _glfwGetMonitorContentScaleNull(_GLFWmonitor* monitor, float* xscale, float* yscale);
 void _glfwGetMonitorWorkareaNull(_GLFWmonitor* monitor, int* xpos, int* ypos, int* width, int* height);
 GLFWvidmode* _glfwGetVideoModesNull(_GLFWmonitor* monitor, int* found);
-void _glfwGetVideoModeNull(_GLFWmonitor* monitor, GLFWvidmode* mode);
+GLFWbool _glfwGetVideoModeNull(_GLFWmonitor* monitor, GLFWvidmode* mode);
 GLFWbool _glfwGetGammaRampNull(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
 void _glfwSetGammaRampNull(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
@@ -238,7 +237,6 @@ void _glfwSetWindowOpacityNull(_GLFWwindow* window, float opacity);
 void _glfwSetRawMouseMotionNull(_GLFWwindow *window, GLFWbool enabled);
 GLFWbool _glfwRawMouseMotionSupportedNull(void);
 void _glfwShowWindowNull(_GLFWwindow* window);
-void _glfwRequestWindowAttentionNull(_GLFWwindow* window);
 void _glfwRequestWindowAttentionNull(_GLFWwindow* window);
 void _glfwHideWindowNull(_GLFWwindow* window);
 void _glfwFocusWindowNull(_GLFWwindow* window);

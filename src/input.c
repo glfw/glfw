@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 - www.glfw.org
+// GLFW 3.5 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
@@ -23,8 +23,6 @@
 // 3. This notice may not be removed or altered from any source
 //    distribution.
 //
-//========================================================================
-// Please use C89 style variable declarations in this file because VS 2010
 //========================================================================
 
 #include "internal.h"
@@ -350,20 +348,22 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
 {
     assert(window != NULL);
     assert(button >= 0);
-    assert(button <= GLFW_MOUSE_BUTTON_LAST);
     assert(action == GLFW_PRESS || action == GLFW_RELEASE);
     assert(mods == (mods & GLFW_MOD_MASK));
 
-    if (button < 0 || button > GLFW_MOUSE_BUTTON_LAST)
+    if (button < 0 || (!window->disableMouseButtonLimit && button > GLFW_MOUSE_BUTTON_LAST))
         return;
 
     if (!window->lockKeyMods)
         mods &= ~(GLFW_MOD_CAPS_LOCK | GLFW_MOD_NUM_LOCK);
 
-    if (action == GLFW_RELEASE && window->stickyMouseButtons)
-        window->mouseButtons[button] = _GLFW_STICK;
-    else
-        window->mouseButtons[button] = (char) action;
+    if (button <= GLFW_MOUSE_BUTTON_LAST)
+    {
+        if (action == GLFW_RELEASE && window->stickyMouseButtons)
+            window->mouseButtons[button] = _GLFW_STICK;
+        else
+            window->mouseButtons[button] = (char) action;
+    }
 
     if (window->callbacks.mouseButton)
         window->callbacks.mouseButton((GLFWwindow*) window, button, action, mods);
@@ -462,10 +462,11 @@ void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value)
     assert(hat >= 0);
     assert(hat < js->hatCount);
 
-    // Valid hat values only use the least significant nibble and have at most two bits
-    // set, which can be considered adjacent plus an arbitrary rotation within the nibble
+    // Valid hat values only use the least significant nibble
     assert((value & 0xf0) == 0);
-    assert((value & ((value << 2) | (value >> 2))) == 0);
+    // Valid hat values do not have both bits of an axis set
+    assert((value & GLFW_HAT_LEFT) == 0 || (value & GLFW_HAT_RIGHT) == 0);
+    assert((value & GLFW_HAT_UP) == 0 || (value & GLFW_HAT_DOWN) == 0);
 
     base = js->buttonCount + hat * 4;
 
@@ -577,6 +578,8 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* handle, int mode)
             return window->lockKeyMods;
         case GLFW_RAW_MOUSE_MOTION:
             return window->rawMouseMotion;
+        case GLFW_UNLIMITED_MOUSE_BUTTONS:
+            return window->disableMouseButtonLimit;
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode 0x%08X", mode);
@@ -684,6 +687,12 @@ GLFWAPI void glfwSetInputMode(GLFWwindow* handle, int mode, int value)
             _glfw.platform.setRawMouseMotion(window, value);
             return;
         }
+
+        case GLFW_UNLIMITED_MOUSE_BUTTONS:
+        {
+            window->disableMouseButtonLimit = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
+        }
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid input mode 0x%08X", mode);
@@ -701,6 +710,12 @@ GLFWAPI const char* glfwGetKeyName(int key, int scancode)
 
     if (key != GLFW_KEY_UNKNOWN)
     {
+        if (key < GLFW_KEY_SPACE || key > GLFW_KEY_LAST)
+        {
+            _glfwInputError(GLFW_INVALID_ENUM, "Invalid key %i", key);
+            return NULL;
+        }
+
         if (key != GLFW_KEY_KP_EQUAL &&
             (key < GLFW_KEY_KP_0 || key > GLFW_KEY_KP_ADD) &&
             (key < GLFW_KEY_APOSTROPHE || key > GLFW_KEY_WORLD_2))
@@ -716,12 +731,12 @@ GLFWAPI const char* glfwGetKeyName(int key, int scancode)
 
 GLFWAPI int glfwGetKeyScancode(int key)
 {
-    _GLFW_REQUIRE_INIT_OR_RETURN(-1);
+    _GLFW_REQUIRE_INIT_OR_RETURN(0);
 
     if (key < GLFW_KEY_SPACE || key > GLFW_KEY_LAST)
     {
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid key %i", key);
-        return GLFW_RELEASE;
+        return -1;
     }
 
     return _glfw.platform.getKeyScancode(key);
@@ -1433,7 +1448,7 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state)
         if (e->type == _GLFW_JOYSTICK_AXIS)
         {
             const float value = js->axes[e->index] * e->axisScale + e->axisOffset;
-            state->axes[i] = _glfw_fminf(_glfw_fmaxf(value, -1.f), 1.f);
+            state->axes[i] = fminf(fmaxf(value, -1.f), 1.f);
         }
         else if (e->type == _GLFW_JOYSTICK_HATBIT)
         {

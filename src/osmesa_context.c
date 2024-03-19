@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 OSMesa - www.glfw.org
+// GLFW 3.5 OSMesa - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2016 Google Inc.
 // Copyright (c) 2016-2017 Camilla Löwy <elmindreda@glfw.org>
@@ -24,15 +24,12 @@
 //    distribution.
 //
 //========================================================================
-// Please use C89 style variable declarations in this file because VS 2010
-//========================================================================
+
+#include "internal.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-
-#include "internal.h"
-
 
 static void makeContextCurrentOSMesa(_GLFWwindow* window)
 {

@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 Win32 - www.glfw.org
+// GLFW 3.5 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
@@ -23,8 +23,6 @@
 // 3. This notice may not be removed or altered from any source
 //    distribution.
 //
-//========================================================================
-// Please use C89 style variable declarations in this file because VS 2010
 //========================================================================
 
 #include "internal.h"
@@ -735,6 +733,13 @@ GLFWbool _glfwPollJoystickWin32(_GLFWjoystick* js, int mode)
             dpad |= GLFW_HAT_DOWN;
         if (xis.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT)
             dpad |= GLFW_HAT_LEFT;
+
+        // Treat invalid combinations as neither being pressed
+        // while preserving what data can be preserved
+        if ((dpad & GLFW_HAT_RIGHT) && (dpad & GLFW_HAT_LEFT))
+            dpad &= ~(GLFW_HAT_RIGHT | GLFW_HAT_LEFT);
+        if ((dpad & GLFW_HAT_UP) && (dpad & GLFW_HAT_DOWN))
+            dpad &= ~(GLFW_HAT_UP | GLFW_HAT_DOWN);
 
         _glfwInputJoystickHat(js, 0, dpad);
     }

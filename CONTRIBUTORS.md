@@ -73,6 +73,7 @@ video tutorials.
  - Jason Francis
  - Gerald Franz
  - Mário Freitas
+ - Daijiro Fukuda
  - GeO4d
  - Marcus Geelnard
  - Gegy
@@ -102,6 +103,7 @@ video tutorials.
  - Charles Huber
  - Brent Huisman
  - Florian Hülsmann
+ - Ryo Ichinose
  - illustris
  - InKryption
  - IntellectualKitty
@@ -120,6 +122,7 @@ video tutorials.
  - Cameron King
  - Peter Knut
  - Christoph Kubisch
+ - Yasutaka Kumei
  - Yuri Kunde Schlesner
  - Rokas Kupstys
  - Konstantin Käfer
@@ -283,6 +286,7 @@ video tutorials.
  - Andy Williams
  - Joel Winarske
  - Richard A. Wilkes
+ - xfangfang
  - Tatsuya Yatagawa
  - Ryogo Yoshimura
  - Lukas Zanner

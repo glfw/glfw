@@ -63,6 +63,13 @@ available for all supported compilers.
 See the [compilation guide](https://www.glfw.org/docs/latest/compile.html) for
 more information about how to compile GLFW yourself.
 
+## Cross-Compile for AmigaOS4
+
+To cross-compile GLFW for AmigaOS4 you need to use cmake. For example:
+
+cmake -DCMAKE_TOOLCHAIN_FILE=/usr/ppc-amigaos/bin/cmake.ppc-amigaos -DCMAKE_INSTALL_PREFIX=/usr/ppc-amigaos/SDK/local/clib4 -DBUILD_SHARED_LIBS=OFF -DGLFW_BUILD_OS4=ON ..
+
+where cmake.ppc-amigaos is the cmake toolchain file that configure all AmigaOS4 related parameters
 
 ## Using GLFW
 

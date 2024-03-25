@@ -48,6 +48,7 @@ video tutorials.
  - Andrew Corrigan
  - Bailey Cosier
  - Noel Cower
+ - James Cowgill
  - CuriouserThing
  - Bill Currie
  - Jason Daly

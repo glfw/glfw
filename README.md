@@ -124,6 +124,7 @@ information on what to include when reporting a bug.
  - Added `GLFW_UNLIMITED_MOUSE_BUTTONS` input mode that allows mouse buttons beyond
    the limit of the mouse button tokens to be reported (#2423)
  - [Wayland] Bugfix: The fractional scaling related objects were not destroyed
+ - [Wayland] Bugfix: `glfwInit` would segfault on compositor with no seat (#2517)
  - [Null] Added Vulkan 'window' surface creation via `VK_EXT_headless_surface`
  - [Null] Added EGL context creation on Mesa via `EGL_MESA_platform_surfaceless`
 

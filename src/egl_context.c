@@ -915,8 +915,12 @@ GLFWAPI EGLContext glfwGetEGLContext(GLFWwindow* handle)
 
     if (window->context.source != GLFW_EGL_CONTEXT_API)
     {
-        _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
-        return EGL_NO_CONTEXT;
+        if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND ||
+            window->context.source != GLFW_NATIVE_CONTEXT_API)
+        {
+            _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
+            return EGL_NO_CONTEXT;
+        }
     }
 
     return window->context.egl.handle;
@@ -931,8 +935,12 @@ GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* handle)
 
     if (window->context.source != GLFW_EGL_CONTEXT_API)
     {
-        _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
-        return EGL_NO_SURFACE;
+        if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND ||
+            window->context.source != GLFW_NATIVE_CONTEXT_API)
+        {
+            _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
+            return EGL_NO_CONTEXT;
+        }
     }
 
     return window->context.egl.surface;

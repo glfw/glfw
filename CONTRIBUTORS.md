@@ -33,6 +33,7 @@ video tutorials.
  - Nicolas Caramelli
  - David Carlier
  - Arturo Castro
+ - Jose Luis Cercós Pita
  - Chi-kwan Chan
  - Victor Chernyakin
  - TheChocolateOre

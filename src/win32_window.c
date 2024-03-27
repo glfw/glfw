@@ -2143,7 +2143,6 @@ GLFWbool _glfwRawMouseMotionSupportedWin32(void)
 
 void _glfwPollEventsWin32(void)
 {
-    MSG msg;
     HWND handle;
     _GLFWwindow* window;
 

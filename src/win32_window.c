@@ -854,11 +854,45 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
             return 0;
         }
+        case WM_NCLBUTTONDOWN:
+        {
+            if (wParam == HTCAPTION)
+            {
+                window->win32.ncMouseButton = uMsg;
+                window->win32.ncMousePos = lParam;
+                return 0;
+            }
+            break;
+        }
+
+        case WM_NCMOUSEMOVE:
+        {
+            if (window->win32.ncMouseButton)
+            {
+                if (GET_X_LPARAM(window->win32.ncMousePos) != GET_X_LPARAM(lParam) ||
+                    GET_Y_LPARAM(window->win32.ncMousePos) != GET_Y_LPARAM(lParam))
+                {
+                    DefWindowProcW(hWnd, window->win32.ncMouseButton, HTCAPTION, window->win32.ncMousePos);
+                    window->win32.ncMouseButton = 0;
+                }
+            }
+            break;
+        }
 
         case WM_MOUSEMOVE:
         {
             const int x = GET_X_LPARAM(lParam);
             const int y = GET_Y_LPARAM(lParam);
+
+            if (window->win32.ncMouseButton)
+            {
+                if (GET_X_LPARAM(window->win32.ncMousePos) != x ||
+                    GET_Y_LPARAM(window->win32.ncMousePos) != y)
+                {
+                    DefWindowProcW(hWnd, window->win32.ncMouseButton, HTCAPTION, window->win32.ncMousePos);
+                    window->win32.ncMouseButton = 0;
+                }
+            }
 
             if (!window->win32.cursorTracked)
             {
@@ -1000,7 +1034,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                 enableCursor(window);
             else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
                 releaseCursor();
-
+            SetTimer(hWnd, 1, 1, NULL);
             break;
         }
 
@@ -1016,7 +1050,16 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
                 disableCursor(window);
             else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
                 captureCursor(window);
+            KillTimer(hWnd, 1);
 
+            break;
+        }
+        case WM_TIMER:
+        {
+            if (wParam == 1)
+            {
+                SwitchToFiber(_glfw.win32.mainFiber);
+            }
             break;
         }
 
@@ -2104,27 +2147,7 @@ void _glfwPollEventsWin32(void)
     HWND handle;
     _GLFWwindow* window;
 
-    while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
-    {
-        if (msg.message == WM_QUIT)
-        {
-            // NOTE: While GLFW does not itself post WM_QUIT, other processes
-            //       may post it to this one, for example Task Manager
-            // HACK: Treat WM_QUIT as a close on all windows
-
-            window = _glfw.windowListHead;
-            while (window)
-            {
-                _glfwInputWindowCloseRequest(window);
-                window = window->next;
-            }
-        }
-        else
-        {
-            TranslateMessage(&msg);
-            DispatchMessageW(&msg);
-        }
-    }
+    SwitchToFiber(_glfw.win32.messageFiber);
 
     // HACK: Release modifier keys that the system did not emit KEYUP for
     // NOTE: Shift keys on Windows tend to "stick" when both are pressed as

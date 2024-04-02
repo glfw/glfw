@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <math.h>
+#include <assert.h>
 
 #include <IOKit/graphics/IOGraphicsLib.h>
 #include <ApplicationServices/ApplicationServices.h>
@@ -627,7 +628,6 @@ void _glfwSetGammaRampCocoa(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 
 GLFWAPI CGDirectDisplayID glfwGetCocoaMonitor(GLFWmonitor* handle)
 {
-    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(kCGNullDirectDisplay);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_COCOA)
@@ -635,6 +635,9 @@ GLFWAPI CGDirectDisplayID glfwGetCocoaMonitor(GLFWmonitor* handle)
         _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "Cocoa: Platform not initialized");
         return kCGNullDirectDisplay;
     }
+
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    assert(monitor != NULL);
 
     return monitor->ns.displayID;
 }

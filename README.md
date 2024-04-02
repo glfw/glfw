@@ -124,6 +124,12 @@ information on what to include when reporting a bug.
  - Added `GLFW_UNLIMITED_MOUSE_BUTTONS` input mode that allows mouse buttons beyond
    the limit of the mouse button tokens to be reported (#2423)
  - Added `GLFW_ANGLE_PLATFORM_TYPE_D3D11ON12` init hint for D3D11on12 support
+ - [Wayland] Bugfix: The fractional scaling related objects were not destroyed
+ - [Wayland] Bugfix: `glfwInit` would segfault on compositor with no seat (#2517)
+ - [Null] Added Vulkan 'window' surface creation via `VK_EXT_headless_surface`
+ - [Null] Added EGL context creation on Mesa via `EGL_MESA_platform_surfaceless`
+ - [EGL] Allowed native access on Wayland with `GLFW_CONTEXT_CREATION_API` set to
+   `GLFW_NATIVE_CONTEXT_API` (#2518)
 
 
 ## Contact

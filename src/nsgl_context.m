@@ -30,6 +30,7 @@
 
 #include <unistd.h>
 #include <math.h>
+#include <assert.h>
 
 static void makeContextCurrentNSGL(_GLFWwindow* window)
 {
@@ -361,7 +362,6 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
 
 GLFWAPI id glfwGetNSGLContext(GLFWwindow* handle)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(nil);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_COCOA)
@@ -370,6 +370,9 @@ GLFWAPI id glfwGetNSGLContext(GLFWwindow* handle)
                         "NSGL: Platform not initialized");
         return nil;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
 
     if (window->context.source != GLFW_NATIVE_CONTEXT_API)
     {

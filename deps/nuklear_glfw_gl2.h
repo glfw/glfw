@@ -140,7 +140,7 @@ nk_glfw3_render(enum nk_anti_aliasing AA)
         config.vertex_layout = vertex_layout;
         config.vertex_size = sizeof(struct nk_glfw_vertex);
         config.vertex_alignment = NK_ALIGNOF(struct nk_glfw_vertex);
-        config.null = dev->null;
+        //config.null = dev->null;
         config.circle_segment_count = 22;
         config.curve_segment_count = 22;
         config.arc_segment_count = 22;

@@ -186,8 +186,8 @@ OS4_DefineWindowBox(_GLFWwindow* window, const _GLFWwndconfig *wndconfig, struct
         box->Width = screen->Width;
         box->Height = screen->Height;
     } else {
-        box->Left = wndconfig->xpos;
-        box->Top = wndconfig->ypos;
+        box->Left = window->os4.xpos;
+        box->Top = window->os4.ypos;
         box->Width = wndconfig->width;
         box->Height = wndconfig->height;
     }
@@ -294,6 +294,12 @@ static void fitToMonitor(_GLFWwindow* window)
                            &window->os4.ypos);
     window->os4.width = mode.width;
     window->os4.height = mode.height;
+    IIntuition->SetWindowAttrs(window->os4.handle,
+        WA_Left, 0,
+        WA_Top, 0,
+        WA_Width, mode.width,
+        WA_Height, mode.height,
+        TAG_DONE);    
 }
 
 static void acquireMonitor(_GLFWwindow* window)
@@ -382,9 +388,14 @@ static int createNativeWindow(_GLFWwindow* window,
     }
     else
     {
+        int x = 0, y = 0;
+        if (_glfw.os4.publicScreen) {
+            x = (_glfw.os4.publicScreen->Width - wndconfig->width) / 2;
+            y = (_glfw.os4.publicScreen->Height - wndconfig->height) / 2;
+        }
         window->os4.fullscreen = GLFW_FALSE;
-        window->os4.xpos = 17;
-        window->os4.ypos = 17;
+        window->os4.xpos = x;
+        window->os4.ypos = y;
         window->os4.width = wndconfig->width;
         window->os4.height = wndconfig->height;
     }
@@ -436,8 +447,8 @@ static int createNativeWindow(_GLFWwindow* window,
 
         _glfwGetWindowPosOS4(window, &window->os4.xpos, &window->os4.ypos);
         _glfwGetWindowSizeOS4(window, &window->os4.width, &window->os4.height);        
-        window->os4.lastCursorPosX = window->os4.xpos;
-        window->os4.lastCursorPosY = window->os4.ypos;
+        window->os4.oldxpos = window->os4.xpos;
+        window->os4.oldypos = window->os4.ypos;
 
         if (wndconfig->decorated && wndconfig->width > 99 && wndconfig->height ) {
             OS4_CreateIconifyGadget(window);
@@ -559,13 +570,10 @@ void _glfwSetWindowMonitorOS4(_GLFWwindow* window,
                                int width, int height,
                                int refreshRate)
 {
-    if (window->monitor == monitor)
+    if (monitor && window->monitor == monitor)
     {
-        if (!monitor)
-        {
-            _glfwSetWindowPosOS4(window, xpos, ypos);
-            _glfwSetWindowSizeOS4(window, width, height);
-        }
+        _glfwSetWindowPosOS4(window, xpos, ypos);
+        _glfwSetWindowSizeOS4(window, width, height);
 
         return;
     }
@@ -603,6 +611,9 @@ void _glfwSetWindowPosOS4(_GLFWwindow* window, int xpos, int ypos)
 
     if (window->os4.xpos != xpos || window->os4.ypos != ypos)
     {
+        window->os4.oldxpos = window->os4.xpos;
+        window->os4.oldypos = window->os4.ypos;
+
         window->os4.xpos = xpos;
         window->os4.ypos = ypos;
         _glfwInputWindowPos(window, xpos, ypos);
@@ -611,9 +622,6 @@ void _glfwSetWindowPosOS4(_GLFWwindow* window, int xpos, int ypos)
             WA_Left, xpos,
             WA_Top, ypos,
             TAG_DONE);
-
-        window->os4.lastCursorPosX = xpos;
-        window->os4.lastCursorPosY = ypos;
     }
 }
 
@@ -744,7 +752,7 @@ void _glfwRestoreWindowOS4(_GLFWwindow* window)
     }
     else if (window->os4.maximized)
     {
-        OS4_ResizeWindow(window, window->os4.width, window->os4.height, window->os4.oldxpos, window->os4.oldypos);
+        OS4_ResizeWindow(window, window->os4.oldwidth, window->os4.oldheight, window->os4.oldxpos, window->os4.oldypos);
         window->os4.maximized = GLFW_FALSE;
         _glfwInputWindowMaximize(window, GLFW_FALSE);
     }
@@ -756,6 +764,9 @@ void _glfwMaximizeWindowOS4(_GLFWwindow* window)
     {
         window->os4.oldxpos = window->os4.xpos;
         window->os4.oldypos = window->os4.ypos;
+        window->os4.oldwidth = window->os4.width;
+        window->os4.oldheight = window->os4.height;
+        printf("%d %d %d %d\n", window->os4.oldwidth, window->os4.oldheight, window->os4.oldxpos, window->os4.oldypos);
 
         OS4_ResizeWindow(window, window->maxwidth, window->maxheight, 0, 0);
 
@@ -771,10 +782,10 @@ int _glfwWindowMaximizedOS4(_GLFWwindow* window)
 
 int _glfwWindowHoveredOS4(_GLFWwindow* window)
 {
-    return _glfw.os4.xcursor >= window->os4.xpos &&
-           _glfw.os4.ycursor >= window->os4.ypos &&
-           _glfw.os4.xcursor <= window->os4.xpos + window->os4.width - 1 &&
-           _glfw.os4.ycursor <= window->os4.ypos + window->os4.height - 1;
+    return window->os4.lastCursorPosX >= window->os4.xpos &&
+           window->os4.lastCursorPosY >= window->os4.ypos &&
+           window->os4.lastCursorPosX <= window->os4.xpos + window->os4.width - 1 &&
+           window->os4.lastCursorPosY <= window->os4.ypos + window->os4.height - 1;
 }
 
 int _glfwFramebufferTransparentOS4(_GLFWwindow* window)
@@ -809,9 +820,11 @@ float _glfwGetWindowOpacityOS4(_GLFWwindow* window)
 void _glfwSetWindowOpacityOS4(_GLFWwindow* window, float opacity)
 {
     window->os4.opacity = opacity;
-
-    int iOpacity = (int)opacity * 255;
-
+    int iOpacity = (int) (opacity * 255);
+    if (iOpacity < 30) {
+        iOpacity = 30;
+        window->os4.opacity = (float) 0.11;
+    }
     IIntuition->SetWindowAttrs(window->os4.handle, WA_Opaqueness, iOpacity, TAG_DONE);
 
 }
@@ -902,8 +915,8 @@ void _glfwPollEventsOS4(void)
 
         switch (msg.Class) {
             case IDCMP_MOUSEMOVE:
-                window->os4.xpos = msg.WindowMouseX;
-                window->os4.ypos = msg.WindowMouseY;
+                window->os4.lastCursorPosX = msg.WindowMouseX;
+                window->os4.lastCursorPosY = msg.WindowMouseY;
 
                 _glfwInputCursorPos(window, msg.WindowMouseX, msg.WindowMouseY);
                 break;
@@ -1055,15 +1068,15 @@ void _glfwPostEmptyEventOS4(void)
 void _glfwGetCursorPosOS4(_GLFWwindow* window, double* xpos, double* ypos)
 {
     if (xpos)
-        *xpos = window->os4.xpos;
+        *xpos = window->os4.lastCursorPosX;
     if (ypos)
-        *ypos = window->os4.ypos;
+        *ypos = window->os4.lastCursorPosY;
 }
 
 void _glfwSetCursorPosOS4(_GLFWwindow* window, double x, double y)
 {
-    _glfw.os4.xcursor = window->os4.xpos + (int) x;
-    _glfw.os4.ycursor = window->os4.ypos + (int) y;
+    window->os4.lastCursorPosX = window->os4.xpos + (int) x;
+    window->os4.lastCursorPosY = window->os4.ypos + (int) y;
 }
 
 void _glfwSetCursorModeOS4(_GLFWwindow* window, int mode)

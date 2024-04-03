@@ -499,7 +499,8 @@ int _glfwInitOS4(void)
 
     OS4_LockPubScreen();
     _glfwPollMonitorsOS4();
-    
+    OS4_UnlockPubScreen();
+
     OS4_FindApplicationName();
 
     return GLFW_TRUE;
@@ -507,8 +508,6 @@ int _glfwInitOS4(void)
 
 void _glfwTerminateOS4(void)
 {
-    OS4_UnlockPubScreen();
-
     if (_glfw.os4.appMsgPort) {
         struct Message *msg;
 

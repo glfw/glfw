@@ -121,6 +121,8 @@ typedef struct _GLFWwindowOS4
     _GLFWcursor      *currentCursor;
     int               width;
     int               height;
+    int               oldwidth;
+    int               oldheight;
     char             *title;
     GLFWbool          visible;
     GLFWbool          iconified;
@@ -169,9 +171,6 @@ typedef struct _GLFWcursorOS4
 //
 typedef struct _GLFWlibraryOS4 {
     STRPTR           appName;
-
-    int              xcursor;
-    int              ycursor;
 
     char             keynames[GLFW_KEY_LAST + 1][17];
     short int        keycodes[512];

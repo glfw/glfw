@@ -268,6 +268,5 @@ OS4_UnlockPubScreen()
 {
     if (_glfw.os4.publicScreen) {
         IIntuition->UnlockPubScreen(NULL, _glfw.os4.publicScreen);
-        _glfw.os4.publicScreen = NULL;
     }
 }

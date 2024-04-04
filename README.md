@@ -79,7 +79,7 @@ more information.
 
 ## System requirements
 
-GLFW supports Windows XP and later and macOS 10.11 and later.  Linux and other
+GLFW supports Windows 7 and later and macOS 10.11 and later.  Linux and other
 Unix-like systems running the X Window System are supported even without
 a desktop environment or modern extensions, although some features require
 a running window or clipboard manager.  The OSMesa backend requires Mesa 6.3.
@@ -125,6 +125,7 @@ information on what to include when reporting a bug.
    the limit of the mouse button tokens to be reported (#2423)
  - Updated minimum CMake version to 3.16 (#2541)
  - Removed support for building with original MinGW (#2540)
+ - [Win32] Removed support for Windows XP and Vista (#2505)
  - [Cocoa] Added `QuartzCore` framework as link-time dependency
  - [Cocoa] Removed support for OS X 10.10 Yosemite and earlier (#2506)
  - [Wayland] Bugfix: The fractional scaling related objects were not destroyed

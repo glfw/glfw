@@ -48,14 +48,14 @@
  #define UNICODE
 #endif
 
-// GLFW requires Windows XP or later
-#if WINVER < 0x0501
+// GLFW requires Windows 7 or later
+#if WINVER < 0x0601
  #undef WINVER
- #define WINVER 0x0501
+ #define WINVER 0x0601
 #endif
-#if _WIN32_WINNT < 0x0501
+#if _WIN32_WINNT < 0x0601
  #undef _WIN32_WINNT
- #define _WIN32_WINNT 0x0501
+ #define _WIN32_WINNT 0x0601
 #endif
 
 // GLFW uses DirectInput8 interfaces
@@ -66,20 +66,12 @@
 
 #include <wctype.h>
 #include <windows.h>
+#include <dwmapi.h>
 #include <dinput.h>
 #include <xinput.h>
 #include <dbt.h>
 
 // HACK: Define macros that some windows.h variants don't
-#ifndef WM_MOUSEHWHEEL
- #define WM_MOUSEHWHEEL 0x020E
-#endif
-#ifndef WM_DWMCOMPOSITIONCHANGED
- #define WM_DWMCOMPOSITIONCHANGED 0x031E
-#endif
-#ifndef WM_DWMCOLORIZATIONCOLORCHANGED
- #define WM_DWMCOLORIZATIONCOLORCHANGED 0x0320
-#endif
 #ifndef WM_COPYGLOBALDATA
  #define WM_COPYGLOBALDATA 0x0049
 #endif
@@ -101,31 +93,6 @@
 #ifndef USER_DEFAULT_SCREEN_DPI
  #define USER_DEFAULT_SCREEN_DPI 96
 #endif
-
-#if WINVER < 0x0601
-typedef struct
-{
-    DWORD cbSize;
-    DWORD ExtStatus;
-} CHANGEFILTERSTRUCT;
-#ifndef MSGFLT_ALLOW
- #define MSGFLT_ALLOW 1
-#endif
-#endif /*Windows 7*/
-
-#if WINVER < 0x0600
-#define DWM_BB_ENABLE 0x00000001
-#define DWM_BB_BLURREGION 0x00000002
-typedef struct
-{
-    DWORD dwFlags;
-    BOOL fEnable;
-    HRGN hRgnBlur;
-    BOOL fTransitionOnMaximized;
-} DWM_BLURBEHIND;
-#else
- #include <dwmapi.h>
-#endif /*Windows Vista*/
 
 #ifndef DPI_ENUMS_DECLARED
 typedef enum
@@ -150,12 +117,6 @@ typedef enum
 // Replacement for versionhelpers.h macros, as we cannot rely on the
 // application having a correct embedded manifest
 //
-#define IsWindowsVistaOrGreater()                                     \
-    _glfwIsWindowsVersionOrGreaterWin32(HIBYTE(_WIN32_WINNT_VISTA),   \
-                                        LOBYTE(_WIN32_WINNT_VISTA), 0)
-#define IsWindows7OrGreater()                                         \
-    _glfwIsWindowsVersionOrGreaterWin32(HIBYTE(_WIN32_WINNT_WIN7),    \
-                                        LOBYTE(_WIN32_WINNT_WIN7), 0)
 #define IsWindows8OrGreater()                                         \
     _glfwIsWindowsVersionOrGreaterWin32(HIBYTE(_WIN32_WINNT_WIN8),    \
                                         LOBYTE(_WIN32_WINNT_WIN8), 0)
@@ -266,15 +227,11 @@ typedef HRESULT (WINAPI * PFN_DirectInput8Create)(HINSTANCE,DWORD,REFIID,LPVOID*
 #define DirectInput8Create _glfw.win32.dinput8.Create
 
 // user32.dll function pointer typedefs
-typedef BOOL (WINAPI * PFN_SetProcessDPIAware)(void);
-typedef BOOL (WINAPI * PFN_ChangeWindowMessageFilterEx)(HWND,UINT,DWORD,CHANGEFILTERSTRUCT*);
 typedef BOOL (WINAPI * PFN_EnableNonClientDpiScaling)(HWND);
 typedef BOOL (WINAPI * PFN_SetProcessDpiAwarenessContext)(HANDLE);
 typedef UINT (WINAPI * PFN_GetDpiForWindow)(HWND);
 typedef BOOL (WINAPI * PFN_AdjustWindowRectExForDpi)(LPRECT,DWORD,BOOL,DWORD,UINT);
 typedef int (WINAPI * PFN_GetSystemMetricsForDpi)(int,UINT);
-#define SetProcessDPIAware _glfw.win32.user32.SetProcessDPIAware_
-#define ChangeWindowMessageFilterEx _glfw.win32.user32.ChangeWindowMessageFilterEx_
 #define EnableNonClientDpiScaling _glfw.win32.user32.EnableNonClientDpiScaling_
 #define SetProcessDpiAwarenessContext _glfw.win32.user32.SetProcessDpiAwarenessContext_
 #define GetDpiForWindow _glfw.win32.user32.GetDpiForWindow_
@@ -460,8 +417,6 @@ typedef struct _GLFWlibraryWin32
 
     struct {
         HINSTANCE                       instance;
-        PFN_SetProcessDPIAware          SetProcessDPIAware_;
-        PFN_ChangeWindowMessageFilterEx ChangeWindowMessageFilterEx_;
         PFN_EnableNonClientDpiScaling   EnableNonClientDpiScaling_;
         PFN_SetProcessDpiAwarenessContext SetProcessDpiAwarenessContext_;
         PFN_GetDpiForWindow             GetDpiForWindow_;

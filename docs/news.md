@@ -20,6 +20,12 @@ this.
 
 ## Removals {#removals}
 
+### Windows XP and Vista support has been removed {#winxp_vista}
+
+Support for Windows XP and Vista has been removed.  Windows XP has been out of extended
+support since 2014.
+
+
 ### Original MinGW support has been removed {#original_mingw}
 
 Support for the now unmaintained original MinGW distribution has been removed.

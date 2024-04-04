@@ -24,8 +24,6 @@
 //
 //========================================================================
 
-#define OLDSDK 1
-
 #include <amigainput/amigainput.h>
 #include <proto/amigainput.h>
 

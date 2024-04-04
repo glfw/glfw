@@ -294,7 +294,5 @@ void _glfwUpdateGamepadGUIDOS4(char* guid);
 # define kprintf(format, args...)((struct ExecIFace *)((*(struct ExecBase **)4)->MainInterface))->DebugPrintF(format, ## args)
 #endif /* DEBUG */
 
-BOOL OS4_LockPubScreen();
-void OS4_UnlockPubScreen();
 void OS4_IconifyWindow(_GLFWwindow *window);
 void OS4_UniconifyWindow(_GLFWwindow* window);

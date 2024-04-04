@@ -53,6 +53,7 @@ static void OS4_CreateIconifyGadget(_GLFWwindow * window);
 static struct DiskObject *OS4_GetDiskObject();
 static void OS4_HandleAppIcon(struct AppMessage * msg);
 static ULONG OS4_BackFill(const struct Hook *hook, struct RastPort *rastport, struct BackFillMessage *message);
+static char *UCS4ToUTF8(uint32_t ch, char *dst);
 
 #ifndef MAX
 #define MAX(a, b)    ((a) > (b) ? (a) : (b))
@@ -923,21 +924,31 @@ void _glfwPollEventsOS4(void)
 
             case IDCMP_RAWKEY:
                 uint8_t rawkey = msg.Code & 0x7F;
-                //printf("RAWKEY = 0x%x\n", rawkey);
+                dprintf("RAWKEY = 0x%x\n", rawkey);
                 int key = _glfw.os4.keycodes[rawkey];
                 int mods = OS4_TranslateState(msg.Qualifier);
                 const int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
 
                 if (imsg->Code < 0x80) {
-                    char text[2];
+                    char text[5] ={0};
+                    const uint32 unicode = OS4_TranslateUnicode(msg.Code, msg.Qualifier);
+                    if (unicode) {
+                        UCS4ToUTF8(unicode, text);
 
-                    text[0] = OS4_TranslateUnicode(msg.Code, msg.Qualifier);
-                    text[1] = '\0';
+                        _glfwInputKey(window, key, rawkey, GLFW_PRESS, mods);
+                        for (int i = 0; i < 4; i++) {
+                            if (text[0] != '\0')
+                                _glfwInputChar(window, text[i], mods, plain);
+                        }
+                    }
+                    else {
+                        text[0] = OS4_TranslateUnicode(msg.Code, msg.Qualifier);
+                        text[1] = '\0';
 
-                    _glfwInputKey(window, key, rawkey, GLFW_PRESS, mods);                          
+                        _glfwInputKey(window, key, rawkey, GLFW_PRESS, mods);                          
 
-                    if (text[0] && text[0] < 0x80) {
-                        _glfwInputChar(window, text[0], mods, plain);
+                        if (text[0] && text[0] < 0x80)
+                            _glfwInputChar(window, text[0], mods, plain);
                     }
                 } else {
                     _glfwInputKey(window, key, rawkey, GLFW_RELEASE, mods);                          
@@ -945,14 +956,14 @@ void _glfwPollEventsOS4(void)
                 break;
 
             case IDCMP_MOUSEBUTTONS:
-                //OS4_HandleMouseButtons(_this, &msg);
                 int button = OS4_GetButton(imsg->Code);
                 int state = OS4_GetButtonState(imsg->Code);
+                int bmods = OS4_TranslateState(msg.Qualifier);
 
                 _glfwInputMouseClick(window,
                                      button,
                                      state,
-                                     0);
+                                     bmods);
                 break;
 
             case IDCMP_EXTENDEDMOUSE:
@@ -1197,12 +1208,12 @@ const char* _glfwGetScancodeNameOS4(int scancode)
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid OS4 scancode %i", scancode);
         return NULL;
     }
-    return _glfw.os4.keynames[_glfw.os4.keycodes[scancode]];
+    return _glfw.os4.keynames[scancode];
 }
 
 int _glfwGetKeyScancodeOS4(int key)
 {
-    return key;
+    return _glfw.os4.scancodes[key];
 }
 
 void _glfwGetRequiredInstanceExtensionsOS4(char** extensions)
@@ -1589,4 +1600,30 @@ OS4_BackFill(const struct Hook *hook, struct RastPort *rastport, struct BackFill
     igfx->RectFillColor(&bfRastport, rect->MinX, rect->MinY, rect->MaxX, rect->MaxY, 0xFF000000);
 
     return 0;
+}
+
+static 
+char *UCS4ToUTF8(uint32_t ch, char *dst)
+{
+    uint8_t *p = (uint8_t *)dst;
+    if (ch <= 0x7F) {
+        *p = (uint8_t)ch;
+        ++dst;
+    } else if (ch <= 0x7FF) {
+        p[0] = 0xC0 | (uint8_t)((ch >> 6) & 0x1F);
+        p[1] = 0x80 | (uint8_t)(ch & 0x3F);
+        dst += 2;
+    } else if (ch <= 0xFFFF) {
+        p[0] = 0xE0 | (uint8_t)((ch >> 12) & 0x0F);
+        p[1] = 0x80 | (uint8_t)((ch >> 6) & 0x3F);
+        p[2] = 0x80 | (uint8_t)(ch & 0x3F);
+        dst += 3;
+    } else {
+        p[0] = 0xF0 | (uint8_t)((ch >> 18) & 0x07);
+        p[1] = 0x80 | (uint8_t)((ch >> 12) & 0x3F);
+        p[2] = 0x80 | (uint8_t)((ch >> 6) & 0x3F);
+        p[3] = 0x80 | (uint8_t)(ch & 0x3F);
+        dst += 4;
+    }
+    return dst;
 }

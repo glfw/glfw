@@ -58,11 +58,7 @@ AMIGAINPUT_Close(_GLFWjoystick * joystick)
 {
     dprintf("Closing joystick #%d (AI ID=%ld)\n", joystick->os4js.instance_id, joystick->os4js.joystickList[joystick->os4js.instance_id].id);
     if (joystick->os4js.hwdata) {
-#if OLDSDK
         GLFW_IAIN->AIN_ReleaseDevice(joystick->os4js.hwdata->context, joystick->os4js.hwdata->handle);
-#else
-        GLFW_IAIN->ReleaseDevice(joystick->os4js.hwdata->context, joystick->os4js.hwdata->handle);
-#endif
 
         _glfw_free(joystick->os4js.hwdata);
         joystick->os4js.hwdata = NULL;
@@ -81,13 +77,9 @@ AMIGAINPUT_Open(_GLFWjoystick * joysticks, int device_index)
     AIN_DeviceHandle *handle;
     AIN_DeviceID id = joystick->os4js.joystickList[joystick->os4js.instance_id].id;
 
-#if OLDSDK
     handle = GLFW_IAIN->AIN_ObtainDevice(_glfw.os4js.joystickContext, id);
-#else
-    handle = GLFW_IAIN->ObtainDevice(_glfw.os4js.joystickContext, id);
-#endif
 
-    printf("Opening joystick #%ld (AI ID=%ld)\n", joystick->os4js.instance_id, id);
+    dprintf("Opening joystick #%ld (AI ID=%ld)\n", joystick->os4js.instance_id, id);
 
     if (handle) {
         joystick->os4js.hwdata = _glfw_calloc(1, sizeof(struct joystick_hwdata));
@@ -109,17 +101,11 @@ AMIGAINPUT_Open(_GLFWjoystick * joysticks, int device_index)
             strncpy(joystick->name, joystick->os4js.joystickList[joystick->os4js.instance_id].name, sizeof(joystick->name) - 1);
 
             /* Query number of axes, buttons and hats the device has */
-#if OLDSDK
             result = result && GLFW_IAIN->AIN_Query(joystick->os4js.hwdata->context, id, AINQ_NUMAXES,    0, &num_axes, 4);
             result = result && GLFW_IAIN->AIN_Query(joystick->os4js.hwdata->context, id, AINQ_NUMBUTTONS, 0, &num_buttons, 4);
             result = result && GLFW_IAIN->AIN_Query(joystick->os4js.hwdata->context, id, AINQ_NUMHATS,    0, &num_hats, 4);
-#else
-            result = result && GLFW_IAIN->Query(joystick->os4js.hwdata->context, id, AINQ_NUMAXES,    0, &num_axes, 4);
-            result = result && GLFW_IAIN->Query(joystick->os4js.hwdata->context, id, AINQ_NUMBUTTONS, 0, &num_buttons, 4);
-            result = result && GLFW_IAIN->Query(joystick->os4js.hwdata->context, id, AINQ_NUMHATS,    0, &num_hats, 4);
-#endif
 
-            printf ("Found %d axes, %d buttons, %d hats\n", num_axes, num_buttons, num_hats);
+            dprintf ("Found %d axes, %d buttons, %d hats\n", num_axes, num_buttons, num_hats);
 
             joystick->axisCount   = num_axes < MAX_AXES       ? num_axes    : MAX_AXES;
             joystick->buttonCount = num_buttons < MAX_BUTTONS ? num_buttons : MAX_BUTTONS;
@@ -131,13 +117,8 @@ AMIGAINPUT_Open(_GLFWjoystick * joysticks, int device_index)
 
             /* Query offsets in ReadDevice buffer for axes' data */
             for (i = 0; i < joystick->axisCount; i++) {
-#if OLDSDK
                 result = result && GLFW_IAIN->AIN_Query(joystick->os4js.hwdata->context, id, AINQ_AXIS_OFFSET, i, &(hwdata->axisBufferOffset[i]), 4);
                 result = result && GLFW_IAIN->AIN_Query(joystick->os4js.hwdata->context, id, AINQ_AXISNAME,    i, &(hwdata->axisName[i][0]), 32 );
-#else
-                result = result && GLFW_IAIN->Query(joystick->os4js.hwdata->context, id, AINQ_AXIS_OFFSET, i, &(hwdata->axisBufferOffset[i]), 4);
-                result = result && GLFW_IAIN->Query(joystick->os4js.hwdata->context, id, AINQ_AXISNAME,    i, &(hwdata->axisName[i][0]), 32 );
-#endif
             }
 
             // Sort the axes so that X and Y come first
@@ -177,20 +158,12 @@ AMIGAINPUT_Open(_GLFWjoystick * joysticks, int device_index)
 
             /* Query offsets in ReadDevice buffer for buttons' data */
             for (i = 0; i < joystick->buttonCount; i++) {
-#if OLDSDK
                 result = result && GLFW_IAIN->AIN_Query(joystick->os4js.hwdata->context, id, AINQ_BUTTON_OFFSET, i, &(joystick->os4js.hwdata->buttonBufferOffset[i]), 4);
-#else
-                result = result && GLFW_IAIN->Query(joystick->os4js.hwdata->context, id, AINQ_BUTTON_OFFSET, i, &(joystick->os4js.hwdata->buttonBufferOffset[i]), 4);
-#endif
             }
 
             /* Query offsets in ReadDevice buffer for hats' data */
             for (i = 0; i < joystick->hatCount; i++) {
-#if OLDSDK
                 result = result && GLFW_IAIN->AIN_Query(joystick->os4js.hwdata->context, id, AINQ_HAT_OFFSET, i, &(hwdata->hatBufferOffset[i]), 4);
-#else
-                result = result && GLFW_IAIN->Query(joystick->os4js.hwdata->context, id, AINQ_HAT_OFFSET, i, &(hwdata->hatBufferOffset[i]), 4);
-#endif
             }
 
             if (result) {
@@ -199,19 +172,15 @@ AMIGAINPUT_Open(_GLFWjoystick * joysticks, int device_index)
                 sprintf(guid, "78696e707574%02lx000000000000000000", handle->DeviceID & 0xff);                
                 _glfwAllocJoystick(joystick->name, guid, joystick->axisCount, joystick->buttonCount, joystick->hatCount);
 
-                printf("Successful\n");
+                dprintf("Successful\n");
                 return 0;
             }
         }
 
-#if OLDSDK
         GLFW_IAIN->AIN_ReleaseDevice (_glfw.os4js.joystickContext, handle);
-#else
-        GLFW_IAIN->ReleaseDevice (_glfw.os4js.joystickContext, handle);
-#endif
     }
 
-    printf("Failed\n");
+    dprintf("Failed\n");
 
     return GLFW_FALSE;
 }
@@ -229,7 +198,7 @@ AMIGAINPUT_EnumerateJoysticks(AIN_Device *device, void *UserData)
     BOOL result = FALSE;
 
     if (*count < MAX_JOYSTICKS) {
-        printf("ENUMJOY: id=%ld, type=%ld, axes=%ld, buttons=%ld\n",
+        dprintf("ENUMJOY: id=%ld, type=%ld, axes=%ld, buttons=%ld\n",
             *count,
             (int32)device->Type,
             (int32)device->NumAxes,
@@ -245,35 +214,26 @@ AMIGAINPUT_EnumerateJoysticks(AIN_Device *device, void *UserData)
             if ((device->NumAxes > 0) && (device->NumButtons > 0)) {
                 /* Then, check whether we can actually obtain the device
                  */
-#if OLDSDK
                 AIN_DeviceHandle *handle = GLFW_IAIN->AIN_ObtainDevice (context, device->DeviceID);
-#else
-                AIN_DeviceHandle *handle = GLFW_IAIN->ObtainDevice (context, device->DeviceID);
-#endif
-
                 if (handle) {
                     /* Okay. This appears to be a valid device. We'll report it to GLFW.
                      */
                     joy->id   = device->DeviceID;
                     joy->name = _glfw_strdup(device->DeviceName);
 
-                    printf("Found joystick #%ld (AI ID=%ld) '%s'\n", *count, joy->id, joy->name);
+                    dprintf("Found joystick #%ld (AI ID=%ld) '%s'\n", *count, joy->id, joy->name);
 
                     (*count)++;
 
-#if OLDSDK
                     GLFW_IAIN->AIN_ReleaseDevice (context, handle);
-#else
-                    GLFW_IAIN->ReleaseDevice (context, handle);
-#endif
 
                     result = TRUE;
                 }
                 else
-                    printf("Failed to obtain joystick '%s' (AI ID=%ld) - ignoring.\n", device->DeviceName, device->DeviceID);
+                    dprintf("Failed to obtain joystick '%s' (AI ID=%ld) - ignoring.\n", device->DeviceName, device->DeviceID);
             }
             else
-                printf("Joystick '%s' (AI ID=%ld) has no axes/buttons - ignoring.\n", device->DeviceName, device->DeviceID);
+                dprintf("Joystick '%s' (AI ID=%ld) has no axes/buttons - ignoring.\n", device->DeviceName, device->DeviceID);
         }
     }
     return result;
@@ -285,7 +245,7 @@ AMIGAINPUT_EnumerateJoysticks(AIN_Device *device, void *UserData)
 
 GLFWbool _glfwInitJoysticksOS4(void)
 {
-    printf("_glfwInitJoysticksOS4\n");
+    dprintf("_glfwInitJoysticksOS4\n");
     GLFW_AIN_Base = IExec->OpenLibrary("AmigaInput.library", 51);
 
     if (GLFW_AIN_Base) {
@@ -295,11 +255,7 @@ GLFWbool _glfwInitJoysticksOS4(void)
             IExec->CloseLibrary(GLFW_AIN_Base);
             return GLFW_FALSE;
         }
-#if OLDSDK
         _glfw.os4js.joystickContext = GLFW_IAIN->AIN_CreateContext(1, NULL);
-#else
-        _glfw.os4js.joystickContext = GLFW_IAIN->CreateContext(1, NULL);
-#endif
         if (_glfw.os4js.joystickContext) {
             struct enumPacket packet = {
                  _glfw.os4js.joystickContext,
@@ -307,13 +263,9 @@ GLFWbool _glfwInitJoysticksOS4(void)
                 &_glfw.os4js.joystickList[0]
             };
 
-#if OLDSDK
             BOOL result = GLFW_IAIN->AIN_EnumDevices(_glfw.os4js.joystickContext, AMIGAINPUT_EnumerateJoysticks, &packet);
-#else
-            BOOL result = GLFW_IAIN->EnumDevices(_glfw.os4js.joystickContext, AMIGAINPUT_EnumerateJoysticks, &packet);
-#endif
-            printf("EnumDevices returned %d\n", result);
-            printf("Found %ld joysticks\n", _glfw.os4js.joystickCount);
+            dprintf("EnumDevices returned %d\n", result);
+            dprintf("Found %ld joysticks\n", _glfw.os4js.joystickCount);
 
             if (result) {
                 /*
@@ -325,14 +277,14 @@ GLFWbool _glfwInitJoysticksOS4(void)
                 int i;
 
                 for (i = 0; i < _glfw.os4js.joystickCount; i++) {
-                    printf("Add joystick %d\n", i);
+                    dprintf("Add joystick %d\n", i);
                     AMIGAINPUT_Open(_glfw.joysticks, i);
                 }
             }
             return GLFW_TRUE;
         }
     } else {
-        printf("Failed to open AmigaInput.library\n");
+        dprintf("Failed to open AmigaInput.library\n");
     }
 
     return GLFW_FALSE;
@@ -344,7 +296,7 @@ void _glfwTerminateJoysticksOS4(void)
     uint32 i;
     
     for (i = 0; i < _glfw.os4js.joystickCount; i++) {
-        printf("_glfw_free joystickList[i].name\n");
+        dprintf("_glfw_free joystickList[i].name\n");
         AMIGAINPUT_Close(_glfw.joysticks + i);
         _glfw_free((char *)_glfw.os4js.joystickList[i].name);
     }
@@ -352,12 +304,8 @@ void _glfwTerminateJoysticksOS4(void)
     _glfw.os4js.joystickCount = 0;
 
     if (_glfw.os4js.joystickContext) {
-        printf("AIN_DeleteContext\n");
-#if OLDSDK
+        dprintf("AIN_DeleteContext\n");
         GLFW_IAIN->AIN_DeleteContext(_glfw.os4js.joystickContext);
-#else
-        GLFW_IAIN->DeleteContext(_glfw.os4js.joystickContext);
-#endif
         _glfw.os4js.joystickContext = NULL;
     }
 
@@ -370,16 +318,12 @@ int _glfwPollJoystickOS4(_GLFWjoystick* joystick, int mode)
     struct joystick_hwdata *hwdata = joystick->os4js.hwdata;
     void                   *buffer;
 
-    //printf("Called %p\n", hwdata);
+    //dprintf("Called %p\n", hwdata);
 
     /*
      * Poll device for data
      */
-#if OLDSDK
     if (hwdata && GLFW_IAIN->AIN_ReadDevice(hwdata->context, hwdata->handle, &buffer))
-#else
-    if (hwdata && GLFW_IAIN->ReadDevice(hwdata->context, hwdata->handle, &buffer))
-#endif
     {
         int i;
 

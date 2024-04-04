@@ -119,29 +119,32 @@ void _glfwPollMonitorsOS4(void)
     struct DimensionInfo diminfo;
     APTR handle;
     ULONG modeid;
+    _glfw.os4.publicScreen = IIntuition->LockPubScreen(NULL);
+    if (_glfw.os4.publicScreen != NULL) {
+        IIntuition->GetScreenAttrs(_glfw.os4.publicScreen, SA_DisplayID, &modeid, TAG_DONE);
 
-    IIntuition->GetScreenAttrs(_glfw.os4.publicScreen, SA_DisplayID, &modeid, TAG_DONE);
+        handle = IGraphics->FindDisplayInfo(modeid);
+        if (handle) {
+            if (IGraphics->GetDisplayInfoData(handle, (UBYTE *)&diminfo, sizeof(diminfo), DTAG_DIMS, 0)) {
+                GLFW_DisplayModeData *data;
+                data = (GLFW_DisplayModeData *) malloc(sizeof(*data));
+                if (data) {
+                    data->modeid = modeid;
+                    data->x = diminfo.Nominal.MinX;
+                    data->y = diminfo.Nominal.MinY;
+                    data->depth = diminfo.MaxDepth;
 
-    handle = IGraphics->FindDisplayInfo(modeid);
-    if (handle) {
-        if (IGraphics->GetDisplayInfoData(handle, (UBYTE *)&diminfo, sizeof(diminfo), DTAG_DIMS, 0)) {
-            GLFW_DisplayModeData *data;
-            data = (GLFW_DisplayModeData *) malloc(sizeof(*data));
-            if (data) {
-                data->modeid = modeid;
-                data->x = diminfo.Nominal.MinX;
-                data->y = diminfo.Nominal.MinY;
-                data->depth = diminfo.MaxDepth;
-
-                _GLFWmonitor* monitor = _glfwAllocMonitor("OS4 Monitor 0",
-                                                        (int) (mode.width * 25.4f / dpi),
-                                                        (int) (mode.height * 25.4f / dpi));
-                
-                monitor->userPointer = data;
-                
-                _glfwInputMonitor(monitor, GLFW_CONNECTED, _GLFW_INSERT_FIRST);
+                    _GLFWmonitor* monitor = _glfwAllocMonitor("OS4 Monitor 0",
+                                                            (int) (mode.width * 25.4f / dpi),
+                                                            (int) (mode.height * 25.4f / dpi));
+                    
+                    monitor->userPointer = data;
+                    
+                    _glfwInputMonitor(monitor, GLFW_CONNECTED, _GLFW_INSERT_FIRST);
+                }
             }
         }
+        IIntuition->UnlockPubScreen(NULL, _glfw.os4.publicScreen);
     }
 }
 
@@ -249,24 +252,3 @@ void _glfwSetGammaRampOS4(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 /**********************************************************************************************/
 /******************************************** PRIVATE METHODS *********************************/
 /**********************************************************************************************/
-
-BOOL
-OS4_LockPubScreen()
-{
-    _glfw.os4.publicScreen = IIntuition->LockPubScreen(NULL);
-
-    if (_glfw.os4.publicScreen) {
-        return TRUE;
-    } else {
-        dprintf("Failed to lock Workbench screen\n");
-        return FALSE;
-    }
-}
-
-void
-OS4_UnlockPubScreen()
-{
-    if (_glfw.os4.publicScreen) {
-        IIntuition->UnlockPubScreen(NULL, _glfw.os4.publicScreen);
-    }
-}

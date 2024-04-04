@@ -52,7 +52,7 @@ and window system.  It does not need any additional headers for context creation
 APIs (WGL, GLX, EGL, NSGL, OSMesa) or rendering APIs (OpenGL, OpenGL ES, Vulkan)
 to enable support for them.
 
-GLFW supports compilation on Windows with Visual C++ 2013 and later, MinGW and
+GLFW supports compilation on Windows with Visual C++ (2013 and later) and
 MinGW-w64, on macOS with Clang and on Linux and other Unix-like systems with GCC
 and Clang.  It will likely compile in other environments as well, but this is
 not regularly tested.
@@ -124,6 +124,7 @@ information on what to include when reporting a bug.
  - Added `GLFW_UNLIMITED_MOUSE_BUTTONS` input mode that allows mouse buttons beyond
    the limit of the mouse button tokens to be reported (#2423)
  - Updated minimum CMake version to 3.16 (#2541)
+ - Removed support for building with original MinGW (#2540)
  - [Cocoa] Added `QuartzCore` framework as link-time dependency
  - [Cocoa] Removed support for OS X 10.10 Yosemite and earlier (#2506)
  - [Wayland] Bugfix: The fractional scaling related objects were not destroyed

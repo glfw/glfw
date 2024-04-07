@@ -28,6 +28,8 @@
 
 #if defined(_GLFW_COCOA)
 
+#import <QuartzCore/CAMetalLayer.h>
+
 #include <float.h>
 #include <string.h>
 #include <assert.h>
@@ -1948,18 +1950,8 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
 {
     @autoreleasepool {
 
-    // HACK: Dynamically load Core Animation to avoid adding an extra
-    //       dependency for the majority who don't use MoltenVK
-    NSBundle* bundle = [NSBundle bundleWithPath:@"/System/Library/Frameworks/QuartzCore.framework"];
-    if (!bundle)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Failed to find QuartzCore.framework");
-        return VK_ERROR_EXTENSION_NOT_PRESENT;
-    }
-
     // NOTE: Create the layer here as makeBackingLayer should not return nil
-    window->ns.layer = [[bundle classNamed:@"CAMetalLayer"] layer];
+    window->ns.layer = [CAMetalLayer layer];
     if (!window->ns.layer)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,

@@ -310,7 +310,6 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)windowDidChangeOcclusionState:(NSNotification* )notification
 {
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1090
     if ([window->ns.object respondsToSelector:@selector(occlusionState)])
     {
         if ([window->ns.object occlusionState] & NSWindowOcclusionStateVisible)
@@ -318,7 +317,6 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         else
             window->ns.occluded = GLFW_TRUE;
     }
-#endif
 }
 
 @end
@@ -1950,7 +1948,6 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
 {
     @autoreleasepool {
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101100
     // HACK: Dynamically load Core Animation to avoid adding an extra
     //       dependency for the majority who don't use MoltenVK
     NSBundle* bundle = [NSBundle bundleWithPath:@"/System/Library/Frameworks/QuartzCore.framework"];
@@ -2027,9 +2024,6 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
     }
 
     return err;
-#else
-    return VK_ERROR_EXTENSION_NOT_PRESENT;
-#endif
 
     } // autoreleasepool
 }

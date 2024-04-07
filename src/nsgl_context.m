@@ -218,14 +218,11 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         ADD_ATTRIB(kCGLPFASupportsAutomaticGraphicsSwitching);
     }
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
     if (ctxconfig->major >= 4)
     {
         SET_ATTRIB(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion4_1Core);
     }
-    else
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
-    if (ctxconfig->major >= 3)
+    else if (ctxconfig->major >= 3)
     {
         SET_ATTRIB(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);
     }

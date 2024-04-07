@@ -242,24 +242,27 @@ extensions are unavailable, the `GLFW_SRGB_CAPABLE` hint will have no effect.
 
 ## OpenGL on macOS {#compat_osx}
 
-Support for OpenGL 3.2 and above was introduced with OS X 10.7 and even then
-only forward-compatible, core profile contexts are supported.  Support for
-OpenGL 4.1 was introduced with OS X 10.9, also limited to forward-compatible,
-core profile contexts.  There is also still no mechanism for requesting debug
-contexts or no-error contexts.  Versions of Mac OS X earlier than 10.7 support
-at most OpenGL version 2.1.
+macOS (as of version 14) still provides OpenGL but it has been deprecated by
+Apple.  While the API is still available, it is poorly maintained and frequently
+develops new issues.  On modern systems, OpenGL is implemented on top of Metal
+and is not fully thread-safe.
 
-Because of this, on OS X 10.7 and later, the `GLFW_CONTEXT_VERSION_MAJOR` and
-`GLFW_CONTEXT_VERSION_MINOR` hints will cause @ref glfwCreateWindow to fail if
-given version 3.0 or 3.1.  The `GLFW_OPENGL_PROFILE` hint must be set to
-`GLFW_OPENGL_CORE_PROFILE` when creating OpenGL 3.2 and later contexts.  The
-`GLFW_CONTEXT_DEBUG` and `GLFW_CONTEXT_NO_ERROR` hints are ignored.
+macOS does not support OpenGL stereo rendering.  If the `GLFW_STEREO` hint is
+set to true, OpenGL context creation will always fail.
 
-Also, on Mac OS X 10.6 and below, the `GLFW_CONTEXT_VERSION_MAJOR` and
-`GLFW_CONTEXT_VERSION_MINOR` hints will fail if given a version above 2.1,
-setting the `GLFW_OPENGL_PROFILE` or `GLFW_OPENGL_FORWARD_COMPAT` hints to
-a non-default value will cause @ref glfwCreateWindow to fail and the
-`GLFW_CONTEXT_DEBUG` hint is ignored.
+macOS only supports OpenGL core profile contexts that are forward-compatible,
+but the `GLFW_OPENGL_FORWARD_COMPAT` hint is ignored since GLFW 3.4.  Even if
+this hint is set to false (the default), a forward-compatible context will be
+returned if available.
+
+macOS does not support OpenGL debug contexts, no-error contexts or robustness.
+The `GLFW_CONTEXT_DEBUG`, `GLFW_CONTEXT_NO_ERROR` and `GLFW_CONTEXT_ROBUSTNESS`
+hints will be ignored and a context without these features will be returned.
+
+macOS does not flush OpenGL contexts when they are made non-current.  The
+`GLFW_CONTEXT_RELEASE_BEHAVIOR` hint is ignored and the release behavior will
+always be the equivalent of `GLFW_RELEASE_BEHAVIOR_NONE`.  If you need a context
+to be flushed, call `glFlush` before making it non-current.
 
 
 ## Vulkan loader and API {#compat_vulkan}

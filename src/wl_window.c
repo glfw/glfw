@@ -1986,7 +1986,7 @@ static void dataDeviceHandleEnter(void* userData,
                     window = wl_surface_get_user_data(surface);
             }
 
-            if (surface == window->wl.surface && _glfw.wl.offers[i].text_uri_list)
+            if (window && surface == window->wl.surface && _glfw.wl.offers[i].text_uri_list)
             {
                 _glfw.wl.dragOffer = offer;
                 _glfw.wl.dragFocus = window;

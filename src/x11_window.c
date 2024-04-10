@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 X11 - www.glfw.org
+// GLFW 3.5 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
@@ -23,8 +23,6 @@
 // 3. This notice may not be removed or altered from any source
 //    distribution.
 //
-//========================================================================
-// It is fine to use C99 in this file because it will not be built with VS
 //========================================================================
 
 #include "internal.h"
@@ -81,23 +79,25 @@ static GLFWbool waitForX11Event(double *timeout)
 //
 static GLFWbool waitForAnyEvent(double *timeout)
 {
-    nfds_t count = 2;
-    struct pollfd fds[3] =
-        {
-            {ConnectionNumber(_glfw.x11.display), POLLIN},
-            {_glfw.x11.emptyEventPipe[0], POLLIN}};
+    enum { XLIB_FD, PIPE_FD, INOTIFY_FD };
+    struct pollfd fds[] =
+    {
+        [XLIB_FD] = { ConnectionNumber(_glfw.x11.display), POLLIN },
+        [PIPE_FD] = { _glfw.x11.emptyEventPipe[0], POLLIN },
+        [INOTIFY_FD] = { -1, POLLIN }
+    };
 
-#if defined(_GLFW_LINUX_JOYSTICK)
+#if defined(GLFW_BUILD_LINUX_JOYSTICK)
     if (_glfw.joysticksInitialized)
-        fds[count++] = (struct pollfd){_glfw.linjs.inotify, POLLIN};
+        fds[INOTIFY_FD].fd = _glfw.linjs.inotify;
 #endif
 
     while (!XPending(_glfw.x11.display))
     {
-        if (!_glfwPollPOSIX(fds, count, timeout))
+        if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), timeout))
             return GLFW_FALSE;
 
-        for (int i = 1; i < count; i++)
+        for (int i = 1; i < sizeof(fds) / sizeof(fds[0]); i++)
         {
             if (fds[i].revents & POLLIN)
                 return GLFW_TRUE;
@@ -1613,7 +1613,188 @@ static void processEvent(XEvent *event)
             // The drag operation has finished by dropping on the window
             Time time = CurrentTime;
 
-            if (_glfw.x11.xdnd.version > _GLFW_XDND_VERSION)
+            if (event->xbutton.button == Button1)
+                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS, mods);
+            else if (event->xbutton.button == Button2)
+                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_MIDDLE, GLFW_PRESS, mods);
+            else if (event->xbutton.button == Button3)
+                _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_RIGHT, GLFW_PRESS, mods);
+
+            // Modern X provides scroll events as mouse button presses
+            else if (event->xbutton.button == Button4)
+                _glfwInputScroll(window, 0.0, 1.0);
+            else if (event->xbutton.button == Button5)
+                _glfwInputScroll(window, 0.0, -1.0);
+            else if (event->xbutton.button == Button6)
+                _glfwInputScroll(window, 1.0, 0.0);
+            else if (event->xbutton.button == Button7)
+                _glfwInputScroll(window, -1.0, 0.0);
+
+            else
+            {
+                // Additional buttons after 7 are treated as regular buttons
+                // We subtract 4 to fill the gap left by scroll input above
+                _glfwInputMouseClick(window,
+                                     event->xbutton.button - Button1 - 4,
+                                     GLFW_PRESS,
+                                     mods);
+            }
+
+            return;
+        }
+
+        case ButtonRelease:
+        {
+            const int mods = translateState(event->xbutton.state);
+
+            if (event->xbutton.button == Button1)
+            {
+                _glfwInputMouseClick(window,
+                                     GLFW_MOUSE_BUTTON_LEFT,
+                                     GLFW_RELEASE,
+                                     mods);
+            }
+            else if (event->xbutton.button == Button2)
+            {
+                _glfwInputMouseClick(window,
+                                     GLFW_MOUSE_BUTTON_MIDDLE,
+                                     GLFW_RELEASE,
+                                     mods);
+            }
+            else if (event->xbutton.button == Button3)
+            {
+                _glfwInputMouseClick(window,
+                                     GLFW_MOUSE_BUTTON_RIGHT,
+                                     GLFW_RELEASE,
+                                     mods);
+            }
+            else if (event->xbutton.button > Button7)
+            {
+                // Additional buttons after 7 are treated as regular buttons
+                // We subtract 4 to fill the gap left by scroll input above
+                _glfwInputMouseClick(window,
+                                     event->xbutton.button - Button1 - 4,
+                                     GLFW_RELEASE,
+                                     mods);
+            }
+
+            return;
+        }
+
+        case EnterNotify:
+        {
+            // XEnterWindowEvent is XCrossingEvent
+            const int x = event->xcrossing.x;
+            const int y = event->xcrossing.y;
+
+            // HACK: This is a workaround for WMs (KWM, Fluxbox) that otherwise
+            //       ignore the defined cursor for hidden cursor mode
+            if (window->cursorMode == GLFW_CURSOR_HIDDEN)
+                updateCursorImage(window);
+
+            _glfwInputCursorEnter(window, GLFW_TRUE);
+            _glfwInputCursorPos(window, x, y);
+
+            window->x11.lastCursorPosX = x;
+            window->x11.lastCursorPosY = y;
+            return;
+        }
+
+        case LeaveNotify:
+        {
+            _glfwInputCursorEnter(window, GLFW_FALSE);
+            return;
+        }
+
+        case MotionNotify:
+        {
+            const int x = event->xmotion.x;
+            const int y = event->xmotion.y;
+
+            if (x != window->x11.warpCursorPosX ||
+                y != window->x11.warpCursorPosY)
+            {
+                // The cursor was moved by something other than GLFW
+
+                if (window->cursorMode == GLFW_CURSOR_DISABLED)
+                {
+                    if (_glfw.x11.disabledCursorWindow != window)
+                        return;
+                    if (window->rawMouseMotion)
+                        return;
+
+                    const int dx = x - window->x11.lastCursorPosX;
+                    const int dy = y - window->x11.lastCursorPosY;
+
+                    _glfwInputCursorPos(window,
+                                        window->virtualCursorPosX + dx,
+                                        window->virtualCursorPosY + dy);
+                }
+                else
+                    _glfwInputCursorPos(window, x, y);
+            }
+
+            window->x11.lastCursorPosX = x;
+            window->x11.lastCursorPosY = y;
+            return;
+        }
+
+        case ConfigureNotify:
+        {
+            if (event->xconfigure.width != window->x11.width ||
+                event->xconfigure.height != window->x11.height)
+            {
+                window->x11.width = event->xconfigure.width;
+                window->x11.height = event->xconfigure.height;
+
+                _glfwInputFramebufferSize(window,
+                                          event->xconfigure.width,
+                                          event->xconfigure.height);
+
+                _glfwInputWindowSize(window,
+                                     event->xconfigure.width,
+                                     event->xconfigure.height);
+            }
+
+            int xpos = event->xconfigure.x;
+            int ypos = event->xconfigure.y;
+
+            // NOTE: ConfigureNotify events from the server are in local
+            //       coordinates, so if we are reparented we need to translate
+            //       the position into root (screen) coordinates
+            if (!event->xany.send_event && window->x11.parent != _glfw.x11.root)
+            {
+                _glfwGrabErrorHandlerX11();
+
+                Window dummy;
+                XTranslateCoordinates(_glfw.x11.display,
+                                      window->x11.parent,
+                                      _glfw.x11.root,
+                                      xpos, ypos,
+                                      &xpos, &ypos,
+                                      &dummy);
+
+                _glfwReleaseErrorHandlerX11();
+                if (_glfw.x11.errorCode == BadWindow)
+                    return;
+            }
+
+            if (xpos != window->x11.xpos || ypos != window->x11.ypos)
+            {
+                window->x11.xpos = xpos;
+                window->x11.ypos = ypos;
+
+                _glfwInputWindowPos(window, xpos, ypos);
+            }
+
+            return;
+        }
+
+        case ClientMessage:
+        {
+            // Custom client message, probably from the window manager
+
+            if (filtered)
                 return;
 
             if (_glfw.x11.xdnd.format)
@@ -2778,7 +2959,7 @@ void _glfwPollEventsX11(void)
 {
     drainEmptyEvents();
 
-#if defined(_GLFW_LINUX_JOYSTICK)
+#if defined(GLFW_BUILD_LINUX_JOYSTICK)
     if (_glfw.joysticksInitialized)
         _glfwPollAllJoysticks();
     _glfwDetectJoystickConnectionLinux();
@@ -2899,14 +3080,16 @@ const char *_glfwGetScancodeNameX11(int scancode)
     if (!_glfw.x11.xkb.available)
         return NULL;
 
-    if (scancode < 0 || scancode > 0xff ||
-        _glfw.x11.keycodes[scancode] == GLFW_KEY_UNKNOWN)
+    if (scancode < 0 || scancode > 0xff)
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode %i", scancode);
         return NULL;
     }
 
     const int key = _glfw.x11.keycodes[scancode];
+    if (key == GLFW_KEY_UNKNOWN)
+        return NULL;
+
     const KeySym keysym = XkbKeycodeToKeysym(_glfw.x11.display,
                                              scancode, _glfw.x11.xkb.group, 0);
     if (keysym == NoSymbol)
@@ -3295,7 +3478,6 @@ GLFWAPI Display *glfwGetX11Display(void)
 
 GLFWAPI Window glfwGetX11Window(GLFWwindow *handle)
 {
-    _GLFWwindow *window = (_GLFWwindow *)handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(None);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_X11)
@@ -3304,11 +3486,16 @@ GLFWAPI Window glfwGetX11Window(GLFWwindow *handle)
         return None;
     }
 
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
     return window->x11.handle;
 }
 
 GLFWAPI void glfwSetX11SelectionString(const char *string)
 {
+    assert(string != NULL);
+
     _GLFW_REQUIRE_INIT();
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_X11)

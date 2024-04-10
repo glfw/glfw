@@ -62,6 +62,7 @@ int main(int argc, char** argv)
     char min_width_buffer[12] = "", min_height_buffer[12] = "";
     char max_width_buffer[12] = "", max_height_buffer[12] = "";
     int may_close = true;
+    char window_title[64] = "";
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
@@ -71,12 +72,13 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    GLFWwindow* window = glfwCreateWindow(600, 600, "Window Features", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(600, 660, "Window Features", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
+    glfwSetInputMode(window, GLFW_UNLIMITED_MOUSE_BUTTONS, GLFW_TRUE);
 
     glfwMakeContextCurrent(window);
     gladLoadGL(glfwGetProcAddress);
@@ -109,6 +111,8 @@ int main(int argc, char** argv)
     nk_glfw3_font_stash_begin(&atlas);
     nk_glfw3_font_stash_end();
 
+    strncpy(window_title, glfwGetWindowTitle(window), sizeof(window_title));
+
     while (!(may_close && glfwWindowShouldClose(window)))
     {
         int width, height;
@@ -121,17 +125,20 @@ int main(int argc, char** argv)
         nk_glfw3_new_frame();
         if (nk_begin(nk, "main", area, 0))
         {
-            nk_layout_row_dynamic(nk, 30, 5);
+            nk_layout_row_dynamic(nk, 30, 4);
 
-            if (nk_button_label(nk, "Toggle Fullscreen"))
+            if (glfwGetWindowMonitor(window))
             {
-                if (glfwGetWindowMonitor(window))
+                if (nk_button_label(nk, "Make Windowed"))
                 {
                     glfwSetWindowMonitor(window, NULL,
                                          windowed_x, windowed_y,
                                          windowed_width, windowed_height, 0);
                 }
-                else
+            }
+            else
+            {
+                if (nk_button_label(nk, "Make Fullscreen"))
                 {
                     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
                     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -149,7 +156,10 @@ int main(int argc, char** argv)
                 glfwIconifyWindow(window);
             if (nk_button_label(nk, "Restore"))
                 glfwRestoreWindow(window);
-            if (nk_button_label(nk, "Hide (briefly)"))
+
+            nk_layout_row_dynamic(nk, 30, 2);
+
+            if (nk_button_label(nk, "Hide (for 3s)"))
             {
                 glfwHideWindow(window);
 
@@ -158,6 +168,16 @@ int main(int argc, char** argv)
                     glfwWaitEventsTimeout(1.0);
 
                 glfwShowWindow(window);
+            }
+            if (nk_button_label(nk, "Request Attention (after 3s)"))
+            {
+                glfwIconifyWindow(window);
+
+                const double time = glfwGetTime() + 3.0;
+                while (glfwGetTime() < time)
+                    glfwWaitEventsTimeout(1.0);
+
+                glfwRequestWindowAttention(window);
             }
 
             nk_layout_row_dynamic(nk, 30, 1);
@@ -176,6 +196,16 @@ int main(int argc, char** argv)
             const nk_flags flags = NK_EDIT_FIELD |
                                    NK_EDIT_SIG_ENTER |
                                    NK_EDIT_GOTO_END_ON_ACTIVATE;
+
+            nk_layout_row_begin(nk, NK_DYNAMIC, 30, 2);
+            nk_layout_row_push(nk, 1.f / 3.f);
+            nk_label(nk, "Title", NK_TEXT_LEFT);
+            nk_layout_row_push(nk, 2.f / 3.f);
+            events = nk_edit_string_zero_terminated(nk, flags, window_title,
+                                                    sizeof(window_title), NULL);
+            if (events & NK_EDIT_COMMITED)
+                glfwSetWindowTitle(window, window_title);
+            nk_layout_row_end(nk);
 
             if (position_supported)
             {
@@ -211,7 +241,7 @@ int main(int argc, char** argv)
                 last_ypos = ypos;
             }
             else
-                nk_label(nk, "Position not supported", NK_TEXT_LEFT);
+                nk_label(nk, "Platform does not support window position", NK_TEXT_LEFT);
 
             nk_layout_row_dynamic(nk, 30, 3);
             nk_label(nk, "Size", NK_TEXT_LEFT);

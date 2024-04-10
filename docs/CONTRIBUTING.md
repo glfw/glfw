@@ -23,13 +23,12 @@ Questions about how to use GLFW should be asked either in the [support
 section](https://discourse.glfw.org/c/support) of the forum, under the [Stack
 Overflow tag](https://stackoverflow.com/questions/tagged/glfw) or [Game
 Development tag](https://gamedev.stackexchange.com/questions/tagged/glfw) on
-Stack Exchange or in the IRC channel `#glfw` on
-[Libera.Chat](https://libera.chat/).
+Stack Exchange.
 
 Questions about the design or implementation of GLFW or about future plans
 should be asked in the [dev section](https://discourse.glfw.org/c/dev) of the
-forum or in the IRC channel.  Please don't open a GitHub issue to discuss design
-questions without first checking with a maintainer.
+forum.  Please don't open a GitHub issue to discuss design questions without
+first checking with a maintainer.
 
 
 ## Reporting a bug
@@ -327,7 +326,7 @@ a thousand line one, if that is the appropriate size for the fix.
 In addition to the code, a complete bug fix includes:
 
 - Change log entry in `README.md`, describing the incorrect behavior
-- Credits entries for all authors of the bug fix
+- Credits entries in `CONTRIBUTORS.md` for all authors of the bug fix
 
 Bug fixes will not be rejected because they don't include all the above parts,
 but please keep in mind that maintainer time is finite and that there are many
@@ -358,11 +357,11 @@ feature.
 In addition to the code, a complete feature includes:
 
 - Change log entry in `README.md`, listing all new symbols
-- News page entry, briefly describing the feature
-- Guide documentation, with minimal examples, in the relevant guide
+- News page entry in `docs/news.md`, briefly describing the feature
+- Guide documentation, with minimal examples, in the relevant guide in the `docs` folder
 - Reference documentation, with all applicable tags
 - Cross-references and mentions in appropriate places
-- Credits entries for all authors of the feature
+- Credits entries in `CONTRIBUTORS.md` for all authors of the feature
 
 If the feature requires platform-specific code, at minimum stubs must be added
 for the new platform function to all supported and experimental platforms.
@@ -374,7 +373,7 @@ If it adds a new monitor property, support for it must be added to
 
 If it adds a new OpenGL, OpenGL ES or Vulkan option or extension, support
 for it must be added to `tests/glfwinfo.c` and the behavior of the library when
-the extension is missing documented in `docs/compat.dox`.
+the extension is missing documented in `docs/compat.md`.
 
 If you haven't already, read the excellent article [How to Write a Git Commit
 Message](https://chris.beams.io/posts/git-commit/).

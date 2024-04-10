@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 WGL - www.glfw.org
+// GLFW 3.5 WGL - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
@@ -23,8 +23,6 @@
 // 3. This notice may not be removed or altered from any source
 //    distribution.
 //
-//========================================================================
-// Please use C89 style variable declarations in this file because VS 2010
 //========================================================================
 
 #include "internal.h"
@@ -117,6 +115,23 @@ static int choosePixelFormatWGL(_GLFWwindow* window,
             if (_glfw.wgl.EXT_colorspace)
                 ADD_ATTRIB(WGL_COLORSPACE_EXT);
         }
+
+        // NOTE: In a Parallels VM WGL_ARB_pixel_format returns fewer pixel formats than
+        //       DescribePixelFormat, violating the guarantees of the extension spec
+        // HACK: Iterate through the minimum of both counts
+
+        const int attrib = WGL_NUMBER_PIXEL_FORMATS_ARB;
+        int extensionCount;
+
+        if (!wglGetPixelFormatAttribivARB(window->context.wgl.dc,
+                                          1, 0, 1, &attrib, &extensionCount))
+        {
+            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                 "WGL: Failed to retrieve pixel format attribute");
+            return 0;
+        }
+
+        nativeCount = _glfw_min(nativeCount, extensionCount);
     }
 
     usableConfigs = _glfw_calloc(nativeCount, sizeof(_GLFWfbconfig));
@@ -332,6 +347,7 @@ static void swapBuffersWGL(_GLFWwindow* window)
 static void swapIntervalWGL(int interval)
 {
     _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
+    assert(window != NULL);
 
     window->context.wgl.interval = interval;
 
@@ -759,7 +775,6 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
 
 GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* handle)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_WIN32)
@@ -768,6 +783,9 @@ GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* handle)
                         "WGL: Platform not initialized");
         return NULL;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
 
     if (window->context.source != GLFW_NATIVE_CONTEXT_API)
     {

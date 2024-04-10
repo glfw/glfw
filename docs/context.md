@@ -1,8 +1,6 @@
-/*!
+# Context guide {#context_guide}
 
-@page context_guide Context guide
-
-@tableofcontents
+[TOC]
 
 This guide introduces the OpenGL and OpenGL ES context related functions of
 GLFW.  For details on a specific function in this category, see the @ref
@@ -15,7 +13,7 @@ context.  There are also guides for the other areas of the GLFW API.
  - @ref input_guide
 
 
-@section context_object Context objects
+## Context objects {#context_object}
 
 A window object encapsulates both a top-level window and an OpenGL or OpenGL ES
 context.  It is created with @ref glfwCreateWindow and destroyed with @ref
@@ -34,22 +32,22 @@ context creation by setting the [GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint)
 hint to `GLFW_NO_API`.  For more information, see the @ref vulkan_guide.
 
 
-@subsection context_hints Context creation hints
+### Context creation hints {#context_hints}
 
 There are a number of hints, specified using @ref glfwWindowHint, related to
 what kind of context is created.  See
 [context related hints](@ref window_hints_ctx) in the window guide.
 
 
-@subsection context_sharing Context object sharing
+### Context object sharing {#context_sharing}
 
 When creating a window and its OpenGL or OpenGL ES context with @ref
 glfwCreateWindow, you can specify another window whose context the new one
 should share its objects (textures, vertex and element buffers, etc.) with.
 
-@code
+```c
 GLFWwindow* second_window = glfwCreateWindow(640, 480, "Second Window", NULL, first_window);
-@endcode
+```
 
 Object sharing is implemented by the operating system and graphics driver.  On
 platforms where it is possible to choose which types of objects are shared, GLFW
@@ -64,17 +62,17 @@ Contexts_.
 GLFW comes with a bare-bones object sharing example program called `sharing`.
 
 
-@subsection context_offscreen Offscreen contexts
+### Offscreen contexts {#context_offscreen}
 
 GLFW doesn't support creating contexts without an associated window.  However,
 contexts with hidden windows can be created with the
 [GLFW_VISIBLE](@ref GLFW_VISIBLE_hint) window hint.
 
-@code
+```c
 glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
 GLFWwindow* offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
-@endcode
+```
 
 The window never needs to be shown and its context can be used as a plain
 offscreen context.  Depending on the window manager, the size of a hidden
@@ -85,15 +83,16 @@ You should still [process events](@ref events) as long as you have at least one
 window, even if none of them are visible.
 
 
-@subsection context_less Windows without contexts
+### Windows without contexts {#context_less}
 
 You can disable context creation by setting the
-[GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint) hint to `GLFW_NO_API`.  Windows
-without contexts must not be passed to @ref glfwMakeContextCurrent or @ref
-glfwSwapBuffers.
+[GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint) hint to `GLFW_NO_API`.
+
+Windows without contexts should not be passed to @ref glfwMakeContextCurrent or
+@ref glfwSwapBuffers.  Doing this generates a @ref GLFW_NO_WINDOW_CONTEXT error.
 
 
-@section context_current Current context
+## Current context {#context_current}
 
 Before you can make OpenGL or OpenGL ES calls, you need to have a current
 context of the correct type.  A context can only be current for a single thread
@@ -104,15 +103,15 @@ thread before making it current on the new one.
 
 The context of a window is made current with @ref glfwMakeContextCurrent.
 
-@code
+```c
 glfwMakeContextCurrent(window);
-@endcode
+```
 
 The window of the current context is returned by @ref glfwGetCurrentContext.
 
-@code
+```c
 GLFWwindow* window = glfwGetCurrentContext();
-@endcode
+```
 
 The following GLFW functions require a context to be current.  Calling any these
 functions without a current context will generate a @ref GLFW_NO_CURRENT_CONTEXT
@@ -123,12 +122,12 @@ error.
  - @ref glfwGetProcAddress
 
 
-@section context_swap Buffer swapping
+## Buffer swapping {#context_swap}
 
 See @ref buffer_swap in the window guide.
 
 
-@section context_glext OpenGL and OpenGL ES extensions
+## OpenGL and OpenGL ES extensions {#context_glext}
 
 One of the benefits of OpenGL and OpenGL ES is their extensibility.
 Hardware vendors may include extensions in their implementations that extend the
@@ -151,7 +150,7 @@ their specifications, can be found at the
 [OpenGL ES Registry](https://www.khronos.org/registry/gles/).
 
 
-@subsection context_glext_auto Loading extension with a loader library
+### Loading extension with a loader library {#context_glext_auto}
 
 An extension loader library is the easiest and best way to access both OpenGL and
 OpenGL ES extensions and modern versions of the core OpenGL or OpenGL ES APIs.
@@ -168,9 +167,9 @@ both GLFW and glad, but loaders for OpenGL ES, as well as loaders for specific
 API versions and extension sets can be generated.  The generated files are
 written to the `output` directory.
 
-@code{.sh}
+```sh
 python main.py --generator c --no-loader --out-path output
-@endcode
+```
 
 The `--no-loader` option is added because GLFW already provides a function for
 loading OpenGL and OpenGL ES function pointers, one that automatically uses the
@@ -184,14 +183,14 @@ include the glad header file, which will replace the OpenGL header of your
 development environment.  By including the glad header before the GLFW header,
 it suppresses the development environment's OpenGL or OpenGL ES header.
 
-@code
+```c
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-@endcode
+```
 
 Finally, you need to initialize glad once you have a suitable current context.
 
-@code
+```c
 window = glfwCreateWindow(640, 480, "My Window", NULL, NULL);
 if (!window)
 {
@@ -201,7 +200,7 @@ if (!window)
 glfwMakeContextCurrent(window);
 
 gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
-@endcode
+```
 
 Once glad has been loaded, you have access to all OpenGL core and extension
 functions supported by both the context you created and the glad loader you
@@ -214,25 +213,25 @@ check the actual OpenGL or OpenGL ES version with
 a specific version is supported by the current context with the
 `GLAD_GL_VERSION_x_x` booleans.
 
-@code
+```c
 if (GLAD_GL_VERSION_3_2)
 {
     // Call OpenGL 3.2+ specific code
 }
-@endcode
+```
 
 To check whether a specific extension is supported, use the `GLAD_GL_xxx`
 booleans.
 
-@code
+```c
 if (GLAD_GL_ARB_gl_spirv)
 {
     // Use GL_ARB_gl_spirv
 }
-@endcode
+```
 
 
-@subsection context_glext_manual Loading extensions manually
+### Loading extensions manually {#context_glext_manual}
 
 __Do not use this technique__ unless it is absolutely necessary.  An
 [extension loader library](@ref context_glext_auto) will save you a ton of
@@ -247,7 +246,7 @@ This section will demonstrate manual loading of OpenGL extensions.  The loading
 of OpenGL ES extensions is identical except for the name of the extension header.
 
 
-@subsubsection context_glext_header The glext.h header
+#### The glext.h header {#context_glext_header}
 
 The `glext.h` extension header is a continually updated file that defines the
 interfaces for all OpenGL extensions.  The latest version of this can always be
@@ -266,41 +265,41 @@ to function) and `PROC` (procedure) are added to the ends.
 To include the extension header, define @ref GLFW_INCLUDE_GLEXT before including
 the GLFW header.
 
-@code
+```c
 #define GLFW_INCLUDE_GLEXT
 #include <GLFW/glfw3.h>
-@endcode
+```
 
 
-@subsubsection context_glext_string Checking for extensions
+#### Checking for extensions {#context_glext_string}
 
 A given machine may not actually support the extension (it may have older
 drivers or a graphics card that lacks the necessary hardware features), so it
 is necessary to check at run-time whether the context supports the extension.
 This is done with @ref glfwExtensionSupported.
 
-@code
+```c
 if (glfwExtensionSupported("GL_ARB_gl_spirv"))
 {
     // The extension is supported by the current context
 }
-@endcode
+```
 
 The argument is a null terminated ASCII string with the extension name.  If the
 extension is supported, @ref glfwExtensionSupported returns `GLFW_TRUE`,
 otherwise it returns `GLFW_FALSE`.
 
 
-@subsubsection context_glext_proc Fetching function pointers
+#### Fetching function pointers {#context_glext_proc}
 
 Many extensions, though not all, require the use of new OpenGL functions.
 These functions often do not have entry points in the client API libraries of
 your operating system, making it necessary to fetch them at run time.  You can
 retrieve pointers to these functions with @ref glfwGetProcAddress.
 
-@code
+```c
 PFNGLSPECIALIZESHADERARBPROC pfnSpecializeShaderARB = glfwGetProcAddress("glSpecializeShaderARB");
-@endcode
+```
 
 In general, you should avoid giving the function pointer variables the (exact)
 same name as the function, as this may confuse your linker.  Instead, you can
@@ -309,7 +308,7 @@ use a different prefix, like above, or some other naming scheme.
 Now that all the pieces have been introduced, here is what they might look like
 when used together.
 
-@code
+```c
 #define GLFW_INCLUDE_GLEXT
 #include <GLFW/glfw3.h>
 
@@ -337,6 +336,5 @@ void some_function(void)
         glSpecializeShaderARB(...);
     }
 }
-@endcode
+```
 
-*/

@@ -14,12 +14,11 @@ values over 8. For compatibility with older versions, the
 @ref GLFW_UNLIMITED_MOUSE_BUTTONS input mode needs to be set to make use of
 this.
 
-### Support for trackpad zoom and rotate on macOS
+### Support for trackpad zoom and rotate on macOS and Wayland
 
-Trackpad zoom and rotate events are now supported on macOS using
+Trackpad zoom and rotate events are now supported on macOS and Wayland using
 [glfwSetTrackpadZoomCallback](@ref glfwSetTrackpadZoomCallback) and [glfwSetTrackpadRotateCallback](@ref glfwSetTrackpadRotateCallback). These
-events have not yet been implemented and currently will not emit anything on
-Windows, X11, and Wayland.
+events will not yet emit anything on Windows or X11.
 
 ## Caveats {#caveats}
 

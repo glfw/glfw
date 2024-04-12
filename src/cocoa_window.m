@@ -618,8 +618,10 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 {
     double magnification = [event magnification];
 
+    // 1.0 is added to convert the magnification value to a scale factor,
+    // as suggested in apple documentation
     if (fabs(magnification) > 0.0)
-        _glfwInputTrackpadZoom(window, magnification);
+        _glfwInputTrackpadZoom(window, magnification + 1.0);
 }
 
 - (void)rotateWithEvent:(NSEvent *)event

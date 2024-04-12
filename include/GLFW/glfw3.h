@@ -1880,7 +1880,7 @@ typedef void (* GLFWscrollfun)(GLFWwindow* window, double xoffset, double yoffse
  *  @endcode
  *
  *  @param[in] window The window that received the event.
- *  @param[in] scale The manigification amount
+ *  @param[in] scale The manigification amount, as a scale factor
  *
  *  @sa @ref glfwSetTrackpadZoomCallback
  *
@@ -1897,7 +1897,7 @@ typedef void (* GLFWtrackpadzoomfun)(GLFWwindow* window, double scale);
  *  @endcode
  *
  *  @param[in] window The window that received the event.
- *  @param[in] angle The rotation amount
+ *  @param[in] angle The rotation amount, in degrees
  *
  *  @sa @ref glfwSetTrackpadRotateCallback
  *

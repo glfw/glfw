@@ -2042,15 +2042,17 @@ static void dataDeviceHandleDrop(void* userData,
         int count;
         char** paths = _glfwParseUriList(string, &count);
         if (paths)
+        {
             _glfwInputDrop(_glfw.wl.dragFocus, count, (const char**) paths);
 
-        for (int i = 0; i < count; i++)
-            _glfw_free(paths[i]);
+            for (int i = 0; i < count; i++)
+                _glfw_free(paths[i]);
 
-        _glfw_free(paths);
+            _glfw_free(paths);
+        }
+
+        _glfw_free(string);
     }
-
-    _glfw_free(string);
 }
 
 static void dataDeviceHandleSelection(void* userData,

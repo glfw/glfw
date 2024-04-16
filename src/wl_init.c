@@ -212,6 +212,7 @@ static void registryHandleGlobal(void* userData,
             wl_registry_bind(registry, name,
                              &wp_fractional_scale_manager_v1_interface,
                              1);
+    }
     else if (strcmp(interface, "zwp_pointer_gestures_v1") == 0)
     {
         _glfw.wl.pointerGestures =

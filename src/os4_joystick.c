@@ -28,6 +28,9 @@
 
 #include "internal.h"
 
+#ifdef NEWLIB
+#undef __STRICT_ANSI__
+#endif
 #include <string.h>
 #include <stdio.h>
 

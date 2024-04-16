@@ -201,9 +201,10 @@ GLFWvidmode* _glfwGetVideoModesOS4(_GLFWmonitor* monitor, int* found)
     return mode;
 }
 
-void _glfwGetVideoModeOS4(_GLFWmonitor* monitor, GLFWvidmode* mode)
+GLFWbool _glfwGetVideoModeOS4(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
     *mode = getVideoMode();
+    return GLFW_TRUE;
 }
 
 GLFWbool _glfwGetGammaRampOS4(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
@@ -220,7 +221,7 @@ GLFWbool _glfwGetGammaRampOS4(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
             float value;
             value = i / (float) (monitor->os4.ramp.size - 1);
             value = powf(value, 1.f / gamma) * 65535.f + 0.5f;
-            value = _glfw_fminf(value, 65535.f);
+            value = fminf(value, 65535.f);
 
             monitor->os4.ramp.red[i]   = (unsigned short) value;
             monitor->os4.ramp.green[i] = (unsigned short) value;

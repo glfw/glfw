@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 Win32 - www.glfw.org
+// GLFW 3.5 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
@@ -24,8 +24,6 @@
 //    distribution.
 //
 //========================================================================
-// Please use C89 style variable declarations in this file because VS 2010
-//========================================================================
 
 #include "internal.h"
 
@@ -34,6 +32,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include <windowsx.h>
 #include <shellapi.h>
 
@@ -234,7 +233,12 @@ static void updateCursorImage(_GLFWwindow* window)
             SetCursor(LoadCursorW(NULL, IDC_ARROW));
     }
     else
-        SetCursor(NULL);
+    {
+        // NOTE: Via Remote Desktop, setting the cursor to NULL does not hide it.
+        // HACK: When running locally, it is set to NULL, but when connected via Remote
+        //       Desktop, this is a transparent cursor.
+        SetCursor(_glfw.win32.blankCursor);
+    }
 }
 
 // Sets the cursor clip rect to the window content area
@@ -926,8 +930,28 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             data = _glfw.win32.rawInput;
             if (data->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
             {
-                dx = data->data.mouse.lLastX - window->win32.lastCursorPosX;
-                dy = data->data.mouse.lLastY - window->win32.lastCursorPosY;
+                POINT pos = {0};
+                int width, height;
+
+                if (data->data.mouse.usFlags & MOUSE_VIRTUAL_DESKTOP)
+                {
+                    pos.x += GetSystemMetrics(SM_XVIRTUALSCREEN);
+                    pos.y += GetSystemMetrics(SM_YVIRTUALSCREEN);
+                    width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+                    height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+                }
+                else
+                {
+                    width = GetSystemMetrics(SM_CXSCREEN);
+                    height = GetSystemMetrics(SM_CYSCREEN);
+                }
+
+                pos.x += (int) ((data->data.mouse.lLastX / 65535.f) * width);
+                pos.y += (int) ((data->data.mouse.lLastY / 65535.f) * height);
+                ScreenToClient(window->win32.handle, &pos);
+
+                dx = pos.x - window->win32.lastCursorPosX;
+                dy = pos.y - window->win32.lastCursorPosY;
             }
             else
             {
@@ -1291,6 +1315,34 @@ static int createNativeWindow(_GLFWwindow* window,
         }
     }
 
+    if (GetSystemMetrics(SM_REMOTESESSION))
+    {
+        // NOTE: On Remote Desktop, setting the cursor to NULL does not hide it
+        // HACK: Create a transparent cursor and always set that instead of NULL
+        //       When not on Remote Desktop, this handle is NULL and normal hiding is used
+        if (!_glfw.win32.blankCursor)
+        {
+            const int cursorWidth = GetSystemMetrics(SM_CXCURSOR);
+            const int cursorHeight = GetSystemMetrics(SM_CYCURSOR);
+
+            unsigned char* cursorPixels = _glfw_calloc(cursorWidth * cursorHeight, 4);
+            if (!cursorPixels)
+                return GLFW_FALSE;
+
+            // NOTE: Windows checks whether the image is fully transparent and if so
+            //       just ignores the alpha channel and makes the whole cursor opaque
+            // HACK: Make one pixel slightly less transparent
+            cursorPixels[3] = 1;
+
+            const GLFWimage cursorImage = { cursorWidth, cursorHeight, cursorPixels };
+            _glfw.win32.blankCursor = createIcon(&cursorImage, 0, 0, FALSE);
+            _glfw_free(cursorPixels);
+
+            if (!_glfw.win32.blankCursor)
+                return GLFW_FALSE;
+        }
+    }
+
     if (window->monitor)
     {
         MONITORINFO mi = { sizeof(mi) };
@@ -1367,6 +1419,7 @@ static int createNativeWindow(_GLFWwindow* window,
 
     window->win32.scaleToMonitor = wndconfig->scaleToMonitor;
     window->win32.keymenu = wndconfig->win32.keymenu;
+    window->win32.showDefault = wndconfig->win32.showDefault;
 
     if (!window->monitor)
     {
@@ -1749,7 +1802,23 @@ void _glfwMaximizeWindowWin32(_GLFWwindow* window)
 
 void _glfwShowWindowWin32(_GLFWwindow* window)
 {
-    ShowWindow(window->win32.handle, SW_SHOWNA);
+    int showCommand = SW_SHOWNA;
+
+    if (window->win32.showDefault)
+    {
+        // NOTE: GLFW windows currently do not seem to match the Windows 10 definition of
+        //       a main window, so even SW_SHOWDEFAULT does nothing
+        //       This definition is undocumented and can change (source: Raymond Chen)
+        // HACK: Apply the STARTUPINFO show command manually if available
+        STARTUPINFOW si = { sizeof(si) };
+        GetStartupInfoW(&si);
+        if (si.dwFlags & STARTF_USESHOWWINDOW)
+            showCommand = si.wShowWindow;
+
+        window->win32.showDefault = GLFW_FALSE;
+    }
+
+    ShowWindow(window->win32.handle, showCommand);
 }
 
 void _glfwHideWindowWin32(_GLFWwindow* window)
@@ -2104,6 +2173,7 @@ void _glfwPollEventsWin32(void)
 
         // NOTE: Re-center the cursor only if it has moved since the last call,
         //       to avoid breaking glfwWaitEvents with WM_MOUSEMOVE
+        // The re-center is required in order to prevent the mouse cursor stopping at the edges of the screen.
         if (window->win32.lastCursorPosX != width / 2 ||
             window->win32.lastCursorPosY != height / 2)
         {
@@ -2121,7 +2191,7 @@ void _glfwWaitEventsWin32(void)
 
 void _glfwWaitEventsTimeoutWin32(double timeout)
 {
-    MsgWaitForMultipleObjects(0, NULL, FALSE, (DWORD) (timeout * 1e3), QS_ALLEVENTS);
+    MsgWaitForMultipleObjects(0, NULL, FALSE, (DWORD) (timeout * 1e3), QS_ALLINPUT);
 
     _glfwPollEventsWin32();
 }
@@ -2199,14 +2269,17 @@ void _glfwSetCursorModeWin32(_GLFWwindow* window, int mode)
 
 const char* _glfwGetScancodeNameWin32(int scancode)
 {
-    if (scancode < 0 || scancode > (KF_EXTENDED | 0xff) ||
-        _glfw.win32.keycodes[scancode] == GLFW_KEY_UNKNOWN)
+    if (scancode < 0 || scancode > (KF_EXTENDED | 0xff))
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode %i", scancode);
         return NULL;
     }
 
-    return _glfw.win32.keynames[_glfw.win32.keycodes[scancode]];
+    const int key = _glfw.win32.keycodes[scancode];
+    if (key == GLFW_KEY_UNKNOWN)
+        return NULL;
+
+    return _glfw.win32.keynames[key];
 }
 
 int _glfwGetKeyScancodeWin32(int key)
@@ -2293,7 +2366,7 @@ void _glfwSetCursorWin32(_GLFWwindow* window, _GLFWcursor* cursor)
 
 void _glfwSetClipboardStringWin32(const char* string)
 {
-    int characterCount;
+    int characterCount, tries = 0;
     HANDLE object;
     WCHAR* buffer;
 
@@ -2321,12 +2394,20 @@ void _glfwSetClipboardStringWin32(const char* string)
     MultiByteToWideChar(CP_UTF8, 0, string, -1, buffer, characterCount);
     GlobalUnlock(object);
 
-    if (!OpenClipboard(_glfw.win32.helperWindowHandle))
+    // NOTE: Retry clipboard opening a few times as some other application may have it
+    //       open and also the Windows Clipboard History reads it after each update
+    while (!OpenClipboard(_glfw.win32.helperWindowHandle))
     {
-        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                             "Win32: Failed to open clipboard");
-        GlobalFree(object);
-        return;
+        Sleep(1);
+        tries++;
+
+        if (tries == 3)
+        {
+            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                 "Win32: Failed to open clipboard");
+            GlobalFree(object);
+            return;
+        }
     }
 
     EmptyClipboard();
@@ -2338,12 +2419,21 @@ const char* _glfwGetClipboardStringWin32(void)
 {
     HANDLE object;
     WCHAR* buffer;
+    int tries = 0;
 
-    if (!OpenClipboard(_glfw.win32.helperWindowHandle))
+    // NOTE: Retry clipboard opening a few times as some other application may have it
+    //       open and also the Windows Clipboard History reads it after each update
+    while (!OpenClipboard(_glfw.win32.helperWindowHandle))
     {
-        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                             "Win32: Failed to open clipboard");
-        return NULL;
+        Sleep(1);
+        tries++;
+
+        if (tries == 3)
+        {
+            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                 "Win32: Failed to open clipboard");
+            return NULL;
+        }
     }
 
     object = GetClipboardData(CF_UNICODETEXT);
@@ -2487,7 +2577,6 @@ VkResult _glfwCreateWindowSurfaceWin32(VkInstance instance,
 
 GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_WIN32)
@@ -2496,6 +2585,9 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
                         "Win32: Platform not initialized");
         return NULL;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
 
     return window->win32.handle;
 }

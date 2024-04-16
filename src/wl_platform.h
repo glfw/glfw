@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 Wayland - www.glfw.org
+// GLFW 3.5 Wayland - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -27,8 +27,6 @@
 #include <wayland-client-core.h>
 #include <xkbcommon/xkbcommon.h>
 #include <xkbcommon/xkbcommon-compose.h>
-
-#include <stdbool.h>
 
 typedef VkFlags VkWaylandSurfaceCreateFlagsKHR;
 
@@ -129,6 +127,10 @@ struct wl_output;
 #define xdg_surface_interface _glfw_xdg_surface_interface
 #define xdg_toplevel_interface _glfw_xdg_toplevel_interface
 #define xdg_wm_base_interface _glfw_xdg_wm_base_interface
+#define xdg_activation_v1_interface _glfw_xdg_activation_v1_interface
+#define xdg_activation_token_v1_interface _glfw_xdg_activation_token_v1_interface
+#define wl_surface_interface _glfw_wl_surface_interface
+#define wp_fractional_scale_v1_interface _glfw_wp_fractional_scale_v1_interface
 
 #define GLFW_WAYLAND_WINDOW_STATE         _GLFWwindowWayland  wl;
 #define GLFW_WAYLAND_LIBRARY_WINDOW_STATE _GLFWlibraryWayland wl;
@@ -321,21 +323,12 @@ typedef void (* PFN_libdecor_state_free)(struct libdecor_state*);
 #define libdecor_state_new _glfw.wl.libdecor.libdecor_state_new_
 #define libdecor_state_free _glfw.wl.libdecor.libdecor_state_free_
 
-typedef enum _GLFWdecorationSideWayland
-{
-    GLFW_MAIN_WINDOW,
-    GLFW_TOP_DECORATION,
-    GLFW_LEFT_DECORATION,
-    GLFW_RIGHT_DECORATION,
-    GLFW_BOTTOM_DECORATION
-} _GLFWdecorationSideWayland;
-
-typedef struct _GLFWdecorationWayland
+typedef struct _GLFWfallbackEdgeWayland
 {
     struct wl_surface*          surface;
     struct wl_subsurface*       subsurface;
     struct wp_viewport*         viewport;
-} _GLFWdecorationWayland;
+} _GLFWfallbackEdgeWayland;
 
 typedef struct _GLFWofferWayland
 {
@@ -347,7 +340,7 @@ typedef struct _GLFWofferWayland
 typedef struct _GLFWscaleWayland
 {
     struct wl_output*           output;
-    int                         factor;
+    int32_t                     factor;
 } _GLFWscaleWayland;
 
 // Wayland-specific per-window data
@@ -355,12 +348,14 @@ typedef struct _GLFWscaleWayland
 typedef struct _GLFWwindowWayland
 {
     int                         width, height;
+    int                         fbWidth, fbHeight;
     GLFWbool                    visible;
     GLFWbool                    maximized;
     GLFWbool                    activated;
     GLFWbool                    fullscreen;
     GLFWbool                    hovered;
     GLFWbool                    transparent;
+    GLFWbool                    scaleFramebuffer;
     struct wl_surface*          surface;
     struct wl_callback*         callback;
 
@@ -385,33 +380,37 @@ typedef struct _GLFWwindowWayland
 
     struct {
         struct libdecor_frame*  frame;
-        int                     mode;
     } libdecor;
 
     _GLFWcursor*                currentCursor;
     double                      cursorPosX, cursorPosY;
 
-    char*                       title;
     char*                       appId;
 
     // We need to track the monitors the window spans on to calculate the
     // optimal scaling factor.
-    int                         contentScale;
-    _GLFWscaleWayland*          scales;
-    int                         scaleCount;
-    int                         scaleSize;
+    int32_t                     bufferScale;
+    _GLFWscaleWayland*          outputScales;
+    size_t                      outputScaleCount;
+    size_t                      outputScaleSize;
+
+    struct wp_viewport*             scalingViewport;
+    uint32_t                        scalingNumerator;
+    struct wp_fractional_scale_v1*  fractionalScale;
 
     struct zwp_relative_pointer_v1* relativePointer;
     struct zwp_locked_pointer_v1*   lockedPointer;
     struct zwp_confined_pointer_v1* confinedPointer;
 
-    struct zwp_idle_inhibitor_v1*          idleInhibitor;
+    struct zwp_idle_inhibitor_v1*   idleInhibitor;
+    struct xdg_activation_token_v1* activationToken;
 
     struct {
-        struct wl_buffer*                  buffer;
-        _GLFWdecorationWayland             top, left, right, bottom;
-        _GLFWdecorationSideWayland         focus;
-    } decorations;
+        GLFWbool                    decorations;
+        struct wl_buffer*           buffer;
+        _GLFWfallbackEdgeWayland    top, left, right, bottom;
+        struct wl_surface*          focus;
+    } fallback;
 } _GLFWwindowWayland;
 
 // Wayland-specific global data
@@ -434,6 +433,8 @@ typedef struct _GLFWlibraryWayland
     struct zwp_relative_pointer_manager_v1* relativePointerManager;
     struct zwp_pointer_constraints_v1*      pointerConstraints;
     struct zwp_idle_inhibit_manager_v1*     idleInhibitManager;
+    struct xdg_activation_v1*               activationManager;
+    struct wp_fractional_scale_manager_v1*  fractionalScaleManager;
 
     _GLFWofferWayland*          offers;
     unsigned int                offerCount;
@@ -550,6 +551,8 @@ typedef struct _GLFWlibraryWayland
     struct {
         void*                   handle;
         struct libdecor*        context;
+        struct wl_callback*     callback;
+        GLFWbool                ready;
         PFN_libdecor_new        libdecor_new_;
         PFN_libdecor_unref      libdecor_unref_;
         PFN_libdecor_get_fd     libdecor_get_fd_;
@@ -588,7 +591,7 @@ typedef struct _GLFWmonitorWayland
 
     int                         x;
     int                         y;
-    int                         contentScale;
+    int32_t                     scale;
 } _GLFWmonitorWayland;
 
 // Wayland-specific per-cursor data
@@ -674,12 +677,12 @@ void _glfwGetMonitorPosWayland(_GLFWmonitor* monitor, int* xpos, int* ypos);
 void _glfwGetMonitorContentScaleWayland(_GLFWmonitor* monitor, float* xscale, float* yscale);
 void _glfwGetMonitorWorkareaWayland(_GLFWmonitor* monitor, int* xpos, int* ypos, int* width, int* height);
 GLFWvidmode* _glfwGetVideoModesWayland(_GLFWmonitor* monitor, int* count);
-void _glfwGetVideoModeWayland(_GLFWmonitor* monitor, GLFWvidmode* mode);
+GLFWbool _glfwGetVideoModeWayland(_GLFWmonitor* monitor, GLFWvidmode* mode);
 GLFWbool _glfwGetGammaRampWayland(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
 void _glfwSetGammaRampWayland(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 
 void _glfwAddOutputWayland(uint32_t name, uint32_t version);
-void _glfwUpdateContentScaleWayland(_GLFWwindow* window);
+void _glfwUpdateBufferScaleFromOutputsWayland(_GLFWwindow* window);
 
 void _glfwAddSeatListenerWayland(struct wl_seat* seat);
 void _glfwAddDataDeviceListenerWayland(struct wl_data_device* device);

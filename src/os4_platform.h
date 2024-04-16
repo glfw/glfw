@@ -208,7 +208,7 @@ void _glfwGetMonitorPosOS4(_GLFWmonitor* monitor, int* xpos, int* ypos);
 void _glfwGetMonitorContentScaleOS4(_GLFWmonitor* monitor, float* xscale, float* yscale);
 void _glfwGetMonitorWorkareaOS4(_GLFWmonitor* monitor, int* xpos, int* ypos, int* width, int* height);
 GLFWvidmode* _glfwGetVideoModesOS4(_GLFWmonitor* monitor, int* found);
-void _glfwGetVideoModeOS4(_GLFWmonitor* monitor, GLFWvidmode* mode);
+GLFWbool _glfwGetVideoModeOS4(_GLFWmonitor* monitor, GLFWvidmode* mode);
 GLFWbool _glfwGetGammaRampOS4(_GLFWmonitor* monitor, GLFWgammaramp* ramp);
 void _glfwSetGammaRampOS4(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 

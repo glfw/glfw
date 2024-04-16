@@ -29,9 +29,15 @@
 
 #include "internal.h"
 
+#ifndef CLIB4
+#undef __STRICT_ANSI__
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdarg.h>
+#include <unistd.h>
 
 extern struct Library *DOSBase;
 extern struct DOSIFace *IDOS;

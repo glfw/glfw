@@ -929,6 +929,18 @@ extern "C" {
  */
 #define GLFW_MOUSE_PASSTHROUGH      0x0002000D
 
+/*! @brief Window can become the main window
+ *
+ * Only honored with Cocoa backend
+ */
+#define GLFW_CAN_BECOME_MAIN        0x00020010
+
+/*! @brief Window can receive key inputs
+ *
+ * Only honored with Cocoa backend
+ */
+#define GLFW_CAN_BECOME_KEY         0x00020011
+
 /*! @brief Initial position x-coordinate window hint.
  *
  *  Initial position x-coordinate [window hint](@ref GLFW_POSITION_X).

@@ -28,6 +28,8 @@
 
 #if defined(_GLFW_COCOA)
 
+#import <QuartzCore/CAMetalLayer.h>
+
 #include <float.h>
 #include <string.h>
 #include <assert.h>
@@ -310,7 +312,6 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)windowDidChangeOcclusionState:(NSNotification* )notification
 {
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1090
     if ([window->ns.object respondsToSelector:@selector(occlusionState)])
     {
         if ([window->ns.object occlusionState] & NSWindowOcclusionStateVisible)
@@ -318,7 +319,6 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         else
             window->ns.occluded = GLFW_TRUE;
     }
-#endif
 }
 
 @end
@@ -1950,19 +1950,8 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
 {
     @autoreleasepool {
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101100
-    // HACK: Dynamically load Core Animation to avoid adding an extra
-    //       dependency for the majority who don't use MoltenVK
-    NSBundle* bundle = [NSBundle bundleWithPath:@"/System/Library/Frameworks/QuartzCore.framework"];
-    if (!bundle)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Failed to find QuartzCore.framework");
-        return VK_ERROR_EXTENSION_NOT_PRESENT;
-    }
-
     // NOTE: Create the layer here as makeBackingLayer should not return nil
-    window->ns.layer = [[bundle classNamed:@"CAMetalLayer"] layer];
+    window->ns.layer = [CAMetalLayer layer];
     if (!window->ns.layer)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -2027,9 +2016,6 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
     }
 
     return err;
-#else
-    return VK_ERROR_EXTENSION_NOT_PRESENT;
-#endif
 
     } // autoreleasepool
 }

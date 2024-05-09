@@ -4044,7 +4044,7 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  content area.
  *  @param[in] ypos The desired y-coordinate of the upper-left corner of the
  *  content area.
- *  @param[in] width The desired with, in screen coordinates, of the content
+ *  @param[in] width The desired width, in screen coordinates, of the content
  *  area or video mode.
  *  @param[in] height The desired height, in screen coordinates, of the content
  *  area or video mode.

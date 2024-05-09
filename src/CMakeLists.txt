@@ -313,30 +313,34 @@ if (GLFW_BUILD_SHARED_LIBRARY)
     if (MINGW)
         # Enable link-time exploit mitigation features enabled by default on MSVC
         include(CheckCCompilerFlag)
+        include(CMakePushCheckState)
 
         # Compatibility with data execution prevention (DEP)
+        cmake_push_check_state()
         set(CMAKE_REQUIRED_FLAGS "-Wl,--nxcompat")
         check_c_compiler_flag("" _GLFW_HAS_DEP)
         if (_GLFW_HAS_DEP)
             target_link_libraries(glfw PRIVATE "-Wl,--nxcompat")
         endif()
+        cmake_pop_check_state()
 
         # Compatibility with address space layout randomization (ASLR)
+        cmake_push_check_state()
         set(CMAKE_REQUIRED_FLAGS "-Wl,--dynamicbase")
         check_c_compiler_flag("" _GLFW_HAS_ASLR)
         if (_GLFW_HAS_ASLR)
             target_link_libraries(glfw PRIVATE "-Wl,--dynamicbase")
         endif()
+        cmake_pop_check_state()
 
         # Compatibility with 64-bit address space layout randomization (ASLR)
+        cmake_push_check_state()
         set(CMAKE_REQUIRED_FLAGS "-Wl,--high-entropy-va")
         check_c_compiler_flag("" _GLFW_HAS_64ASLR)
         if (_GLFW_HAS_64ASLR)
             target_link_libraries(glfw PRIVATE "-Wl,--high-entropy-va")
         endif()
-
-        # Clear flags again to avoid breaking later tests
-        set(CMAKE_REQUIRED_FLAGS)
+        cmake_pop_check_state()
     endif()
 
     if (UNIX)

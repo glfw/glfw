@@ -372,7 +372,7 @@ GLFWbool _glfwInitEGL(void)
 #elif defined(_GLFW_WIN32)
         "libEGL.dll",
         "EGL.dll",
-#elif defined(_GLFW_COCOA)
+#elif defined(__APPLE__)
         "libEGL.dylib",
 #elif defined(__CYGWIN__)
         "libEGL-1.so",
@@ -771,7 +771,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 #elif defined(_GLFW_WIN32)
             "GLESv1_CM.dll",
             "libGLES_CM.dll",
-#elif defined(_GLFW_COCOA)
+#elif defined(__APPLE__)
             "libGLESv1_CM.dylib",
 #elif defined(__OpenBSD__) || defined(__NetBSD__)
             "libGLESv1_CM.so",
@@ -788,7 +788,7 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 #elif defined(_GLFW_WIN32)
             "GLESv2.dll",
             "libGLESv2.dll",
-#elif defined(_GLFW_COCOA)
+#elif defined(__APPLE__)
             "libGLESv2.dylib",
 #elif defined(__CYGWIN__)
             "libGLESv2-2.so",
@@ -804,7 +804,8 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 #if defined(_GLFW_OPENGL_LIBRARY)
             _GLFW_OPENGL_LIBRARY,
 #elif defined(_GLFW_WIN32)
-#elif defined(_GLFW_COCOA)
+#elif defined(__APPLE__)
+            "libGL.1.dylib",
 #elif defined(__OpenBSD__) || defined(__NetBSD__)
             "libGL.so",
 #else

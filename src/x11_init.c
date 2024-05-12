@@ -606,6 +606,8 @@ static GLFWbool initExtensions(void)
 {
 #if defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.vidmode.handle = _glfwPlatformLoadModule("libXxf86vm.so");
+#elif defined(__APPLE__)
+    _glfw.x11.vidmode.handle = _glfwPlatformLoadModule("libXxf86vm.1.dylib");
 #else
     _glfw.x11.vidmode.handle = _glfwPlatformLoadModule("libXxf86vm.so.1");
 #endif
@@ -630,6 +632,8 @@ static GLFWbool initExtensions(void)
     _glfw.x11.xi.handle = _glfwPlatformLoadModule("libXi-6.so");
 #elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.xi.handle = _glfwPlatformLoadModule("libXi.so");
+#elif defined(__APPLE__)
+    _glfw.x11.xi.handle = _glfwPlatformLoadModule("libXi.6.dylib");
 #else
     _glfw.x11.xi.handle = _glfwPlatformLoadModule("libXi.so.6");
 #endif
@@ -662,6 +666,8 @@ static GLFWbool initExtensions(void)
     _glfw.x11.randr.handle = _glfwPlatformLoadModule("libXrandr-2.so");
 #elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.randr.handle = _glfwPlatformLoadModule("libXrandr.so");
+#elif defined(__APPLE__)
+    _glfw.x11.randr.handle = _glfwPlatformLoadModule("libXrandr.2.dylib");
 #else
     _glfw.x11.randr.handle = _glfwPlatformLoadModule("libXrandr.so.2");
 #endif
@@ -756,6 +762,8 @@ static GLFWbool initExtensions(void)
     _glfw.x11.xcursor.handle = _glfwPlatformLoadModule("libXcursor-1.so");
 #elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.xcursor.handle = _glfwPlatformLoadModule("libXcursor.so");
+#elif defined(__APPLE__)
+    _glfw.x11.xcursor.handle = _glfwPlatformLoadModule("libXcursor.1.dylib");
 #else
     _glfw.x11.xcursor.handle = _glfwPlatformLoadModule("libXcursor.so.1");
 #endif
@@ -779,6 +787,8 @@ static GLFWbool initExtensions(void)
     _glfw.x11.xinerama.handle = _glfwPlatformLoadModule("libXinerama-1.so");
 #elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.xinerama.handle = _glfwPlatformLoadModule("libXinerama.so");
+#elif defined(__APPLE__)
+    _glfw.x11.xinerama.handle = _glfwPlatformLoadModule("libXinerama.1.dylib");
 #else
     _glfw.x11.xinerama.handle = _glfwPlatformLoadModule("libXinerama.so.1");
 #endif
@@ -834,6 +844,8 @@ static GLFWbool initExtensions(void)
         _glfw.x11.x11xcb.handle = _glfwPlatformLoadModule("libX11-xcb-1.so");
 #elif defined(__OpenBSD__) || defined(__NetBSD__)
         _glfw.x11.x11xcb.handle = _glfwPlatformLoadModule("libX11-xcb.so");
+#elif defined(__APPLE__)
+        _glfw.x11.x11xcb.handle = _glfwPlatformLoadModule("libX11-xcb.1.dylib");
 #else
         _glfw.x11.x11xcb.handle = _glfwPlatformLoadModule("libX11-xcb.so.1");
 #endif
@@ -849,6 +861,8 @@ static GLFWbool initExtensions(void)
     _glfw.x11.xrender.handle = _glfwPlatformLoadModule("libXrender-1.so");
 #elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.xrender.handle = _glfwPlatformLoadModule("libXrender.so");
+#elif defined(__APPLE__)
+    _glfw.x11.xrender.handle = _glfwPlatformLoadModule("libXrender.1.dylib");
 #else
     _glfw.x11.xrender.handle = _glfwPlatformLoadModule("libXrender.so.1");
 #endif
@@ -878,6 +892,8 @@ static GLFWbool initExtensions(void)
     _glfw.x11.xshape.handle = _glfwPlatformLoadModule("libXext-6.so");
 #elif defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.xshape.handle = _glfwPlatformLoadModule("libXext.so");
+#elif defined(__APPLE__)
+    _glfw.x11.xshape.handle = _glfwPlatformLoadModule("libXext.6.dylib");
 #else
     _glfw.x11.xshape.handle = _glfwPlatformLoadModule("libXext.so.6");
 #endif
@@ -1259,6 +1275,8 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
     void* module = _glfwPlatformLoadModule("libX11-6.so");
 #elif defined(__OpenBSD__) || defined(__NetBSD__)
     void* module = _glfwPlatformLoadModule("libX11.so");
+#elif defined(__APPLE__)
+    void* module = _glfwPlatformLoadModule("libX11.6.dylib");
 #else
     void* module = _glfwPlatformLoadModule("libX11.so.6");
 #endif

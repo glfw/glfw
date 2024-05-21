@@ -50,11 +50,7 @@ if (RT_LIBRARY)
 endif()
 
 if (GLFW_BUILD_X11 OR GLFW_BUILD_WAYLAND)
-    find_package(Fontconfig)
-    if (FONTCONFIG_FOUND)
-        target_compile_definitions(input_text PRIVATE FONTCONFIG_ENABLED)
-        target_link_libraries(input_text fontconfig)
-    endif()
+    target_compile_definitions(input_text PRIVATE FONTCONFIG_ENABLED)
 endif()
 
 set(GUI_ONLY_BINARIES empty gamma icon input_text inputlag joysticks tearing

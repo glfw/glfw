@@ -85,10 +85,6 @@
 
 #include "getopt.h"
 
-#if defined(FONTCONFIG_ENABLED)
-    #include <fontconfig/fontconfig.h>
-#endif
-
 #define MAX_BUFFER_LEN 1024
 
 // https://github.com/Immediate-Mode-UI/Nuklear/wiki/Complete-font-guide
@@ -231,24 +227,89 @@ static int load_custom_font()
 #endif
 
 #if defined(FONTCONFIG_ENABLED)
+
+#include <dlfcn.h>
+
+typedef struct _FcConfig FcConfig;
+
+typedef struct _FcFontSet
+{
+    int nfont;
+    int sfont;
+    void **fonts;
+} FcFontSet;
+
+typedef struct _FcValue
+{
+    int type;
+    union
+    {
+	const unsigned char* s;
+	double d;
+    } u;
+} FcValue;
+
+struct FcLib
+{
+    void* handle;
+    void* (*InitLoadConfigAndFonts)(void);
+    void* (*ConfigGetFonts)(void*, int);
+    void  (*ConfigDestroy)(void*);
+    int   (*PatternGet)(const void*, const char*, int, void*);
+} fcLib;
+
+static int init_fontconfig(void)
+{
+    if (fcLib.handle)
+        return GLFW_TRUE;
+
+    fcLib.handle = dlopen("libfontconfig.so.1", RTLD_LAZY | RTLD_LOCAL);
+    if (!fcLib.handle)
+        return GLFW_FALSE;
+
+#define GET_FC_SYMBOL(name)                             \
+    fcLib.name = dlsym(fcLib.handle, "Fc"#name);        \
+    if (!fcLib.name)                                    \
+    {                                                   \
+        dlclose(fcLib.handle);                          \
+        fcLib.handle = NULL;                            \
+        return GLFW_FALSE;                              \
+    }
+
+    GET_FC_SYMBOL(InitLoadConfigAndFonts);
+    GET_FC_SYMBOL(ConfigGetFonts);
+    GET_FC_SYMBOL(ConfigDestroy);
+    GET_FC_SYMBOL(PatternGet);
+
+#undef GET_FC_SYMBOL
+
+    return GLFW_TRUE;
+}
+
 static void load_font_list_by_fontconfig()
 {
-    FcConfig* config = FcInitLoadConfigAndFonts();
-    FcFontSet* fontset = FcConfigGetFonts(config, FcSetSystem);
+    FcConfig* config;
+    FcFontSet* fontset;
+
+    if (!init_fontconfig())
+        return;
+
+    config = fcLib.InitLoadConfigAndFonts();
+    fontset = fcLib.ConfigGetFonts(config, 0 /* FcSetSystem */);
 
     if (!fontset)
     {
         printf("load_font_list_by_fontconfig failed.\n");
-        FcConfigDestroy(config);
+        fcLib.ConfigDestroy(config);
         return;
     }
 
     for (int i = 0; i < fontset->nfont; i++)
     {
         FcValue fvalue, dvalue;
-        if (FcResultMatch == FcPatternGet(fontset->fonts[i], FC_FAMILY, 0, &fvalue))
+        if (fcLib.PatternGet(fontset->fonts[i], "family", 0, &fvalue) == 0)
         {
-            if (FcResultMatch == FcPatternGet(fontset->fonts[i], FC_FILE, 0, &dvalue))
+            if (fcLib.PatternGet(fontset->fonts[i], "file", 0, &dvalue) == 0)
             {
                 const char* familyName = (const char*) fvalue.u.s;
                 const char* filePath = (const char*) dvalue.u.s;
@@ -288,7 +349,7 @@ static void load_font_list_by_fontconfig()
         }
     }
 
-    FcConfigDestroy(config);
+    fcLib.ConfigDestroy(config);
 }
 #endif
 

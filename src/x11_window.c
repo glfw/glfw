@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 X11 - www.glfw.org
+// GLFW 3.5 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
@@ -3302,7 +3302,6 @@ GLFWAPI Display* glfwGetX11Display(void)
 
 GLFWAPI Window glfwGetX11Window(GLFWwindow* handle)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(None);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_X11)
@@ -3311,11 +3310,16 @@ GLFWAPI Window glfwGetX11Window(GLFWwindow* handle)
         return None;
     }
 
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
     return window->x11.handle;
 }
 
 GLFWAPI void glfwSetX11SelectionString(const char* string)
 {
+    assert(string != NULL);
+
     _GLFW_REQUIRE_INIT();
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_X11)

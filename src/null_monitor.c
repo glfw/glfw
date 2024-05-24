@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 - www.glfw.org
+// GLFW 3.5 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2016 Google Inc.
 // Copyright (c) 2016-2019 Camilla Löwy <elmindreda@glfw.org>
@@ -109,9 +109,10 @@ GLFWvidmode* _glfwGetVideoModesNull(_GLFWmonitor* monitor, int* found)
     return mode;
 }
 
-void _glfwGetVideoModeNull(_GLFWmonitor* monitor, GLFWvidmode* mode)
+GLFWbool _glfwGetVideoModeNull(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
     *mode = getVideoMode();
+    return GLFW_TRUE;
 }
 
 GLFWbool _glfwGetGammaRampNull(_GLFWmonitor* monitor, GLFWgammaramp* ramp)

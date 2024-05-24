@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 Wayland - www.glfw.org
+// GLFW 3.5 Wayland - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -33,6 +33,7 @@
 #include <string.h>
 #include <errno.h>
 #include <math.h>
+#include <assert.h>
 
 #include "wayland-client-protocol.h"
 
@@ -232,9 +233,10 @@ GLFWvidmode* _glfwGetVideoModesWayland(_GLFWmonitor* monitor, int* found)
     return monitor->modes;
 }
 
-void _glfwGetVideoModeWayland(_GLFWmonitor* monitor, GLFWvidmode* mode)
+GLFWbool _glfwGetVideoModeWayland(_GLFWmonitor* monitor, GLFWvidmode* mode)
 {
     *mode = monitor->modes[monitor->wl.currentMode];
+    return GLFW_TRUE;
 }
 
 GLFWbool _glfwGetGammaRampWayland(_GLFWmonitor* monitor, GLFWgammaramp* ramp)
@@ -257,7 +259,6 @@ void _glfwSetGammaRampWayland(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 
 GLFWAPI struct wl_output* glfwGetWaylandMonitor(GLFWmonitor* handle)
 {
-    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
@@ -265,6 +266,9 @@ GLFWAPI struct wl_output* glfwGetWaylandMonitor(GLFWmonitor* handle)
         _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "Wayland: Platform not initialized");
         return NULL;
     }
+
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    assert(monitor != NULL);
 
     return monitor->wl.output;
 }

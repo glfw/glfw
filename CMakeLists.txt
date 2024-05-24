@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.4...3.20 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.4...3.28 FATAL_ERROR)
 
-project(GLFW VERSION 3.4.0 LANGUAGES C)
+project(GLFW VERSION 3.5.0 LANGUAGES C)
 
 if (POLICY CMP0069)
     cmake_policy(SET CMP0069 NEW)
@@ -29,7 +29,7 @@ endif()
 
 if (DEFINED GLFW_USE_WAYLAND AND UNIX AND NOT APPLE)
     message(FATAL_ERROR
-        "GLFW_USE_WAYLAND has been removed; set the GLFW_BUILD_WAYLAND and GLFW_BUILD_X11 options")
+        "GLFW_USE_WAYLAND has been removed; delete the CMake cache and set GLFW_BUILD_WAYLAND and GLFW_BUILD_X11 instead")
 endif()
 
 cmake_dependent_option(GLFW_BUILD_WIN32 "Build support for Win32" ON "WIN32" OFF)

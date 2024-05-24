@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 - www.glfw.org
+// GLFW 3.5 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2018 Camilla Löwy <elmindreda@glfw.org>
@@ -142,6 +142,8 @@ GLFWbool _glfwInitVulkan(int mode)
             _glfw.vk.KHR_xcb_surface = GLFW_TRUE;
         else if (strcmp(ep[i].extensionName, "VK_KHR_wayland_surface") == 0)
             _glfw.vk.KHR_wayland_surface = GLFW_TRUE;
+        else if (strcmp(ep[i].extensionName, "VK_EXT_headless_surface") == 0)
+            _glfw.vk.EXT_headless_surface = GLFW_TRUE;
     }
 
     _glfw_free(ep);
@@ -272,10 +274,10 @@ GLFWAPI int glfwGetPhysicalDevicePresentationSupport(VkInstance instance,
                                                      VkPhysicalDevice device,
                                                      uint32_t queuefamily)
 {
+    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
+
     assert(instance != VK_NULL_HANDLE);
     assert(device != VK_NULL_HANDLE);
-
-    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
 
     if (!_glfwInitVulkan(_GLFW_REQUIRE_LOADER))
         return GLFW_FALSE;
@@ -297,14 +299,15 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance,
                                          const VkAllocationCallbacks* allocator,
                                          VkSurfaceKHR* surface)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
-    assert(instance != VK_NULL_HANDLE);
-    assert(window != NULL);
     assert(surface != NULL);
 
     *surface = VK_NULL_HANDLE;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(VK_ERROR_INITIALIZATION_FAILED);
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+    assert(instance != VK_NULL_HANDLE);
 
     if (!_glfwInitVulkan(_GLFW_REQUIRE_LOADER))
         return VK_ERROR_INITIALIZATION_FAILED;

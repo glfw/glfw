@@ -4,7 +4,7 @@ GLFW is a free, Open Source, multi-platform library for OpenGL, OpenGL ES and
 Vulkan application development.  It provides a simple, platform-independent API
 for creating windows, contexts and surfaces, reading input, handling events, etc.
 
-@ref news_34 list new features, caveats and deprecations.
+@ref news list new features, caveats and deprecations.
 
 @ref quick_guide is a guide for users new to GLFW.  It takes you through how to
 write a small but complete program.
@@ -28,9 +28,6 @@ use the new API.
 
 There is a section on @ref guarantees_limitations for pointer lifetimes,
 reentrancy, thread safety, event order and backward and forward compatibility.
-
-The [FAQ](https://www.glfw.org/faq.html) answers many common questions about the
-design, implementation and use of GLFW.
 
 Finally, @ref compat_guide explains what APIs, standards and protocols GLFW uses
 and what happens when they are not present on a given machine.

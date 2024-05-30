@@ -222,6 +222,11 @@ static int extensionSupportedGLX(const char* extension)
 
 static GLFWglproc getProcAddressGLX(const char* procname)
 {
+    // Avoid calling glXGetProcAddress() for EGL procs.
+    // We don't expect it to ever succeed, but somtimes it returns non-null anyway.
+    if (0 == strncmp(name, "egl", 3)) {
+        return NULL;
+    }
     if (_glfw.glx.GetProcAddress)
         return _glfw.glx.GetProcAddress((const GLubyte*) procname);
     else if (_glfw.glx.GetProcAddressARB)

@@ -42,6 +42,7 @@ jobs:
               run: cmake -B build-full-static -D GLFW_BUILD_WAYLAND=ON -D GLFW_BUILD_X11=ON
             - name: Build Wayland+X11 static library
               run: cmake --build build-full-static --parallel
+            - run: ./build-full-static/tests/glfwinfo
 
             - name: Configure Wayland+X11 shared library
               run: cmake -B build-full-shared -D GLFW_BUILD_WAYLAND=ON -D BUILD_SHARED_LIBS=ON -D GLFW_BUILD_X11=ON

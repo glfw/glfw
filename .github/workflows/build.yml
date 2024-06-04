@@ -68,6 +68,8 @@ jobs:
               run: cmake -B build-cocoa-static
             - name: Build Cocoa static library
               run: cmake --build build-cocoa-static --parallel
+            - run: ./build-cocoa-static/tests/glfwinfo
+            - run: ./build-cocoa-static/examples/offscreen
 
             - name: Configure Cocoa shared library
               run: cmake -B build-cocoa-shared -D BUILD_SHARED_LIBS=ON

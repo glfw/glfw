@@ -200,6 +200,29 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     assert((size_t) index < sizeof(attribs) / sizeof(attribs[0])); \
     attribs[index++] = a; \
 }
+// DELETE_ATTRIB checks a !=0, as SET_ATTRIB(x,0) are used, and needs
+// a special UNSET_ATTRIB(x,0), instead of "DELETE_ATTRIB(x); DELETE_ATTRIB(0)"
+#define DELETE_ATTRIB(a) \
+{ \
+    assert(a != 0); \
+    assert(index > 0); \
+    int i = 0; \
+    while (attribs[i] != a && i < index) i++; \
+    if (i < index) { \
+        index--; \
+        while(i < index) { \
+            attribs[i] = attribs[i+1]; \
+            i++; \
+        } \
+    } \
+}
+#define DELETE_TERMINATING_NULL \
+{ \
+    assert(index > 0); \
+    if (attribs[index-1] == 0) { \
+        index--; \
+    } \
+}
 #define SET_ATTRIB(a, v) { ADD_ATTRIB(a); ADD_ATTRIB(v); }
 
     NSOpenGLPixelFormatAttribute attribs[40];
@@ -302,19 +325,32 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     // NOTE: All NSOpenGLPixelFormats on the relevant cards support sRGB
     //       framebuffer, so there's no need (and no way) to request it
 
-    ADD_ATTRIB(0);
-
-#undef ADD_ATTRIB
-#undef SET_ATTRIB
+    ADD_ATTRIB(0); // See also DELETE_TERMINATING_NULL!
 
     window->context.nsgl.pixelFormat =
         [[NSOpenGLPixelFormat alloc] initWithAttributes:attribs];
     if (window->context.nsgl.pixelFormat == nil)
     {
-        _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
-                        "NSGL: Failed to find a suitable pixel format");
-        return GLFW_FALSE;
+        // Re-try with Software Renderer
+        DELETE_ATTRIB(NSOpenGLPFAAccelerated);
+        DELETE_TERMINATING_NULL; // Unterminate.
+        ADD_ATTRIB(NSOpenGLPFARendererID);
+        ADD_ATTRIB(kCGLRendererGenericFloatID);
+        ADD_ATTRIB(0); // Re-terminate.
+        window->context.nsgl.pixelFormat =
+            [[NSOpenGLPixelFormat alloc] initWithAttributes:attribs];
+        if (window->context.nsgl.pixelFormat == nil)
+        {
+            _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
+                            "NSGL: Failed to find a suitable pixel format");
+            return GLFW_FALSE;
+        }
     }
+
+#undef ADD_ATTRIB
+#undef DELETE_ATTRIB
+#undef DELETE_TERMINATING_NULL
+#undef SET_ATTRIB
 
     NSOpenGLContext* share = nil;
 

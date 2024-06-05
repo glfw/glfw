@@ -344,8 +344,7 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         // Re-try with Software Renderer
         DELETE_ATTRIB(NSOpenGLPFAAccelerated);
         DELETE_TERMINATING_NULL; // Unterminate.
-        ADD_ATTRIB(NSOpenGLPFARendererID);
-        ADD_ATTRIB(kCGLRendererGenericFloatID);
+        SET_ATTRIB(NSOpenGLPFARendererID, kCGLRendererGenericFloatID);
         ADD_ATTRIB(0); // Re-terminate.
         window->context.nsgl.pixelFormat =
             [[NSOpenGLPixelFormat alloc] initWithAttributes:attribs];

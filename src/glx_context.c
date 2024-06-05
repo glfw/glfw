@@ -467,6 +467,9 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
+    if (ctxconfig->renderer == GLFW_SOFTWARE_RENDERER)
+        setenv("LIBGL_ALWAYS_SOFTWARE", "1", 1);
+
     if (ctxconfig->client == GLFW_OPENGL_ES_API)
     {
         if (!_glfw.glx.ARB_create_context ||

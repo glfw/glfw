@@ -449,6 +449,7 @@ struct _GLFWctxconfig
     int           profile;
     int           robustness;
     int           release;
+    int           renderer;
     _GLFWwindow*  share;
     struct {
         GLFWbool  offline;

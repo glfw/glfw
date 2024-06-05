@@ -375,6 +375,11 @@ does not update the window contents when its buffers are swapped.  Use OpenGL
 functions or the OSMesa native access functions @ref glfwGetOSMesaColorBuffer
 and @ref glfwGetOSMesaDepthBuffer to retrieve the framebuffer contents.
 
+@anchor GLFW_CONTEXT_RENDERER_hint
+__GLFW_CONTEXT_RENDERER__ specifies whether to create the context using
+a hardware or software renderer, if that is possible to control on the current
+platform.
+
 @anchor GLFW_CONTEXT_VERSION_MAJOR_hint
 @anchor GLFW_CONTEXT_VERSION_MINOR_hint
 __GLFW_CONTEXT_VERSION_MAJOR__ and __GLFW_CONTEXT_VERSION_MINOR__ specify the
@@ -566,6 +571,7 @@ GLFW_SRGB_CAPABLE             | `GLFW_FALSE`                | `GLFW_TRUE` or `GL
 GLFW_DOUBLEBUFFER             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_CLIENT_API               | `GLFW_OPENGL_API`           | `GLFW_OPENGL_API`, `GLFW_OPENGL_ES_API` or `GLFW_NO_API`
 GLFW_CONTEXT_CREATION_API     | `GLFW_NATIVE_CONTEXT_API`   | `GLFW_NATIVE_CONTEXT_API`, `GLFW_EGL_CONTEXT_API` or `GLFW_OSMESA_CONTEXT_API`
+GLFW_CONTEXT_RENDERER         | `GLFW_HARDWARE_RENDERER`    | `GLFW_HARDWARE_RENDERER` or `GLFW_SOFTWARE_RENDERER`
 GLFW_CONTEXT_VERSION_MAJOR    | 1                           | Any valid major version number of the chosen client API
 GLFW_CONTEXT_VERSION_MINOR    | 0                           | Any valid minor version number of the chosen client API
 GLFW_CONTEXT_ROBUSTNESS       | `GLFW_NO_ROBUSTNESS`        | `GLFW_NO_ROBUSTNESS`, `GLFW_NO_RESET_NOTIFICATION` or `GLFW_LOSE_CONTEXT_ON_RESET`

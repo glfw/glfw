@@ -166,8 +166,22 @@ static int choosePixelFormatWGL(_GLFWwindow* window,
             if (FIND_ATTRIB_VALUE(WGL_PIXEL_TYPE_ARB) != WGL_TYPE_RGBA_ARB)
                 continue;
 
-            if (FIND_ATTRIB_VALUE(WGL_ACCELERATION_ARB) == WGL_NO_ACCELERATION_ARB)
-                continue;
+            if (ctxconfig->renderer == GLFW_HARDWARE_RENDERER)
+            {
+                if (FIND_ATTRIB_VALUE(WGL_ACCELERATION_ARB) ==
+                    WGL_NO_ACCELERATION_ARB)
+                {
+                    continue;
+                }
+            }
+            else if (ctxconfig->renderer == GLFW_SOFTWARE_RENDERER)
+            {
+                if (FIND_ATTRIB_VALUE(WGL_ACCELERATION_ARB) !=
+                    WGL_NO_ACCELERATION_ARB)
+                {
+                    continue;
+                }
+            }
 
             if (FIND_ATTRIB_VALUE(WGL_DOUBLE_BUFFER_ARB) != fbconfig->doublebuffer)
                 continue;
@@ -235,10 +249,21 @@ static int choosePixelFormatWGL(_GLFWwindow* window,
                 continue;
             }
 
-            if (!(pfd.dwFlags & PFD_GENERIC_ACCELERATED) &&
-                (pfd.dwFlags & PFD_GENERIC_FORMAT))
+            if (ctxconfig->renderer == GLFW_HARDWARE_RENDERER)
             {
-                continue;
+                if (!(pfd.dwFlags & PFD_GENERIC_ACCELERATED) &&
+                    (pfd.dwFlags & PFD_GENERIC_FORMAT))
+                {
+                    continue;
+                }
+            }
+            else if (ctxconfig->renderer == GLFW_SOFTWARE_RENDERER)
+            {
+                if ((pfd.dwFlags & PFD_GENERIC_ACCELERATED) &&
+                    !(pfd.dwFlags & PFD_GENERIC_FORMAT))
+                {
+                    continue;
+                }
             }
 
             if (pfd.iPixelType != PFD_TYPE_RGBA)

@@ -1108,6 +1108,8 @@ extern "C" {
  *  [GLFW_SCALE_FRAMEBUFFER](@ref GLFW_SCALE_FRAMEBUFFER_hint) window hint for
  *  compatibility with earlier versions.
  */
+#define GLFW_CONTEXT_RENDERER       0x0002200E
+
 #define GLFW_COCOA_RETINA_FRAMEBUFFER 0x00023001
 /*! @brief macOS specific
  *  [window hint](@ref GLFW_COCOA_FRAME_NAME_hint).
@@ -1179,6 +1181,9 @@ extern "C" {
 
 #define GLFW_WAYLAND_PREFER_LIBDECOR    0x00038001
 #define GLFW_WAYLAND_DISABLE_LIBDECOR   0x00038002
+
+#define GLFW_HARDWARE_RENDERER      0x00039001
+#define GLFW_SOFTWARE_RENDERER      0x00039002
 
 #define GLFW_ANY_POSITION           0x80000000
 

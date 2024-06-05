@@ -31,6 +31,8 @@
 #include <unistd.h>
 #include <math.h>
 #include <assert.h>
+#include <OpenGL/CGLRenderers.h>
+
 
 static void makeContextCurrentNSGL(_GLFWwindow* window)
 {
@@ -228,8 +230,16 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     NSOpenGLPixelFormatAttribute attribs[40];
     int index = 0;
 
-    ADD_ATTRIB(NSOpenGLPFAAccelerated);
     ADD_ATTRIB(NSOpenGLPFAClosestPolicy);
+
+    if (ctxconfig->renderer == GLFW_HARDWARE_RENDERER)
+    {
+        ADD_ATTRIB(NSOpenGLPFAAccelerated);
+    }
+    else if (ctxconfig->renderer == GLFW_SOFTWARE_RENDERER)
+    {
+        SET_ATTRIB(NSOpenGLPFARendererID, kCGLRendererGenericFloatID);
+    }
 
     if (ctxconfig->nsgl.offline)
     {

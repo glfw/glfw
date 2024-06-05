@@ -56,6 +56,15 @@ GLFWbool _glfwIsValidContextConfig(const _GLFWctxconfig* ctxconfig)
         return GLFW_FALSE;
     }
 
+    if (ctxconfig->renderer != GLFW_HARDWARE_RENDERER &&
+        ctxconfig->renderer != GLFW_SOFTWARE_RENDERER)
+    {
+        _glfwInputError(GLFW_INVALID_ENUM,
+                        "Invalid context renderer 0x%08X",
+                        ctxconfig->renderer);
+        return GLFW_FALSE;
+    }
+
     if (ctxconfig->client != GLFW_NO_API &&
         ctxconfig->client != GLFW_OPENGL_API &&
         ctxconfig->client != GLFW_OPENGL_ES_API)

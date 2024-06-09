@@ -1107,17 +1107,23 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             else
                 AdjustWindowRectEx(&frame, style, FALSE, exStyle);
 
-            if (window->minwidth != GLFW_DONT_CARE &&
-                window->minheight != GLFW_DONT_CARE)
+            if (window->minwidth != GLFW_DONT_CARE)
             {
                 mmi->ptMinTrackSize.x = window->minwidth + frame.right - frame.left;
+            }
+
+            if (window->minheight != GLFW_DONT_CARE)
+            {
                 mmi->ptMinTrackSize.y = window->minheight + frame.bottom - frame.top;
             }
 
-            if (window->maxwidth != GLFW_DONT_CARE &&
-                window->maxheight != GLFW_DONT_CARE)
+            if (window->maxwidth != GLFW_DONT_CARE)
             {
                 mmi->ptMaxTrackSize.x = window->maxwidth + frame.right - frame.left;
+            }
+
+            if (window->maxheight != GLFW_DONT_CARE)
+            {
                 mmi->ptMaxTrackSize.y = window->maxheight + frame.bottom - frame.top;
             }
 

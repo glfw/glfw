@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 macOS - www.glfw.org
+// GLFW 3.5 macOS - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2019 Camilla Löwy <elmindreda@glfw.org>
 //
@@ -23,15 +23,16 @@
 //    distribution.
 //
 //========================================================================
-// It is fine to use C99 in this file because it will not be built with VS
-//========================================================================
 
 #include "internal.h"
 
 #if defined(_GLFW_COCOA)
 
+#import <QuartzCore/CAMetalLayer.h>
+
 #include <float.h>
 #include <string.h>
+#include <assert.h>
 
 // HACK: This enum value is missing from framework headers on OS X 10.11 despite
 //       having been (according to documentation) added in Mac OS X 10.7
@@ -388,7 +389,6 @@ static void setDockProgressIndicator(int progressState, double value)
 
 - (void)windowDidChangeOcclusionState:(NSNotification* )notification
 {
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1090
     if ([window->ns.object respondsToSelector:@selector(occlusionState)])
     {
         if ([window->ns.object occlusionState] & NSWindowOcclusionStateVisible)
@@ -396,7 +396,6 @@ static void setDockProgressIndicator(int progressState, double value)
         else
             window->ns.occluded = GLFW_TRUE;
     }
-#endif
 }
 
 @end
@@ -592,7 +591,7 @@ static void setDockProgressIndicator(int progressState, double value)
 
     if (xscale != window->ns.xscale || yscale != window->ns.yscale)
     {
-        if (window->ns.retina && window->ns.layer)
+        if (window->ns.scaleFramebuffer && window->ns.layer)
             [window->ns.layer setContentsScale:[window->ns.object backingScaleFactor]];
 
         window->ns.xscale = xscale;
@@ -951,7 +950,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         [window->ns.object setFrameAutosaveName:@(wndconfig->ns.frameName)];
 
     window->ns.view = [[GLFWContentView alloc] initWithGlfwWindow:window];
-    window->ns.retina = wndconfig->ns.retina;
+    window->ns.scaleFramebuffer = wndconfig->scaleFramebuffer;
 
     if (fbconfig->transparent)
     {
@@ -1839,14 +1838,15 @@ const char* _glfwGetScancodeNameCocoa(int scancode)
 {
     @autoreleasepool {
 
-    if (scancode < 0 || scancode > 0xff ||
-        _glfw.ns.keycodes[scancode] == GLFW_KEY_UNKNOWN)
+    if (scancode < 0 || scancode > 0xff)
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid scancode %i", scancode);
         return NULL;
     }
 
     const int key = _glfw.ns.keycodes[scancode];
+    if (key == GLFW_KEY_UNKNOWN)
+        return NULL;
 
     UInt32 deadKeyState = 0;
     UniChar characters[4];
@@ -2130,19 +2130,8 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
 {
     @autoreleasepool {
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101100
-    // HACK: Dynamically load Core Animation to avoid adding an extra
-    //       dependency for the majority who don't use MoltenVK
-    NSBundle* bundle = [NSBundle bundleWithPath:@"/System/Library/Frameworks/QuartzCore.framework"];
-    if (!bundle)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Failed to find QuartzCore.framework");
-        return VK_ERROR_EXTENSION_NOT_PRESENT;
-    }
-
     // NOTE: Create the layer here as makeBackingLayer should not return nil
-    window->ns.layer = [[bundle classNamed:@"CAMetalLayer"] layer];
+    window->ns.layer = [CAMetalLayer layer];
     if (!window->ns.layer)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -2150,7 +2139,7 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
         return VK_ERROR_EXTENSION_NOT_PRESENT;
     }
 
-    if (window->ns.retina)
+    if (window->ns.scaleFramebuffer)
         [window->ns.layer setContentsScale:[window->ns.object backingScaleFactor]];
 
     [window->ns.view setLayer:window->ns.layer];
@@ -2207,9 +2196,6 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
     }
 
     return err;
-#else
-    return VK_ERROR_EXTENSION_NOT_PRESENT;
-#endif
 
     } // autoreleasepool
 }
@@ -2221,17 +2207,36 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
 
 GLFWAPI id glfwGetCocoaWindow(GLFWwindow* handle)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(nil);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_COCOA)
     {
         _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
                         "Cocoa: Platform not initialized");
-        return NULL;
+        return nil;
     }
 
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
     return window->ns.object;
+}
+
+GLFWAPI id glfwGetCocoaView(GLFWwindow* handle)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(nil);
+
+    if (_glfw.platform.platformID != GLFW_PLATFORM_COCOA)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
+                        "Cocoa: Platform not initialized");
+        return nil;
+    }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    return window->ns.view;
 }
 
 #endif // _GLFW_COCOA

@@ -631,30 +631,6 @@ GLFWAPI void glfwSetWindowBadgeString(GLFWwindow* handle, const char* string)
     _glfw.platform.setWindowBadgeString(window, string);
 }
 
-GLFWAPI void glfwSetWindowBadge(GLFWwindow* handle, int count)
-{
-    _GLFWwindow* window = (_GLFWwindow*)handle;
-
-    _GLFW_REQUIRE_INIT();
-
-    if (count < 0)
-    {
-        _glfwInputError(GLFW_INVALID_VALUE, "Invalid badge count %d", count);
-        return;
-    }
-
-    _glfw.platform.setWindowBadge(window, count);
-}
-
-GLFWAPI void glfwSetWindowBadgeString(GLFWwindow* handle, const char* string)
-{
-    _GLFWwindow* window = (_GLFWwindow*)handle;
-
-    _GLFW_REQUIRE_INIT();
-
-    _glfw.platform.setWindowBadgeString(window, string);
-}
-
 GLFWAPI void glfwGetWindowPos(GLFWwindow* handle, int* xpos, int* ypos)
 {
     if (xpos)

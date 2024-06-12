@@ -1,8 +1,6 @@
-/*!
+# Monitor guide {#monitor_guide}
 
-@page monitor_guide Monitor guide
-
-@tableofcontents
+[TOC]
 
 This guide introduces the monitor related functions of GLFW.  For details on
 a specific function in this category, see the @ref monitor.  There are also
@@ -15,7 +13,7 @@ guides for the other areas of GLFW.
  - @ref input_guide
 
 
-@section monitor_object Monitor objects
+## Monitor objects {#monitor_object}
 
 A monitor object represents a currently connected monitor and is represented as
 a pointer to the [opaque](https://en.wikipedia.org/wiki/Opaque_data_type) type
@@ -36,42 +34,42 @@ To see how GLFW views your monitor setup and its available video modes, run the
 `monitors` test program.
 
 
-@subsection monitor_monitors Retrieving monitors
+### Retrieving monitors {#monitor_monitors}
 
 The primary monitor is returned by @ref glfwGetPrimaryMonitor.  It is the user's
 preferred monitor and is usually the one with global UI elements like task bar
 or menu bar.
 
-@code
+```c
 GLFWmonitor* primary = glfwGetPrimaryMonitor();
-@endcode
+```
 
 You can retrieve all currently connected monitors with @ref glfwGetMonitors.
 See the reference documentation for the lifetime of the returned array.
 
-@code
+```c
 int count;
 GLFWmonitor** monitors = glfwGetMonitors(&count);
-@endcode
+```
 
 The primary monitor is always the first monitor in the returned array, but other
 monitors may be moved to a different index when a monitor is connected or
 disconnected.
 
 
-@subsection monitor_event Monitor configuration changes
+### Monitor configuration changes {#monitor_event}
 
 If you wish to be notified when a monitor is connected or disconnected, set
 a monitor callback.
 
-@code
+```c
 glfwSetMonitorCallback(monitor_callback);
-@endcode
+```
 
 The callback function receives the handle for the monitor that has been
 connected or disconnected and the event that occurred.
 
-@code
+```c
 void monitor_callback(GLFWmonitor* monitor, int event)
 {
     if (event == GLFW_CONNECTED)
@@ -83,7 +81,7 @@ void monitor_callback(GLFWmonitor* monitor, int event)
         // The monitor was disconnected
     }
 }
-@endcode
+```
 
 If a monitor is disconnected, all windows that are full screen on it will be
 switched to windowed mode before the callback is called.  Only @ref
@@ -91,14 +89,14 @@ glfwGetMonitorName and @ref glfwGetMonitorUserPointer will return useful values
 for a disconnected monitor and only before the monitor callback returns.
 
 
-@section monitor_properties Monitor properties
+## Monitor properties {#monitor_properties}
 
 Each monitor has a current video mode, a list of supported video modes,
 a virtual position, a content scale, a human-readable name, a user pointer, an
 estimated physical size and a gamma ramp.
 
 
-@subsection monitor_modes Video modes
+### Video modes {#monitor_modes}
 
 GLFW generally does a good job selecting a suitable video mode when you create
 a full screen window, change its video mode or make a windowed one full
@@ -109,101 +107,93 @@ Video modes are represented as @ref GLFWvidmode structures.  You can get an
 array of the video modes supported by a monitor with @ref glfwGetVideoModes.
 See the reference documentation for the lifetime of the returned array.
 
-@code
+```c
 int count;
 GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
-@endcode
+```
 
 To get the current video mode of a monitor call @ref glfwGetVideoMode.  See the
 reference documentation for the lifetime of the returned pointer.
 
-@code
+```c
 const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-@endcode
+```
 
 The resolution of a video mode is specified in
 [screen coordinates](@ref coordinate_systems), not pixels.
 
 
-@subsection monitor_size Physical size
+### Physical size {#monitor_size}
 
 The physical size of a monitor in millimetres, or an estimation of it, can be
 retrieved with @ref glfwGetMonitorPhysicalSize.  This has no relation to its
 current _resolution_, i.e. the width and height of its current
 [video mode](@ref monitor_modes).
 
-@code
+```c
 int width_mm, height_mm;
 glfwGetMonitorPhysicalSize(monitor, &width_mm, &height_mm);
-@endcode
+```
 
 While this can be used to calculate the raw DPI of a monitor, this is often not
 useful.  Instead, use the [monitor content scale](@ref monitor_scale) and
 [window content scale](@ref window_scale) to scale your content.
 
 
-@subsection monitor_scale Content scale
+### Content scale {#monitor_scale}
 
 The content scale for a monitor can be retrieved with @ref
 glfwGetMonitorContentScale.
 
-@code
+```c
 float xscale, yscale;
 glfwGetMonitorContentScale(monitor, &xscale, &yscale);
-@endcode
+```
 
-The content scale is the ratio between the current DPI and the platform's
-default DPI.  This is especially important for text and any UI elements.  If the
-pixel dimensions of your UI scaled by this look appropriate on your machine then
-it should appear at a reasonable size on other machines regardless of their DPI
-and scaling settings.  This relies on the system DPI and scaling settings being
-somewhat correct.
-
-The content scale may depend on both the monitor resolution and pixel density
-and on user settings.  It may be very different from the raw DPI calculated from
-the physical size and current resolution.
+For more information on what the content scale is and how to use it, see
+[window content scale](@ref window_scale).
 
 
-@subsection monitor_pos Virtual position
+### Virtual position {#monitor_pos}
 
 The position of the monitor on the virtual desktop, in
 [screen coordinates](@ref coordinate_systems), can be retrieved with @ref
 glfwGetMonitorPos.
 
-@code
+```c
 int xpos, ypos;
 glfwGetMonitorPos(monitor, &xpos, &ypos);
-@endcode
+```
 
 
-@subsection monitor_workarea Work area
+### Work area {#monitor_workarea}
 
 The area of a monitor not occupied by global task bars or menu bars is the work
 area.  This is specified in [screen coordinates](@ref coordinate_systems) and
 can be retrieved with @ref glfwGetMonitorWorkarea.
 
-@code
+```c
 int xpos, ypos, width, height;
 glfwGetMonitorWorkarea(monitor, &xpos, &ypos, &width, &height);
-@endcode
+```
 
 
-@subsection monitor_name Human-readable name
+### Human-readable name {#monitor_name}
 
 The human-readable, UTF-8 encoded name of a monitor is returned by @ref
 glfwGetMonitorName.  See the reference documentation for the lifetime of the
 returned string.
 
-@code
+```c
 const char* name = glfwGetMonitorName(monitor);
-@endcode
+```
 
 Monitor names are not guaranteed to be unique.  Two monitors of the same model
 and make may have the same name.  Only the monitor handle is guaranteed to be
 unique, and only until that monitor is disconnected.
 
 
-@subsection monitor_userptr User pointer
+### User pointer {#monitor_userptr}
 
 Each monitor has a user pointer that can be set with @ref
 glfwSetMonitorUserPointer and queried with @ref glfwGetMonitorUserPointer.  This
@@ -214,12 +204,12 @@ terminated.
 The initial value of the pointer is `NULL`.
 
 
-@subsection monitor_gamma Gamma ramp
+### Gamma ramp {#monitor_gamma}
 
 The gamma ramp of a monitor can be set with @ref glfwSetGammaRamp, which accepts
 a monitor handle and a pointer to a @ref GLFWgammaramp structure.
 
-@code
+```c
 GLFWgammaramp ramp;
 unsigned short red[256], green[256], blue[256];
 
@@ -234,7 +224,7 @@ for (i = 0;  i < ramp.size;  i++)
 }
 
 glfwSetGammaRamp(monitor, &ramp);
-@endcode
+```
 
 The gamma ramp data is copied before the function returns, so there is no need
 to keep it around once the ramp has been set.
@@ -245,17 +235,17 @@ ramp for that monitor.
 The current gamma ramp for a monitor is returned by @ref glfwGetGammaRamp.  See
 the reference documentation for the lifetime of the returned structure.
 
-@code
+```c
 const GLFWgammaramp* ramp = glfwGetGammaRamp(monitor);
-@endcode
+```
 
 If you wish to set a regular gamma ramp, you can have GLFW calculate it for you
 from the desired exponent with @ref glfwSetGamma, which in turn calls @ref
 glfwSetGammaRamp with the resulting ramp.
 
-@code
+```c
 glfwSetGamma(monitor, 1.0);
-@endcode
+```
 
 To experiment with gamma correction via the @ref glfwSetGamma function, run the
 `gamma` test program.
@@ -265,4 +255,3 @@ hardware gamma correction, which today is typically an approximation of sRGB
 gamma.  This means that setting a perfectly linear ramp, or gamma 1.0, will
 produce the default (usually sRGB-like) behavior.
 
-*/

@@ -255,6 +255,10 @@ address.footer {
 	align-content: stretch;
 }
 
+#main-menu a:focus {
+    outline-style: none;
+}
+
 #main-menu a,#main-menu a:visited,#main-menu a:hover,#main-menu li {
 	color:$navbar-link-color;
 }

@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 Linux - www.glfw.org
+// GLFW 3.5 Linux - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2017 Camilla Löwy <elmindreda@glfw.org>
@@ -23,8 +23,6 @@
 // 3. This notice may not be removed or altered from any source
 //    distribution.
 //
-//========================================================================
-// It is fine to use C99 in this file because it will not be built with VS
 //========================================================================
 
 #include "internal.h"
@@ -137,7 +135,7 @@ static GLFWbool openJoystickDevice(const char* path)
     }
 
     _GLFWjoystickLinux linjs = {0};
-    linjs.fd = open(path, O_RDONLY | O_NONBLOCK);
+    linjs.fd = open(path, O_RDONLY | O_NONBLOCK | O_CLOEXEC);
     if (linjs.fd == -1)
         return GLFW_FALSE;
 

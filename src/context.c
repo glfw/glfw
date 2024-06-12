@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 - www.glfw.org
+// GLFW 3.5 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
@@ -23,8 +23,6 @@
 // 3. This notice may not be removed or altered from any source
 //    distribution.
 //
-//========================================================================
-// Please use C89 style variable declarations in this file because VS 2010
 //========================================================================
 
 #include "internal.h"
@@ -617,10 +615,10 @@ GLFWbool _glfwStringInExtensionString(const char* string, const char* extensions
 
 GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
 {
+    _GLFW_REQUIRE_INIT();
+
     _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFWwindow* previous;
-
-    _GLFW_REQUIRE_INIT();
 
     previous = _glfwPlatformGetTls(&_glfw.contextSlot);
 
@@ -649,10 +647,10 @@ GLFWAPI GLFWwindow* glfwGetCurrentContext(void)
 
 GLFWAPI void glfwSwapBuffers(GLFWwindow* handle)
 {
+    _GLFW_REQUIRE_INIT();
+
     _GLFWwindow* window = (_GLFWwindow*) handle;
     assert(window != NULL);
-
-    _GLFW_REQUIRE_INIT();
 
     if (window->context.client == GLFW_NO_API)
     {

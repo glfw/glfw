@@ -326,6 +326,7 @@ typedef UINT (WINAPI * PFN_ImmGetDescriptionW)(HKL,LPWSTR,UINT);
 typedef BOOL (WINAPI * PFN_ImmGetOpenStatus)(HIMC);
 typedef BOOL (WINAPI * PFN_ImmNotifyIME)(HIMC,DWORD,DWORD,DWORD);
 typedef BOOL (WINAPI * PFN_ImmReleaseContext)(HWND,HIMC);
+typedef BOOL (WINAPI * PFN_ImmSetCompositionWindow)(HIMC,LPCOMPOSITIONFORM);
 typedef BOOL (WINAPI * PFN_ImmSetCandidateWindow)(HIMC,LPCANDIDATEFORM);
 typedef BOOL (WINAPI * PFN_ImmSetOpenStatus)(HIMC,BOOL);
 #define ImmGetCandidateListW _glfw.win32.imm32.ImmGetCandidateListW_
@@ -336,6 +337,7 @@ typedef BOOL (WINAPI * PFN_ImmSetOpenStatus)(HIMC,BOOL);
 #define ImmGetOpenStatus _glfw.win32.imm32.ImmGetOpenStatus_
 #define ImmNotifyIME _glfw.win32.imm32.ImmNotifyIME_
 #define ImmReleaseContext _glfw.win32.imm32.ImmReleaseContext_
+#define ImmSetCompositionWindow _glfw.win32.imm32.ImmSetCompositionWindow_
 #define ImmSetCandidateWindow _glfw.win32.imm32.ImmSetCandidateWindow_
 #define ImmSetOpenStatus _glfw.win32.imm32.ImmSetOpenStatus_
 
@@ -536,6 +538,7 @@ typedef struct _GLFWlibraryWin32
         PFN_ImmGetOpenStatus            ImmGetOpenStatus_;
         PFN_ImmNotifyIME                ImmNotifyIME_;
         PFN_ImmReleaseContext           ImmReleaseContext_;
+        PFN_ImmSetCompositionWindow     ImmSetCompositionWindow_;
         PFN_ImmSetCandidateWindow       ImmSetCandidateWindow_;
         PFN_ImmSetOpenStatus            ImmSetOpenStatus_;
     } imm32;

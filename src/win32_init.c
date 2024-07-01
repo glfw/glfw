@@ -186,6 +186,8 @@ static GLFWbool loadLibraries(void)
             _glfwPlatformGetModuleSymbol(_glfw.win32.imm32.instance, "ImmNotifyIME");
         _glfw.win32.imm32.ImmReleaseContext_ = (PFN_ImmReleaseContext)
             _glfwPlatformGetModuleSymbol(_glfw.win32.imm32.instance, "ImmReleaseContext");
+        _glfw.win32.imm32.ImmSetCompositionWindow_ = (PFN_ImmSetCompositionWindow)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.imm32.instance, "ImmSetCompositionWindow");
         _glfw.win32.imm32.ImmSetCandidateWindow_ = (PFN_ImmSetCandidateWindow)
             _glfwPlatformGetModuleSymbol(_glfw.win32.imm32.instance, "ImmSetCandidateWindow");
         _glfw.win32.imm32.ImmSetOpenStatus_ = (PFN_ImmSetOpenStatus)

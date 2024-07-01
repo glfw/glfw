@@ -2867,8 +2867,11 @@ void _glfwUpdatePreeditCursorRectangleWin32(_GLFWwindow* window)
     int y = preedit->cursorPosY;
     int w = preedit->cursorWidth;
     int h = preedit->cursorHeight;
-    CANDIDATEFORM excludeRect = { 0, CFS_EXCLUDE, { x, y }, { x, y, x + w, y + h } };
 
+    COMPOSITIONFORM areaRect = { CFS_RECT, { x, y }, { x, y, x + w, y + h } };
+    ImmSetCompositionWindow(hIMC, &areaRect);
+
+    CANDIDATEFORM excludeRect = { 0, CFS_EXCLUDE, { x, y }, { x, y, x + w, y + h } };
     ImmSetCandidateWindow(hIMC, &excludeRect);
 
     ImmReleaseContext(hWnd, hIMC);

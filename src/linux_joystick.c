@@ -49,6 +49,7 @@
 //
 static void handleKeyEvent(_GLFWjoystick* js, int code, int value)
 {
+    if (code < BTN_MISC || code >= KEY_CNT - BTN_MISC) return;
     _glfwInputJoystickButton(js,
                              js->linjs.keyMap[code - BTN_MISC],
                              value ? GLFW_PRESS : GLFW_RELEASE);
@@ -58,6 +59,7 @@ static void handleKeyEvent(_GLFWjoystick* js, int code, int value)
 //
 static void handleAbsEvent(_GLFWjoystick* js, int code, int value)
 {
+    if (code >= ABS_CNT) return;
     const int index = js->linjs.absMap[code];
 
     if (code >= ABS_HAT0X && code <= ABS_HAT3Y)

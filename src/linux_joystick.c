@@ -49,9 +49,8 @@
 //
 static void handleKeyEvent(_GLFWjoystick* js, int code, int value)
 {
-    if (code < BTN_MISC || code >= KEY_CNT - BTN_MISC) return;
     _glfwInputJoystickButton(js,
-                             js->linjs.keyMap[code - BTN_MISC],
+                             js->linjs.keyMap[code],
                              value ? GLFW_PRESS : GLFW_RELEASE);
 }
 
@@ -59,7 +58,6 @@ static void handleKeyEvent(_GLFWjoystick* js, int code, int value)
 //
 static void handleAbsEvent(_GLFWjoystick* js, int code, int value)
 {
-    if (code >= ABS_CNT) return;
     const int index = js->linjs.absMap[code];
 
     if (code >= ABS_HAT0X && code <= ABS_HAT3Y)
@@ -197,7 +195,16 @@ static GLFWbool openJoystickDevice(const char* path)
         if (!isBitSet(code, keyBits))
             continue;
 
-        linjs.keyMap[code - BTN_MISC] = buttonCount;
+        linjs.keyMap[code] = buttonCount;
+        buttonCount++;
+    }
+
+    for (int code = 0;  code < BTN_MISC;  code++)
+    {
+        if (!isBitSet(code, keyBits))
+            continue;
+
+        linjs.keyMap[code] = buttonCount;
         buttonCount++;
     }
 

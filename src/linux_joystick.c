@@ -190,7 +190,10 @@ static GLFWbool openJoystickDevice(const char* path)
 
     int axisCount = 0, buttonCount = 0, hatCount = 0;
 
-    for (int code = BTN_MISC;  code < KEY_CNT;  code++)
+    // This loop should stop at KEY_CNT instead of KEY_MAX. However, we are
+    // terminating the loop one iteration early to maintain compatibility with
+    // the SDL gamepad mappings.
+    for (int code = BTN_JOYSTICK;  code < KEY_MAX;  code++)
     {
         if (!isBitSet(code, keyBits))
             continue;
@@ -199,7 +202,11 @@ static GLFWbool openJoystickDevice(const char* path)
         buttonCount++;
     }
 
-    for (int code = 0;  code < BTN_MISC;  code++)
+    // Originally, this range was not mapped, but some controllers now output
+    // these values. Appending them to the end of the list maintains both
+    // backwards compatibility with older versions of GLFW, and with the SDL
+    // gamepad mappings.
+    for (int code = 0;  code < BTN_JOYSTICK;  code++)
     {
         if (!isBitSet(code, keyBits))
             continue;

@@ -535,6 +535,7 @@ static void detectEWMH(void)
                                    XA_WINDOW,
                                    (unsigned char**) &windowFromChild))
     {
+        _glfwReleaseErrorHandlerX11();
         XFree(windowFromRoot);
         return;
     }

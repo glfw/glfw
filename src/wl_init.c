@@ -93,7 +93,7 @@
 #undef types
 
 #define types _glfw_pointer_gestures_types
-#include "wayland-pointer-gestures-unstable-v1-client-protocol-code.h"
+#include "pointer-gestures-unstable-v1-client-protocol-code.h"
 #undef types
 
 static void wmBaseHandlePing(void* userData,

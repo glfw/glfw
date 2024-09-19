@@ -1069,7 +1069,7 @@ GLFWAPI GLFWtrackpadzoomfun glfwSetTrackpadZoomCallback(GLFWwindow* handle,
     return cbfun;
 }
 
-GLFWAPI GLFWtrackpadzoomfun glfwSetTrackpadRotateCallback(GLFWwindow* handle,
+GLFWAPI GLFWtrackpadrotatefun glfwSetTrackpadRotateCallback(GLFWwindow* handle,
                                                           GLFWtrackpadrotatefun cbfun)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;

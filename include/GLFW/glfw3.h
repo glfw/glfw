@@ -1880,7 +1880,8 @@ typedef void (* GLFWscrollfun)(GLFWwindow* window, double xoffset, double yoffse
  *  @endcode
  *
  *  @param[in] window The window that received the event.
- *  @param[in] scale The manigification amount, as a scale factor
+ *  @param[in] scale The manigification amount, to be multiplied by the current
+ *  scale factor to get the new scale factor.
  *
  *  @sa @ref glfwSetTrackpadZoomCallback
  *

@@ -5487,6 +5487,10 @@ GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* window, GLFWscrollfun ca
  *
  *  @thread_safety This function must only be called from the main thread.
  *
+ *  @sa @ref input_mouse_trackpad_gestures
+ *
+ *  @since Added in version 3.5.
+ *
  *  @ingroup input
  */
 GLFWAPI GLFWtrackpadzoomfun glfwSetTrackpadZoomCallback(GLFWwindow* window, GLFWtrackpadzoomfun callback);
@@ -5512,6 +5516,10 @@ GLFWAPI GLFWtrackpadzoomfun glfwSetTrackpadZoomCallback(GLFWwindow* window, GLFW
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
  *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref input_mouse_trackpad_gestures
+ *
+ *  @since Added in version 3.5.
  *
  *  @ingroup input
  */

@@ -291,9 +291,10 @@ endif()
 
 if (GLFW_BUILD_WEBGPU)
     target_compile_definitions(glfw PRIVATE _GLFW_BUILD_WEBGPU)
-    if (APPLE)
-      target_compile_options(glfw PRIVATE -x objective-c)
-      target_link_libraries(glfw PRIVATE "-framework Cocoa" "-framework CoreVideo" "-framework IOKit" "-framework QuartzCore")
+    if (GLFW_BUILD_COCOA)
+        target_compile_options(glfw PRIVATE -x objective-c)
+        target_link_libraries(glfw PRIVATE "-framework QuartzCore")
+        set(glfw_PKG_LIBS "${glfw_PKG_LIBS} -framework QuartzCore")
     endif ()
 endif ()
 

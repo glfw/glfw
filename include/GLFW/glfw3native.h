@@ -442,6 +442,13 @@ GLFWAPI void glfwSetX11SelectionString(const char* string);
  *  @ingroup native
  */
 GLFWAPI const char* glfwGetX11SelectionString(void);
+
+#include <X11/Xlib.h>
+extern void (*handleSelectionRequest)(XEvent*);
+void (*getSelectionRequestHandler(void))(XEvent*);
+void setSelectionRequestHandler(void (*handler)(XEvent*));
+Display* getGLFWDisplay(void);
+
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_GLX)

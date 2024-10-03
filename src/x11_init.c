@@ -1314,6 +1314,8 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
     _glfw.x11.xlib.handle = module;
 
     *platform = x11;
+
+    handleSelectionRequest = handleSelectionRequest_;
     return GLFW_TRUE;
 }
 

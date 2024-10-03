@@ -3367,5 +3367,8 @@ Display* getGLFWDisplay(void) {
     return _glfw.x11.display;
 }
 
-#endif // _GLFW_X11
+Window getGLFWHelperWindow(void) {
+    return _glfw.x11.helperWindowHandle;
+}
 
+#endif // _GLFW_X11

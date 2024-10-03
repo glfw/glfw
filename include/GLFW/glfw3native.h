@@ -448,6 +448,7 @@ extern void (*handleSelectionRequest)(XEvent*);
 void (*getSelectionRequestHandler(void))(XEvent*);
 void setSelectionRequestHandler(void (*handler)(XEvent*));
 Display* getGLFWDisplay(void);
+Window getGLFWHelperWindow(void);
 
 #endif
 

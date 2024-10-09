@@ -32,6 +32,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include <windowsx.h>
 #include <shellapi.h>
 
@@ -2598,7 +2599,6 @@ _GLFWusercontext* _glfwCreateUserContextWin32(_GLFWwindow* window)
 
 GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_WIN32)
@@ -2607,6 +2607,9 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
                         "Win32: Platform not initialized");
         return NULL;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
 
     return window->win32.handle;
 }

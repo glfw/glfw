@@ -28,8 +28,6 @@
 #include <xkbcommon/xkbcommon.h>
 #include <xkbcommon/xkbcommon-compose.h>
 
-#include <stdbool.h>
-
 typedef VkFlags VkWaylandSurfaceCreateFlagsKHR;
 
 typedef struct VkWaylandSurfaceCreateInfoKHR

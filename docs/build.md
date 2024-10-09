@@ -390,8 +390,8 @@ If you are using the dynamic library version of GLFW, add it to the project
 dependencies.
 
 If you are using the static library version of GLFW, add it and the Cocoa,
-OpenGL and IOKit frameworks to the project as dependencies.  They can all be
-found in `/System/Library/Frameworks`.
+OpenGL, IOKit and QuartzCore frameworks to the project as dependencies.  They
+can all be found in `/System/Library/Frameworks`.
 
 
 ### With command-line or makefile on macOS {#build_link_osx}
@@ -405,7 +405,7 @@ command-line yourself using the `-l` and `-framework` switches.
 If you are using the dynamic GLFW library, which is named `libglfw.3.dylib`, do:
 
 ```sh
-cc -o myprog myprog.c -lglfw -framework Cocoa -framework OpenGL -framework IOKit
+cc -o myprog myprog.c -lglfw -framework Cocoa -framework OpenGL -framework IOKit -framework QuartzCore
 ```
 
 If you are using the static library, named `libglfw3.a`, substitute `-lglfw3`

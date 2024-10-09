@@ -157,6 +157,17 @@
 #define GLFW_NULL_SC_MENU           120
 #define GLFW_NULL_SC_LAST           GLFW_NULL_SC_MENU
 
+typedef VkFlags VkHeadlessSurfaceCreateFlagsEXT;
+
+typedef struct VkHeadlessSurfaceCreateInfoEXT
+{
+    VkStructureType                 sType;
+    const void*                     pNext;
+    VkHeadlessSurfaceCreateFlagsEXT flags;
+} VkHeadlessSurfaceCreateInfoEXT;
+
+typedef VkResult (APIENTRY *PFN_vkCreateHeadlessSurfaceEXT)(VkInstance,const VkHeadlessSurfaceCreateInfoEXT*,const VkAllocationCallbacks*,VkSurfaceKHR*);
+
 // Null-specific per-window data
 //
 typedef struct _GLFWwindowNull

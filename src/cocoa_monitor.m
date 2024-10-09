@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <math.h>
+#include <assert.h>
 
 #include <IOKit/graphics/IOGraphicsLib.h>
 #include <ApplicationServices/ApplicationServices.h>
@@ -136,7 +137,7 @@ static GLFWbool modeIsGood(CGDisplayModeRef mode)
     if (flags & kDisplayModeStretchedFlag)
         return GLFW_FALSE;
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED <= 101100
+#if MAC_OS_X_VERSION_MAX_ALLOWED == 101100
     CFStringRef format = CGDisplayModeCopyPixelEncoding(mode);
     if (CFStringCompare(format, CFSTR(IO16BitDirectPixels), 0) &&
         CFStringCompare(format, CFSTR(IO32BitDirectPixels), 0))
@@ -163,7 +164,7 @@ static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode,
     if (result.refreshRate == 0)
         result.refreshRate = (int) round(fallbackRefreshRate);
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED <= 101100
+#if MAC_OS_X_VERSION_MAX_ALLOWED == 101100
     CFStringRef format = CGDisplayModeCopyPixelEncoding(mode);
     if (CFStringCompare(format, CFSTR(IO16BitDirectPixels), 0) == 0)
     {
@@ -179,7 +180,7 @@ static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode,
         result.blueBits = 8;
     }
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED <= 101100
+#if MAC_OS_X_VERSION_MAX_ALLOWED == 101100
     CFRelease(format);
 #endif /* MAC_OS_X_VERSION_MAX_ALLOWED */
     return result;
@@ -627,7 +628,6 @@ void _glfwSetGammaRampCocoa(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
 
 GLFWAPI CGDirectDisplayID glfwGetCocoaMonitor(GLFWmonitor* handle)
 {
-    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(kCGNullDirectDisplay);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_COCOA)
@@ -635,6 +635,9 @@ GLFWAPI CGDirectDisplayID glfwGetCocoaMonitor(GLFWmonitor* handle)
         _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "Cocoa: Platform not initialized");
         return kCGNullDirectDisplay;
     }
+
+    _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
+    assert(monitor != NULL);
 
     return monitor->ns.displayID;
 }

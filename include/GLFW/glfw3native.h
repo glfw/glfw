@@ -444,7 +444,6 @@ GLFWAPI void glfwSetX11SelectionString(const char* string);
 GLFWAPI const char* glfwGetX11SelectionString(void);
 
 #include <X11/Xlib.h>
-extern void (*handleSelectionRequest)(XEvent*);
 void (*getSelectionRequestHandler(void))(XEvent*);
 void setSelectionRequestHandler(void (*handler)(XEvent*));
 Display* getGLFWDisplay(void);

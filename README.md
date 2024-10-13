@@ -132,7 +132,11 @@ information on what to include when reporting a bug.
  - [Null] Added EGL context creation on Mesa via `EGL_MESA_platform_surfaceless`
  - [EGL] Allowed native access on Wayland with `GLFW_CONTEXT_CREATION_API` set to
    `GLFW_NATIVE_CONTEXT_API` (#2518)
-
+ - [X11] Added `getSelectionRequestHandler`, `setSelectionRequestHander`,
+   `getGLFWDisplay`, and `getGLFWHelperWindow` functions. to allow
+   clients to implement more X clipboard functionality than is
+   built-in; with these primitives clients can add copy paste support
+   for files, images, colors, and other non-text data types.
 
 ## Contact
 
@@ -148,4 +152,3 @@ request, please file it in the
 
 Finally, if you're interested in helping out with the development of GLFW or
 porting it to your favorite platform, join us on the forum or GitHub.
-

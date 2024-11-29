@@ -2174,6 +2174,14 @@ GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
             return GLFW_FALSE;
     }
 
+    //Reset progress state as it gets saved between application runs
+    if(_glfw.dbus.connection)
+    {
+        //Window NULL is safe here because it won't get
+        //used inside the SetWindowTaskbarProgress function
+        _glfwSetWindowProgressIndicatorWayland(NULL, GLFW_PROGRESS_INDICATOR_DISABLED, 0.0);
+    }
+
     return GLFW_TRUE;
 }
 
@@ -2237,6 +2245,15 @@ void _glfwSetWindowIconWayland(_GLFWwindow* window,
 {
     _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
                     "Wayland: The platform does not support setting the window icon");
+}
+
+void _glfwSetWindowProgressIndicatorWayland(_GLFWwindow* window, const int progressState, double value)
+{
+    (void)window;
+
+    const dbus_bool_t progressVisible = (progressState != GLFW_PROGRESS_INDICATOR_DISABLED);
+
+    _glfwUpdateTaskbarProgressDBusPOSIX(progressVisible, value);
 }
 
 void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos)

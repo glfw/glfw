@@ -289,6 +289,7 @@ video tutorials.
  - Ryogo Yoshimura
  - Lukas Zanner
  - Andrey Zholos
+ - Tianlan Zhou
  - Aihui Zhu
  - Santi Zupancic
  - Jonas Ådahl

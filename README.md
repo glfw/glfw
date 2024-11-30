@@ -131,6 +131,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: A drag entering a non-GLFW surface could cause a segfault
  - [Null] Added Vulkan 'window' surface creation via `VK_EXT_headless_surface`
  - [Null] Added EGL context creation on Mesa via `EGL_MESA_platform_surfaceless`
+ - [EGL] Added `GLFW_ANGLE_PLATFORM_TYPE_D3D11ON12` init hint for D3D11on12 support
  - [EGL] Allowed native access on Wayland with `GLFW_CONTEXT_CREATION_API` set to
    `GLFW_NATIVE_CONTEXT_API` (#2518)
 

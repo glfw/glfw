@@ -342,6 +342,30 @@ void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset)
         window->callbacks.scroll((GLFWwindow*) window, xoffset, yoffset);
 }
 
+// Notifies shared code of a trackpad zoom event
+//
+void _glfwInputTrackpadZoom(_GLFWwindow* window, double scale)
+{
+    assert(window != NULL);
+    assert(scale > -FLT_MAX);
+    assert(scale < FLT_MAX);
+
+    if (window->callbacks.trackpadZoom)
+        window->callbacks.trackpadZoom((GLFWwindow*) window, scale);
+}
+
+// Notifies shared code of a trackpad rotate event
+//
+void _glfwInputTrackpadRotate(_GLFWwindow* window, double angle)
+{
+    assert(window != NULL);
+    assert(angle > -FLT_MAX);
+    assert(angle < FLT_MAX);
+
+    if (window->callbacks.trackpadRotate)
+        window->callbacks.trackpadRotate((GLFWwindow*) window, angle);
+}
+
 // Notifies shared code of a mouse button click event
 //
 void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
@@ -1031,6 +1055,28 @@ GLFWAPI GLFWscrollfun glfwSetScrollCallback(GLFWwindow* handle,
     assert(window != NULL);
 
     _GLFW_SWAP(GLFWscrollfun, window->callbacks.scroll, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWtrackpadzoomfun glfwSetTrackpadZoomCallback(GLFWwindow* handle,
+                                                        GLFWtrackpadzoomfun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP(GLFWtrackpadzoomfun, window->callbacks.trackpadZoom, cbfun);
+    return cbfun;
+}
+
+GLFWAPI GLFWtrackpadrotatefun glfwSetTrackpadRotateCallback(GLFWwindow* handle,
+                                                          GLFWtrackpadrotatefun cbfun)
+{
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFW_SWAP(GLFWtrackpadrotatefun, window->callbacks.trackpadRotate, cbfun);
     return cbfun;
 }
 

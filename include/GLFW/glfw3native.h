@@ -155,6 +155,10 @@ extern "C" {
   #include <GL/osmesa.h>
  #endif
 
+ #if defined(GLFW_EXPOSE_NATIVE_ANDROID)
+  #include <android_native_app_glue.h>
+ #endif
+
 #endif /*GLFW_NATIVE_INCLUDE_NONE*/
 
 
@@ -653,6 +657,12 @@ GLFWAPI int glfwGetOSMesaDepthBuffer(GLFWwindow* window, int* width, int* height
  *  @ingroup native
  */
 GLFWAPI OSMesaContext glfwGetOSMesaContext(GLFWwindow* window);
+#endif
+
+#if defined(GLFW_EXPOSE_NATIVE_ANDROID)
+/*! @brief Returns the `struct android_app` of the specified window.
+ */
+GLFWAPI struct android_app* glfwGetAndroidApp(GLFWwindow* window);
 #endif
 
 #ifdef __cplusplus

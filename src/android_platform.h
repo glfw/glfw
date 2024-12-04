@@ -131,4 +131,4 @@ void _glfwGetRequiredInstanceExtensionsAndroid(char** extensions);
 GLFWbool _glfwGetPhysicalDevicePresentationSupportAndroid(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
 VkResult _glfwCreateWindowSurfaceAndroid(VkInstance instance, _GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
 
-GLFWAPI struct android_app* glfwGetAndroidApp(GLFWwindow* handle);
+GLFWAPI struct android_app* glfwGetAndroidApp(void);

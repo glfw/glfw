@@ -660,9 +660,21 @@ GLFWAPI OSMesaContext glfwGetOSMesaContext(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_ANDROID)
-/*! @brief Returns the `struct android_app` of the specified window.
+/*! @brief Returns the `struct android_app` of the current application.
+ *
+ *  @return The `struct android_app` of the current, or `NULL` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @since Added in version 3.5.
+ *
+ *  @ingroup native
  */
-GLFWAPI struct android_app* glfwGetAndroidApp(GLFWwindow* window);
+GLFWAPI struct android_app* glfwGetAndroidApp(void);
 #endif
 
 #ifdef __cplusplus

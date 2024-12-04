@@ -555,9 +555,8 @@ VkResult _glfwCreateWindowSurfaceAndroid(VkInstance instance,
 //////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////
 
-GLFWAPI struct android_app* glfwGetAndroidApp(GLFWwindow* handle)
+GLFWAPI struct android_app* glfwGetAndroidApp(void)
 {
-    _GLFWwindow* window = (_GLFWwindow*)handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-    return window->android;
+    return _glfw.gstate.app;
 }

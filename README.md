@@ -133,7 +133,8 @@ information on what to include when reporting a bug.
  - [Null] Added EGL context creation on Mesa via `EGL_MESA_platform_surfaceless`
  - [EGL] Allowed native access on Wayland with `GLFW_CONTEXT_CREATION_API` set to
    `GLFW_NATIVE_CONTEXT_API` (#2518)
-
+ - Added `GLFW_GAMEPAD_BUTTON_MISC1` and `GLFW_GAMEPAD_BUTTON_TOUCHPAD` to the
+   gamepad_buttons button group
 
 ## Contact
 

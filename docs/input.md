@@ -911,6 +911,85 @@ righttrigger:a5,dpup:h0.1,dpright:h0.2,dpdown:h0.4,dpleft:h0.8,
 were recently added to SDL.  The input modifiers `+`, `-` and `~` are supported
 and described above.
 
+### Event-based joystick and gamepad input {#joystick_input_event}
+
+If you wish to be notified when a button on a joystick is pressed or released, set a joystick button callback.
+
+```c
+glfwSetJoystickButtonCallback(joystick_button_callback);
+```
+
+The callback function receives the joystick id, the [joystick button](@ref joystick_button) that was pressed or released, and action.
+
+```c
+void joystick_button_callback(int jid, int button, int action)
+{
+    if (button == 0 && action == GLFW_PRESS)
+        jump();
+}
+```
+
+The action is one of `GLFW_PRESS` or `GLFW_RELEASE`
+
+If you wish to be notified when an axis on a joystick is moved, set a joystick axis callback.
+
+```c
+glfwSetJoystickAxisCallback(joystick_axis_callback);
+```
+
+The callback function receives the joystick id, [joystick axis](@ref joystick_axis) that was moved, and float value from -1.0 to 1.0 for the axis.
+
+```c
+void joystick_axis_callback(int jid, int axis, float value)
+{
+    if (axis == 0){
+        if(value == -1.0f)
+            move_left();
+        else if(value == 1.0f)
+            move_right();
+    }
+}
+```
+
+If you wish to be notified when a hat on a joystick is moved, set a joystick hat callback.
+
+```c
+glfwSetJoystickHatCallback(joystick_hat_callback);
+```
+
+The callback function receives the joystick id, hat, and the [hat states](@ref hat_state).
+
+```c
+void joystick_hat_callback(int jid, int hat, int position)
+{
+    if(hat == 0 && position == GLFW_HAT_UP)
+        move_up();
+}
+```
+
+If you wish to be notified when the state of a gamepad is updated, set a gamepad state callback. This callback will occur every time any button, axis, or hat updates, so with this, you will have to handle checks for if a value is changed.
+
+```c
+glfwSetGamepadStateCallback(gamepad_state_callback);
+```
+
+The callback function recieves the joystick id and the gamepad state.
+
+```c
+bool jumpButtonHeld = false;
+
+gamepad_state_callback(int jid, GLFWgamepadstate state){
+    if (state.buttons[GLFW_GAMEPAD_BUTTON_A] && !jumpButtonHeld)
+    {
+        input_jump();
+        jumpButtonHeld = true;
+    }
+    else if (!state.buttons[GLFW_GAMEPAD_BUTTON_A] && jumpButtonHeld)
+    {
+        jumpButtonHeld = false;
+    }
+}
+```
 
 ## Time input {#time}
 

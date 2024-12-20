@@ -30,6 +30,7 @@ add_custom_target(update_mappings
 set_target_properties(update_mappings PROPERTIES FOLDER "GLFW3")
 
 if (GLFW_BUILD_COCOA)
+    enable_language(OBJC)
     target_compile_definitions(glfw PRIVATE _GLFW_COCOA)
     target_sources(glfw PRIVATE cocoa_platform.h cocoa_joystick.h cocoa_init.m
                                 cocoa_joystick.m cocoa_monitor.m cocoa_window.m
@@ -52,8 +53,8 @@ endif()
 
 if (GLFW_BUILD_WAYLAND)
     target_compile_definitions(glfw PRIVATE _GLFW_WAYLAND)
-    target_sources(glfw PRIVATE wl_platform.h xkb_unicode.h wl_init.c
-                                wl_monitor.c wl_window.c xkb_unicode.c)
+    target_sources(glfw PRIVATE wl_platform.h wl_init.c
+                                wl_monitor.c wl_window.c)
 endif()
 
 if (GLFW_BUILD_X11 OR GLFW_BUILD_WAYLAND)
@@ -137,13 +138,6 @@ target_include_directories(glfw PRIVATE
                            "${GLFW_BINARY_DIR}/src")
 target_link_libraries(glfw PRIVATE Threads::Threads)
 
-# Workaround for CMake not knowing about .m files before version 3.16
-if (CMAKE_VERSION VERSION_LESS "3.16" AND APPLE)
-    set_source_files_properties(cocoa_init.m cocoa_joystick.m cocoa_monitor.m
-                                cocoa_window.m nsgl_context.m PROPERTIES
-                                LANGUAGE C)
-endif()
-
 if (GLFW_BUILD_WIN32)
     list(APPEND glfw_PKG_LIBS "-lgdi32")
 endif()
@@ -151,10 +145,11 @@ endif()
 if (GLFW_BUILD_COCOA)
     target_link_libraries(glfw PRIVATE "-framework Cocoa"
                                        "-framework IOKit"
-                                       "-framework CoreFoundation")
+                                       "-framework CoreFoundation"
+                                       "-framework QuartzCore")
 
     set(glfw_PKG_DEPS "")
-    set(glfw_PKG_LIBS "-framework Cocoa -framework IOKit -framework CoreFoundation")
+    set(glfw_PKG_LIBS "-framework Cocoa -framework IOKit -framework CoreFoundation -framework QuartzCore")
 endif()
 
 if (GLFW_BUILD_WAYLAND)
@@ -312,30 +307,34 @@ if (GLFW_BUILD_SHARED_LIBRARY)
     if (MINGW)
         # Enable link-time exploit mitigation features enabled by default on MSVC
         include(CheckCCompilerFlag)
+        include(CMakePushCheckState)
 
         # Compatibility with data execution prevention (DEP)
+        cmake_push_check_state()
         set(CMAKE_REQUIRED_FLAGS "-Wl,--nxcompat")
         check_c_compiler_flag("" _GLFW_HAS_DEP)
         if (_GLFW_HAS_DEP)
             target_link_libraries(glfw PRIVATE "-Wl,--nxcompat")
         endif()
+        cmake_pop_check_state()
 
         # Compatibility with address space layout randomization (ASLR)
+        cmake_push_check_state()
         set(CMAKE_REQUIRED_FLAGS "-Wl,--dynamicbase")
         check_c_compiler_flag("" _GLFW_HAS_ASLR)
         if (_GLFW_HAS_ASLR)
             target_link_libraries(glfw PRIVATE "-Wl,--dynamicbase")
         endif()
+        cmake_pop_check_state()
 
         # Compatibility with 64-bit address space layout randomization (ASLR)
+        cmake_push_check_state()
         set(CMAKE_REQUIRED_FLAGS "-Wl,--high-entropy-va")
         check_c_compiler_flag("" _GLFW_HAS_64ASLR)
         if (_GLFW_HAS_64ASLR)
             target_link_libraries(glfw PRIVATE "-Wl,--high-entropy-va")
         endif()
-
-        # Clear flags again to avoid breaking later tests
-        set(CMAKE_REQUIRED_FLAGS)
+        cmake_pop_check_state()
     endif()
 
     if (UNIX)
@@ -344,12 +343,8 @@ if (GLFW_BUILD_SHARED_LIBRARY)
     endif()
 endif()
 
-foreach(arg ${glfw_PKG_DEPS})
-    string(APPEND deps " ${arg}")
-endforeach()
-foreach(arg ${glfw_PKG_LIBS})
-    string(APPEND libs " ${arg}")
-endforeach()
+list(JOIN glfw_PKG_DEPS " " deps)
+list(JOIN glfw_PKG_LIBS " " libs)
 
 set(GLFW_PKG_CONFIG_REQUIRES_PRIVATE "${deps}" CACHE INTERNAL
     "GLFW pkg-config Requires.private")

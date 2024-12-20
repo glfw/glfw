@@ -79,7 +79,7 @@ more information.
 
 ## System requirements
 
-GLFW supports Windows XP and later and macOS 10.8 and later.  Linux and other
+GLFW supports Windows XP and later and macOS 10.11 and later.  Linux and other
 Unix-like systems running the X Window System are supported even without
 a desktop environment or modern extensions, although some features require
 a running window or clipboard manager.  The OSMesa backend requires Mesa 6.3.
@@ -90,7 +90,7 @@ in the documentation for more information.
 
 ## Dependencies
 
-GLFW itself needs only CMake 3.4 or later and the headers and libraries for your
+GLFW itself needs only CMake 3.16 or later and the headers and libraries for your
 OS and window system.
 
 The examples and test programs depend on a number of tiny libraries.  These are
@@ -123,8 +123,12 @@ information on what to include when reporting a bug.
 
  - Added `GLFW_UNLIMITED_MOUSE_BUTTONS` input mode that allows mouse buttons beyond
    the limit of the mouse button tokens to be reported (#2423)
+ - Updated minimum CMake version to 3.16 (#2541)
+ - [Cocoa] Added `QuartzCore` framework as link-time dependency
+ - [Cocoa] Removed support for OS X 10.10 Yosemite and earlier (#2506)
  - [Wayland] Bugfix: The fractional scaling related objects were not destroyed
  - [Wayland] Bugfix: `glfwInit` would segfault on compositor with no seat (#2517)
+ - [Wayland] Bugfix: A drag entering a non-GLFW surface could cause a segfault
  - [Null] Added Vulkan 'window' surface creation via `VK_EXT_headless_surface`
  - [Null] Added EGL context creation on Mesa via `EGL_MESA_platform_surfaceless`
  - [EGL] Allowed native access on Wayland with `GLFW_CONTEXT_CREATION_API` set to

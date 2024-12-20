@@ -183,16 +183,16 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    // Context robustness modes (GL_KHR_robustness) are not yet supported by
+    // Context robustness modes (GL_KHR_robustness) are not supported by
     // macOS but are not a hard constraint, so ignore and continue
 
-    // Context release behaviors (GL_KHR_context_flush_control) are not yet
+    // Context release behaviors (GL_KHR_context_flush_control) are not 
     // supported by macOS but are not a hard constraint, so ignore and continue
 
-    // Debug contexts (GL_KHR_debug) are not yet supported by macOS but are not
+    // Debug contexts (GL_KHR_debug) are not supported by macOS but are not
     // a hard constraint, so ignore and continue
 
-    // No-error contexts (GL_KHR_no_error) are not yet supported by macOS but
+    // No-error contexts (GL_KHR_no_error) are not supported by macOS but
     // are not a hard constraint, so ignore and continue
 
 #define ADD_ATTRIB(a) \
@@ -218,14 +218,11 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         ADD_ATTRIB(kCGLPFASupportsAutomaticGraphicsSwitching);
     }
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
     if (ctxconfig->major >= 4)
     {
         SET_ATTRIB(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion4_1Core);
     }
-    else
-#endif /*MAC_OS_X_VERSION_MAX_ALLOWED*/
-    if (ctxconfig->major >= 3)
+    else if (ctxconfig->major >= 3)
     {
         SET_ATTRIB(NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core);
     }

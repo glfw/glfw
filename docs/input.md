@@ -940,9 +940,10 @@ with @ref glfwGetTimerValue.
 uint64_t value = glfwGetTimerValue();
 ```
 
-This value is in 1&nbsp;/&nbsp;frequency seconds.  The frequency of the raw
-timer varies depending on the operating system and hardware.  You can query the
-frequency, in Hz, with @ref glfwGetTimerFrequency.
+This function returns the current value of the raw timer. To get the current time in 
+1&nbsp;/&nbsp;frequency seconds, use `glfwGetTimerValue() / glfwGetTimerFrequency()`.
+The frequency of the rawtimer varies depending on the operating system and hardware.
+You can query the frequency, in Hz, with @ref glfwGetTimerFrequency.
 
 ```c
 uint64_t frequency = glfwGetTimerFrequency();

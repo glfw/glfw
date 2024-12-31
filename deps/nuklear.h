@@ -12983,7 +12983,7 @@ nk_font_bake_convert(void *out_memory, int img_width, int img_height,
     const void *in_memory)
 {
     int n = 0;
-    nk_rune *dst;
+    nk_byte *dst;
     const nk_byte *src;
 
     NK_ASSERT(out_memory);
@@ -12992,10 +12992,14 @@ nk_font_bake_convert(void *out_memory, int img_width, int img_height,
     NK_ASSERT(img_height);
     if (!out_memory || !in_memory || !img_height || !img_width) return;
 
-    dst = (nk_rune*)out_memory;
+    dst = (nk_byte*)out_memory;
     src = (const nk_byte*)in_memory;
-    for (n = (int)(img_width * img_height); n > 0; n--)
-        *dst++ = ((nk_rune)(*src++) << 24) | 0x00FFFFFF;
+    for (n = (int)(img_width * img_height); n > 0; n--) {
+        *dst++ = 0xff;  // r
+        *dst++ = 0xff;  // g
+        *dst++ = 0xff;  // b
+        *dst++ = *src++;  // a
+    }
 }
 
 /* -------------------------------------------------------------

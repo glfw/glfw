@@ -28,7 +28,9 @@
 //
 //========================================================================
 
-#include <glad/glad.h>
+#define GLAD_GL_IMPLEMENTATION
+#include <glad/gl.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -93,23 +95,28 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 static void list_modes(GLFWmonitor* monitor)
 {
     int count, x, y, width_mm, height_mm, i;
+    int workarea_x, workarea_y, workarea_width, workarea_height;
     float xscale, yscale;
+
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
     const GLFWvidmode* modes = glfwGetVideoModes(monitor, &count);
 
     glfwGetMonitorPos(monitor, &x, &y);
     glfwGetMonitorPhysicalSize(monitor, &width_mm, &height_mm);
     glfwGetMonitorContentScale(monitor, &xscale, &yscale);
+    glfwGetMonitorWorkarea(monitor, &workarea_x, &workarea_y, &workarea_width, &workarea_height);
 
     printf("Name: %s (%s)\n",
            glfwGetMonitorName(monitor),
            glfwGetPrimaryMonitor() == monitor ? "primary" : "secondary");
     printf("Current mode: %s\n", format_mode(mode));
-    printf("Virtual position: %i %i\n", x, y);
-    printf("Content scale: %f %f\n", xscale, yscale);
+    printf("Virtual position: %i, %i\n", x, y);
+    printf("Content scale: %f x %f\n", xscale, yscale);
 
-    printf("Physical size: %i x %i mm (%0.2f dpi)\n",
-           width_mm, height_mm, mode->width * 25.4f / width_mm);
+    printf("Physical size: %i x %i mm (%0.2f dpi at %i x %i)\n",
+           width_mm, height_mm, mode->width * 25.4f / width_mm, mode->width, mode->height);
+    printf("Monitor work area: %i x %i starting at %i, %i\n",
+            workarea_width, workarea_height, workarea_x, workarea_y);
 
     printf("Modes:\n");
 
@@ -161,7 +168,7 @@ static void test_modes(GLFWmonitor* monitor)
         glfwSetKeyCallback(window, key_callback);
 
         glfwMakeContextCurrent(window);
-        gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+        gladLoadGL(glfwGetProcAddress);
         glfwSwapInterval(1);
 
         glfwSetTime(0.0);
@@ -234,6 +241,8 @@ int main(int argc, char** argv)
     }
 
     glfwSetErrorCallback(error_callback);
+
+    glfwInitHint(GLFW_COCOA_MENUBAR, GLFW_FALSE);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);

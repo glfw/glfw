@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 Linux - www.glfw.org
+// GLFW 3.5 Linux - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -24,5 +24,7 @@
 //
 //========================================================================
 
-long _glfwKeySym2Unicode(unsigned int keysym);
+#define GLFW_INVALID_CODEPOINT 0xffffffffu
+
+uint32_t _glfwKeySym2Unicode(unsigned int keysym);
 

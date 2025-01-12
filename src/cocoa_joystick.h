@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.3 Cocoa - www.glfw.org
+// GLFW 3.5 Cocoa - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2006-2017 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -26,13 +26,10 @@
 
 #include <IOKit/IOKitLib.h>
 #include <IOKit/IOCFPlugIn.h>
-#include <IOKit/hid/IOHIDLib.h>
 #include <IOKit/hid/IOHIDKeys.h>
 
-#define _GLFW_PLATFORM_JOYSTICK_STATE         _GLFWjoystickNS ns
-#define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE
-
-#define _GLFW_PLATFORM_MAPPING_NAME "Mac OS X"
+#define GLFW_COCOA_JOYSTICK_STATE         _GLFWjoystickNS ns;
+#define GLFW_COCOA_LIBRARY_JOYSTICK_STATE
 
 // Cocoa-specific per-joystick data
 //
@@ -44,7 +41,9 @@ typedef struct _GLFWjoystickNS
     CFMutableArrayRef   hats;
 } _GLFWjoystickNS;
 
-
-void _glfwInitJoysticksNS(void);
-void _glfwTerminateJoysticksNS(void);
+GLFWbool _glfwInitJoysticksCocoa(void);
+void _glfwTerminateJoysticksCocoa(void);
+GLFWbool _glfwPollJoystickCocoa(_GLFWjoystick* js, int mode);
+const char* _glfwGetMappingNameCocoa(void);
+void _glfwUpdateGamepadGUIDCocoa(char* guid);
 

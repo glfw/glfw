@@ -2,15 +2,17 @@
 // This is an example program for the GLFW library
 //
 // The program uses a "split window" view, rendering four views of the
-// same scene in one window (e.g. uesful for 3D modelling software). This
-// demo uses scissors to separete the four different rendering areas from
+// same scene in one window (e.g. useful for 3D modelling software). This
+// demo uses scissors to separate the four different rendering areas from
 // each other.
 //
 // (If the code seems a little bit strange here and there, it may be
 //  because I am not a friend of orthogonal projections)
 //========================================================================
 
-#include <glad/glad.h>
+#define GLAD_GL_IMPLEMENTATION
+#include <glad/gl.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #if defined(_MSC_VER)
@@ -513,7 +515,7 @@ int main(void)
 
     // Enable vsync
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    gladLoadGL(glfwGetProcAddress);
     glfwSwapInterval(1);
 
     if (GLAD_GL_ARB_multisample || GLAD_GL_VERSION_1_3)

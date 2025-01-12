@@ -28,7 +28,9 @@
 //
 //========================================================================
 
-#include <glad/glad.h>
+#define GLAD_GL_IMPLEMENTATION
+#include <glad/gl.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -36,7 +38,7 @@
 
 #include "getopt.h"
 
-static int windowed_xpos, windowed_ypos, windowed_width, windowed_height;
+static int windowed_xpos, windowed_ypos, windowed_width = 640, windowed_height = 480;
 
 static void usage(void)
 {
@@ -179,8 +181,8 @@ static GLFWwindow* create_window(GLFWmonitor* monitor)
     }
     else
     {
-        width = 640;
-        height = 480;
+        width = windowed_width;
+        height = windowed_height;
     }
 
     window = glfwCreateWindow(width, height, "Iconify", monitor, NULL);
@@ -191,7 +193,7 @@ static GLFWwindow* create_window(GLFWmonitor* monitor)
     }
 
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    gladLoadGL(glfwGetProcAddress);
 
     return window;
 }

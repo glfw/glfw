@@ -29,7 +29,9 @@
 #include <assert.h>
 #include <stddef.h>
 
-#include <glad/glad.h>
+#define GLAD_GL_IMPLEMENTATION
+#include <glad/gl.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 /* Map height updates */
@@ -291,12 +293,12 @@ static void generate_heightmap__circle(float* center_x, float* center_y,
 {
     float sign;
     /* random value for element in between [0-1.0] */
-    *center_x = (MAP_SIZE * rand()) / (1.0f * RAND_MAX);
-    *center_y = (MAP_SIZE * rand()) / (1.0f * RAND_MAX);
-    *size = (MAX_CIRCLE_SIZE * rand()) / (1.0f * RAND_MAX);
-    sign = (1.0f * rand()) / (1.0f * RAND_MAX);
+    *center_x = (MAP_SIZE * rand()) / (float) RAND_MAX;
+    *center_y = (MAP_SIZE * rand()) / (float) RAND_MAX;
+    *size = (MAX_CIRCLE_SIZE * rand()) / (float) RAND_MAX;
+    sign = (1.0f * rand()) / (float) RAND_MAX;
     sign = (sign < DISPLACEMENT_SIGN_LIMIT) ? -1.0f : 1.0f;
-    *displacement = (sign * (MAX_DISPLACEMENT * rand())) / (1.0f * RAND_MAX);
+    *displacement = (sign * (MAX_DISPLACEMENT * rand())) / (float) RAND_MAX;
 }
 
 /* Run the specified number of iterations of the generation process for the
@@ -432,7 +434,7 @@ int main(int argc, char** argv)
     glfwSetKeyCallback(window, key_callback);
 
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    gladLoadGL(glfwGetProcAddress);
 
     /* Prepare opengl resources for rendering */
     shader_program = make_shader_program(vertex_shader_text, fragment_shader_text);

@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.3 POSIX - www.glfw.org
+// GLFW 3.5 POSIX - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2006-2017 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -26,6 +26,8 @@
 //========================================================================
 
 #include "internal.h"
+
+#if defined(GLFW_BUILD_POSIX_THREAD)
 
 #include <assert.h>
 #include <string.h>
@@ -100,4 +102,6 @@ void _glfwPlatformUnlockMutex(_GLFWmutex* mutex)
     assert(mutex->posix.allocated == GLFW_TRUE);
     pthread_mutex_unlock(&mutex->posix.handle);
 }
+
+#endif // GLFW_BUILD_POSIX_THREAD
 

@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.3 macOS - www.glfw.org
+// GLFW 3.5 macOS - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2009-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2009-2019 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -25,8 +25,13 @@
 //========================================================================
 
 #include "internal.h"
+
+#if defined(_GLFW_COCOA)
+
 #include <sys/param.h> // For MAXPATHLEN
 
+// Needed for _NSGetProgname
+#include <crt_externs.h>
 
 // Change to our application bundle's resources directory, if present
 //
@@ -64,12 +69,114 @@ static void changeToResourcesDirectory(void)
     chdir(resourcesPath);
 }
 
+// Set up the menu bar (manually)
+// This is nasty, nasty stuff -- calls to undocumented semi-private APIs that
+// could go away at any moment, lots of stuff that really should be
+// localize(d|able), etc.  Add a nib to save us this horror.
+//
+static void createMenuBar(void)
+{
+    NSString* appName = nil;
+    NSDictionary* bundleInfo = [[NSBundle mainBundle] infoDictionary];
+    NSString* nameKeys[] =
+    {
+        @"CFBundleDisplayName",
+        @"CFBundleName",
+        @"CFBundleExecutable",
+    };
+
+    // Try to figure out what the calling application is called
+
+    for (size_t i = 0;  i < sizeof(nameKeys) / sizeof(nameKeys[0]);  i++)
+    {
+        id name = bundleInfo[nameKeys[i]];
+        if (name &&
+            [name isKindOfClass:[NSString class]] &&
+            ![name isEqualToString:@""])
+        {
+            appName = name;
+            break;
+        }
+    }
+
+    if (!appName)
+    {
+        char** progname = _NSGetProgname();
+        if (progname && *progname)
+            appName = @(*progname);
+        else
+            appName = @"GLFW Application";
+    }
+
+    NSMenu* bar = [[NSMenu alloc] init];
+    [NSApp setMainMenu:bar];
+
+    NSMenuItem* appMenuItem =
+        [bar addItemWithTitle:@"" action:NULL keyEquivalent:@""];
+    NSMenu* appMenu = [[NSMenu alloc] init];
+    [appMenuItem setSubmenu:appMenu];
+
+    [appMenu addItemWithTitle:[NSString stringWithFormat:@"About %@", appName]
+                       action:@selector(orderFrontStandardAboutPanel:)
+                keyEquivalent:@""];
+    [appMenu addItem:[NSMenuItem separatorItem]];
+    NSMenu* servicesMenu = [[NSMenu alloc] init];
+    [NSApp setServicesMenu:servicesMenu];
+    [[appMenu addItemWithTitle:@"Services"
+                       action:NULL
+                keyEquivalent:@""] setSubmenu:servicesMenu];
+    [servicesMenu release];
+    [appMenu addItem:[NSMenuItem separatorItem]];
+    [appMenu addItemWithTitle:[NSString stringWithFormat:@"Hide %@", appName]
+                       action:@selector(hide:)
+                keyEquivalent:@"h"];
+    [[appMenu addItemWithTitle:@"Hide Others"
+                       action:@selector(hideOtherApplications:)
+                keyEquivalent:@"h"]
+        setKeyEquivalentModifierMask:NSEventModifierFlagOption | NSEventModifierFlagCommand];
+    [appMenu addItemWithTitle:@"Show All"
+                       action:@selector(unhideAllApplications:)
+                keyEquivalent:@""];
+    [appMenu addItem:[NSMenuItem separatorItem]];
+    [appMenu addItemWithTitle:[NSString stringWithFormat:@"Quit %@", appName]
+                       action:@selector(terminate:)
+                keyEquivalent:@"q"];
+
+    NSMenuItem* windowMenuItem =
+        [bar addItemWithTitle:@"" action:NULL keyEquivalent:@""];
+    [bar release];
+    NSMenu* windowMenu = [[NSMenu alloc] initWithTitle:@"Window"];
+    [NSApp setWindowsMenu:windowMenu];
+    [windowMenuItem setSubmenu:windowMenu];
+
+    [windowMenu addItemWithTitle:@"Minimize"
+                          action:@selector(performMiniaturize:)
+                   keyEquivalent:@"m"];
+    [windowMenu addItemWithTitle:@"Zoom"
+                          action:@selector(performZoom:)
+                   keyEquivalent:@""];
+    [windowMenu addItem:[NSMenuItem separatorItem]];
+    [windowMenu addItemWithTitle:@"Bring All to Front"
+                          action:@selector(arrangeInFront:)
+                   keyEquivalent:@""];
+
+    // TODO: Make this appear at the bottom of the menu (for consistency)
+    [windowMenu addItem:[NSMenuItem separatorItem]];
+    [[windowMenu addItemWithTitle:@"Enter Full Screen"
+                           action:@selector(toggleFullScreen:)
+                    keyEquivalent:@"f"]
+     setKeyEquivalentModifierMask:NSEventModifierFlagControl | NSEventModifierFlagCommand];
+
+    // Prior to Snow Leopard, we need to use this oddly-named semi-private API
+    // to get the application menu working properly.
+    SEL setAppleMenuSelector = NSSelectorFromString(@"setAppleMenu:");
+    [NSApp performSelector:setAppleMenuSelector withObject:appMenu];
+}
+
 // Create key code translation tables
 //
 static void createKeyTables(void)
 {
-    int scancode;
-
     memset(_glfw.ns.keycodes, -1, sizeof(_glfw.ns.keycodes));
     memset(_glfw.ns.scancodes, -1, sizeof(_glfw.ns.scancodes));
 
@@ -142,7 +249,7 @@ static void createKeyTables(void)
     _glfw.ns.keycodes[0x6D] = GLFW_KEY_F10;
     _glfw.ns.keycodes[0x67] = GLFW_KEY_F11;
     _glfw.ns.keycodes[0x6F] = GLFW_KEY_F12;
-    _glfw.ns.keycodes[0x69] = GLFW_KEY_F13;
+    _glfw.ns.keycodes[0x69] = GLFW_KEY_PRINT_SCREEN;
     _glfw.ns.keycodes[0x6B] = GLFW_KEY_F14;
     _glfw.ns.keycodes[0x71] = GLFW_KEY_F15;
     _glfw.ns.keycodes[0x6A] = GLFW_KEY_F16;
@@ -188,7 +295,7 @@ static void createKeyTables(void)
     _glfw.ns.keycodes[0x43] = GLFW_KEY_KP_MULTIPLY;
     _glfw.ns.keycodes[0x4E] = GLFW_KEY_KP_SUBTRACT;
 
-    for (scancode = 0;  scancode < 256;  scancode++)
+    for (int scancode = 0;  scancode < 256;  scancode++)
     {
         // Store the reverse translation for faster key name lookup
         if (_glfw.ns.keycodes[scancode] >= 0)
@@ -198,7 +305,7 @@ static void createKeyTables(void)
 
 // Retrieve Unicode data for the current keyboard layout
 //
-static GLFWbool updateUnicodeDataNS(void)
+static GLFWbool updateUnicodeData(void)
 {
     if (_glfw.ns.inputSource)
     {
@@ -268,36 +375,245 @@ static GLFWbool initializeTIS(void)
     _glfw.ns.tis.kPropertyUnicodeKeyLayoutData =
         *kPropertyUnicodeKeyLayoutData;
 
-    return updateUnicodeDataNS();
+    return updateUnicodeData();
 }
 
-@interface GLFWLayoutListener : NSObject
+@interface GLFWHelper : NSObject
 @end
 
-@implementation GLFWLayoutListener
+@implementation GLFWHelper
 
 - (void)selectedKeyboardInputSourceChanged:(NSObject* )object
 {
-    updateUnicodeDataNS();
+    updateUnicodeData();
 }
 
+- (void)doNothing:(id)object
+{
+}
+
+@end // GLFWHelper
+
+@interface GLFWApplicationDelegate : NSObject <NSApplicationDelegate>
 @end
+
+@implementation GLFWApplicationDelegate
+
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
+{
+    for (_GLFWwindow* window = _glfw.windowListHead;  window;  window = window->next)
+        _glfwInputWindowCloseRequest(window);
+
+    return NSTerminateCancel;
+}
+
+- (void)applicationDidChangeScreenParameters:(NSNotification *) notification
+{
+    for (_GLFWwindow* window = _glfw.windowListHead;  window;  window = window->next)
+    {
+        if (window->context.client != GLFW_NO_API)
+            [window->context.nsgl.object update];
+    }
+
+    _glfwPollMonitorsCocoa();
+}
+
+- (void)applicationWillFinishLaunching:(NSNotification *)notification
+{
+    if (_glfw.hints.init.ns.menubar)
+    {
+        // Menu bar setup must go between sharedApplication and finishLaunching
+        // in order to properly emulate the behavior of NSApplicationMain
+
+        if ([[NSBundle mainBundle] pathForResource:@"MainMenu" ofType:@"nib"])
+        {
+            [[NSBundle mainBundle] loadNibNamed:@"MainMenu"
+                                          owner:NSApp
+                                topLevelObjects:&_glfw.ns.nibObjects];
+        }
+        else
+            createMenuBar();
+    }
+}
+
+- (void)applicationDidFinishLaunching:(NSNotification *)notification
+{
+    _glfwPostEmptyEventCocoa();
+    [NSApp stop:nil];
+}
+
+- (void)applicationDidHide:(NSNotification *)notification
+{
+    for (int i = 0;  i < _glfw.monitorCount;  i++)
+        _glfwRestoreVideoModeCocoa(_glfw.monitors[i]);
+}
+
+@end // GLFWApplicationDelegate
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                       GLFW internal API                      //////
+//////////////////////////////////////////////////////////////////////////
+
+void* _glfwLoadLocalVulkanLoaderCocoa(void)
+{
+    CFBundleRef bundle = CFBundleGetMainBundle();
+    if (!bundle)
+        return NULL;
+
+    CFURLRef frameworksUrl = CFBundleCopyPrivateFrameworksURL(bundle);
+    if (!frameworksUrl)
+        return NULL;
+
+    CFURLRef loaderUrl = CFURLCreateCopyAppendingPathComponent(
+        kCFAllocatorDefault, frameworksUrl, CFSTR("libvulkan.1.dylib"), false);
+    if (!loaderUrl)
+    {
+        CFRelease(frameworksUrl);
+        return NULL;
+    }
+
+    char path[PATH_MAX];
+    void* handle = NULL;
+
+    if (CFURLGetFileSystemRepresentation(loaderUrl, true, (UInt8*) path, sizeof(path) - 1))
+        handle = _glfwPlatformLoadModule(path);
+
+    CFRelease(loaderUrl);
+    CFRelease(frameworksUrl);
+    return handle;
+}
 
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-int _glfwPlatformInit(void)
+GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
 {
-    _glfw.ns.autoreleasePool = [[NSAutoreleasePool alloc] init];
+    const _GLFWplatform cocoa =
+    {
+        .platformID = GLFW_PLATFORM_COCOA,
+        .init = _glfwInitCocoa,
+        .terminate = _glfwTerminateCocoa,
+        .getCursorPos = _glfwGetCursorPosCocoa,
+        .setCursorPos = _glfwSetCursorPosCocoa,
+        .setCursorMode = _glfwSetCursorModeCocoa,
+        .setRawMouseMotion = _glfwSetRawMouseMotionCocoa,
+        .rawMouseMotionSupported = _glfwRawMouseMotionSupportedCocoa,
+        .createCursor = _glfwCreateCursorCocoa,
+        .createStandardCursor = _glfwCreateStandardCursorCocoa,
+        .destroyCursor = _glfwDestroyCursorCocoa,
+        .setCursor = _glfwSetCursorCocoa,
+        .getScancodeName = _glfwGetScancodeNameCocoa,
+        .getKeyScancode = _glfwGetKeyScancodeCocoa,
+        .setClipboardString = _glfwSetClipboardStringCocoa,
+        .getClipboardString = _glfwGetClipboardStringCocoa,
+        .initJoysticks = _glfwInitJoysticksCocoa,
+        .terminateJoysticks = _glfwTerminateJoysticksCocoa,
+        .pollJoystick = _glfwPollJoystickCocoa,
+        .getMappingName = _glfwGetMappingNameCocoa,
+        .updateGamepadGUID = _glfwUpdateGamepadGUIDCocoa,
+        .freeMonitor = _glfwFreeMonitorCocoa,
+        .getMonitorPos = _glfwGetMonitorPosCocoa,
+        .getMonitorContentScale = _glfwGetMonitorContentScaleCocoa,
+        .getMonitorWorkarea = _glfwGetMonitorWorkareaCocoa,
+        .getVideoModes = _glfwGetVideoModesCocoa,
+        .getVideoMode = _glfwGetVideoModeCocoa,
+        .getGammaRamp = _glfwGetGammaRampCocoa,
+        .setGammaRamp = _glfwSetGammaRampCocoa,
+        .createWindow = _glfwCreateWindowCocoa,
+        .destroyWindow = _glfwDestroyWindowCocoa,
+        .setWindowTitle = _glfwSetWindowTitleCocoa,
+        .setWindowIcon = _glfwSetWindowIconCocoa,
+        .getWindowPos = _glfwGetWindowPosCocoa,
+        .setWindowPos = _glfwSetWindowPosCocoa,
+        .getWindowSize = _glfwGetWindowSizeCocoa,
+        .setWindowSize = _glfwSetWindowSizeCocoa,
+        .setWindowSizeLimits = _glfwSetWindowSizeLimitsCocoa,
+        .setWindowAspectRatio = _glfwSetWindowAspectRatioCocoa,
+        .getFramebufferSize = _glfwGetFramebufferSizeCocoa,
+        .getWindowFrameSize = _glfwGetWindowFrameSizeCocoa,
+        .getWindowContentScale = _glfwGetWindowContentScaleCocoa,
+        .iconifyWindow = _glfwIconifyWindowCocoa,
+        .restoreWindow = _glfwRestoreWindowCocoa,
+        .maximizeWindow = _glfwMaximizeWindowCocoa,
+        .showWindow = _glfwShowWindowCocoa,
+        .hideWindow = _glfwHideWindowCocoa,
+        .requestWindowAttention = _glfwRequestWindowAttentionCocoa,
+        .focusWindow = _glfwFocusWindowCocoa,
+        .setWindowMonitor = _glfwSetWindowMonitorCocoa,
+        .windowFocused = _glfwWindowFocusedCocoa,
+        .windowIconified = _glfwWindowIconifiedCocoa,
+        .windowVisible = _glfwWindowVisibleCocoa,
+        .windowMaximized = _glfwWindowMaximizedCocoa,
+        .windowHovered = _glfwWindowHoveredCocoa,
+        .framebufferTransparent = _glfwFramebufferTransparentCocoa,
+        .getWindowOpacity = _glfwGetWindowOpacityCocoa,
+        .setWindowResizable = _glfwSetWindowResizableCocoa,
+        .setWindowDecorated = _glfwSetWindowDecoratedCocoa,
+        .setWindowFloating = _glfwSetWindowFloatingCocoa,
+        .setWindowOpacity = _glfwSetWindowOpacityCocoa,
+        .setWindowMousePassthrough = _glfwSetWindowMousePassthroughCocoa,
+        .pollEvents = _glfwPollEventsCocoa,
+        .waitEvents = _glfwWaitEventsCocoa,
+        .waitEventsTimeout = _glfwWaitEventsTimeoutCocoa,
+        .postEmptyEvent = _glfwPostEmptyEventCocoa,
+        .getEGLPlatform = _glfwGetEGLPlatformCocoa,
+        .getEGLNativeDisplay = _glfwGetEGLNativeDisplayCocoa,
+        .getEGLNativeWindow = _glfwGetEGLNativeWindowCocoa,
+        .getRequiredInstanceExtensions = _glfwGetRequiredInstanceExtensionsCocoa,
+        .getPhysicalDevicePresentationSupport = _glfwGetPhysicalDevicePresentationSupportCocoa,
+        .createWindowSurface = _glfwCreateWindowSurfaceCocoa
+    };
+
+    *platform = cocoa;
+    return GLFW_TRUE;
+}
+
+int _glfwInitCocoa(void)
+{
+    @autoreleasepool {
+
+    _glfw.ns.helper = [[GLFWHelper alloc] init];
+
+    [NSThread detachNewThreadSelector:@selector(doNothing:)
+                             toTarget:_glfw.ns.helper
+                           withObject:nil];
+
+    [NSApplication sharedApplication];
+
+    _glfw.ns.delegate = [[GLFWApplicationDelegate alloc] init];
+    if (_glfw.ns.delegate == nil)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Cocoa: Failed to create application delegate");
+        return GLFW_FALSE;
+    }
+
+    [NSApp setDelegate:_glfw.ns.delegate];
+
+    NSEvent* (^block)(NSEvent*) = ^ NSEvent* (NSEvent* event)
+    {
+        if ([event modifierFlags] & NSEventModifierFlagCommand)
+            [[NSApp keyWindow] sendEvent:event];
+
+        return event;
+    };
+
+    _glfw.ns.keyUpMonitor =
+        [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskKeyUp
+                                              handler:block];
 
     if (_glfw.hints.init.ns.chdir)
         changeToResourcesDirectory();
 
-    _glfw.ns.listener = [[GLFWLayoutListener alloc] init];
+    // Press and Hold prevents some keys from emitting repeated characters
+    NSDictionary* defaults = @{@"ApplePressAndHoldEnabled":@NO};
+    [[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
+
     [[NSNotificationCenter defaultCenter]
-        addObserver:_glfw.ns.listener
+        addObserver:_glfw.ns.helper
            selector:@selector(selectedKeyboardInputSourceChanged:)
                name:NSTextInputContextKeyboardSelectionDidChangeNotification
              object:nil];
@@ -313,15 +629,24 @@ int _glfwPlatformInit(void)
     if (!initializeTIS())
         return GLFW_FALSE;
 
-    _glfwInitTimerNS();
-    _glfwInitJoysticksNS();
+    _glfwPollMonitorsCocoa();
 
-    _glfwPollMonitorsNS();
+    if (![[NSRunningApplication currentApplication] isFinishedLaunching])
+        [NSApp run];
+
+    // In case we are unbundled, make us a proper UI application
+    if (_glfw.hints.init.ns.menubar)
+        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+
     return GLFW_TRUE;
+
+    } // autoreleasepool
 }
 
-void _glfwPlatformTerminate(void)
+void _glfwTerminateCocoa(void)
 {
+    @autoreleasepool {
+
     if (_glfw.ns.inputSource)
     {
         CFRelease(_glfw.ns.inputSource);
@@ -342,33 +667,29 @@ void _glfwPlatformTerminate(void)
         _glfw.ns.delegate = nil;
     }
 
-    if (_glfw.ns.listener)
+    if (_glfw.ns.helper)
     {
         [[NSNotificationCenter defaultCenter]
-            removeObserver:_glfw.ns.listener
+            removeObserver:_glfw.ns.helper
                       name:NSTextInputContextKeyboardSelectionDidChangeNotification
                     object:nil];
         [[NSNotificationCenter defaultCenter]
-            removeObserver:_glfw.ns.listener];
-        [_glfw.ns.listener release];
-        _glfw.ns.listener = nil;
+            removeObserver:_glfw.ns.helper];
+        [_glfw.ns.helper release];
+        _glfw.ns.helper = nil;
     }
 
-    free(_glfw.ns.clipboardString);
+    if (_glfw.ns.keyUpMonitor)
+        [NSEvent removeMonitor:_glfw.ns.keyUpMonitor];
+
+    _glfw_free(_glfw.ns.clipboardString);
 
     _glfwTerminateNSGL();
-    _glfwTerminateJoysticksNS();
+    _glfwTerminateEGL();
+    _glfwTerminateOSMesa();
 
-    [_glfw.ns.autoreleasePool release];
-    _glfw.ns.autoreleasePool = nil;
+    } // autoreleasepool
 }
 
-const char* _glfwPlatformGetVersionString(void)
-{
-    return _GLFW_VERSION_NUMBER " Cocoa NSGL"
-#if defined(_GLFW_BUILD_DLL)
-        " dynamic"
-#endif
-        ;
-}
+#endif // _GLFW_COCOA
 

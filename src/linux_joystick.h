@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.3 Linux - www.glfw.org
+// GLFW 3.5 Linux - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2014 Jonas Ådahl <jadahl@gmail.com>
 //
@@ -28,10 +28,8 @@
 #include <linux/limits.h>
 #include <regex.h>
 
-#define _GLFW_PLATFORM_JOYSTICK_STATE         _GLFWjoystickLinux linjs
-#define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE _GLFWlibraryLinux  linjs
-
-#define _GLFW_PLATFORM_MAPPING_NAME "Linux"
+#define GLFW_LINUX_JOYSTICK_STATE         _GLFWjoystickLinux linjs;
+#define GLFW_LINUX_LIBRARY_JOYSTICK_STATE _GLFWlibraryLinux  linjs;
 
 // Linux-specific joystick data
 //
@@ -52,11 +50,15 @@ typedef struct _GLFWlibraryLinux
     int                     inotify;
     int                     watch;
     regex_t                 regex;
+    GLFWbool                regexCompiled;
     GLFWbool                dropped;
 } _GLFWlibraryLinux;
 
+void _glfwDetectJoystickConnectionLinux(void);
 
 GLFWbool _glfwInitJoysticksLinux(void);
 void _glfwTerminateJoysticksLinux(void);
-void _glfwDetectJoystickConnectionLinux(void);
+GLFWbool _glfwPollJoystickLinux(_GLFWjoystick* js, int mode);
+const char* _glfwGetMappingNameLinux(void);
+void _glfwUpdateGamepadGUIDLinux(char* guid);
 

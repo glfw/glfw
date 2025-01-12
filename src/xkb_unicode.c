@@ -1,8 +1,8 @@
 //========================================================================
-// GLFW 3.3 X11 - www.glfw.org
+// GLFW 3.5 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
-// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2006-2017 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -27,6 +27,7 @@
 
 #include "internal.h"
 
+#if defined(_GLFW_X11) || defined(_GLFW_WAYLAND)
 
 /*
  * Marcus: This code was originally written by Markus G. Kuhn.
@@ -905,7 +906,7 @@ static const struct codepair {
 
 // Convert XKB KeySym to Unicode
 //
-long _glfwKeySym2Unicode(unsigned int keysym)
+uint32_t _glfwKeySym2Unicode(unsigned int keysym)
 {
     int min = 0;
     int max = sizeof(keysymtab) / sizeof(struct codepair) - 1;
@@ -935,6 +936,8 @@ long _glfwKeySym2Unicode(unsigned int keysym)
     }
 
     // No matching Unicode value found
-    return -1;
+    return GLFW_INVALID_CODEPOINT;
 }
+
+#endif // _GLFW_WAYLAND or _GLFW_X11
 

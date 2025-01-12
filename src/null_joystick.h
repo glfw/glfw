@@ -1,7 +1,7 @@
 //========================================================================
-// GLFW 3.3 - www.glfw.org
+// GLFW 3.5 - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
+// Copyright (c) 2006-2017 Camilla Löwy <elmindreda@glfw.org>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -24,8 +24,9 @@
 //
 //========================================================================
 
-#define _GLFW_PLATFORM_JOYSTICK_STATE         int nulljs
-#define _GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE int nulljs
-
-#define _GLFW_PLATFORM_MAPPING_NAME ""
+GLFWbool _glfwInitJoysticksNull(void);
+void _glfwTerminateJoysticksNull(void);
+GLFWbool _glfwPollJoystickNull(_GLFWjoystick* js, int mode);
+const char* _glfwGetMappingNameNull(void);
+void _glfwUpdateGamepadGUIDNull(char* guid);
 

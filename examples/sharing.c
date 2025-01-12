@@ -23,13 +23,14 @@
 //
 //========================================================================
 
-#include <glad/glad.h>
+#define GLAD_GL_IMPLEMENTATION
+#include <glad/gl.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "getopt.h"
 #include "linmath.h"
 
 static const char* vertex_shader_text =
@@ -103,7 +104,7 @@ int main(int argc, char** argv)
 
     // The contexts are created with the same APIs so the function
     // pointers should be re-usable between them
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    gladLoadGL(glfwGetProcAddress);
 
     // Create the OpenGL objects inside the first context, created above
     // All objects will be shared with the second context, created below

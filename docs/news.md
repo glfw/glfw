@@ -14,6 +14,10 @@ values over 8. For compatibility with older versions, the
 @ref GLFW_UNLIMITED_MOUSE_BUTTONS input mode needs to be set to make use of
 this.
 
+### Gamepad misc1 and touchpad buttons
+
+GLFW gamepad support improved to include mapping for misc1 and touchpad buttons.
+
 ## Caveats {#caveats}
 
 ## Deprecations {#deprecations}

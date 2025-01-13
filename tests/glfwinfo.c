@@ -71,6 +71,9 @@
 #define PLATFORM_NAME_X11   "x11"
 #define PLATFORM_NAME_NULL  "null"
 
+#define RENDERER_NAME_HW    "hw"
+#define RENDERER_NAME_SW    "sw"
+
 static void usage(void)
 {
     printf("Usage: glfwinfo [OPTION]...\n");
@@ -92,6 +95,9 @@ static void usage(void)
                                         API_NAME_NATIVE " or "
                                         API_NAME_EGL " or "
                                         API_NAME_OSMESA ")\n");
+    printf("      --renderer=RENDERER   the renderer to use ("
+                                        RENDERER_NAME_HW " or "
+                                        RENDERER_NAME_SW ")\n");
     printf("  -d, --debug               request a debug context\n");
     printf("  -f, --forward             require a forward-compatible context\n");
     printf("  -h, --help                show this help\n");
@@ -384,7 +390,7 @@ int main(int argc, char** argv)
     bool cocoa_graphics_switching = false;
     bool disable_xcb_surface = false;
 
-    enum { PLATFORM, CLIENT, CONTEXT, BEHAVIOR, DEBUG_CONTEXT, FORWARD, HELP,
+    enum { PLATFORM, CLIENT, CONTEXT, RENDERER, BEHAVIOR, DEBUG_CONTEXT, FORWARD, HELP,
            EXTENSIONS, LAYERS,
            MAJOR, MINOR, PROFILE, ROBUSTNESS, VERSION,
            REDBITS, GREENBITS, BLUEBITS, ALPHABITS, DEPTHBITS, STENCILBITS,
@@ -397,6 +403,7 @@ int main(int argc, char** argv)
         { "behavior",           1, NULL, BEHAVIOR },
         { "client-api",         1, NULL, CLIENT },
         { "context-api",        1, NULL, CONTEXT },
+        { "renderer",           1, NULL, RENDERER },
         { "debug",              0, NULL, DEBUG_CONTEXT },
         { "forward",            0, NULL, FORWARD },
         { "help",               0, NULL, HELP },
@@ -484,6 +491,17 @@ int main(int argc, char** argv)
                     context_creation_api = GLFW_EGL_CONTEXT_API;
                 else if (strcasecmp(optarg, API_NAME_OSMESA) == 0)
                     context_creation_api = GLFW_OSMESA_CONTEXT_API;
+                else
+                {
+                    usage();
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case RENDERER:
+                if (strcasecmp(optarg, RENDERER_NAME_HW) == 0)
+                    glfwWindowHint(GLFW_CONTEXT_RENDERER, GLFW_HARDWARE_RENDERER);
+                else if (strcasecmp(optarg, RENDERER_NAME_SW) == 0)
+                    glfwWindowHint(GLFW_CONTEXT_RENDERER, GLFW_SOFTWARE_RENDERER);
                 else
                 {
                     usage();

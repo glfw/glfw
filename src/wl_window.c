@@ -503,12 +503,12 @@ static void acquireMonitor(_GLFWwindow* window)
     if (window->wl.libdecor.frame)
     {
         libdecor_frame_set_fullscreen(window->wl.libdecor.frame,
-                                      window->monitor->wl.output);
+                                      NULL);
     }
     else if (window->wl.xdg.toplevel)
     {
         xdg_toplevel_set_fullscreen(window->wl.xdg.toplevel,
-                                    window->monitor->wl.output);
+                                    NULL);
     }
 
     setIdleInhibitor(window, GLFW_TRUE);
@@ -849,7 +849,7 @@ static GLFWbool createLibdecorFrame(_GLFWwindow* window)
     if (window->monitor)
     {
         libdecor_frame_set_fullscreen(window->wl.libdecor.frame,
-                                      window->monitor->wl.output);
+                                      NULL);
         setIdleInhibitor(window, GLFW_TRUE);
     }
     else
@@ -942,7 +942,7 @@ static GLFWbool createXdgShellObjects(_GLFWwindow* window)
 
     if (window->monitor)
     {
-        xdg_toplevel_set_fullscreen(window->wl.xdg.toplevel, window->monitor->wl.output);
+        xdg_toplevel_set_fullscreen(window->wl.xdg.toplevel, NULL);
         setIdleInhibitor(window, GLFW_TRUE);
     }
     else

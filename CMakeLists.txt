@@ -24,10 +24,11 @@ if (DEFINED GLFW_USE_WAYLAND AND UNIX AND NOT APPLE)
         "GLFW_USE_WAYLAND has been removed; delete the CMake cache and set GLFW_BUILD_WAYLAND and GLFW_BUILD_X11 instead")
 endif()
 
-cmake_dependent_option(GLFW_BUILD_WIN32 "Build support for Win32" ON "WIN32" OFF)
-cmake_dependent_option(GLFW_BUILD_COCOA "Build support for Cocoa" ON "APPLE" OFF)
-cmake_dependent_option(GLFW_BUILD_X11 "Build support for X11" ON "UNIX;NOT APPLE" OFF)
-cmake_dependent_option(GLFW_BUILD_WAYLAND "Build support for Wayland" ON "UNIX;NOT APPLE" OFF)
+cmake_dependent_option(GLFW_BUILD_WIN32 "Build support for Win32" ON "WIN32;NOT ANDROID" OFF)
+cmake_dependent_option(GLFW_BUILD_COCOA "Build support for Cocoa" ON "APPLE;NOT ANDROID" OFF)
+cmake_dependent_option(GLFW_BUILD_X11 "Build support for X11" ON "UNIX;NOT APPLE;NOT ANDROID" OFF)
+cmake_dependent_option(GLFW_BUILD_WAYLAND "Build support for Wayland" ON "UNIX;NOT APPLE;NOT ANDROID" OFF)
+cmake_dependent_option(GLFW_BUILD_ANDROID "Build support for Android" ON "ANDROID" OFF)
 
 cmake_dependent_option(GLFW_USE_HYBRID_HPG "Force use of high-performance GPU on hybrid systems" OFF
                        "WIN32" OFF)
@@ -65,6 +66,9 @@ if (GLFW_BUILD_WAYLAND)
 endif()
 if (GLFW_BUILD_X11)
     message(STATUS "Including X11 support")
+endif()
+if (GLFW_BUILD_ANDROID)
+    message(STATUS "Including Android support")
 endif()
 
 #--------------------------------------------------------------------

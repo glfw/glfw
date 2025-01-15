@@ -487,6 +487,8 @@ static void draw_particles(GLFWwindow* window, double t, float dt)
             if (alpha > 1.f)
                 alpha = 1.f;
 
+            rgba = 0;
+
             // Convert color from float to 8-bit (store it in a 32-bit
             // integer using endian independent type casting)
             ((GLubyte*) &rgba)[0] = (GLubyte)(pptr->r * 255.f);

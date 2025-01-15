@@ -7,6 +7,7 @@ video tutorials.
 
  - Bobyshev Alexander
  - Laurent Aphecetche
+ - Dimitris Apostolou
  - Matt Arsenault
  - Takuro Ashie
  - ashishgamedev

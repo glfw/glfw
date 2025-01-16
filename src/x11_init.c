@@ -1241,6 +1241,7 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
         .waitEvents = _glfwWaitEventsX11,
         .waitEventsTimeout = _glfwWaitEventsTimeoutX11,
         .postEmptyEvent = _glfwPostEmptyEventX11,
+        .createUserContext = _glfwCreateUserContextX11,
         .getEGLPlatform = _glfwGetEGLPlatformX11,
         .getEGLNativeDisplay = _glfwGetEGLNativeDisplayX11,
         .getEGLNativeWindow = _glfwGetEGLNativeWindowX11,

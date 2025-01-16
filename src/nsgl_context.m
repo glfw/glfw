@@ -353,6 +353,51 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
 }
 
 
+static void _glfwMakeUserContextCurrentNSGL(_GLFWusercontext* context)
+{
+    @autoreleasepool {
+
+        [context->nsgl.object makeCurrentContext];
+
+        _glfwPlatformSetTls(&_glfw.usercontextSlot, context);
+
+    } // autoreleasepool
+}
+
+static void _glfwDestroyUserContextNSGL(_GLFWusercontext* context)
+{
+    @autoreleasepool {
+
+        [context->nsgl.object release];
+
+    } // autoreleasepool
+    free(context);
+}
+
+_GLFWusercontext* _glfwCreateUserContextNSGL(_GLFWwindow* window)
+{
+    _GLFWusercontext* context;
+
+    context = calloc(1, sizeof(_GLFWusercontext));
+    context->window = window;
+
+    context->nsgl.object =
+        [[NSOpenGLContext alloc] initWithFormat:window->context.nsgl.pixelFormat
+                                   shareContext:window->context.nsgl.object];
+    if (window->context.nsgl.object == nil)
+    {
+        _glfwInputError(GLFW_VERSION_UNAVAILABLE,
+                        "NSGL: Failed to create OpenGL user context");
+        free(context);
+        return NULL;
+    }
+
+    context->makeCurrent = _glfwMakeUserContextCurrentNSGL;
+    context->destroy = _glfwDestroyUserContextNSGL;
+
+    return context;
+}
+
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////

@@ -581,6 +581,42 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 A normal mouse wheel, being vertical, provides offsets along the Y-axis.
 
+### Trackpad zoom and rotate {#input_mouse_trackpad_gestures}
+
+Trackpad events are currently only available on macOS and Wayland (Linux).
+
+If you wish to be notified when a zoom gesture is performed on a trackpad,
+set the trackpadZoom callback.
+
+```c
+glfwSetTrackpadZoomCallback(window, trackpad_zoom_callback);
+```
+
+The callback function receives the scale of the zoom, which is a ratio that
+should be multiplied by the current zoom level to get the new zoom level.
+
+```c
+static void trackpad_zoom_callback(GLFWwindow* window, double scale)
+{
+    my_app->zoom_level *= scale;
+}
+```
+
+For trackpad rotate gestures, set the trackpadRotateCallback.
+
+```c
+glfwSetTrackpadRotateCallback(window, trackpad_rotate_callback);
+```
+
+The callback function recieves the angle, in degrees, to rotate by.
+
+```c
+static void trackpad_rotate_callback(GLFWwindow* window, double angle)
+{
+    my_app->rotation_angle_degrees += angle;
+}
+```
+
 
 ## Joystick input {#joystick}
 

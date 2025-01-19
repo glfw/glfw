@@ -28,10 +28,10 @@
 #include "internal.h"
 
 #include <assert.h>
+#include <limits.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include <limits.h>
-#include <stdio.h>
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -185,6 +185,7 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
                                          unsigned int count)
 {
     unsigned int i;
+    bool accelerationMatch, closestAccelerationMatch = false;
     unsigned int missing, leastMissing = UINT_MAX;
     unsigned int colorDiff, leastColorDiff = UINT_MAX;
     unsigned int extraDiff, leastExtraDiff = UINT_MAX;
@@ -200,6 +201,8 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
             // Stereo is a hard constraint
             continue;
         }
+
+        accelerationMatch = desired->acceleration == current->acceleration;
 
         // Count number of missing buffers
         {
@@ -318,19 +321,25 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
         // Least number of missing buffers is the most important heuristic,
         // then color buffer size match and lastly size match for other buffers
 
-        if (missing < leastMissing)
+        if (accelerationMatch && !closestAccelerationMatch)
             closest = current;
-        else if (missing == leastMissing)
+        else if (accelerationMatch == closestAccelerationMatch)
         {
-            if ((colorDiff < leastColorDiff) ||
-                (colorDiff == leastColorDiff && extraDiff < leastExtraDiff))
-            {
+            if (missing < leastMissing)
                 closest = current;
+            else if (missing == leastMissing)
+            {
+                if ((colorDiff < leastColorDiff) ||
+                    (colorDiff == leastColorDiff && extraDiff < leastExtraDiff))
+                {
+                    closest = current;
+                }
             }
         }
 
         if (current == closest)
         {
+            closestAccelerationMatch = accelerationMatch;
             leastMissing = missing;
             leastColorDiff = colorDiff;
             leastExtraDiff = extraDiff;

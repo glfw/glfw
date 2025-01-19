@@ -14,6 +14,11 @@ values over 8. For compatibility with older versions, the
 @ref GLFW_UNLIMITED_MOUSE_BUTTONS input mode needs to be set to make use of
 this.
 
+### Callback functions for gamepad state, joystick buttons, joystick axes, and joystick hat inputs {#joystick_input_callbacks}
+
+GLFW now has callback functions for [gamepad state](@ref glfwSetGamepadStateCallback), [joystick buttons](@ref glfwSetJoystickButtonCallback), [joystick axes](@ref glfwSetJoystickAxisCallback), and [joystick hats](@ref glfwSetJoystickHatCallback), allowing for 
+event-based inputs for joysticks and gamepads.
+
 ## Caveats {#caveats}
 
 ## Deprecations {#deprecations}
@@ -24,7 +29,17 @@ this.
 
 ### New functions {#new_functions}
 
+- @ref glfwSetJoystickButtonCallback
+- @ref glfwSetJoystickAxisCallback
+- @ref glfwSetJoystickHatCallback
+- @ref glfwSetGamepadStateCallback
+
 ### New types {#new_types}
+
+- @ref GLFWjoystickbuttonfun
+- @ref GLFWjoystickaxisfun
+- @ref GLFWjoystickhatfun
+- @ref GLFWgamepadstatefun
 
 ### New constants {#new_constants}
 

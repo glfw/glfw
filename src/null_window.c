@@ -186,6 +186,18 @@ void _glfwSetWindowIconNull(_GLFWwindow* window, int count, const GLFWimage* ima
 {
 }
 
+void _glfwSetWindowProgressIndicatorNull(_GLFWwindow* window, int progressState, double value)
+{
+}
+
+void _glfwSetWindowBadgeNull(_GLFWwindow* window, int count)
+{
+}
+
+void _glfwSetWindowBadgeStringNull(_GLFWwindow* window, const char* string)
+{
+}
+
 void _glfwSetWindowMonitorNull(_GLFWwindow* window,
                                _GLFWmonitor* monitor,
                                int xpos, int ypos,

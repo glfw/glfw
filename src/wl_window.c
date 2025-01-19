@@ -1796,10 +1796,11 @@ static void keyboardHandleKey(void* userData,
 
             timer.it_value.tv_sec = _glfw.wl.keyRepeatDelay / 1000;
             timer.it_value.tv_nsec = (_glfw.wl.keyRepeatDelay % 1000) * 1000000;
+            timerfd_settime(_glfw.wl.keyRepeatTimerfd, 0, &timer, NULL);
         }
+    } else if (scancode == _glfw.wl.keyRepeatScancode) {
+        timerfd_settime(_glfw.wl.keyRepeatTimerfd, 0, &timer, NULL);
     }
-
-    timerfd_settime(_glfw.wl.keyRepeatTimerfd, 0, &timer, NULL);
 
     _glfwInputKey(window, key, scancode, action, _glfw.wl.xkb.modifiers);
 

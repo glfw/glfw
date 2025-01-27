@@ -15,6 +15,9 @@ if (APPLE)
 elseif (WIN32)
     target_sources(glfw PRIVATE win32_time.h win32_thread.h win32_module.c
                                 win32_time.c win32_thread.c)
+elseif (OGC)
+    target_sources(glfw PRIVATE ogc_time.h ogc_thread.h ogc_module.c
+                                ogc_time.c ogc_thread.c)
 else()
     target_sources(glfw PRIVATE posix_time.h posix_thread.h posix_module.c
                                 posix_time.c posix_thread.c)
@@ -55,6 +58,13 @@ if (GLFW_BUILD_WAYLAND)
     target_compile_definitions(glfw PRIVATE _GLFW_WAYLAND)
     target_sources(glfw PRIVATE wl_platform.h wl_init.c
                                 wl_monitor.c wl_window.c)
+endif()
+
+if (GLFW_BUILD_OGC)
+    target_compile_definitions(glfw PRIVATE _GLFW_OGC)
+    target_sources(glfw PRIVATE ogc_platform.h ogc_init.c ogc_joystick.c
+                                ogc_monitor.c ogc_window.c ogc_context.c
+                                ogc_cursor.h)
 endif()
 
 if (GLFW_BUILD_X11 OR GLFW_BUILD_WAYLAND)
@@ -136,7 +146,9 @@ target_include_directories(glfw PUBLIC
 target_include_directories(glfw PRIVATE
                            "${GLFW_SOURCE_DIR}/src"
                            "${GLFW_BINARY_DIR}/src")
-target_link_libraries(glfw PRIVATE Threads::Threads)
+if (Threads_FOUND)
+    target_link_libraries(glfw PRIVATE Threads::Threads)
+endif()
 
 if (GLFW_BUILD_WIN32)
     list(APPEND glfw_PKG_LIBS "-lgdi32")
@@ -211,6 +223,13 @@ if (GLFW_BUILD_X11)
         message(FATAL_ERROR "X Shape headers not found; install libxext development package")
     endif()
     target_include_directories(glfw PRIVATE "${X11_Xshape_INCLUDE_PATH}")
+endif()
+
+if (GLFW_BUILD_OGC)
+    include(FindPkgConfig)
+
+    pkg_check_modules(Opengx REQUIRED IMPORTED_TARGET opengl)
+    target_link_libraries(glfw PRIVATE PkgConfig::Opengx wiikeyboard fat)
 endif()
 
 if (UNIX AND NOT APPLE)

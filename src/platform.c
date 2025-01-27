@@ -56,6 +56,9 @@ static const struct
 #if defined(_GLFW_X11)
     { GLFW_PLATFORM_X11, _glfwConnectX11 },
 #endif
+#if defined(_GLFW_OGC)
+    { GLFW_PLATFORM_OGC, _glfwConnectOgc },
+#endif
 };
 
 GLFWbool _glfwSelectPlatform(int desiredID, _GLFWplatform* platform)
@@ -68,6 +71,7 @@ GLFWbool _glfwSelectPlatform(int desiredID, _GLFWplatform* platform)
         desiredID != GLFW_PLATFORM_COCOA &&
         desiredID != GLFW_PLATFORM_WAYLAND &&
         desiredID != GLFW_PLATFORM_X11 &&
+        desiredID != GLFW_PLATFORM_OGC &&
         desiredID != GLFW_PLATFORM_NULL)
     {
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid platform ID 0x%08X", desiredID);

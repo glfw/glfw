@@ -129,7 +129,9 @@ struct wl_output;
 #define xdg_activation_v1_interface _glfw_xdg_activation_v1_interface
 #define xdg_activation_token_v1_interface _glfw_xdg_activation_token_v1_interface
 #define wl_surface_interface _glfw_wl_surface_interface
-#define wp_fractional_scale_v1_interface _glfw_wp_fractional_scale_v1_interface
+//#define wp_cursor_shape_manager_v1_interface _glfw_wp_cursor_shape_interface
+#define fractional _glfw_wp_fractional_scale_v1_interface
+
 
 #define GLFW_WAYLAND_WINDOW_STATE         _GLFWwindowWayland  wl;
 #define GLFW_WAYLAND_LIBRARY_WINDOW_STATE _GLFWlibraryWayland wl;
@@ -438,6 +440,8 @@ typedef struct _GLFWlibraryWayland
     struct zwp_idle_inhibit_manager_v1*     idleInhibitManager;
     struct xdg_activation_v1*               activationManager;
     struct wp_fractional_scale_manager_v1*  fractionalScaleManager;
+    struct wp_cursor_shape_manager_v1*      cursorShapeManager;
+    struct wp_cursor_shape_device_v1*       cursorShapeDevice;
 
     _GLFWofferWayland*          offers;
     unsigned int                offerCount;
@@ -609,6 +613,7 @@ typedef struct _GLFWcursorWayland
     int                         width, height;
     int                         xhot, yhot;
     int                         currentImage;
+    int                         shape;
 } _GLFWcursorWayland;
 
 GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform);

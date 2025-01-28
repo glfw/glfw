@@ -105,6 +105,8 @@ if (GLFW_BUILD_WAYLAND)
     generate_wayland_protocol("fractional-scale-v1.xml")
     generate_wayland_protocol("xdg-activation-v1.xml")
     generate_wayland_protocol("xdg-decoration-unstable-v1.xml")
+    generate_wayland_protocol("tablet-unstable-v2.xml")
+    generate_wayland_protocol("cursor-shape-v1.xml")
 endif()
 
 if (WIN32 AND GLFW_BUILD_SHARED_LIBRARY)

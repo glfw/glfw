@@ -129,9 +129,7 @@ struct wl_output;
 #define xdg_activation_v1_interface _glfw_xdg_activation_v1_interface
 #define xdg_activation_token_v1_interface _glfw_xdg_activation_token_v1_interface
 #define wl_surface_interface _glfw_wl_surface_interface
-//#define wp_cursor_shape_manager_v1_interface _glfw_wp_cursor_shape_interface
-#define fractional _glfw_wp_fractional_scale_v1_interface
-
+#define wp_fractional_scale_v1_interface _glfw_wp_fractional_scale_v1_interface
 
 #define GLFW_WAYLAND_WINDOW_STATE         _GLFWwindowWayland  wl;
 #define GLFW_WAYLAND_LIBRARY_WINDOW_STATE _GLFWlibraryWayland wl;

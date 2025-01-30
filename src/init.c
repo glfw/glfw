@@ -66,6 +66,10 @@ static _GLFWinitconfig _glfwInitHints =
     {
         .libdecorMode = GLFW_WAYLAND_PREFER_LIBDECOR
     },
+    .win32 =
+    {
+        .msgInFiber = GLFW_FALSE,
+    }
 };
 
 // The allocation function used when no custom allocator is set
@@ -461,6 +465,9 @@ GLFWAPI void glfwInitHint(int hint, int value)
             return;
         case GLFW_WAYLAND_LIBDECOR:
             _glfwInitHints.wl.libdecorMode = value;
+            return;
+        case GLFW_WIN32_MESSAGES_IN_FIBER:
+            _glfwInitHints.win32.msgInFiber = value;
             return;
     }
 

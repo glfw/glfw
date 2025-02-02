@@ -26,6 +26,7 @@
 //========================================================================
 
 #include "internal.h"
+#include <X11/Xlib.h>
 
 #if defined(_GLFW_X11)
 
@@ -2727,6 +2728,27 @@ void _glfwSetWindowMousePassthroughX11(_GLFWwindow* window, GLFWbool enabled)
         XShapeCombineMask(_glfw.x11.display, window->x11.handle,
                           ShapeInput, 0, 0, None, ShapeSet);
     }
+}
+
+GLFWbool _glfwGetIsWindowFullscreenX11(_GLFWwindow* window)
+{
+    Atom atom = XInternAtom(_glfw.x11.display, "_NET_WM_STATE_FULLSCREEN", 0);
+
+    unsigned char prop[32] = {};
+    XGetWindowProperty(
+        _glfw.x11.display,
+        window->x11.handle,
+        atom, 
+        0,
+        1, // 32 bits
+        0,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        (unsigned char**)&prop
+    );
 }
 
 float _glfwGetWindowOpacityX11(_GLFWwindow* window)

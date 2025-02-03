@@ -747,7 +747,7 @@ struct _GLFWplatform
     void (*setWindowFloating)(_GLFWwindow*,GLFWbool);
     void (*setWindowOpacity)(_GLFWwindow*,float);
     void (*setWindowMousePassthrough)(_GLFWwindow*,GLFWbool);
-    void (*getWindowIsFullscreen) (_GLFWwindow*);
+    GLFWbool (*getWindowIsFullscreen) (_GLFWwindow*);
     void (*pollEvents)(void);
     void (*waitEvents)(void);
     void (*waitEventsTimeout)(double);

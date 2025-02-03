@@ -26,7 +26,9 @@
 //========================================================================
 
 #include "internal.h"
+#include <X11/X.h>
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 
 #if defined(_GLFW_X11)
 
@@ -2730,25 +2732,44 @@ void _glfwSetWindowMousePassthroughX11(_GLFWwindow* window, GLFWbool enabled)
     }
 }
 
-GLFWbool _glfwGetIsWindowFullscreenX11(_GLFWwindow* window)
+GLFWbool _glfwGetWindowIsFullscreenX11(_GLFWwindow* window)
 {
-    Atom atom = XInternAtom(_glfw.x11.display, "_NET_WM_STATE_FULLSCREEN", 0);
+    Atom wm_state = XInternAtom(_glfw.x11.display, "_NET_WM_STATE", True);
+    Atom wm_state_fullscreen = XInternAtom(_glfw.x11.display, "_NET_WM_STATE_FULLSCREEN", True);
 
-    unsigned char prop[32] = {};
-    XGetWindowProperty(
+    Atom type = XA_ATOM;
+    int format;
+    size_t nItems;
+    size_t bytesAfterReturn;
+    Atom* prop;
+    
+    int result = XGetWindowProperty(
         _glfw.x11.display,
         window->x11.handle,
-        atom, 
+        wm_state, 
         0,
-        1, // 32 bits
-        0,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        (unsigned char**)&prop
+        ~0L,
+        False,
+        AnyPropertyType,
+        &type,
+        &format,
+        &nItems,
+        &bytesAfterReturn,
+        (unsigned char**)&prop 
     );
+
+    assert(result == Success);
+
+    GLFWbool isFullscreen = 0;
+    for (int i = 0; i < nItems; i++) {
+        if (prop[i] == wm_state_fullscreen) {
+            isFullscreen = 1;
+        }
+    }
+
+    XFree(prop);
+    
+    return isFullscreen;
 }
 
 float _glfwGetWindowOpacityX11(_GLFWwindow* window)

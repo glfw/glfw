@@ -2756,6 +2756,11 @@ GLFWbool _glfwGetWindowIsFullscreenX11(_GLFWwindow* window)
     );
 
     assert(result == Success);
+    assert(nItems > 0);
+
+    if (!prop) {
+        return 0;
+    }
 
     GLFWbool isFullscreen = 0;
     for (int i = 0; i < nItems; i++) {

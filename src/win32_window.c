@@ -389,7 +389,7 @@ static void updateFramebufferTransparency(const _GLFWwindow* window)
     {
         HRGN region = CreateRectRgn(0, 0, -1, -1);
         DWM_BLURBEHIND bb = {0};
-        bb.dwFlags = DWM_BB_ENABLE;
+        bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;;
         bb.hRgnBlur = region;
         bb.fEnable = TRUE;
 

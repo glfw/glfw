@@ -664,6 +664,7 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         .setWindowFloating = _glfwSetWindowFloatingWin32,
         .setWindowOpacity = _glfwSetWindowOpacityWin32,
         .setWindowMousePassthrough = _glfwSetWindowMousePassthroughWin32,
+        .getWindowIsFullscreen = _glfwGetWindowIsFullscreenNull,
         .pollEvents = _glfwPollEventsWin32,
         .waitEvents = _glfwWaitEventsWin32,
         .waitEventsTimeout = _glfwWaitEventsTimeoutWin32,

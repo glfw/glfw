@@ -190,15 +190,6 @@ int main(int argc, char** argv)
                     glfwSetWindowAttrib(window, GLFW_MOUSE_PASSTHROUGH, false);
             }
 
-            if (nk_button_label(nk, "Is window fullscreen?")) {
-                int fullscreen = glfwGetWindowAttrib(window, GLFW_FULLSCREEN);
-                if (fullscreen) {
-                    nk_label(nk, "Yes", NK_TEXT_CENTERED); 
-                } else {
-                    nk_label(nk, "No", NK_TEXT_CENTERED); 
-                }
-            }
-
             nk_label(nk, "Press Enter in a text field to set value", NK_TEXT_CENTERED);
 
             nk_flags events;
@@ -450,6 +441,7 @@ int main(int argc, char** argv)
             nk_value_bool(nk, "Visible", glfwGetWindowAttrib(window, GLFW_VISIBLE));
             nk_value_bool(nk, "Iconified", glfwGetWindowAttrib(window, GLFW_ICONIFIED));
             nk_value_bool(nk, "Maximized", glfwGetWindowAttrib(window, GLFW_MAXIMIZED));
+            nk_value_bool(nk, "Fullscreen", glfwGetWindowAttrib(window, GLFW_FULLSCREEN));
         }
         nk_end(nk);
 

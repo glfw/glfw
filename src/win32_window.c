@@ -68,6 +68,9 @@ static DWORD getWindowExStyle(const _GLFWwindow* window)
 {
     DWORD style = WS_EX_APPWINDOW;
 
+    if (_glfw.hints.framebuffer.transparent)
+        style |= WS_EX_LAYERED;
+
     if (window->monitor || window->floating)
         style |= WS_EX_TOPMOST;
 
@@ -380,15 +383,17 @@ static void updateFramebufferTransparency(const _GLFWwindow* window)
     if (FAILED(DwmIsCompositionEnabled(&composition)) || !composition)
        return;
 
+
     if (IsWindows8OrGreater() ||
         (SUCCEEDED(DwmGetColorizationColor(&color, &opaque)) && !opaque))
     {
         HRGN region = CreateRectRgn(0, 0, -1, -1);
         DWM_BLURBEHIND bb = {0};
-        bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
+        bb.dwFlags = DWM_BB_ENABLE;
         bb.hRgnBlur = region;
         bb.fEnable = TRUE;
 
+        SetLayeredWindowAttributes(window->win32.handle, 0x0030c100, 254, LWA_ALPHA);
         DwmEnableBlurBehindWindow(window->win32.handle, &bb);
         DeleteObject(region);
     }
@@ -1294,6 +1299,7 @@ static int createNativeWindow(_GLFWwindow* window,
 #else
         wc.lpszClassName = L"GLFW30";
 #endif
+        wc.hbrBackground = (HBRUSH)CreateSolidBrush(0x00000000);
         // Load user-provided icon if available
         wc.hIcon = LoadImageW(GetModuleHandleW(NULL),
                               L"GLFW_ICON", IMAGE_ICON,

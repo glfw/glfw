@@ -74,6 +74,29 @@ jobs:
             - name: Build Cocoa shared library
               run: cmake --build build-cocoa-shared --parallel
 
+    build-mingw:
+      name: Windows (MINGW)
+      runs-on: windows-latest
+      timeout-minutes: 4
+      strategy:
+        matrix:
+            BUILD_SHARED_LIBS: [ ON, OFF ]
+      defaults:
+        run:
+          # Use MinGW environment
+          shell: bash
+      env:
+          CFLAGS: -Werror
+          CMAKE_GENERATOR: MinGW Makefiles
+      steps:
+          - uses: actions/checkout@v4
+          - name: Configure MINGW library
+            run: cmake -B build -DBUILD_SHARED_LIBS=${{matrix.BUILD_SHARED_LIBS}}
+          - name: Build MINGW library
+            run: cmake --build build --parallel
+          - name: Install MINGW library to /tmp
+            run: cmake --install build --prefix /tmp
+
     build-windows-vs2022:
         name: Windows (VS2022)
         runs-on: windows-latest

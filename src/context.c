@@ -619,8 +619,9 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
 
     _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFWwindow* previous;
+    _GLFWusercontext* previousUserContext;
 
-    _glfwPlatformSetTls(&_glfw.usercontextSlot, NULL);
+    previousUserContext = _glfwPlatformGetTls(&_glfw.usercontextSlot);
     previous = _glfwPlatformGetTls(&_glfw.contextSlot);
 
     if (window && window->context.client == GLFW_NO_API)
@@ -628,6 +629,12 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
         _glfwInputError(GLFW_NO_WINDOW_CONTEXT,
                         "Cannot make current with a window that has no OpenGL or OpenGL ES context");
         return;
+    }
+
+    if (previousUserContext)
+    {
+        assert(previous==NULL);
+        previousUserContext->makeCurrent(NULL);
     }
 
     if (previous)

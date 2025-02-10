@@ -687,12 +687,24 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
 
 static void _glfwMakeUserContextCurrentGLX(_GLFWusercontext* context)
 {
-    if(!glXMakeCurrent(_glfw.x11.display, context->window->context.glx.window,context->glx.handle))
+	if (context)
+	{
+		if(!glXMakeCurrent(_glfw.x11.display, context->window->context.glx.window,context->glx.handle))
+		{
+			_glfwInputError(GLFW_PLATFORM_ERROR,
+							"GLX: Failed to make user context current");
+			_glfwPlatformSetTls(&_glfw.usercontextSlot, NULL);
+			return;
+		}
+	}
+	else
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "GLX: Failed to make user context current");
-        _glfwPlatformSetTls(&_glfw.usercontextSlot, NULL);
-        return;
+        if (!glXMakeCurrent(_glfw.x11.display, None, NULL))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "GLX: Failed to clear current user context");
+            return;
+        }
     }
     _glfwPlatformSetTls(&_glfw.usercontextSlot, context);
 }

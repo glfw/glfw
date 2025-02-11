@@ -510,6 +510,7 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         .waitEvents = _glfwWaitEventsWayland,
         .waitEventsTimeout = _glfwWaitEventsTimeoutWayland,
         .postEmptyEvent = _glfwPostEmptyEventWayland,
+        .createUserContext = _glfwCreateUserContextWayland,
         .getEGLPlatform = _glfwGetEGLPlatformWayland,
         .getEGLNativeDisplay = _glfwGetEGLNativeDisplayWayland,
         .getEGLNativeWindow = _glfwGetEGLNativeWindowWayland,

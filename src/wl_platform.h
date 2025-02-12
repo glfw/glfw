@@ -438,6 +438,7 @@ typedef struct _GLFWlibraryWayland
     struct zwp_idle_inhibit_manager_v1*     idleInhibitManager;
     struct xdg_activation_v1*               activationManager;
     struct wp_fractional_scale_manager_v1*  fractionalScaleManager;
+    struct xdg_toplevel_icon_manager_v1*    toplevelIconManager;
 
     _GLFWofferWayland*          offers;
     unsigned int                offerCount;

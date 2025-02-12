@@ -51,6 +51,7 @@
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
 #include "fractional-scale-v1-client-protocol.h"
+#include "xdg-toplevel-icon-v1-client-protocol.h"
 
 #define GLFW_BORDER_SIZE    4
 #define GLFW_CAPTION_HEIGHT 24
@@ -2235,8 +2236,55 @@ void _glfwSetWindowTitleWayland(_GLFWwindow* window, const char* title)
 void _glfwSetWindowIconWayland(_GLFWwindow* window,
                                int count, const GLFWimage* images)
 {
-    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                    "Wayland: The platform does not support setting the window icon");
+    if (!_glfw.wl.toplevelIconManager)
+    {   
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Wayland: The platform does not support setting the window icon");
+        return;
+    }
+
+    if (!count)
+    {
+        if (window->wl.libdecor.frame)
+            xdg_toplevel_icon_manager_v1_set_icon(_glfw.wl.toplevelIconManager,
+                                                libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame),
+                                                NULL);
+        else if (window->wl.xdg.toplevel)
+            xdg_toplevel_icon_manager_v1_set_icon(_glfw.wl.toplevelIconManager, window->wl.xdg.toplevel, NULL);
+        return;
+    }
+
+    for (int i = 0;  i < count;  i++)
+    {
+        if (images[i].width != images[i].height)
+        {
+            _glfwInputError(GLFW_INVALID_VALUE,
+                            "Wayland: The icon must be a square");
+            return;
+        }
+    }
+
+    struct xdg_toplevel_icon_v1 *icon = xdg_toplevel_icon_manager_v1_create_icon(_glfw.wl.toplevelIconManager);
+    struct wl_buffer *bufferArr[count];
+
+    for (int i = 0;  i < count;  i++)
+    {
+        bufferArr[i] = createShmBuffer(&images[i]);
+        xdg_toplevel_icon_v1_add_buffer(icon, bufferArr[i], 1);
+    }
+
+    if (window->wl.libdecor.frame)
+        xdg_toplevel_icon_manager_v1_set_icon(_glfw.wl.toplevelIconManager,
+                                                libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame),
+                                                icon);
+    else if (window->wl.xdg.toplevel)
+        xdg_toplevel_icon_manager_v1_set_icon(_glfw.wl.toplevelIconManager, window->wl.xdg.toplevel, icon);
+    xdg_toplevel_icon_v1_destroy(icon);
+
+    for (int i = 0;  i < count;  i++)
+    {
+        wl_buffer_destroy(bufferArr[i]);
+    }
 }
 
 void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos)

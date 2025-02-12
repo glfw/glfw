@@ -3399,9 +3399,9 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *
  *  [bundle-guide]: https://developer.apple.com/library/mac/documentation/CoreFoundation/Conceptual/CFBundles/
  *
- *  @remark @wayland There is no existing protocol to change an icon, the
- *  window will thus inherit the one defined in the application's desktop file.
- *  This function will emit @ref GLFW_FEATURE_UNAVAILABLE.
+ *  @remark @wayland This only works on compositors implementing the XDG toplevel icon protocol.
+ *  This function will emit @ref GLFW_FEATURE_UNAVAILABLE if this protocol is not available.
+ *  The icon must be square. Otherwise @ref GLFW_INVALID_VALUE will be emited.
  *
  *  @thread_safety This function must only be called from the main thread.
  *

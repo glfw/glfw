@@ -49,6 +49,7 @@
 #include "fractional-scale-v1-client-protocol.h"
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
+#include "xdg-toplevel-icon-v1-client-protocol.h"
 
 // NOTE: Versions of wayland-scanner prior to 1.17.91 named every global array of
 //       wl_interface pointers 'types', making it impossible to combine several unmodified
@@ -89,6 +90,10 @@
 
 #define types _glfw_idle_inhibit_types
 #include "idle-inhibit-unstable-v1-client-protocol-code.h"
+#undef types
+
+#define types _glfw_toplevel_icon_types
+#include "xdg-toplevel-icon-v1-client-protocol-code.h"
 #undef types
 
 static void wmBaseHandlePing(void* userData,
@@ -206,6 +211,13 @@ static void registryHandleGlobal(void* userData,
         _glfw.wl.fractionalScaleManager =
             wl_registry_bind(registry, name,
                              &wp_fractional_scale_manager_v1_interface,
+                             1);
+    }
+    else if (strcmp(interface, xdg_toplevel_icon_manager_v1_interface.name) == 0)
+    {
+        _glfw.wl.toplevelIconManager =
+            wl_registry_bind(registry, name,
+                             &xdg_toplevel_icon_manager_v1_interface,
                              1);
     }
 }
@@ -988,6 +1000,8 @@ void _glfwTerminateWayland(void)
         xdg_activation_v1_destroy(_glfw.wl.activationManager);
     if (_glfw.wl.fractionalScaleManager)
         wp_fractional_scale_manager_v1_destroy(_glfw.wl.fractionalScaleManager);
+    if (_glfw.wl.toplevelIconManager)
+        xdg_toplevel_icon_manager_v1_destroy(_glfw.wl.toplevelIconManager);
     if (_glfw.wl.registry)
         wl_registry_destroy(_glfw.wl.registry);
     if (_glfw.wl.display)

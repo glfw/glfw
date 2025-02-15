@@ -50,6 +50,8 @@
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
 #include "xdg-toplevel-icon-v1-client-protocol.h"
+#include "tablet-unstable-v2-client-protocol.h"
+#include "cursor-shape-v1-client-protocol.h"
 
 // NOTE: Versions of wayland-scanner prior to 1.17.91 named every global array of
 //       wl_interface pointers 'types', making it impossible to combine several unmodified
@@ -94,6 +96,14 @@
 
 #define types _glfw_toplevel_icon_types
 #include "xdg-toplevel-icon-v1-client-protocol-code.h"
+#undef types
+
+#define types _glfw_tablet_types
+#include "tablet-unstable-v2-client-protocol-code.h"
+#undef types
+
+#define types _glfw_cursor_shape_types
+#include "cursor-shape-v1-client-protocol-code.h"
 #undef types
 
 static void wmBaseHandlePing(void* userData,
@@ -218,6 +228,13 @@ static void registryHandleGlobal(void* userData,
         _glfw.wl.toplevelIconManager =
             wl_registry_bind(registry, name,
                              &xdg_toplevel_icon_manager_v1_interface,
+                             1);
+    }
+    else if (strcmp(interface, wp_cursor_shape_manager_v1_interface.name) == 0)
+    {
+        _glfw.wl.cursorShapeManager =
+            wl_registry_bind(registry, name,
+                             &wp_cursor_shape_manager_v1_interface,
                              1);
     }
 }
@@ -1002,6 +1019,10 @@ void _glfwTerminateWayland(void)
         wp_fractional_scale_manager_v1_destroy(_glfw.wl.fractionalScaleManager);
     if (_glfw.wl.toplevelIconManager)
         xdg_toplevel_icon_manager_v1_destroy(_glfw.wl.toplevelIconManager);
+    if (_glfw.wl.cursorShapeManager)
+        wp_cursor_shape_manager_v1_destroy(_glfw.wl.cursorShapeManager);
+    if (_glfw.wl.cursorShapeDevice)
+        wp_cursor_shape_device_v1_destroy(_glfw.wl.cursorShapeDevice);
     if (_glfw.wl.registry)
         wl_registry_destroy(_glfw.wl.registry);
     if (_glfw.wl.display)

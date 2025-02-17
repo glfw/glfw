@@ -56,6 +56,8 @@ static void error_callback(int error, const char* description)
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    static GLFWwindow *iconified;
+
     printf("%0.2f Key %s\n",
            glfwGetTime(),
            action == GLFW_PRESS ? "pressed" : "released");
@@ -67,12 +69,15 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     {
         case GLFW_KEY_I:
             glfwIconifyWindow(window);
+            iconified = window;
             break;
         case GLFW_KEY_M:
             glfwMaximizeWindow(window);
             break;
         case GLFW_KEY_R:
+            if (iconified) window = iconified;
             glfwRestoreWindow(window);
+            iconified = NULL;
             break;
         case GLFW_KEY_ESCAPE:
             glfwSetWindowShouldClose(window, GLFW_TRUE);
@@ -253,9 +258,10 @@ int main(int argc, char** argv)
         if (fullscreen)
             monitor = glfwGetPrimaryMonitor();
 
-        window_count = 1;
+        window_count = 2;
         windows = calloc(window_count, sizeof(GLFWwindow*));
         windows[0] = create_window(monitor);
+        windows[1] = create_window(monitor);
     }
 
     for (i = 0;  i < window_count;  i++)

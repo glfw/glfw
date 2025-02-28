@@ -126,6 +126,8 @@ information on what to include when reporting a bug.
  - Updated minimum CMake version to 3.16 (#2541)
  - [Cocoa] Added `QuartzCore` framework as link-time dependency
  - [Cocoa] Removed support for OS X 10.10 Yosemite and earlier (#2506)
+ - [Cocoa] Bugfix: glfwGetFramebufferSize() now returns correct values for
+   non-retina windows for some Macs. (#2478)
  - [Wayland] Bugfix: The fractional scaling related objects were not destroyed
  - [Wayland] Bugfix: `glfwInit` would segfault on compositor with no seat (#2517)
  - [Wayland] Bugfix: A drag entering a non-GLFW surface could cause a segfault

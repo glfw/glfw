@@ -2176,32 +2176,20 @@ GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
 
     if (ctxconfig->client != GLFW_NO_API)
     {
-        if (ctxconfig->source == GLFW_EGL_CONTEXT_API ||
-            ctxconfig->source == GLFW_NATIVE_CONTEXT_API)
+        window->wl.egl.window = wl_egl_window_create(window->wl.surface,
+                                                     window->wl.fbWidth,
+                                                     window->wl.fbHeight);
+        if (!window->wl.egl.window)
         {
-            window->wl.egl.window = wl_egl_window_create(window->wl.surface,
-                                                         window->wl.fbWidth,
-                                                         window->wl.fbHeight);
-            if (!window->wl.egl.window)
-            {
-                _glfwInputError(GLFW_PLATFORM_ERROR,
-                                "Wayland: Failed to create EGL window");
-                return GLFW_FALSE;
-            }
-
-            if (!_glfwInitEGL())
-                return GLFW_FALSE;
-            if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
-                return GLFW_FALSE;
-        }
-        else if (ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
-        {
-            if (!_glfwInitOSMesa())
-                return GLFW_FALSE;
-            if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
-                return GLFW_FALSE;
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Wayland: Failed to create EGL window");
+            return GLFW_FALSE;
         }
 
+        if (!_glfwInitEGL())
+            return GLFW_FALSE;
+        if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
+            return GLFW_FALSE;
         if (!_glfwRefreshContextAttribs(window, ctxconfig))
             return GLFW_FALSE;
     }

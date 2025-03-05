@@ -354,9 +354,9 @@ This is a hard constraint.
 
 @anchor GLFW_CONTEXT_CREATION_API_hint
 __GLFW_CONTEXT_CREATION_API__ specifies which context creation API to use to
-create the context.  Possible values are `GLFW_NATIVE_CONTEXT_API`,
-`GLFW_EGL_CONTEXT_API` and `GLFW_OSMESA_CONTEXT_API`.  This is a hard
-constraint.  If no client API is requested, this hint is ignored.
+create the context.  Possible values are `GLFW_NATIVE_CONTEXT_API` and
+`GLFW_EGL_CONTEXT_API`.  This is a hard constraint.  If no client API is requested,
+this hint is ignored.
 
 An [extension loader library](@ref context_glext_auto) that assumes it knows
 which API was used to create the current context may fail if you change this
@@ -369,11 +369,6 @@ will have no effect.
 @note __X11:__ On some Linux systems, creating contexts via both the native and EGL
 APIs in a single process will cause the application to segfault.  Stick to one
 API or the other on Linux for now.
-
-@note __OSMesa:__ As its name implies, an OpenGL context created with OSMesa
-does not update the window contents when its buffers are swapped.  Use OpenGL
-functions or the OSMesa native access functions @ref glfwGetOSMesaColorBuffer
-and @ref glfwGetOSMesaDepthBuffer to retrieve the framebuffer contents.
 
 @anchor GLFW_CONTEXT_VERSION_MAJOR_hint
 @anchor GLFW_CONTEXT_VERSION_MINOR_hint
@@ -565,7 +560,7 @@ GLFW_STEREO                   | `GLFW_FALSE`                | `GLFW_TRUE` or `GL
 GLFW_SRGB_CAPABLE             | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_DOUBLEBUFFER             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_CLIENT_API               | `GLFW_OPENGL_API`           | `GLFW_OPENGL_API`, `GLFW_OPENGL_ES_API` or `GLFW_NO_API`
-GLFW_CONTEXT_CREATION_API     | `GLFW_NATIVE_CONTEXT_API`   | `GLFW_NATIVE_CONTEXT_API`, `GLFW_EGL_CONTEXT_API` or `GLFW_OSMESA_CONTEXT_API`
+GLFW_CONTEXT_CREATION_API     | `GLFW_NATIVE_CONTEXT_API`   | `GLFW_NATIVE_CONTEXT_API` or `GLFW_EGL_CONTEXT_API`
 GLFW_CONTEXT_VERSION_MAJOR    | 1                           | Any valid major version number of the chosen client API
 GLFW_CONTEXT_VERSION_MINOR    | 0                           | Any valid minor version number of the chosen client API
 GLFW_CONTEXT_ROBUSTNESS       | `GLFW_NO_ROBUSTNESS`        | `GLFW_NO_ROBUSTNESS`, `GLFW_NO_RESET_NOTIFICATION` or `GLFW_LOSE_CONTEXT_ON_RESET`
@@ -1407,8 +1402,7 @@ either `GLFW_OPENGL_API`, `GLFW_OPENGL_ES_API` or `GLFW_NO_API`.
 
 @anchor GLFW_CONTEXT_CREATION_API_attrib
 __GLFW_CONTEXT_CREATION_API__ indicates the context creation API used to create
-the window's context; either `GLFW_NATIVE_CONTEXT_API`, `GLFW_EGL_CONTEXT_API`
-or `GLFW_OSMESA_CONTEXT_API`.
+the window's context; either `GLFW_NATIVE_CONTEXT_API` or `GLFW_EGL_CONTEXT_API`.
 
 @anchor GLFW_CONTEXT_VERSION_MAJOR_attrib
 @anchor GLFW_CONTEXT_VERSION_MINOR_attrib

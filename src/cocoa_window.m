@@ -948,13 +948,6 @@ GLFWbool _glfwCreateWindowCocoa(_GLFWwindow* window,
             if (!_glfwCreateContextEGL(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }
-        else if (ctxconfig->source == GLFW_OSMESA_CONTEXT_API)
-        {
-            if (!_glfwInitOSMesa())
-                return GLFW_FALSE;
-            if (!_glfwCreateContextOSMesa(window, ctxconfig, fbconfig))
-                return GLFW_FALSE;
-        }
 
         if (!_glfwRefreshContextAttribs(window, ctxconfig))
             return GLFW_FALSE;

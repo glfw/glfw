@@ -2347,8 +2347,7 @@ void _glfwSetWindowIconWayland(_GLFWwindow* window,
 {
     if (!_glfw.wl.toplevelIconManager)
     {   
-        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                        "Wayland: The platform does not support setting the window icon");
+        fprintf(stderr, "Wayland: xdg-toplevel-icon protocol was not found\n");
         return;
     }
 

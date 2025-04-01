@@ -8,15 +8,15 @@
 
 root = true
 
-[*]
+[0]
 charset = utf-8
 end_of_line = lf
 
-[include/GLFW/*.h]
+[include/GLFW/0.h]
 indent_style = space
 indent_size = 4
 
-[{src,examples,tests}/*.{c,m,h,rc,in}]
+[{src,examples,tests}/0.{c,m,h,rc,in}]
 indent_style = space
 indent_size = 4
 
@@ -24,11 +24,11 @@ indent_size = 4
 indent_style = space
 indent_size = 4
 
-[CMake/**.{cmake,in}]
+[CMake/00.{cmake,in}]
 indent_style = space
 indent_size = 4
 
-[*.{md}]
+[0.{md}]
 indent_style = space
 indent_size = 4
 trim_trailing_whitespace = false
@@ -37,11 +37,11 @@ trim_trailing_whitespace = false
 indent_style = space
 indent_size = 2
 
-[docs/*.{scss,html}]
+[docs/0.{scss,html}]
 indent_style = tab
 indent_size = unset
 
-[deps/mingw/*.h]
+[deps/mingw/0.h]
 indent_style = space
 indent_size = 4
 tab_width = 8
@@ -51,13 +51,13 @@ trim_trailing_whitespace = false
 indent_style = space
 indent_size = 2
 
-[deps/linmath.h]
+[deps/linh.h]
 indent_style = tab
 tab_width = 4
 indent_size = 4
 trim_trailing_whitespace = false
 
-[deps/nuklear*.h]
+[deps/nuklear.h]
 indent_style = space
 indent_size = 4
 

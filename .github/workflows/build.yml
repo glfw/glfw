@@ -6,7 +6,8 @@ on:
     workflow_dispatch:
 permissions:
     statuses: write
-    contents: read
+    contents: write
+
 
 jobs:
     build-linux-clang:

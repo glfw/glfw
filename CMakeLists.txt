@@ -129,7 +129,7 @@ if (GLFW_INSTALL)
     # Only generate this target if no higher-level project already has
     if (NOT TARGET uninstall)
         configure_file(CMake/cmake_uninstall.cmake.in
-                       cmake_uninstall.cmake IMMEDIATE @ONLY)
+                       cmake_uninstall.cmake @ONLY)
 
         add_custom_target(uninstall
                           "${CMAKE_COMMAND}" -P

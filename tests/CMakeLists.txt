@@ -3,7 +3,7 @@ link_libraries(glfw)
 
 include_directories("${GLFW_SOURCE_DIR}/deps")
 
-if (MATH_LIBRARY)
+if (NOT MATH_LIBRARY STREQUAL "MATH_LIBRARY-NOTFOUND")
     link_libraries("${MATH_LIBRARY}")
 endif()
 
@@ -43,7 +43,7 @@ add_executable(window WIN32 MACOSX_BUNDLE window.c ${GLAD_GL})
 
 target_link_libraries(empty Threads::Threads)
 target_link_libraries(threads Threads::Threads)
-if (RT_LIBRARY)
+if (NOT RT_LIBRARY STREQUAL "RT_LIBRARY-NOTFOUND")
     target_link_libraries(empty "${RT_LIBRARY}")
     target_link_libraries(threads "${RT_LIBRARY}")
 endif()

@@ -3,7 +3,7 @@ link_libraries(glfw)
 
 include_directories("${GLFW_SOURCE_DIR}/deps")
 
-if (MATH_LIBRARY)
+if (NOT MATH_LIBRARY STREQUAL "MATH_LIBRARY-NOTFOUND")
     link_libraries("${MATH_LIBRARY}")
 endif()
 
@@ -38,7 +38,7 @@ add_executable(wave WIN32 MACOSX_BUNDLE wave.c ${ICON} ${GLAD_GL})
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${ICON} ${GLAD_GL})
 
 target_link_libraries(particles Threads::Threads)
-if (RT_LIBRARY)
+if (NOT RT_LIBRARY STREQUAL "RT_LIBRARY-NOTFOUND")
     target_link_libraries(particles "${RT_LIBRARY}")
 endif()
 

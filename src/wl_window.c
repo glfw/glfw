@@ -1682,11 +1682,11 @@ static void keyboardHandleKeymap(void* userData,
 
     // Look up the preferred locale, falling back to "C" as default.
     locale = getenv("LC_ALL");
-    if (!locale)
+    if (!locale || strlen(locale) == 0)
         locale = getenv("LC_CTYPE");
-    if (!locale)
+    if (!locale || strlen(locale) == 0)
         locale = getenv("LANG");
-    if (!locale)
+    if (!locale || strlen(locale) == 0)
         locale = "C";
 
     composeTable =

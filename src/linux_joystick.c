@@ -181,7 +181,7 @@ static GLFWbool openJoystickDevice(const char* path)
     // They are filtered out for enumeration. I wish there is a more robust way to detect if a device is really
     // a gamecontroller/gamepad, but I wasn't able to find a way.
     if (strstr(name, "Keyboard System Control") || 
-        strstr(name, "Keyboard Consumer Control" ||
+        strstr(name, "Keyboard Consumer Control") ||
         strstr(name, "11-0048 EP0110M09") ||
         strstr(name, "HID 046a:0023")) { 
         close(linjs.fd);

@@ -712,6 +712,10 @@ int _glfwInitWayland(void)
         _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_compose_state_get_status");
     _glfw.wl.xkb.compose_state_get_one_sym = (PFN_xkb_compose_state_get_one_sym)
         _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_compose_state_get_one_sym");
+    _glfw.wl.xkb.keysym_to_utf32 = (PFN_xkb_keysym_to_utf32)
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_keysym_to_utf32");
+    _glfw.wl.xkb.keysym_to_utf8 = (PFN_xkb_keysym_to_utf8)
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_keysym_to_utf8");
 
     if (!_glfw.wl.xkb.context_new ||
         !_glfw.wl.xkb.context_unref ||

@@ -67,6 +67,7 @@ video tutorials.
  - Robin Eklind
  - Jan Ekström
  - Siavash Eliasi
+ - er-azh
  - Ahmad Fatoum
  - Nikita Fediuchin
  - Felipe Ferreira

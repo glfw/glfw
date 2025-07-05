@@ -264,8 +264,8 @@ __USE_MSVC_RUNTIME_LIBRARY_DLL__ determines whether to use the DLL version or th
 static library version of the Visual C++ runtime library.  When enabled, the
 DLL version of the Visual C++ library is used.  This is enabled by default.
 
-On CMake 3.15 and later you can set the standard CMake [CMAKE_MSVC_RUNTIME_LIBRARY][]
-variable instead of this GLFW-specific option.
+It is recommended to set the standard CMake variable [CMAKE_MSVC_RUNTIME_LIBRARY][]
+instead of this GLFW-specific option.
 
 [CMAKE_MSVC_RUNTIME_LIBRARY]: https://cmake.org/cmake/help/latest/variable/CMAKE_MSVC_RUNTIME_LIBRARY.html
 

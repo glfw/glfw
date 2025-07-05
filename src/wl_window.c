@@ -1267,17 +1267,21 @@ static void handleEvents(double* timeout)
 
             if (read(_glfw.wl.keyRepeatTimerfd, &repeats, sizeof(repeats)) == 8)
             {
-                for (uint64_t i = 0; i < repeats; i++)
+                if(_glfw.wl.keyboardFocus)
                 {
-                    _glfwInputKey(_glfw.wl.keyboardFocus,
-                                  translateKey(_glfw.wl.keyRepeatScancode),
-                                  _glfw.wl.keyRepeatScancode,
-                                  GLFW_PRESS,
-                                  _glfw.wl.xkb.modifiers);
-                    inputText(_glfw.wl.keyboardFocus, _glfw.wl.keyRepeatScancode);
+                    for (uint64_t i = 0; i < repeats; i++)
+                    {
+                        _glfwInputKey(_glfw.wl.keyboardFocus,
+                                      translateKey(_glfw.wl.keyRepeatScancode),
+                                      _glfw.wl.keyRepeatScancode,
+                                      GLFW_PRESS,
+                                      _glfw.wl.xkb.modifiers);
+                        inputText(_glfw.wl.keyboardFocus, _glfw.wl.keyRepeatScancode);
+                    }
+
+                    event = GLFW_TRUE;
                 }
 
-                event = GLFW_TRUE;
             }
         }
 

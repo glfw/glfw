@@ -229,7 +229,7 @@ video tutorials.
  - Brandon Schaefer
  - Sebastian Schuberth
  - Scr3amer
- - Jan Schuerkamp
+ - Jan Schürkamp
  - Christian Sdunek
  - Matt Sealey
  - Steve Sexton

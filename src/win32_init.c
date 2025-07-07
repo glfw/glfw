@@ -81,6 +81,14 @@ static GLFWbool loadLibraries(void)
         return GLFW_FALSE;
     }
 
+    // ntdll needs to be initialised before user32 because user32 needs IsWindows7OrGreater which depends on ntdll.
+    _glfw.win32.ntdll.instance = _glfwPlatformLoadModule("ntdll.dll");
+    if (_glfw.win32.ntdll.instance)
+    {
+        _glfw.win32.ntdll.RtlVerifyVersionInfo_ = (PFN_RtlVerifyVersionInfo)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.ntdll.instance, "RtlVerifyVersionInfo");
+    }
+
     _glfw.win32.user32.instance = _glfwPlatformLoadModule("user32.dll");
     if (!_glfw.win32.user32.instance)
     {
@@ -103,6 +111,27 @@ static GLFWbool loadLibraries(void)
         _glfwPlatformGetModuleSymbol(_glfw.win32.user32.instance, "AdjustWindowRectExForDpi");
     _glfw.win32.user32.GetSystemMetricsForDpi_ = (PFN_GetSystemMetricsForDpi)
         _glfwPlatformGetModuleSymbol(_glfw.win32.user32.instance, "GetSystemMetricsForDpi");
+
+    // Strictly speaking only QueryDisplayConfig requires Windows 7.
+    // The others two require Windows Vista but we use them in conjunction so I put them all here.
+    // If down the road someone needs them separately feel free to put the others two in if(IsWindowsVistaOrGreater())
+    // You will also probably need to move the structures defined in win32_platform.h #ifdef WINVER < 0x0601 to another
+    // block with WINVER < 0x0600 aka _WIN32_WINNT_VISTA
+    if(IsWindows7OrGreater())
+    {
+        _glfw.win32.user32.GetDisplayConfigBufferSizes_ = (PFN_GetDisplayConfigBufferSizes)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.user32.instance, "GetDisplayConfigBufferSizes");
+        _glfw.win32.user32.QueryDisplayConfig_ = (PFN_QueryDisplayConfig)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.user32.instance, "QueryDisplayConfig");
+        _glfw.win32.user32.DisplayConfigGetDeviceInfo_ = (PFN_DisplayConfigGetDeviceInfo)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.user32.instance, "DisplayConfigGetDeviceInfo");
+    }
+    else
+    {
+        _glfw.win32.user32.GetDisplayConfigBufferSizes_ = NULL;
+        _glfw.win32.user32.QueryDisplayConfig_          = NULL;
+        _glfw.win32.user32.DisplayConfigGetDeviceInfo_  = NULL;
+    }
 
     _glfw.win32.dinput8.instance = _glfwPlatformLoadModule("dinput8.dll");
     if (_glfw.win32.dinput8.instance)
@@ -158,13 +187,6 @@ static GLFWbool loadLibraries(void)
             _glfwPlatformGetModuleSymbol(_glfw.win32.shcore.instance, "SetProcessDpiAwareness");
         _glfw.win32.shcore.GetDpiForMonitor_ = (PFN_GetDpiForMonitor)
             _glfwPlatformGetModuleSymbol(_glfw.win32.shcore.instance, "GetDpiForMonitor");
-    }
-
-    _glfw.win32.ntdll.instance = _glfwPlatformLoadModule("ntdll.dll");
-    if (_glfw.win32.ntdll.instance)
-    {
-        _glfw.win32.ntdll.RtlVerifyVersionInfo_ = (PFN_RtlVerifyVersionInfo)
-            _glfwPlatformGetModuleSymbol(_glfw.win32.ntdll.instance, "RtlVerifyVersionInfo");
     }
 
     return GLFW_TRUE;

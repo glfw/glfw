@@ -388,6 +388,8 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_SCALE_FRAMEBUFFER:
         case GLFW_COCOA_RETINA_FRAMEBUFFER:
             _glfw.hints.window.scaleFramebuffer = value ? GLFW_TRUE : GLFW_FALSE;
+        case GLFW_THEME:
+            _glfw.hints.window.theme = value;
             return;
         case GLFW_CENTER_CURSOR:
             _glfw.hints.window.centerCursor = value ? GLFW_TRUE : GLFW_FALSE;
@@ -605,6 +607,15 @@ GLFWAPI void glfwSetWindowPos(GLFWwindow* handle, int xpos, int ypos)
         return;
 
     _glfw.platform.setWindowPos(window, xpos, ypos);
+}
+
+GLFWAPI int glfwIsWindowLightTheme(GLFWwindow* handle)
+{
+    _GLFWwindow* window = (_GLFWwindow*)handle;
+    assert(window != NULL);
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(0);
+    return window->isLightTheme;
 }
 
 GLFWAPI void glfwGetWindowSize(GLFWwindow* handle, int* width, int* height)

@@ -284,8 +284,9 @@ typedef int (WINAPI * PFN_GetSystemMetricsForDpi)(int,UINT);
 // dwmapi.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_DwmIsCompositionEnabled)(BOOL*);
 typedef HRESULT (WINAPI * PFN_DwmFlush)(VOID);
-typedef HRESULT(WINAPI * PFN_DwmEnableBlurBehindWindow)(HWND,const DWM_BLURBEHIND*);
+typedef HRESULT (WINAPI * PFN_DwmEnableBlurBehindWindow)(HWND,const DWM_BLURBEHIND*);
 typedef HRESULT (WINAPI * PFN_DwmGetColorizationColor)(DWORD*,BOOL*);
+typedef HRESULT (WINAPI * PFN_DwmSetWindowAttribute)(HWND, DWORD, LPCVOID, DWORD);
 #define DwmIsCompositionEnabled _glfw.win32.dwmapi.IsCompositionEnabled
 #define DwmFlush _glfw.win32.dwmapi.Flush
 #define DwmEnableBlurBehindWindow _glfw.win32.dwmapi.EnableBlurBehindWindow
@@ -475,6 +476,7 @@ typedef struct _GLFWlibraryWin32
         PFN_DwmFlush                    Flush;
         PFN_DwmEnableBlurBehindWindow   EnableBlurBehindWindow;
         PFN_DwmGetColorizationColor     GetColorizationColor;
+        PFN_DwmSetWindowAttribute       DwmSetWindowAttribute;
     } dwmapi;
 
     struct {
@@ -521,6 +523,7 @@ BOOL _glfwIsWindowsVersionOrGreaterWin32(WORD major, WORD minor, WORD sp);
 BOOL _glfwIsWindows10BuildOrGreaterWin32(WORD build);
 void _glfwInputErrorWin32(int error, const char* description);
 void _glfwUpdateKeyNamesWin32(void);
+void _glfwSetWindowTheme(BOOL dark, HWND hwnd);
 
 void _glfwPollMonitorsWin32(void);
 void _glfwSetVideoModeWin32(_GLFWmonitor* monitor, const GLFWvidmode* desired);

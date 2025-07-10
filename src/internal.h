@@ -415,6 +415,7 @@ struct _GLFWwndconfig
     GLFWbool      mousePassthrough;
     GLFWbool      scaleToMonitor;
     GLFWbool      scaleFramebuffer;
+    int           theme;
     struct {
         char      frameName[256];
     } ns;
@@ -539,6 +540,7 @@ struct _GLFWwindow
     GLFWbool            focusOnShow;
     GLFWbool            mousePassthrough;
     GLFWbool            shouldClose;
+    GLFWbool            isLightTheme;
     void*               userPointer;
     GLFWbool            doublebuffer;
     GLFWvidmode         videoMode;

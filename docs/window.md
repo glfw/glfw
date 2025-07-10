@@ -262,6 +262,11 @@ This is the new name, introduced in GLFW 3.4.  The older
 `GLFW_COCOA_RETINA_FRAMEBUFFER` name is also available for compatibility.  Both
 names modify the same hint value.
 
+@anchor GLFW_THEME
+__GLFW_THEME__ specifies whether the window should use light theme or not.
+Possible values are `GLFW_THEME_AUTO`, `GLFW_THEME_DARK`, and `GLFW_THEME_LIGHT`. This hint only has effect
+on windows operating system.
+
 @anchor GLFW_MOUSE_PASSTHROUGH_hint
 __GLFW_MOUSE_PASSTHROUGH__ specifies whether the window is transparent to mouse
 input, letting any mouse events pass through to whatever window is behind it.

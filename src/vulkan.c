@@ -61,6 +61,8 @@ GLFWbool _glfwInitVulkan(int mode)
         _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.1.dylib");
         if (!_glfw.vk.handle)
             _glfw.vk.handle = _glfwLoadLocalVulkanLoaderCocoa();
+#elif defined(_GLFW_ANDROID)
+        _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.so");
 #elif defined(__OpenBSD__) || defined(__NetBSD__)
         _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.so");
 #else
@@ -142,6 +144,8 @@ GLFWbool _glfwInitVulkan(int mode)
             _glfw.vk.KHR_xcb_surface = GLFW_TRUE;
         else if (strcmp(ep[i].extensionName, "VK_KHR_wayland_surface") == 0)
             _glfw.vk.KHR_wayland_surface = GLFW_TRUE;
+        else if (strcmp(ep[i].extensionName, "VK_KHR_android_surface") == 0)
+            _glfw.vk.KHR_android_surface = GLFW_TRUE;
         else if (strcmp(ep[i].extensionName, "VK_EXT_headless_surface") == 0)
             _glfw.vk.EXT_headless_surface = GLFW_TRUE;
     }

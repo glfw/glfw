@@ -258,6 +258,9 @@ typedef HRESULT (WINAPI * PFN_GetDpiForMonitor)(HMONITOR,MONITOR_DPI_TYPE,UINT*,
 typedef LONG (WINAPI * PFN_RtlVerifyVersionInfo)(OSVERSIONINFOEXW*,ULONG,ULONGLONG);
 #define RtlVerifyVersionInfo _glfw.win32.ntdll.RtlVerifyVersionInfo_
 
+// winmm.dll function pointer typedefs
+typedef UINT (WINAPI * PFN_timeBeginPeriod)(UINT);
+
 // WGL extension pointer typedefs
 typedef BOOL (WINAPI * PFNWGLSWAPINTERVALEXTPROC)(int);
 typedef BOOL (WINAPI * PFNWGLGETPIXELFORMATATTRIBIVARBPROC)(HDC,int,int,UINT,const int*,int*);
@@ -442,6 +445,11 @@ typedef struct _GLFWlibraryWin32
         HINSTANCE                       instance;
         PFN_RtlVerifyVersionInfo        RtlVerifyVersionInfo_;
     } ntdll;
+    
+    struct {
+        HINSTANCE                       instance;
+        PFN_timeBeginPeriod             timeBeginPeriod_;
+    } winmm;
 } _GLFWlibraryWin32;
 
 // Win32-specific per-monitor data

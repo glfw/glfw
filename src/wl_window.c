@@ -2187,7 +2187,12 @@ void _glfwDestroyWindowWayland(_GLFWwindow* window)
         _glfw.wl.pointerFocus = NULL;
 
     if (window == _glfw.wl.keyboardFocus)
+	{
+		struct itimerspec timer = {0};
+		timerfd_settime(_glfw.wl.keyRepeatTimerfd, 0, &timer, NULL);
+
         _glfw.wl.keyboardFocus = NULL;
+	}
 
     if (window->wl.fractionalScale)
         wp_fractional_scale_v1_destroy(window->wl.fractionalScale);

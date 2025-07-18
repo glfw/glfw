@@ -137,6 +137,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Keyboard leave event handler now processes key repeats (#2736)
  - [Wayland] Bugfix: Retrieved cursor position would be incorrect when hovering over
                      fallback decorations
+ - [Wayland] Bugfix: Fallback decorations would report scroll events
  - [X11] Bugfix: Running without a WM could trigger an assert (#2593,#2601,#2631)
  - [Null] Added Vulkan 'window' surface creation via `VK_EXT_headless_surface`
  - [Null] Added EGL context creation on Mesa via `EGL_MESA_platform_surfaceless`

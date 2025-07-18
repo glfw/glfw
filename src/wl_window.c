@@ -1636,11 +1636,14 @@ static void pointerHandleAxis(void* userData,
     if (!window)
         return;
 
-    // NOTE: 10 units of motion per mouse wheel step seems to be a common ratio
-    if (axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL)
-        _glfwInputScroll(window, -wl_fixed_to_double(value) / 10.0, 0.0);
-    else if (axis == WL_POINTER_AXIS_VERTICAL_SCROLL)
-        _glfwInputScroll(window, 0.0, -wl_fixed_to_double(value) / 10.0);
+    if (window->wl.hovered)
+    {
+        // NOTE: 10 units of motion per mouse wheel step seems to be a common ratio
+        if (axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL)
+            _glfwInputScroll(window, -wl_fixed_to_double(value) / 10.0, 0.0);
+        else if (axis == WL_POINTER_AXIS_VERTICAL_SCROLL)
+            _glfwInputScroll(window, 0.0, -wl_fixed_to_double(value) / 10.0);
+    }
 }
 
 static const struct wl_pointer_listener pointerListener =

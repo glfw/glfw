@@ -1446,11 +1446,11 @@ static void pointerHandleMotion(void* userData,
 
     const double xpos = wl_fixed_to_double(sx);
     const double ypos = wl_fixed_to_double(sy);
-    window->wl.cursorPosX = xpos;
-    window->wl.cursorPosY = ypos;
 
     if (window->wl.hovered)
     {
+        window->wl.cursorPosX = xpos;
+        window->wl.cursorPosY = ypos;
         _glfw.wl.cursorPreviousName = NULL;
         _glfwInputCursorPos(window, xpos, ypos);
         return;
@@ -1458,6 +1458,9 @@ static void pointerHandleMotion(void* userData,
 
     if (window->wl.fallback.decorations)
     {
+        window->wl.fallback.pointerX = sx;
+        window->wl.fallback.pointerY = sy;
+
         const char* cursorName = "left_ptr";
 
         if (window->resizable)
@@ -1557,36 +1560,39 @@ static void pointerHandleButton(void* userData,
 
     if (window->wl.fallback.decorations)
     {
+        const double xpos = wl_fixed_to_double(window->wl.fallback.pointerX);
+        const double ypos = wl_fixed_to_double(window->wl.fallback.pointerY);
+
         if (button == BTN_LEFT)
         {
             uint32_t edges = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
 
             if (window->wl.fallback.focus == window->wl.fallback.top.surface)
             {
-                if (window->wl.cursorPosY < GLFW_BORDER_SIZE)
+                if (ypos < GLFW_BORDER_SIZE)
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP;
                 else
                     xdg_toplevel_move(window->wl.xdg.toplevel, _glfw.wl.seat, serial);
             }
             else if (window->wl.fallback.focus == window->wl.fallback.left.surface)
             {
-                if (window->wl.cursorPosY < GLFW_BORDER_SIZE)
+                if (ypos < GLFW_BORDER_SIZE)
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT;
                 else
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_LEFT;
             }
             else if (window->wl.fallback.focus == window->wl.fallback.right.surface)
             {
-                if (window->wl.cursorPosY < GLFW_BORDER_SIZE)
+                if (ypos < GLFW_BORDER_SIZE)
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT;
                 else
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_RIGHT;
             }
             else if (window->wl.fallback.focus == window->wl.fallback.bottom.surface)
             {
-                if (window->wl.cursorPosX < GLFW_BORDER_SIZE)
+                if (xpos < GLFW_BORDER_SIZE)
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT;
-                else if (window->wl.cursorPosX > window->wl.width + GLFW_BORDER_SIZE)
+                else if (xpos > window->wl.width + GLFW_BORDER_SIZE)
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT;
                 else
                     edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM;

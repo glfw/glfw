@@ -413,6 +413,7 @@ typedef struct _GLFWwindowWayland
         struct wl_buffer*           buffer;
         _GLFWfallbackEdgeWayland    top, left, right, bottom;
         struct wl_surface*          focus;
+        wl_fixed_t                  pointerX, pointerY;
     } fallback;
 } _GLFWwindowWayland;
 

@@ -107,6 +107,7 @@ typedef VkResult (APIENTRY *PFN_vkCreateMetalSurfaceEXT)(VkInstance,const VkMeta
 
 #define GLFW_NSGL_CONTEXT_STATE         _GLFWcontextNSGL nsgl;
 #define GLFW_NSGL_LIBRARY_CONTEXT_STATE _GLFWlibraryNSGL nsgl;
+#define GLFW_NSGL_USER_CONTEXT_STATE    _GLFWusercontextNSGL nsgl;
 
 // HIToolbox.framework pointer typedefs
 #define kTISPropertyUnicodeKeyLayoutData _glfw.ns.tis.kPropertyUnicodeKeyLayoutData
@@ -133,6 +134,14 @@ typedef struct _GLFWlibraryNSGL
     // dlopen handle for OpenGL.framework (for glfwGetProcAddress)
     CFBundleRef     framework;
 } _GLFWlibraryNSGL;
+
+// NSGL-specific per usercontext data
+//
+typedef struct _GLFWusercontextNSGL
+{
+    id                object;
+
+} _GLFWusercontextNSGL;
 
 // Cocoa-specific per-window data
 //
@@ -300,3 +309,5 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                 const _GLFWfbconfig* fbconfig);
 void _glfwDestroyContextNSGL(_GLFWwindow* window);
 
+_GLFWusercontext* _glfwCreateUserContextCocoa(_GLFWwindow* window);
+_GLFWusercontext* _glfwCreateUserContextNSGL(_GLFWwindow* window);

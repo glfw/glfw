@@ -401,10 +401,7 @@ static void handleFallbackDecorationButton(_GLFWwindow* window,
         }
 
         if (edges != XDG_TOPLEVEL_RESIZE_EDGE_NONE)
-        {
-            xdg_toplevel_resize(window->wl.xdg.toplevel, _glfw.wl.seat,
-                                serial, edges);
-        }
+            xdg_toplevel_resize(window->wl.xdg.toplevel, _glfw.wl.seat, serial, edges);
     }
     else if (button == BTN_RIGHT)
     {

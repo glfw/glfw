@@ -1417,7 +1417,6 @@ static void pointerHandleLeave(void* userData,
 
     _glfw.wl.serial = serial;
     _glfw.wl.pointerFocus = NULL;
-    _glfw.wl.cursorPreviousName = NULL;
 
     if (window->wl.hovered)
     {
@@ -1427,7 +1426,10 @@ static void pointerHandleLeave(void* userData,
     else
     {
         if (window->wl.fallback.decorations)
+        {
             window->wl.fallback.focus = NULL;
+            window->wl.fallback.cursorName = NULL;
+        }
     }
 }
 
@@ -1451,7 +1453,6 @@ static void pointerHandleMotion(void* userData,
     {
         window->wl.cursorPosX = xpos;
         window->wl.cursorPosY = ypos;
-        _glfw.wl.cursorPreviousName = NULL;
         _glfwInputCursorPos(window, xpos, ypos);
         return;
     }
@@ -1495,7 +1496,7 @@ static void pointerHandleMotion(void* userData,
             }
         }
 
-        if (_glfw.wl.cursorPreviousName != cursorName)
+        if (window->wl.fallback.cursorName != cursorName)
         {
             struct wl_surface* surface = _glfw.wl.cursorSurface;
             struct wl_cursor_theme* theme = _glfw.wl.cursorTheme;
@@ -1531,7 +1532,7 @@ static void pointerHandleMotion(void* userData,
             wl_surface_damage(surface, 0, 0, image->width, image->height);
             wl_surface_commit(surface);
 
-            _glfw.wl.cursorPreviousName = cursorName;
+            window->wl.fallback.cursorName = cursorName;
         }
     }
 }

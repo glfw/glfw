@@ -414,6 +414,7 @@ typedef struct _GLFWwindowWayland
         _GLFWfallbackEdgeWayland    top, left, right, bottom;
         struct wl_surface*          focus;
         wl_fixed_t                  pointerX, pointerY;
+        const char*                 cursorName;
     } fallback;
 } _GLFWwindowWayland;
 
@@ -455,7 +456,6 @@ typedef struct _GLFWlibraryWayland
     struct wl_cursor_theme*     cursorTheme;
     struct wl_cursor_theme*     cursorThemeHiDPI;
     struct wl_surface*          cursorSurface;
-    const char*                 cursorPreviousName;
     int                         cursorTimerfd;
     uint32_t                    serial;
     uint32_t                    pointerEnterSerial;

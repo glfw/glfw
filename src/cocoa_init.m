@@ -555,6 +555,7 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         .setWindowFloating = _glfwSetWindowFloatingCocoa,
         .setWindowOpacity = _glfwSetWindowOpacityCocoa,
         .setWindowMousePassthrough = _glfwSetWindowMousePassthroughCocoa,
+        .getWindowIsFullscreen = _glfwGetWindowIsFullscreenNull,
         .pollEvents = _glfwPollEventsCocoa,
         .waitEvents = _glfwWaitEventsCocoa,
         .waitEventsTimeout = _glfwWaitEventsTimeoutCocoa,

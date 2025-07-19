@@ -2254,6 +2254,26 @@ GLFWAPI int glfwInit(void);
  */
 GLFWAPI void glfwTerminate(void);
 
+/*! @brief Queries if the GLFW library is intialized.
+ *
+ *  This function queries whether the GLFW libarary is in an initialized state.
+ *  The library is considered to be in an initialized state 
+ *  when @ref glfwInit is invoked successfully, and @ref glfwTerminate has not been invoked after.
+ * 
+ *  @return `GLFW_TRUE` if the library is intialized, or `GLFW_FALSE` if otherwise.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref intro_init
+ *  @sa @ref glfwInit
+ *  @sa @ref glfwTerminate
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup init
+ */
+GLFWAPI int glfwIsInitialized(void);
+
 /*! @brief Sets the specified init hint to the desired value.
  *
  *  This function sets hints for the next initialization of GLFW.

@@ -14,6 +14,25 @@ values over 8. For compatibility with older versions, the
 @ref GLFW_UNLIMITED_MOUSE_BUTTONS input mode needs to be set to make use of
 this.
 
+
+### Support for custom X11 clipboard functionality {#x11_custom_selection}
+
+This change allows clients to implement custom X11 clipboard
+functionality like the copying and pasting of files across
+applications.
+
+GLFW itself only allows plain text to be copied to the
+clipboard and back on all platforms. On some platforms, like Windows,
+you can use platform specific APIs to add extra clipboard
+functionality like copying of other data types. However, on X11, this
+was previously not fully possible due to the fact that GLFW internal
+code has full control over the X11 event queue.
+
+This change exposes several new symbols that allow you to get and set
+the handler for X11 selection events that GLFW will use. It also
+allows getting the internal display connection and selection helper
+window, for use in that kind of code.
+
 ## Caveats {#caveats}
 
 ## Deprecations {#deprecations}
@@ -38,6 +57,12 @@ actively maintained and available on many platforms.
 ## New symbols {#new_symbols}
 
 ### New functions {#new_functions}
+
+#### X11-specific
+ - @ref getSelectionRequestHandler
+ - @ref setSelectionRequestHanddler
+ - @ref getGLFWDisplay
+ - @ref getGLFWHelperWindow
 
 ### New types {#new_types}
 

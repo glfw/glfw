@@ -921,7 +921,8 @@ static Atom writeTargetToProperty(const XSelectionRequestEvent* request)
     return None;
 }
 
-static void handleSelectionRequest(XEvent* event)
+void (*handleSelectionRequest)(XEvent*);
+void handleSelectionRequest_(XEvent* event)
 {
     const XSelectionRequestEvent* request = &event->xselectionrequest;
 
@@ -3356,6 +3357,18 @@ GLFWAPI const char* glfwGetX11SelectionString(void)
 
     return getSelectionString(_glfw.x11.PRIMARY);
 }
+void (*getSelectionRequestHandler(void))(XEvent*) {
+    return handleSelectionRequest;
+}
+void setSelectionRequestHandler(void (*handler)(XEvent*)) {
+    handleSelectionRequest = handler;
+}
+Display* getGLFWDisplay(void) {
+    return _glfw.x11.display;
+}
+
+Window getGLFWHelperWindow(void) {
+    return _glfw.x11.helperWindowHandle;
+}
 
 #endif // _GLFW_X11
-

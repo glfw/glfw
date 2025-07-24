@@ -61,6 +61,7 @@
 #define ANGLE_TYPE_OPENGLES "es"
 #define ANGLE_TYPE_D3D9     "d3d9"
 #define ANGLE_TYPE_D3D11    "d3d11"
+#define ANGLE_TYPE_D3D11ON12 "d3d11on12"
 #define ANGLE_TYPE_VULKAN   "vk"
 #define ANGLE_TYPE_METAL    "mtl"
 
@@ -129,6 +130,7 @@ static void usage(void)
                                         ANGLE_TYPE_OPENGLES ", "
                                         ANGLE_TYPE_D3D9 ", "
                                         ANGLE_TYPE_D3D11 ", "
+                                        ANGLE_TYPE_D3D11ON12 ", "
                                         ANGLE_TYPE_VULKAN " or "
                                         ANGLE_TYPE_METAL ")\n");
     printf("      --graphics-switching  request macOS graphics switching\n");
@@ -638,6 +640,8 @@ int main(int argc, char** argv)
                     angle_type = GLFW_ANGLE_PLATFORM_TYPE_D3D9;
                 else if (strcmp(optarg, ANGLE_TYPE_D3D11) == 0)
                     angle_type = GLFW_ANGLE_PLATFORM_TYPE_D3D11;
+                else if (strcmp(optarg, ANGLE_TYPE_D3D11ON12) == 0)
+                    angle_type = GLFW_ANGLE_PLATFORM_TYPE_D3D11ON12;
                 else if (strcmp(optarg, ANGLE_TYPE_VULKAN) == 0)
                     angle_type = GLFW_ANGLE_PLATFORM_TYPE_VULKAN;
                 else if (strcmp(optarg, ANGLE_TYPE_METAL) == 0)

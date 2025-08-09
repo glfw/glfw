@@ -282,6 +282,7 @@ video tutorials.
  - Corentin Wallez
  - Torsten Walluhn
  - Patrick Walton
+ - Ivor Wanders
  - Jim Wang
  - Xo Wang
  - Andre Weissflog

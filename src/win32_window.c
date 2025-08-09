@@ -43,6 +43,11 @@
 typedef UINT64 QWORD; // Needed for NEXTRAWINPUTBLOCK()
 #endif
 
+#ifndef RI_MOUSE_HWHEEL
+// MinGW may not have the define for RI_MOUSE_HWHEEL
+#define RI_MOUSE_HWHEEL 0x0800
+#endif
+
 
 // Returns the window style for the specified window
 //

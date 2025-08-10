@@ -52,7 +52,7 @@ and window system.  It does not need any additional headers for context creation
 APIs (WGL, GLX, EGL, NSGL, OSMesa) or rendering APIs (OpenGL, OpenGL ES, Vulkan)
 to enable support for them.
 
-GLFW supports compilation on Windows with Visual C++ 2013 and later, MinGW and
+GLFW supports compilation on Windows with Visual C++ (2013 and later) and
 MinGW-w64, on macOS with Clang and on Linux and other Unix-like systems with GCC
 and Clang.  It will likely compile in other environments as well, but this is
 not regularly tested.
@@ -79,7 +79,7 @@ more information.
 
 ## System requirements
 
-GLFW supports Windows XP and later and macOS 10.11 and later.  Linux and other
+GLFW supports Windows 7 and later and macOS 10.11 and later.  Linux and other
 Unix-like systems running the X Window System are supported even without
 a desktop environment or modern extensions, although some features require
 a running window or clipboard manager.  The OSMesa backend requires Mesa 6.3.
@@ -127,12 +127,16 @@ information on what to include when reporting a bug.
  - Added `GLFW_UNLIMITED_MOUSE_BUTTONS` input mode that allows mouse buttons beyond
    the limit of the mouse button tokens to be reported (#2423)
  - Updated minimum CMake version to 3.16 (#2541)
+ - Removed support for building with original MinGW (#2540)
+ - [Win32] Removed support for Windows XP and Vista (#2505)
  - [Cocoa] Added `QuartzCore` framework as link-time dependency
  - [Cocoa] Removed support for OS X 10.10 Yosemite and earlier (#2506)
  - [Wayland] Bugfix: The fractional scaling related objects were not destroyed
  - [Wayland] Bugfix: `glfwInit` would segfault on compositor with no seat (#2517)
  - [Wayland] Bugfix: A drag entering a non-GLFW surface could cause a segfault
  - [Wayland] Bugfix: Ignore key repeat events when no window has keyboard focus (#2727)
+ - [Wayland] Bugfix: Reset key repeat timer when window destroyed (#2741,#2727)
+ - [Wayland] Bugfix: Memory would leak if reading a data offer failed midway
  - [X11] Bugfix: Running without a WM could trigger an assert (#2593,#2601,#2631)
  - [Null] Added Vulkan 'window' surface creation via `VK_EXT_headless_surface`
  - [Null] Added EGL context creation on Mesa via `EGL_MESA_platform_surfaceless`

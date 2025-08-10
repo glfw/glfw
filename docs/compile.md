@@ -36,9 +36,9 @@ specific to GLFW.  It may be a useful companion to this one.
 
 ### Installing dependencies {#compile_deps}
 
-The C/C++ development environments in Visual Studio, Xcode and MinGW come with
-all necessary dependencies for compiling GLFW, but on Unix-like systems like
-Linux and FreeBSD you will need a few extra packages.
+The C/C++ development environments in Visual Studio, Xcode and MinGW-w64 come
+with all necessary dependencies for compiling GLFW, but on Unix-like systems
+like Linux and FreeBSD you will need a few extra packages.
 
 
 #### Dependencies for Wayland and X11 {#compile_deps_wayland}
@@ -180,7 +180,7 @@ cd path/to/build
 make
 ```
 
-With MinGW, it is `mingw32-make`.
+With MinGW-w64, it is `mingw32-make`.
 
 ```sh
 cd path/to/build
@@ -299,12 +299,12 @@ library.  This option is only available when compiling for Linux and other Unix-
 systems other than macOS.  This is enabled by default.
 
 
-## Cross-compilation with CMake and MinGW {#compile_mingw_cross}
+## Cross-compilation with CMake and MinGW-w64 {#compile_mingw_cross}
 
-Both Cygwin and many Linux distributions have MinGW or MinGW-w64 packages.  For
-example, Cygwin has the `mingw64-i686-gcc` and `mingw64-x86_64-gcc` packages
-for 32- and 64-bit version of MinGW-w64, while Debian GNU/Linux and derivatives
-like Ubuntu have the `mingw-w64` package for both.
+Both Cygwin and many Linux distributions have MinGW-w64 packages.  For example,
+Cygwin has the `mingw64-i686-gcc` and `mingw64-x86_64-gcc` packages for 32- and
+64-bit version of MinGW-w64, while Debian GNU/Linux and derivatives like Ubuntu
+have the `mingw-w64` package for both.
 
 GLFW has CMake toolchain files in the `CMake` subdirectory that set up
 cross-compilation of Windows binaries.  To use these files you set the
@@ -315,9 +315,9 @@ configuring and generating the build files.
 cmake -S path/to/glfw -B path/to/build -D CMAKE_TOOLCHAIN_FILE=path/to/file
 ```
 
-The exact toolchain file to use depends on the prefix used by the MinGW or
-MinGW-w64 binaries on your system.  You can usually see this in the /usr
-directory.  For example, both the Ubuntu and Cygwin MinGW-w64 packages have
+The exact toolchain file to use depends on the prefix used by the MinGW-w64
+binaries on your system.  You can usually see this in the /usr directory.  For
+example, both the Ubuntu and Cygwin MinGW-w64 packages have
 `/usr/x86_64-w64-mingw32` for the 64-bit compilers, so the correct invocation
 would be:
 

@@ -1333,6 +1333,7 @@ static char* readDataOfferAsString(struct wl_data_offer* offer, const char* mime
             if (!longer)
             {
                 _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
+                _glfw_free(string);
                 close(fds[0]);
                 return NULL;
             }
@@ -1352,6 +1353,7 @@ static char* readDataOfferAsString(struct wl_data_offer* offer, const char* mime
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Wayland: Failed to read from data offer pipe: %s",
                             strerror(errno));
+            _glfw_free(string);
             close(fds[0]);
             return NULL;
         }
@@ -2187,7 +2189,12 @@ void _glfwDestroyWindowWayland(_GLFWwindow* window)
         _glfw.wl.pointerFocus = NULL;
 
     if (window == _glfw.wl.keyboardFocus)
+	{
+		struct itimerspec timer = {0};
+		timerfd_settime(_glfw.wl.keyRepeatTimerfd, 0, &timer, NULL);
+
         _glfw.wl.keyboardFocus = NULL;
+	}
 
     if (window->wl.fractionalScale)
         wp_fractional_scale_v1_destroy(window->wl.fractionalScale);

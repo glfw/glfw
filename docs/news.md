@@ -29,6 +29,21 @@ this.
 
 ## Removals {#removals}
 
+### Windows XP and Vista support has been removed {#winxp_vista}
+
+Support for Windows XP and Vista has been removed.  Windows XP has been out of extended
+support since 2014.
+
+
+### Original MinGW support has been removed {#original_mingw}
+
+Support for the now unmaintained original MinGW distribution has been removed.
+
+This does not apply to the much more capable [MinGW-w64](https://www.mingw-w64.org/),
+which remains fully supported.  MinGW-w64 can build both 32- and 64-bit binaries, is
+actively maintained and available on many platforms.
+
+
 ## New symbols {#new_symbols}
 
 ### New functions {#new_functions}

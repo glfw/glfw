@@ -327,8 +327,8 @@ static void swapBuffersWGL(_GLFWwindow* window)
 {
     if (!window->monitor)
     {
-        // HACK: Use DwmFlush when desktop composition is enabled on Windows Vista and 7
-        if (!IsWindows8OrGreater() && IsWindowsVistaOrGreater())
+        // HACK: Use DwmFlush when desktop composition is enabled on Windows 7
+        if (!IsWindows8OrGreater())
         {
             BOOL enabled = FALSE;
 
@@ -353,9 +353,9 @@ static void swapIntervalWGL(int interval)
 
     if (!window->monitor)
     {
-        // HACK: Disable WGL swap interval when desktop composition is enabled on Windows
-        //       Vista and 7 to avoid interfering with DWM vsync
-        if (!IsWindows8OrGreater() && IsWindowsVistaOrGreater())
+        // HACK: Disable WGL swap interval when desktop composition is enabled on
+        //       Windows 7 to avoid interfering with DWM vsync
+        if (!IsWindows8OrGreater())
         {
             BOOL enabled = FALSE;
 

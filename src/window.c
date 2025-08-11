@@ -235,6 +235,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->cursorMode       = GLFW_CURSOR_NORMAL;
 
     window->doublebuffer = fbconfig.doublebuffer;
+    window->acceleration = fbconfig.acceleration;
 
     window->minwidth    = GLFW_DONT_CARE;
     window->minheight   = GLFW_DONT_CARE;
@@ -287,6 +288,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.framebuffer.depthBits    = 24;
     _glfw.hints.framebuffer.stencilBits  = 8;
     _glfw.hints.framebuffer.doublebuffer = GLFW_TRUE;
+    _glfw.hints.framebuffer.acceleration = GLFW_TRUE;
 
     // The default is to select the highest available refresh rate
     _glfw.hints.refreshRate = GLFW_DONT_CARE;
@@ -345,6 +347,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             return;
         case GLFW_SRGB_CAPABLE:
             _glfw.hints.framebuffer.sRGB = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
+        case GLFW_ACCELERATION:
+            _glfw.hints.framebuffer.acceleration = value ? GLFW_TRUE : GLFW_FALSE;
             return;
         case GLFW_RESIZABLE:
             _glfw.hints.window.resizable = value ? GLFW_TRUE : GLFW_FALSE;
@@ -912,6 +917,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->autoIconify;
         case GLFW_DOUBLEBUFFER:
             return window->doublebuffer;
+        case GLFW_ACCELERATION:
+            return window->acceleration;
         case GLFW_CLIENT_API:
             return window->context.client;
         case GLFW_CONTEXT_CREATION_API:

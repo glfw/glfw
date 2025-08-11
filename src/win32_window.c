@@ -1392,6 +1392,36 @@ static int createNativeWindow(_GLFWwindow* window,
                                            _glfw.win32.instance,
                                            (LPVOID) wndconfig);
 
+    BOOL should_use_light_mode;
+    if (wndconfig->theme == GLFW_THEME_AUTO)
+    {
+        BOOL success = FALSE;
+        HKEY hRootKey = HKEY_CURRENT_USER;
+        const wchar_t* lpSubKey = L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize";
+        const wchar_t* lpValueName = L"AppsUseLightTheme";
+        DWORD result;
+        {
+            HKEY hKey = 0;
+            if (RegOpenKeyExW(hRootKey, lpSubKey, 0, KEY_READ, &hKey) == ERROR_SUCCESS)
+            {
+                DWORD dwBufferSize = sizeof(DWORD);
+                DWORD dwData = 0;
+                if (RegQueryValueExW(hKey, lpValueName, 0, NULL, (LPBYTE)(&dwData), &dwBufferSize) == ERROR_SUCCESS)
+                {
+                    result = dwData;
+                    success = TRUE;
+                }
+                RegCloseKey(hKey);
+            }
+        }
+        should_use_light_mode = success && result != 0;
+    }
+    else
+        should_use_light_mode = wndconfig->theme == GLFW_THEME_LIGHT;
+
+    _glfwSetWindowTheme(!should_use_light_mode, window->win32.handle);
+    window->isLightTheme = should_use_light_mode ? GLFW_TRUE : GLFW_FALSE;
+
     _glfw_free(wideTitle);
 
     if (!window->win32.handle)

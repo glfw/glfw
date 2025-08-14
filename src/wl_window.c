@@ -405,13 +405,19 @@ static void handleFallbackDecorationButton(_GLFWwindow* window,
     }
     else if (button == BTN_RIGHT)
     {
-        if (window->wl.xdg.toplevel)
-        {
-            xdg_toplevel_show_window_menu(window->wl.xdg.toplevel,
-                                          _glfw.wl.seat, serial,
-                                          window->wl.cursorPosX,
-                                          window->wl.cursorPosY);
-        }
+        if (!window->wl.xdg.toplevel)
+            return;
+
+        if (window->wl.fallback.focus != window->wl.fallback.top.surface)
+            return;
+
+        if (ypos < GLFW_BORDER_SIZE)
+            return;
+
+        xdg_toplevel_show_window_menu(window->wl.xdg.toplevel,
+                                      _glfw.wl.seat, serial,
+                                      xpos,
+                                      ypos - GLFW_CAPTION_HEIGHT - GLFW_BORDER_SIZE);
     }
 }
 

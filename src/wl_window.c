@@ -870,47 +870,56 @@ static GLFWbool createLibdecorFrame(_GLFWwindow* window)
 
 static void updateXdgSizeLimits(_GLFWwindow* window)
 {
-    int minwidth, minheight, maxwidth, maxheight;
+    int minwidth = 0, minheight = 0;
+    int maxwidth = 0, maxheight = 0;
+    GLFWbool setMin = GLFW_FALSE, setMax = GLFW_FALSE;
 
     if (window->resizable)
     {
-        if (window->minwidth == GLFW_DONT_CARE || window->minheight == GLFW_DONT_CARE)
-            minwidth = minheight = 0;
-        else
+        if (window->minwidth != GLFW_DONT_CARE && window->minheight != GLFW_DONT_CARE)
         {
-            minwidth  = window->minwidth;
+            minwidth = window->minwidth;
             minheight = window->minheight;
-
-            if (window->wl.fallback.decorations)
-            {
-                minwidth  += GLFW_BORDER_SIZE * 2;
-                minheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
-            }
+            setMin = GLFW_TRUE;
         }
 
-        if (window->maxwidth == GLFW_DONT_CARE || window->maxheight == GLFW_DONT_CARE)
-            maxwidth = maxheight = 0;
-        else
+        if (window->maxwidth != GLFW_DONT_CARE && window->maxheight != GLFW_DONT_CARE)
         {
-            maxwidth  = window->maxwidth;
+            maxwidth = window->maxwidth;
             maxheight = window->maxheight;
+            setMax = GLFW_TRUE;
+        }
 
-            if (window->wl.fallback.decorations)
+        if (window->wl.fallback.decorations)
+        {
+            if (setMin)
             {
-                maxwidth  += GLFW_BORDER_SIZE * 2;
+                minwidth += GLFW_BORDER_SIZE * 2;
+                minheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
+            }
+
+            if (setMax)
+            {
+                maxwidth += GLFW_BORDER_SIZE * 2;
                 maxheight += GLFW_CAPTION_HEIGHT + GLFW_BORDER_SIZE;
             }
         }
     }
     else
     {
+        // Non-resizable: lock to current size
         minwidth = maxwidth = window->wl.width;
         minheight = maxheight = window->wl.height;
+        setMin = setMax = GLFW_TRUE;
     }
 
-    xdg_toplevel_set_min_size(window->wl.xdg.toplevel, minwidth, minheight);
-    xdg_toplevel_set_max_size(window->wl.xdg.toplevel, maxwidth, maxheight);
+    if (setMin)
+        xdg_toplevel_set_min_size(window->wl.xdg.toplevel, minwidth, minheight);
+
+    if (setMax)
+        xdg_toplevel_set_max_size(window->wl.xdg.toplevel, maxwidth, maxheight);
 }
+
 
 static GLFWbool createXdgShellObjects(_GLFWwindow* window)
 {

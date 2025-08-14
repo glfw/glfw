@@ -299,6 +299,7 @@ int main(void)
                         "LB", "RB",
                         "Back", "Start", "Guide",
                         "LT", "RT",
+                        "MISC1", "TOUCHPAD"
                     };
 
                     nk_labelf(nk, NK_TEXT_LEFT,

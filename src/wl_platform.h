@@ -116,6 +116,7 @@ struct wl_output;
 #define zwp_pointer_constraints_v1_interface _glfw_zwp_pointer_constraints_v1_interface
 #define zwp_relative_pointer_v1_interface _glfw_zwp_relative_pointer_v1_interface
 #define zwp_relative_pointer_manager_v1_interface _glfw_zwp_relative_pointer_manager_v1_interface
+#define zwp_pointer_gestures_v1_interface _glfw_zwp_pointer_gestures_v1_interface
 #define wp_viewport_interface _glfw_wp_viewport_interface
 #define wp_viewporter_interface _glfw_wp_viewporter_interface
 #define xdg_toplevel_interface _glfw_xdg_toplevel_interface
@@ -440,6 +441,8 @@ typedef struct _GLFWlibraryWayland
     struct zwp_idle_inhibit_manager_v1*     idleInhibitManager;
     struct xdg_activation_v1*               activationManager;
     struct wp_fractional_scale_manager_v1*  fractionalScaleManager;
+    struct zwp_pointer_gestures_v1*      pointerGestures;
+    struct zwp_pointer_gesture_pinch_v1* pinchGesture;
 
     _GLFWofferWayland*          offers;
     unsigned int                offerCount;
@@ -469,6 +472,8 @@ typedef struct _GLFWlibraryWayland
     short int                   keycodes[256];
     short int                   scancodes[GLFW_KEY_LAST + 1];
     char                        keynames[GLFW_KEY_LAST + 1][5];
+
+    double                       pinchGesturePreviousScale;
 
     struct {
         void*                   handle;
@@ -692,4 +697,5 @@ void _glfwUpdateBufferScaleFromOutputsWayland(_GLFWwindow* window);
 
 void _glfwAddSeatListenerWayland(struct wl_seat* seat);
 void _glfwAddDataDeviceListenerWayland(struct wl_data_device* device);
+void _glfwAddPointerGesturesListeners(struct zwp_pointer_gestures_v1* pointer_gestures);
 

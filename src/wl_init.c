@@ -979,7 +979,8 @@ void _glfwTerminateWayland(void)
     if (_glfw.wl.cursorTimerfd >= 0)
         close(_glfw.wl.cursorTimerfd);
 
-    // Free modules only after all wayland termination functions are called
+    // Free modules only after all Wayland termination functions are called
+
     if (_glfw.egl.handle)
     {
         _glfwPlatformFreeModule(_glfw.egl.handle);
@@ -1003,6 +1004,7 @@ void _glfwTerminateWayland(void)
         _glfwPlatformFreeModule(_glfw.wl.xkb.handle);
         _glfw.wl.xkb.handle = NULL;
     }
+
     if (_glfw.wl.cursor.handle)
     {
         _glfwPlatformFreeModule(_glfw.wl.cursor.handle);

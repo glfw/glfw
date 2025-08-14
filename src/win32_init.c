@@ -528,7 +528,8 @@ void _glfwUpdateKeyNamesWin32(void)
 
         if (key >= GLFW_KEY_KP_0 && key <= GLFW_KEY_KP_ADD)
         {
-            const UINT vks[] = {
+            const UINT vks[] =
+            {
                 VK_NUMPAD0,  VK_NUMPAD1,  VK_NUMPAD2, VK_NUMPAD3,
                 VK_NUMPAD4,  VK_NUMPAD5,  VK_NUMPAD6, VK_NUMPAD7,
                 VK_NUMPAD8,  VK_NUMPAD9,  VK_DECIMAL, VK_DIVIDE,

@@ -1538,6 +1538,13 @@ static void pointerHandleEnter(void* userData,
         window->wl.hovered = GLFW_TRUE;
         _glfwSetCursorWayland(window, window->wl.currentCursor);
         _glfwInputCursorEnter(window, GLFW_TRUE);
+
+        if (window->cursorMode != GLFW_CURSOR_DISABLED)
+        {
+            window->wl.cursorPosX = wl_fixed_to_double(sx);
+            window->wl.cursorPosY = wl_fixed_to_double(sy);
+            _glfwInputCursorPos(window, window->wl.cursorPosX, window->wl.cursorPosY);
+        }
     }
     else
     {

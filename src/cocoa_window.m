@@ -2020,6 +2020,26 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
     } // autoreleasepool
 }
 
+typedef struct WGPUSurfaceSourceMetalLayer {
+    WGPUChainedStruct chain;
+    void * layer;
+} WGPUSurfaceSourceMetalLayer;
+
+WGPUSurface _glfwCreateWindowWGPUSurfaceCocoa(WGPUInstance instance, _GLFWwindow* window) {
+    [window->ns.view setLayer:window->ns.layer];
+    [window->ns.view setWantsLayer:YES];
+
+    WGPUSurfaceSourceMetalLayer metalSurface;
+    metalSurface.chain.next = NULL;
+    metalSurface.chain.sType = WGPUSType_SurfaceSourceMetalLayer;
+    metalSurface.layer = window->ns.layer;
+
+    WGPUSurfaceDescriptor surfaceDescriptor;
+    surfaceDescriptor.nextInChain = &metalSurface.chain;
+    surfaceDescriptor.label = (WGPUStringView){ NULL, SIZE_MAX };
+
+    return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

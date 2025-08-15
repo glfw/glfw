@@ -1778,24 +1778,6 @@ static void keyboardHandleLeave(void* userData,
     if (!window)
         return;
 
-    // Handle any key repeats up to this point. We don't poll as this should be infrequent.
-    uint64_t repeats;
-    if (read(_glfw.wl.keyRepeatTimerfd, &repeats, sizeof(repeats)) == 8)
-    {
-        if(_glfw.wl.keyboardFocus)
-        {
-            for (uint64_t i = 0; i < repeats; i++)
-            {
-                _glfwInputKey(_glfw.wl.keyboardFocus,
-                              translateKey(_glfw.wl.keyRepeatScancode),
-                              _glfw.wl.keyRepeatScancode,
-                              GLFW_PRESS,
-                              _glfw.wl.xkb.modifiers);
-                inputText(_glfw.wl.keyboardFocus, _glfw.wl.keyRepeatScancode);
-            }
-        }
-    }
-
     struct itimerspec timer = {0};
     timerfd_settime(_glfw.wl.keyRepeatTimerfd, 0, &timer, NULL);
 

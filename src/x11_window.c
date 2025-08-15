@@ -3282,6 +3282,53 @@ VkResult _glfwCreateWindowSurfaceX11(VkInstance instance,
     }
 }
 
+typedef struct WGPUSurfaceSourceXCBWindow {
+    WGPUChainedStruct chain;
+    void * connection;
+    uint32_t window;
+} WGPUSurfaceSourceXCBWindow;
+
+typedef struct WGPUSurfaceSourceXlibWindow {
+    WGPUChainedStruct chain;
+    void * display;
+    uint64_t window;
+} WGPUSurfaceSourceXlibWindow;
+
+WGPUSurface _glfwCreateWindowWGPUSurfaceX11(WGPUInstance instance, _GLFWwindow* window)
+{
+    WGPUSurfaceDescriptor surfaceDescriptor;
+
+    if (_glfw.x11.x11xcb.handle)
+    {
+        WGPUSurfaceSourceXCBWindow xcbSurface;
+        xcbSurface.chain.sType = WGPUSType_SurfaceSourceXCBWindow;
+        xcbSurface.chain.next = NULL;
+        xcb_connection_t* connection = XGetXCBConnection(_glfw.x11.display);
+        if (!connection)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Failed to retrieve XCB connection");
+            return NULL;
+        }
+        xcbSurface.connection = connection;
+        xcbSurface.window = window->x11.handle;
+        surfaceDescriptor.nextInChain = &xcbSurface.chain;
+    }
+    else
+    {
+        WGPUSurfaceSourceXlibWindow xlibSurface;
+        xlibSurface.chain.sType = WGPUSType_SurfaceSourceXlibWindow;
+        xlibSurface.chain.next = NULL;
+        xlibSurface.display = _glfw.x11.display;
+        xlibSurface.window = window->x11.handle;
+        surfaceDescriptor.nextInChain = &xlibSurface.chain;
+    }
+
+    surfaceDescriptor.label = (WGPUStringView){ NULL, SIZE_MAX };
+
+    return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

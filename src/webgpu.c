@@ -28,11 +28,14 @@
 
 #include <assert.h>
 #include <stdlib.h>
-
-GLFWAPI void glfwSetWGPUInstanceCreateSurfaceAddr(WGPUSurface (*addr)(WGPUInstance, const WGPUSurfaceDescriptor*)) {
-    _GLFW_REQUIRE_INIT()
-    _glfw.wgpu.instanceCreateSurface = addr;
+#if defined(_GLFW_WIN32)
+// TODO: Implement Window version
+#else
+#include <dlfcn.h>
+void _glfwLoadWGPUInstanceCreateSurfaceAddr() {
+    _glfw.wgpu.instanceCreateSurface = dlsym(RTLD_DEFAULT, "wgpuInstanceCreateSurface");
 }
+#endif
 
 GLFWAPI WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindow* handle) {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL)

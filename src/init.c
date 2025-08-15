@@ -402,6 +402,8 @@ GLFWAPI int glfwInit(void)
     if (!_glfwSelectPlatform(_glfw.hints.init.platformID, &_glfw.platform))
         return GLFW_FALSE;
 
+    _glfwLoadWGPUInstanceCreateSurfaceAddr();
+
     if (!_glfw.platform.init())
     {
         terminate();

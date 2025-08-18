@@ -2915,8 +2915,8 @@ GLFWAPI const GLFWvidmode* glfwGetVideoMode(GLFWmonitor* monitor);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref GLFW_INVALID_VALUE,
  *  @ref GLFW_PLATFORM_ERROR and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
  *
- *  @remark @wayland Gamma handling is a privileged protocol, this function
- *  will thus never be implemented and emits @ref GLFW_FEATURE_UNAVAILABLE.
+ *  @remark @wayland Monitor gamma is a privileged protocol, so this function
+ *  cannot be implemented and emits @ref GLFW_FEATURE_UNAVAILABLE.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -2939,8 +2939,8 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* monitor, float gamma);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref GLFW_PLATFORM_ERROR
  *  and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
  *
- *  @remark @wayland Gamma handling is a privileged protocol, this function
- *  will thus never be implemented and emits @ref GLFW_FEATURE_UNAVAILABLE while
+ *  @remark @wayland Monitor gamma is a privileged protocol, so this function
+ *  cannot be implemented and emits @ref GLFW_FEATURE_UNAVAILABLE while
  *  returning `NULL`.
  *
  *  @pointer_lifetime The returned structure and its arrays are allocated and
@@ -2983,8 +2983,8 @@ GLFWAPI const GLFWgammaramp* glfwGetGammaRamp(GLFWmonitor* monitor);
  *
  *  @remark @win32 The gamma ramp size must be 256.
  *
- *  @remark @wayland Gamma handling is a privileged protocol, this function
- *  will thus never be implemented and emits @ref GLFW_FEATURE_UNAVAILABLE.
+ *  @remark @wayland Monitor gamma is a privileged protocol, so this function
+ *  cannot be implemented and emits @ref GLFW_FEATURE_UNAVAILABLE.
  *
  *  @pointer_lifetime The specified gamma ramp is copied before this function
  *  returns.
@@ -3430,8 +3430,8 @@ GLFWAPI void glfwSetWindowIcon(GLFWwindow* window, int count, const GLFWimage* i
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_PLATFORM_ERROR and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
  *
- *  @remark @wayland There is no way for an application to retrieve the global
- *  position of its windows.  This function will emit @ref
+ *  @remark @wayland Window positions are not currently part of any common
+ *  Wayland protocol, so this function cannot be implemented and will emit @ref
  *  GLFW_FEATURE_UNAVAILABLE.
  *
  *  @thread_safety This function must only be called from the main thread.
@@ -3464,8 +3464,8 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
  *  GLFW_PLATFORM_ERROR and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
  *
- *  @remark @wayland There is no way for an application to set the global
- *  position of its windows.  This function will emit @ref
+ *  @remark @wayland Window positions are not currently part of any common
+ *  Wayland protocol, so this function cannot be implemented and will emit @ref
  *  GLFW_FEATURE_UNAVAILABLE.
  *
  *  @thread_safety This function must only be called from the main thread.
@@ -3807,10 +3807,6 @@ GLFWAPI void glfwSetWindowOpacity(GLFWwindow* window, float opacity);
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
  *
- *  @remark @wayland Once a window is iconified, @ref glfwRestoreWindow won’t
- *  be able to restore it.  This is a design decision of the xdg-shell
- *  protocol.
- *
  *  @thread_safety This function must only be called from the main thread.
  *
  *  @sa @ref window_iconify
@@ -3837,6 +3833,10 @@ GLFWAPI void glfwIconifyWindow(GLFWwindow* window);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
+ *
+ *  @remark @wayland Restoring a window from maximization is not currently part
+ *  of any common Wayland protocol, so this function can only restore windows
+ *  from maximization.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -4058,8 +4058,8 @@ GLFWAPI GLFWmonitor* glfwGetWindowMonitor(GLFWwindow* window);
  *  affected by any resizing or mode switching, although you may need to update
  *  your viewport if the framebuffer size has changed.
  *
- *  @remark @wayland The desired window position is ignored, as there is no way
- *  for an application to set this property.
+ *  @remark @wayland Window positions are not currently part of any common
+ *  Wayland protocol.  The window position arguments are ignored.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -4096,8 +4096,9 @@ GLFWAPI void glfwSetWindowMonitor(GLFWwindow* window, GLFWmonitor* monitor, int 
  *  errors.  However, this function should not fail as long as it is passed
  *  valid arguments and the library has been [initialized](@ref intro_init).
  *
- *  @remark @wayland The Wayland protocol provides no way to check whether a
- *  window is iconfied, so @ref GLFW_ICONIFIED always returns `GLFW_FALSE`.
+ *  @remark @wayland Checking whether a window is iconified is not currently
+ *  part of any common Wayland protocol, so the @ref GLFW_ICONIFIED attribute
+ *  cannot be implemented and is always `GLFW_FALSE`.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -4219,8 +4220,8 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
  *
- *  @remark @wayland This callback will never be called, as there is no way for
- *  an application to know its global position.
+ *  @remark @wayland This callback will not be called.  The Wayland protocol
+ *  provides no way to be notified of when a window is moved.
  *
  *  @thread_safety This function must only be called from the main thread.
  *
@@ -4394,6 +4395,10 @@ GLFWAPI GLFWwindowfocusfun glfwSetWindowFocusCallback(GLFWwindow* window, GLFWwi
  *  [function pointer type](@ref GLFWwindowiconifyfun).
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @remark @wayland This callback will not be called.  The Wayland protocol
+ *  provides no way to be notified of when a window is iconified, and no way to
+ *  check whether a window is currently iconified.
  *
  *  @thread_safety This function must only be called from the main thread.
  *

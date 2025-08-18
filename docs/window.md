@@ -893,6 +893,12 @@ int xpos, ypos;
 glfwGetWindowPos(window, &xpos, &ypos);
 ```
 
+@note @wayland An applications cannot know the positions of its windows or
+whether one has been moved.  The @ref GLFW_POSITION_X and @ref GLFW_POSITION_Y
+window hints are ignored.  The @ref glfwGetWindowPos and @ref glfwSetWindowPos
+functions emit @ref GLFW_FEATURE_UNAVAILABLE.  The window position callback will
+not be called.
+
 
 ### Window title {#window_title}
 
@@ -1037,6 +1043,12 @@ You can also get the current iconification state with @ref glfwGetWindowAttrib.
 ```c
 int iconified = glfwGetWindowAttrib(window, GLFW_ICONIFIED);
 ```
+
+@note @wayland An application cannot know if any of its windows have been
+iconified or restore one from iconification.  The @ref glfwRestoreWindow
+function can only restore windows from maximization and the iconify callback
+will not be called.  The [GLFW_ICONIFIED](@ref GLFW_ICONIFIED_attrib) attribute
+will be false.  The @ref glfwIconifyWindow function works normally.
 
 
 ### Window maximization {#window_maximize}

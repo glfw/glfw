@@ -55,6 +55,7 @@ video tutorials.
  - Jason Daly
  - danhambleton
  - Jarrod Davis
+ - decce
  - Olivier Delannoy
  - Paul R. Deppe
  - Michael Dickens

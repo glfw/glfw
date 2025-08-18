@@ -1542,7 +1542,10 @@ static void pointerHandleEnter(void* userData,
     else
     {
         if (window->wl.fallback.decorations)
+        {
             window->wl.fallback.focus = surface;
+            updateFallbackDecorationCursor(window, sx, sy);
+        }
     }
 }
 

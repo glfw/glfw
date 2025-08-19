@@ -134,7 +134,6 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Ignore key repeat events when no window has keyboard focus (#2727)
  - [Wayland] Bugfix: Reset key repeat timer when window destroyed (#2741,#2727)
  - [Wayland] Bugfix: Memory would leak if reading a data offer failed midway
- - [Wayland] Bugfix: Keyboard leave event handler now processes key repeats (#2736)
  - [Wayland] Bugfix: Retrieved cursor position would be incorrect when hovering over
                      fallback decorations
  - [Wayland] Bugfix: Fallback decorations would report scroll events

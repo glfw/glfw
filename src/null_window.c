@@ -701,7 +701,7 @@ int _glfwGetKeyScancodeNull(int key)
     return _glfw.null.scancodes[key];
 }
 
-void _glfwGetRequiredInstanceExtensionsNull(char** extensions)
+void _glfwGetRequiredInstanceExtensionsNull(const char** extensions)
 {
     if (!_glfw.vk.KHR_surface || !_glfw.vk.EXT_headless_surface)
         return;

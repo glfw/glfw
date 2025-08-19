@@ -14,6 +14,9 @@ values over 8. For compatibility with older versions, the
 @ref GLFW_UNLIMITED_MOUSE_BUTTONS input mode needs to be set to make use of
 this.
 
+On Windows 10 or newer it is now possible to specify ANGLE's D3D11on12
+backend via the @ref GLFW_ANGLE_PLATFORM_TYPE_D3D11ON12 init hint.
+
 ## Caveats {#caveats}
 
 ## Deprecations {#deprecations}
@@ -44,6 +47,7 @@ actively maintained and available on many platforms.
 ### New constants {#new_constants}
 
 - @ref GLFW_UNLIMITED_MOUSE_BUTTONS
+- @ref GLFW_ANGLE_PLATFORM_TYPE_D3D11ON12
 
 ## Release notes for earlier versions {#news_archive}
 

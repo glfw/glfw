@@ -253,7 +253,7 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     return (GLFWwindow*) window;
 }
 
-void glfwDefaultWindowHints(void)
+GLFWAPI void glfwDefaultWindowHints(void)
 {
     _GLFW_REQUIRE_INIT();
 

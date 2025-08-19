@@ -337,5 +337,9 @@ if (GLFW_INSTALL)
             RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+
+    # If a compilation .pdb file was produced, install it next to the library.
+    install(FILES "$<TARGET_FILE_DIR:glfw>/$<TARGET_FILE_BASE_NAME:glfw>.pdb"
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}" OPTIONAL)
 endif()
 

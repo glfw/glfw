@@ -1155,6 +1155,7 @@ extern "C" {
 #define GLFW_LOCK_KEY_MODS           0x00033004
 #define GLFW_RAW_MOUSE_MOTION        0x00033005
 #define GLFW_UNLIMITED_MOUSE_BUTTONS 0x00033006
+#define GLFW_IME                     0x00033007
 
 #define GLFW_CURSOR_NORMAL          0x00034001
 #define GLFW_CURSOR_HIDDEN          0x00034002
@@ -1308,6 +1309,11 @@ extern "C" {
  *  Platform selection [init hint](@ref GLFW_PLATFORM).
  */
 #define GLFW_PLATFORM               0x00050003
+/*! @brief Preedit candidate init hint.
+ *
+ *  Preedit candidate [init hint](@ref GLFW_MANAGE_PREEDIT_CANDIDATE_hint).
+ */
+#define GLFW_MANAGE_PREEDIT_CANDIDATE 0x00050004
 /*! @brief macOS specific init hint.
  *
  *  macOS specific [init hint](@ref GLFW_COCOA_CHDIR_RESOURCES_hint).
@@ -1323,6 +1329,11 @@ extern "C" {
  *  X11 specific [init hint](@ref GLFW_X11_XCB_VULKAN_SURFACE_hint).
  */
 #define GLFW_X11_XCB_VULKAN_SURFACE 0x00052001
+/*! @brief X11 specific init hint.
+ *
+ *  X11 specific [init hint](@ref GLFW_X11_ONTHESPOT_hint).
+ */
+#define GLFW_X11_ONTHESPOT          0x00052002
 /*! @brief Wayland specific init hint.
  *
  *  Wayland specific [init hint](@ref GLFW_WAYLAND_LIBDECOR_hint).
@@ -1944,6 +1955,67 @@ typedef void (* GLFWcharfun)(GLFWwindow* window, unsigned int codepoint);
  *  @ingroup input
  */
 typedef void (* GLFWcharmodsfun)(GLFWwindow* window, unsigned int codepoint, int mods);
+
+/*! @brief The function pointer type for preedit callbacks.
+ *
+ *  This is the function pointer type for preedit callback functions.
+ *
+ *  @param[in] window The window that received the event.
+ *  @param[in] preedit_count Preedit string count.
+ *  @param[in] preedit_string Preedit string.
+ *  @param[in] block_count Attributed block count.
+ *  @param[in] block_sizes List of attributed block size.
+ *  @param[in] focused_block Focused block index.
+ *  @param[in] caret Caret position.
+ *
+ *  @sa @ref ime_support
+ *  @sa glfwSetPreeditCallback
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWpreeditfun)(GLFWwindow* window,
+                                int preedit_count,
+                                unsigned int* preedit_string,
+                                int block_count,
+                                int* block_sizes,
+                                int focused_block,
+                                int caret);
+
+/*! @brief The function pointer type for IME status change callbacks.
+ *
+ *  This is the function pointer type for IME status change callback functions.
+ *
+ *  @param[in] window The window that received the event.
+ *
+ *  @sa @ref ime_support
+ *  @sa glfwSetIMEStatusCallback
+ *
+ *  @ingroup monitor
+ */
+typedef void (* GLFWimestatusfun)(GLFWwindow* window);
+
+/*! @brief The function pointer type for preedit candidate callbacks.
+ *
+ *  This is the function pointer type for preedit candidate callback functions.
+ *  Use @ref glfwGetPreeditCandidate to get the candidate text for a specific index.
+ *
+ *  @param[in] window The window that received the event.
+ *  @param[in] candidates_count Candidates count.
+ *  @param[in] selected_index.Index of selected candidate.
+ *  @param[in] page_start Start index of candidate currently displayed.
+ *  @param[in] page_size Count of candidates currently displayed.
+ *
+ *  @sa @ref ime_support
+ *  @sa @ref glfwSetPreeditCandidateCallback
+ *  @sa @ref glfwGetPreeditCandidate
+ *
+ *  @ingroup input
+ */
+typedef void (* GLFWpreeditcandidatefun)(GLFWwindow* window,
+                                         int candidates_count,
+                                         int selected_index,
+                                         int page_start,
+                                         int page_size);
 
 /*! @brief The function pointer type for path drop callbacks.
  *
@@ -4657,13 +4729,13 @@ GLFWAPI void glfwPostEmptyEvent(void);
  *
  *  This function returns the value of an input option for the specified window.
  *  The mode must be one of @ref GLFW_CURSOR, @ref GLFW_STICKY_KEYS,
- *  @ref GLFW_STICKY_MOUSE_BUTTONS, @ref GLFW_LOCK_KEY_MODS or
- *  @ref GLFW_RAW_MOUSE_MOTION.
+ *  @ref GLFW_STICKY_MOUSE_BUTTONS, @ref GLFW_LOCK_KEY_MODS,
+ *  @ref GLFW_RAW_MOUSE_MOTION or @ref GLFW_IME.
  *
  *  @param[in] window The window to query.
  *  @param[in] mode One of `GLFW_CURSOR`, `GLFW_STICKY_KEYS`,
- *  `GLFW_STICKY_MOUSE_BUTTONS`, `GLFW_LOCK_KEY_MODS` or
- *  `GLFW_RAW_MOUSE_MOTION`.
+ *  `GLFW_STICKY_MOUSE_BUTTONS`, `GLFW_LOCK_KEY_MODS`, `GLFW_RAW_MOUSE_MOTION`,
+ *  or `GLFW_IME`.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_INVALID_ENUM.
@@ -4682,8 +4754,9 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *
  *  This function sets an input mode option for the specified window.  The mode
  *  must be one of @ref GLFW_CURSOR, @ref GLFW_STICKY_KEYS,
- *  @ref GLFW_STICKY_MOUSE_BUTTONS, @ref GLFW_LOCK_KEY_MODS
- *  @ref GLFW_RAW_MOUSE_MOTION, or @ref GLFW_UNLIMITED_MOUSE_BUTTONS.
+ *  @ref GLFW_STICKY_MOUSE_BUTTONS, @ref GLFW_LOCK_KEY_MODS,
+ *  @ref GLFW_RAW_MOUSE_MOTION, @ref GLFW_UNLIMITED_MOUSE_BUTTONS,
+ *  @ref GLFW_IME.
  *
  *  If the mode is `GLFW_CURSOR`, the value must be one of the following cursor
  *  modes:
@@ -4728,10 +4801,13 @@ GLFWAPI int glfwGetInputMode(GLFWwindow* window, int mode);
  *  callback, or `GLFW_FALSE` to limit the mouse buttons sent to the callback
  *  to the mouse button token values up to `GLFW_MOUSE_BUTTON_LAST`.
  *
+ *  If the mode is `GLFW_IME`, the value must be either `GLFW_TRUE` to turn on
+ *  IME, or `GLFW_FALSE` to turn off it.
+ *
  *  @param[in] window The window whose input mode to set.
  *  @param[in] mode One of `GLFW_CURSOR`, `GLFW_STICKY_KEYS`,
- *  `GLFW_STICKY_MOUSE_BUTTONS`, `GLFW_LOCK_KEY_MODS` or
- *  `GLFW_RAW_MOUSE_MOTION`.
+ *  `GLFW_STICKY_MOUSE_BUTTONS`, `GLFW_LOCK_KEY_MODS`,
+ *  `GLFW_RAW_MOUSE_MOTION` or `GLFW_IME`.
  *  @param[in] value The new value of the specified input mode.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
@@ -5161,6 +5237,100 @@ GLFWAPI void glfwDestroyCursor(GLFWcursor* cursor);
  */
 GLFWAPI void glfwSetCursor(GLFWwindow* window, GLFWcursor* cursor);
 
+/*! @brief Retrieves the area of the preedit text cursor.
+ *
+ *  This area is used to decide the position of the candidate window.
+ *  The cursor position is relative to the window.
+ *
+ *  @param[in] window The window to set the preedit text cursor for.
+ *  @param[out] x The preedit text cursor x position (relative position from window coordinates).
+ *  @param[out] y The preedit text cursor y position (relative position from window coordinates).
+ *  @param[out] w The preedit text cursor width.
+ *  @param[out] h The preedit text cursor height.
+ *
+ *  @par Thread Safety
+ *  This function may only be called from the main thread.
+ *
+ *  @sa @ref ime_support
+ *
+ *  @since Added in GLFW 3.X.
+ *
+ *  @ingroup input
+ */
+GLFWAPI void glfwGetPreeditCursorRectangle(GLFWwindow* window, int* x, int* y, int* w, int* h);
+
+/*! @brief Sets the area of the preedit text cursor.
+ *
+ *  This area is used to decide the position of the candidate window.
+ *  The cursor position is relative to the window.
+ *
+ *  @param[in] window The window to set the text cursor for.
+ *  @param[in] x The preedit text cursor x position (relative position from window coordinates).
+ *  @param[in] y The preedit text cursor y position (relative position from window coordinates).
+ *  @param[in] w The preedit text cursor width.
+ *  @param[in] h The preedit text cursor height.
+ *
+ *  @par Thread Safety
+ *  This function may only be called from the main thread.
+ *
+ *  @sa @ref ime_support
+ *
+ *  @since Added in GLFW 3.X.
+ *
+ *  @ingroup input
+ */
+GLFWAPI void glfwSetPreeditCursorRectangle(GLFWwindow* window, int x, int y, int w, int h);
+
+/*! @brief Resets IME input status.
+ *
+ *  This function resets IME's preedit text.
+ *
+ *  @param[in] window The window.
+ *
+ *  @remark @x11 Since over-the-spot style is used by default, you don't need
+ *  to use this function.
+ *
+ *  @remark @wayland This function is currently not supported.
+ *
+ *  @par Thread Safety
+ *  This function may only be called from the main thread.
+ *
+ *  @sa @ref ime_support
+ *
+ *  @since Added in GLFW 3.X.
+ *
+ *  @ingroup input
+ */
+GLFWAPI void glfwResetPreeditText(GLFWwindow* window);
+
+/*! @brief Returns the preedit candidate.
+ *
+ *  This function returns the text and the text-count of the preedit candidate.
+ *
+ *  By default, the IME manages the preedit candidates, so there is no need to
+ *  use this function.  See @ref glfwSetPreeditCandidateCallback and
+ *  [GLFW_MANAGE_PREEDIT_CANDIDATE](@ref GLFW_MANAGE_PREEDIT_CANDIDATE_hint) for details.
+ *
+ *  @param[in] window The window.
+ *  @param[in] index The index of the candidate.
+ *  @param[out] textCount The text-count of the candidate.
+ *  @return The text of the candidate as Unicode code points.
+ *
+ *  @remark @macos @x11 @wayland Don't support this function.
+ *
+ *  @par Thread Safety
+ *  This function may only be called from the main thread.
+ *
+ *  @sa @ref ime_support
+ *  @sa @ref glfwSetPreeditCandidateCallback
+ *  @sa [GLFW_MANAGE_PREEDIT_CANDIDATE](@ref GLFW_MANAGE_PREEDIT_CANDIDATE_hint)
+ *
+ *  @since Added in GLFW 3.X.
+ *
+ *  @ingroup input
+ */
+GLFWAPI unsigned int* glfwGetPreeditCandidate(GLFWwindow* window, int index, int* textCount);
+
 /*! @brief Sets the key callback.
  *
  *  This function sets the key callback of the specified window, which is called
@@ -5295,6 +5465,124 @@ GLFWAPI GLFWcharfun glfwSetCharCallback(GLFWwindow* window, GLFWcharfun callback
  *  @ingroup input
  */
 GLFWAPI GLFWcharmodsfun glfwSetCharModsCallback(GLFWwindow* window, GLFWcharmodsfun callback);
+
+/*! @brief Sets the preedit callback.
+ *
+ *  This function sets the preedit callback of the specified
+ *  window, which is called when an IME is processing text before committed.
+ *
+ *  Callback receives relative position of input cursor inside preedit text and
+ *  attributed text blocks.  This callback is used for on-the-spot text editing
+ *  with IME.
+ *
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or an
+ *  error occurred.
+ *
+ *  @callback_signature
+ *  @code
+ *  void function_name(GLFWwindow* window,
+                       int preedit_count,
+                       unsigned int* preedit_string,
+                       int block_count,
+                       int* block_sizes,
+                       int focused_block,
+                       int caret)
+ *  @endcode
+ *  For more information about the callback parameters, see the
+ *  [function pointer type](@ref GLFWpreeditfun).
+ *
+ *  @remark @x11 Since over-the-spot style is used by default, you don't need
+ *  to use this function.
+ *
+ *  @par Thread Safety
+ *  This function may only be called from the main thread.
+ *
+ *  @sa @ref ime_support
+ *
+ *  @since Added in GLFW 3.X
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWpreeditfun glfwSetPreeditCallback(GLFWwindow* window, GLFWpreeditfun cbfun);
+
+/*! @brief Sets the IME status change callback.
+ *
+ *  This function sets the IME status callback of the specified
+ *  window, which is called when an IME is switched on and off.
+ *
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or an
+ *  error occurred.
+ *
+ *  @callback_signature
+ *  @code
+ *  void function_name(GLFWwindow* window)
+ *  @endcode
+ *  For more information about the callback parameters, see the
+ *  [function pointer type](@ref GLFWimestatusfun).
+ *
+ *  @remark @x11 @wayland Don't support this function.  The callback is not called.
+ *
+ *  @par Thread Safety
+ *  This function may only be called from the main thread.
+ *
+ *  @sa @ref ime_support
+ *
+ *  @since Added in GLFW 3.X
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWimestatusfun glfwSetIMEStatusCallback(GLFWwindow* window, GLFWimestatusfun cbfun);
+
+/*! @brief Sets the preedit candidate change callback.
+ *
+ *  This function sets the preedit candidate callback of the specified
+ *  window, which is called when the candidates are updated and can be used
+ *  to display them by the application side.
+ *
+ *  By default, this callback is not called because the IME displays the
+ *  candidates and there is nothing to do on the application side.  Only when
+ *  the application side needs to use this to manage the displaying of 
+ *  IME candidates, you can set
+ *  [GLFW_MANAGE_PREEDIT_CANDIDATE](@ref GLFW_MANAGE_PREEDIT_CANDIDATE_hint) init hint
+ *  and stop the IME from managing it.
+ * 
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] cbfun The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or an
+ *  error occurred.
+ *
+ *  @callback_signature
+ *  @code
+ *  void function_name(GLFWwindow* window,
+                       int candidates_count,
+                       int selected_index,
+                       int page_start,
+                       int page_size)
+ *  @endcode
+ *  For more information about the callback parameters, see the
+ *  [function pointer type](@ref GLFWpreeditcandidatefun).
+ *
+ *  @remark @macos @x11 @wayland Don't support this function.  The callback is
+ *  not called.
+ *
+ *  @par Thread Safety
+ *  This function may only be called from the main thread.
+ *
+ *  @sa @ref ime_support
+ *  @sa [GLFW_MANAGE_PREEDIT_CANDIDATE](@ref GLFW_MANAGE_PREEDIT_CANDIDATE_hint)
+ *
+ *  @since Added in GLFW 3.X
+ *
+ *  @ingroup input
+ */
+GLFWAPI GLFWpreeditcandidatefun glfwSetPreeditCandidateCallback(GLFWwindow* window, GLFWpreeditcandidatefun cbfun);
 
 /*! @brief Sets the mouse button callback.
  *

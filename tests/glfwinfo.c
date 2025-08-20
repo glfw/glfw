@@ -383,6 +383,7 @@ int main(int argc, char** argv)
     int angle_type = GLFW_ANGLE_PLATFORM_TYPE_NONE;
     bool cocoa_graphics_switching = false;
     bool disable_xcb_surface = false;
+    bool acceleration = true;
 
     enum { PLATFORM, CLIENT, CONTEXT, BEHAVIOR, DEBUG_CONTEXT, FORWARD, HELP,
            EXTENSIONS, LAYERS,
@@ -390,7 +391,7 @@ int main(int argc, char** argv)
            REDBITS, GREENBITS, BLUEBITS, ALPHABITS, DEPTHBITS, STENCILBITS,
            ACCUMREDBITS, ACCUMGREENBITS, ACCUMBLUEBITS, ACCUMALPHABITS,
            AUXBUFFERS, SAMPLES, STEREO, SRGB, SINGLEBUFFER, NOERROR_SRSLY,
-           ANGLE_TYPE, GRAPHICS_SWITCHING, XCB_SURFACE };
+           ANGLE_TYPE, GRAPHICS_SWITCHING, XCB_SURFACE, NO_ACCELERATION };
     const struct option options[] =
     {
         { "platform",           1, NULL, PLATFORM },
@@ -426,6 +427,7 @@ int main(int argc, char** argv)
         { "angle-type",         1, NULL, ANGLE_TYPE },
         { "graphics-switching", 0, NULL, GRAPHICS_SWITCHING },
         { "vk-xcb-surface",     0, NULL, XCB_SURFACE },
+        { "no-acceleration",    0, NULL, NO_ACCELERATION },
         { NULL, 0, NULL, 0 }
     };
 
@@ -654,6 +656,9 @@ int main(int argc, char** argv)
             case XCB_SURFACE:
                 disable_xcb_surface = true;
                 break;
+            case NO_ACCELERATION:
+                acceleration = false;
+                break;
             default:
                 usage();
                 exit(EXIT_FAILURE);
@@ -708,6 +713,7 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_STEREO, fb_stereo);
     glfwWindowHint(GLFW_SRGB_CAPABLE, fb_srgb);
     glfwWindowHint(GLFW_DOUBLEBUFFER, fb_doublebuffer);
+    glfwWindowHint(GLFW_ACCELERATION, acceleration);
 
     glfwWindowHint(GLFW_COCOA_GRAPHICS_SWITCHING, cocoa_graphics_switching);
 

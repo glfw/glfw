@@ -336,6 +336,15 @@ __GLFW_DOUBLEBUFFER__ specifies whether the framebuffer should be double
 buffered.  You nearly always want to use double buffering.  This is a hard
 constraint.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.
 
+@anchor GLFW_ACCELERATION
+@anchor GLFW_ACCELERATION_hint
+__GLFW_ACCELERATION__ specifies whether the hardware acceleration should be
+preferred.  By default, hardware acceleration is preferred, and will fallback
+to no acceleration if hardware acceleration is unavailable.  Possible values
+are `GLFW_TRUE` and `GLFW_FALSE`.
+
+This hint only has an effect on WGL.
+
 
 #### Monitor related hints {#window_hints_mtr}
 
@@ -1498,6 +1507,11 @@ respectively.
 __GLFW_DOUBLEBUFFER__ indicates whether the specified window is double-buffered
 when rendering with OpenGL or OpenGL ES.  This can be set before creation with
 the [GLFW_DOUBLEBUFFER](@ref GLFW_DOUBLEBUFFER_hint) window hint.
+
+@anchor GLFW_ACCELERATION_attrib
+__GLFW_ACCELERATION__ indicates whether the specified window is hardware
+accelerated when rendering with OpenGL or OpenGL ES.  This can be set before
+creation with the [GLFW_ACCELERATION](@ref GLFW_ACCELERATION_hint) window hint.
 
 
 ## Buffer swapping {#buffer_swap}

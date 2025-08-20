@@ -14,7 +14,24 @@ values over 8. For compatibility with older versions, the
 @ref GLFW_UNLIMITED_MOUSE_BUTTONS input mode needs to be set to make use of
 this.
 
+### Window hint for hardware acceleration {#acceleration}
+
+You can use window hint [GLFW_ACCELERATION](@ref GLFW_ACCELERATION_hint) to
+specify whether hardware acceleration is preferred or not.  The default value
+is to prefer hardware acceleration.  You can get whether hardware acceleration
+is enabled with the window attribute
+[GLFW_ACCELERATION](@ref GLFW_ACCELERATION_attrib).  This feature is only
+available on WGL currently.
+
+
 ## Caveats {#caveats}
+
+### Microsoft GDI software OpenGL ICD support {#gdi_opengl_icd}
+
+GLFW now supports creating window when the Microsoft GDI software OpenGL ICD is
+the only available implementation.
+See [GLFW_ACCELERATION](@ref GLFW_ACCELERATION_hint) for more details.
+
 
 ## Deprecations {#deprecations}
 
@@ -52,4 +69,3 @@ actively maintained and available on many platforms.
 - [Release notes for 3.2](https://www.glfw.org/docs/3.2/news.html)
 - [Release notes for 3.1](https://www.glfw.org/docs/3.1/news.html)
 - [Release notes for 3.0](https://www.glfw.org/docs/3.0/news.html)
-

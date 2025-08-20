@@ -145,6 +145,8 @@ static int choosePixelFormatWGL(_GLFWwindow* window,
         {
             // Get pixel format attributes through "modern" extension
 
+            int acceleration;
+
             if (!wglGetPixelFormatAttribivARB(window->context.wgl.dc,
                                               pixelFormat, 0,
                                               attribCount,
@@ -166,11 +168,10 @@ static int choosePixelFormatWGL(_GLFWwindow* window,
             if (FIND_ATTRIB_VALUE(WGL_PIXEL_TYPE_ARB) != WGL_TYPE_RGBA_ARB)
                 continue;
 
-            if (FIND_ATTRIB_VALUE(WGL_ACCELERATION_ARB) == WGL_NO_ACCELERATION_ARB)
-                continue;
-
             if (FIND_ATTRIB_VALUE(WGL_DOUBLE_BUFFER_ARB) != fbconfig->doublebuffer)
                 continue;
+
+            acceleration = FIND_ATTRIB_VALUE(WGL_ACCELERATION_ARB);
 
             u->redBits = FIND_ATTRIB_VALUE(WGL_RED_BITS_ARB);
             u->greenBits = FIND_ATTRIB_VALUE(WGL_GREEN_BITS_ARB);
@@ -210,6 +211,10 @@ static int choosePixelFormatWGL(_GLFWwindow* window,
                         u->sRGB = GLFW_TRUE;
                 }
             }
+
+            u->acceleration =
+                acceleration == WGL_GENERIC_ACCELERATION_ARB ||
+                acceleration == WGL_FULL_ACCELERATION_ARB;
         }
         else
         {
@@ -231,12 +236,6 @@ static int choosePixelFormatWGL(_GLFWwindow* window,
 
             if (!(pfd.dwFlags & PFD_DRAW_TO_WINDOW) ||
                 !(pfd.dwFlags & PFD_SUPPORT_OPENGL))
-            {
-                continue;
-            }
-
-            if (!(pfd.dwFlags & PFD_GENERIC_ACCELERATED) &&
-                (pfd.dwFlags & PFD_GENERIC_FORMAT))
             {
                 continue;
             }
@@ -264,6 +263,10 @@ static int choosePixelFormatWGL(_GLFWwindow* window,
 
             if (pfd.dwFlags & PFD_STEREO)
                 u->stereo = GLFW_TRUE;
+
+            u->acceleration =
+                (pfd.dwFlags & PFD_GENERIC_ACCELERATED) ||
+                !(pfd.dwFlags & PFD_GENERIC_FORMAT);
         }
 
         u->handle = pixelFormat;
@@ -437,8 +440,6 @@ GLFWbool _glfwInitWGL(void)
 
     // NOTE: A dummy context has to be created for opengl32.dll to load the
     //       OpenGL ICD, from which we can then query WGL extensions
-    // NOTE: This code will accept the Microsoft GDI ICD; accelerated context
-    //       creation failure occurs during manual pixel format enumeration
 
     dc = GetDC(_glfw.win32.helperWindowHandle);
 

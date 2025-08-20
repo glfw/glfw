@@ -100,6 +100,7 @@ video tutorials.
  - Björn Hempel
  - Matthew Henry
  - heromyth
+ - Jochen Heizmann
  - Lucas Hinderberger
  - Paul Holden
  - Hajime Hoshi

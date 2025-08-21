@@ -23,6 +23,7 @@ video tutorials.
  - Denis Bernard
  - BiBi
  - Doug Binks
+ - bitb4ker
  - blanco
  - Waris Boonyasiriwat
  - Kyle Brenneman

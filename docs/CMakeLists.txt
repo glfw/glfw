@@ -50,7 +50,7 @@ else()
                        COMMENT "Generating HTML documentation"
                        VERBATIM)
 
-    add_custom_target(docs ALL SOURCES "html/index.html")
+    add_custom_target(docs ALL DEPENDS "html/index.html")
     set_target_properties(docs PROPERTIES FOLDER "GLFW3")
 
     if (GLFW_INSTALL)

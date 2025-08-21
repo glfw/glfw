@@ -397,6 +397,20 @@ static void scroll_callback(GLFWwindow* window, double x, double y)
            counter++, slot->number, glfwGetTime(), x, y);
 }
 
+static void trackpad_zoom_callback(GLFWwindow* window, double scale)
+{
+    Slot* slot = glfwGetWindowUserPointer(window);
+    printf("%08x to %i at %0.3f: Trackpad Zoom: %0.3f\n",
+           counter++, slot->number, glfwGetTime(), scale);
+}
+
+static void trackpad_rotate_callback(GLFWwindow* window, double angle)
+{
+    Slot* slot = glfwGetWindowUserPointer(window);
+    printf("%08x to %i at %0.3f: Trackpad Rotate: %0.3f\n",
+           counter++, slot->number, glfwGetTime(), angle);
+}
+
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     Slot* slot = glfwGetWindowUserPointer(window);
@@ -647,6 +661,8 @@ int main(int argc, char** argv)
         glfwSetCursorPosCallback(slots[i].window, cursor_position_callback);
         glfwSetCursorEnterCallback(slots[i].window, cursor_enter_callback);
         glfwSetScrollCallback(slots[i].window, scroll_callback);
+        glfwSetTrackpadZoomCallback(slots[i].window, trackpad_zoom_callback);
+        glfwSetTrackpadRotateCallback(slots[i].window, trackpad_rotate_callback);
         glfwSetKeyCallback(slots[i].window, key_callback);
         glfwSetCharCallback(slots[i].window, char_callback);
         glfwSetDropCallback(slots[i].window, drop_callback);

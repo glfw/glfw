@@ -49,6 +49,7 @@
 #include "fractional-scale-v1-client-protocol.h"
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
+#include "pointer-gestures-unstable-v1-client-protocol.h"
 
 // NOTE: Versions of wayland-scanner prior to 1.17.91 named every global array of
 //       wl_interface pointers 'types', making it impossible to combine several unmodified
@@ -89,6 +90,10 @@
 
 #define types _glfw_idle_inhibit_types
 #include "idle-inhibit-unstable-v1-client-protocol-code.h"
+#undef types
+
+#define types _glfw_pointer_gestures_types
+#include "pointer-gestures-unstable-v1-client-protocol-code.h"
 #undef types
 
 static void wmBaseHandlePing(void* userData,
@@ -207,6 +212,14 @@ static void registryHandleGlobal(void* userData,
             wl_registry_bind(registry, name,
                              &wp_fractional_scale_manager_v1_interface,
                              1);
+    }
+    else if (strcmp(interface, "zwp_pointer_gestures_v1") == 0)
+    {
+        _glfw.wl.pointerGestures =
+            wl_registry_bind(registry, name,
+                             &zwp_pointer_gestures_v1_interface,
+                             1);
+        _glfwAddPointerGesturesListeners(_glfw.wl.pointerGestures);
     }
 }
 
@@ -988,6 +1001,10 @@ void _glfwTerminateWayland(void)
         xdg_activation_v1_destroy(_glfw.wl.activationManager);
     if (_glfw.wl.fractionalScaleManager)
         wp_fractional_scale_manager_v1_destroy(_glfw.wl.fractionalScaleManager);
+    if (_glfw.wl.pinchGesture)
+        zwp_pointer_gesture_pinch_v1_destroy(_glfw.wl.pinchGesture);
+    if (_glfw.wl.pointerGestures)
+        zwp_pointer_gestures_v1_destroy(_glfw.wl.pointerGestures);
     if (_glfw.wl.registry)
         wl_registry_destroy(_glfw.wl.registry);
     if (_glfw.wl.display)

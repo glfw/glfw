@@ -51,6 +51,7 @@
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
 #include "fractional-scale-v1-client-protocol.h"
+#include "pointer-gestures-unstable-v1-client-protocol.h"
 
 #define GLFW_BORDER_SIZE    4
 #define GLFW_CAPTION_HEIGHT 24
@@ -1671,6 +1672,53 @@ static const struct wl_pointer_listener pointerListener =
     pointerHandleAxis,
 };
 
+static void pointerGesturesHandlePinchBegin(void *userData,
+                                            struct zwp_pointer_gesture_pinch_v1 *zwp_pointer_gesture_pinch_v1,
+                                            uint32_t serial,
+                                            uint32_t time,
+                                            struct wl_surface *surface,
+                                            uint32_t fingers)
+{
+    _glfw.wl.pinchGesturePreviousScale = 1.0;
+}
+
+static void pointerGesturesHandlePinchMotion(void *userData,
+                                             struct zwp_pointer_gesture_pinch_v1 *zwp_pointer_gesture_pinch_v1,
+                                             uint32_t time,
+		                                     wl_fixed_t dx,
+		                                     wl_fixed_t dy,
+		                                     wl_fixed_t scale,
+		                                     wl_fixed_t rotation)
+{
+    _GLFWwindow* window = _glfw.wl.pointerFocus;
+
+    double zoom_value = wl_fixed_to_double(scale);
+    double prev_zoom_value = _glfw.wl.pinchGesturePreviousScale;
+    double zoom_delta = zoom_value / prev_zoom_value;
+    _glfw.wl.pinchGesturePreviousScale = zoom_value;
+
+    double rotation_value = wl_fixed_to_double(rotation);
+
+    _glfwInputTrackpadZoom(window, zoom_delta);
+    _glfwInputTrackpadRotate(window, rotation_value);
+}
+
+static void pointerGesturesHandlePinchEnd(void *userData,
+                                          struct zwp_pointer_gesture_pinch_v1 *zwp_pointer_gesture_pinch_v1,
+		                                  uint32_t serial,
+		                                  uint32_t time,
+		                                  int32_t cancelled)
+{
+    _glfw.wl.pinchGesturePreviousScale = 1.0;
+}
+
+static const struct zwp_pointer_gesture_pinch_v1_listener pinchGestureListener =
+{
+    pointerGesturesHandlePinchBegin,
+    pointerGesturesHandlePinchMotion,
+    pointerGesturesHandlePinchEnd,
+};
+
 static void keyboardHandleKeymap(void* userData,
                                  struct wl_keyboard* keyboard,
                                  uint32_t format,
@@ -1926,6 +1974,8 @@ static void seatHandleCapabilities(void* userData,
     {
         _glfw.wl.pointer = wl_seat_get_pointer(seat);
         wl_pointer_add_listener(_glfw.wl.pointer, &pointerListener, NULL);
+
+        _glfwAddPointerGesturesListeners(_glfw.wl.pointerGestures);
     }
     else if (!(caps & WL_SEAT_CAPABILITY_POINTER) && _glfw.wl.pointer)
     {
@@ -2159,6 +2209,21 @@ void _glfwAddSeatListenerWayland(struct wl_seat* seat)
 void _glfwAddDataDeviceListenerWayland(struct wl_data_device* device)
 {
     wl_data_device_add_listener(device, &dataDeviceListener, NULL);
+}
+
+void _glfwAddPointerGesturesListeners(struct zwp_pointer_gestures_v1* pointer_gestures)
+{
+    if (_glfw.wl.pinchGesture) return;
+    if (!_glfw.wl.pointer) return;
+
+    _glfw.wl.pinchGesture =
+        zwp_pointer_gestures_v1_get_pinch_gesture(
+            pointer_gestures,
+            _glfw.wl.pointer);
+    zwp_pointer_gesture_pinch_v1_add_listener(_glfw.wl.pinchGesture,
+                                              &pinchGestureListener,
+                                              NULL);
+    // zwp_pointer_gestures_v1
 }
 
 

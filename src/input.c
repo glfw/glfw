@@ -144,6 +144,8 @@ static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
         { "rightshoulder", mapping->buttons + GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER },
         { "leftstick",     mapping->buttons + GLFW_GAMEPAD_BUTTON_LEFT_THUMB },
         { "rightstick",    mapping->buttons + GLFW_GAMEPAD_BUTTON_RIGHT_THUMB },
+        { "misc1",         mapping->buttons + GLFW_GAMEPAD_BUTTON_MISC1 },
+        { "touchpad",      mapping->buttons + GLFW_GAMEPAD_BUTTON_TOUCHPAD },
         { "dpup",          mapping->buttons + GLFW_GAMEPAD_BUTTON_DPAD_UP },
         { "dpright",       mapping->buttons + GLFW_GAMEPAD_BUTTON_DPAD_RIGHT },
         { "dpdown",        mapping->buttons + GLFW_GAMEPAD_BUTTON_DPAD_DOWN },

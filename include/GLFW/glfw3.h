@@ -628,10 +628,12 @@ extern "C" {
 #define GLFW_GAMEPAD_BUTTON_GUIDE           8
 #define GLFW_GAMEPAD_BUTTON_LEFT_THUMB      9
 #define GLFW_GAMEPAD_BUTTON_RIGHT_THUMB     10
-#define GLFW_GAMEPAD_BUTTON_DPAD_UP         11
-#define GLFW_GAMEPAD_BUTTON_DPAD_RIGHT      12
-#define GLFW_GAMEPAD_BUTTON_DPAD_DOWN       13
-#define GLFW_GAMEPAD_BUTTON_DPAD_LEFT       14
+#define GLFW_GAMEPAD_BUTTON_MISC1           11
+#define GLFW_GAMEPAD_BUTTON_TOUCHPAD        12
+#define GLFW_GAMEPAD_BUTTON_DPAD_UP         13
+#define GLFW_GAMEPAD_BUTTON_DPAD_RIGHT      14
+#define GLFW_GAMEPAD_BUTTON_DPAD_DOWN       15
+#define GLFW_GAMEPAD_BUTTON_DPAD_LEFT       16
 #define GLFW_GAMEPAD_BUTTON_LAST            GLFW_GAMEPAD_BUTTON_DPAD_LEFT
 
 #define GLFW_GAMEPAD_BUTTON_CROSS       GLFW_GAMEPAD_BUTTON_A
@@ -2116,7 +2118,7 @@ typedef struct GLFWgamepadstate
     /*! The states of each [gamepad button](@ref gamepad_buttons), `GLFW_PRESS`
      *  or `GLFW_RELEASE`.
      */
-    unsigned char buttons[15];
+    unsigned char buttons[17];
     /*! The states of each [gamepad axis](@ref gamepad_axes), in the range -1.0
      *  to 1.0 inclusive.
      */

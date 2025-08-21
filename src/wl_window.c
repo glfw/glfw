@@ -40,7 +40,9 @@
 #include <sys/mman.h>
 #include <sys/timerfd.h>
 #include <poll.h>
+#if __has_include(<linux/input-event-codes.h>)
 #include <linux/input-event-codes.h>
+#endif
 
 #include "wayland-client-protocol.h"
 #include "xdg-shell-client-protocol.h"

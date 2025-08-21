@@ -9,34 +9,28 @@ GLFW is an Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan
 application development.  It provides a simple, platform-independent API for
 creating windows, contexts and surfaces, reading input, handling events, etc.
 
-GLFW natively supports Windows, macOS and Linux and other Unix-like systems.  On
-Linux both Wayland and X11 are supported.
+GLFW is written primarily in C99, with parts of macOS support being written in
+Objective-C.
+
+GLFW supports Windows, macOS and Linux, and also works on many other Unix-like
+systems.  On Linux both Wayland and X11 are supported.
 
 GLFW is licensed under the [zlib/libpng
 license](https://www.glfw.org/license.html).
 
 You can [download](https://www.glfw.org/download.html) the latest stable release
-as source or Windows binaries.  Each release starting with 3.0 also has
-a corresponding [annotated tag](https://github.com/glfw/glfw/releases) with
-source and binary archives.
+as source or Windows and macOS binaries.  There are [release
+tags](https://github.com/glfw/glfw/releases) with source and binary archives
+attached for every version since 3.0.
 
 The [documentation](https://www.glfw.org/docs/latest/) is available online and is
-included in all source and binary archives.  See the [release
-notes](https://www.glfw.org/docs/latest/news.html) for new features, caveats and
-deprecations in the latest release.  For more details see the [version
-history](https://www.glfw.org/changelog.html).
-
-The `master` branch is the stable integration branch and _should_ always compile
-and run on all supported platforms, although details of newly added features may
-change until they have been included in a release.  New features and many bug
-fixes live in [other branches](https://github.com/glfw/glfw/branches/all) until
-they are stable enough to merge.
-
-If you are new to GLFW, you may find the
-[tutorial](https://www.glfw.org/docs/latest/quick.html) for GLFW 3 useful.  If
-you have used GLFW 2 in the past, there is a [transition
-guide](https://www.glfw.org/docs/latest/moving.html) for moving to the GLFW
-3 API.
+also included in source and binary archives, except those generated
+automatically by Github.  The documentation contains guides, a tutorial and the
+API reference.  The [release
+notes](https://www.glfw.org/docs/latest/news.html) list the new features,
+caveats and deprecations in the latest release.  The [version
+history](https://www.glfw.org/changelog.html) lists every user-visible change
+for every release.
 
 GLFW exists because of the contributions of [many people](CONTRIBUTORS.md)
 around the world, whether by reporting bugs, providing community support, adding
@@ -44,57 +38,37 @@ features, reviewing or testing code, debugging, proofreading docs, suggesting
 features or fixing bugs.
 
 
-## Compiling GLFW
-
-GLFW is written primarily in C99, with parts of macOS support being written in
-Objective-C.  GLFW itself requires only the headers and libraries for your OS
-and window system.  It does not need any additional headers for context creation
-APIs (WGL, GLX, EGL, NSGL, OSMesa) or rendering APIs (OpenGL, OpenGL ES, Vulkan)
-to enable support for them.
-
-GLFW supports compilation on Windows with Visual C++ (2013 and later) and
-MinGW-w64, on macOS with Clang and on Linux and other Unix-like systems with GCC
-and Clang.  It will likely compile in other environments as well, but this is
-not regularly tested.
-
-There are [pre-compiled binaries](https://www.glfw.org/download.html) available
-for all supported compilers on Windows and macOS.
-
-See the [compilation guide](https://www.glfw.org/docs/latest/compile.html) for
-more information about how to compile GLFW yourself.
-
-
-## Using GLFW
-
-See the [documentation](https://www.glfw.org/docs/latest/) for tutorials, guides
-and the API reference.
-
-
-## Contributing to GLFW
-
-See the [contribution
-guide](https://github.com/glfw/glfw/blob/master/docs/CONTRIBUTING.md) for
-more information.
-
-
 ## System requirements
 
-GLFW supports Windows 7 and later and macOS 10.11 and later.  Linux and other
-Unix-like systems running the X Window System are supported even without
-a desktop environment or modern extensions, although some features require
-a running window or clipboard manager.  The OSMesa backend requires Mesa 6.3.
+GLFW supports Windows 7 and later and macOS 10.11 and later.  On GNOME Wayland,
+window decorations will be very basic unless the
+[libdecor](https://gitlab.freedesktop.org/libdecor/libdecor) package is
+installed.  Linux and other Unix-like systems running X11 are supported even
+without a desktop environment or modern extensions, although some features
+require a clipboard manager or a modern window manager.
 
 See the [compatibility guide](https://www.glfw.org/docs/latest/compat.html)
-in the documentation for more information.
+for more detailed information.
 
 
-## Dependencies
+## Compiling GLFW
 
-GLFW itself needs only CMake 3.16 or later and the headers and libraries for your
-OS and window system.
+GLFW supports compilation with Visual C++ (2013 and later), GCC and Clang.  Both
+Clang-CL and MinGW-w64 are supported.  Other C99 compilers will likely also
+work, but this is not regularly tested.
+
+There are [pre-compiled binaries](https://www.glfw.org/download.html)
+available for Windows and macOS.
+
+GLFW itself needs only CMake and the headers and libraries for your operating
+system and window system.  No other SDKs are required.
+
+See the [compilation guide](https://www.glfw.org/docs/latest/compile.html) for
+more information about compiling GLFW and the exact dependencies required for
+each window system.
 
 The examples and test programs depend on a number of tiny libraries.  These are
-located in the `deps/` directory.
+bundled in the `deps/` directory.  The repository has no submodules.
 
  - [getopt\_port](https://github.com/kimgr/getopt_port/) for examples
    with command-line options
@@ -107,8 +81,33 @@ located in the `deps/` directory.
  - [Nuklear](https://github.com/Immediate-Mode-UI/Nuklear) for test and example UI
  - [stb\_image\_write](https://github.com/nothings/stb) for writing images to disk
 
-The documentation is generated with [Doxygen](https://doxygen.org/) if CMake can
-find that tool.
+The documentation is generated with [Doxygen](https://doxygen.org/) when the
+library is built, provided CMake could find a sufficiently new version of it
+during configuration.
+
+
+## Using GLFW
+
+See the [HTML documentation](https://www.glfw.org/docs/latest/) for a tutorial,
+guides and the API reference.
+
+
+## Contributing to GLFW
+
+See the [contribution
+guide](https://github.com/glfw/glfw/blob/master/docs/CONTRIBUTING.md) for
+more information.
+
+The `master` branch is the stable integration branch and _should_ always compile
+and run on all supported platforms.  Details of a newly added feature,
+including the public API, may change until it has been included in a release.
+
+The `latest` branch is equivalent to the [highest numbered](https://semver.org/)
+release, although it may not always point to the same commit as the tag for that
+release.
+
+The `ci` branch is used to trigger continuous integration jobs for code under
+testing and should never be relied on for any purpose.
 
 
 ## Reporting bugs

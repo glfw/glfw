@@ -973,6 +973,53 @@ The contents of the system clipboard can be set to a UTF-8 encoded string with
 glfwSetClipboardString(NULL, "A string with words in it");
 ```
 
+\par Advanced Usage
+While GLFW does not directly support using other data types with the
+system clipboard, on many platforms this is possible using platform
+specific code. If you are primarily targetting a small set of
+platforms, this may be viable for your application.
+
+\par
+On Windows, you can do clipboard operations directly using <a
+href="https://learn.microsoft.com/en-us/windows/win32/api/winuser/">winuser.h</a>,
+allowing you to copy and paste datatypes other than text. On X11 you
+can also use the platform specific API to get this functionality, but
+you must hook into GLFW's X11 event handling code to allow copying
+<i>out</i> of your application. Example code for most of this functionality
+can be found in general X11 documentation like <a
+href="http://www.uninformativ.de/blog/postings/2017-04-02/0/POSTING-en.html">this
+page</a>; the GLFW-specific part is including
+
+\par
+@code
+#include <GLFW/glfw3.h>
+#include <X11/Xlib.h>
+#define GLFW_EXPOSE_NATIVE_X11
+#include <GLFW/glfw3native.h>
+@endcode
+
+\par
+At the top of your file (guarded by platform), and then running
+
+\par
+@code
+setSelectionRequestHandler(myHandler);
+@endcode
+
+\par
+on initialization. Your selection handler must have the signature:
+
+\par
+@code
+void myHandler(XEvent*);
+@endcode
+
+\par
+and it will receive all X Selection events. To ensure compatibility
+use `getGLFWDisplay()` to get a display object instead of
+`XOpenDisplay()` and use the result of `getGLFWHelperWindow()` as the
+target window for the selection.
+
 
 ## Path drop input {#path_drop}
 

@@ -896,6 +896,8 @@ typedef struct _GLFWcursorX11
     Cursor handle;
 } _GLFWcursorX11;
 
+extern void (*handleSelectionRequest)(XEvent*);
+void handleSelectionRequest_(XEvent* event);
 
 GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform);
 int _glfwInitX11(void);

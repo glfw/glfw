@@ -3326,13 +3326,15 @@ VkResult _glfwCreateWindowSurfaceWayland(VkInstance instance,
     return err;
 }
 
-typedef struct WGPUSurfaceSourceWaylandSurface {
+typedef struct WGPUSurfaceSourceWaylandSurface
+{
     WGPUChainedStruct chain;
     void * display;
     void * surface;
 } WGPUSurfaceSourceWaylandSurface;
 
-WGPUSurface _glfwCreateWindowWGPUSurfaceWayland(WGPUInstance instance, _GLFWwindow* window) {
+WGPUSurface _glfwCreateWindowWGPUSurfaceWayland(WGPUInstance instance, _GLFWwindow* window)
+{
     WGPUSurfaceSourceWaylandSurface waylandSurface;   
     waylandSurface.chain.sType = WGPUSType_SurfaceSourceWaylandSurface;
     waylandSurface.chain.next = NULL;

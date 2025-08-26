@@ -335,12 +335,14 @@ typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const c
 typedef struct WGPUInstanceImpl* WGPUInstance;
 typedef struct WGPUSurfaceImpl* WGPUSurface;
 
-typedef struct WGPUStringView {
+typedef struct WGPUStringView
+{
     char const * data;
     size_t length;
 } WGPUStringView;
 
-typedef enum WGPUSType {
+typedef enum WGPUSType
+{
     WGPUSType_ShaderSourceSPIRV = 0x00000001,
     WGPUSType_ShaderSourceWGSL = 0x00000002,
     WGPUSType_RenderPassMaxDrawCount = 0x00000003,
@@ -353,12 +355,14 @@ typedef enum WGPUSType {
     WGPUSType_Force32 = 0x7FFFFFFF
 } WGPUSType;
 
-typedef struct WGPUChainedStruct {
+typedef struct WGPUChainedStruct
+{
     struct WGPUChainedStruct const * next;
     WGPUSType sType;
 } WGPUChainedStruct;
 
-typedef struct WGPUSurfaceDescriptor {
+typedef struct WGPUSurfaceDescriptor
+{
     WGPUChainedStruct const * nextInChain;
     WGPUStringView label;
 } WGPUSurfaceDescriptor;

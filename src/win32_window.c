@@ -2562,13 +2562,15 @@ VkResult _glfwCreateWindowSurfaceWin32(VkInstance instance,
     return err;
 }
 
-typedef struct WGPUSurfaceSourceWindowsHWND {
+typedef struct WGPUSurfaceSourceWindowsHWND
+{
     WGPUChainedStruct chain;
     void * hinstance;
     void * hwnd;
 } WGPUSurfaceSourceWindowsHWND;
 
-WGPUSurface _glfwCreateWindowWGPUSurfaceWin32(WGPUInstance instance, _GLFWwindow *window) {
+WGPUSurface _glfwCreateWindowWGPUSurfaceWin32(WGPUInstance instance, _GLFWwindow *window)
+{
     WGPUSurfaceSourceWindowsHWND windowsSurface;
     windowsSurface.chain.sType = WGPUSType_SurfaceSourceWindowsHWND;
     windowsSurface.chain.next = NULL;

@@ -29,12 +29,14 @@
 #include <assert.h>
 #include <stdlib.h>
 
-GLFWAPI void glfwSetWGPUInstanceCreateSurfaceAddr(WGPUSurface (*addr)(WGPUInstance, const WGPUSurfaceDescriptor*)) {
+GLFWAPI void glfwSetWGPUInstanceCreateSurfaceAddr(WGPUSurface (*addr)(WGPUInstance, const WGPUSurfaceDescriptor*))
+{
     _GLFW_REQUIRE_INIT()
     _glfw.wgpu.instanceCreateSurface = addr;
 }
 
-GLFWAPI WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindow* handle) {
+GLFWAPI WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindow* handle)
+{
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL)
 
     _GLFWwindow* window = (_GLFWwindow*)handle;

@@ -2020,12 +2020,14 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
     } // autoreleasepool
 }
 
-typedef struct WGPUSurfaceSourceMetalLayer {
+typedef struct WGPUSurfaceSourceMetalLayer
+{
     WGPUChainedStruct chain;
     void * layer;
 } WGPUSurfaceSourceMetalLayer;
 
-WGPUSurface _glfwCreateWindowWGPUSurfaceCocoa(WGPUInstance instance, _GLFWwindow* window) {
+WGPUSurface _glfwCreateWindowWGPUSurfaceCocoa(WGPUInstance instance, _GLFWwindow* window)
+{
     [window->ns.view setLayer:window->ns.layer];
     [window->ns.view setWantsLayer:YES];
 

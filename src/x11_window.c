@@ -3282,13 +3282,15 @@ VkResult _glfwCreateWindowSurfaceX11(VkInstance instance,
     }
 }
 
-typedef struct WGPUSurfaceSourceXCBWindow {
+typedef struct WGPUSurfaceSourceXCBWindow
+{
     WGPUChainedStruct chain;
     void * connection;
     uint32_t window;
 } WGPUSurfaceSourceXCBWindow;
 
-typedef struct WGPUSurfaceSourceXlibWindow {
+typedef struct WGPUSurfaceSourceXlibWindow
+{
     WGPUChainedStruct chain;
     void * display;
     uint64_t window;

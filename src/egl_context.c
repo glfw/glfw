@@ -939,7 +939,7 @@ GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* handle)
             window->context.source != GLFW_NATIVE_CONTEXT_API)
         {
             _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
-            return EGL_NO_CONTEXT;
+            return EGL_NO_SURFACE;
         }
     }
 

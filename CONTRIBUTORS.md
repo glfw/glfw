@@ -124,6 +124,7 @@ video tutorials.
  - Josh Kilmer
  - Byunghoon Kim
  - Cameron King
+ - knokko
  - Peter Knut
  - Christoph Kubisch
  - Yuri Kunde Schlesner

@@ -946,3 +946,25 @@ GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* handle)
     return window->context.egl.surface;
 }
 
+GLFWAPI int glfwGetEGLConfig(GLFWwindow* handle, EGLConfig* config)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+    assert(config != NULL);
+
+    if (window->context.source != GLFW_EGL_CONTEXT_API)
+    {
+        if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND ||
+            window->context.source != GLFW_NATIVE_CONTEXT_API)
+        {
+            _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
+            return GLFW_FALSE;
+        }
+    }
+
+    *config = window->context.egl.config;
+    return GLFW_TRUE;
+}
+

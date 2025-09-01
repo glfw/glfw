@@ -2974,8 +2974,14 @@ static void lockPointer(_GLFWwindow* window)
     if (!_glfw.wl.relativePointerManager)
     {
         _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                        "Wayland: The compositor does not support pointer locking");
+                        "Wayland: The compositor does not support relative pointer motion");
         return;
+    }
+
+    if (!_glfw.wl.pointerConstraints)
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Wayland: The compositor does not support locking the pointer");
     }
 
     window->wl.relativePointer =
@@ -3025,6 +3031,12 @@ static const struct zwp_confined_pointer_v1_listener confinedPointerListener =
 
 static void confinePointer(_GLFWwindow* window)
 {
+    if (!_glfw.wl.pointerConstraints)
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Wayland: The compositor does not support confining the pointer");
+    }
+
     window->wl.confinedPointer =
         zwp_pointer_constraints_v1_confine_pointer(
             _glfw.wl.pointerConstraints,

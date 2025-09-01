@@ -414,7 +414,8 @@ typedef struct _GLFWwindowWayland
         GLFWbool                    decorations;
         struct wl_buffer*           buffer;
         _GLFWfallbackEdgeWayland    top, left, right, bottom;
-        wl_fixed_t                  pointerX, pointerY;
+        double                      pointerX, pointerY;
+        uint32_t                    buttonPressSerial;
         const char*                 cursorName;
     } fallback;
 } _GLFWwindowWayland;
@@ -471,6 +472,17 @@ typedef struct _GLFWlibraryWayland
     short int                   keycodes[256];
     short int                   scancodes[GLFW_KEY_LAST + 1];
     char                        keynames[GLFW_KEY_LAST + 1][5];
+
+    struct {
+        struct wl_surface*      pointerSurface;
+        unsigned int            events;
+        double                  pointerX;
+        double                  pointerY;
+        double                  scrollX;
+        double                  scrollY;
+        int                     button;
+        int                     action;
+    } pending;
 
     struct {
         void*                   handle;

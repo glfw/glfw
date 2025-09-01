@@ -150,6 +150,8 @@ information on what to include when reporting a bug.
    compositors without `pointer-constraints-unstable-v1`
  - [Wayland] Bugfix: Key repeat did not function on very old compositors
  - [Wayland] Bugfix: The `libwayland-client` library was not unloaded at termination
+ - [Wayland] Bugfix: Scroll events were sent twice on some versions of GNOME (#2494)
+ - [Wayland] Bugfix: Two-dimensional scroll input was emitted as separate axes
  - [X11] Bugfix: Running without a WM could trigger an assert (#2593,#2601,#2631)
  - [X11] Bugfix: Occasional crash when an idle display awakes (#2766) 
  - [X11] Bugfix: Prevent BadWindow when creating small windows with a content scale

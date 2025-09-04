@@ -161,9 +161,7 @@ if (GLFW_BUILD_WAYLAND)
         wayland-egl>=0.2.7
         xkbcommon>=0.5.0)
 
-    pkg_check_modules(DBUS REQUIRED dbus-1)
-    target_include_directories(glfw PRIVATE ${DBUS_INCLUDE_DIRS})
-    target_link_libraries(glfw PRIVATE ${DBUS_LIBRARIES})
+    set(DBUS_SIZEOF_VOID_P ${CMAKE_SIZEOF_VOID_P})
 
     target_include_directories(glfw PRIVATE ${Wayland_INCLUDE_DIRS})
 

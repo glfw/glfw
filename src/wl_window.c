@@ -41,7 +41,6 @@
 #include <sys/timerfd.h>
 #include <poll.h>
 #include <linux/input-event-codes.h>
-#include <dbus/dbus.h>
 
 #include "wayland-client-protocol.h"
 #include "xdg-shell-client-protocol.h"
@@ -2038,7 +2037,7 @@ static void dataDeviceHandleEnter(void* userData,
         _GLFWwindow* window = wl_surface_get_user_data(surface);
         if (window->wl.surface == surface)
         {
-            GLFWbool portal = _glfw.wl.offers[i].portal_file_transfer;
+            GLFWbool portal = _glfw.wl.offers[i].portal_file_transfer && _glfw.wl.dbus.handle;
             if (_glfw.wl.offers[i].text_uri_list || portal)
             {
                 _glfw.wl.dragOffer = offer;
@@ -2090,6 +2089,8 @@ static void dataDeviceHandleMotion(void* userData,
 static void dataDeviceHandleFileTransferPortalDrop(void* userData,
                                                    struct wl_data_device* device)
 {
+    assert(_glfw.wl.dbus.handle != NULL);
+
     char* key = readDataOfferAsString(_glfw.wl.dragOffer, FILE_TRANSFER_PORTAL_MIME_TYPE);
     if (!key)
         return;
@@ -2104,7 +2105,7 @@ static void dataDeviceHandleFileTransferPortalDrop(void* userData,
         _glfw_free(key);
         return;
     }
-    dbus_connection_set_exit_on_disconnect(connection, FALSE);
+    dbus_connection_set_exit_on_disconnect(connection, DBUS_FALSE);
 
     DBusMessage* message = dbus_message_new_method_call(
         "org.freedesktop.portal.Documents",

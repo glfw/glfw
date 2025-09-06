@@ -287,6 +287,7 @@ video tutorials.
  - Xo Wang
  - Andre Weissflog
  - Jay Weisskopf
+ - Drew Weymouth
  - Frank Wille
  - Andy Williams
  - Joel Winarske

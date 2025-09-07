@@ -1198,11 +1198,8 @@ static bool createZwlrShellObjects(_GLFWwindow* window)
 
 static GLFWbool createShellObjects(_GLFWwindow* window)
 {
-    if (_glfw.hints.window.wl.useZWLR)
-    {
-        if (createZwlrShellObjects(window))
-            return GLFW_TRUE;
-    }
+    if (_glfw.hints.window.wl.useZWLR)         // I can't imagine why fallback to xdg needed..
+        return createZwlrShellObjects(window); // ..if user explicitly request zwlr.
 
     if (_glfw.wl.libdecor.context)
     {
@@ -3470,10 +3467,10 @@ GLFWAPI void glfwWaylandZwlrSetLayer(GLFWwindow* handle, int layer)
 
     switch (layer)
     {
-        case GLFW_WAYLAND_ZWLR_LAYER_BACKGROUD: layer = ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND; break;
-        case GLFW_WAYLAND_ZWLR_LAYER_BOTTOM:    layer = ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM;     break;
-        case GLFW_WAYLAND_ZWLR_LAYER_TOP:       layer = ZWLR_LAYER_SHELL_V1_LAYER_TOP;        break;
-        case GLFW_WAYLAND_ZWLR_LAYER_OVERLAY:   layer = ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY;    break;
+        case GLFW_WAYLAND_ZWLR_LAYER_BACKGROUND: layer = ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND; break;
+        case GLFW_WAYLAND_ZWLR_LAYER_BOTTOM:     layer = ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM;     break;
+        case GLFW_WAYLAND_ZWLR_LAYER_TOP:        layer = ZWLR_LAYER_SHELL_V1_LAYER_TOP;        break;
+        case GLFW_WAYLAND_ZWLR_LAYER_OVERLAY:    layer = ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY;    break;
         default:
         {
             _glfwInputError(GLFW_INVALID_ENUM,

@@ -518,6 +518,14 @@ __GLFW_WAYLAND_APP_ID__ specifies the Wayland app_id for a window, used
 by window managers to identify types of windows. This is set with
 @ref glfwWindowHintString.
 
+@anchor GLFW_WAYLAND_USE_ZWLR_hint
+__GLFW_WAYLAND_USE_ZWLR__ Try to utilize
+[wlr layers system](https://wayland.app/protocols/wlr-layer-shell-unstable-v1)
+from your compositor.
+This is set by @ref glfwWindowHint with [special init layer](@ref GLFW_WAYLAND_USE_ZWLR).
+If success, you can control layer behavior with
+[<GLFW/glfw3native.h>](@ref glfwWaylandZwlrSetLayer) api.
+Example available [here](https://github.com/glfw/glfw/blob/master/examples/wayland-widget.c).
 
 #### X11 specific window hints {#window_hints_x11}
 
@@ -577,10 +585,10 @@ GLFW_WIN32_KEYBOARD_MENU      | `GLFW_FALSE`                | `GLFW_TRUE` or `GL
 GLFW_WIN32_SHOWDEFAULT        | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_COCOA_FRAME_NAME         | `""`                        | A UTF-8 encoded frame autosave name
 GLFW_COCOA_GRAPHICS_SWITCHING | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_WAYLAND_APP_ID           | `""`                        | An ASCII encoded Wayland `app_id` name
 GLFW_X11_CLASS_NAME           | `""`                        | An ASCII encoded `WM_CLASS` class name
 GLFW_X11_INSTANCE_NAME        | `""`                        | An ASCII encoded `WM_CLASS` instance name
-
+GLFW_WAYLAND_APP_ID           | `""`                        | An ASCII encoded Wayland `app_id` name
+GLFW_WAYLAND_USE_ZWLR         | 0                           | `GLFW_WAYLAND_ZWLR_LAYER_BACKGROUD`, `GLFW_WAYLAND_ZWLR_LAYER_BOTTOM`, `GLFW_WAYLAND_ZWLR_LAYER_TOP` or `GLFW_WAYLAND_ZWLR_LAYER_OVERLAY`
 
 ## Window event processing {#window_events}
 

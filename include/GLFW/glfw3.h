@@ -1135,6 +1135,27 @@ extern "C" {
  *  Allows specification of the Wayland app_id.
  */
 #define GLFW_WAYLAND_APP_ID         0x00026001
+
+#define GLFW_WAYLAND_ZWLR_LAYER_BACKGROUD 0x00026002
+#define GLFW_WAYLAND_ZWLR_LAYER_BOTTOM    0x00026003
+#define GLFW_WAYLAND_ZWLR_LAYER_TOP       0x00026004
+#define GLFW_WAYLAND_ZWLR_LAYER_OVERLAY   0x00026005
+
+#define GLFW_WAYLAND_ZWLR_ANCHOR_TOP      0x1
+#define GLFW_WAYLAND_ZWLR_ANCHOR_BOTTOM   0x2
+#define GLFW_WAYLAND_ZWLR_ANCHOR_LEFT     0x4
+#define GLFW_WAYLAND_ZWLR_ANCHOR_RIGHT    0x8
+/*! @brief Wayland specific
+ *  [window hint](@ref GLFW_WAYLAND_USE_ZWLR_hint).
+ *
+ *  Available options are:
+ *    - GLFW_WAYLAND_ZWLR_BACKGROUD
+ *    - GLFW_WAYLAND_ZWLR_BOTTOM
+ *    - GLFW_WAYLAND_ZWLR_TOP
+ *    - GLFW_WAYLAND_ZWLR_OVERLAY
+ */
+#define GLFW_WAYLAND_USE_ZWLR 0x00026010
+
 /*! @} */
 
 #define GLFW_NO_API                          0

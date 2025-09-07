@@ -49,6 +49,7 @@
 #include "fractional-scale-v1-client-protocol.h"
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
+#include "wlr-layer-shell-unstable-v1-client-protocol.h"
 
 // NOTE: Versions of wayland-scanner prior to 1.17.91 named every global array of
 //       wl_interface pointers 'types', making it impossible to combine several unmodified
@@ -90,6 +91,11 @@
 #define types _glfw_idle_inhibit_types
 #include "idle-inhibit-unstable-v1-client-protocol-code.h"
 #undef types
+
+#define types _glfw_zwlr_layer_shell_types
+#include "wlr-layer-shell-unstable-v1-client-protocol-code.h"
+#undef types
+
 
 static void wmBaseHandlePing(void* userData,
                              struct xdg_wm_base* wmBase,
@@ -207,6 +213,13 @@ static void registryHandleGlobal(void* userData,
             wl_registry_bind(registry, name,
                              &wp_fractional_scale_manager_v1_interface,
                              1);
+    }
+    else if (strcmp(interface, "zwlr_layer_shell_v1") == 0)
+    {
+        _glfw.wl.zwlrLayerShell =
+            wl_registry_bind(registry, name,
+                             &zwlr_layer_shell_v1_interface,
+                             5); // use the latest version, because why not? (since 2017)
     }
 }
 
@@ -395,6 +408,8 @@ static void createKeyTables(void)
     }
 }
 
+
+
 static GLFWbool loadCursorTheme(void)
 {
     int cursorSize = 16;
@@ -424,6 +439,7 @@ static GLFWbool loadCursorTheme(void)
 
     _glfw.wl.cursorSurface = wl_compositor_create_surface(_glfw.wl.compositor);
     _glfw.wl.cursorTimerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
+
     return GLFW_TRUE;
 }
 
@@ -948,6 +964,8 @@ void _glfwTerminateWayland(void)
 
     _glfw_free(_glfw.wl.offers);
 
+    if(_glfw.wl.zwlrLayerShell)
+        zwlr_layer_shell_v1_destroy(_glfw.wl.zwlrLayerShell);
     if (_glfw.wl.cursorSurface)
         wl_surface_destroy(_glfw.wl.cursorSurface);
     if (_glfw.wl.subcompositor)

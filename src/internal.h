@@ -427,6 +427,7 @@ struct _GLFWwndconfig
     } win32;
     struct {
         char      appId[256];
+        GLFWbool  useZWLR;
     } wl;
 };
 

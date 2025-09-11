@@ -130,6 +130,7 @@ struct wl_output;
 #define xdg_activation_token_v1_interface _glfw_xdg_activation_token_v1_interface
 #define wl_surface_interface _glfw_wl_surface_interface
 #define wp_fractional_scale_v1_interface _glfw_wp_fractional_scale_v1_interface
+#define zwlr_layer_shell_v1_interface _glfw_zwlr_layer_shell_v1
 
 #define GLFW_WAYLAND_WINDOW_STATE         _GLFWwindowWayland  wl;
 #define GLFW_WAYLAND_LIBRARY_WINDOW_STATE _GLFWlibraryWayland wl;
@@ -382,6 +383,11 @@ typedef struct _GLFWwindowWayland
     } xdg;
 
     struct {
+        struct zwlr_layer_surface_v1* surface;
+    } zwlr;
+
+
+    struct {
         struct libdecor_frame*  frame;
     } libdecor;
 
@@ -440,6 +446,7 @@ typedef struct _GLFWlibraryWayland
     struct zwp_idle_inhibit_manager_v1*     idleInhibitManager;
     struct xdg_activation_v1*               activationManager;
     struct wp_fractional_scale_manager_v1*  fractionalScaleManager;
+    struct zwlr_layer_shell_v1*             zwlrLayerShell;
 
     _GLFWofferWayland*          offers;
     unsigned int                offerCount;

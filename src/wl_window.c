@@ -51,6 +51,7 @@
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
 #include "fractional-scale-v1-client-protocol.h"
+#include "wlr-layer-shell-unstable-v1-client-protocol.h"
 
 #define GLFW_BORDER_SIZE    4
 #define GLFW_CAPTION_HEIGHT 24
@@ -494,6 +495,9 @@ static GLFWbool resizeWindow(_GLFWwindow* window, int width, int height)
 
     window->wl.width = width;
     window->wl.height = height;
+
+    if (window->wl.zwlr.surface)
+        zwlr_layer_surface_v1_set_size(window->wl.zwlr.surface, width, height);
 
     resizeFramebuffer(window);
 
@@ -1130,8 +1134,73 @@ static GLFWbool createXdgShellObjects(_GLFWwindow* window)
     return GLFW_TRUE;
 }
 
+static void zwlrSurfaceConfigure(void *data,
+                                 struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1,
+                                 uint32_t serial,
+                                 uint32_t width,
+                                 uint32_t height)
+{
+    _GLFWwindow* window = data;
+
+    window->wl.visible = GLFW_TRUE; // I'm not sure this belong here, but window not visible without
+    resizeWindow(window, width, height);
+
+    zwlr_layer_surface_v1_ack_configure(zwlr_layer_surface_v1, serial);
+}
+
+static void zwlrSurfaceClose(void *userData,
+                             struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1)
+{
+    _GLFWwindow* window = userData;
+    _glfwInputWindowCloseRequest(window);
+
+}
+
+static const struct zwlr_layer_surface_v1_listener zwlrSurfaceListener =
+{
+    .configure = zwlrSurfaceConfigure,
+    .closed    = zwlrSurfaceClose
+};
+
+static bool createZwlrShellObjects(_GLFWwindow* window)
+{
+    if (!_glfw.wl.zwlrLayerShell)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: ZWLR protocol not supported on this system");
+        return GLFW_FALSE;
+    }
+
+    window->wl.zwlr.surface = zwlr_layer_shell_v1_get_layer_surface(_glfw.wl.zwlrLayerShell,
+        window->wl.surface, NULL, ZWLR_LAYER_SHELL_V1_LAYER_TOP, window->title);
+
+    if (!window->wl.zwlr.surface)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to create layer surface for window");
+        return GLFW_FALSE;
+    }
+    zwlr_layer_surface_v1_add_listener(window->wl.zwlr.surface, &zwlrSurfaceListener,
+                                       window);
+
+
+    zwlr_layer_surface_v1_set_anchor(window->wl.zwlr.surface, 0); // center
+    zwlr_layer_surface_v1_set_size(window->wl.zwlr.surface,
+                                   window->wl.fbWidth, window->wl.fbHeight);
+
+    glfwWaylandZwlrSetLayer((GLFWwindow*)window, _glfw.hints.window.wl.useZWLR);
+
+    wl_surface_commit(window->wl.surface);
+    wl_display_roundtrip(_glfw.wl.display);
+
+    return GLFW_TRUE;
+}
+
 static GLFWbool createShellObjects(_GLFWwindow* window)
 {
+    if (_glfw.hints.window.wl.useZWLR)         // I can't imagine why fallback to xdg needed..
+        return createZwlrShellObjects(window); // ..if user explicitly request zwlr.
+
     if (_glfw.wl.libdecor.context)
     {
         if (createLibdecorFrame(window))
@@ -1156,6 +1225,9 @@ static void destroyShellObjects(_GLFWwindow* window)
 
     if (window->wl.xdg.surface)
         xdg_surface_destroy(window->wl.xdg.surface);
+
+    if (window->wl.zwlr.surface)
+        zwlr_layer_surface_v1_destroy(window->wl.zwlr.surface);
 
     window->wl.libdecor.frame = NULL;
     window->wl.xdg.decoration = NULL;
@@ -1545,6 +1617,16 @@ static void pointerHandleEnter(void* userData,
             window->wl.cursorPosY = wl_fixed_to_double(sy);
             _glfwInputCursorPos(window, window->wl.cursorPosX, window->wl.cursorPosY);
         }
+
+        if (_glfw.hints.window.wl.zwlrKeyboardGrabOnFocus)
+        {
+            if (window->wl.zwlr.surface)
+            {
+                // mf don't receive keyboard events by default
+                zwlr_layer_surface_v1_set_keyboard_interactivity(window->wl.zwlr.surface,
+                                    ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_ON_DEMAND);
+            }
+        }
     }
     else
     {
@@ -1578,6 +1660,15 @@ static void pointerHandleLeave(void* userData,
     {
         window->wl.hovered = GLFW_FALSE;
         _glfwInputCursorEnter(window, GLFW_FALSE);
+
+        if (_glfw.hints.window.wl.zwlrKeyboardGrabOnFocus)
+        {
+            if (window->wl.zwlr.surface)
+            {
+                zwlr_layer_surface_v1_set_keyboard_interactivity(window->wl.zwlr.surface,
+                                    ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_NONE);
+            }
+        }
     }
     else
     {
@@ -2653,7 +2744,7 @@ void _glfwSetWindowDecoratedWayland(_GLFWwindow* window, GLFWbool enabled)
 void _glfwSetWindowFloatingWayland(_GLFWwindow* window, GLFWbool enabled)
 {
     _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                    "Wayland: Platform does not support making a window floating");
+                    "Wayland: hint GLFW_WAYLAND_USE_ZWLR for layer support");
 }
 
 void _glfwSetWindowMousePassthroughWayland(_GLFWwindow* window, GLFWbool enabled)
@@ -3358,6 +3449,139 @@ GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* handle)
     assert(window != NULL);
 
     return window->wl.surface;
+}
+
+GLFWAPI void glfwWaylandZwlrSetLayer(GLFWwindow* handle, int layer)
+{
+    _GLFW_REQUIRE_INIT();
+
+    if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
+                        "Wayland: Platform not initialized");
+        return;
+    }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    if (!(window->wl.zwlr.surface))
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Wayland: ZWLR not supported or wasn't requested");
+        return;
+
+    }
+
+    switch (layer)
+    {
+        case GLFW_WAYLAND_ZWLR_LAYER_BACKGROUND: layer = ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND; break;
+        case GLFW_WAYLAND_ZWLR_LAYER_BOTTOM:     layer = ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM;     break;
+        case GLFW_WAYLAND_ZWLR_LAYER_TOP:        layer = ZWLR_LAYER_SHELL_V1_LAYER_TOP;        break;
+        case GLFW_WAYLAND_ZWLR_LAYER_OVERLAY:    layer = ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY;    break;
+        default:
+        {
+            _glfwInputError(GLFW_INVALID_ENUM,
+                            "Wayland: invalid ZWLR layer received");
+            return;
+        }
+    }
+
+    zwlr_layer_surface_v1_set_layer(window->wl.zwlr.surface, layer);
+    if (layer == ZWLR_LAYER_SHELL_V1_LAYER_BOTTOM || layer == ZWLR_LAYER_SHELL_V1_LAYER_BACKGROUND)
+        zwlr_layer_surface_v1_set_keyboard_interactivity(window->wl.zwlr.surface,
+                                            ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_NONE);
+}
+
+GLFWAPI void glfwWaylandZwlrSetAnchor(GLFWwindow* handle, int anchor)
+{
+    _GLFW_REQUIRE_INIT();
+
+    if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
+                        "Wayland: Platform not initialized");
+        return;
+    }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    if (!(window->wl.zwlr.surface))
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Wayland: ZWLR not supported or wasn't requested");
+        return;
+    }
+
+    zwlr_layer_surface_v1_set_anchor(window->wl.zwlr.surface, anchor);
+}
+
+GLFWAPI void glfwWaylandZwlrSetExclusiveZone(GLFWwindow* handle, int zone)
+{
+    _GLFW_REQUIRE_INIT();
+
+    if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
+                        "Wayland: Platform not initialized");
+        return;
+    }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    if (!(window->wl.zwlr.surface))
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Wayland: ZWLR not supported or wasn't requested");
+        return;
+    }
+
+    zwlr_layer_surface_v1_set_exclusive_zone(window->wl.zwlr.surface, zone);
+}
+
+GLFWAPI void glfwWaylandZwlrSetMargin(GLFWwindow* handle, int top, int right, int bottom, int left)
+{
+    _GLFW_REQUIRE_INIT();
+
+    if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
+                        "Wayland: Platform not initialized");
+        return;
+    }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    if (!(window->wl.zwlr.surface))
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Wayland: ZWLR not supported or wasn't requested");
+        return;
+    }
+
+    zwlr_layer_surface_v1_set_margin(window->wl.zwlr.surface, top, right, bottom, left);
+}
+
+
+GLFWAPI void glfwWaylandZwlrSetKeyboardFocus(GLFWwindow* handle, int focus)
+{
+    _GLFW_REQUIRE_INIT();
+
+    if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE,
+                        "Wayland: Platform not initialized");
+        return;
+    }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    if (!(window->wl.zwlr.surface))
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Wayland: ZWLR not supported or wasn't requested");
+        return;
+    }
+
+    int flag;
+    if (focus) flag = ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_EXCLUSIVE;
+    else       flag = ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_NONE;
+
+    zwlr_layer_surface_v1_set_keyboard_interactivity(window->wl.zwlr.surface, flag);
 }
 
 #endif // _GLFW_WAYLAND

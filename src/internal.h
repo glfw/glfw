@@ -427,6 +427,8 @@ struct _GLFWwndconfig
     } win32;
     struct {
         char      appId[256];
+        GLFWbool  useZWLR;
+        GLFWbool  zwlrKeyboardGrabOnFocus;
     } wl;
 };
 

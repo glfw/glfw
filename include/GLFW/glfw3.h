@@ -1135,7 +1135,37 @@ extern "C" {
  *  Allows specification of the Wayland app_id.
  */
 #define GLFW_WAYLAND_APP_ID         0x00026001
-/*! @} */
+
+/*! @brief Wayland specific
+ *  [window hint](@ref GLFW_WAYLAND_USE_ZWLR_hint).
+ *
+ *  Available options are:
+ *    - GLFW_WAYLAND_ZWLR_BACKGROUND
+ *    - GLFW_WAYLAND_ZWLR_BOTTOM
+ *    - GLFW_WAYLAND_ZWLR_TOP
+ *    - GLFW_WAYLAND_ZWLR_OVERLAY
+ */
+#define GLFW_WAYLAND_USE_ZWLR              0x00026010
+
+#define GLFW_WAYLAND_ZWLR_LAYER_BACKGROUND 0x00026011
+#define GLFW_WAYLAND_ZWLR_LAYER_BOTTOM     0x00026012
+#define GLFW_WAYLAND_ZWLR_LAYER_TOP        0x00026013
+#define GLFW_WAYLAND_ZWLR_LAYER_OVERLAY    0x00026014
+
+#define GLFW_WAYLAND_ZWLR_ANCHOR_TOP       0x1
+#define GLFW_WAYLAND_ZWLR_ANCHOR_BOTTOM    0x2
+#define GLFW_WAYLAND_ZWLR_ANCHOR_LEFT      0x4
+#define GLFW_WAYLAND_ZWLR_ANCHOR_RIGHT     0x8
+
+/*! @brief Wayland specific
+ *  [window hint](@ref GLFW_WAYLAND_ZWLR_KEYBOARD_ON_FOCUS).
+ *
+ * By default, layer shell surfaces do not receive keyboard events.
+ * Set this flag to automatically redirect focus to app on hover,
+ * and release it when mouse leave surface.
+ */
+#define GLFW_WAYLAND_ZWLR_KEYBOARD_ON_FOCUS 0x00026015
+
 
 #define GLFW_NO_API                          0
 #define GLFW_OPENGL_API             0x00030001

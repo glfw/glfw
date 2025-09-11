@@ -554,6 +554,98 @@ GLFWAPI struct wl_output* glfwGetWaylandMonitor(GLFWmonitor* monitor);
  *  @ingroup native
  */
 GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* window);
+
+/*! @brief Change the layer that the surface is rendered on.
+ *
+ *  @errors Possible errors include @ref GLFW_FEATURE_UNAVAILABLE and @ref
+ *  GLFW_PLATFORM_UNAVAILABLE and @ref GLFW_INVALID_ENUM.
+ *
+ * @param[in] layer GLFW_WAYLAND_ZWLR_LAYER_BACKGROUD,
+ *                  GLFW_WAYLAND_ZWLR_LAYER_BOTTOM,
+ *                  GLFW_WAYLAND_ZWLR_LAYER_TOP,
+ *                  GLFW_WAYLAND_ZWLR_LAYER_OVERLAY.
+
+ *  @thread_safety This function should be called from main thread.
+ *
+ *  @since Added in version 3.5.
+ *
+ *  @ingroup native
+ */
+GLFWAPI void glfwWaylandZwlrSetLayer(GLFWwindow* window, int layer);
+
+/*! @brief Configures the anchor point of the surface.
+ *
+ *  Requests that the compositor anchor the surface to the specified
+ *  edges and corners. If two orthogonal edges are specified
+ *  (e.g. 'top' and 'left'), then the anchor point will be the
+ *  intersection of the edges (e.g. the top left corner of the output);
+ *  otherwise the anchor point will be centered on that edge,
+ *  or in the center if none is specified.
+ *
+ * @param[in] anchor GLFW_WAYLAND_ZWLR_ANCHOR_TOP |
+ *                   GLFW_WAYLAND_ZWLR_ANCHOR_BOTTOM |
+ *                   GLFW_WAYLAND_ZWLR_ANCHOR_LEFT |
+ *                   GLFW_WAYLAND_ZWLR_ANCHOR_RIGHT
+ *
+ *  @errors Possible errors include @ref GLFW_FEATURE_UNAVAILABLE and @ref
+ *  GLFW_PLATFORM_UNAVAILABLE. Viewport is centered if you send incorrect anchor.
+ *
+ *  @thread_safety This function should be called from main thread.
+ *
+ *  @since Added in version 3.5.
+ *
+ *  @ingroup native
+ */
+GLFWAPI void glfwWaylandZwlrSetAnchor(GLFWwindow* window, int anchor);
+
+/*! @brief Requests that the compositor avoids occluding an area with other surfaces.
+ *
+ *  @note The compositor's use of this information is implementation-dependent.
+ *        Do not assume that this region will not actually be occluded.
+ *
+ *  @errors Possible errors include @ref GLFW_FEATURE_UNAVAILABLE and @ref
+ *  GLFW_PLATFORM_UNAVAILABLE.
+ *
+ *  @thread_safety This function should be called from main thread.
+ *
+ *  @since Added in version 3.5.
+ *
+ *  @ingroup native
+ */
+GLFWAPI void glfwWaylandZwlrSetExclusiveZone(GLFWwindow* window, int zone);
+
+/*! @brief Requests that the surface be placed some distance away from the
+ *         anchor point on the output, in surface-local coordinates. Setting this
+ *         value for edges you are not anchored to has no effect.
+ *         The exclusive zone includes the margin.
+ *
+ *  @errors Possible errors include @ref GLFW_FEATURE_UNAVAILABLE and @ref
+ *  GLFW_PLATFORM_UNAVAILABLE.
+ *
+ *  @thread_safety This function should be called from main thread.
+ *
+ *  @since Added in version 3.5.
+ *
+ *  @ingroup native
+ */
+GLFWAPI void glfwWaylandZwlrSetMargin(GLFWwindow* window, int top, int right, int bottom, int left);
+
+/*! @brief Request or release keyboard focus from compositor.
+ *
+ *  @warning Create fallback mechanism to release focus before request one.
+ *  Standart window events are not processed by GLFW in ZWLR mode,
+ *  you will not be able to interact with your compositor after focus granted.
+ *
+ *  @errors Possible errors include @ref GLFW_FEATURE_UNAVAILABLE and @ref
+ *  GLFW_PLATFORM_UNAVAILABLE.
+ *
+ *  @thread_safety This function should be called from main thread.
+ *
+ *  @since Added in version 3.5.
+ *
+ *  @ingroup native
+ */
+GLFWAPI void glfwWaylandZwlrSetKeyboardFocus(GLFWwindow* window, int focus);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_EGL)

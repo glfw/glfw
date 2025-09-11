@@ -428,6 +428,7 @@ struct _GLFWwndconfig
     struct {
         char      appId[256];
         GLFWbool  useZWLR;
+        GLFWbool  zwlrKeyboardGrabOnFocus;
     } wl;
 };
 

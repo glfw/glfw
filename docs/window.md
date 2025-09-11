@@ -527,6 +527,12 @@ If success, you can control layer behavior with
 [<GLFW/glfw3native.h>](@ref glfwWaylandZwlrSetLayer) api.
 Example available [here](https://github.com/glfw/glfw/blob/master/examples/wayland-widget.c).
 
+@anchor GLFW_WAYLAND_ZWLR_KEYBOARD_ON_FOCUS_hint
+__GLFW_WAYLAND_ZWLR_KEYBOARD_ON_FOCUS__  By default, layer shell surfaces do not receive keyboard
+events. Set this flag to automatically redirect focus to app on hover, and release it when mouse
+leave surface. This is set by @ref glfwWindowHint. Otherwise, you may control keyboard focus
+with [<GLFW/glfw3native.h>](@ref glfwWaylandZwlrSetKeyboardFocus) api.
+
 #### X11 specific window hints {#window_hints_x11}
 
 @anchor GLFW_X11_CLASS_NAME_hint
@@ -539,56 +545,57 @@ These are set with @ref glfwWindowHintString.
 
 #### Supported and default values {#window_hints_values}
 
-Window hint                   | Default value               | Supported values
------------------------------ | --------------------------- | ----------------
-GLFW_RESIZABLE                | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_VISIBLE                  | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_DECORATED                | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_FOCUSED                  | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_AUTO_ICONIFY             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_FLOATING                 | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_MAXIMIZED                | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_CENTER_CURSOR            | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_TRANSPARENT_FRAMEBUFFER  | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_FOCUS_ON_SHOW            | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_SCALE_TO_MONITOR         | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_SCALE_FRAMEBUFFER        | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_MOUSE_PASSTHROUGH        | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_POSITION_X               | `GLFW_ANY_POSITION`         | Any valid screen x-coordinate or `GLFW_ANY_POSITION`
-GLFW_POSITION_Y               | `GLFW_ANY_POSITION`         | Any valid screen y-coordinate or `GLFW_ANY_POSITION`
-GLFW_RED_BITS                 | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-GLFW_GREEN_BITS               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-GLFW_BLUE_BITS                | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-GLFW_ALPHA_BITS               | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-GLFW_DEPTH_BITS               | 24                          | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-GLFW_STENCIL_BITS             | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-GLFW_ACCUM_RED_BITS           | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-GLFW_ACCUM_GREEN_BITS         | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-GLFW_ACCUM_BLUE_BITS          | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-GLFW_ACCUM_ALPHA_BITS         | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-GLFW_AUX_BUFFERS              | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-GLFW_SAMPLES                  | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-GLFW_REFRESH_RATE             | `GLFW_DONT_CARE`            | 0 to `INT_MAX` or `GLFW_DONT_CARE`
-GLFW_STEREO                   | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_SRGB_CAPABLE             | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_DOUBLEBUFFER             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_CLIENT_API               | `GLFW_OPENGL_API`           | `GLFW_OPENGL_API`, `GLFW_OPENGL_ES_API` or `GLFW_NO_API`
-GLFW_CONTEXT_CREATION_API     | `GLFW_NATIVE_CONTEXT_API`   | `GLFW_NATIVE_CONTEXT_API`, `GLFW_EGL_CONTEXT_API` or `GLFW_OSMESA_CONTEXT_API`
-GLFW_CONTEXT_VERSION_MAJOR    | 1                           | Any valid major version number of the chosen client API
-GLFW_CONTEXT_VERSION_MINOR    | 0                           | Any valid minor version number of the chosen client API
-GLFW_CONTEXT_ROBUSTNESS       | `GLFW_NO_ROBUSTNESS`        | `GLFW_NO_ROBUSTNESS`, `GLFW_NO_RESET_NOTIFICATION` or `GLFW_LOSE_CONTEXT_ON_RESET`
-GLFW_CONTEXT_RELEASE_BEHAVIOR | `GLFW_ANY_RELEASE_BEHAVIOR` | `GLFW_ANY_RELEASE_BEHAVIOR`, `GLFW_RELEASE_BEHAVIOR_FLUSH` or `GLFW_RELEASE_BEHAVIOR_NONE`
-GLFW_OPENGL_FORWARD_COMPAT    | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_CONTEXT_DEBUG            | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_OPENGL_PROFILE           | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE`
-GLFW_WIN32_KEYBOARD_MENU      | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_WIN32_SHOWDEFAULT        | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_COCOA_FRAME_NAME         | `""`                        | A UTF-8 encoded frame autosave name
-GLFW_COCOA_GRAPHICS_SWITCHING | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
-GLFW_X11_CLASS_NAME           | `""`                        | An ASCII encoded `WM_CLASS` class name
-GLFW_X11_INSTANCE_NAME        | `""`                        | An ASCII encoded `WM_CLASS` instance name
-GLFW_WAYLAND_APP_ID           | `""`                        | An ASCII encoded Wayland `app_id` name
-GLFW_WAYLAND_USE_ZWLR         | 0                           | `GLFW_WAYLAND_ZWLR_LAYER_BACKGROUD`, `GLFW_WAYLAND_ZWLR_LAYER_BOTTOM`, `GLFW_WAYLAND_ZWLR_LAYER_TOP` or `GLFW_WAYLAND_ZWLR_LAYER_OVERLAY`
+Window hint                        | Default value               | Supported values
+---------------------------------- | --------------------------- | ----------------
+GLFW_RESIZABLE                     | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_VISIBLE                       | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_DECORATED                     | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_FOCUSED                       | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_AUTO_ICONIFY                  | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_FLOATING                      | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_MAXIMIZED                     | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_CENTER_CURSOR                 | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_TRANSPARENT_FRAMEBUFFER       | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_FOCUS_ON_SHOW                 | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_SCALE_TO_MONITOR              | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_SCALE_FRAMEBUFFER             | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_MOUSE_PASSTHROUGH             | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_POSITION_X                    | `GLFW_ANY_POSITION`         | Any valid screen x-coordinate or `GLFW_ANY_POSITION`
+GLFW_POSITION_Y                    | `GLFW_ANY_POSITION`         | Any valid screen y-coordinate or `GLFW_ANY_POSITION`
+GLFW_RED_BITS                      | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_GREEN_BITS                    | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_BLUE_BITS                     | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_ALPHA_BITS                    | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_DEPTH_BITS                    | 24                          | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_STENCIL_BITS                  | 8                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_ACCUM_RED_BITS                | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_ACCUM_GREEN_BITS              | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_ACCUM_BLUE_BITS               | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_ACCUM_ALPHA_BITS              | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_AUX_BUFFERS                   | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_SAMPLES                       | 0                           | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_REFRESH_RATE                  | `GLFW_DONT_CARE`            | 0 to `INT_MAX` or `GLFW_DONT_CARE`
+GLFW_STEREO                        | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_SRGB_CAPABLE                  | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_DOUBLEBUFFER                  | `GLFW_TRUE`                 | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_CLIENT_API                    | `GLFW_OPENGL_API`           | `GLFW_OPENGL_API`, `GLFW_OPENGL_ES_API` or `GLFW_NO_API`
+GLFW_CONTEXT_CREATION_API          | `GLFW_NATIVE_CONTEXT_API`   | `GLFW_NATIVE_CONTEXT_API`, `GLFW_EGL_CONTEXT_API` or `GLFW_OSMESA_CONTEXT_API`
+GLFW_CONTEXT_VERSION_MAJOR         | 1                           | Any valid major version number of the chosen client API
+GLFW_CONTEXT_VERSION_MINOR         | 0                           | Any valid minor version number of the chosen client API
+GLFW_CONTEXT_ROBUSTNESS            | `GLFW_NO_ROBUSTNESS`        | `GLFW_NO_ROBUSTNESS`, `GLFW_NO_RESET_NOTIFICATION` or `GLFW_LOSE_CONTEXT_ON_RESET`
+GLFW_CONTEXT_RELEASE_BEHAVIOR      | `GLFW_ANY_RELEASE_BEHAVIOR` | `GLFW_ANY_RELEASE_BEHAVIOR`, `GLFW_RELEASE_BEHAVIOR_FLUSH` or `GLFW_RELEASE_BEHAVIOR_NONE`
+GLFW_OPENGL_FORWARD_COMPAT         | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_CONTEXT_DEBUG                 | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_OPENGL_PROFILE                | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE`
+GLFW_WIN32_KEYBOARD_MENU           | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_WIN32_SHOWDEFAULT             | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_COCOA_FRAME_NAME              | `""`                        | A UTF-8 encoded frame autosave name
+GLFW_COCOA_GRAPHICS_SWITCHING      | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_X11_CLASS_NAME                | `""`                        | An ASCII encoded `WM_CLASS` class name
+GLFW_X11_INSTANCE_NAME             | `""`                        | An ASCII encoded `WM_CLASS` instance name
+GLFW_WAYLAND_APP_ID                | `""`                        | An ASCII encoded Wayland `app_id` name
+GLFW_WAYLAND_USE_ZWLR              | 0                           | `GLFW_WAYLAND_ZWLR_LAYER_BACKGROUD`, `GLFW_WAYLAND_ZWLR_LAYER_BOTTOM`, `GLFW_WAYLAND_ZWLR_LAYER_TOP` or `GLFW_WAYLAND_ZWLR_LAYER_OVERLAY`
+GLFW_WAYLAND_ZWLR_KEYBOARD_ON_FOCUS| `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 
 ## Window event processing {#window_events}
 

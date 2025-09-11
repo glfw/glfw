@@ -384,6 +384,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_WAYLAND_USE_ZWLR:
             _glfw.hints.window.wl.useZWLR = value;
             return;
+        case GLFW_WAYLAND_ZWLR_KEYBOARD_ON_FOCUS:
+            _glfw.hints.window.wl.zwlrKeyboardGrabOnFocus = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
         case GLFW_SCALE_TO_MONITOR:
             _glfw.hints.window.scaleToMonitor = value ? GLFW_TRUE : GLFW_FALSE;
             return;

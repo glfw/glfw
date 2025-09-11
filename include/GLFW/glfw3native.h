@@ -629,6 +629,23 @@ GLFWAPI void glfwWaylandZwlrSetExclusiveZone(GLFWwindow* window, int zone);
  *  @ingroup native
  */
 GLFWAPI void glfwWaylandZwlrSetMargin(GLFWwindow* window, int top, int right, int bottom, int left);
+
+/*! @brief Request or release keyboard focus from compositor.
+ *
+ *  @warning Create fallback mechanism to release focus before request one.
+ *  Standart window events are not processed by GLFW in ZWLR mode,
+ *  you will not be able to interact with your compositor after focus granted.
+ *
+ *  @errors Possible errors include @ref GLFW_FEATURE_UNAVAILABLE and @ref
+ *  GLFW_PLATFORM_UNAVAILABLE.
+ *
+ *  @thread_safety This function should be called from main thread.
+ *
+ *  @since Added in version 3.5.
+ *
+ *  @ingroup native
+ */
+GLFWAPI void glfwWaylandZwlrSetKeyboardFocus(GLFWwindow* window, int focus);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_EGL)

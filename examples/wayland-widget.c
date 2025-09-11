@@ -26,7 +26,7 @@
 
 
 
-#define WIN_HEIGHT 150
+static unsigned char LastCharPressed = 0;
 
 
 void nk_process(GLFWwindow*, struct nk_context*, float, float);
@@ -38,7 +38,7 @@ static void GLFW_DebugCallback(int err_code, const char* description)
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-    { printf("Captured %i\n", key); }
+    { if (action == GLFW_PRESS) LastCharPressed = key; }
 
 
 
@@ -48,13 +48,11 @@ int main(int argc, char** argv)
 
     if (!glfwInit()) return 1;
 
+    //glfwWindowHint(GLFW_WAYLAND_ZWLR_KEYBOARD_ON_FOCUS,          GLFW_TRUE); // no need to call glfwWaylandSetKeyboardFocus manually
     glfwWindowHint(GLFW_WAYLAND_USE_ZWLR, GLFW_WAYLAND_ZWLR_LAYER_TOP);
 
     GLFWwindow* window = glfwCreateWindow(600, 400, "Don't Care", NULL, NULL);
     if (!window) return 1;
-
-    //glfwWaylandZwlrSetExclusiveZone(window, WIN_HEIGHT + 50); // try to play with
-    //glfwWaylandZwlrSetMargin(window, 10, 10, 10, 10);
 
     glfwMakeContextCurrent(window);
     glfwSetKeyCallback    (window, key_callback);
@@ -111,9 +109,17 @@ void nk_process(GLFWwindow* window, struct nk_context* ctx, float width, float h
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
 
-    nk_layout_row_dynamic(ctx, (height / 3), 1);
-    nk_layout_row_dynamic(ctx, 30, 2);
+    nk_layout_row_dynamic(ctx, (height / 4), 1);
+    nk_layout_row_dynamic(ctx, 30, 1);
+    {
+        static char inputBuff[64];
+        sprintf(inputBuff, "Mouse focus: %b | Char received: %i",
+                glfwGetWindowAttrib(window, GLFW_FOCUSED), LastCharPressed);
 
+        nk_label(ctx, inputBuff, NK_TEXT_CENTERED);
+    }
+
+    nk_layout_row_dynamic(ctx, 30, 2);
     {
         static char exclusiveBuff[12];
 
@@ -192,6 +198,16 @@ void nk_process(GLFWwindow* window, struct nk_context* ctx, float width, float h
             nk_combo_end(ctx);
         }
     }
+
+    nk_layout_row_dynamic(ctx, 30, 2);
+    {
+        if (nk_button_label(ctx, "Request keybord focus"))
+            glfwWaylandZwlrSetKeyboardFocus(window, GLFW_TRUE);
+
+        if (nk_button_label(ctx, "Release keybord focus"))
+            glfwWaylandZwlrSetKeyboardFocus(window, GLFW_FALSE);
+    }
+
 }
 
 

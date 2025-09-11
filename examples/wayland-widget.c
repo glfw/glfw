@@ -48,7 +48,7 @@ int main(int argc, char** argv)
 
     if (!glfwInit()) return 1;
 
-    //glfwWindowHint(GLFW_WAYLAND_ZWLR_KEYBOARD_ON_FOCUS,          GLFW_TRUE); // no need to call glfwWaylandSetKeyboardFocus manually
+    glfwWindowHint(GLFW_WAYLAND_ZWLR_KEYBOARD_ON_FOCUS,     GLFW_TRUE); // no need to call glfwWaylandSetKeyboardFocus manually
     glfwWindowHint(GLFW_WAYLAND_USE_ZWLR, GLFW_WAYLAND_ZWLR_LAYER_TOP);
 
     GLFWwindow* window = glfwCreateWindow(600, 400, "Don't Care", NULL, NULL);
@@ -113,7 +113,7 @@ void nk_process(GLFWwindow* window, struct nk_context* ctx, float width, float h
     nk_layout_row_dynamic(ctx, 30, 1);
     {
         static char inputBuff[64];
-        sprintf(inputBuff, "Mouse focus: %b | Char received: %i",
+        sprintf(inputBuff, "Window focus: %b | Char received: %i",
                 glfwGetWindowAttrib(window, GLFW_FOCUSED), LastCharPressed);
 
         nk_label(ctx, inputBuff, NK_TEXT_CENTERED);

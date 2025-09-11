@@ -1656,19 +1656,19 @@ static void pointerHandleLeave(void* userData,
     _glfw.wl.serial = serial;
     _glfw.wl.pointerFocus = NULL;
 
-    if (_glfw.hints.window.wl.zwlrKeyboardGrabOnFocus)
-    {
-        if (window->wl.zwlr.surface) // TODO: find out why wl.hovered not fired
-        {
-            zwlr_layer_surface_v1_set_keyboard_interactivity(window->wl.zwlr.surface,
-                                ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_NONE);
-        }
-    }
-
     if (window->wl.hovered)
     {
         window->wl.hovered = GLFW_FALSE;
         _glfwInputCursorEnter(window, GLFW_FALSE);
+
+        if (_glfw.hints.window.wl.zwlrKeyboardGrabOnFocus)
+        {
+            if (window->wl.zwlr.surface)
+            {
+                zwlr_layer_surface_v1_set_keyboard_interactivity(window->wl.zwlr.surface,
+                                    ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_NONE);
+            }
+        }
     }
     else
     {

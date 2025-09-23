@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <assert.h>
 
 void _glfwInitDBusPOSIX(void)
 {
@@ -436,7 +437,9 @@ dbus_bool_t _glfwAppendDictDataDBusPOSIX(struct DBusMessageIter* iterator, int k
     if(!_glfwAppendDataDBusPOSIX(&keyIterator, keyType, keyData))
         return GLFW_FALSE;
 
-    if(!_glfwOpenContainerDBusPOSIX(&keyIterator, DBUS_TYPE_VARIANT, (const char*)&valueType, &valueIterator))
+    char* valueTypeStr = _glfwDBusTypeToStrPOSIX(valueType);
+    assert(valueTypeStr != NULL);
+    if(!_glfwOpenContainerDBusPOSIX(&keyIterator, DBUS_TYPE_VARIANT, valueTypeStr, &valueIterator))
         return GLFW_FALSE;
 
     //Append value data
@@ -470,4 +473,47 @@ dbus_bool_t _glfwSendMessageDBusPOSIX(struct DBusMessage* message)
     dbus_connection_flush(_glfw.dbus.connection);
 
     return GLFW_TRUE;
+}
+
+char* _glfwDBusTypeToStrPOSIX(int valueType)
+{
+    switch (valueType)
+    {
+        case DBUS_TYPE_STRING:
+            return DBUS_TYPE_STRING_AS_STRING;
+        case DBUS_TYPE_ARRAY:
+            return DBUS_TYPE_ARRAY_AS_STRING;
+        case DBUS_TYPE_DICT_ENTRY:
+            return DBUS_TYPE_DICT_ENTRY_AS_STRING;
+        case DBUS_TYPE_VARIANT:
+            return DBUS_TYPE_VARIANT_AS_STRING;
+        case DBUS_TYPE_BOOLEAN:
+            return DBUS_TYPE_BOOLEAN_AS_STRING;
+        case DBUS_TYPE_DOUBLE:
+            return DBUS_TYPE_DOUBLE_AS_STRING;
+        case DBUS_TYPE_INT16:
+            return DBUS_TYPE_INT16_AS_STRING;
+        case DBUS_TYPE_UINT16:
+            return DBUS_TYPE_UINT16_AS_STRING;
+        case DBUS_TYPE_INT32:
+            return DBUS_TYPE_INT32_AS_STRING;
+        case DBUS_TYPE_UINT32:
+            return DBUS_TYPE_UINT32_AS_STRING;
+        case DBUS_TYPE_INT64:
+            return DBUS_TYPE_INT64_AS_STRING;
+        case DBUS_TYPE_UINT64:
+            return DBUS_TYPE_UINT64_AS_STRING;
+        case DBUS_TYPE_STRUCT_OPEN:
+            return DBUS_TYPE_STRUCT_OPEN_AS_STRING;
+        case DBUS_TYPE_STRUCT_CLOSE:
+            return DBUS_TYPE_STRUCT_CLOSE_AS_STRING;
+        case DBUS_TYPE_BYTE:
+            return DBUS_TYPE_BYTE_AS_STRING;
+        case DBUS_TYPE_OBJECT_PATH:
+            return DBUS_TYPE_OBJECT_PATH_AS_STRING;
+        case DBUS_TYPE_SIGNATURE:
+            return DBUS_TYPE_SIGNATURE_AS_STRING;
+    }
+
+    return NULL;
 }

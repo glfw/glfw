@@ -1645,12 +1645,6 @@ void _glfwSetWindowProgressIndicatorWin32(_GLFWwindow* window, int progressState
     int winProgressState = 0;
     int progressValue = (int)(value * 100.0);
 
-    if(!IsWindows7OrGreater())
-    {
-        _glfwInputError(GLFW_FEATURE_UNAVAILABLE, "Win32: Taskbar progress is only supported on Windows 7 or newer");
-        return;
-    }
-
     if(!window->win32.taskbarList)
         return;
 

@@ -208,7 +208,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
 
     wndconfig.width   = width;
     wndconfig.height  = height;
-    wndconfig.title   = title;
     ctxconfig.share   = (_GLFWwindow*) share;
 
     if (!_glfwIsValidContextConfig(&ctxconfig))

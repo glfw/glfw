@@ -375,9 +375,6 @@ static void updateFramebufferTransparency(const _GLFWwindow* window)
     BOOL composition, opaque;
     DWORD color;
 
-    if (!IsWindowsVistaOrGreater())
-        return;
-
     if (FAILED(DwmIsCompositionEnabled(&composition)) || !composition)
        return;
 
@@ -984,7 +981,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
         case WM_MOUSEHWHEEL:
         {
-            // This message is only sent on Windows Vista and later
             // NOTE: The X-axis is inverted for consistency with macOS and X11
             _glfwInputScroll(window, -((SHORT) HIWORD(wParam) / (double) WHEEL_DELTA), 0.0);
             return 0;
@@ -1394,7 +1390,7 @@ static int createNativeWindow(_GLFWwindow* window,
         frameHeight = rect.bottom - rect.top;
     }
 
-    wideTitle = _glfwCreateWideStringFromUTF8Win32(wndconfig->title);
+    wideTitle = _glfwCreateWideStringFromUTF8Win32(window->title);
     if (!wideTitle)
         return GLFW_FALSE;
 
@@ -1420,19 +1416,13 @@ static int createNativeWindow(_GLFWwindow* window,
 
     SetPropW(window->win32.handle, L"GLFW", window);
 
-    if (IsWindows7OrGreater())
-    {
-        ChangeWindowMessageFilterEx(window->win32.handle,
-                                    WM_DROPFILES, MSGFLT_ALLOW, NULL);
-        ChangeWindowMessageFilterEx(window->win32.handle,
-                                    WM_COPYDATA, MSGFLT_ALLOW, NULL);
-        ChangeWindowMessageFilterEx(window->win32.handle,
-                                    WM_COPYGLOBALDATA, MSGFLT_ALLOW, NULL);
+    ChangeWindowMessageFilterEx(window->win32.handle, WM_DROPFILES, MSGFLT_ALLOW, NULL);
+    ChangeWindowMessageFilterEx(window->win32.handle, WM_COPYDATA, MSGFLT_ALLOW, NULL);
+    ChangeWindowMessageFilterEx(window->win32.handle, WM_COPYGLOBALDATA, MSGFLT_ALLOW, NULL);
 
-        window->win32.taskbarListMsgID = RegisterWindowMessageW(L"TaskbarButtonCreated");
-        if (window->win32.taskbarListMsgID)
-            ChangeWindowMessageFilterEx(window->win32.handle, window->win32.taskbarListMsgID, MSGFLT_ALLOW, NULL);
-    }
+    window->win32.taskbarListMsgID = RegisterWindowMessageW(L"TaskbarButtonCreated");
+    if (window->win32.taskbarListMsgID)
+        ChangeWindowMessageFilterEx(window->win32.handle, window->win32.taskbarListMsgID, MSGFLT_ALLOW, NULL);
 
     window->win32.scaleToMonitor = wndconfig->scaleToMonitor;
     window->win32.keymenu = wndconfig->win32.keymenu;
@@ -1656,12 +1646,6 @@ void _glfwSetWindowProgressIndicatorWin32(_GLFWwindow* window, int progressState
     HRESULT res = S_OK;
     int winProgressState = 0;
     int progressValue = (int)(value * 100.0);
-
-    if(!IsWindows7OrGreater())
-    {
-        _glfwInputError(GLFW_FEATURE_UNAVAILABLE, "Win32: Taskbar progress is only supported on Windows 7 and newer");
-        return;
-    }
 
     if(!window->win32.taskbarList)
         return;
@@ -2075,12 +2059,6 @@ void _glfwSetWindowBadgeWin32(_GLFWwindow* window, int count)
         return;
     }
 
-    if (!IsWindows7OrGreater())
-    {
-        _glfwInputError(GLFW_FEATURE_UNAVAILABLE, "Win32: Taskbar badge is only supported on Windows 7 and newer");
-        return;
-    }
-
     if (!window->win32.taskbarList)
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar badge count");
@@ -2486,9 +2464,6 @@ GLFWbool _glfwFramebufferTransparentWin32(_GLFWwindow* window)
     DWORD color;
 
     if (!window->win32.transparent)
-        return GLFW_FALSE;
-
-    if (!IsWindowsVistaOrGreater())
         return GLFW_FALSE;
 
     if (FAILED(DwmIsCompositionEnabled(&composition)) || !composition)

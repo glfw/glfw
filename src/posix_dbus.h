@@ -80,6 +80,24 @@ struct DBusMessageIter
 #define DBUS_TYPE_OBJECT_PATH (unsigned int)'o'
 #define DBUS_TYPE_SIGNATURE (unsigned int)'g'
 
+#define DBUS_TYPE_STRING_AS_STRING "s"
+#define DBUS_TYPE_ARRAY_AS_STRING "a"
+#define DBUS_TYPE_DICT_ENTRY_AS_STRING "e"
+#define DBUS_TYPE_VARIANT_AS_STRING "v"
+#define DBUS_TYPE_BOOLEAN_AS_STRING "b"
+#define DBUS_TYPE_DOUBLE_AS_STRING "d"
+#define DBUS_TYPE_INT16_AS_STRING "n"
+#define DBUS_TYPE_UINT16_AS_STRING "q"
+#define DBUS_TYPE_INT32_AS_STRING "i"
+#define DBUS_TYPE_UINT32_AS_STRING "u"
+#define DBUS_TYPE_INT64_AS_STRING "x"
+#define DBUS_TYPE_UINT64_AS_STRING "t"
+#define DBUS_TYPE_STRUCT_OPEN_AS_STRING "("
+#define DBUS_TYPE_STRUCT_CLOSE_AS_STRING ")"
+#define DBUS_TYPE_BYTE_AS_STRING "y"
+#define DBUS_TYPE_OBJECT_PATH_AS_STRING "o"
+#define DBUS_TYPE_SIGNATURE_AS_STRING "g"
+
 typedef void (* PFN_dbus_error_init)(struct DBusError*);
 typedef dbus_bool_t (* PFN_dbus_error_is_set)(const struct DBusError*);
 typedef void (* PFN_dbus_error_free)(struct DBusError*);
@@ -157,3 +175,4 @@ dbus_bool_t _glfwCloseContainerDBusPOSIX(struct DBusMessageIter* iterator, struc
 dbus_bool_t _glfwAppendDataDBusPOSIX(struct DBusMessageIter* iterator, int DBusType, const void* data);
 dbus_bool_t _glfwAppendDictDataDBusPOSIX(struct DBusMessageIter* iterator, int keyType, const void* keyData, int valueType, const void* valueData);
 dbus_bool_t _glfwSendMessageDBusPOSIX(struct DBusMessage* message);
+char* _glfwDBusTypeToStrPOSIX(int valueType);

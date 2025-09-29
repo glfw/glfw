@@ -29,12 +29,11 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#if !defined(_MSC_VER)
-WGPUSurface __attribute__((weak)) wgpuInstanceCreateSurface(WGPUInstance instance, const WGPUSurfaceDescriptor* descriptor)
+GLFWAPI void glfwSetWGPUInstanceCreateSurfaceAddr(WGPUSurface (*addr)(WGPUInstance, const WGPUSurfaceDescriptor*))
 {
-    return NULL;
+    _GLFW_REQUIRE_INIT()
+    _glfw.wgpu.instanceCreateSurface = addr;
 }
-#endif
 
 GLFWAPI WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindow* handle)
 {
@@ -44,7 +43,7 @@ GLFWAPI WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindo
 
     assert(window != NULL);
     assert(instance != NULL);
-    assert(&wgpuInstanceCreateSurface != NULL);
+    assert(_glfw.wgpu.instanceCreateSurface != NULL);
 
     if (window->context.client != GLFW_NO_API)
     {

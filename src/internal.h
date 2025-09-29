@@ -367,8 +367,6 @@ typedef struct WGPUSurfaceDescriptor
     WGPUStringView label;
 } WGPUSurfaceDescriptor;
 
-typedef WGPUSurface (*PFN_wgpuInstanceCreateSurface)(WGPUInstance, const WGPUSurfaceDescriptor*);
-
 extern WGPUSurface wgpuInstanceCreateSurface(WGPUInstance instance, const WGPUSurfaceDescriptor* descriptor) __attribute((weak));
 
 #include "platform.h"
@@ -915,10 +913,6 @@ struct _GLFWlibrary
         GLFWbool        KHR_wayland_surface;
         GLFWbool        EXT_headless_surface;
     } vk;
-
-    struct {
-        PFN_wgpuInstanceCreateSurface instanceCreateSurface;
-    } wgpu;
 
     struct {
         GLFWmonitorfun  monitor;

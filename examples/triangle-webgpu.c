@@ -30,6 +30,7 @@
 
 #include <webgpu/webgpu.h>
 #include <webgpu/wgpu.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 #define SHADER_SOURCE(...) #__VA_ARGS__

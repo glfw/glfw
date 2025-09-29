@@ -25,6 +25,20 @@ set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"
 set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
                 "${GLFW_SOURCE_DIR}/deps/tinycthread.c")
 
+include(FetchContent)
+
+set(WEBGPU_LINK_TYPE STATIC)
+set(WEBGPU_BACKEND WGPU)
+FetchContent_Declare(
+	webgpu
+	GIT_REPOSITORY https://github.com/eliemichel/WebGPU-distribution.git
+	GIT_TAG        v0.3.0-gamma
+	GIT_SHALLOW    TRUE
+	GIT_PROGRESS   TRUE
+	EXCLUDE_FROM_ALL
+)
+FetchContent_MakeAvailable(webgpu)
+
 add_executable(boing WIN32 MACOSX_BUNDLE boing.c ${ICON} ${GLAD_GL})
 add_executable(gears WIN32 MACOSX_BUNDLE gears.c ${ICON} ${GLAD_GL})
 add_executable(heightmap WIN32 MACOSX_BUNDLE heightmap.c ${ICON} ${GLAD_GL})
@@ -34,6 +48,7 @@ add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c ${ICON} ${GLAD_GL})
 add_executable(splitview WIN32 MACOSX_BUNDLE splitview.c ${ICON} ${GLAD_GL})
 add_executable(triangle-opengl WIN32 MACOSX_BUNDLE triangle-opengl.c ${ICON} ${GLAD_GL})
 add_executable(triangle-opengles WIN32 MACOSX_BUNDLE triangle-opengles.c ${ICON} ${GLAD_GLES2})
+add_executable(triangle-webgpu WIN32 MACOSX_BUNDLE triangle-webgpu.c ${ICON})
 add_executable(wave WIN32 MACOSX_BUNDLE wave.c ${ICON} ${GLAD_GL})
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${ICON} ${GLAD_GL})
 
@@ -42,8 +57,10 @@ if (RT_LIBRARY)
     target_link_libraries(particles "${RT_LIBRARY}")
 endif()
 
+target_link_libraries(triangle-webgpu webgpu)
+
 set(GUI_ONLY_BINARIES boing gears heightmap particles sharing splitview
-    triangle-opengl triangle-opengles wave windows)
+    triangle-opengl triangle-opengles triangle-webgpu wave windows)
 set(CONSOLE_BINARIES offscreen)
 
 set_target_properties(${GUI_ONLY_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
@@ -68,6 +85,7 @@ if (APPLE)
     set_target_properties(sharing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Sharing")
     set_target_properties(triangle-opengl PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "OpenGL Triangle")
     set_target_properties(triangle-opengles PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "OpenGL ES Triangle")
+    set_target_properties(triangle-webgpu PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "WebGPU Triangle")
     set_target_properties(splitview PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "SplitView")
     set_target_properties(wave PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Wave")
     set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")

@@ -1,7 +1,7 @@
 //========================================================================
 // GLFW 3.5 - www.glfw.org
 //------------------------------------------------------------------------
-// Copyright (c) Sebastian Dawid <sdawid@techfak.uni-bielefeld.de>
+// Copyright (c) Sebastian Dawid <sebdawid@gmail.com>
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
@@ -29,12 +29,6 @@
 #include <assert.h>
 #include <stdlib.h>
 
-GLFWAPI void glfwSetWGPUInstanceCreateSurfaceAddr(WGPUSurface (*addr)(WGPUInstance, const WGPUSurfaceDescriptor*))
-{
-    _GLFW_REQUIRE_INIT()
-    _glfw.wgpu.instanceCreateSurface = addr;
-}
-
 GLFWAPI WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindow* handle)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL)
@@ -43,7 +37,7 @@ GLFWAPI WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindo
 
     assert(window != NULL);
     assert(instance != NULL);
-    assert(_glfw.wgpu.instanceCreateSurface != NULL);
+    assert(&wgpuInstanceCreateSurface != NULL);
 
     if (window->context.client != GLFW_NO_API)
     {

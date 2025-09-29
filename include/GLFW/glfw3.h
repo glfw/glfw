@@ -6536,19 +6536,6 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window
 
 #if defined(WEBGPU_H_)
 
-/*! @brief Provide the address of the `wgpuInstanceCreateSurface` function to GLFW.
- *
- * This function passes the address provided for the `wgpuInstanceCreateSurface` function
- * to GLFW.
- *
- * @param[in] addr The address of the `wgpuInstanceCreateSurface` function.
- *
- * @since Added in version 3.5
- *
- * @ingroup webgpu
- */
-GLFWAPI void glfwSetWGPUInstanceCreateSurfaceAddr(WGPUSurface (*addr)(WGPUInstance, const WGPUSurfaceDescriptor*));
-
 /*! @brief Creates a WebGPU surface for the specified window.
  * 
  * This function creates a WebGPU surface for the specified window.

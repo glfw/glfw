@@ -369,7 +369,7 @@ typedef struct WGPUSurfaceDescriptor
 
 typedef WGPUSurface (*PFN_wgpuInstanceCreateSurface)(WGPUInstance, const WGPUSurfaceDescriptor*);
 
-#define wgpuInstanceCreateSurface _glfw.wgpu.instanceCreateSurface
+extern WGPUSurface wgpuInstanceCreateSurface(WGPUInstance instance, const WGPUSurfaceDescriptor* descriptor) __attribute((weak));
 
 #include "platform.h"
 

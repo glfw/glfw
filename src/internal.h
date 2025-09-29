@@ -367,7 +367,9 @@ typedef struct WGPUSurfaceDescriptor
     WGPUStringView label;
 } WGPUSurfaceDescriptor;
 
-extern WGPUSurface wgpuInstanceCreateSurface(WGPUInstance instance, const WGPUSurfaceDescriptor* descriptor) __attribute((weak));
+#if !defined(_MSC_VER)
+WGPUSurface __attribute__((weak)) wgpuInstanceCreateSurface(WGPUInstance instance, const WGPUSurfaceDescriptor* descriptor);
+#endif
 
 #include "platform.h"
 

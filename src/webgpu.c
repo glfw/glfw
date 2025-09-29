@@ -29,6 +29,13 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#if !defined(_MSC_VER)
+WGPUSurface __attribute__((weak)) wgpuInstanceCreateSurface(WGPUInstance instance, const WGPUSurfaceDescriptor* descriptor)
+{
+    return NULL;
+}
+#endif
+
 GLFWAPI WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindow* handle)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL)

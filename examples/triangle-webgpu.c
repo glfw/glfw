@@ -73,8 +73,16 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    WGPUAdapter adapter;
     WGPUSurface surface = glfwCreateWindowWGPUSurface(instance, window);
+    if (!surface)
+    {
+        fprintf(stderr, "Error: Failed to create WebGPU surface.\n");
+        wgpuInstanceRelease(instance);
+        glfwDestroyWindow(window);
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
+    WGPUAdapter adapter;
     WGPUDevice device;
     WGPUQueue queue;
     bool success = false;

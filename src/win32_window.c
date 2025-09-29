@@ -1377,7 +1377,7 @@ static int createNativeWindow(_GLFWwindow* window,
         frameHeight = rect.bottom - rect.top;
     }
 
-    wideTitle = _glfwCreateWideStringFromUTF8Win32(wndconfig->title);
+    wideTitle = _glfwCreateWideStringFromUTF8Win32(window->title);
     if (!wideTitle)
         return GLFW_FALSE;
 

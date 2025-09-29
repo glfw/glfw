@@ -405,13 +405,19 @@ static void handleFallbackDecorationButton(_GLFWwindow* window,
     }
     else if (button == BTN_RIGHT)
     {
-        if (window->wl.xdg.toplevel)
-        {
-            xdg_toplevel_show_window_menu(window->wl.xdg.toplevel,
-                                          _glfw.wl.seat, serial,
-                                          window->wl.cursorPosX,
-                                          window->wl.cursorPosY);
-        }
+        if (!window->wl.xdg.toplevel)
+            return;
+
+        if (window->wl.fallback.focus != window->wl.fallback.top.surface)
+            return;
+
+        if (ypos < GLFW_BORDER_SIZE)
+            return;
+
+        xdg_toplevel_show_window_menu(window->wl.xdg.toplevel,
+                                      _glfw.wl.seat, serial,
+                                      xpos,
+                                      ypos - GLFW_CAPTION_HEIGHT - GLFW_BORDER_SIZE);
     }
 }
 
@@ -1532,11 +1538,21 @@ static void pointerHandleEnter(void* userData,
         window->wl.hovered = GLFW_TRUE;
         _glfwSetCursorWayland(window, window->wl.currentCursor);
         _glfwInputCursorEnter(window, GLFW_TRUE);
+
+        if (window->cursorMode != GLFW_CURSOR_DISABLED)
+        {
+            window->wl.cursorPosX = wl_fixed_to_double(sx);
+            window->wl.cursorPosY = wl_fixed_to_double(sy);
+            _glfwInputCursorPos(window, window->wl.cursorPosX, window->wl.cursorPosY);
+        }
     }
     else
     {
         if (window->wl.fallback.decorations)
+        {
             window->wl.fallback.focus = surface;
+            updateFallbackDecorationCursor(window, sx, sy);
+        }
     }
 }
 
@@ -1777,24 +1793,6 @@ static void keyboardHandleLeave(void* userData,
 
     if (!window)
         return;
-
-    // Handle any key repeats up to this point. We don't poll as this should be infrequent.
-    uint64_t repeats;
-    if (read(_glfw.wl.keyRepeatTimerfd, &repeats, sizeof(repeats)) == 8)
-    {
-        if(_glfw.wl.keyboardFocus)
-        {
-            for (uint64_t i = 0; i < repeats; i++)
-            {
-                _glfwInputKey(_glfw.wl.keyboardFocus,
-                              translateKey(_glfw.wl.keyRepeatScancode),
-                              _glfw.wl.keyRepeatScancode,
-                              GLFW_PRESS,
-                              _glfw.wl.xkb.modifiers);
-                inputText(_glfw.wl.keyboardFocus, _glfw.wl.keyRepeatScancode);
-            }
-        }
-    }
 
     struct itimerspec timer = {0};
     timerfd_settime(_glfw.wl.keyRepeatTimerfd, 0, &timer, NULL);

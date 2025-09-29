@@ -754,13 +754,13 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
             const char* resourceName = getenv("RESOURCE_NAME");
             if (resourceName && strlen(resourceName))
                 hint->res_name = (char*) resourceName;
-            else if (strlen(wndconfig->title))
-                hint->res_name = (char*) wndconfig->title;
+            else if (strlen(window->title))
+                hint->res_name = (char*) window->title;
             else
                 hint->res_name = (char*) "glfw-application";
 
-            if (strlen(wndconfig->title))
-                hint->res_class = (char*) wndconfig->title;
+            if (strlen(window->title))
+                hint->res_class = (char*) window->title;
             else
                 hint->res_class = (char*) "GLFW-Application";
         }
@@ -780,7 +780,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     if (_glfw.x11.im)
         _glfwCreateInputContextX11(window);
 
-    _glfwSetWindowTitleX11(window, wndconfig->title);
+    _glfwSetWindowTitleX11(window, window->title);
     _glfwGetWindowPosX11(window, &window->x11.xpos, &window->x11.ypos);
     _glfwGetWindowSizeX11(window, &window->x11.width, &window->x11.height);
 

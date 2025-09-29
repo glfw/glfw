@@ -14,6 +14,19 @@ values over 8. For compatibility with older versions, the
 @ref GLFW_UNLIMITED_MOUSE_BUTTONS input mode needs to be set to make use of
 this.
 
+
+### EGLConfig native access function {#eglconfig}
+
+GLFW now provides the @ref glfwGetEGLConfig native access function for querying
+the `EGLConfig` of a window that has a `EGLSurface`.
+
+
+### GLXFBConfig native access function {#glxfbconfig}
+
+GLFW now provides the @ref glfwGetGLXFBConfig native access function for
+querying the `GLXFBConfig` of a window that has a `GLXWindow`.
+
+
 ## Caveats {#caveats}
 
 ## Deprecations {#deprecations}
@@ -38,6 +51,10 @@ actively maintained and available on many platforms.
 ## New symbols {#new_symbols}
 
 ### New functions {#new_functions}
+
+ - @ref glfwGetEGLConfig
+ - @ref glfwGetGLXFBConfig
+
 
 ### New types {#new_types}
 

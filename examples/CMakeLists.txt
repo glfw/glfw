@@ -27,8 +27,6 @@ set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
 
 include(FetchContent)
 
-set(WEBGPU_LINK_TYPE STATIC)
-set(WEBGPU_BACKEND WGPU)
 FetchContent_Declare(
 	webgpu
 	GIT_REPOSITORY https://github.com/eliemichel/WebGPU-distribution.git
@@ -58,6 +56,7 @@ if (RT_LIBRARY)
 endif()
 
 target_link_libraries(triangle-webgpu webgpu)
+target_copy_webgpu_binaries(triangle-webgpu)
 
 set(GUI_ONLY_BINARIES boing gears heightmap particles sharing splitview
     triangle-opengl triangle-opengles triangle-webgpu wave windows)

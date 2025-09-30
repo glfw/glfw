@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include <webgpu/webgpu.h>
 #include <webgpu/wgpu.h>
@@ -35,7 +36,27 @@
 
 #define SHADER_SOURCE(...) #__VA_ARGS__
 
-static const char* CODE = SHADER_SOURCE();
+static const char* CODE = SHADER_SOURCE(
+@vertex
+fn vert(@builtin(vertex_index) index: u32) -> @builtin(position) vec4f {
+    var p = vec2f(0.0, 0.0);
+    
+    if (index == 0u) {
+        p = vec2f(-0.5, -0.5);
+    } else if (index == 1u) {
+        p = vec2f(0.5, -0.5);
+    } else {
+        p = vec2f(0.0, 0.5);
+    }
+
+    return vec4f(p, 0.0, 1.0);
+}
+
+@fragment
+fn frag() -> @location(0) vec4f {
+    return vec4f(1.0, 0.0, 0.0, 1.0);
+}
+);
 
 static void error_callback(int error, const char* description);
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -51,6 +72,7 @@ int main(void)
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
         exit(EXIT_FAILURE);
+    glfwSetWGPUInstanceCreateSurfaceAddr(wgpuInstanceCreateSurface);
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
@@ -103,7 +125,7 @@ int main(void)
     while (!success); // spin until we get the adapter
     success = false;
 
-    WGPULimits supported_limits;
+    WGPULimits supported_limits = {0};
     wgpuAdapterGetLimits(adapter, &supported_limits);
     WGPULimits required_limits = get_required_limits(&supported_limits);
 
@@ -177,7 +199,73 @@ int main(void)
 
     wgpuAdapterRelease(adapter);
     wgpuInstanceRelease(instance);
+    
+    WGPUShaderSourceWGSL shader_source = {0};
+    shader_source.chain.next = NULL;
+    shader_source.chain.sType = WGPUSType_ShaderSourceWGSL;
+    shader_source.code = (WGPUStringView) { CODE, strlen(CODE) };
 
+    WGPUShaderModuleDescriptor module_descriptor = {0};
+    module_descriptor.nextInChain = &shader_source.chain;
+    module_descriptor.label = (WGPUStringView) { NULL, SIZE_MAX };
+
+    WGPUShaderModule module = wgpuDeviceCreateShaderModule(device, &module_descriptor);
+
+    WGPURenderPipelineDescriptor pipeline_descriptor = {0};
+    pipeline_descriptor.nextInChain = NULL;
+    pipeline_descriptor.label = (WGPUStringView) { NULL, SIZE_MAX };
+    pipeline_descriptor.layout = NULL;
+
+    pipeline_descriptor.vertex.nextInChain = NULL;
+    pipeline_descriptor.vertex.entryPoint = (WGPUStringView) { "vert", 4 };
+    pipeline_descriptor.vertex.module = module;
+    pipeline_descriptor.vertex.bufferCount = 0;
+    pipeline_descriptor.vertex.buffers = NULL;
+    pipeline_descriptor.vertex.constantCount = 0;
+    pipeline_descriptor.vertex.constants = NULL;
+
+    pipeline_descriptor.primitive.nextInChain = NULL;
+    pipeline_descriptor.primitive.topology = WGPUPrimitiveTopology_TriangleList;
+    pipeline_descriptor.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
+    pipeline_descriptor.primitive.frontFace = WGPUFrontFace_CCW;
+    pipeline_descriptor.primitive.cullMode = WGPUCullMode_None;
+
+    WGPUBlendState blend_state = {0};
+    blend_state.color.srcFactor = WGPUBlendFactor_SrcAlpha;
+    blend_state.color.dstFactor = WGPUBlendFactor_OneMinusSrcAlpha;
+    blend_state.color.operation = WGPUBlendOperation_Add;
+
+    blend_state.alpha.srcFactor = WGPUBlendFactor_Zero;
+    blend_state.alpha.dstFactor = WGPUBlendFactor_One;
+    blend_state.alpha.operation = WGPUBlendOperation_Add;
+
+    WGPUColorTargetState color_target_state = {0};
+    color_target_state.nextInChain = NULL;
+    color_target_state.format = format;
+    color_target_state.blend = &blend_state;
+    color_target_state.writeMask = WGPUColorWriteMask_All;
+
+    WGPUFragmentState fragment_state = {0};
+    fragment_state.nextInChain = NULL;
+    fragment_state.module = module;
+    fragment_state.entryPoint = (WGPUStringView) { "frag", 4 };
+    fragment_state.constantCount = 0;
+    fragment_state.constants = NULL;
+    fragment_state.targetCount = 1;
+    fragment_state.targets = &color_target_state;
+
+    pipeline_descriptor.fragment = &fragment_state;
+
+    pipeline_descriptor.multisample.count = 1;
+    pipeline_descriptor.multisample.mask = ~0u;
+    pipeline_descriptor.multisample.alphaToCoverageEnabled = false;
+    
+    pipeline_descriptor.depthStencil = NULL;
+
+    WGPURenderPipeline pipeline = wgpuDeviceCreateRenderPipeline(device, &pipeline_descriptor);
+    
+    wgpuShaderModuleRelease(module);
+    
     WGPUSurfaceTexture surface_texture = {0};
     WGPUTextureView target_view = {0};
     while (!glfwWindowShouldClose(window))
@@ -206,6 +294,43 @@ int main(void)
 
         if (target_view == NULL)
             continue;
+
+        WGPURenderPassDescriptor render_pass_descriptor = {0};
+        render_pass_descriptor.nextInChain = NULL;
+
+        WGPURenderPassColorAttachment color_attachment = {0};
+        color_attachment.view = target_view;
+        color_attachment.resolveTarget = NULL;
+        color_attachment.loadOp = WGPULoadOp_Clear;
+        color_attachment.storeOp = WGPUStoreOp_Store;
+        color_attachment.clearValue = (WGPUColor) { 0.0f, 0.0f, 0.0f, 1.0f };
+        render_pass_descriptor.colorAttachmentCount = 1;
+        render_pass_descriptor.colorAttachments = &color_attachment;
+
+        render_pass_descriptor.depthStencilAttachment = NULL;
+        render_pass_descriptor.timestampWrites = NULL;
+
+        WGPUCommandEncoderDescriptor encoder_descriptor = {0};
+        encoder_descriptor.nextInChain = NULL;
+        encoder_descriptor.label = (WGPUStringView) { NULL, SIZE_MAX };
+        WGPUCommandEncoder encoder = wgpuDeviceCreateCommandEncoder(device, &encoder_descriptor);
+
+        WGPURenderPassEncoder render_pass = wgpuCommandEncoderBeginRenderPass(encoder, &render_pass_descriptor);
+
+        wgpuRenderPassEncoderSetPipeline(render_pass, pipeline);
+        wgpuRenderPassEncoderDraw(render_pass, 3, 1, 0, 0);
+
+        wgpuRenderPassEncoderEnd(render_pass);
+        wgpuRenderPassEncoderRelease(render_pass);
+
+        WGPUCommandBufferDescriptor command_buffer_descriptor = {0};
+        command_buffer_descriptor.nextInChain = NULL;
+        command_buffer_descriptor.label = (WGPUStringView) { NULL, SIZE_MAX };
+
+        WGPUCommandBuffer command_buffer = wgpuCommandEncoderFinish(encoder, &command_buffer_descriptor);
+
+        wgpuQueueSubmit(queue, 1, &command_buffer);
+        wgpuCommandBufferRelease(command_buffer);
 
         wgpuTextureViewRelease(target_view);
         target_view = NULL;

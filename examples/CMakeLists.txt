@@ -26,7 +26,6 @@ set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
                 "${GLFW_SOURCE_DIR}/deps/tinycthread.c")
 
 include(FetchContent)
-
 FetchContent_Declare(
 	webgpu
 	GIT_REPOSITORY https://github.com/eliemichel/WebGPU-distribution.git
@@ -36,6 +35,7 @@ FetchContent_Declare(
 	EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(webgpu)
+message("${CMAKE_SYSTEM_PROCESSOR}")
 
 add_executable(boing WIN32 MACOSX_BUNDLE boing.c ${ICON} ${GLAD_GL})
 add_executable(gears WIN32 MACOSX_BUNDLE gears.c ${ICON} ${GLAD_GL})

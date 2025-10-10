@@ -412,6 +412,8 @@ struct _GLFWwndconfig
     GLFWbool      centerCursor;
     GLFWbool      focusOnShow;
     GLFWbool      mousePassthrough;
+    GLFWbool      canBecomeMain;
+    GLFWbool      canBecomeKey;
     GLFWbool      scaleToMonitor;
     GLFWbool      scaleFramebuffer;
     struct {
@@ -537,6 +539,8 @@ struct _GLFWwindow
     GLFWbool            floating;
     GLFWbool            focusOnShow;
     GLFWbool            mousePassthrough;
+    GLFWbool            canBecomeMain;
+    GLFWbool            canBecomeKey;
     GLFWbool            shouldClose;
     void*               userPointer;
     GLFWbool            doublebuffer;

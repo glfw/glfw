@@ -590,6 +590,15 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         action = GLFW_RELEASE;
 
     _glfwInputKey(window, key, [event keyCode], action, mods);
+
+    _glfwInputKey(window, GLFW_KEY_LEFT_SHIFT   , _glfw.ns.scancodes[GLFW_KEY_LEFT_SHIFT   ], mods & GLFW_MOD_SHIFT   ? GLFW_PRESS : GLFW_RELEASE, mods);
+    _glfwInputKey(window, GLFW_KEY_LEFT_CONTROL , _glfw.ns.scancodes[GLFW_KEY_LEFT_CONTROL ], mods & GLFW_MOD_CONTROL ? GLFW_PRESS : GLFW_RELEASE, mods);
+    _glfwInputKey(window, GLFW_KEY_LEFT_ALT     , _glfw.ns.scancodes[GLFW_KEY_LEFT_ALT     ], mods & GLFW_MOD_ALT     ? GLFW_PRESS : GLFW_RELEASE, mods);
+    _glfwInputKey(window, GLFW_KEY_LEFT_SUPER   , _glfw.ns.scancodes[GLFW_KEY_LEFT_SUPER   ], mods & GLFW_MOD_SUPER   ? GLFW_PRESS : GLFW_RELEASE, mods);
+    _glfwInputKey(window, GLFW_KEY_RIGHT_SHIFT  , _glfw.ns.scancodes[GLFW_KEY_RIGHT_SHIFT  ], mods & GLFW_MOD_SHIFT   ? GLFW_PRESS : GLFW_RELEASE, mods);
+    _glfwInputKey(window, GLFW_KEY_RIGHT_CONTROL, _glfw.ns.scancodes[GLFW_KEY_RIGHT_CONTROL], mods & GLFW_MOD_CONTROL ? GLFW_PRESS : GLFW_RELEASE, mods);
+    _glfwInputKey(window, GLFW_KEY_RIGHT_ALT    , _glfw.ns.scancodes[GLFW_KEY_RIGHT_ALT    ], mods & GLFW_MOD_ALT     ? GLFW_PRESS : GLFW_RELEASE, mods);
+    _glfwInputKey(window, GLFW_KEY_RIGHT_SUPER  , _glfw.ns.scancodes[GLFW_KEY_RIGHT_SUPER  ], mods & GLFW_MOD_SUPER   ? GLFW_PRESS : GLFW_RELEASE, mods);
 }
 
 - (void)keyUp:(NSEvent *)event

@@ -63,7 +63,7 @@ before the application exits.  Modern systems are very good at freeing resources
 allocated by programs that exit, but GLFW sometimes has to change global system
 settings and these might not be restored without termination.
 
-@macos When the library is initialized the main menu and dock icon are created.
+__macOS:__ When the library is initialized the main menu and dock icon are created.
 These are not desirable for a command-line only program.  The creation of the
 main menu and dock icon can be disabled with the @ref GLFW_COCOA_MENUBAR init
 hint.

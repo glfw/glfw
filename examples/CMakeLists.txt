@@ -35,7 +35,6 @@ FetchContent_Declare(
 	EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(webgpu)
-message("${CMAKE_SYSTEM_PROCESSOR}")
 
 add_executable(boing WIN32 MACOSX_BUNDLE boing.c ${ICON} ${GLAD_GL})
 add_executable(gears WIN32 MACOSX_BUNDLE gears.c ${ICON} ${GLAD_GL})

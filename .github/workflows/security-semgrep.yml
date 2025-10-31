@@ -1,0 +1,15 @@
+name: Security - Semgrep Scan
+permissions:
+  contents: read
+
+on: [push, pull_request]
+
+jobs:
+  semgrep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: serve-robotics/actions/security/semgrep@v3
+        with:
+          config: "auto"

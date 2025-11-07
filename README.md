@@ -148,10 +148,13 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: The cursor position was not updated when clicking through
    from a modal to the content area
  - [X11] Bugfix: Running without a WM could trigger an assert (#2593,#2601,#2631)
+ - [X11] Bugfix: Occasional crash when an idle display awakes (#2766) 
  - [Null] Added Vulkan 'window' surface creation via `VK_EXT_headless_surface`
  - [Null] Added EGL context creation on Mesa via `EGL_MESA_platform_surfaceless`
  - [EGL] Allowed native access on Wayland with `GLFW_CONTEXT_CREATION_API` set to
    `GLFW_NATIVE_CONTEXT_API` (#2518)
+ - [X11] Bugfix: Prevent BadWindow when creating small windows with a content scale
+   less than 1 (#2754)
 
 ## Contact
 

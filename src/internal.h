@@ -755,7 +755,7 @@ struct _GLFWplatform
     EGLNativeDisplayType (*getEGLNativeDisplay)(void);
     EGLNativeWindowType (*getEGLNativeWindow)(_GLFWwindow*);
     // vulkan
-    void (*getRequiredInstanceExtensions)(char**);
+    void (*getRequiredInstanceExtensions)(const char**);
     GLFWbool (*getPhysicalDevicePresentationSupport)(VkInstance,VkPhysicalDevice,uint32_t);
     VkResult (*createWindowSurface)(VkInstance,_GLFWwindow*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 };
@@ -862,7 +862,7 @@ struct _GLFWlibrary
     struct {
         GLFWbool        available;
         void*           handle;
-        char*           extensions[2];
+        const char*     extensions[2];
         PFN_vkGetInstanceProcAddr GetInstanceProcAddr;
         GLFWbool        KHR_surface;
         GLFWbool        KHR_win32_surface;

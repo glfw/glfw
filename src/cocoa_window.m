@@ -1922,7 +1922,7 @@ EGLNativeWindowType _glfwGetEGLNativeWindowCocoa(_GLFWwindow* window)
     return window->ns.layer;
 }
 
-void _glfwGetRequiredInstanceExtensionsCocoa(char** extensions)
+void _glfwGetRequiredInstanceExtensionsCocoa(const char** extensions)
 {
     if (_glfw.vk.KHR_surface && _glfw.vk.EXT_metal_surface)
     {

@@ -55,9 +55,6 @@ static void outputHandleGeometry(void* userData,
     monitor->wl.y = y;
     monitor->widthMM = physicalWidth;
     monitor->heightMM = physicalHeight;
-
-    if (strlen(monitor->name) == 0)
-        snprintf(monitor->name, sizeof(monitor->name), "%s %s", make, model);
 }
 
 static void outputHandleMode(void* userData,
@@ -133,13 +130,17 @@ void outputHandleName(void* userData, struct wl_output* wl_output, const char* n
 {
     struct _GLFWmonitor* monitor = userData;
 
-    strncpy(monitor->name, name, sizeof(monitor->name) - 1);
+    if (strlen(monitor->name) == 0)
+        strncpy(monitor->name, name, sizeof(monitor->name) - 1);
 }
 
 void outputHandleDescription(void* userData,
                              struct wl_output* wl_output,
                              const char* description)
 {
+    struct _GLFWmonitor* monitor = userData;
+
+    strncpy(monitor->name, description, sizeof(monitor->name) - 1);
 }
 
 static const struct wl_output_listener outputListener =

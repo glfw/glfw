@@ -894,8 +894,6 @@ int _glfwInitWayland(void)
 
 void _glfwTerminateWayland(void)
 {
-    _glfwPollEventsWayland();
-
     _glfwTerminateEGL();
     _glfwTerminateOSMesa();
 

@@ -982,6 +982,12 @@ void _glfwTerminateWayland(void)
         close(_glfw.wl.cursorTimerfd);
 
     // Free modules only after all wayland termination functions are called
+    if (_glfw.egl.handle)
+    {
+        _glfwPlatformFreeModule(_glfw.egl.handle);
+        _glfw.egl.handle = NULL;
+    }
+
     if (_glfw.wl.libdecor.handle)
     {
         _glfwPlatformFreeModule(_glfw.wl.libdecor.handle);

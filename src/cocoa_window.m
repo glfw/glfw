@@ -198,6 +198,83 @@ static NSUInteger translateKeyToModifierFlag(int key)
 //
 static const NSRange kEmptyRange = { NSNotFound, 0 };
 
+static NSProgressIndicator* createProgressIndicator(const NSDockTile* dockTile)
+{
+    NSView* contentView = [dockTile contentView];
+
+    NSProgressIndicator* indicator = [[NSProgressIndicator alloc] initWithFrame:NSMakeRect(0.0f, 0.0f, contentView.frame.size.width, 15.0f)];
+    
+    [indicator setStyle:NSProgressIndicatorStyleBar];
+    
+    if (@available(macOS 11.0, *))
+    {
+        [indicator setControlSize:NSControlSizeLarge];
+    }
+    
+    [indicator setMinValue:0.0f];
+    [indicator setMaxValue:1.0f];
+    
+    [indicator sizeToFit];
+
+    [contentView addSubview:indicator];
+
+    _glfw.ns.dockProgressIndicator.view = indicator;
+    
+    return indicator;
+}
+
+static void setDockProgressIndicator(int progressState, double value)
+{
+    NSProgressIndicator* indicator = _glfw.ns.dockProgressIndicator.view;
+    
+    NSDockTile* dockTile = [[NSApplication sharedApplication] dockTile];
+    
+    if (indicator == nil)
+    {
+        if ([dockTile contentView] == nil)
+        {
+            NSImageView *iconView = [[NSImageView alloc] init];
+            [iconView setImage:[[NSApplication sharedApplication] applicationIconImage]];
+            [dockTile setContentView:iconView];
+            [iconView release];
+        }
+    
+        indicator = createProgressIndicator(dockTile);
+    }
+    
+    // ### Switching from INDETERMINATE to NORMAL, PAUSED or ERROR requires 2 invocations in different frames.
+    // In MacOS 12 (and probably other versions), an indeterminate progress bar is rendered as a normal bar
+    // with 0.0 progress. So when calling [progressIndicator setIndeterminate:YES], the indicator actually
+    // sets its doubleValue to 0.0.
+    // The bug is caused by NSProgressIndicator not immediately updating its value when it's increasing.
+    // This code illustrates the exact same problem, but this time from NORMAL, PAUSED and ERROR to INDETERMINATE:
+    //
+    // if (progressState == GLFW_PROGRESS_INDICATOR_INDETERMINATE)
+    //     [progressIndicator setDoubleValue:0.75];
+    // else
+    //     [progressIndicator setDoubleValue:0.25];
+    //
+    // This is likely a bug in Cocoa.
+    //
+    // ### Progress increments are delayed
+    // What this also means, is that each time the progress increments, the bar's progress will be 1 frame delayed,
+    // and only updated once a higher or similar value is again set the next frame.
+    
+    // Workaround for the aforementioned issues. If there's any versions of MacOS where
+    // this issue is not present, this should be ommitted in those versions.
+    if ([indicator isIndeterminate] || [indicator doubleValue] < value)
+    {
+        [indicator removeFromSuperview];
+        [indicator release];
+        indicator = createProgressIndicator(dockTile);
+    }
+    
+    [indicator setIndeterminate:progressState == GLFW_PROGRESS_INDICATOR_INDETERMINATE];
+    [indicator setHidden:progressState == GLFW_PROGRESS_INDICATOR_DISABLED];
+    [indicator setDoubleValue:value];
+    
+    [dockTile display];
+}
 
 //------------------------------------------------------------------------
 // Delegate for window related notifications
@@ -990,6 +1067,8 @@ GLFWbool _glfwCreateWindowCocoa(_GLFWwindow* window,
 void _glfwDestroyWindowCocoa(_GLFWwindow* window)
 {
     @autoreleasepool {
+        
+    _glfwSetWindowProgressIndicatorCocoa(window, GLFW_PROGRESS_INDICATOR_DISABLED, 0.0);
 
     if (_glfw.ns.disabledCursorWindow == window)
         _glfw.ns.disabledCursorWindow = NULL;
@@ -1034,6 +1113,62 @@ void _glfwSetWindowIconCocoa(_GLFWwindow* window,
 {
     _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
                     "Cocoa: Regular windows do not have icons on macOS");
+}
+
+void _glfwSetWindowProgressIndicatorCocoa(_GLFWwindow* window, int progressState, double value)
+{
+    if (progressState == GLFW_PROGRESS_INDICATOR_ERROR || progressState == GLFW_PROGRESS_INDICATOR_PAUSED)
+        progressState = GLFW_PROGRESS_INDICATOR_NORMAL;
+        
+    const int oldState = window->ns.dockProgressIndicator.state;
+    const int state = progressState;
+    
+    const double oldValue = window->ns.dockProgressIndicator.value;
+    
+    if (oldState == state)
+    {
+        if (state == GLFW_PROGRESS_INDICATOR_DISABLED ||
+            state == GLFW_PROGRESS_INDICATOR_INDETERMINATE ||
+            oldValue == value)
+            return;
+    }
+    
+    if (oldState != state)
+    {
+        // Reset
+        if (oldState == GLFW_PROGRESS_INDICATOR_INDETERMINATE)
+            --_glfw.ns.dockProgressIndicator.indeterminateCount;
+        if (oldState != GLFW_PROGRESS_INDICATOR_DISABLED)
+        {
+            --_glfw.ns.dockProgressIndicator.windowCount;
+            _glfw.ns.dockProgressIndicator.totalValue -= oldValue;
+        }
+        
+        // Set
+        if (state == GLFW_PROGRESS_INDICATOR_INDETERMINATE)
+            ++_glfw.ns.dockProgressIndicator.indeterminateCount;
+        if (state != GLFW_PROGRESS_INDICATOR_DISABLED)
+        {
+            ++_glfw.ns.dockProgressIndicator.windowCount;
+            _glfw.ns.dockProgressIndicator.totalValue += value;
+        }
+    }
+    else if (state != GLFW_PROGRESS_INDICATOR_DISABLED)
+        _glfw.ns.dockProgressIndicator.totalValue += (value - oldValue);
+    
+    
+    if (_glfw.ns.dockProgressIndicator.windowCount > _glfw.ns.dockProgressIndicator.indeterminateCount)
+    {
+        const double finalValue = _glfw.ns.dockProgressIndicator.totalValue / _glfw.ns.dockProgressIndicator.windowCount;
+        setDockProgressIndicator(GLFW_PROGRESS_INDICATOR_NORMAL, finalValue);
+    }
+    else if (_glfw.ns.dockProgressIndicator.indeterminateCount > 0)
+        setDockProgressIndicator(GLFW_PROGRESS_INDICATOR_INDETERMINATE, 0.0f);
+    else
+        setDockProgressIndicator(GLFW_PROGRESS_INDICATOR_DISABLED, 0.0f);
+    
+    window->ns.dockProgressIndicator.state = state;
+    window->ns.dockProgressIndicator.value = value;
 }
 
 void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos)

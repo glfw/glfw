@@ -112,7 +112,7 @@ GLFWbool _glfwInitVulkan(int mode)
         return GLFW_FALSE;
     }
 
-    ep = _glfw_calloc(count, sizeof(VkExtensionProperties));
+    ep = (VkExtensionProperties*)_glfw_calloc(count, sizeof(VkExtensionProperties));
 
     err = vkEnumerateInstanceExtensionProperties(NULL, &count, ep);
     if (err)

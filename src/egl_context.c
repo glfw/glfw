@@ -123,10 +123,10 @@ static GLFWbool chooseEGLConfig(const _GLFWctxconfig* ctxconfig,
         return GLFW_FALSE;
     }
 
-    nativeConfigs = _glfw_calloc(nativeCount, sizeof(EGLConfig));
+    nativeConfigs = (EGLConfig *)_glfw_calloc(nativeCount, sizeof(EGLConfig));
     eglGetConfigs(_glfw.egl.display, nativeConfigs, nativeCount, &nativeCount);
 
-    usableConfigs = _glfw_calloc(nativeCount, sizeof(_GLFWfbconfig));
+    usableConfigs = (_GLFWfbconfig *)_glfw_calloc(nativeCount, sizeof(_GLFWfbconfig));
     usableCount = 0;
 
     for (i = 0;  i < nativeCount;  i++)
@@ -312,7 +312,7 @@ static int extensionSupportedEGL(const char* extension)
 
 static GLFWglproc getProcAddressEGL(const char* procname)
 {
-    _GLFWwindow* window = _glfwPlatformGetTls(&_glfw.contextSlot);
+    _GLFWwindow* window = (_GLFWwindow *)_glfwPlatformGetTls(&_glfw.contextSlot);
     assert(window != NULL);
 
     if (window->context.egl.client)
@@ -967,4 +967,3 @@ GLFWAPI int glfwGetEGLConfig(GLFWwindow* handle, EGLConfig* config)
     *config = window->context.egl.config;
     return GLFW_TRUE;
 }
-

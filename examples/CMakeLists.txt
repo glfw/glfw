@@ -25,7 +25,6 @@ set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"
 set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
                 "${GLFW_SOURCE_DIR}/deps/tinycthread.c")
 
-set(WEBGPU_MIRROR "https://github.com/gfx-rs/wgpu-native")
 set(URL_ARCH)
 if (CMAKE_SYSTEM_PROCESSOR STREQUAL "AMD64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
     if (CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -40,16 +39,17 @@ else ()
 endif ()
 
 set(URL_OS)
-set(WEBGPU_LIBNAME "libwgpu_native.a")
+set(WEBGPU_LIBNAME "libwgpu_native.so")
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(URL_OS "windows")
+    set(WEBGPU_LIBNAME "wgpu_native.dll")
     if (MSVC)
-        set(WEBGPU_LIBNAME "wgpu_native.lib")
         set(URL_ARCH "${URL_ARCH}-msvc")
     else ()
         set(URL_ARCH "${URL_ARCH}-gnu")
     endif ()
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    set(WEBGPU_LIBNAME "libwgpu_native.dylib")
     set(URL_OS "macos")
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(URL_OS "linux")
@@ -64,9 +64,10 @@ FetchContent_Declare(webgpu_bins
 )
 FetchContent_MakeAvailable(webgpu_bins)
 
-add_library(webgpu STATIC IMPORTED GLOBAL)
+add_library(webgpu SHARED IMPORTED GLOBAL)
+set(WEBGPU_RUNTIME_LIB "${webgpu_bins_SOURCE_DIR}/lib/${WEBGPU_LIBNAME}")
 set_target_properties(webgpu PROPERTIES
-    IMPORTED_LOCATION "${webgpu_bins_SOURCE_DIR}/lib/${WEBGPU_LIBNAME}"
+    IMPORTED_LOCATION "${WEBGPU_RUNTIME_LIB}"
 )
 target_include_directories(webgpu INTERFACE
     "${webgpu_bins_SOURCE_DIR}/include"
@@ -74,34 +75,28 @@ target_include_directories(webgpu INTERFACE
 )
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    target_link_libraries(webgpu INTERFACE
-        d3dcompiler.lib
-        Ws2_32.lib
-        Userenv.lib
-        ntdll.lib
-        Bcrypt.lib
-        Opengl32.lib
-        Propsys.lib
-        RuntimeObject.lib
+    set_target_properties(webgpu PROPERTIES
+        IMPORTED_IMPLIB ${webgpu_bins_SOURCE_DIR}/lib/${WEBGPU_LIBNAME}.lib
     )
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    target_link_libraries(webgpu INTERFACE dl pthread m)
+    set_target_properties(webgpu PROPERTIES IMPORTED_NO_SONAME True)
 else () # macOS
     if (URL_ARCH STREQUAL "aarch64")
         set(URL_ARCH "x86_64")
     else ()
         set(URL_ARCH "aarch64")
     endif ()
+
     set(WEBGPU_URL "https://github.com/gfx-rs/wgpu-native/releases/download/v24.0.3.1/wgpu-macos-${URL_ARCH}-release.zip")
-    include(FetchContent)
     FetchContent_Declare(webgpu_other_bins
         URL ${WEBGPU_URL}
     )
     FetchContent_MakeAvailable(webgpu_other_bins)
 
     add_library(webgpu_other STATIC IMPORTED GLOBAL)
+    set(WEBGPU_RUNTIME_LIB_OTHER "${webgpu_other_bins_SOURCE_DIR}/lib/${WEBGPU_LIBNAME}")
     set_target_properties(webgpu_other PROPERTIES
-        IMPORTED_LOCATION "${webgpu_other_bins_SOURCE_DIR}/lib/${WEBGPU_LIBNAME}"
+        IMPORTED_LOCATION "${WEBGPU_RUNTIME_LIB_OTHER}"
     )
     target_include_directories(webgpu_other INTERFACE
         "${webgpu_other_bins_SOURCE_DIR}/include"
@@ -109,9 +104,6 @@ else () # macOS
     )
 
     target_link_libraries(webgpu INTERFACE
-        "-framework Metal"
-        "-framework QuartzCore"
-		"-framework MetalKit"
         webgpu_other
     )
 endif ()

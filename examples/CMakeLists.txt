@@ -75,9 +75,15 @@ target_include_directories(webgpu INTERFACE
 )
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set_target_properties(webgpu PROPERTIES
-        IMPORTED_IMPLIB ${webgpu_bins_SOURCE_DIR}/lib/${WEBGPU_LIBNAME}.lib
-    )
+    if (MSVC)
+        set_target_properties(webgpu PROPERTIES
+            IMPORTED_IMPLIB ${webgpu_bins_SOURCE_DIR}/lib/${WEBGPU_LIBNAME}.lib
+        )
+    else ()
+        set_target_properties(webgpu PROPERTIES
+            IMPORTED_IMPLIB ${webgpu_bins_SOURCE_DIR}/lib/lib${WEBGPU_LIBNAME}.a
+        )
+    endif ()
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set_target_properties(webgpu PROPERTIES IMPORTED_NO_SONAME True)
 else () # macOS

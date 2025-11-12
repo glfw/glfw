@@ -92,7 +92,7 @@ else () # macOS
     else ()
         set(URL_ARCH "aarch64")
     endif ()
-    set(WEBGPU_URL "https://github.com/gfx-rs/wgpu-native/releases/download/v24.0.3.1/webgpu-macos-${URL_ARCH}-release.zip")
+    set(WEBGPU_URL "https://github.com/gfx-rs/wgpu-native/releases/download/v24.0.3.1/wgpu-macos-${URL_ARCH}-release.zip")
     include(FetchContent)
     FetchContent_Declare(webgpu_other_bins
         URL ${WEBGPU_URL}

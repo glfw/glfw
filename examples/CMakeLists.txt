@@ -25,16 +25,96 @@ set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"
 set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
                 "${GLFW_SOURCE_DIR}/deps/tinycthread.c")
 
+set(WEBGPU_MIRROR "https://github.com/gfx-rs/wgpu-native")
+set(URL_ARCH)
+if (CMAKE_SYSTEM_PROCESSOR STREQUAL "AMD64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(URL_ARCH "x86_64")
+    elseif (CMAKE_SIZEOF_VOID_P EQUAL 4)
+        set(URL_ARCH "i686")
+    endif ()
+elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64|arm64|armv8|arm)$")
+    set(URL_ARCH "aarch64")
+else ()
+    message(FATAL_ERROR "Unsopported CPU architecture: ${CMAKE_SYSTEM_PROCESSOR}")
+endif ()
+
+set(URL_OS)
+set(WEBGPU_LIBNAME "libwgpu_native.a")
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(URL_OS "windows")
+    if (MSVC)
+        set(WEBGPU_LIBNAME "wgpu_native.lib")
+        set(URL_ARCH "${URL_ARCH}-msvc")
+    else ()
+        set(URL_ARCH "${URL_ARCH}-gnu")
+    endif ()
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    set(URL_OS "macos")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(URL_OS "linux")
+else ()
+    message(FATAL_ERROR "Unsopported OS: ${CMAKE_SYSTEM_NAME}")
+endif ()
+
+set(WEBGPU_URL "https://github.com/gfx-rs/wgpu-native/releases/download/v24.0.3.1/wgpu-${URL_OS}-${URL_ARCH}-release.zip")
 include(FetchContent)
-FetchContent_Declare(
-	webgpu
-	GIT_REPOSITORY https://github.com/eliemichel/WebGPU-distribution.git
-	GIT_TAG        v0.3.0-gamma
-	GIT_SHALLOW    TRUE
-	GIT_PROGRESS   TRUE
-	EXCLUDE_FROM_ALL
+FetchContent_Declare(webgpu_bins
+    URL ${WEBGPU_URL}
 )
-FetchContent_MakeAvailable(webgpu)
+FetchContent_MakeAvailable(webgpu_bins)
+
+add_library(webgpu STATIC IMPORTED GLOBAL)
+set_target_properties(webgpu PROPERTIES
+    IMPORTED_LOCATION "${webgpu_bins_SOURCE_DIR}/lib/${WEBGPU_LIBNAME}"
+)
+target_include_directories(webgpu INTERFACE
+    "${webgpu_bins_SOURCE_DIR}/include"
+    "${webgpu_bins_SOURCE_DIR}/include/webgpu"
+)
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    target_link_libraries(webgpu INTERFACE
+        d3dcompiler.lib
+        Ws2_32.lib
+        Userenv.lib
+        ntdll.lib
+        Bcrypt.lib
+        Opengl32.lib
+        Propsys.lib
+        RuntimeObject.lib
+    )
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    target_link_libraries(webgpu INTERFACE dl pthread m)
+else () # macOS
+    if (URL_ARCH STREQUAL "aarch64")
+        set(URL_ARCH "x86_64")
+    else ()
+        set(URL_ARCH "aarch64")
+    endif ()
+    set(WEBGPU_URL "https://github.com/gfx-rs/wgpu-native/releases/download/v24.0.3.1/webgpu-macos-${URL_ARCH}-release.zip")
+    include(FetchContent)
+    FetchContent_Declare(webgpu_other_bins
+        URL ${WEBGPU_URL}
+    )
+    FetchContent_MakeAvailable(webgpu_other_bins)
+
+    add_library(webgpu_other STATIC IMPORTED GLOBAL)
+    set_target_properties(webgpu_other PROPERTIES
+        IMPORTED_LOCATION "${webgpu_other_bins_SOURCE_DIR}/lib/${WEBGPU_LIBNAME}"
+    )
+    target_include_directories(webgpu_other INTERFACE
+        "${webgpu_other_bins_SOURCE_DIR}/include"
+        "${webgpu_other_bins_SOURCE_DIR}/include/webgpu"
+    )
+
+    target_link_libraries(webgpu INTERFACE
+        "-framework Metal"
+        "-framework QuartzCore"
+		"-framework MetalKit"
+        webgpu_other
+    )
+endif ()
 
 add_executable(boing WIN32 MACOSX_BUNDLE boing.c ${ICON} ${GLAD_GL})
 add_executable(gears WIN32 MACOSX_BUNDLE gears.c ${ICON} ${GLAD_GL})
@@ -55,7 +135,6 @@ if (RT_LIBRARY)
 endif()
 
 target_link_libraries(triangle-webgpu webgpu)
-target_copy_webgpu_binaries(triangle-webgpu)
 
 set(GUI_ONLY_BINARIES boing gears heightmap particles sharing splitview
     triangle-opengl triangle-opengles triangle-webgpu wave windows)

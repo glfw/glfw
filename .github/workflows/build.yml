@@ -21,7 +21,7 @@ jobs:
             - name: Install dependencies
               run: |
                   sudo apt update
-                  sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev
+                  sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libwayland-dev libxkbcommon-dev libdbus-1-dev
 
             - name: Configure Null shared library
               run: cmake -B build-null-shared -D GLFW_BUILD_WAYLAND=OFF -D GLFW_BUILD_X11=OFF -D BUILD_SHARED_LIBS=ON

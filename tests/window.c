@@ -72,7 +72,7 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    GLFWwindow* window = glfwCreateWindow(600, 660, "Window Features", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(600, 800, "Window Features", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -441,6 +441,45 @@ int main(int argc, char** argv)
             nk_value_bool(nk, "Visible", glfwGetWindowAttrib(window, GLFW_VISIBLE));
             nk_value_bool(nk, "Iconified", glfwGetWindowAttrib(window, GLFW_ICONIFIED));
             nk_value_bool(nk, "Maximized", glfwGetWindowAttrib(window, GLFW_MAXIMIZED));
+
+            nk_layout_row_dynamic(nk, 30, 1);
+
+            nk_label(nk, "Window Progress indicator", NK_TEXT_CENTERED);
+
+            nk_layout_row_dynamic(nk, 30, 5);
+
+            static int state = GLFW_PROGRESS_INDICATOR_DISABLED;
+            static float progress = 0;
+            if(nk_button_label(nk, "No progress"))
+                glfwSetWindowProgressIndicator(window, state = GLFW_PROGRESS_INDICATOR_DISABLED, (double) progress);
+            if (nk_button_label(nk, "Indeterminate"))
+                glfwSetWindowProgressIndicator(window, state = GLFW_PROGRESS_INDICATOR_INDETERMINATE, (double) progress);
+            if (nk_button_label(nk, "Normal"))
+                glfwSetWindowProgressIndicator(window, state = GLFW_PROGRESS_INDICATOR_NORMAL, (double) progress);
+            if (nk_button_label(nk, "Error"))
+                glfwSetWindowProgressIndicator(window, state = GLFW_PROGRESS_INDICATOR_ERROR, (double) progress);
+            if (nk_button_label(nk, "Paused"))
+                glfwSetWindowProgressIndicator(window, state = GLFW_PROGRESS_INDICATOR_PAUSED, (double) progress);
+
+            nk_label(nk, "Progress: ", NK_TEXT_ALIGN_LEFT);
+            if (nk_slider_float(nk, 0.0f, &progress, 1.0f, 0.05f))
+                glfwSetWindowProgressIndicator(window, state, (double) progress);
+
+            nk_layout_row_dynamic(nk, 30, 1);
+
+            nk_label(nk, "Badge", NK_TEXT_CENTERED);
+
+            static int badgeCount = 0;
+            nk_layout_row_begin(nk, NK_DYNAMIC, 30, 3);
+            nk_layout_row_push(nk, 1.0f / 3.f);
+            nk_labelf(nk, NK_TEXT_LEFT, "Badge count: %d", badgeCount);
+            nk_layout_row_push(nk, 2.f / 3.f);
+            if (nk_slider_int(nk, 0, &badgeCount, 10000, 1))
+            {
+                glfwSetWindowBadge(window, badgeCount);
+                glfwSetWindowBadge(NULL, badgeCount);
+            }
+            nk_layout_row_end(nk);
         }
         nk_end(nk);
 

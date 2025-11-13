@@ -98,20 +98,8 @@ else () # macOS
         URL ${WEBGPU_URL}
     )
     FetchContent_MakeAvailable(webgpu_other_bins)
-
-    add_library(webgpu_other STATIC IMPORTED GLOBAL)
     set(WEBGPU_RUNTIME_LIB_OTHER "${webgpu_other_bins_SOURCE_DIR}/lib/${WEBGPU_LIBNAME}")
-    set_target_properties(webgpu_other PROPERTIES
-        IMPORTED_LOCATION "${WEBGPU_RUNTIME_LIB_OTHER}"
-    )
-    target_include_directories(webgpu_other INTERFACE
-        "${webgpu_other_bins_SOURCE_DIR}/include"
-        "${webgpu_other_bins_SOURCE_DIR}/include/webgpu"
-    )
-
-    target_link_libraries(webgpu INTERFACE
-        webgpu_other
-    )
+    execute_process(COMMAND lipo -create ${WEBGPU_RUNTIME_LIB} ${WEBGPU_RUNTIME_LIB_OTHER} -output ${WEBGPU_RUNTIME_LIB})
 endif ()
 
 add_executable(boing WIN32 MACOSX_BUNDLE boing.c ${ICON} ${GLAD_GL})

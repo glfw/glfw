@@ -144,6 +144,8 @@ information on what to include when reporting a bug.
    a modal to a fallback decoration
  - [Wayland] Bugfix: The cursor position was not updated when clicking through
    from a modal to the content area
+ - [Wayland] Bugfix: free modules at end of terminate function to resolve
+   potential segmentation fault (#2744)
  - [X11] Bugfix: Running without a WM could trigger an assert (#2593,#2601,#2631)
  - [X11] Bugfix: Occasional crash when an idle display awakes (#2766) 
  - [X11] Bugfix: Prevent BadWindow when creating small windows with a content scale

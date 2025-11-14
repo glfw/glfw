@@ -359,10 +359,10 @@ attempts to detect the appropriate platform at initialization.
 If you are building GLFW as a shared library / dynamic library / DLL then you
 must also define @b _GLFW_BUILD_DLL.  Otherwise, you must not define it.
 
-If you are using a custom name for the Vulkan, EGL, GLX, OSMesa, OpenGL, GLESv1
+If you are using a custom name for the Vulkan, EGL, GLX, OpenGL, GLESv1
 or GLESv2 library, you can override the default names by defining those you need
 of @b _GLFW_VULKAN_LIBRARY, @b _GLFW_EGL_LIBRARY, @b _GLFW_GLX_LIBRARY, @b
-_GLFW_OSMESA_LIBRARY, @b _GLFW_OPENGL_LIBRARY, @b _GLFW_GLESV1_LIBRARY and @b
+_GLFW_OPENGL_LIBRARY, @b _GLFW_GLESV1_LIBRARY and @b
 _GLFW_GLESV2_LIBRARY.  Otherwise, GLFW will use the built-in default names.
 
 @note None of the @ref build_macros may be defined during the compilation of

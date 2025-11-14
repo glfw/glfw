@@ -895,7 +895,6 @@ int _glfwInitWayland(void)
 void _glfwTerminateWayland(void)
 {
     _glfwTerminateEGL();
-    _glfwTerminateOSMesa();
 
     if (_glfw.wl.libdecor.context)
     {

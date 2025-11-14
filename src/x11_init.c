@@ -445,9 +445,14 @@ static GLFWbool hasUsableInputMethodStyle(void)
     if (XGetIMValues(_glfw.x11.im, XNQueryInputStyle, &styles, NULL) != NULL)
         return GLFW_FALSE;
 
+    if (_glfw.hints.init.x11.onTheSpotIMStyle)
+        _glfw.x11.imStyle = STYLE_ONTHESPOT;
+    else
+        _glfw.x11.imStyle = STYLE_OVERTHESPOT;
+
     for (unsigned int i = 0;  i < styles->count_styles;  i++)
     {
-        if (styles->supported_styles[i] == (XIMPreeditNothing | XIMStatusNothing))
+        if (styles->supported_styles[i] == _glfw.x11.imStyle)
         {
             found = GLFW_TRUE;
             break;
@@ -1183,6 +1188,10 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
         .getKeyScancode = _glfwGetKeyScancodeX11,
         .setClipboardString = _glfwSetClipboardStringX11,
         .getClipboardString = _glfwGetClipboardStringX11,
+        .updatePreeditCursorRectangle = _glfwUpdatePreeditCursorRectangleX11,
+        .resetPreeditText = _glfwResetPreeditTextX11,
+        .setIMEStatus = _glfwSetIMEStatusX11,
+        .getIMEStatus = _glfwGetIMEStatusX11,
 #if defined(GLFW_BUILD_LINUX_JOYSTICK)
         .initJoysticks = _glfwInitJoysticksLinux,
         .terminateJoysticks = _glfwTerminateJoysticksLinux,
@@ -1452,6 +1461,8 @@ int _glfwInitX11(void)
         _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XSetErrorHandler");
     _glfw.x11.xlib.SetICFocus = (PFN_XSetICFocus)
         _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XSetICFocus");
+    _glfw.x11.xlib.SetICValues = (PFN_XSetICValues)
+        _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XSetICValues");
     _glfw.x11.xlib.SetIMValues = (PFN_XSetIMValues)
         _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XSetIMValues");
     _glfw.x11.xlib.SetInputFocus = (PFN_XSetInputFocus)
@@ -1482,6 +1493,8 @@ int _glfwInitX11(void)
         _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XUnmapWindow");
     _glfw.x11.xlib.UnsetICFocus = (PFN_XUnsetICFocus)
         _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XUnsetICFocus");
+    _glfw.x11.xlib.VaCreateNestedList = (PFN_XVaCreateNestedList)
+        _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XVaCreateNestedList");
     _glfw.x11.xlib.VisualIDFromVisual = (PFN_XVisualIDFromVisual)
         _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XVisualIDFromVisual");
     _glfw.x11.xlib.WarpPointer = (PFN_XWarpPointer)
@@ -1514,6 +1527,8 @@ int _glfwInitX11(void)
         _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XrmUniqueQuark");
     _glfw.x11.xlib.UnregisterIMInstantiateCallback = (PFN_XUnregisterIMInstantiateCallback)
         _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XUnregisterIMInstantiateCallback");
+    _glfw.x11.xlib.mbResetIC = (PFN_XmbResetIC)
+        _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XmbResetIC");
     _glfw.x11.xlib.utf8LookupString = (PFN_Xutf8LookupString)
         _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "Xutf8LookupString");
     _glfw.x11.xlib.utf8SetWMProperties = (PFN_Xutf8SetWMProperties)

@@ -619,7 +619,9 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
 
     _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFWwindow* previous;
+    _GLFWusercontext* previousUserContext;
 
+    previousUserContext = _glfwPlatformGetTls(&_glfw.usercontextSlot);
     previous = _glfwPlatformGetTls(&_glfw.contextSlot);
 
     if (window && window->context.client == GLFW_NO_API)
@@ -627,6 +629,12 @@ GLFWAPI void glfwMakeContextCurrent(GLFWwindow* handle)
         _glfwInputError(GLFW_NO_WINDOW_CONTEXT,
                         "Cannot make current with a window that has no OpenGL or OpenGL ES context");
         return;
+    }
+
+    if (previousUserContext)
+    {
+        assert(previous==NULL);
+        previousUserContext->makeCurrent(NULL);
     }
 
     if (previous)
@@ -763,3 +771,65 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname)
     return window->context.getProcAddress(procname);
 }
 
+GLFWAPI GLFWusercontext* glfwCreateUserContext(GLFWwindow* handle)
+{
+    _GLFWusercontext* context;
+    _GLFWwindow* window = (_GLFWwindow*)handle;
+
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+
+    if (!window)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE,
+                        "Cannot create a user context without a valid window handle");
+        return NULL;
+    }
+
+    if (window->context.client == GLFW_NO_API)
+    {
+        _glfwInputError(GLFW_NO_WINDOW_CONTEXT,
+                        "Cannot create a user context for a window that has no OpenGL or OpenGL ES context");
+        return NULL;
+    }
+
+    context = _glfw.platform.createUserContext(window);
+
+    return (GLFWusercontext*)context;
+}
+
+GLFWAPI void glfwDestroyUserContext(GLFWusercontext* handle)
+{
+    _GLFWusercontext* context = (_GLFWusercontext*)handle;
+    _GLFWusercontext* current = _glfwPlatformGetTls(&_glfw.usercontextSlot);
+
+    _GLFW_REQUIRE_INIT();
+
+    if (context)
+    {
+        if(current==context)
+            glfwMakeContextCurrent(NULL);
+
+        context->destroy(context);
+    }
+}
+
+GLFWAPI void glfwMakeUserContextCurrent(GLFWusercontext* handle)
+{
+    _GLFWusercontext* context = (_GLFWusercontext*)handle;
+
+    _GLFW_REQUIRE_INIT();
+
+    // Call glfwMakeContextCurrent(NULL) to both clear context TLS and set
+    // context to NULL if required by platform & context, and this
+    // handles case of calling glfwMakeUserContextCurrent(NULL)
+    glfwMakeContextCurrent(NULL);
+
+    if (context)
+        context->makeCurrent(context);
+}
+
+GLFWAPI GLFWusercontext* glfwGetCurrentUserContext(void)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    return _glfwPlatformGetTls(&_glfw.usercontextSlot);
+}

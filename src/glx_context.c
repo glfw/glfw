@@ -447,25 +447,18 @@ void _glfwTerminateGLX(void)
     attribs[index++] = v; \
 }
 
-// Create the OpenGL or OpenGL ES context
+
+// Create the OpenGL or OpenGL ES context for the window fbConfig
 //
-GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
-                               const _GLFWctxconfig* ctxconfig,
-                               const _GLFWfbconfig* fbconfig)
+GLFWbool _glfwCreateContextForFBGLX(_GLFWwindow* window,
+                                    const _GLFWctxconfig* ctxconfig,
+                                    GLXContext* context)
 {
     int attribs[40];
-    GLXFBConfig native = NULL;
     GLXContext share = NULL;
 
     if (ctxconfig->share)
         share = ctxconfig->share->context.glx.handle;
-
-    if (!chooseGLXFBConfig(fbconfig, &native))
-    {
-        _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
-                        "GLX: Failed to find a suitable GLXFBConfig");
-        return GLFW_FALSE;
-    }
 
     if (ctxconfig->client == GLFW_OPENGL_ES_API)
     {
@@ -581,9 +574,9 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
 
         SET_ATTRIB(None, None);
 
-        window->context.glx.handle =
+        *context =
             _glfw.glx.CreateContextAttribsARB(_glfw.x11.display,
-                                              native,
+                                              window->context.glx.fbconfig,
                                               share,
                                               True,
                                               attribs);
@@ -592,41 +585,61 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
         //       implementation of GLX_ARB_create_context_profile that fail
         //       default 1.0 context creation with a GLXBadProfileARB error in
         //       violation of the extension spec
-        if (!window->context.glx.handle)
+        if (!(*context))
         {
             if (_glfw.x11.errorCode == _glfw.glx.errorBase + GLXBadProfileARB &&
                 ctxconfig->client == GLFW_OPENGL_API &&
                 ctxconfig->profile == GLFW_OPENGL_ANY_PROFILE &&
                 ctxconfig->forward == GLFW_FALSE)
             {
-                window->context.glx.handle =
-                    createLegacyContextGLX(window, native, share);
+                *context =
+                    createLegacyContextGLX(window, window->context.glx.fbconfig, share);
             }
         }
     }
     else
     {
-        window->context.glx.handle =
-            createLegacyContextGLX(window, native, share);
+        *context =
+            createLegacyContextGLX(window, window->context.glx.fbconfig, share);
     }
 
     _glfwReleaseErrorHandlerX11();
 
-    if (!window->context.glx.handle)
+    if (!(*context))
     {
         _glfwInputErrorX11(GLFW_VERSION_UNAVAILABLE, "GLX: Failed to create context");
         return GLFW_FALSE;
     }
 
+    return GLFW_TRUE;
+}
+
+// Create the OpenGL or OpenGL ES context
+//
+GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
+                               const _GLFWctxconfig* ctxconfig,
+                               const _GLFWfbconfig* fbconfig)
+{
+
+    if (!chooseGLXFBConfig(fbconfig, &window->context.glx.fbconfig))
+    {
+        _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
+                        "GLX: Failed to find a suitable GLXFBConfig");
+        return GLFW_FALSE;
+    }
+
+    if(!_glfwCreateContextForFBGLX(window,ctxconfig,&window->context.glx.handle))
+    {
+        return GLFW_FALSE;
+    }
+
     window->context.glx.window =
-        glXCreateWindow(_glfw.x11.display, native, window->x11.handle, NULL);
+        glXCreateWindow(_glfw.x11.display, window->context.glx.fbconfig, window->x11.handle, NULL);
     if (!window->context.glx.window)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "GLX: Failed to create window");
         return GLFW_FALSE;
     }
-
-    window->context.glx.fbconfig = native;
 
     window->context.makeCurrent = makeContextCurrentGLX;
     window->context.swapBuffers = swapBuffersGLX;
@@ -672,6 +685,60 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
     return GLFW_TRUE;
 }
 
+static void _glfwMakeUserContextCurrentGLX(_GLFWusercontext* context)
+{
+	if (context)
+	{
+		if(!glXMakeCurrent(_glfw.x11.display, context->window->context.glx.window,context->glx.handle))
+		{
+			_glfwInputError(GLFW_PLATFORM_ERROR,
+							"GLX: Failed to make user context current");
+			_glfwPlatformSetTls(&_glfw.usercontextSlot, NULL);
+			return;
+		}
+	}
+	else
+    {
+        if (!glXMakeCurrent(_glfw.x11.display, None, NULL))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "GLX: Failed to clear current user context");
+            return;
+        }
+    }
+    _glfwPlatformSetTls(&_glfw.usercontextSlot, context);
+}
+
+static void _glfwDestroyUserContextGLX(_GLFWusercontext* context)
+{
+    glXDestroyContext(_glfw.x11.display, context->glx.handle);
+    free(context);
+}
+
+_GLFWusercontext* _glfwCreateUserContextGLX(_GLFWwindow* window)
+{
+    _GLFWusercontext* context;
+    _GLFWctxconfig ctxconfig;
+
+    context = calloc(1, sizeof(_GLFWusercontext));
+    context->window = window;
+
+    ctxconfig = _glfw.hints.context;
+    ctxconfig.share = window;
+
+    if(!_glfwCreateContextForFBGLX(window,&ctxconfig,&context->glx.handle))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "GLX: Failed to create user OpenGL context");
+        free(context);
+        return NULL;
+    }
+
+    context->makeCurrent = _glfwMakeUserContextCurrentGLX;
+    context->destroy = _glfwDestroyUserContextGLX;
+
+    return context;
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

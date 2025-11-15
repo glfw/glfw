@@ -5,6 +5,15 @@
 
 ## New features {#features}
 
+### Multiple window contexts {#multiple_window_contexts}
+
+GLFW now provides the ability to create multiple OpenGL and OpenGL ES
+contexts for a given window. Called user contexts, a [GLFWusercontext](@ref context_user)
+can be created using @ref glfwCreateUserContext,
+destroyed using @ref glfwDestroyUserContext, and managed with
+@ref glfwMakeUserContextCurrent and @ref glfwGetCurrentUserContext.
+For more information see the [user context](@ref context_user) documentation.
+
 ### Unlimited mouse buttons {#unlimited_mouse_buttons}
 
 GLFW now has an input mode which allows an unlimited number of mouse buttons to

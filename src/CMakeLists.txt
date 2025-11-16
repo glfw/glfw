@@ -17,7 +17,8 @@ elseif (WIN32)
                                 win32_time.c win32_thread.c)
 else()
     target_sources(glfw PRIVATE posix_time.h posix_thread.h posix_module.c
-                                posix_time.c posix_thread.c)
+                                posix_time.c posix_thread.c posix_dbus.h
+                                posix_dbus.c)
 endif()
 
 add_custom_target(update_mappings

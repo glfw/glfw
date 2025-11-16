@@ -187,6 +187,7 @@
  #define GLFW_BUILD_COCOA_TIMER
 #else
  #define GLFW_BUILD_POSIX_TIMER
+ #define GLFW_BUILD_POSIX_DBUS
 #endif
 
 #if defined(GLFW_BUILD_WIN32_TIMER)
@@ -198,6 +199,13 @@
 #elif defined(GLFW_BUILD_POSIX_TIMER)
  #include "posix_time.h"
  #define GLFW_PLATFORM_LIBRARY_TIMER_STATE  GLFW_POSIX_LIBRARY_TIMER_STATE
+#endif
+
+#if defined(GLFW_BUILD_POSIX_DBUS)
+ #include "posix_dbus.h"
+ #define GLFW_PLATFORM_LIBRARY_DBUS_STATE  GLFW_POSIX_LIBRARY_DBUS_STATE
+#else
+ #define GLFW_PLATFORM_LIBRARY_DBUS_STATE
 #endif
 
 #if defined(_WIN32)

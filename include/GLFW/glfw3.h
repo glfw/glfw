@@ -1129,6 +1129,9 @@ extern "C" {
 /*! @brief Win32 specific [window hint](@ref GLFW_WIN32_SHOWDEFAULT_hint).
  */
 #define GLFW_WIN32_SHOWDEFAULT      0x00025002
+
+#define GLFW_WIN32_GENERIC_BADGE    0x00025003
+
 /*! @brief Wayland specific
  *  [window hint](@ref GLFW_WAYLAND_APP_ID_hint).
  *  
@@ -1286,6 +1289,59 @@ extern "C" {
  *  This is an alias for compatibility with earlier versions.
  */
 #define GLFW_HAND_CURSOR            GLFW_POINTING_HAND_CURSOR
+/*! @} */
+
+/*! @addtogroup window
+ *  @{ */
+/*! @brief Disable the progress bar.
+ *
+ *  Disable the progress bar.
+ *
+ *  Used by @ref window_progress_indicator.
+ */
+#define GLFW_PROGRESS_INDICATOR_DISABLED      0
+/*! @brief Display the progress bar in an indeterminate state.
+ *
+ *  Display the progress bar in an indeterminate state.
+ *
+ *  @remark @win32 This displays the progress bar animation cycling repeatedly.
+ *
+ *  @remark @x11 @wayland This behaves like @ref GLFW_PROGRESS_INDICATOR_NORMAL.
+ *
+ *  @remark @macos This displays a standard indeterminate `NSProgressIndicator`.
+ *
+ *  Used by @ref window_progress_indicator.
+ */
+#define GLFW_PROGRESS_INDICATOR_INDETERMINATE 1
+/*! @brief Display the normal progress bar.
+ *
+ *  Display the normal progress bar.
+ *
+ *  Used by @ref window_progress_indicator.
+ */
+#define GLFW_PROGRESS_INDICATOR_NORMAL        2
+/*! @brief Display the progress bar in an error state.
+ *
+ *  Display the progress bar in an error state.
+ *
+ *  @remark @win32 This displays a red progress bar.
+ *
+ *  @remark @x11 @wayland @macos This behaves like @ref GLFW_PROGRESS_INDICATOR_NORMAL.
+ *
+ *  Used by @ref window_progress_indicator.
+ */
+#define GLFW_PROGRESS_INDICATOR_ERROR         3
+/*! @brief Display the progress bar in a paused state.
+ *
+ *  Display the progress bar in a paused state.
+ *
+ *  @remark @win32 This displays a yellow progress bar.
+ *
+ *  @remark @x11 @wayland @macos This behaves like @ref GLFW_PROGRESS_INDICATOR_NORMAL.
+ *
+ *  Used by @ref window_progress_indicator.
+ */
+#define GLFW_PROGRESS_INDICATOR_PAUSED        4
 /*! @} */
 
 #define GLFW_CONNECTED              0x00040001
@@ -3412,6 +3468,106 @@ GLFWAPI void glfwSetWindowTitle(GLFWwindow* window, const char* title);
  *  @ingroup window
  */
 GLFWAPI void glfwSetWindowIcon(GLFWwindow* window, int count, const GLFWimage* images);
+
+/*! @brief Sets the dock or taskbar progress indicator for the specified window.
+ *
+ *  This function sets the dock or taskbar progress indicator of the specified window.
+ *
+ *  @param[in] window The window whose progress to set.
+ *  @param[in] progressState The state of the progress to be displayed in the dock
+ *  or taskbar. Valid values are: @ref GLFW_PROGRESS_INDICATOR_DISABLED,
+ *  @ref GLFW_PROGRESS_INDICATOR_INDETERMINATE, @ref GLFW_PROGRESS_INDICATOR_NORMAL,
+ *  @ref GLFW_PROGRESS_INDICATOR_ERROR and @ref GLFW_PROGRESS_INDICATOR_PAUSED.
+ *  @param[in] value The amount of completed progress to set. Valid range is 0.0 to 1.0.
+ *  This is ignored if progressState is set to @ref GLFW_PROGRESS_INDICATOR_DISABLED.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_INVALID_VALUE, @ref GLFW_INVALID_ENUM, @ref GLFW_PLATFORM_ERROR,
+ *  @ref GLFW_FEATURE_UNIMPLEMENTED and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
+ *
+ *  @remark @win32 On Windows Vista and earlier, this function will emit
+ *  @ref GLFW_FEATURE_UNAVAILABLE.
+ *
+ *  @remark @macos There exists only one Dock icon progress bar, and this
+ *  displays the combined values of all the windows.
+ *
+ *  @remark @x11 @wayland Requires a valid application desktop file with the same name
+ *  as the compiled executable. Due to limitations in the Unity Launcher API
+ *  @ref GLFW_PROGRESS_INDICATOR_INDETERMINATE, @ref GLFW_PROGRESS_INDICATOR_ERROR
+ *  and @ref GLFW_PROGRESS_INDICATOR_PAUSED have the same behaviour as
+ *  @ref GLFW_PROGRESS_INDICATOR_NORMAL. The Unity Launcher API is only known
+ *  to be supported on the Unity and KDE desktop environments; on other desktop
+ *  environments this function may do nothing.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_progress_indicator
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowProgressIndicator(GLFWwindow* window, int progressState, double value);
+
+/*! @brief Sets the dock or taskbar badge for the specified window or the application.
+ *
+ *  This function sets the dock or taskbar badge for the specified window
+ *  or the application as a whole.  Any badge set with this function
+ *  overrides the string badge set with @ref glfwSetWindowBadgeString.
+ *  If the platform does not support number badges, the string badge
+ *  is not overridden.
+ *
+ *  @param[in] window The window whose badge to set.
+ *  @param[in] count The number to set, or `0` to disable it.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_PLATFORM_ERROR, and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
+ *
+ *  @remark @win32 On Windows Vista and earlier, this function will emit
+ *  @ref GLFW_FEATURE_UNAVAILABLE.
+ *
+ *  @remark @macos Only the Dock icon may contain a badge. Pass a `NULL`
+ *  window handle to set it.  Emits @ref GLFW_FEATURE_UNAVAILABLE if a
+ *  valid window handle is passed.
+ *
+ *  @remark @x11 @wayland @win32 Emits GLFW_FEATURE_UNAVAILABLE if a
+ *  `NULL` window handle is passed.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowBadge(GLFWwindow* window, int count);
+
+/*! @brief Sets the dock or taskbar badge for the specified window or the application.
+ *
+ *  This function sets the dock or taskbar badge for the specified window
+ *  or the application as a whole.  Any string badge set with this function
+ *  overrides the number badge set with @ref glfwSetWindowBadge.
+ *  If the platform does not support string badges, the number badge
+ *  is not overridden.
+ *
+ *  @param[in] window The window whose badge to set.
+ *  @param[in] string The text to set, or `NULL` to disable it.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_PLATFORM_ERROR, and @ref GLFW_FEATURE_UNAVAILABLE (see remarks).
+ *
+ *  @remark @macos Only the Dock icon may contain a badge. Pass a `NULL`
+ *  window handle to set it.  Emits @ref GLFW_FEATURE_UNAVAILABLE if a
+ *  valid window handle is passed.
+ *
+ *  @remark @x11 @wayland @win32 Emits GLFW_FEATURE_UNAVAILABLE.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwSetWindowBadgeString(GLFWwindow* window, const char* string);
 
 /*! @brief Retrieves the position of the content area of the specified window.
  *

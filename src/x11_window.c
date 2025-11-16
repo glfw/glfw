@@ -2044,6 +2044,14 @@ GLFWbool _glfwCreateWindowX11(_GLFWwindow* window,
         }
     }
 
+    //Reset progress state as it gets saved between application runs
+    if(_glfw.dbus.connection)
+    {
+        //Window NULL is safe here because it won't get
+        //used inside the SetWindowTaskbarProgress function
+        _glfwSetWindowProgressIndicatorX11(NULL, GLFW_PROGRESS_INDICATOR_DISABLED, 0.0);
+    }
+
     XFlush(_glfw.x11.display);
     return GLFW_TRUE;
 }
@@ -2154,6 +2162,35 @@ void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* imag
     }
 
     XFlush(_glfw.x11.display);
+}
+
+void _glfwSetWindowProgressIndicatorX11(_GLFWwindow* window, int progressState, double value)
+{
+    (void)window;
+
+    const dbus_bool_t progressVisible = (progressState != GLFW_PROGRESS_INDICATOR_DISABLED);
+
+    _glfwUpdateTaskbarProgressDBusPOSIX(progressVisible, value);
+}
+
+void _glfwSetWindowBadgeX11(_GLFWwindow* window, int count)
+{
+    if (window != NULL)
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "X11: Cannot set a badge for a window. Pass NULL to set the application's shared badge.");
+        return;
+    }
+
+    const dbus_bool_t badgeVisible = (count > 0);
+
+    _glfwUpdateBadgeDBusPOSIX(badgeVisible, count);
+}
+
+void _glfwSetWindowBadgeStringX11(_GLFWwindow* window, const char* string)
+{
+    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                    "X11: Unable to set a string badge. Only integer badges are supported.");
 }
 
 void _glfwGetWindowPosX11(_GLFWwindow* window, int* xpos, int* ypos)

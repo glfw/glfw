@@ -223,6 +223,9 @@ GLFWbool _glfwCreateWindowNull(_GLFWwindow* window, const _GLFWwndconfig* wndcon
 void _glfwDestroyWindowNull(_GLFWwindow* window);
 void _glfwSetWindowTitleNull(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconNull(_GLFWwindow* window, int count, const GLFWimage* images);
+void _glfwSetWindowProgressIndicatorNull(_GLFWwindow* window, int progressState, double value);
+void _glfwSetWindowBadgeNull(_GLFWwindow* window, int count);
+void _glfwSetWindowBadgeStringNull(_GLFWwindow* window, const char* string);
 void _glfwSetWindowMonitorNull(_GLFWwindow* window, _GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);
 void _glfwGetWindowPosNull(_GLFWwindow* window, int* xpos, int* ypos);
 void _glfwSetWindowPosNull(_GLFWwindow* window, int xpos, int ypos);

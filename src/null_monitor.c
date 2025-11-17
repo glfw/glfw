@@ -103,7 +103,7 @@ void _glfwGetMonitorWorkareaNull(_GLFWmonitor* monitor,
 
 GLFWvidmode* _glfwGetVideoModesNull(_GLFWmonitor* monitor, int* found)
 {
-    GLFWvidmode* mode = _glfw_calloc(1, sizeof(GLFWvidmode));
+    GLFWvidmode* mode = (GLFWvidmode*)_glfw_calloc(1, sizeof(GLFWvidmode));
     *mode = getVideoMode();
     *found = 1;
     return mode;
@@ -157,4 +157,3 @@ void _glfwSetGammaRampNull(_GLFWmonitor* monitor, const GLFWgammaramp* ramp)
     memcpy(monitor->null.ramp.green, ramp->green, sizeof(short) * ramp->size);
     memcpy(monitor->null.ramp.blue,  ramp->blue,  sizeof(short) * ramp->size);
 }
-

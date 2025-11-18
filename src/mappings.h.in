@@ -78,5 +78,9 @@ const char* _glfwDefaultMappings[] =
 #if defined(GLFW_BUILD_LINUX_JOYSTICK)
 @GLFW_LINUX_MAPPINGS@
 #endif // GLFW_BUILD_LINUX_JOYSTICK
+
+#if defined(_GLFW_OGC)
+"05002bf87e0500000105000001000000,Nintendo Wiimote,a:b0,b:b1,x:b2,y:b3,back:b6,guide:b4,start:b5,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,platform:Ogc,",
+#endif
 };
 

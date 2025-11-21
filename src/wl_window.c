@@ -1397,12 +1397,14 @@ static void handleEvents(double* timeout)
             wl_display_cancel_read(_glfw.wl.display);
             return;
         }
+		
+		if (timeout && *timeout <= 0.0)
+			event = GLFW_TRUE;
 
         if (fds[DISPLAY_FD].revents & POLLIN)
         {
             wl_display_read_events(_glfw.wl.display);
-            if (wl_display_dispatch_pending(_glfw.wl.display) > 0)
-                event = GLFW_TRUE;
+            wl_display_dispatch_pending(_glfw.wl.display);
         }
         else
             wl_display_cancel_read(_glfw.wl.display);
@@ -1424,8 +1426,6 @@ static void handleEvents(double* timeout)
                                       _glfw.wl.xkb.modifiers);
                         inputText(_glfw.wl.keyboardFocus, _glfw.wl.keyRepeatScancode);
                     }
-
-                    event = GLFW_TRUE;
                 }
 
             }
@@ -1441,9 +1441,11 @@ static void handleEvents(double* timeout)
 
         if (fds[LIBDECOR_FD].revents & POLLIN)
         {
-            if (libdecor_dispatch(_glfw.wl.libdecor.context, 0) > 0)
-                event = GLFW_TRUE;
+            libdecor_dispatch(_glfw.wl.libdecor.context, 0);
         }
+		
+		if (_glfw.newEventsRcvd)
+			event = GLFW_TRUE;
     }
 }
 
@@ -2705,9 +2707,19 @@ void _glfwWaitEventsTimeoutWayland(double timeout)
     handleEvents(&timeout);
 }
 
+static void wlSyncDoneHandler(void *data, struct wl_callback *callback, uint32_t callback_data)
+{
+	_glfw.newEventsRcvd = GLFW_TRUE;
+}
+
+static const struct wl_callback_listener wlSyncDoneListener = {
+	wlSyncDoneHandler
+};
+	
 void _glfwPostEmptyEventWayland(void)
 {
-    wl_display_sync(_glfw.wl.display);
+    struct wl_callback *callback = wl_display_sync(_glfw.wl.display);
+	wl_callback_add_listener(callback,&wlSyncDoneListener,NULL);
     flushDisplay();
 }
 

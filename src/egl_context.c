@@ -436,6 +436,10 @@ GLFWbool _glfwInitEGL(void)
         _glfwPlatformGetModuleSymbol(_glfw.egl.handle, "eglQueryString");
     _glfw.egl.GetProcAddress = (PFN_eglGetProcAddress)
         _glfwPlatformGetModuleSymbol(_glfw.egl.handle, "eglGetProcAddress");
+    _glfw.egl.CreatePbufferSurface = (PFN_eglCreatePbufferSurface)
+        _glfwPlatformGetModuleSymbol(_glfw.egl.handle, "eglCreatePbufferSurface");
+    _glfw.egl.ChooseConfig = (PFN_eglChooseConfig)
+        _glfwPlatformGetModuleSymbol(_glfw.egl.handle, "eglChooseConfig");
 
     if (!_glfw.egl.GetConfigAttrib ||
         !_glfw.egl.GetConfigs ||
@@ -453,7 +457,9 @@ GLFWbool _glfwInitEGL(void)
         !_glfw.egl.SwapBuffers ||
         !_glfw.egl.SwapInterval ||
         !_glfw.egl.QueryString ||
-        !_glfw.egl.GetProcAddress)
+        !_glfw.egl.GetProcAddress ||
+        !_glfw.egl.CreatePbufferSurface||
+        !_glfw.egl.ChooseConfig)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "EGL: Failed to load required entry points");
@@ -570,17 +576,15 @@ void _glfwTerminateEGL(void)
     attribs[index++] = v; \
 }
 
-// Create the OpenGL or OpenGL ES context
+// Create the OpenGL or OpenGL ES context for the window eglConfig
 //
-GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
-                               const _GLFWctxconfig* ctxconfig,
-                               const _GLFWfbconfig* fbconfig)
+GLFWbool _glfwCreateContextForConfigEGL(EGLConfig eglConfig,
+                                        const _GLFWctxconfig* ctxconfig,
+                                        EGLContext* context)
 {
     EGLint attribs[40];
-    EGLConfig config;
-    EGLContext share = NULL;
-    EGLNativeWindowType native;
     int index = 0;
+    EGLContext share = NULL;
 
     if (!_glfw.egl.display)
     {
@@ -590,9 +594,6 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 
     if (ctxconfig->share)
         share = ctxconfig->share->context.egl.handle;
-
-    if (!chooseEGLConfig(ctxconfig, fbconfig, &config))
-        return GLFW_FALSE;
 
     if (ctxconfig->client == GLFW_OPENGL_ES_API)
     {
@@ -689,10 +690,9 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
 
     SET_ATTRIB(EGL_NONE, EGL_NONE);
 
-    window->context.egl.handle = eglCreateContext(_glfw.egl.display,
-                                                  config, share, attribs);
+    *context = eglCreateContext(_glfw.egl.display, eglConfig, share, attribs);
 
-    if (window->context.egl.handle == EGL_NO_CONTEXT)
+    if (*context == EGL_NO_CONTEXT)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "EGL: Failed to create context: %s",
@@ -700,9 +700,32 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    // Set up attributes for surface creation
-    index = 0;
+    return GLFW_TRUE;
+}
 
+// Create the OpenGL or OpenGL ES context
+//
+GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
+                               const _GLFWctxconfig* ctxconfig,
+                               const _GLFWfbconfig* fbconfig)
+{
+    EGLNativeWindowType native;
+    EGLint attribs[40];
+    int index = 0;
+
+    if (!chooseEGLConfig(ctxconfig, fbconfig, &window->context.egl.config))
+    {
+        _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
+                        "EGL: Failed to find a suitable EGLConfig");
+        return GLFW_FALSE;
+    }
+
+    if (!_glfwCreateContextForConfigEGL(window->context.egl.config,ctxconfig,&window->context.egl.handle))
+    {
+        return GLFW_FALSE;
+    }
+
+    // Set up attributes for surface creation
     if (fbconfig->sRGB)
     {
         if (_glfw.egl.KHR_gl_colorspace)
@@ -736,18 +759,18 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         //       implement eglCreatePlatformWindowSurfaceEXT despite reporting
         //       support for EGL_EXT_platform_base
         window->context.egl.surface =
-            eglCreateWindowSurface(_glfw.egl.display, config, native, attribs);
+            eglCreateWindowSurface(_glfw.egl.display, window->context.egl.config, native, attribs);
     }
     else if (_glfw.egl.platform == EGL_PLATFORM_SURFACELESS_MESA)
     {
         // HACK: Use a pbuffer surface as the default framebuffer
         window->context.egl.surface =
-            eglCreatePbufferSurface(_glfw.egl.display, config, attribs);
+            eglCreatePbufferSurface(_glfw.egl.display, window->context.egl.config, attribs);
     }
     else
     {
         window->context.egl.surface =
-            eglCreatePlatformWindowSurfaceEXT(_glfw.egl.display, config, native, attribs);
+            eglCreatePlatformWindowSurfaceEXT(_glfw.egl.display, window->context.egl.config, native, attribs);
     }
 
     if (window->context.egl.surface == EGL_NO_SURFACE)
@@ -758,7 +781,6 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
-    window->context.egl.config = config;
 
     // Load the appropriate client library
     if (!_glfw.egl.KHR_get_all_proc_addresses)
@@ -895,6 +917,109 @@ GLFWbool _glfwChooseVisualEGL(const _GLFWwndconfig* wndconfig,
     return GLFW_TRUE;
 }
 #endif // _GLFW_X11
+
+static void _glfwMakeUserContextCurrentEGL(_GLFWusercontext* context)
+{
+    if (context)
+    {
+        if (!eglMakeCurrent(_glfw.egl.display,
+                            context->egl.surface,
+                            context->egl.surface,
+                            context->egl.handle))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "EGL: Failed to make user context current: %s",
+                            getEGLErrorString(eglGetError()));
+            _glfwPlatformSetTls(&_glfw.usercontextSlot, NULL);
+            return;
+        }
+    }
+    else
+    {
+        if (!eglMakeCurrent(_glfw.egl.display,
+                            EGL_NO_SURFACE,
+                            EGL_NO_SURFACE,
+                            EGL_NO_CONTEXT))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "EGL: Failed to clear current user context: %s",
+                            getEGLErrorString(eglGetError()));
+            return;
+        }
+    }
+    _glfwPlatformSetTls(&_glfw.usercontextSlot, context);
+}
+
+static void _glfwDestroyUserContextEGL(_GLFWusercontext* context)
+{
+    if (context->egl.surface!=EGL_NO_SURFACE)
+        eglDestroySurface(_glfw.egl.display,context->egl.surface);
+
+    eglDestroyContext(_glfw.egl.display, context->egl.handle);
+    free(context);
+}
+
+_GLFWusercontext* _glfwCreateUserContextEGL(_GLFWwindow* window)
+{
+    _GLFWusercontext* context;
+    _GLFWctxconfig ctxconfig;
+    EGLint dummyConfigAttribs[] =
+    {
+        EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+        EGL_RED_SIZE, 1, EGL_GREEN_SIZE, 1, EGL_BLUE_SIZE, 1,
+        EGL_NONE
+    };
+    EGLint dummySurfaceAttribs[] =
+    {
+        EGL_WIDTH, 1, EGL_HEIGHT, 1,
+        EGL_NONE
+    };
+    EGLint dummySurfaceNumConfigs;
+    EGLConfig dummySurfaceConfig;
+
+    context = calloc(1, sizeof(_GLFWusercontext));
+    context->window = window;
+
+    ctxconfig = _glfw.hints.context;
+    ctxconfig.share = window;
+
+    if (!_glfwCreateContextForConfigEGL(window->context.egl.config,&ctxconfig,&context->egl.handle))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "EGL: Failed to create user OpenGL context");
+        free(context);
+        return NULL;
+    }
+    if (glfwExtensionSupported("EGL_KHR_surfaceless_context"))
+        context->egl.surface = EGL_NO_SURFACE;
+    else
+    {
+        eglChooseConfig(_glfw.egl.display, dummyConfigAttribs, &dummySurfaceConfig, 1, &dummySurfaceNumConfigs);
+        if (!dummySurfaceNumConfigs)
+        {
+            eglDestroyContext(_glfw.egl.display, context->egl.handle);
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                                    "EGL: Failed to find surface config for user context: %s", getEGLErrorString(eglGetError()));
+            free(context);
+            return NULL;
+        }
+        context->egl.surface = eglCreatePbufferSurface(_glfw.egl.display, dummySurfaceConfig, dummySurfaceAttribs);
+        if (context->egl.surface == EGL_NO_SURFACE)
+        {
+            eglDestroyContext(_glfw.egl.display, context->egl.handle);
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                                    "EGL: Failed to create surface for user context: %s for %s", getEGLErrorString(eglGetError()), eglQueryString(_glfw.egl.display,0x3054));
+            free(context);
+            return NULL;
+        }
+    }
+
+    context->makeCurrent = _glfwMakeUserContextCurrentEGL;
+    context->destroy = _glfwDestroyUserContextEGL;
+
+    return context;
+}
+
 
 
 //////////////////////////////////////////////////////////////////////////

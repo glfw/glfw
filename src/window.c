@@ -67,6 +67,8 @@ void _glfwInputWindowFocus(_GLFWwindow* window, GLFWbool focused)
                 _glfwInputMouseClick(window, button, GLFW_RELEASE, 0);
         }
     }
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code that a window has moved
@@ -78,6 +80,8 @@ void _glfwInputWindowPos(_GLFWwindow* window, int x, int y)
 
     if (window->callbacks.pos)
         window->callbacks.pos((GLFWwindow*) window, x, y);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code that a window has been resized
@@ -91,6 +95,8 @@ void _glfwInputWindowSize(_GLFWwindow* window, int width, int height)
 
     if (window->callbacks.size)
         window->callbacks.size((GLFWwindow*) window, width, height);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code that a window has been iconified or restored
@@ -102,6 +108,8 @@ void _glfwInputWindowIconify(_GLFWwindow* window, GLFWbool iconified)
 
     if (window->callbacks.iconify)
         window->callbacks.iconify((GLFWwindow*) window, iconified);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code that a window has been maximized or restored
@@ -113,6 +121,8 @@ void _glfwInputWindowMaximize(_GLFWwindow* window, GLFWbool maximized)
 
     if (window->callbacks.maximize)
         window->callbacks.maximize((GLFWwindow*) window, maximized);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code that a window framebuffer has been resized
@@ -126,6 +136,8 @@ void _glfwInputFramebufferSize(_GLFWwindow* window, int width, int height)
 
     if (window->callbacks.fbsize)
         window->callbacks.fbsize((GLFWwindow*) window, width, height);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code that a window content scale has changed
@@ -141,6 +153,8 @@ void _glfwInputWindowContentScale(_GLFWwindow* window, float xscale, float yscal
 
     if (window->callbacks.scale)
         window->callbacks.scale((GLFWwindow*) window, xscale, yscale);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code that the window contents needs updating
@@ -151,6 +165,8 @@ void _glfwInputWindowDamage(_GLFWwindow* window)
 
     if (window->callbacks.refresh)
         window->callbacks.refresh((GLFWwindow*) window);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code that the user wishes to close a window
@@ -163,6 +179,8 @@ void _glfwInputWindowCloseRequest(_GLFWwindow* window)
 
     if (window->callbacks.close)
         window->callbacks.close((GLFWwindow*) window);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code that a window has changed its desired monitor
@@ -171,6 +189,8 @@ void _glfwInputWindowMonitor(_GLFWwindow* window, _GLFWmonitor* monitor)
 {
     assert(window != NULL);
     window->monitor = monitor;
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1172,6 +1192,7 @@ GLFWAPI void glfwPollEvents(void)
 GLFWAPI void glfwWaitEvents(void)
 {
     _GLFW_REQUIRE_INIT();
+    _glfw.newEventsRcvd = GLFW_FALSE;
     _glfw.platform.waitEvents();
 }
 
@@ -1188,6 +1209,7 @@ GLFWAPI void glfwWaitEventsTimeout(double timeout)
         return;
     }
 
+    _glfw.platform.waitEvents();
     _glfw.platform.waitEventsTimeout(timeout);
 }
 

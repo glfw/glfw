@@ -357,6 +357,9 @@ static LRESULT CALLBACK helperWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
             break;
         }
+        case WM_NULL:
+            _glfw.newEventsRcvd = GLFW_TRUE;
+            return 0;
     }
 
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);

@@ -2187,7 +2187,7 @@ void _glfwWaitEventsTimeoutWin32(double timeout)
         ret = MsgWaitForMultipleObjects(0, NULL, FALSE, (DWORD) (timeout * 1e3), QS_ALLINPUT);
 
         _glfwPollEventsWin32();
-    } while (_glfw.newEventsRcvd == GLFW_FALSE || ret == WAIT_TIMEOUT);
+    } while (_glfw.newEventsRcvd == GLFW_FALSE && ret != WAIT_TIMEOUT);
 }
 
 void _glfwPostEmptyEventWin32(void)

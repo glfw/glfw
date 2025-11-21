@@ -2709,6 +2709,7 @@ void _glfwWaitEventsTimeoutWayland(double timeout)
 
 static void wlSyncDoneHandler(void *data, struct wl_callback *callback, uint32_t callback_data)
 {
+	// this will be called on the same thread as handleEvents
 	_glfw.newEventsRcvd = GLFW_TRUE;
 }
 

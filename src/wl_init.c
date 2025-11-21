@@ -908,18 +908,6 @@ void _glfwTerminateWayland(void)
         libdecor_unref(_glfw.wl.libdecor.context);
     }
 
-    if (_glfw.wl.libdecor.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.wl.libdecor.handle);
-        _glfw.wl.libdecor.handle = NULL;
-    }
-
-    if (_glfw.wl.egl.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.wl.egl.handle);
-        _glfw.wl.egl.handle = NULL;
-    }
-
     if (_glfw.wl.xkb.composeState)
         xkb_compose_state_unref(_glfw.wl.xkb.composeState);
     if (_glfw.wl.xkb.keymap)
@@ -928,21 +916,11 @@ void _glfwTerminateWayland(void)
         xkb_state_unref(_glfw.wl.xkb.state);
     if (_glfw.wl.xkb.context)
         xkb_context_unref(_glfw.wl.xkb.context);
-    if (_glfw.wl.xkb.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.wl.xkb.handle);
-        _glfw.wl.xkb.handle = NULL;
-    }
 
     if (_glfw.wl.cursorTheme)
         wl_cursor_theme_destroy(_glfw.wl.cursorTheme);
     if (_glfw.wl.cursorThemeHiDPI)
         wl_cursor_theme_destroy(_glfw.wl.cursorThemeHiDPI);
-    if (_glfw.wl.cursor.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.wl.cursor.handle);
-        _glfw.wl.cursor.handle = NULL;
-    }
 
     for (unsigned int i = 0; i < _glfw.wl.offerCount; i++)
         wl_data_offer_destroy(_glfw.wl.offers[i].offer);
@@ -1001,6 +979,36 @@ void _glfwTerminateWayland(void)
         close(_glfw.wl.keyRepeatTimerfd);
     if (_glfw.wl.cursorTimerfd >= 0)
         close(_glfw.wl.cursorTimerfd);
+
+    // Free modules only after all wayland termination functions are called
+    if (_glfw.egl.handle)
+    {
+        _glfwPlatformFreeModule(_glfw.egl.handle);
+        _glfw.egl.handle = NULL;
+    }
+
+    if (_glfw.wl.libdecor.handle)
+    {
+        _glfwPlatformFreeModule(_glfw.wl.libdecor.handle);
+        _glfw.wl.libdecor.handle = NULL;
+    }
+
+    if (_glfw.wl.egl.handle)
+    {
+        _glfwPlatformFreeModule(_glfw.wl.egl.handle);
+        _glfw.wl.egl.handle = NULL;
+    }
+
+    if (_glfw.wl.xkb.handle)
+    {
+        _glfwPlatformFreeModule(_glfw.wl.xkb.handle);
+        _glfw.wl.xkb.handle = NULL;
+    }
+    if (_glfw.wl.cursor.handle)
+    {
+        _glfwPlatformFreeModule(_glfw.wl.cursor.handle);
+        _glfw.wl.cursor.handle = NULL;
+    }
 
     _glfw_free(_glfw.wl.clipboardString);
 }

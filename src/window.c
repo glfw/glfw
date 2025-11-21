@@ -1210,7 +1210,6 @@ GLFWAPI void glfwWaitEventsTimeout(double timeout)
     }
 
     _glfw.newEventsRcvd = GLFW_FALSE;
-    _glfw.platform.waitEvents();
     _glfw.platform.waitEventsTimeout(timeout);
 }
 

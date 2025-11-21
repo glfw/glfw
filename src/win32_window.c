@@ -2182,12 +2182,17 @@ void _glfwWaitEventsWin32(void)
 void _glfwWaitEventsTimeoutWin32(double timeout)
 {
     DWORD ret;
+    double timeStart, timeEnd, timeWait;
+    timeStart = glfwGetTime();
+    timeWait = timeout;
     do
     {
-        ret = MsgWaitForMultipleObjects(0, NULL, FALSE, (DWORD) (timeout * 1e3), QS_ALLINPUT);
+        ret = MsgWaitForMultipleObjects(0, NULL, FALSE, (DWORD) (timeWait * 1e3), QS_ALLINPUT);
 
         _glfwPollEventsWin32();
-    } while (_glfw.newEventsRcvd == GLFW_FALSE && ret != WAIT_TIMEOUT);
+        timeEnd = glfwGetTime();
+        timeWait = timeout - (timeEnd - timeStart);
+    } while (_glfw.newEventsRcvd == GLFW_FALSE && timeWait > 0.0 );
 }
 
 void _glfwPostEmptyEventWin32(void)

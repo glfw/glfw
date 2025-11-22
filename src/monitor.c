@@ -150,6 +150,8 @@ void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement)
 
     if (action == GLFW_DISCONNECTED)
         _glfwFreeMonitor(monitor);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code that a full screen window has acquired or released
@@ -159,6 +161,8 @@ void _glfwInputMonitorWindow(_GLFWmonitor* monitor, _GLFWwindow* window)
 {
     assert(monitor != NULL);
     monitor->window = window;
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 

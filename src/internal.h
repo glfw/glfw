@@ -793,6 +793,8 @@ struct _GLFWlibrary
     _GLFWtls            contextSlot;
     _GLFWmutex          errorLock;
 
+    GLFWbool            newEventsRcvd;
+
     struct {
         uint64_t        offset;
         // This is defined in platform.h

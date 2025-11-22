@@ -376,6 +376,8 @@ void _glfwInputError(int code, const char* format, ...)
 
     if (_glfwErrorCallback)
         _glfwErrorCallback(code, description);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 

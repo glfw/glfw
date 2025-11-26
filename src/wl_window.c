@@ -1381,6 +1381,10 @@ static void handleEvents(double* timeout)
 			else if (wl_display_dispatch_pending(_glfw.wl.display) > 0)
 			{
 				event = GLFW_TRUE;
+				if (wl_display_prepare_read(_glfw.wl.display) == 0)
+				{
+					wlcanread = GLFW_TRUE;
+				}
 			}
         }
 
@@ -1402,7 +1406,16 @@ static void handleEvents(double* timeout)
 				return;
 			}
 
-			if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), timeout))
+			if(event)
+			{
+				double notimeout = 0.0;
+				if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), &notimeout))
+				{
+					wl_display_cancel_read(_glfw.wl.display);
+					return;
+				}
+			}
+			else if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), timeout))
 			{
 				wl_display_cancel_read(_glfw.wl.display);
 				return;
@@ -1420,7 +1433,7 @@ static void handleEvents(double* timeout)
 		else
 		{
 			fds[DISPLAY_FD].fd = -1; // ignore wl events
-			fds[LIBDECOR_FD].fd = -1;
+			//fds[LIBDECOR_FD].fd = -1;
 			//fds[CURSOR_FD].fd = -1;
 			double notimeout = 0.0;
 			if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), &notimeout))

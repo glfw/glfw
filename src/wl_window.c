@@ -1419,18 +1419,6 @@ static void handleEvents(double* timeout)
 		}
 		else
 		{
-			if (!flushDisplay())
-			{
-				_GLFWwindow* window = _glfw.windowListHead;
-				while (window)
-				{
-					_glfwInputWindowCloseRequest(window);
-					window = window->next;
-				}
-
-				return;
-			}
-
 			fds[DISPLAY_FD].fd = -1; // ignore wl events
 			fds[LIBDECOR_FD].fd = -1;
 			//fds[CURSOR_FD].fd = -1;

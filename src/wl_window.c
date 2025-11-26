@@ -1381,7 +1381,6 @@ static void handleEvents(double* timeout)
 			else if (wl_display_dispatch_pending(_glfw.wl.display) > 0)
 			{
 				event = GLFW_TRUE;
-				break;
 			}
         }
 

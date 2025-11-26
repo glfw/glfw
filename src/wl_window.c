@@ -1371,6 +1371,7 @@ static void handleEvents(double* timeout)
 
     while (!event)
     {
+        wlcanread = GLFW_FALSE;
         while (!wlcanread && !event)
         {
 			if (wl_display_prepare_read(_glfw.wl.display) == 0)

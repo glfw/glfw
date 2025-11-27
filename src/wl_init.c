@@ -251,6 +251,9 @@ static void libdecorReadyCallback(void* userData,
                                   uint32_t time)
 {
     _glfw.wl.libdecor.ready = GLFW_TRUE;
+	
+	// Ensure wait events returns so the ready flag can be received
+	_glfw.newEventsRcvd = GLFW_TRUE;
 
     assert(_glfw.wl.libdecor.callback == callback);
     wl_callback_destroy(_glfw.wl.libdecor.callback);

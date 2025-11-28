@@ -146,6 +146,8 @@ information on what to include when reporting a bug.
    from a modal to the content area
  - [Wayland] Bugfix: free modules at end of terminate function to resolve
    potential segmentation fault (#2744)
+ - [Wayland] Bugfix: Events being lost due to some drivers moving events
+   to the default event queue during buffer swapping (#2793)
  - [X11] Bugfix: Running without a WM could trigger an assert (#2593,#2601,#2631)
  - [X11] Bugfix: Occasional crash when an idle display awakes (#2766) 
  - [X11] Bugfix: Prevent BadWindow when creating small windows with a content scale

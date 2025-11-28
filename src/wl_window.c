@@ -1406,16 +1406,12 @@ static void handleEvents(double* timeout)
 				return;
 			}
 
-			if(event)
-			{
-				double notimeout = 0.0;
-				if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), &notimeout))
-				{
-					wl_display_cancel_read(_glfw.wl.display);
-					return;
-				}
-			}
-			else if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), timeout))
+			double* ptimeout = timeout;
+			double notimeout = 0.0;
+			if (event)
+				ptimeout = &notimeout; // do not wait if we already have an event
+			
+			if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), ptimeout))
 			{
 				wl_display_cancel_read(_glfw.wl.display);
 				return;
@@ -1433,8 +1429,6 @@ static void handleEvents(double* timeout)
 		else
 		{
 			fds[DISPLAY_FD].fd = -1; // ignore wl events
-			//fds[LIBDECOR_FD].fd = -1;
-			//fds[CURSOR_FD].fd = -1;
 			double notimeout = 0.0;
 			if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), &notimeout))
 			{
@@ -1462,7 +1456,6 @@ static void handleEvents(double* timeout)
 
                     event = GLFW_TRUE;
                 }
-
             }
         }
 

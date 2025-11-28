@@ -1,14 +1,14 @@
-/*!
+# Compiling GLFW {#compile_guide}
 
-@page compile_guide Compiling GLFW
-
-@tableofcontents
+[TOC]
 
 This is about compiling the GLFW library itself.  For information on how to
 build applications that use GLFW, see @ref build_guide.
 
+GLFW uses some C99 features and does not support Visual Studio 2012 and earlier.
 
-@section compile_cmake Using CMake
+
+## Using CMake {#compile_cmake}
 
 GLFW behaves like most other libraries that use CMake so this guide mostly
 describes the standard configure, generate and compile sequence.  If you are already
@@ -19,8 +19,8 @@ GLFW uses [CMake](https://cmake.org/) to generate project files or makefiles
 for your chosen development environment.  To compile GLFW, first generate these
 files with CMake and then use them to compile the GLFW library. 
 
-If you are on Windows and macOS you can
-[download CMake](https://cmake.org/download/) from their site.
+If you are on Windows and macOS you can [download
+CMake](https://cmake.org/download/) from their site.
 
 If you are on a Unix-like system such as Linux, FreeBSD or Cygwin or have
 a package system like Fink, MacPorts or Homebrew, you can install its CMake
@@ -28,90 +28,65 @@ package.
 
 CMake is a complex tool and this guide will only show a few of the possible ways
 to set up and compile GLFW.  The CMake project has their own much more detailed
-[CMake user guide](https://cmake.org/cmake/help/latest/guide/user-interaction/)
-that includes everything in this guide not specific to GLFW.  It may be a useful
-companion to this one.
+[CMake user guide][cmake-guide] that includes everything in this guide not
+specific to GLFW.  It may be a useful companion to this one.
+
+[cmake-guide]: https://cmake.org/cmake/help/latest/guide/user-interaction/
 
 
-@subsection compile_deps Installing dependencies
+### Installing dependencies {#compile_deps}
 
-The C/C++ development environments in Visual Studio, Xcode and MinGW come with
-all necessary dependencies for compiling GLFW, but on Unix-like systems like
-Linux and FreeBSD you will need a few extra packages.
-
-
-@subsubsection compile_deps_x11 Dependencies for X11
-
-To compile GLFW for X11, you need to have the X11 development packages
-installed.  They are not needed to build or run programs that use GLFW.
-
-On Debian and derivatives like Ubuntu and Linux Mint the `xorg-dev` meta-package
-pulls in the development packages for all of X11.
-
-@code{.sh}
-sudo apt install xorg-dev
-@endcode
-
-On Fedora and derivatives like Red Hat the X11 extension packages
-`libXcursor-devel`, `libXi-devel`, `libXinerama-devel` and `libXrandr-devel`
-required by GLFW pull in all its other dependencies.
-
-@code{.sh}
-sudo dnf install libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel
-@endcode
-
-On FreeBSD the X11 headers are installed along the end-user X11 packages, so if
-you have an X server running you should have the headers as well.  If not,
-install the `xorgproto` package.
-
-@code{.sh}
-pkg install xorgproto
-@endcode
-
-On Cygwin the `libXcursor-devel`, `libXi-devel`, `libXinerama-devel`,
-`libXrandr-devel` and `libXrender-devel` packages in the Libs section of the GUI
-installer will install all the headers and other development related files GLFW
-requires for X11.
-
-Once you have the required dependencies, move on to @ref compile_generate.
+The C/C++ development environments in Visual Studio, Xcode and MinGW-w64 come
+with all necessary dependencies for compiling GLFW, but on Unix-like systems
+like Linux and FreeBSD you will need a few extra packages.
 
 
-@subsubsection compile_deps_wayland Dependencies for Wayland and X11
+#### Dependencies for Wayland and X11 {#compile_deps_wayland}
+
+By default, both the Wayland and X11 backends are enabled on Linux and other Unix-like
+systems (except macOS).  To disable one or both of these, set the @ref GLFW_BUILD_WAYLAND
+or @ref GLFW_BUILD_X11 CMake options in the next step when generating build files.
 
 To compile GLFW for both Wayland and X11, you need to have the X11, Wayland and xkbcommon
-development packages installed.  They are not needed to build or run programs that use
-GLFW.  You will also need to set the @ref GLFW_BUILD_WAYLAND CMake option in the next
-step when generating build files.
+development packages installed.  On some systems a few other packages are also required.
+None of the development packages above are needed to build or run programs that use an
+already compiled GLFW library.
 
-On Debian and derivatives like Ubuntu and Linux Mint you will need the `libwayland-dev`,
-`libxkbcommon-dev` and `wayland-protocols` packages and the `xorg-dev` meta-package.
+On Debian and derivatives like Ubuntu and Linux Mint you will need the `libwayland-dev`
+and `libxkbcommon-dev` packages to compile for Wayland and the `xorg-dev` meta-package to
+compile for X11.  These will pull in all other dependencies.
+
+```sh
+sudo apt install libwayland-dev libxkbcommon-dev xorg-dev
+```
+
+On Fedora and derivatives like Red Hat you will need the `wayland-devel` and
+`libxkbcommon-devel` packages to compile for Wayland and the `libXcursor-devel`,
+`libXi-devel`, `libXinerama-devel` and `libXrandr-devel` packages to compile for X11.
 These will pull in all other dependencies.
 
-@code{.sh}
-sudo apt install libwayland-dev libxkbcommon-dev wayland-protocols xorg-dev
-@endcode
+```sh
+sudo dnf install wayland-devel libxkbcommon-devel libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel
+```
 
-On Fedora and derivatives like Red Hat you will need the `wayland-devel`,
-`libxkbcommon-devel`, `wayland-protocols-devel`, `libXcursor-devel`, `libXi-devel`,
-`libXinerama-devel` and `libXrandr-devel` packages.  These will pull in all other
-dependencies.
+On FreeBSD you will need the `wayland`, `libxkbcommon` and `evdev-proto` packages to
+compile for Wayland.  The X11 headers are installed along the end-user X11 packages, so if
+you have an X server running you should have the headers as well.  If not, install the
+`xorgproto` package to compile for X11.
 
-@code{.sh}
-sudo dnf install wayland-devel libxkbcommon-devel wayland-protocols-devel libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel
-@endcode
+```sh
+pkg install wayland libxkbcommon evdev-proto xorgproto
+```
 
-On FreeBSD you will need the `wayland`, `libxkbcommon` and `wayland-protocols` packages.
-The X11 headers are installed along the end-user X11 packages, so if you have an X server
-running you should have the headers as well.  If not, install the `xorgproto` package.
-
-@code{.sh}
-pkg install wayland libxkbcommon wayland-protocols xorgproto
-@endcode
+On Cygwin Wayland is not supported but you will need the `libXcursor-devel`,
+`libXi-devel`, `libXinerama-devel`, `libXrandr-devel` and `libXrender-devel` packages to
+compile for X11.  These can be found in the Libs section of the GUI installer and will
+pull in all other dependencies.
 
 Once you have the required dependencies, move on to @ref compile_generate.
 
 
-@subsection compile_generate Generating build files with CMake
+### Generating build files with CMake {#compile_generate}
 
 Once you have all necessary dependencies it is time to generate the project
 files or makefiles for your development environment.  CMake needs two paths for
@@ -133,7 +108,7 @@ A common pattern when building a single configuration is to have a build
 directory named `build` in the root of the source tree.
 
 
-@subsubsection compile_generate_gui Generating with the CMake GUI
+#### Generating with the CMake GUI {#compile_generate_gui}
 
 Start the CMake GUI and set the paths to the source and build directories
 described above.  Then press _Configure_ and _Generate_.
@@ -142,53 +117,54 @@ If you wish change any CMake variables in the list, press _Configure_ and then
 _Generate_ to have the new values take effect.  The variable list will be
 populated after the first configure step.
 
-By default, GLFW will use X11 on Linux and other Unix-like systems other than macOS.  To
-include support for Wayland as well, set the @ref GLFW_BUILD_WAYLAND option in the GLFW
-section of the variable list, then apply the new value as described above.
+By default, GLFW will use Wayland and X11 on Linux and other Unix-like systems other than
+macOS.  To disable support for one or both of these, set the @ref GLFW_BUILD_WAYLAND
+and/or @ref GLFW_BUILD_X11 option in the GLFW section of the variable list, then apply the
+new value as described above.
 
 Once you have generated the project files or makefiles for your chosen
 development environment, move on to @ref compile_compile.
 
 
-@subsubsection compile_generate_cli Generating with command-line CMake
+#### Generating with command-line CMake {#compile_generate_cli}
 
 To make a build directory, pass the source and build directories to the `cmake`
 command.  These can be relative or absolute paths.  The build directory is
 created if it doesn't already exist.
 
-@code{.sh}
+```sh
 cmake -S path/to/glfw -B path/to/build
-@endcode
+```
 
 It is common to name the build directory `build` and place it in the root of the
 source tree when only planning to build a single configuration.
 
-@code{.sh}
+```sh
 cd path/to/glfw
 cmake -S . -B build
-@endcode
+```
 
 Without other flags these will generate Visual Studio project files on Windows
 and makefiles on other platforms.  You can choose other targets using the `-G`
 flag.
 
-@code{.sh}
+```sh
 cmake -S path/to/glfw -B path/to/build -G Xcode
-@endcode
+```
 
-By default, GLFW will use X11 on Linux and other Unix-like systems other
-than macOS.  To also include support for Wayland, set the @ref GLFW_BUILD_WAYLAND CMake
-option.
+By default, GLFW will use Wayland and X11 on Linux and other Unix-like systems other than
+macOS.  To disable support for one or both of these, set the @ref GLFW_BUILD_WAYLAND
+and/or @ref GLFW_BUILD_X11 CMake option.
 
-@code{.sh}
-cmake -S path/to/glfw -B path/to/build -D GLFW_BUILD_WAYLAND=1
-@endcode
+```sh
+cmake -S path/to/glfw -B path/to/build -D GLFW_BUILD_X11=0
+```
 
 Once you have generated the project files or makefiles for your chosen
 development environment, move on to @ref compile_compile.
 
 
-@subsection compile_compile Compiling the library
+### Compiling the library {#compile_compile}
 
 You should now have all required dependencies and the project files or makefiles
 necessary to compile GLFW.  Go ahead and compile the actual GLFW library with
@@ -199,24 +175,24 @@ With Visual Studio open `GLFW.sln` and use the Build menu.  With Xcode open
 
 With Linux, macOS and other forms of Unix, run `make`.
 
-@code{.sh}
+```sh
 cd path/to/build
 make
-@endcode
+```
 
-With MinGW, it is `mingw32-make`.
+With MinGW-w64, it is `mingw32-make`.
 
-@code{.sh}
+```sh
 cd path/to/build
 mingw32-make
-@endcode
+```
 
 Any CMake build directory can also be built with the `cmake` command and the
 `--build` flag.
 
-@code{.sh}
+```sh
 cmake --build path/to/build
-@endcode
+```
 
 This will run the platform specific build tool the directory was generated for.
 
@@ -224,7 +200,7 @@ Once the GLFW library is compiled you are ready to build your application,
 linking it to the GLFW library.  See @ref build_guide for more information.
 
 
-@section compile_options CMake options
+## CMake options {#compile_options}
 
 The CMake files for GLFW provide a number of options, although not all are
 available on all supported platforms.  Some of these are de facto standards
@@ -239,12 +215,12 @@ distributions based on Debian GNU/Linux have this tool in a separate
 Finally, if you don't want to use any GUI, you can set options from the `cmake`
 command-line with the `-D` flag.
 
-@code{.sh}
+```sh
 cmake -S path/to/glfw -B path/to/build -D BUILD_SHARED_LIBS=ON
-@endcode
+```
 
 
-@subsection compile_options_shared Shared CMake options
+### Shared CMake options {#compile_options_shared}
 
 @anchor BUILD_SHARED_LIBS
 __BUILD_SHARED_LIBS__ determines whether GLFW is built as a static library or as
@@ -276,7 +252,7 @@ with the library.  This is enabled by default if
 [Doxygen](https://www.doxygen.nl/) is found by CMake during configuration.
 
 
-@subsection compile_options_win32 Win32 specific CMake options
+### Win32 specific CMake options {#compile_options_win32}
 
 @anchor GLFW_BUILD_WIN32
 __GLFW_BUILD_WIN32__ determines whether to include support for Win32 when compiling the
@@ -288,9 +264,10 @@ __USE_MSVC_RUNTIME_LIBRARY_DLL__ determines whether to use the DLL version or th
 static library version of the Visual C++ runtime library.  When enabled, the
 DLL version of the Visual C++ library is used.  This is enabled by default.
 
-On CMake 3.15 and later you can set the standard CMake
-[CMAKE_MSVC_RUNTIME_LIBRARY](https://cmake.org/cmake/help/latest/variable/CMAKE_MSVC_RUNTIME_LIBRARY.html)
-variable instead of this GLFW-specific option.
+It is recommended to set the standard CMake variable [CMAKE_MSVC_RUNTIME_LIBRARY][]
+instead of this GLFW-specific option.
+
+[CMAKE_MSVC_RUNTIME_LIBRARY]: https://cmake.org/cmake/help/latest/variable/CMAKE_MSVC_RUNTIME_LIBRARY.html
 
 @anchor GLFW_USE_HYBRID_HPG
 __GLFW_USE_HYBRID_HPG__ determines whether to export the `NvOptimusEnablement` and
@@ -301,7 +278,7 @@ will not work if GLFW is built as a DLL.  This is disabled by default, letting
 the operating system and driver decide.
 
 
-@subsection compile_options_macos macOS specific CMake options
+### macOS specific CMake options {#compile_options_macos}
 
 @anchor GLFW_BUILD_COCOA
 __GLFW_BUILD_COCOA__ determines whether to include support for Cocoa when compiling the
@@ -309,12 +286,12 @@ library.  This option is only available when compiling for macOS.  This is enabl
 default.
 
 
-@subsection compile_options_unix Unix-like system specific CMake options
+### Unix-like system specific CMake options {#compile_options_unix}
 
 @anchor GLFW_BUILD_WAYLAND
 __GLFW_BUILD_WAYLAND__ determines whether to include support for Wayland when compiling
 the library.  This option is only available when compiling for Linux and other Unix-like
-systems other than macOS.  This is disabled by default.
+systems other than macOS.  This is enabled by default.
 
 @anchor GLFW_BUILD_X11
 __GLFW_BUILD_X11__ determines whether to include support for X11 when compiling the
@@ -322,40 +299,41 @@ library.  This option is only available when compiling for Linux and other Unix-
 systems other than macOS.  This is enabled by default.
 
 
-@section compile_mingw_cross Cross-compilation with CMake and MinGW
+## Cross-compilation with CMake and MinGW-w64 {#compile_mingw_cross}
 
-Both Cygwin and many Linux distributions have MinGW or MinGW-w64 packages.  For
-example, Cygwin has the `mingw64-i686-gcc` and `mingw64-x86_64-gcc` packages
-for 32- and 64-bit version of MinGW-w64, while Debian GNU/Linux and derivatives
-like Ubuntu have the `mingw-w64` package for both.
+Both Cygwin and many Linux distributions have MinGW-w64 packages.  For example,
+Cygwin has the `mingw64-i686-gcc` and `mingw64-x86_64-gcc` packages for 32- and
+64-bit version of MinGW-w64, while Debian GNU/Linux and derivatives like Ubuntu
+have the `mingw-w64` package for both.
 
 GLFW has CMake toolchain files in the `CMake` subdirectory that set up
 cross-compilation of Windows binaries.  To use these files you set the
 `CMAKE_TOOLCHAIN_FILE` CMake variable with the `-D` flag add an option when
 configuring and generating the build files.
 
-@code{.sh}
+```sh
 cmake -S path/to/glfw -B path/to/build -D CMAKE_TOOLCHAIN_FILE=path/to/file
-@endcode
+```
 
-The exact toolchain file to use depends on the prefix used by the MinGW or
-MinGW-w64 binaries on your system.  You can usually see this in the /usr
-directory.  For example, both the Ubuntu and Cygwin MinGW-w64 packages have
+The exact toolchain file to use depends on the prefix used by the MinGW-w64
+binaries on your system.  You can usually see this in the /usr directory.  For
+example, both the Ubuntu and Cygwin MinGW-w64 packages have
 `/usr/x86_64-w64-mingw32` for the 64-bit compilers, so the correct invocation
 would be:
 
-@code{.sh}
+```sh
 cmake -S path/to/glfw -B path/to/build -D CMAKE_TOOLCHAIN_FILE=CMake/x86_64-w64-mingw32.cmake
-@endcode
+```
 
 The path to the toolchain file is relative to the path to the GLFW source tree
 passed to the `-S` flag, not to the current directory.
 
-For more details see the
-[CMake toolchain guide](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html).
+For more details see the [CMake toolchain guide][cmake-toolchains].
+
+[cmake-toolchains]: https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html
 
 
-@section compile_manual Compiling GLFW manually
+## Compiling GLFW manually {#compile_manual}
 
 If you wish to compile GLFW without its CMake build environment then you will have to do
 at least some platform-detection yourself.  There are preprocessor macros for
@@ -372,8 +350,8 @@ clipboard.  The options are:
 
  - @b _GLFW_COCOA to use the Cocoa frameworks
  - @b _GLFW_WIN32 to use the Win32 API
+ - @b _GLFW_WAYLAND to use the Wayland protocol
  - @b _GLFW_X11 to use the X Window System
- - @b _GLFW_WAYLAND to use the Wayland API (incomplete)
 
 The @b _GLFW_WAYLAND and @b _GLFW_X11 macros may be combined and produces a library that
 attempts to detect the appropriate platform at initialization.
@@ -391,4 +369,3 @@ _GLFW_GLESV2_LIBRARY.  Otherwise, GLFW will use the built-in default names.
 GLFW.  If you define any of these in your build files, make sure they are not
 applied to the GLFW sources.
 
-*/

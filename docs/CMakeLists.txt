@@ -1,21 +1,25 @@
 
+# Because of bugs and limitations in its Markdown support, only fairly recent
+# versions of Doxygen can produce acceptable output
+set(MINIMUM_DOXYGEN_VERSION 1.9.8)
+
 # NOTE: The order of this list determines the order of items in the Guides
 #       (i.e. Pages) list in the generated documentation
 set(source_files
-    main.dox
-    news.dox
-    quick.dox
-    moving.dox
-    compile.dox
-    build.dox
-    intro.dox
-    context.dox
-    monitor.dox
-    window.dox
-    input.dox
-    vulkan.dox
-    compat.dox
-    internal.dox)
+    main.md
+    news.md
+    quick.md
+    moving.md
+    compile.md
+    build.md
+    intro.md
+    context.md
+    monitor.md
+    window.md
+    input.md
+    vulkan.md
+    compat.md
+    internal.md)
 
 set(extra_files DoxygenLayout.xml header.html footer.html extra.css spaces.svg)
 
@@ -31,16 +35,27 @@ foreach(file IN LISTS source_files)
     string(APPEND GLFW_DOXYGEN_INPUT " \\\n\"${CMAKE_CURRENT_SOURCE_DIR}/${file}\"")
 endforeach()
 
-configure_file(Doxyfile.in Doxyfile @ONLY)
+set(DOXYGEN_SKIP_DOT TRUE)
+find_package(Doxygen ${MINIMUM_DOXYGEN_VERSION} QUIET)
 
-add_custom_command(OUTPUT "html/index.html"
-                   COMMAND "${DOXYGEN_EXECUTABLE}"
-                   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-                   MAIN_DEPENDENCY Doxyfile
-                   DEPENDS ${header_paths} ${source_files} ${extra_files}
-                   COMMENT "Generating HTML documentation"
-                   VERBATIM)
+if (NOT DOXYGEN_FOUND)
+    message(STATUS "Documentation generation requires Doxygen ${MINIMUM_DOXYGEN_VERSION} or later")
+else()
+    configure_file(Doxyfile.in Doxyfile @ONLY)
+    add_custom_command(OUTPUT "html/index.html"
+                       COMMAND "${DOXYGEN_EXECUTABLE}"
+                       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+                       MAIN_DEPENDENCY Doxyfile
+                       DEPENDS ${header_paths} ${source_files} ${extra_files}
+                       COMMENT "Generating HTML documentation"
+                       VERBATIM)
 
-add_custom_target(docs ALL SOURCES "html/index.html")
-set_target_properties(docs PROPERTIES FOLDER "GLFW3")
+    add_custom_target(docs ALL SOURCES ${source_files} DEPENDS "html/index.html")
+    set_target_properties(docs PROPERTIES FOLDER "GLFW3")
+
+    if (GLFW_INSTALL)
+        install(DIRECTORY "${GLFW_BINARY_DIR}/docs/html"
+                DESTINATION "${CMAKE_INSTALL_DOCDIR}")
+    endif()
+endif()
 

@@ -15,10 +15,10 @@ environment:
         - GENERATOR: MinGW Makefiles
           BUILD_SHARED_LIBS: OFF
           CFLAGS: -Werror
-        - GENERATOR: Visual Studio 10 2010
+        - GENERATOR: Visual Studio 12 2013
           BUILD_SHARED_LIBS: ON
           CFLAGS: /WX
-        - GENERATOR: Visual Studio 10 2010
+        - GENERATOR: Visual Studio 12 2013
           BUILD_SHARED_LIBS: OFF
           CFLAGS: /WX
 matrix:
@@ -29,15 +29,15 @@ for:
         only:
             - GENERATOR: MinGW Makefiles
     build_script:
-        - set PATH=%PATH:C:\Program Files\Git\usr\bin=C:\MinGW\bin%
-        - cmake -S . -B build -G "%GENERATOR%" -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS%
+        - set PATH=C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;%PATH:C:\Program Files\Git\usr\bin=%
+        - cmake -B build -G "%GENERATOR%" -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS%
         - cmake --build build
 -
     matrix:
         only:
-            - GENERATOR: Visual Studio 10 2010
+            - GENERATOR: Visual Studio 12 2013
     build_script:
-        - cmake -S . -B build -G "%GENERATOR%" -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS%
+        - cmake -B build -G "%GENERATOR%" -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS%
         - cmake --build build --target glfw
 notifications:
     - provider: Email

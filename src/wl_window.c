@@ -2565,7 +2565,33 @@ void _glfwFocusWindowWayland(_GLFWwindow* window)
 
 void _glfwDragWindowWayland(_GLFWwindow* window)
 {
-    xdg_toplevel_move(window->wl.xdg.toplevel, _glfw.wl.seat, _glfw.wl.serial);
+    struct xdg_toplevel* toplevel =
+        window->wl.libdecor.frame ?
+        libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame) :
+        window->wl.xdg.toplevel;
+
+    if (!toplevel)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Cannot drag window: xdg_toplevel not created yet");
+        return;
+    }
+
+    if (!_glfw.wl.seat)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Cannot drag window: no valid seat");
+        return;
+    }
+
+    if (_glfw.wl.serial == 0)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Cannot drag window: no valid serial");
+        return;
+    }
+
+    xdg_toplevel_move(toplevel, _glfw.wl.seat, _glfw.wl.serial);
 }
 
 void _glfwSetWindowMonitorWayland(_GLFWwindow* window,

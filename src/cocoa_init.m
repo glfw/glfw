@@ -688,6 +688,8 @@ void _glfwTerminateCocoa(void)
     _glfwTerminateEGL();
     _glfwTerminateOSMesa();
 
+    memset(&_glfw.ns, 0, sizeof(_glfw.ns));
+
     } // autoreleasepool
 }
 

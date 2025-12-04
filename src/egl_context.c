@@ -333,11 +333,8 @@ static void destroyContextEGL(_GLFWwindow* window)
     if (_glfw.platform.platformID != GLFW_PLATFORM_X11 ||
         window->context.client != GLFW_OPENGL_API)
     {
-        if (window->context.egl.client)
-        {
-            _glfwPlatformFreeModule(window->context.egl.client);
-            window->context.egl.client = NULL;
-        }
+        _glfwPlatformFreeModule(window->context.egl.client);
+        window->context.egl.client = NULL;
     }
 
     if (window->context.egl.surface)
@@ -552,7 +549,7 @@ void _glfwTerminateEGL(void)
     }
 
     // Free modules only after all wayland termination functions are called
-    if (_glfw.egl.handle && _glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
+    if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
     {
         _glfwPlatformFreeModule(_glfw.egl.handle);
         _glfw.egl.handle = NULL;

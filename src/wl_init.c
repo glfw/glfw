@@ -984,43 +984,16 @@ void _glfwTerminateWayland(void)
 
     // Free modules only after all Wayland termination functions are called
 
-    if (_glfw.egl.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.egl.handle);
-        _glfw.egl.handle = NULL;
-    }
-
-    if (_glfw.wl.libdecor.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.wl.libdecor.handle);
-        _glfw.wl.libdecor.handle = NULL;
-    }
-
-    if (_glfw.wl.egl.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.wl.egl.handle);
-        _glfw.wl.egl.handle = NULL;
-    }
-
-    if (_glfw.wl.xkb.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.wl.xkb.handle);
-        _glfw.wl.xkb.handle = NULL;
-    }
-
-    if (_glfw.wl.cursor.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.wl.cursor.handle);
-        _glfw.wl.cursor.handle = NULL;
-    }
-
-    if (_glfw.wl.client.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.wl.client.handle);
-        _glfw.wl.client.handle = NULL;
-    }
+    _glfwPlatformFreeModule(_glfw.egl.handle);
+    _glfwPlatformFreeModule(_glfw.wl.libdecor.handle);
+    _glfwPlatformFreeModule(_glfw.wl.egl.handle);
+    _glfwPlatformFreeModule(_glfw.wl.xkb.handle);
+    _glfwPlatformFreeModule(_glfw.wl.cursor.handle);
+    _glfwPlatformFreeModule(_glfw.wl.client.handle);
 
     _glfw_free(_glfw.wl.clipboardString);
+
+    memset(&_glfw.wl, 0, sizeof(_glfw.wl));
 }
 
 #endif // _GLFW_WAYLAND

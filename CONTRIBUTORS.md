@@ -237,6 +237,7 @@ video tutorials.
  - Jan Schürkamp
  - Christian Sdunek
  - Matt Sealey
+ - Perumaal Shanmugam
  - Steve Sexton
  - Arkady Shapkin
  - Mingjie Shen

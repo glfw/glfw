@@ -88,6 +88,7 @@ GLFWbool _glfwConnectNull(int platformID, _GLFWplatform* platform)
         .hideWindow = _glfwHideWindowNull,
         .requestWindowAttention = _glfwRequestWindowAttentionNull,
         .focusWindow = _glfwFocusWindowNull,
+        .dragWindow = _glfwDragWindowNull,      
         .setWindowMonitor = _glfwSetWindowMonitorNull,
         .windowFocused = _glfwWindowFocusedNull,
         .windowIconified = _glfwWindowIconifiedNull,

@@ -733,6 +733,7 @@ struct _GLFWplatform
     void (*hideWindow)(_GLFWwindow*);
     void (*requestWindowAttention)(_GLFWwindow*);
     void (*focusWindow)(_GLFWwindow*);
+    void (*dragWindow)(_GLFWwindow*);
     void (*setWindowMonitor)(_GLFWwindow*,_GLFWmonitor*,int,int,int,int,int);
     GLFWbool (*windowFocused)(_GLFWwindow*);
     GLFWbool (*windowIconified)(_GLFWwindow*);

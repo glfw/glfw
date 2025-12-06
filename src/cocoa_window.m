@@ -1240,6 +1240,11 @@ void _glfwFocusWindowCocoa(_GLFWwindow* window)
     } // autoreleasepool
 }
 
+void _glfwDragWindowCocoa(_GLFWwindow* window)
+{
+    // TODO
+}
+
 void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
                                 _GLFWmonitor* monitor,
                                 int xpos, int ypos,

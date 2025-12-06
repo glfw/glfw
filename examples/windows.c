@@ -31,6 +31,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods){
+    if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+        glfwDragWindow(window);
+    }
+}
+
 int main(int argc, char** argv)
 {
     int xpos, ypos, height;
@@ -78,6 +84,7 @@ int main(int argc, char** argv)
         }
 
         glfwSetInputMode(windows[i], GLFW_STICKY_KEYS, GLFW_TRUE);
+        glfwSetMouseButtonCallback(windows[i], mouse_button_callback);
 
         glfwMakeContextCurrent(windows[i]);
         gladLoadGL(glfwGetProcAddress);

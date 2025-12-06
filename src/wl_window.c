@@ -1578,6 +1578,13 @@ static void pointerHandleLeave(void* userData,
     {
         window->wl.hovered = GLFW_FALSE;
         _glfwInputCursorEnter(window, GLFW_FALSE);
+        // Would like to silently set mouse button state to undefined without triggering a mouse button release event
+        // See https://gitlab.freedesktop.org/wayland/wayland/-/issues/280
+        // But many underlying systems will keep their own state and only use GLFW events to keep it up to date
+        // So realistically, they NEED a mouse button event, even if wayland spec would like it to be implicitly undefined
+        for (int btn = 0; btn < GLFW_MOUSE_BUTTON_LAST+1; btn++)
+            if (window->mouseButtons[btn] != GLFW_RELEASE)
+                _glfwInputMouseClick(window, btn, GLFW_RELEASE, 0);
     }
     else
     {
@@ -1801,6 +1808,14 @@ static void keyboardHandleLeave(void* userData,
     _glfw.wl.serial = serial;
     _glfw.wl.keyboardFocus = NULL;
     _glfwInputWindowFocus(window, GLFW_FALSE);
+
+    // Would like to silently set key state to undefined without triggering a key release event
+    // See https://gitlab.freedesktop.org/wayland/wayland/-/issues/280
+    // But many underlying systems will keep their own state and only use GLFW events to keep it up to date
+    // So realistically, they NEED a key event, even if wayland spec would like it to be implicitly undefined
+    for (int key = 0; key < GLFW_KEY_LAST+1; key++)
+        if (window->keys[key] != GLFW_RELEASE)
+            _glfwInputKey(window, key, _glfwGetKeyScancodeWayland(key), GLFW_RELEASE, 0);
 }
 
 static void keyboardHandleKey(void* userData,
@@ -2549,6 +2564,37 @@ void _glfwFocusWindowWayland(_GLFWwindow* window)
     }
 
     xdg_activation_token_v1_commit(window->wl.activationToken);
+}
+
+void _glfwDragWindowWayland(_GLFWwindow* window)
+{
+    struct xdg_toplevel* toplevel =
+        window->wl.libdecor.frame ?
+        libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame) :
+        window->wl.xdg.toplevel;
+
+    if (!toplevel)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Cannot drag window: xdg_toplevel not created yet");
+        return;
+    }
+
+    if (!_glfw.wl.seat)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Cannot drag window: no valid seat");
+        return;
+    }
+
+    if (_glfw.wl.serial == 0)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Cannot drag window: no valid serial");
+        return;
+    }
+
+    xdg_toplevel_move(toplevel, _glfw.wl.seat, _glfw.wl.serial);
 }
 
 void _glfwSetWindowMonitorWayland(_GLFWwindow* window,

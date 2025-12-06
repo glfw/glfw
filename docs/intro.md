@@ -618,20 +618,20 @@ The format of the string is as follows:
  - For each supported platform:
    - The name of the window system API
    - The name of the window system specific context creation API, if applicable
- - The names of the always supported context creation APIs EGL and OSMesa
+ - The names of the always supported context creation APIs and EGL
  - Any additional compile-time options, APIs and (on Windows) what compiler was used
 
 For example, compiling GLFW 3.5 with MinGW-64 as a DLL for Windows, may result
 in a version string like this:
 
 ```c
-3.5.0 Win32 WGL Null EGL OSMesa MinGW-w64 DLL
+3.5.0 Win32 WGL Null EGL MinGW-w64 DLL
 ```
 
 Compiling GLFW as a static library for Linux, with both Wayland and X11 enabled, may
 result in a version string like this:
 
 ```c
-3.5.0 Wayland X11 GLX Null EGL OSMesa monotonic
+3.5.0 Wayland X11 GLX Null EGL monotonic
 ```
 

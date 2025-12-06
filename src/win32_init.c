@@ -719,7 +719,6 @@ void _glfwTerminateWin32(void)
 
     _glfwTerminateWGL();
     _glfwTerminateEGL();
-    _glfwTerminateOSMesa();
 
     freeLibraries();
 }

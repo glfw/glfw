@@ -16,7 +16,7 @@ include(GNUInstallDirs)
 include(CMakeDependentOption)
 
 if (GLFW_USE_OSMESA)
-    message(FATAL_ERROR "GLFW_USE_OSMESA has been removed; set the GLFW_PLATFORM init hint")
+    message(FATAL_ERROR "OSMesa support has been removed")
 endif()
 
 if (DEFINED GLFW_USE_WAYLAND AND UNIX AND NOT APPLE)

@@ -46,7 +46,6 @@
 
 #define API_NAME_NATIVE     "native"
 #define API_NAME_EGL        "egl"
-#define API_NAME_OSMESA     "osmesa"
 
 #define PROFILE_NAME_CORE   "core"
 #define PROFILE_NAME_COMPAT "compat"
@@ -90,8 +89,7 @@ static void usage(void)
                                         BEHAVIOR_NAME_FLUSH ")\n");
     printf("  -c, --context-api=API     the context creation API to use ("
                                         API_NAME_NATIVE " or "
-                                        API_NAME_EGL " or "
-                                        API_NAME_OSMESA ")\n");
+                                        API_NAME_EGL ")\n");
     printf("  -d, --debug               request a debug context\n");
     printf("  -f, --forward             require a forward-compatible context\n");
     printf("  -h, --help                show this help\n");
@@ -482,8 +480,6 @@ int main(int argc, char** argv)
                     context_creation_api = GLFW_NATIVE_CONTEXT_API;
                 else if (strcasecmp(optarg, API_NAME_EGL) == 0)
                     context_creation_api = GLFW_EGL_CONTEXT_API;
-                else if (strcasecmp(optarg, API_NAME_OSMESA) == 0)
-                    context_creation_api = GLFW_OSMESA_CONTEXT_API;
                 else
                 {
                     usage();

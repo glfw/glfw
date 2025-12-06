@@ -2312,7 +2312,6 @@ PREDEFINED             = GLFWAPI=                   \
                          GLFW_EXPOSE_NATIVE_COCOA   \
                          GLFW_EXPOSE_NATIVE_NSGL    \
                          GLFW_EXPOSE_NATIVE_EGL     \
-                         GLFW_EXPOSE_NATIVE_OSMESA  \
                          VK_VERSION_1_0
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this

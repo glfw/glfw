@@ -1157,6 +1157,10 @@ static void processEvent(XEvent *event)
         keycode = event->xkey.keycode;
 
     filtered = XFilterEvent(event, None);
+    if (filtered)
+    {
+        return;
+    }
 
     if (_glfw.x11.randr.available)
     {

@@ -711,11 +711,11 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             const int mods = getKeyMods();
 
             scancode = (HIWORD(lParam) & (KF_EXTENDED | 0xff));
-            if (!scancode)
+            if (scancode == 0x100)
             {
-                // NOTE: Some synthetic key messages have a scancode of zero
+                // NOTE: Some synthetic key messages have a scancode of extended zero
                 // HACK: Map the virtual key back to a usable scancode
-                scancode = MapVirtualKeyW((UINT) wParam, MAPVK_VK_TO_VSC);
+                scancode = KF_EXTENDED | MapVirtualKeyW((UINT) wParam, MAPVK_VK_TO_VSC);
             }
 
             // HACK: Alt+PrtSc has a different scancode than just PrtSc

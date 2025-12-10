@@ -829,6 +829,73 @@ int _glfwInitWayland(void)
         }
     }
 
+    _glfw.wl.dbus.handle = _glfwPlatformLoadModule("libdbus-1.so.3");
+
+    if (_glfw.wl.dbus.handle)
+    {
+        _glfw.wl.dbus.dbus_error_init_ = (PFN_dbus_error_init)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_error_init");
+        _glfw.wl.dbus.dbus_error_free_ = (PFN_dbus_error_free)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_error_free");
+        _glfw.wl.dbus.dbus_error_is_set_ = (PFN_dbus_error_is_set)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_error_is_set");
+        _glfw.wl.dbus.dbus_bus_get_ = (PFN_dbus_bus_get)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_bus_get");
+        _glfw.wl.dbus.dbus_connection_set_exit_on_disconnect_ = (PFN_dbus_connection_set_exit_on_disconnect)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_connection_set_exit_on_disconnect");
+        _glfw.wl.dbus.dbus_connection_send_with_reply_and_block_ = (PFN_dbus_connection_send_with_reply_and_block)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_connection_send_with_reply_and_block");
+        _glfw.wl.dbus.dbus_message_new_method_call_ = (PFN_dbus_message_new_method_call)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_message_new_method_call");
+        _glfw.wl.dbus.dbus_message_unref_ = (PFN_dbus_message_unref)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_message_unref");
+        _glfw.wl.dbus.dbus_message_iter_init_ = (PFN_dbus_message_iter_init)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_message_iter_init");
+        _glfw.wl.dbus.dbus_message_iter_init_append_ = (PFN_dbus_message_iter_init_append)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_message_iter_init_append");
+        _glfw.wl.dbus.dbus_message_iter_append_basic_ = (PFN_dbus_message_iter_append_basic)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_message_iter_append_basic");
+        _glfw.wl.dbus.dbus_message_iter_open_container_ = (PFN_dbus_message_iter_open_container)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_message_iter_open_container");
+        _glfw.wl.dbus.dbus_message_iter_close_container_ = (PFN_dbus_message_iter_close_container)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_message_iter_close_container");
+        _glfw.wl.dbus.dbus_message_iter_get_arg_type_ = (PFN_dbus_message_iter_get_arg_type)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_message_iter_get_arg_type");
+        _glfw.wl.dbus.dbus_message_iter_get_element_type_ = (PFN_dbus_message_iter_get_element_type)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_message_iter_get_element_type");
+        _glfw.wl.dbus.dbus_message_iter_recurse_ = (PFN_dbus_message_iter_recurse)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_message_iter_recurse");
+        _glfw.wl.dbus.dbus_message_iter_get_element_count_ = (PFN_dbus_message_iter_get_element_count)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_message_iter_get_element_count");
+        _glfw.wl.dbus.dbus_message_iter_get_basic_ = (PFN_dbus_message_iter_get_basic)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_message_iter_get_basic");
+        _glfw.wl.dbus.dbus_message_iter_next_ = (PFN_dbus_message_iter_next)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.dbus.handle, "dbus_message_iter_next");
+        if (!_glfw.wl.dbus.dbus_error_init_ ||
+            !_glfw.wl.dbus.dbus_error_free_ ||
+            !_glfw.wl.dbus.dbus_error_is_set_ ||
+            !_glfw.wl.dbus.dbus_bus_get_ ||
+            !_glfw.wl.dbus.dbus_connection_set_exit_on_disconnect_ ||
+            !_glfw.wl.dbus.dbus_connection_send_with_reply_and_block_ ||
+            !_glfw.wl.dbus.dbus_message_new_method_call_ ||
+            !_glfw.wl.dbus.dbus_message_unref_ ||
+            !_glfw.wl.dbus.dbus_message_iter_init_ ||
+            !_glfw.wl.dbus.dbus_message_iter_init_append_ ||
+            !_glfw.wl.dbus.dbus_message_iter_append_basic_ ||
+            !_glfw.wl.dbus.dbus_message_iter_open_container_ ||
+            !_glfw.wl.dbus.dbus_message_iter_close_container_ ||
+            !_glfw.wl.dbus.dbus_message_iter_get_arg_type_ ||
+            !_glfw.wl.dbus.dbus_message_iter_get_element_type_ ||
+            !_glfw.wl.dbus.dbus_message_iter_recurse_ ||
+            !_glfw.wl.dbus.dbus_message_iter_get_element_count_ ||
+            !_glfw.wl.dbus.dbus_message_iter_get_basic_ ||
+            !_glfw.wl.dbus.dbus_message_iter_next_)
+        {
+            _glfwPlatformFreeModule(_glfw.wl.dbus.handle);
+            memset(&_glfw.wl.dbus, 0, sizeof(_glfw.wl.dbus));
+        }
+    }
+
     _glfw.wl.registry = wl_display_get_registry(_glfw.wl.display);
     wl_registry_add_listener(_glfw.wl.registry, &registryListener, NULL);
 

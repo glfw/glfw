@@ -161,6 +161,8 @@ if (GLFW_BUILD_WAYLAND)
         wayland-egl>=0.2.7
         xkbcommon>=0.5.0)
 
+    set(DBUS_SIZEOF_VOID_P ${CMAKE_SIZEOF_VOID_P})
+
     target_include_directories(glfw PRIVATE ${Wayland_INCLUDE_DIRS})
 
     if (NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")

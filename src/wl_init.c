@@ -477,6 +477,7 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         .destroyWindow = _glfwDestroyWindowWayland,
         .setWindowTitle = _glfwSetWindowTitleWayland,
         .setWindowIcon = _glfwSetWindowIconWayland,
+        .setWindowProgressIndicator = _glfwSetWindowProgressIndicatorWayland,
         .getWindowPos = _glfwGetWindowPosWayland,
         .setWindowPos = _glfwSetWindowPosWayland,
         .getWindowSize = _glfwGetWindowSizeWayland,
@@ -563,6 +564,8 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
 
 int _glfwInitWayland(void)
 {
+    _glfwInitDBusPOSIX();
+
     // These must be set before any failure checks
     _glfw.wl.keyRepeatTimerfd = -1;
     _glfw.wl.cursorTimerfd = -1;
@@ -1012,6 +1015,8 @@ void _glfwTerminateWayland(void)
     }
 
     _glfw_free(_glfw.wl.clipboardString);
+
+    _glfwTerminateDBusPOSIX();
 }
 
 #endif // _GLFW_WAYLAND

@@ -308,6 +308,79 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(
 #define GLFW_WGL_CONTEXT_STATE          _GLFWcontextWGL wgl;
 #define GLFW_WGL_LIBRARY_CONTEXT_STATE  _GLFWlibraryWGL wgl;
 
+typedef enum
+{
+    TBPF_NOPROGRESS = 0x0,
+    TBPF_INDETERMINATE = 0x1,
+    TBPF_NORMAL = 0x2,
+    TBPF_ERROR = 0x4,
+    TBPF_PAUSED = 0x8
+} TBPFLAG;
+
+static const IID IID_ITaskbarList3 = { 0xea1afb91, 0x9e28, 0x4b86, {0x90, 0xe9, 0x9e, 0x9f, 0x8a, 0x5e, 0xef, 0xaf} };
+static const IID CLSID_TaskbarList = { 0x56fdf344, 0xfd6d, 0x11d0, {0x95, 0x8a, 0x00, 0x60, 0x97, 0xc9, 0xa0, 0x90} };
+
+typedef enum THUMBBUTTONMASK
+{
+    THB_BITMAP = 0x1,
+    THB_ICON = 0x2,
+    THB_TOOLTIP = 0x4,
+    THB_FLAGS = 0x8
+} THUMBBUTTONMASK;
+
+typedef enum THUMBBUTTONFLAGS
+{
+    THBF_ENABLED = 0,
+    THBF_DISABLED = 0x1,
+    THBF_DISMISSONCLICK = 0x2,
+    THBF_NOBACKGROUND = 0x4,
+    THBF_HIDDEN = 0x8,
+    THBF_NONINTERACTIVE = 0x10
+} THUMBBUTTONFLAGS;
+
+typedef struct THUMBBUTTON {
+    THUMBBUTTONMASK  dwMask;
+    UINT             iId;
+    UINT             iBitmap;
+    HICON            hIcon;
+    WCHAR            szTip[260];
+    THUMBBUTTONFLAGS dwFlags;
+} THUMBBUTTON, *LPTHUMBBUTTON;
+
+struct _IMAGELIST;
+typedef struct _IMAGELIST* HIMAGELIST;
+
+typedef struct ITaskbarList3 ITaskbarList3;
+
+typedef struct ITaskbarList3Vtbl
+{
+    HRESULT(WINAPI* QueryInterface)(struct ITaskbarList3*, const IID* const, void**);
+    ULONG(WINAPI* AddRef)(struct ITaskbarList3*);
+    ULONG(WINAPI* Release)(struct ITaskbarList3*);
+    HRESULT(WINAPI* HrInit)(struct ITaskbarList3*);
+    HRESULT(WINAPI* AddTab)(struct ITaskbarList3*, HWND);
+    HRESULT(WINAPI* DeleteTab)(struct ITaskbarList3*, HWND);
+    HRESULT(WINAPI* ActivateTab)(struct ITaskbarList3*, HWND);
+    HRESULT(WINAPI* SetActiveAlt)(struct ITaskbarList3*, HWND);
+    HRESULT(WINAPI* MarkFullscreenWindow)(struct ITaskbarList3*, HWND, BOOL);
+    HRESULT(WINAPI* SetProgressValue)(struct ITaskbarList3*, HWND, ULONGLONG, ULONGLONG);
+    HRESULT(WINAPI* SetProgressState)(struct ITaskbarList3*, HWND, TBPFLAG);
+    HRESULT(WINAPI* RegisterTab)(struct ITaskbarList3*, HWND, HWND);
+    HRESULT(WINAPI* UnregisterTab)(struct ITaskbarList3*, HWND);
+    HRESULT(WINAPI* SetTabOrder)(struct ITaskbarList3*, HWND, HWND);
+    HRESULT(WINAPI* SetTabActive)(struct ITaskbarList3*, HWND, HWND, DWORD);
+    HRESULT(WINAPI* ThumbBarAddButtons)(struct ITaskbarList3*, HWND, UINT, LPTHUMBBUTTON);
+    HRESULT(WINAPI* ThumbBarUpdateButtons)(struct ITaskbarList3*, HWND, UINT, LPTHUMBBUTTON);
+    HRESULT(WINAPI* ThumbBarSetImageList)(struct ITaskbarList3*, HWND, HIMAGELIST);
+    HRESULT(WINAPI* SetOverlayIcon)(struct ITaskbarList3*, HWND, HICON, LPCWSTR);
+    HRESULT(WINAPI* SetThumbnailTooltip)(struct ITaskbarList3*, HWND, LPCWSTR);
+    HRESULT(WINAPI* SetThumbnailClip)(struct ITaskbarList3*, HWND, RECT*);
+} ITaskbarList3Vtbl;
+
+struct ITaskbarList3
+{
+    struct ITaskbarList3Vtbl* lpVtbl;
+};
 
 // WGL-specific per-context data
 //
@@ -375,6 +448,9 @@ typedef struct _GLFWwindowWin32
     int                 lastCursorPosX, lastCursorPosY;
     // The last received high surrogate when decoding pairs of UTF-16 messages
     WCHAR               highSurrogate;
+
+    ITaskbarList3*      taskbarList;
+    UINT                taskbarListMsgID;
 } _GLFWwindowWin32;
 
 // Win32-specific global data
@@ -465,7 +541,6 @@ typedef struct _GLFWcursorWin32
     HCURSOR             handle;
 } _GLFWcursorWin32;
 
-
 GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform);
 int _glfwInitWin32(void);
 void _glfwTerminateWin32(void);
@@ -486,6 +561,7 @@ GLFWbool _glfwCreateWindowWin32(_GLFWwindow* window, const _GLFWwndconfig* wndco
 void _glfwDestroyWindowWin32(_GLFWwindow* window);
 void _glfwSetWindowTitleWin32(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* images);
+void _glfwSetWindowProgressIndicatorWin32(_GLFWwindow* window, int progressState, double value);
 void _glfwGetWindowPosWin32(_GLFWwindow* window, int* xpos, int* ypos);
 void _glfwSetWindowPosWin32(_GLFWwindow* window, int xpos, int ypos);
 void _glfwGetWindowSizeWin32(_GLFWwindow* window, int* width, int* height);

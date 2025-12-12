@@ -163,6 +163,13 @@ static GLFWbool loadLibraries(void)
             _glfwPlatformGetModuleSymbol(_glfw.win32.ntdll.instance, "RtlVerifyVersionInfo");
     }
 
+    _glfw.win32.winmm.instance = _glfwPlatformLoadModule("winmm.dll");
+    if (_glfw.win32.winmm.instance)
+    {
+        _glfw.win32.winmm.timeBeginPeriod_ = (PFN_timeBeginPeriod) _glfwPlatformGetModuleSymbol(_glfw.win32.winmm.instance, "timeBeginPeriod");
+        _glfw.win32.winmm.timeBeginPeriod_(1);
+    }
+
     return GLFW_TRUE;
 }
 
@@ -187,6 +194,9 @@ static void freeLibraries(void)
 
     if (_glfw.win32.ntdll.instance)
         _glfwPlatformFreeModule(_glfw.win32.ntdll.instance);
+
+    if (_glfw.win32.winmm.instance)
+        _glfwPlatformFreeModule(_glfw.win32.winmm.instance);
 }
 
 // Create key code translation tables

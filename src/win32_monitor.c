@@ -145,7 +145,7 @@ void _glfwPollMonitorsWin32(void)
     disconnectedCount = _glfw.monitorCount;
     if (disconnectedCount)
     {
-        disconnected = _glfw_calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
+        disconnected = (_GLFWmonitor**)_glfw_calloc(_glfw.monitorCount, sizeof(_GLFWmonitor*));
         memcpy(disconnected,
                _glfw.monitors,
                _glfw.monitorCount * sizeof(_GLFWmonitor*));
@@ -463,7 +463,7 @@ GLFWvidmode* _glfwGetVideoModesWin32(_GLFWmonitor* monitor, int* count)
     if (!*count)
     {
         // HACK: Report the current mode if no valid modes were found
-        result = _glfw_calloc(1, sizeof(GLFWvidmode));
+        result = (GLFWvidmode*)_glfw_calloc(1, sizeof(GLFWvidmode));
         _glfwGetVideoModeWin32(monitor, result);
         *count = 1;
     }

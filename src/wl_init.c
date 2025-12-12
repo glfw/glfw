@@ -243,7 +243,7 @@ void libdecorHandleError(struct libdecor* context,
 
 static const struct libdecor_interface libdecorInterface =
 {
-    libdecorHandleError
+    .error = libdecorHandleError
 };
 
 static void libdecorReadyCallback(void* userData,

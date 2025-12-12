@@ -150,7 +150,7 @@ GLFWbool _glfwInitVulkan(int mode)
 
     _glfw.vk.available = GLFW_TRUE;
 
-    _glfw.platform.getRequiredInstanceExtensions(_glfw.vk.extensions);
+    _glfw.platform.getRequiredInstanceExtensions((const char **)_glfw.vk.extensions);
 
     return GLFW_TRUE;
 }

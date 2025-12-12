@@ -2347,6 +2347,9 @@ void _glfwRestoreWindowX11(_GLFWwindow* window)
 
     if (_glfwWindowIconifiedX11(window))
     {
+        // Some window managers do not unmap iconified windows, and XMapWindow is
+        // then no-op. Explicitly unmap the window to make sure it gets restored.
+        XUnmapWindow(_glfw.x11.display, window->x11.handle);
         XMapWindow(_glfw.x11.display, window->x11.handle);
         waitForVisibilityNotify(window);
     }

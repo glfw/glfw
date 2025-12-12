@@ -231,6 +231,8 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->floating         = wndconfig.floating;
     window->focusOnShow      = wndconfig.focusOnShow;
     window->mousePassthrough = wndconfig.mousePassthrough;
+    window->canBecomeMain    = wndconfig.canBecomeMain;
+    window->canBecomeKey     = wndconfig.canBecomeKey;
     window->cursorMode       = GLFW_CURSOR_NORMAL;
 
     window->doublebuffer = fbconfig.doublebuffer;
@@ -396,6 +398,12 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             return;
         case GLFW_MOUSE_PASSTHROUGH:
             _glfw.hints.window.mousePassthrough = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
+        case GLFW_CAN_BECOME_MAIN:
+            _glfw.hints.window.canBecomeMain = value ? GLFW_TRUE : GLFW_FALSE;
+            return;
+        case GLFW_CAN_BECOME_KEY:
+            _glfw.hints.window.canBecomeKey = value ? GLFW_TRUE : GLFW_FALSE;
             return;
         case GLFW_CLIENT_API:
             _glfw.hints.context.client = value;
@@ -899,6 +907,10 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return window->focusOnShow;
         case GLFW_MOUSE_PASSTHROUGH:
             return window->mousePassthrough;
+        case GLFW_CAN_BECOME_MAIN:
+            return window->canBecomeMain;
+        case GLFW_CAN_BECOME_KEY:
+            return window->canBecomeKey;
         case GLFW_TRANSPARENT_FRAMEBUFFER:
             return _glfw.platform.framebufferTransparent(window);
         case GLFW_RESIZABLE:
@@ -979,6 +991,14 @@ GLFWAPI void glfwSetWindowAttrib(GLFWwindow* handle, int attrib, int value)
         case GLFW_MOUSE_PASSTHROUGH:
             window->mousePassthrough = value;
             _glfw.platform.setWindowMousePassthrough(window, value);
+            return;
+
+        case GLFW_CAN_BECOME_MAIN:
+            window->canBecomeMain = value;
+            return;
+
+        case GLFW_CAN_BECOME_KEY:
+            window->canBecomeKey = value;
             return;
     }
 

@@ -1058,13 +1058,13 @@ void __CocoaSetDockIcon(unsigned char* data, int width, int height)
 void _glfwSetWindowIconCocoa(_GLFWwindow* window,
                              int count, const GLFWimage* images)
 {
-    /*_glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                    "Cocoa: Regular windows do not have icons on macOS");*/
-    if (count >= 1) {
-        const GLFWimage poopy = images[0];
-        __CocoaSetDockIcon(poopy.pixels, poopy.width, poopy.height);
-    }
+    if (!window || count < 1)
+        return;
+
+    const GLFWimage iconImage = images[0];
+    __CocoaSetDockIcon(iconImage.pixels, iconImage.width, iconImage.height);
 }
+
 
 void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos)
 {

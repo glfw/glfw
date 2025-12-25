@@ -29,6 +29,8 @@
 #if defined(_GLFW_COCOA)
 
 #import <QuartzCore/CAMetalLayer.h>
+#import <Cocoa/Cocoa.h>
+#import <objc/runtime.h>
 
 #include <float.h>
 #include <string.h>
@@ -1029,11 +1031,36 @@ void _glfwSetWindowTitleCocoa(_GLFWwindow* window, const char* title)
     } // autoreleasepool
 }
 
+void __CocoaSetDockIcon(unsigned char* data, int width, int height)
+{
+    // Create an empty NSImage
+    NSImage *dockIcon = [[NSImage alloc] initWithSize:NSMakeSize(width, height)];
+
+    // Create a CGImage
+    CGDataProviderRef provider = CGDataProviderCreateWithData(nullptr, data, width*height*4, nullptr);
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGImageRef cgImage = CGImageCreate(width, height, 8, 32, width*4, colorSpace,
+                                       kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big,
+                                       provider, nullptr, false, kCGRenderingIntentDefault);
+
+    // Keep the Icon Alive?
+    [dockIcon addRepresentation:[[NSBitmapImageRep alloc] initWithCGImage:cgImage]];
+
+    // set the app icon
+    [NSApp setApplicationIconImage:dockIcon];
+
+    // Free the garbage
+    CGImageRelease(cgImage);
+    CGColorSpaceRelease(colorSpace);
+    CGDataProviderRelease(provider);
+}
+
 void _glfwSetWindowIconCocoa(_GLFWwindow* window,
                              int count, const GLFWimage* images)
 {
-    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                    "Cocoa: Regular windows do not have icons on macOS");
+    /*_glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                    "Cocoa: Regular windows do not have icons on macOS");*/
+    __CocoaSetDockIcon(); // TODO: IMPLEMENT
 }
 
 void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos)

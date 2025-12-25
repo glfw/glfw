@@ -36,6 +36,8 @@
 #include <string.h>
 #include <assert.h>
 
+#define nullptr ((void*)0) // i like c++
+
 // HACK: This enum value is missing from framework headers on OS X 10.11 despite
 //       having been (according to documentation) added in Mac OS X 10.7
 #define NSWindowCollectionBehaviorFullScreenNone (1 << 9)

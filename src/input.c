@@ -1398,6 +1398,8 @@ GLFWAPI int glfwGetGamepadState(int jid, GLFWgamepadstate* state)
     assert(state != NULL);
 
     memset(state, 0, sizeof(GLFWgamepadstate));
+    state->axes[GLFW_GAMEPAD_AXIS_LEFT_TRIGGER] = -1.0f;
+    state->axes[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER] = -1.0f;
 
     _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
 

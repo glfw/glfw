@@ -2207,10 +2207,10 @@ void _glfwGetWindowSizeX11(_GLFWwindow* window, int* width, int* height)
 
 void _glfwSetWindowSizeX11(_GLFWwindow* window, int width, int height)
 {
-	// The dimensions must be nonzero, or a BadValue error results.
+    // The dimensions must be nonzero, or a BadValue error results
     width = _glfw_max(1, width);
     height = _glfw_max(1, height);
-	
+
     if (window->monitor)
     {
         if (window->monitor->window == window)

@@ -151,7 +151,8 @@ void _glfwPollMonitorsX11(void)
             }
 
             XRRCrtcInfo* ci = XRRGetCrtcInfo(_glfw.x11.display, sr, oi->crtc);
-            if (!ci) {
+            if (!ci)
+            {
                 XRRFreeOutputInfo(oi);
                 continue;
             }

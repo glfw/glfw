@@ -251,13 +251,13 @@ void* _glfw_calloc(size_t count, size_t size)
     if (!count || !size)
         return NULL;
 
-    const size_t total_size = count * size;
-    if (total_size > SIZE_MAX)
+    if (count > SIZE_MAX / size)
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Allocation size overflow");
         return NULL;
     }
 
+    const size_t total_size = count * size;
     void* block = _glfw.allocator.allocate(total_size, _glfw.allocator.user);
     if (!block)
     {

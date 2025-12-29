@@ -136,18 +136,22 @@ struct wl_output;
 #define GLFW_WAYLAND_MONITOR_STATE        _GLFWmonitorWayland wl;
 #define GLFW_WAYLAND_CURSOR_STATE         _GLFWcursorWayland  wl;
 
-struct wl_cursor_image {
+struct wl_cursor_image
+{
     uint32_t width;
     uint32_t height;
     uint32_t hotspot_x;
     uint32_t hotspot_y;
     uint32_t delay;
 };
-struct wl_cursor {
+
+struct wl_cursor
+{
     unsigned int image_count;
     struct wl_cursor_image** images;
     char* name;
 };
+
 typedef struct wl_cursor_theme* (* PFN_wl_cursor_theme_load)(const char*, int, struct wl_shm*);
 typedef void (* PFN_wl_cursor_theme_destroy)(struct wl_cursor_theme*);
 typedef struct wl_cursor* (* PFN_wl_cursor_theme_get_cursor)(struct wl_cursor_theme*, const char*);
@@ -217,62 +221,62 @@ struct libdecor_configuration;
 
 enum libdecor_error
 {
-	LIBDECOR_ERROR_COMPOSITOR_INCOMPATIBLE,
-	LIBDECOR_ERROR_INVALID_FRAME_CONFIGURATION,
+    LIBDECOR_ERROR_COMPOSITOR_INCOMPATIBLE,
+    LIBDECOR_ERROR_INVALID_FRAME_CONFIGURATION,
 };
 
 enum libdecor_window_state
 {
-	LIBDECOR_WINDOW_STATE_NONE = 0,
-	LIBDECOR_WINDOW_STATE_ACTIVE = 1,
-	LIBDECOR_WINDOW_STATE_MAXIMIZED = 2,
-	LIBDECOR_WINDOW_STATE_FULLSCREEN = 4,
-	LIBDECOR_WINDOW_STATE_TILED_LEFT = 8,
-	LIBDECOR_WINDOW_STATE_TILED_RIGHT = 16,
-	LIBDECOR_WINDOW_STATE_TILED_TOP = 32,
-	LIBDECOR_WINDOW_STATE_TILED_BOTTOM = 64
+    LIBDECOR_WINDOW_STATE_NONE = 0,
+    LIBDECOR_WINDOW_STATE_ACTIVE = 1,
+    LIBDECOR_WINDOW_STATE_MAXIMIZED = 2,
+    LIBDECOR_WINDOW_STATE_FULLSCREEN = 4,
+    LIBDECOR_WINDOW_STATE_TILED_LEFT = 8,
+    LIBDECOR_WINDOW_STATE_TILED_RIGHT = 16,
+    LIBDECOR_WINDOW_STATE_TILED_TOP = 32,
+    LIBDECOR_WINDOW_STATE_TILED_BOTTOM = 64
 };
 
 enum libdecor_capabilities
 {
-	LIBDECOR_ACTION_MOVE = 1,
-	LIBDECOR_ACTION_RESIZE = 2,
-	LIBDECOR_ACTION_MINIMIZE = 4,
-	LIBDECOR_ACTION_FULLSCREEN = 8,
-	LIBDECOR_ACTION_CLOSE = 16
+    LIBDECOR_ACTION_MOVE = 1,
+    LIBDECOR_ACTION_RESIZE = 2,
+    LIBDECOR_ACTION_MINIMIZE = 4,
+    LIBDECOR_ACTION_FULLSCREEN = 8,
+    LIBDECOR_ACTION_CLOSE = 16
 };
 
 struct libdecor_interface
 {
-	void (* error)(struct libdecor*,enum libdecor_error,const char*);
-	void (* reserved0)(void);
-	void (* reserved1)(void);
-	void (* reserved2)(void);
-	void (* reserved3)(void);
-	void (* reserved4)(void);
-	void (* reserved5)(void);
-	void (* reserved6)(void);
-	void (* reserved7)(void);
-	void (* reserved8)(void);
-	void (* reserved9)(void);
+    void (* error)(struct libdecor*,enum libdecor_error,const char*);
+    void (* reserved0)(void);
+    void (* reserved1)(void);
+    void (* reserved2)(void);
+    void (* reserved3)(void);
+    void (* reserved4)(void);
+    void (* reserved5)(void);
+    void (* reserved6)(void);
+    void (* reserved7)(void);
+    void (* reserved8)(void);
+    void (* reserved9)(void);
 };
 
 struct libdecor_frame_interface
 {
-	void (* configure)(struct libdecor_frame*,struct libdecor_configuration*,void*);
-	void (* close)(struct libdecor_frame*,void*);
-	void (* commit)(struct libdecor_frame*,void*);
-	void (* dismiss_popup)(struct libdecor_frame*,const char*,void*);
-	void (* reserved0)(void);
-	void (* reserved1)(void);
-	void (* reserved2)(void);
-	void (* reserved3)(void);
-	void (* reserved4)(void);
-	void (* reserved5)(void);
-	void (* reserved6)(void);
-	void (* reserved7)(void);
-	void (* reserved8)(void);
-	void (* reserved9)(void);
+    void (* configure)(struct libdecor_frame*,struct libdecor_configuration*,void*);
+    void (* close)(struct libdecor_frame*,void*);
+    void (* commit)(struct libdecor_frame*,void*);
+    void (* dismiss_popup)(struct libdecor_frame*,const char*,void*);
+    void (* reserved0)(void);
+    void (* reserved1)(void);
+    void (* reserved2)(void);
+    void (* reserved3)(void);
+    void (* reserved4)(void);
+    void (* reserved5)(void);
+    void (* reserved6)(void);
+    void (* reserved7)(void);
+    void (* reserved8)(void);
+    void (* reserved9)(void);
 };
 
 typedef struct libdecor* (* PFN_libdecor_new)(struct wl_display*,const struct libdecor_interface*);
@@ -413,6 +417,8 @@ typedef struct _GLFWwindowWayland
         struct wl_buffer*           buffer;
         _GLFWfallbackEdgeWayland    top, left, right, bottom;
         struct wl_surface*          focus;
+        wl_fixed_t                  pointerX, pointerY;
+        const char*                 cursorName;
     } fallback;
 } _GLFWwindowWayland;
 
@@ -454,7 +460,6 @@ typedef struct _GLFWlibraryWayland
     struct wl_cursor_theme*     cursorTheme;
     struct wl_cursor_theme*     cursorThemeHiDPI;
     struct wl_surface*          cursorSurface;
-    const char*                 cursorPreviousName;
     int                         cursorTimerfd;
     uint32_t                    serial;
     uint32_t                    pointerEnterSerial;

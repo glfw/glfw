@@ -363,10 +363,10 @@ which API was used to create the current context may fail if you change this
 hint.  This can be resolved by having it load functions via @ref
 glfwGetProcAddress.
 
-@note @wayland The EGL API _is_ the native context creation API, so this hint
+@note __Wayland:__ The EGL API _is_ the native context creation API, so this hint
 will have no effect.
 
-@note @x11 On some Linux systems, creating contexts via both the native and EGL
+@note __X11:__ On some Linux systems, creating contexts via both the native and EGL
 APIs in a single process will cause the application to segfault.  Stick to one
 API or the other on Linux for now.
 
@@ -400,7 +400,7 @@ requested.  Additionally, OpenGL ES 1.x cannot be returned if 2.0 or later was
 requested, and vice versa.  This is because OpenGL ES 3.x is backward compatible
 with 2.0, but OpenGL ES 2.0 is not backward compatible with 1.x.
 
-@note @macos The OS only supports core profile contexts for OpenGL versions 3.2
+@note __macOS:__ The OS only supports core profile contexts for OpenGL versions 3.2
 and later.  Before creating an OpenGL context of version 3.2 or later you must
 set the [GLFW_OPENGL_PROFILE](@ref GLFW_OPENGL_PROFILE_hint) hint accordingly.
 OpenGL 3.0 and 3.1 contexts are not supported at all on macOS.
@@ -893,6 +893,12 @@ int xpos, ypos;
 glfwGetWindowPos(window, &xpos, &ypos);
 ```
 
+@note __Wayland:__ An applications cannot know the positions of its windows or
+whether one has been moved.  The @ref GLFW_POSITION_X and @ref GLFW_POSITION_Y
+window hints are ignored.  The @ref glfwGetWindowPos and @ref glfwSetWindowPos
+functions emit @ref GLFW_FEATURE_UNAVAILABLE.  The window position callback will
+not be called.
+
 
 ### Window title {#window_title}
 
@@ -1037,6 +1043,12 @@ You can also get the current iconification state with @ref glfwGetWindowAttrib.
 ```c
 int iconified = glfwGetWindowAttrib(window, GLFW_ICONIFIED);
 ```
+
+@note __Wayland:__ An application cannot know if any of its windows have been
+iconified or restore one from iconification.  The @ref glfwRestoreWindow
+function can only restore windows from maximization and the iconify callback
+will not be called.  The [GLFW_ICONIFIED](@ref GLFW_ICONIFIED_attrib) attribute
+will be false.  The @ref glfwIconifyWindow function works normally.
 
 
 ### Window maximization {#window_maximize}

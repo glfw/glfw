@@ -561,7 +561,8 @@ void _glfwTerminateEGL(void)
         _glfw.egl.display = EGL_NO_DISPLAY;
     }
 
-    if (_glfw.egl.handle)
+    // Free modules only after all wayland termination functions are called
+    if (_glfw.egl.handle && _glfw.platform.platformID != GLFW_PLATFORM_WAYLAND)
     {
         _glfwPlatformFreeModule(_glfw.egl.handle);
         _glfw.egl.handle = NULL;
@@ -1064,10 +1065,32 @@ GLFWAPI EGLSurface glfwGetEGLSurface(GLFWwindow* handle)
             window->context.source != GLFW_NATIVE_CONTEXT_API)
         {
             _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
-            return EGL_NO_CONTEXT;
+            return EGL_NO_SURFACE;
         }
     }
 
     return window->context.egl.surface;
+}
+
+GLFWAPI int glfwGetEGLConfig(GLFWwindow* handle, EGLConfig* config)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+    assert(config != NULL);
+
+    if (window->context.source != GLFW_EGL_CONTEXT_API)
+    {
+        if (_glfw.platform.platformID != GLFW_PLATFORM_WAYLAND ||
+            window->context.source != GLFW_NATIVE_CONTEXT_API)
+        {
+            _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
+            return GLFW_FALSE;
+        }
+    }
+
+    *config = window->context.egl.config;
+    return GLFW_TRUE;
 }
 

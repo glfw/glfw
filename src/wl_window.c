@@ -1459,7 +1459,7 @@ static void handleEvents(double* timeout)
             }
         }
 
-        if ((fds[CURSOR_FD].fd > 0 ) && (fds[CURSOR_FD].revents & POLLIN))
+        if (fds[CURSOR_FD].revents & POLLIN)
         {
             uint64_t repeats;
 
@@ -1467,7 +1467,7 @@ static void handleEvents(double* timeout)
                 incrementCursorImage(_glfw.wl.pointerFocus);
         }
 
-        if ((fds[LIBDECOR_FD].fd > 0 ) && (fds[LIBDECOR_FD].revents & POLLIN))
+        if (fds[LIBDECOR_FD].revents & POLLIN)
         {
             if (libdecor_dispatch(_glfw.wl.libdecor.context, 0) > 0)
                 event = GLFW_TRUE;

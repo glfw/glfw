@@ -1413,7 +1413,7 @@ static void handleEvents(double* timeout)
 
             if (read(_glfw.wl.keyRepeatTimerfd, &repeats, sizeof(repeats)) == 8)
             {
-                if(_glfw.wl.keyboardFocus)
+                if (_glfw.wl.keyboardFocus)
                 {
                     for (uint64_t i = 0; i < repeats; i++)
                     {
@@ -1692,7 +1692,8 @@ static void keyboardHandleKeymap(void* userData,
     }
 
     mapStr = mmap(NULL, size, PROT_READ, MAP_SHARED, fd, 0);
-    if (mapStr == MAP_FAILED) {
+    if (mapStr == MAP_FAILED)
+    {
         close(fd);
         return;
     }
@@ -1838,7 +1839,9 @@ static void keyboardHandleKey(void* userData,
             timer.it_value.tv_nsec = (_glfw.wl.keyRepeatDelay % 1000) * 1000000;
             timerfd_settime(_glfw.wl.keyRepeatTimerfd, 0, &timer, NULL);
         }
-    } else if (scancode == _glfw.wl.keyRepeatScancode) {
+    }
+    else if (scancode == _glfw.wl.keyRepeatScancode)
+    {
         timerfd_settime(_glfw.wl.keyRepeatTimerfd, 0, &timer, NULL);
     }
 
@@ -2974,8 +2977,14 @@ static void lockPointer(_GLFWwindow* window)
     if (!_glfw.wl.relativePointerManager)
     {
         _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                        "Wayland: The compositor does not support pointer locking");
+                        "Wayland: The compositor does not support relative pointer motion");
         return;
+    }
+
+    if (!_glfw.wl.pointerConstraints)
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Wayland: The compositor does not support locking the pointer");
     }
 
     window->wl.relativePointer =
@@ -3025,6 +3034,12 @@ static const struct zwp_confined_pointer_v1_listener confinedPointerListener =
 
 static void confinePointer(_GLFWwindow* window)
 {
+    if (!_glfw.wl.pointerConstraints)
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Wayland: The compositor does not support confining the pointer");
+    }
+
     window->wl.confinedPointer =
         zwp_pointer_constraints_v1_confine_pointer(
             _glfw.wl.pointerConstraints,

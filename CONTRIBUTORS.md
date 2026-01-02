@@ -162,6 +162,7 @@ video tutorials.
  - Marcel Metz
  - Liam Middlebrook
  - mightgoyardstill
+ - Mihail
  - Ave Milia
  - Icyllis Milica
  - Jonathan Miller
@@ -282,10 +283,12 @@ video tutorials.
  - Corentin Wallez
  - Torsten Walluhn
  - Patrick Walton
+ - Ivor Wanders
  - Jim Wang
  - Xo Wang
  - Andre Weissflog
  - Jay Weisskopf
+ - Drew Weymouth
  - Frank Wille
  - Andy Williams
  - Joel Winarske

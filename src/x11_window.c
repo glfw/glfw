@@ -576,6 +576,10 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         height *= _glfw.x11.contentScaleY;
     }
 
+    // The dimensions must be nonzero, or a BadValue error results.
+    width = _glfw_max(1, width);
+    height = _glfw_max(1, height);
+
     int xpos = 0, ypos = 0;
 
     if (wndconfig->xpos != GLFW_ANY_POSITION && wndconfig->ypos != GLFW_ANY_POSITION)
@@ -2203,6 +2207,10 @@ void _glfwGetWindowSizeX11(_GLFWwindow* window, int* width, int* height)
 
 void _glfwSetWindowSizeX11(_GLFWwindow* window, int width, int height)
 {
+    // The dimensions must be nonzero, or a BadValue error results
+    width = _glfw_max(1, width);
+    height = _glfw_max(1, height);
+
     if (window->monitor)
     {
         if (window->monitor->window == window)

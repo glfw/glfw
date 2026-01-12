@@ -2713,19 +2713,20 @@ void _glfwSetWindowFloatingX11(_GLFWwindow* window, GLFWbool enabled)
         // NOTE: We don't check for failure as this property may not exist yet
         //       and that's fine (and we'll create it implicitly with append)
 
-        if (states)
+        unsigned long i;
+
+        for (i = 0;  i < count;  i++)
         {
-            for (unsigned long i = 0;  i < count;  i++)
-            {
-                if (states[i] == _glfw.x11.NET_WM_STATE_ABOVE)
-                {
-                    states[i] = states[count - 1];
-                    XChangeProperty(_glfw.x11.display, window->x11.handle,
-                                    _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
-                                    PropModeReplace, (unsigned char*) states, count - 1);
-                    break;
-                }
-            }
+            if (states[i] == _glfw.x11.NET_WM_STATE_ABOVE)
+                break;
+        }
+
+        if (i < count)
+        {
+            states[i] = states[count - 1];
+            XChangeProperty(_glfw.x11.display, window->x11.handle,
+                            _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
+                            PropModeReplace, (unsigned char*) states, count - 1);
         }
 
         if (states)

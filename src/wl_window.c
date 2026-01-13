@@ -965,8 +965,13 @@ static GLFWbool createLibdecorFrame(_GLFWwindow* window)
     libdecor_frame_commit(window->wl.libdecor.frame, frameState, NULL);
     libdecor_state_free(frameState);
 
-    if (strlen(window->wl.appId))
+    if (strlen(window->wl.appId)) {
         libdecor_frame_set_app_id(window->wl.libdecor.frame, window->wl.appId);
+    } else {
+        char *appId = getenv("GLFW_WAYLAND_APPID");
+        if (appId)
+            libdecor_frame_set_app_id(window->wl.libdecor.frame, appId);
+    }
 
     libdecor_frame_set_title(window->wl.libdecor.frame, window->title);
 
@@ -1081,8 +1086,13 @@ static GLFWbool createXdgShellObjects(_GLFWwindow* window)
 
     xdg_toplevel_add_listener(window->wl.xdg.toplevel, &xdgToplevelListener, window);
 
-    if (window->wl.appId)
+    if (window->wl.appId) {
         xdg_toplevel_set_app_id(window->wl.xdg.toplevel, window->wl.appId);
+    } else {
+        char *appId = getenv("GLFW_WAYLAND_APPID");
+        if (appId)
+            xdg_toplevel_set_app_id(window->wl.xdg.toplevel, appId);
+    }
 
     xdg_toplevel_set_title(window->wl.xdg.toplevel, window->title);
 
@@ -2545,6 +2555,12 @@ void _glfwFocusWindowWayland(_GLFWwindow* window)
         {
             xdg_activation_token_v1_set_app_id(window->wl.activationToken,
                                                requester->wl.appId);
+        } else {
+            char *appId = getenv("GLFW_WAYLAND_APPID");
+            if (appId) {
+                xdg_activation_token_v1_set_app_id(window->wl.activationToken,
+                                                   appId);
+            }
         }
     }
 

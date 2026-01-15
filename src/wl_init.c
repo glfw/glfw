@@ -834,7 +834,7 @@ int _glfwInitWayland(void)
 
     createKeyTables();
 
-    _glfw.wl.xkb.context = xkb_context_new(0);
+    _glfw.wl.xkb.context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
     if (!_glfw.wl.xkb.context)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,

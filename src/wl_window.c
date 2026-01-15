@@ -1701,7 +1701,7 @@ static void keyboardHandleKeymap(void* userData,
     keymap = xkb_keymap_new_from_string(_glfw.wl.xkb.context,
                                         mapStr,
                                         XKB_KEYMAP_FORMAT_TEXT_V1,
-                                        0);
+                                        XKB_KEYMAP_COMPILE_NO_FLAGS);
     munmap(mapStr, size);
     close(fd);
 

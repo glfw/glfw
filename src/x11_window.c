@@ -410,29 +410,6 @@ static void updateWindowMode(_GLFWwindow* window)
     }
 }
 
-// Decode a Unicode code point from a UTF-8 stream
-// Based on cutef8 by Jeff Bezanson (Public Domain)
-//
-static uint32_t decodeUTF8(const char** s)
-{
-    uint32_t codepoint = 0, count = 0;
-    static const uint32_t offsets[] =
-    {
-        0x00000000u, 0x00003080u, 0x000e2080u,
-        0x03c82080u, 0xfa082080u, 0x82082080u
-    };
-
-    do
-    {
-        codepoint = (codepoint << 6) + (unsigned char) **s;
-        (*s)++;
-        count++;
-    } while ((**s & 0xc0) == 0x80);
-
-    assert(count <= 6);
-    return codepoint - offsets[count - 1];
-}
-
 // Convert the specified Latin-1 string to UTF-8
 //
 static char* convertLatin1toUTF8(const char* source)
@@ -559,6 +536,235 @@ static void inputContextDestroyCallback(XIC ic, XPointer clientData, XPointer ca
 {
     _GLFWwindow* window = (_GLFWwindow*) clientData;
     window->x11.ic = NULL;
+}
+
+// IME Start callback (do nothing)
+//
+static void _ximPreeditStartCallback(XIC xic, XPointer clientData, XPointer callData)
+{
+}
+
+// IME Done callback (do nothing)
+//
+static void _ximPreeditDoneCallback(XIC xic, XPointer clientData, XPointer callData)
+{
+}
+
+// IME Draw callback
+// When using the dafault style: STYLE_OVERTHESPOT, this is not used since applications
+// don't need to display preedit texts.
+//
+static void _ximPreeditDrawCallback(XIC xic, XPointer clientData, XIMPreeditDrawCallbackStruct* callData)
+{
+    _GLFWwindow* window = (_GLFWwindow*) clientData;
+    _GLFWpreedit* preedit = &window->preedit;
+
+    if (!callData->text)
+    {
+        // preedit text is empty
+        preedit->textCount = 0;
+        preedit->blockSizesCount = 0;
+        preedit->focusedBlockIndex = 0;
+        preedit->caretIndex = 0;
+        _glfwInputPreedit(window);
+        return;
+    }
+    else if (callData->text->encoding_is_wchar)
+    {
+        // wchar is not supported
+        return;
+    }
+    else
+    {
+        XIMText* text = callData->text;
+        int textLen = preedit->textCount + text->length - callData->chg_length;
+        int textBufferCount = preedit->textBufferCount;
+        int i, j, rstart, rend;
+        const char* src;
+
+        // realloc preedit text
+        while (textBufferCount < textLen + 1)
+            textBufferCount = (textBufferCount == 0) ? 1 : textBufferCount * 2;
+        if (textBufferCount != preedit->textBufferCount)
+        {
+            unsigned int* preeditText = _glfw_realloc(preedit->text,
+                                                      sizeof(unsigned int) * textBufferCount);
+            if (preeditText == NULL)
+                return;
+
+            preedit->text = preeditText;
+            preedit->textBufferCount = textBufferCount;
+        }
+        preedit->textCount = textLen;
+        preedit->text[textLen] = 0;
+
+        // realloc block sizes
+        if (preedit->blockSizesBufferCount == 0)
+        {
+            preedit->blockSizes = _glfw_calloc(4, sizeof(int));
+            preedit->blockSizesBufferCount = 4;
+        }
+
+        // store preedit text
+        src = text->string.multi_byte;
+        rend = 0;
+        rstart = textLen;
+        for (i = 0, j = callData->chg_first; i < text->length; i++)
+        {
+            XIMFeedback f;
+
+            if (i < callData->chg_first || callData->chg_first + textLen < i)
+                continue;
+
+            preedit->text[j++] = _glfwDecodeUTF8(&src);
+            f = text->feedback[i];
+            if ((f & XIMReverse) || (f & XIMHighlight))
+            {
+                rend = i;
+                if (i < rstart)
+                    rstart = i;
+            }
+        }
+
+        // store block sizes
+        // TODO: It doesn't care callData->chg_first != 0 case although it's quite rare.
+        if (rstart == textLen)
+        {
+            preedit->blockSizesCount = 1;
+            preedit->blockSizes[0] = textLen;
+            preedit->blockSizes[1] = 0;
+            preedit->focusedBlockIndex = 0;
+            preedit->caretIndex = callData->caret;
+            _glfwInputPreedit(window);
+        }
+        else if (rstart == 0)
+        {
+            if (rend == textLen -1)
+            {
+                preedit->blockSizesCount = 1;
+                preedit->blockSizes[0] = textLen;
+                preedit->blockSizes[1] = 0;
+                preedit->focusedBlockIndex = 0;
+                preedit->caretIndex = callData->caret;
+                _glfwInputPreedit(window);
+            }
+            else
+            {
+                preedit->blockSizesCount = 2;
+                preedit->blockSizes[0] = rend + 1;
+                preedit->blockSizes[1] = textLen - rend - 1;
+                preedit->blockSizes[2] = 0;
+                preedit->focusedBlockIndex = 0;
+                preedit->caretIndex = callData->caret;
+                _glfwInputPreedit(window);
+            }
+        }
+        else if (rend == textLen - 1)
+        {
+            preedit->blockSizesCount = 2;
+            preedit->blockSizes[0] = rstart;
+            preedit->blockSizes[1] = textLen - rstart;
+            preedit->blockSizes[2] = 0;
+            preedit->focusedBlockIndex = 1;
+            preedit->caretIndex = callData->caret;
+            _glfwInputPreedit(window);
+        }
+        else
+        {
+            preedit->blockSizesCount = 3;
+            preedit->blockSizes[0] = rstart;
+            preedit->blockSizes[1] = rend - rstart + 1;
+            preedit->blockSizes[2] = textLen - rend - 1;
+            preedit->blockSizes[3] = 0;
+            preedit->focusedBlockIndex = 1;
+            preedit->caretIndex = callData->caret;
+            _glfwInputPreedit(window);
+        }
+    }
+}
+
+// IME Caret callback (do nothing)
+//
+static void _ximPreeditCaretCallback(XIC xic, XPointer clientData, XPointer callData)
+{
+}
+
+// IME Status Start callback
+// When using the dafault style: STYLE_OVERTHESPOT, this is not used and the IME status
+// can not be taken.
+//
+static void _ximStatusStartCallback(XIC xic, XPointer clientData, XPointer callData)
+{
+    _GLFWwindow* window = (_GLFWwindow*) clientData;
+    window->x11.imeFocus = GLFW_TRUE;
+}
+
+// IME Status Done callback
+// When using the dafault style: STYLE_OVERTHESPOT, this is not used and the IME status
+// can not be taken.
+//
+static void _ximStatusDoneCallback(XIC xic, XPointer clientData, XPointer callData)
+{
+    _GLFWwindow* window = (_GLFWwindow*) clientData;
+    window->x11.imeFocus = GLFW_FALSE;
+}
+
+// IME Status Draw callback
+// When using the dafault style: STYLE_OVERTHESPOT, this is not used and the IME status
+// can not be taken.
+//
+static void _ximStatusDrawCallback(XIC xic, XPointer clientData, XIMStatusDrawCallbackStruct* callData)
+{
+    _GLFWwindow* window = (_GLFWwindow*) clientData;
+    _glfwInputIMEStatus(window);
+}
+
+// Create XIM Preedit callback
+// When using the dafault style: STYLE_OVERTHESPOT, this is not used since applications
+// don't need to display preedit texts.
+//
+static XVaNestedList _createXIMPreeditCallbacks(_GLFWwindow* window)
+{
+    window->x11.preeditStartCallback.client_data = (XPointer) window;
+    window->x11.preeditStartCallback.callback = (XIMProc) _ximPreeditStartCallback;
+    window->x11.preeditDoneCallback.client_data = (XPointer) window;
+    window->x11.preeditDoneCallback.callback = (XIMProc) _ximPreeditDoneCallback;
+    window->x11.preeditDrawCallback.client_data = (XPointer) window;
+    window->x11.preeditDrawCallback.callback = (XIMProc) _ximPreeditDrawCallback;
+    window->x11.preeditCaretCallback.client_data = (XPointer) window;
+    window->x11.preeditCaretCallback.callback = (XIMProc) _ximPreeditCaretCallback;
+    return XVaCreateNestedList(0,
+                               XNPreeditStartCallback,
+                               &window->x11.preeditStartCallback.client_data,
+                               XNPreeditDoneCallback,
+                               &window->x11.preeditDoneCallback.client_data,
+                               XNPreeditDrawCallback,
+                               &window->x11.preeditDrawCallback.client_data,
+                               XNPreeditCaretCallback,
+                               &window->x11.preeditCaretCallback.client_data,
+                               NULL);
+}
+
+// Create XIM status callback
+// When using the dafault style: STYLE_OVERTHESPOT, this is not used and the IME status
+// can not be taken.
+//
+static XVaNestedList _createXIMStatusCallbacks(_GLFWwindow* window)
+{
+    window->x11.statusStartCallback.client_data = (XPointer) window;
+    window->x11.statusStartCallback.callback = (XIMProc) _ximStatusStartCallback;
+    window->x11.statusDoneCallback.client_data = (XPointer) window;
+    window->x11.statusDoneCallback.callback = (XIMProc) _ximStatusDoneCallback;
+    window->x11.statusDrawCallback.client_data = (XPointer) window;
+    window->x11.statusDrawCallback.callback = (XIMProc) _ximStatusDrawCallback;
+    return XVaCreateNestedList(0,
+                               XNStatusStartCallback,
+                               &window->x11.statusStartCallback.client_data,
+                               XNStatusDoneCallback,
+                               &window->x11.statusDoneCallback.client_data,
+                               XNStatusDrawCallback,
+                               &window->x11.statusDrawCallback.client_data,
+                               NULL);
 }
 
 // Create the X11 window (and its colormap)
@@ -1294,7 +1500,7 @@ static void processEvent(XEvent *event)
                         const char* c = chars;
                         chars[count] = '\0';
                         while (c - chars < count)
-                            _glfwInputChar(window, decodeUTF8(&c), mods, plain);
+                            _glfwInputChar(window, _glfwDecodeUTF8(&c), mods, plain);
                     }
 
                     if (chars != buffer)
@@ -1929,16 +2135,55 @@ void _glfwCreateInputContextX11(_GLFWwindow* window)
     callback.callback = (XIMProc) inputContextDestroyCallback;
     callback.client_data = (XPointer) window;
 
-    window->x11.ic = XCreateIC(_glfw.x11.im,
-                               XNInputStyle,
-                               XIMPreeditNothing | XIMStatusNothing,
-                               XNClientWindow,
-                               window->x11.handle,
-                               XNFocusWindow,
-                               window->x11.handle,
-                               XNDestroyCallback,
-                               &callback,
-                               NULL);
+    window->x11.imeFocus = GLFW_FALSE;
+
+    if (_glfw.x11.imStyle == STYLE_ONTHESPOT)
+    {
+        // On X11, on-the-spot style is unstable.
+        // Status callbacks are not called and the preedit cursor position
+        // can not be changed.
+        XVaNestedList preeditList = _createXIMPreeditCallbacks(window);
+        XVaNestedList statusList = _createXIMStatusCallbacks(window);
+
+        window->x11.ic = XCreateIC(_glfw.x11.im,
+                                   XNInputStyle,
+                                   _glfw.x11.imStyle,
+                                   XNClientWindow,
+                                   window->x11.handle,
+                                   XNFocusWindow,
+                                   window->x11.handle,
+                                   XNPreeditAttributes,
+                                   preeditList,
+                                   XNStatusAttributes,
+                                   statusList,
+                                   XNDestroyCallback,
+                                   &callback,
+                                   NULL);
+
+        XFree(preeditList);
+        XFree(statusList);
+    }
+    else if (_glfw.x11.imStyle == STYLE_OVERTHESPOT)
+    {
+        window->x11.ic = XCreateIC(_glfw.x11.im,
+                                   XNInputStyle,
+                                   _glfw.x11.imStyle,
+                                   XNClientWindow,
+                                   window->x11.handle,
+                                   XNFocusWindow,
+                                   window->x11.handle,
+                                   XNDestroyCallback,
+                                   &callback,
+                                   NULL);
+    }
+    else
+    {
+        // (XIMPreeditNothing | XIMStatusNothing) is considered as STYLE_OVERTHESPOT.
+        // So this branch should not be used now.
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "X11: Failed to create input context.");
+        return;
+    }
 
     if (window->x11.ic)
     {
@@ -3108,6 +3353,92 @@ void _glfwSetClipboardStringX11(const char* string)
 const char* _glfwGetClipboardStringX11(void)
 {
     return getSelectionString(_glfw.x11.CLIPBOARD);
+}
+
+// When using STYLE_ONTHESPOT, this doesn't work and the cursor position can't be updated
+//
+void _glfwUpdatePreeditCursorRectangleX11(_GLFWwindow* window)
+{
+    XVaNestedList preedit_attr;
+    XPoint spot;
+    _GLFWpreedit* preedit = &window->preedit;
+
+    if (!window->x11.ic)
+        return;
+
+    spot.x = preedit->cursorPosX + preedit->cursorWidth;
+    spot.y = preedit->cursorPosY + preedit->cursorHeight;
+    preedit_attr = XVaCreateNestedList(0, XNSpotLocation, &spot, NULL);
+    XSetICValues(window->x11.ic, XNPreeditAttributes, preedit_attr, NULL);
+    XFree(preedit_attr);
+}
+
+void _glfwResetPreeditTextX11(_GLFWwindow* window)
+{
+    XIC ic = window->x11.ic;
+    _GLFWpreedit* preedit = &window->preedit;
+
+    /* restore conversion state after resetting ic later */
+    XIMPreeditState preedit_state = XIMPreeditUnKnown;
+    XVaNestedList preedit_attr;
+    char* result;
+
+    if (!ic)
+        return;
+
+    // Can not manage IME in the case of over-the-spot.
+    if (_glfw.x11.imStyle == STYLE_OVERTHESPOT)
+        return;
+
+    if (preedit->textCount == 0)
+        return;
+
+    preedit_attr = XVaCreateNestedList(0, XNPreeditState, &preedit_state, NULL);
+    XGetICValues(ic, XNPreeditAttributes, preedit_attr, NULL);
+    XFree(preedit_attr);
+
+    result = XmbResetIC(ic);
+
+    preedit_attr = XVaCreateNestedList(0, XNPreeditState, preedit_state, NULL);
+    XSetICValues(ic, XNPreeditAttributes, preedit_attr, NULL);
+    XFree(preedit_attr);
+
+    preedit->textCount = 0;
+    preedit->blockSizesCount = 0;
+    preedit->focusedBlockIndex = 0;
+    preedit->caretIndex = 0;
+    _glfwInputPreedit(window);
+
+    XFree (result);
+}
+
+void _glfwSetIMEStatusX11(_GLFWwindow* window, int active)
+{
+    XIC ic = window->x11.ic;
+
+    if (!ic)
+        return;
+
+    // Can not manage IME in the case of over-the-spot.
+    if (_glfw.x11.imStyle == STYLE_OVERTHESPOT)
+        return;
+
+    if (active)
+        XSetICFocus(ic);
+    else
+        XUnsetICFocus(ic);
+}
+
+int _glfwGetIMEStatusX11(_GLFWwindow* window)
+{
+    if (!window->x11.ic)
+        return GLFW_FALSE;
+
+    // Can not manage IME in the case of over-the-spot.
+    if (_glfw.x11.imStyle == STYLE_OVERTHESPOT)
+        return GLFW_FALSE;
+
+    return window->x11.imeFocus;
 }
 
 EGLenum _glfwGetEGLPlatformX11(EGLint** attribs)

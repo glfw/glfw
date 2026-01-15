@@ -159,6 +159,28 @@ information on what to include when reporting a bug.
  - [Null] Added EGL context creation on Mesa via `EGL_MESA_platform_surfaceless`
  - [EGL] Allowed native access on Wayland with `GLFW_CONTEXT_CREATION_API` set to
    `GLFW_NATIVE_CONTEXT_API` (#2518)
+ - Added `glfwSetPreeditCallback` function and `GLFWpreeditfun` type for
+   preedit of input method (#2130)
+ - Added `glfwSetIMEStatusCallback` function and `GLFWimestatusfun` type for
+   status of input method (#2130)
+ - Added `glfwSetPreeditCursorRectangle` function to set the preedit cursor
+   area that is used to decide the position of the candidate window of input
+   method (#2130)
+ - Added `glfwGetPreeditCursorRectangle` function to get the preedit cursor
+   area (#2130)
+ - Added `glfwResetPreeditText` function to reset preedit of input method
+   (#2130)
+ - Added `glfwSetPreeditCandidateCallback` function and
+   `GLFWpreeditcandidatefun` type for preedit candidates (#2130)
+ - Added `glfwGetPreeditCandidate` function to get a preeidt candidate text
+   (#2130)
+ - Added `GLFW_IME` input mode for `glfwGetInputMode` and `glfwSetInputMode`
+   (#2130)
+ - Added `GLFW_X11_ONTHESPOT` init hint for using on-the-spot input method
+   style on X11 (#2130)
+ - Added `GLFW_MANAGE_PREEDIT_CANDIDATE` init hint for displaying preedit
+   candidates on the application side (supported only on Windows currently)
+   (#2130)
 
 
 ## Contact

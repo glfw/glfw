@@ -51,6 +51,8 @@
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
 #include "fractional-scale-v1-client-protocol.h"
+#include "text-input-unstable-v1-client-protocol.h"
+#include "text-input-unstable-v3-client-protocol.h"
 
 #define GLFW_BORDER_SIZE    4
 #define GLFW_CAPTION_HEIGHT 24
@@ -701,6 +703,22 @@ const struct wp_fractional_scale_v1_listener fractionalScaleListener =
     fractionalScaleHandlePreferredScale,
 };
 
+static void activateTextInputV1(_GLFWwindow* window)
+{
+    if (!window->wl.textInputV1)
+        return;
+    zwp_text_input_v1_show_input_panel(window->wl.textInputV1);
+    zwp_text_input_v1_activate(window->wl.textInputV1, _glfw.wl.seat, window->wl.surface);
+}
+
+static void deactivateTextInputV1(_GLFWwindow* window)
+{
+    if (!window->wl.textInputV1)
+        return;
+    zwp_text_input_v1_hide_input_panel(window->wl.textInputV1);
+    zwp_text_input_v1_deactivate(window->wl.textInputV1, _glfw.wl.seat);
+}
+
 static void xdgToplevelHandleConfigure(void* userData,
                                        struct xdg_toplevel* toplevel,
                                        int32_t width,
@@ -728,6 +746,7 @@ static void xdgToplevelHandleConfigure(void* userData,
                 break;
             case XDG_TOPLEVEL_STATE_ACTIVATED:
                 window->wl.pending.activated = GLFW_TRUE;
+                activateTextInputV1(window);
                 break;
         }
     }
@@ -1626,6 +1645,11 @@ static void pointerHandleButton(void* userData,
     if (!window)
         return;
 
+    // On weston, pressing the title bar will cause leave event and never emit
+    // enter event even though back to content area by pressing mouse button
+    // just after it. So activate it here explicitly.
+    activateTextInputV1(window);
+
     if (window->wl.hovered)
     {
         _glfw.wl.serial = serial;
@@ -2164,6 +2188,379 @@ void _glfwAddDataDeviceListenerWayland(struct wl_data_device* device)
     wl_data_device_add_listener(device, &dataDeviceListener, NULL);
 }
 
+// Callbacks for text_input_unstable_v3 protocol.
+//
+// This protocol is widely supported by major desktop environments such as GNOME
+// or KDE.
+//
+static void textInputV3Enter(void* data,
+                             struct zwp_text_input_v3* textInputV3,
+                             struct wl_surface* surface)
+{
+    zwp_text_input_v3_enable(textInputV3);
+    zwp_text_input_v3_commit(textInputV3);
+}
+
+static void textInputV3Reset(_GLFWwindow* window)
+{
+    _GLFWpreedit* preedit = &window->preedit;
+
+    preedit->textCount = 0;
+    preedit->blockSizesCount = 0;
+    preedit->focusedBlockIndex = 0;
+    preedit->caretIndex = 0;
+
+    _glfwInputPreedit(window);
+}
+
+static void textInputV3Leave(void* data,
+                             struct zwp_text_input_v3* textInputV3,
+                             struct wl_surface* surface)
+{
+    _GLFWwindow* window = (_GLFWwindow*) data;
+    zwp_text_input_v3_disable(textInputV3);
+    zwp_text_input_v3_commit(textInputV3);
+
+    // Although this should be handled by IM via preedit callback, it seems that
+    // the behavior varies depending on implemention. It's cleared by IM on
+    // Ubuntu 22.04 but not cleared on Ubuntu 20.04.
+    textInputV3Reset(window);
+}
+
+static void textInputV3PreeditString(void* data,
+                                     struct zwp_text_input_v3* textInputV3,
+                                     const char* text,
+                                     int32_t cursorBegin,
+                                     int32_t cursorEnd)
+{
+    _GLFWwindow* window = (_GLFWwindow*) data;
+    _GLFWpreedit* preedit = &window->preedit;
+    const char* cur = text;
+    unsigned int cursorLength = 0;
+
+    preedit->textCount = 0;
+    preedit->blockSizesCount = 0;
+    preedit->focusedBlockIndex = 0;
+    preedit->caretIndex = 0;
+
+    // Store preedit text
+    while (cur && *cur)
+    {
+        uint32_t codepoint = _glfwDecodeUTF8(&cur);
+
+        ++preedit->textCount;
+
+        if (cur == text + cursorBegin)
+            preedit->caretIndex = preedit->textCount;
+        if (cursorBegin != cursorEnd && cur == text + cursorEnd)
+            cursorLength = preedit->textCount - cursorBegin;
+
+        if (preedit->textBufferCount < preedit->textCount + 1)
+        {
+            int bufSize = preedit->textBufferCount;
+
+            while (bufSize < preedit->textCount + 1)
+                bufSize = (bufSize == 0) ? 1 : bufSize * 2;
+            preedit->text = _glfw_realloc(preedit->text,
+                                          sizeof(unsigned int) * bufSize);
+            if (!preedit->text)
+                return;
+            preedit->textBufferCount = bufSize;
+        }
+        preedit->text[preedit->textCount - 1] = codepoint;
+    }
+    if (preedit->text)
+        preedit->text[preedit->textCount] = 0;
+
+    // Store preedit blocks
+    if (preedit->textCount)
+    {
+        int* blocks = preedit->blockSizes;
+        int blockCount = preedit->blockSizesCount;
+        int cursorPos = preedit->caretIndex;
+        int textCount = preedit->textCount;
+
+        if (!preedit->blockSizes)
+        {
+            int bufSize = 3;
+
+            preedit->blockSizesBufferCount = bufSize;
+            preedit->blockSizes = _glfw_calloc(sizeof(int), bufSize);
+            if (!preedit->blockSizes)
+                return;
+            blocks = preedit->blockSizes;
+        }
+
+        if (cursorLength && cursorPos)
+            blocks[blockCount++] = cursorPos;
+
+        preedit->focusedBlockIndex = blockCount;
+        blocks[blockCount++] = cursorLength ? cursorLength : textCount;
+
+        if (cursorLength && cursorPos + cursorLength != textCount)
+            blocks[blockCount++] = textCount - cursorPos - cursorLength;
+
+        preedit->blockSizesCount = blockCount;
+    }
+}
+
+static void textInputV3CommitString(void* data,
+                                    struct zwp_text_input_v3* textInputV3,
+                                    const char* text)
+{
+    _GLFWwindow* window = (_GLFWwindow*) data;
+    const char* cur = text;
+
+    if (!window->callbacks.character)
+        return;
+
+    while (cur && *cur)
+    {
+        uint32_t codepoint = _glfwDecodeUTF8(&cur);
+        window->callbacks.character((GLFWwindow*) window, codepoint);
+    }
+}
+
+static void textInputV3DeleteSurroundingText(void* data,
+                                             struct zwp_text_input_v3* textInputV3,
+                                             uint32_t beforeLength,
+                                             uint32_t afterLength)
+{
+}
+
+static void textInputV3Done(void* data,
+                            struct zwp_text_input_v3* textInputV3,
+                            uint32_t serial)
+{
+    _GLFWwindow* window = (_GLFWwindow*) data;
+    _glfwUpdatePreeditCursorRectangleWayland(window);
+    _glfwInputPreedit(window);
+}
+
+static const struct zwp_text_input_v3_listener textInputV3Listener =
+{
+    textInputV3Enter,
+    textInputV3Leave,
+    textInputV3PreeditString,
+    textInputV3CommitString,
+    textInputV3DeleteSurroundingText,
+    textInputV3Done
+};
+
+// Callbacks for text_input_unstable_v1 protocol
+//
+// This protocol isn't so popular but Weston which is the reference Wayland
+// implementation supports only this protocol and doesn't support
+// text_input_unstable_v3.
+//
+static void textInputV1Enter(void* data,
+                             struct zwp_text_input_v1* textInputV1,
+                             struct wl_surface* surface)
+{
+    _GLFWwindow* window = (_GLFWwindow*) data;
+    activateTextInputV1(window);
+}
+
+static void textInputV1Reset(_GLFWwindow* window)
+{
+    _GLFWpreedit* preedit = &window->preedit;
+
+    preedit->textCount = 0;
+    preedit->blockSizesCount = 0;
+    preedit->focusedBlockIndex = 0;
+    preedit->caretIndex = 0;
+
+    _glfw_free(window->wl.textInputV1Context.preeditText);
+    _glfw_free(window->wl.textInputV1Context.commitTextOnReset);
+    window->wl.textInputV1Context.preeditText = NULL;
+    window->wl.textInputV1Context.commitTextOnReset = NULL;
+
+    _glfwInputPreedit(window);
+}
+
+static void textInputV1Leave(void* data,
+                             struct zwp_text_input_v1* textInputV1)
+{
+    _GLFWwindow* window = (_GLFWwindow*) data;
+    char* commitText = window->wl.textInputV1Context.commitTextOnReset;
+
+    textInputV3CommitString(data, NULL, commitText);
+    textInputV1Reset(window);
+    deactivateTextInputV1(window);
+}
+
+static void textInputV1ModifiersMap(void* data,
+                                    struct zwp_text_input_v1* textInputV1,
+                                    struct wl_array* map)
+{
+}
+
+static void textInputV1InputPanelState(void* data,
+                                       struct zwp_text_input_v1* textInputV1,
+                                       uint32_t state)
+{
+}
+
+static void textInputV1PreeditString(void* data,
+                                     struct zwp_text_input_v1* textInputV1,
+                                     uint32_t serial,
+                                     const char* text,
+                                     const char* commit)
+{
+    _GLFWwindow* window = (_GLFWwindow*) data;
+
+    _glfw_free(window->wl.textInputV1Context.preeditText);
+    _glfw_free(window->wl.textInputV1Context.commitTextOnReset);
+    window->wl.textInputV1Context.preeditText = strdup(text);
+    window->wl.textInputV1Context.commitTextOnReset = strdup(commit);
+
+    textInputV3PreeditString(data, NULL, text, 0, 0);
+    _glfwInputPreedit(window);
+}
+
+static void textInputV1PreeditStyling(void* data,
+                                      struct zwp_text_input_v1* textInputV1,
+                                      uint32_t index,
+                                      uint32_t length,
+                                      uint32_t style)
+{
+}
+
+static void textInputV1PreeditCursor(void* data,
+                                     struct zwp_text_input_v1* textInputV1,
+                                     int32_t index)
+{
+    _GLFWwindow* window = (_GLFWwindow*) data;
+    _GLFWpreedit* preedit = &window->preedit;
+    const char* text = window->wl.textInputV1Context.preeditText;
+    const char* cur = text;
+
+    preedit->caretIndex = 0;
+    if (index <= 0 || preedit->textCount == 0)
+        return;
+
+    while (cur && *cur)
+    {
+        _glfwDecodeUTF8(&cur);
+        ++preedit->caretIndex;
+        if (cur >= text + index)
+            break;
+        if (preedit->caretIndex > preedit->textCount)
+            break;
+    }
+}
+
+static void textInputV1CommitString(void* data,
+                                    struct zwp_text_input_v1* textInputV1,
+                                    uint32_t serial,
+                                    const char* text)
+{
+    _GLFWwindow* window = (_GLFWwindow*) data;
+
+    textInputV1Reset(window);
+    textInputV3CommitString(data, NULL, text);
+}
+
+static void textInputV1CursorPosition(void* data,
+                                      struct zwp_text_input_v1* textInputV1,
+                                      int32_t index,
+                                      int32_t anchor)
+{
+    // It's for surrounding text feature which isn't supported by GLFW.
+}
+
+static void textInputV1DeleteSurroundingText(void* data,
+                                             struct zwp_text_input_v1* textInputV1,
+                                             int32_t index,
+                                             uint32_t length)
+{
+}
+
+static void textInputV1Keysym(void* data,
+                              struct zwp_text_input_v1* textInputV1,
+                              uint32_t serial,
+                              uint32_t time,
+                              uint32_t sym,
+                              uint32_t state,
+                              uint32_t modifiers)
+{
+    uint32_t scancode;
+
+    // This code supports only weston-keyboard because we aren't aware
+    // of any other input methods that actually support this API.
+    // Supporting all keysyms is overkill for now.
+
+    switch (sym)
+    {
+        case XKB_KEY_Left:
+            scancode = KEY_LEFT;
+            break;
+        case XKB_KEY_Right:
+            scancode = KEY_RIGHT;
+            break;
+        case XKB_KEY_Up:
+            scancode = KEY_UP;
+            break;
+        case XKB_KEY_Down:
+            scancode = KEY_DOWN;
+            break;
+        case XKB_KEY_BackSpace:
+            scancode = KEY_BACKSPACE;
+            break;
+        case XKB_KEY_Tab:
+            scancode = KEY_TAB;
+            break;
+        case XKB_KEY_KP_Enter:
+            scancode = KEY_KPENTER;
+            break;
+        case XKB_KEY_Return:
+            scancode = KEY_ENTER;
+            break;
+        default:
+            return;
+    }
+
+    _glfw.wl.xkb.modifiers = modifiers;
+
+    keyboardHandleKey(data,
+                      _glfw.wl.keyboard,
+                      serial,
+                      time,
+                      scancode,
+                      state);
+}
+
+static void textInputV1Language(void* data,
+                                struct zwp_text_input_v1* textInputV1,
+                                uint32_t serial,
+                                const char* language)
+{
+}
+
+static void textInputV1TextDirection(void* data,
+                                     struct zwp_text_input_v1* textInputV1,
+                                     uint32_t serial,
+                                     uint32_t direction)
+{
+}
+
+static const struct zwp_text_input_v1_listener textInputV1Listener =
+{
+    textInputV1Enter,
+    textInputV1Leave,
+    textInputV1ModifiersMap,
+    textInputV1InputPanelState,
+    textInputV1PreeditString,
+    textInputV1PreeditStyling,
+    textInputV1PreeditCursor,
+    textInputV1CommitString,
+    textInputV1CursorPosition,
+    textInputV1DeleteSurroundingText,
+    textInputV1Keysym,
+    textInputV1Language,
+    textInputV1TextDirection
+};
+
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
@@ -2218,6 +2615,21 @@ GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
             return GLFW_FALSE;
     }
 
+    if (_glfw.wl.textInputManagerV3)
+    {
+        window->wl.textInputV3 =
+            zwp_text_input_manager_v3_get_text_input(_glfw.wl.textInputManagerV3, _glfw.wl.seat);
+        zwp_text_input_v3_add_listener(window->wl.textInputV3,
+                                       &textInputV3Listener, window);
+    }
+    else if (_glfw.wl.textInputManagerV1)
+    {
+        window->wl.textInputV1 =
+            zwp_text_input_manager_v1_create_text_input(_glfw.wl.textInputManagerV1);
+        zwp_text_input_v1_add_listener(window->wl.textInputV1,
+                                       &textInputV1Listener, window);
+    }
+
     return GLFW_TRUE;
 }
 
@@ -2242,6 +2654,15 @@ void _glfwDestroyWindowWayland(_GLFWwindow* window)
 
     if (window->wl.activationToken)
         xdg_activation_token_v1_destroy(window->wl.activationToken);
+
+    if (window->wl.textInputV1) {
+        zwp_text_input_v1_destroy(window->wl.textInputV1);
+        _glfw_free(window->wl.textInputV1Context.preeditText);
+        _glfw_free(window->wl.textInputV1Context.commitTextOnReset);
+    }
+
+    if (window->wl.textInputV3)
+        zwp_text_input_v3_destroy(window->wl.textInputV3);
 
     if (window->wl.idleInhibitor)
         zwp_idle_inhibitor_v1_destroy(window->wl.idleInhibitor);
@@ -3256,6 +3677,36 @@ const char* _glfwGetClipboardStringWayland(void)
     _glfw.wl.clipboardString =
         readDataOfferAsString(_glfw.wl.selectionOffer, "text/plain;charset=utf-8");
     return _glfw.wl.clipboardString;
+}
+
+void _glfwUpdatePreeditCursorRectangleWayland(_GLFWwindow* window)
+{
+    _GLFWpreedit* preedit = &window->preedit;
+    int x = preedit->cursorPosX;
+    int y = preedit->cursorPosY;
+    int w = preedit->cursorWidth;
+    int h = preedit->cursorHeight;
+
+    if (window->wl.textInputV3)
+    {
+        zwp_text_input_v3_set_cursor_rectangle(window->wl.textInputV3, x, y, w, h);
+        zwp_text_input_v3_commit(window->wl.textInputV3);
+    }
+    else if (window->wl.textInputV1)
+        zwp_text_input_v1_set_cursor_rectangle(window->wl.textInputV1, x, y, w, h);
+}
+
+void _glfwResetPreeditTextWayland(_GLFWwindow* window)
+{
+}
+
+void _glfwSetIMEStatusWayland(_GLFWwindow* window, int active)
+{
+}
+
+int _glfwGetIMEStatusWayland(_GLFWwindow* window)
+{
+    return GLFW_FALSE;
 }
 
 EGLenum _glfwGetEGLPlatformWayland(EGLint** attribs)

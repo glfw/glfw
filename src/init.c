@@ -52,6 +52,7 @@ static _GLFWinitconfig _glfwInitHints =
     .hatButtons = GLFW_TRUE,
     .angleType = GLFW_ANGLE_PLATFORM_TYPE_NONE,
     .platformID = GLFW_ANY_PLATFORM,
+    .managePreeditCandidate = GLFW_FALSE,
     .vulkanLoader = NULL,
     .ns =
     {
@@ -61,6 +62,7 @@ static _GLFWinitconfig _glfwInitHints =
     .x11 =
     {
         .xcbVulkanSurface = GLFW_TRUE,
+        .onTheSpotIMStyle = GLFW_FALSE
     },
     .wl =
     {
@@ -173,6 +175,29 @@ size_t _glfwEncodeUTF8(char* s, uint32_t codepoint)
     }
 
     return count;
+}
+
+// Decode a Unicode code point from a UTF-8 stream
+// Based on cutef8 by Jeff Bezanson (Public Domain)
+//
+uint32_t _glfwDecodeUTF8(const char** s)
+{
+    uint32_t codepoint = 0, count = 0;
+    static const uint32_t offsets[] =
+    {
+        0x00000000u, 0x00003080u, 0x000e2080u,
+        0x03c82080u, 0xfa082080u, 0x82082080u
+    };
+
+    do
+    {
+        codepoint = (codepoint << 6) + (unsigned char) **s;
+        (*s)++;
+        count++;
+    } while ((**s & 0xc0) == 0x80);
+
+    assert(count <= 6);
+    return codepoint - offsets[count - 1];
 }
 
 // Splits and translates a text/uri-list into separate file paths
@@ -450,6 +475,9 @@ GLFWAPI void glfwInitHint(int hint, int value)
         case GLFW_PLATFORM:
             _glfwInitHints.platformID = value;
             return;
+        case GLFW_MANAGE_PREEDIT_CANDIDATE:
+            _glfwInitHints.managePreeditCandidate = value;
+            return;
         case GLFW_COCOA_CHDIR_RESOURCES:
             _glfwInitHints.ns.chdir = value;
             return;
@@ -458,6 +486,9 @@ GLFWAPI void glfwInitHint(int hint, int value)
             return;
         case GLFW_X11_XCB_VULKAN_SURFACE:
             _glfwInitHints.x11.xcbVulkanSurface = value;
+            return;
+        case GLFW_X11_ONTHESPOT:
+            _glfwInitHints.x11.onTheSpotIMStyle = value;
             return;
         case GLFW_WAYLAND_LIBDECOR:
             _glfwInitHints.wl.libdecorMode = value;

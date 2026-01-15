@@ -246,6 +246,248 @@ ignored.  This matches the behavior of the key callback, meaning the callback
 arguments can always be passed unmodified to this function.
 
 
+@section ime_support IME support
+
+IME (Input Method Editor/Engine) is used to input characters not mapped with
+physical keys.  It is popular among East Asian people.
+
+
+@subsection ime_style IME styles
+
+GLFW supports the following two styles of IME.
+
+ - On-the-spot
+ - Over-the-spot
+
+On-the-spot style is supported on Windows, macOS and Wayland.  On these platforms,
+applications need to draw preedit text directly in their UI by using the preedit
+callback (See [Preedit input](@ref input_preedit)).
+
+Over-the-spot style is supported on X11.  On this platform, the IME displays preedit
+text, and applications don't need to draw it.  So the preedit callback doesn't work
+on X11.
+
+In both styles, applications should manage the position of the candidate window.
+See [Candidate window](@ref candidate_window) for details.
+
+@note
+@x11 You can use on-the-spot style also on X11 by using @ref GLFW_X11_ONTHESPOT_hint.
+In this case, the preedit callback also works on X11.  However, on-the-spot style on
+X11 is unstable, so it is not recommended.
+
+
+@subsection input_preedit Preedit input
+
+When inputting text with IME, the text is temporarily inputted, then conversion
+and other processing are performed and finally committed.  The committed text is
+inputted in the same way as input without IME (See [Text input](@ref input_char)).
+
+This temporary input is called "preedit" or "pre-edit".
+
+On Windows, macOS and Wayland, that use on-the-spot sytle, applications need to
+take preedit information and draw it in their UI.
+
+You can register the preedit callback as follows.
+
+@code
+glfwSetPreeditCallback(window, preedit_callback);
+@endcode
+
+The callback receives the following information.
+
+@code
+void preedit_callback(GLFWwindow* window,
+                      int preedit_count,
+                      unsigned int* preedit_string,
+                      int block_count,
+                      int* block_sizes,
+                      int focused_block,
+                      int caret)
+{
+}
+@endcode
+
+"preedit_count" and "preedit_string" parameter represent the whole preedit text.
+Each character of the preedit string is a native endian UTF-32 like @ref input_char.
+
+If you want to type the text "寿司(sushi)", Usually the callback is called several
+times like the following sequence:
+
+-# key event: s
+-# preedit: [preedit_string: "ｓ", block_sizes: [1], focused_block: 0]
+-# key event: u
+-# preedit: [preedit_string: "す", block_sizes: [1], focused_block: 0]
+-# key event: s
+-# preedit: [preedit_string: "すｓ", block_sizes: [2], focused_block: 0]
+-# key event: h
+-# preedit: [preedit_string: "すｓｈ", block_sizes: [3], focused_block: 0]
+-# key event: i
+-# preedit: [preedit_string: "すし", block_sizes: [2], focused_block: 0]
+-# key event: ' '
+-# preedit: [preedit_string: "寿司", block_sizes: [2], focused_block: 0]
+-# char: '寿'
+-# char: '司'
+-# preedit: [preedit_string: "", block_sizes: [], focused_block: 0]
+
+If preedit text includes several semantic blocks, the callback returns several blocks:
+
+-# preedit: [preedit_string: "わたしはすしをたべます", block_sizes: [11], focused_block: 0]
+-# preedit: [preedit_string: "私は寿司を食べます", block_sizes: [2, 7], focused_block: 1]
+
+"block_sizes" is a list of the sizes of each block.  The above case, it contains the following
+blocks and the second block is focused.
+
+- 私は
+- [寿司を食べます]
+
+The application side should draw a focused block and unfocused blocks
+in different styles.
+
+You can use the "caret" parameter to draw the caret of the preedit text.
+The specification of this parameter depends on the specification of the input method.
+The following is an example on Win32.
+
+- "あいうえお|" (caret: 5)
+- key event: arrow-left
+- "あいうえ|お" (caret: 4)
+- ...
+- "|あいうえお" (caret: 0)
+
+
+@subsection candidate_window Candidate window
+
+The application has to manage the position of the candidate window that shows
+the preedit candidate list.  To do this, the application has to manage the area
+of the preedit text cursor by the following functions.  The IME displays the
+candidate window in the appropriate position based on the area of the preedit
+text cursor.
+
+@code
+glfwSetPreeditCursorRectangle(window, x, y, w, h);
+glfwGetPreeditCursorRectangle(window, &x, &y, &w, &h);
+@endcode
+
+
+@subsection ime_status IME status
+
+Sometimes, IME task needs to be interrupted by a user or an application.  There
+are several functions to support these situations.
+
+@note
+@x11 @wayland This feature is not supported.
+
+You can receive notification about IME status change(on/off) by using the following
+function:
+
+@code
+glfwSetIMEStatusCallback(window, imestatus_callback);
+@endcode
+
+The callback has a simple signature like this:
+
+@code
+void imestatus_callback(GLFWwindow* window)
+{
+}
+@endcode
+
+@anchor GLFW_IME
+You can get the current IME status by the following function:
+
+@code
+glfwGetInputMode(window, GLFW_IME);
+@endcode
+
+If you get GLFW_TRUE, it means the IME is on, and GLFW_FALSE means the IME is off.
+
+You can also change the IME status by the following function:
+
+@code
+glfwSetInputMode(window, GLFW_IME, GLFW_TRUE);
+glfwSetInputMode(window, GLFW_IME, GLFW_FALSE);
+@endcode
+
+You can use the following function to clear the current preedit.
+
+@code
+glfwResetPreeditText(window);
+@endcode
+
+
+@subsection manage_preedit_candidate Manage preedit candidate
+
+By default, the IME manages the drawing of the preedit candidates, but
+sometimes you need to do that on the application side for some reason.  In such
+a case, you can use
+[GLFW_MANAGE_PREEDIT_CANDIDATE](@ref GLFW_MANAGE_PREEDIT_CANDIDATE_hint) init hint.
+By setting this to `GLFW_TRUE`, the IME stops managing the drawing of the
+candidates and the application needs to manage it by using the following
+functions.
+
+@note
+@win32 Only the OS currently supports this hint.
+
+You can register the candidate callback as follows.
+
+@code
+glfwSetPreeditCandidateCallback(window, candidate_callback);
+@endcode
+
+The callback receives the following information.
+
+@code
+void candidate_callback(GLFWwindow* window,
+                        int candidates_count,
+                        int selected_index,
+                        int page_start,
+                        int page_size)
+{
+}
+@endcode
+
+`candidates_count` is the number of total candidates.  `selected_index` is the
+index of the currently selected candidate.  Normally all candidates should not
+be displayed at once, but divided into pages.  You can use `page_start` and
+`page_size` to manage the pages.  `page_start` is the index of the first
+candidate on the current page.  `page_size` is the number of the candidates on
+the current page.
+
+You can get the text of the candidate on the specific index as follows.  Each
+character of the returned text is a native endian UTF-32.
+
+@code
+int text_count;
+unsigned int* text = glfwGetPreeditCandidate(window, index, &text_count);
+@endcode
+
+A sample code to get all candidate texts on the current page is as follows.
+
+@code
+void candidate_callback(GLFWwindow* window, int candidates_count,
+                        int selected_index, int page_start, int page_size)
+{
+    int i, j;
+    for (i = 0; i < page_size; ++i)
+    {
+        int index = i + page_start;
+        int text_count;
+        unsigned int* text = glfwGetPreeditCandidate(window, index, &text_count);
+        if (index == selected_index)
+            printf("> ");
+        for (j = 0; j < text_count; ++j)
+        {
+            char encoded[5] = "";
+            encode_utf8(encoded, text[j]); // Some kind of encoding process
+            printf("%s", encoded);
+        }
+        printf("\n");
+    }
+}
+
+glfwSetPreeditCandidateCallback(window, candidate_callback);
+@endcode
+
+
 ## Mouse input {#input_mouse}
 
 Mouse input comes in many forms, including mouse motion, button presses and

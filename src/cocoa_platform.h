@@ -109,11 +109,29 @@ typedef VkResult (APIENTRY *PFN_vkCreateMetalSurfaceEXT)(VkInstance,const VkMeta
 #define GLFW_NSGL_LIBRARY_CONTEXT_STATE _GLFWlibraryNSGL nsgl;
 
 // HIToolbox.framework pointer typedefs
+#define kTISCategoryKeyboardInputSource _glfw.ns.tis.kCategoryKeyboardInputSource
+#define kTISPropertyInputSourceCategory _glfw.ns.tis.kPropertyInputSourceCategory
+#define kTISPropertyInputSourceID _glfw.ns.tis.kPropertyInputSourceID
+#define kTISPropertyInputSourceIsSelectCapable _glfw.ns.tis.kPropertyInputSourceIsSelectCapable
+#define kTISPropertyInputSourceType _glfw.ns.tis.kPropertyInputSourceType
 #define kTISPropertyUnicodeKeyLayoutData _glfw.ns.tis.kPropertyUnicodeKeyLayoutData
+#define kTISTypeKeyboardInputMethodModeEnabled _glfw.ns.tis.kTypeKeyboardInputMethodModeEnabled
+typedef TISInputSourceRef (*PFN_TISCopyCurrentASCIICapableKeyboardInputSource)(void);
+#define TISCopyCurrentASCIICapableKeyboardInputSource _glfw.ns.tis.CopyCurrentASCIICapableKeyboardInputSource
+typedef TISInputSourceRef (*PFN_TISCopyCurrentKeyboardInputSource)(void);
+#define TISCopyCurrentKeyboardInputSource _glfw.ns.tis.CopyCurrentKeyboardInputSource
 typedef TISInputSourceRef (*PFN_TISCopyCurrentKeyboardLayoutInputSource)(void);
 #define TISCopyCurrentKeyboardLayoutInputSource _glfw.ns.tis.CopyCurrentKeyboardLayoutInputSource
+typedef TISInputSourceRef (*PFN_TISCopyInputSourceForLanguage)(CFStringRef);
+#define TISCopyInputSourceForLanguage _glfw.ns.tis.CopyInputSourceForLanguage
+typedef CFArrayRef (*PFN_TISCreateASCIICapableInputSourceList)(void);
+#define TISCreateASCIICapableInputSourceList _glfw.ns.tis.CreateASCIICapableInputSourceList
+typedef CFArrayRef (*PEN_TISCreateInputSourceList)(CFDictionaryRef,Boolean);
+#define TISCreateInputSourceList _glfw.ns.tis.CreateInputSourceList
 typedef void* (*PFN_TISGetInputSourceProperty)(TISInputSourceRef,CFStringRef);
 #define TISGetInputSourceProperty _glfw.ns.tis.GetInputSourceProperty
+typedef OSStatus (*PFN_TISSelectInputSource)(TISInputSourceRef);
+#define TISSelectInputSource _glfw.ns.tis.SelectInputSource
 typedef UInt8 (*PFN_LMGetKbdType)(void);
 #define LMGetKbdType _glfw.ns.tis.GetKbdType
 
@@ -184,10 +202,22 @@ typedef struct _GLFWlibraryNS
 
     struct {
         CFBundleRef     bundle;
+        PFN_TISCopyCurrentASCIICapableKeyboardInputSource CopyCurrentASCIICapableKeyboardInputSource;
+        PFN_TISCopyCurrentKeyboardInputSource CopyCurrentKeyboardInputSource;
         PFN_TISCopyCurrentKeyboardLayoutInputSource CopyCurrentKeyboardLayoutInputSource;
+        PFN_TISCopyInputSourceForLanguage CopyInputSourceForLanguage;
+        PFN_TISCreateASCIICapableInputSourceList CreateASCIICapableInputSourceList;
+        PEN_TISCreateInputSourceList CreateInputSourceList;
         PFN_TISGetInputSourceProperty GetInputSourceProperty;
+        PFN_TISSelectInputSource SelectInputSource;
         PFN_LMGetKbdType GetKbdType;
+        CFStringRef     kCategoryKeyboardInputSource;
+        CFStringRef     kPropertyInputSourceCategory;
+        CFStringRef     kPropertyInputSourceID;
+        CFStringRef     kPropertyInputSourceIsSelectCapable;
+        CFStringRef     kPropertyInputSourceType;
         CFStringRef     kPropertyUnicodeKeyLayoutData;
+        CFStringRef     kTypeKeyboardInputMethodModeEnabled;
     } tis;
 } _GLFWlibraryNS;
 
@@ -267,6 +297,11 @@ void _glfwDestroyCursorCocoa(_GLFWcursor* cursor);
 void _glfwSetCursorCocoa(_GLFWwindow* window, _GLFWcursor* cursor);
 void _glfwSetClipboardStringCocoa(const char* string);
 const char* _glfwGetClipboardStringCocoa(void);
+
+void _glfwUpdatePreeditCursorRectangleCocoa(_GLFWwindow* window);
+void _glfwResetPreeditTextCocoa(_GLFWwindow* window);
+void _glfwSetIMEStatusCocoa(_GLFWwindow* window, int active);
+int _glfwGetIMEStatusCocoa(_GLFWwindow* window);
 
 EGLenum _glfwGetEGLPlatformCocoa(EGLint** attribs);
 EGLNativeDisplayType _glfwGetEGLNativeDisplayCocoa(void);

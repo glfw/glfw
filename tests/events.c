@@ -464,6 +464,59 @@ static void char_callback(GLFWwindow* window, unsigned int codepoint)
            counter++, slot->number, glfwGetTime(), codepoint, string);
 }
 
+static void preedit_callback(GLFWwindow* window, int preeditCount,
+                             unsigned int* preeditString, int blockCount,
+                             int* blockSizes, int focusedBlock, int caret)
+{
+    Slot* slot = glfwGetWindowUserPointer(window);
+    int i, blockIndex = -1, remainingBlockSize = 0;
+    int width, height;
+    char encoded[5] = "";
+    size_t encodedCount = 0;
+    printf("%08x to %i at %0.3f: Preedit text ",
+           counter++, slot->number, glfwGetTime());
+    if (preeditCount == 0 || blockCount == 0)
+    {
+        printf("(empty)\n");
+    }
+    else
+    {
+        for (i = 0; i < preeditCount; i++)
+        {
+            if (remainingBlockSize == 0)
+            {
+                if (blockIndex == focusedBlock)
+                    printf("]");
+                blockIndex++;
+                remainingBlockSize = blockSizes[blockIndex];
+                printf("\n   block %d: ", blockIndex);
+                if (blockIndex == focusedBlock)
+                    printf("[");
+            }
+            if (i == caret)
+                printf("|");
+            encodedCount = encode_utf8(encoded, preeditString[i]);
+            encoded[encodedCount] = '\0';
+            printf("%s", encoded);
+            remainingBlockSize--;
+        }
+        if (blockIndex == focusedBlock)
+            printf("]");
+        if (caret == preeditCount)
+            printf("|");
+        printf("\n");
+        glfwGetWindowSize(window, &width, &height);
+        glfwSetPreeditCursorRectangle(window, width/2, height/2, 1, 20);
+    }
+}
+
+static void ime_callback(GLFWwindow* window)
+{
+    Slot* slot = glfwGetWindowUserPointer(window);
+    printf("%08x to %i at %0.3f: IME switched\n",
+           counter++, slot->number, glfwGetTime());
+}
+
 static void drop_callback(GLFWwindow* window, int count, const char* paths[])
 {
     int i;
@@ -649,6 +702,8 @@ int main(int argc, char** argv)
         glfwSetScrollCallback(slots[i].window, scroll_callback);
         glfwSetKeyCallback(slots[i].window, key_callback);
         glfwSetCharCallback(slots[i].window, char_callback);
+        glfwSetPreeditCallback(slots[i].window, preedit_callback);
+        glfwSetIMEStatusCallback(slots[i].window, ime_callback);
         glfwSetDropCallback(slots[i].window, drop_callback);
 
         glfwMakeContextCurrent(slots[i].window);

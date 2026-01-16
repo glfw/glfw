@@ -470,6 +470,11 @@ void _glfwFocusWindowNull(_GLFWwindow* window)
     _glfwInputWindowFocus(window, GLFW_TRUE);
 }
 
+void _glfwDragWindowNull(_GLFWwindow* window)
+{
+    // TODO
+}
+
 GLFWbool _glfwWindowFocusedNull(_GLFWwindow* window)
 {
     return _glfw.null.focusedWindow == window;

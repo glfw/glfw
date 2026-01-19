@@ -92,7 +92,7 @@ extern "C" {
 
 /* If we are we on Windows, we want a single define for it.
  */
-#if !defined(_WIN32) && (defined(__WIN32__) || defined(WIN32) || defined(__MINGW32__))
+#if !defined(_WIN32) && (defined(__WIN32__) || defined(WIN32) || defined(__MINGW32__) || defined(_GLFW_WIN32))
  #define _WIN32
 #endif /* _WIN32 */
 

@@ -1441,7 +1441,11 @@ static void processEvent(XEvent *event)
                 updateCursorImage(window);
 
             _glfwInputCursorEnter(window, GLFW_TRUE);
-            _glfwInputCursorPos(window, x, y);
+
+            // Don't call the cursor callback when GLFW_CURSOR_DISABLED for
+            // this event, it snaps the cursor back to the center
+            if (window->cursorMode != GLFW_CURSOR_DISABLED)
+              _glfwInputCursorPos(window, x, y);
 
             window->x11.lastCursorPosX = x;
             window->x11.lastCursorPosY = y;

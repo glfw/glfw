@@ -76,6 +76,7 @@ typedef struct _GLFWmonitor     _GLFWmonitor;
 typedef struct _GLFWcursor      _GLFWcursor;
 typedef struct _GLFWmapelement  _GLFWmapelement;
 typedef struct _GLFWmapping     _GLFWmapping;
+typedef struct _GLFWusbinfo     _GLFWusbinfo;
 typedef struct _GLFWjoystick    _GLFWjoystick;
 typedef struct _GLFWtls         _GLFWtls;
 typedef struct _GLFWmutex       _GLFWmutex;
@@ -639,6 +640,16 @@ struct _GLFWmapping
     _GLFWmapelement axes[6];
 };
 
+// USB vendor, product, version
+//
+struct _GLFWusbinfo
+{
+    uint16_t bustype;
+	uint16_t vendor;
+	uint16_t product;
+	uint16_t version;
+};
+
 // Joystick structure
 //
 struct _GLFWjoystick
@@ -654,6 +665,7 @@ struct _GLFWjoystick
     char            name[128];
     void*           userPointer;
     char            guid[33];
+    _GLFWusbinfo    usbInfo;
     _GLFWmapping*   mapping;
 
     // This is defined in platform.h

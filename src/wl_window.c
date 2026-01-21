@@ -1662,6 +1662,31 @@ static void pointerHandleAxis(void* userData,
     }
 }
 
+static void pointerHandleFrame(void* userData,
+                               struct wl_pointer* pointer)
+{
+}
+
+static void pointerHandleAxisSource(void* userData,
+                                    struct wl_pointer* pointer,
+                                    uint32_t axis_source)
+{
+}
+
+static void pointerHandleAxisStop(void* userData,
+                                  struct wl_pointer* pointer,
+                                  uint32_t time,
+                                  uint32_t axis)
+{
+}
+
+static void pointerHandleAxisDiscrete(void* userData,
+                                      struct wl_pointer* pointer,
+                                      uint32_t axis,
+                                      int32_t discrete)
+{
+}
+
 static const struct wl_pointer_listener pointerListener =
 {
     pointerHandleEnter,
@@ -1669,6 +1694,10 @@ static const struct wl_pointer_listener pointerListener =
     pointerHandleMotion,
     pointerHandleButton,
     pointerHandleAxis,
+    pointerHandleFrame,
+    pointerHandleAxisSource,
+    pointerHandleAxisStop,
+    pointerHandleAxisDiscrete,
 };
 
 static void keyboardHandleKeymap(void* userData,

@@ -252,7 +252,14 @@ elseif (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR
 endif()
 
 if (GLFW_BUILD_WIN32)
-    target_compile_definitions(glfw PRIVATE UNICODE _UNICODE)
+    # If requested, create a C #define to set the app's window class name.
+    # This class name is baked in at compile time.
+    set(_GLFW_WCN "")
+    if (GLFW_WNDCLASSNAME)
+        set(_GLFW_WCN "_GLFW_WNDCLASSNAME=L\"${GLFW_WNDCLASSNAME}\"")
+    endif()
+
+    target_compile_definitions(glfw PRIVATE UNICODE _UNICODE ${_GLFW_WCN})
 endif()
 
 # Workaround for the MS CRT deprecating parts of the standard library

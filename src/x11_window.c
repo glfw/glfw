@@ -62,7 +62,7 @@
 //
 static GLFWbool waitForX11Event(double* timeout)
 {
-    struct pollfd fd = { ConnectionNumber(_glfw.x11.display), POLLIN };
+    struct pollfd fd = { .fd = ConnectionNumber(_glfw.x11.display), .events = POLLIN };
 
     while (!XPending(_glfw.x11.display))
     {
@@ -97,7 +97,7 @@ static GLFWbool waitForAnyEvent(double* timeout)
         if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), timeout))
             return GLFW_FALSE;
 
-        for (int i = 1; i < sizeof(fds) / sizeof(fds[0]); i++)
+        for (size_t i = 1; i < sizeof(fds) / sizeof(fds[0]); i++)
         {
             if (fds[i].revents & POLLIN)
                 return GLFW_TRUE;
@@ -235,10 +235,10 @@ static int translateState(int state)
 
 // Translates an X11 key code to a GLFW key token
 //
-static int translateKey(int scancode)
+static int translateKey(unsigned int scancode)
 {
     // Use the pre-filled LUT (see createKeyTables() in x11_init.c)
-    if (scancode < 0 || scancode > 255)
+    if (scancode > 255)
         return GLFW_KEY_UNKNOWN;
 
     return _glfw.x11.keycodes[scancode];
@@ -1149,7 +1149,7 @@ static void releaseMonitor(_GLFWwindow* window)
 //
 static void processEvent(XEvent *event)
 {
-    int keycode = 0;
+    unsigned int keycode = 0;
     Bool filtered = False;
 
     // HACK: Save scancode as some IMs clear the field in XFilterEvent
@@ -3159,7 +3159,7 @@ EGLNativeWindowType _glfwGetEGLNativeWindowX11(_GLFWwindow* window)
         return (EGLNativeWindowType) window->x11.handle;
 }
 
-void _glfwGetRequiredInstanceExtensionsX11(char** extensions)
+void _glfwGetRequiredInstanceExtensionsX11(const char** extensions)
 {
     if (!_glfw.vk.KHR_surface)
         return;

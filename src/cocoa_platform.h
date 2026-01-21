@@ -247,6 +247,7 @@ void _glfwSetWindowFloatingCocoa(_GLFWwindow* window, GLFWbool enabled);
 float _glfwGetWindowOpacityCocoa(_GLFWwindow* window);
 void _glfwSetWindowOpacityCocoa(_GLFWwindow* window, float opacity);
 void _glfwSetWindowMousePassthroughCocoa(_GLFWwindow* window, GLFWbool enabled);
+GLFWbool _glfwGetWindowIsFullscreenCocoa(_GLFWwindow* window);
 
 void _glfwSetRawMouseMotionCocoa(_GLFWwindow *window, GLFWbool enabled);
 GLFWbool _glfwRawMouseMotionSupportedCocoa(void);

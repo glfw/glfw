@@ -145,6 +145,8 @@ static GLFWbool loadLibraries(void)
             _glfwPlatformGetModuleSymbol(_glfw.win32.dwmapi.instance, "DwmEnableBlurBehindWindow");
         _glfw.win32.dwmapi.GetColorizationColor = (PFN_DwmGetColorizationColor)
             _glfwPlatformGetModuleSymbol(_glfw.win32.dwmapi.instance, "DwmGetColorizationColor");
+        _glfw.win32.dwmapi.DwmSetWindowAttribute = (PFN_DwmSetWindowAttribute)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.dwmapi.instance, "DwmSetWindowAttribute");
     }
 
     _glfw.win32.shcore.instance = _glfwPlatformLoadModule("shcore.dll");
@@ -562,6 +564,14 @@ void _glfwUpdateKeyNamesWin32(void)
                             sizeof(_glfw.win32.keynames[key]),
                             NULL, NULL);
     }
+}
+
+void _glfwSetWindowTheme(BOOL dark, HWND hwnd)
+{
+#ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
+#define DWMWA_USE_IMMERSIVE_DARK_MODE 20
+#endif
+    _glfw.win32.dwmapi.DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &dark, sizeof(dark));
 }
 
 // Replacement for IsWindowsVersionOrGreater, as we cannot rely on the

@@ -1108,6 +1108,11 @@ extern "C" {
  *  [GLFW_SCALE_FRAMEBUFFER](@ref GLFW_SCALE_FRAMEBUFFER_hint) window hint for
  *  compatibility with earlier versions.
  */
+#define GLFW_THEME                  0x0002200E
+/*! @brief windows specific
+ *
+ *  Allows specifying whether light or dark theme should be used.
+ */
 #define GLFW_COCOA_RETINA_FRAMEBUFFER 0x00023001
 /*! @brief macOS specific
  *  [window hint](@ref GLFW_COCOA_FRAME_NAME_hint).
@@ -1181,6 +1186,10 @@ extern "C" {
 #define GLFW_WAYLAND_DISABLE_LIBDECOR   0x00038002
 
 #define GLFW_ANY_POSITION           0x80000000
+
+#define GLFW_THEME_AUTO             0x00000000
+#define GLFW_THEME_DARK             0x00000001
+#define GLFW_THEME_LIGHT            0x00000002
 
 /*! @defgroup shapes Standard cursor shapes
  *  @brief Standard system cursor shapes.
@@ -3479,6 +3488,8 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
  *  @ingroup window
  */
 GLFWAPI void glfwSetWindowPos(GLFWwindow* window, int xpos, int ypos);
+
+GLFWAPI int glfwIsWindowLightTheme(GLFWwindow* window);
 
 /*! @brief Retrieves the size of the content area of the specified window.
  *

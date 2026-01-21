@@ -25,6 +25,8 @@
 //
 //========================================================================
 
+#define _GNU_SOURCE
+
 #include "internal.h"
 
 #if defined(GLFW_BUILD_LINUX_JOYSTICK)

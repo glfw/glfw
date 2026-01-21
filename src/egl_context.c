@@ -869,7 +869,13 @@ GLFWbool _glfwChooseVisualEGL(const _GLFWwndconfig* wndconfig,
     XVisualInfo desired;
     EGLConfig native;
     EGLint visualID = 0, count = 0;
-    const long vimask = VisualScreenMask | VisualIDMask;
+    long vimask;
+
+    if (fbconfig->transparent) {
+        vimask = VisualScreenMask;
+    } else {
+        vimask = VisualScreenMask | VisualIDMask;
+    }
 
     if (!chooseEGLConfig(ctxconfig, fbconfig, &native))
         return GLFW_FALSE;
@@ -886,6 +892,21 @@ GLFWbool _glfwChooseVisualEGL(const _GLFWwndconfig* wndconfig,
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "EGL: Failed to retrieve Visual for EGLConfig");
         return GLFW_FALSE;
+    }
+
+    if (fbconfig->transparent) {
+        int i;
+        for (i = 0; i < count; i++) {
+            XVisualInfo *vinfo = &result[i];
+            if (vinfo->class == DirectColor || vinfo->class == TrueColor) {
+                if (vinfo->depth == 32) {
+                    *visual = vinfo->visual;
+                    *depth = vinfo->depth;
+                    XFree(result);
+                    return GLFW_TRUE;
+                }
+            }
+        }
     }
 
     *visual = result->visual;

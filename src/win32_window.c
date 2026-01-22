@@ -35,6 +35,7 @@
 #include <assert.h>
 #include <windowsx.h>
 #include <shellapi.h>
+#include <stdio.h>
 
 // Returns the window style for the specified window
 //
@@ -1264,6 +1265,18 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
         }
     }
 
+    if(uMsg == window->win32.taskbarListMsgID)
+    {
+        HRESULT res = CoCreateInstance(&CLSID_TaskbarList, NULL, CLSCTX_INPROC_SERVER, &IID_ITaskbarList3, (LPVOID*)&window->win32.taskbarList);
+        if (res != S_OK && window->win32.taskbarList)
+            window->win32.taskbarList->lpVtbl->Release(window->win32.taskbarList);
+        else
+        {
+            window->win32.taskbarList->lpVtbl->AddRef(window->win32.taskbarList);
+            window->win32.taskbarList->lpVtbl->HrInit(window->win32.taskbarList);
+        }
+    }
+
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
 }
 
@@ -1407,9 +1420,14 @@ static int createNativeWindow(_GLFWwindow* window,
     ChangeWindowMessageFilterEx(window->win32.handle, WM_COPYDATA, MSGFLT_ALLOW, NULL);
     ChangeWindowMessageFilterEx(window->win32.handle, WM_COPYGLOBALDATA, MSGFLT_ALLOW, NULL);
 
+    window->win32.taskbarListMsgID = RegisterWindowMessageW(L"TaskbarButtonCreated");
+    if (window->win32.taskbarListMsgID)
+        ChangeWindowMessageFilterEx(window->win32.handle, window->win32.taskbarListMsgID, MSGFLT_ALLOW, NULL);
+
     window->win32.scaleToMonitor = wndconfig->scaleToMonitor;
     window->win32.keymenu = wndconfig->win32.keymenu;
     window->win32.showDefault = wndconfig->win32.showDefault;
+    window->win32.genericBadge = wndconfig->win32.genericBadge;
 
     if (!window->monitor)
     {
@@ -1558,6 +1576,9 @@ void _glfwDestroyWindowWin32(_GLFWwindow* window)
     if (_glfw.win32.capturedCursorWindow == window)
         releaseCursor();
 
+    if (window->win32.taskbarList)
+        window->win32.taskbarList->lpVtbl->Release(window->win32.taskbarList);
+
     if (window->win32.handle)
     {
         RemovePropW(window->win32.handle, L"GLFW");
@@ -1618,6 +1639,480 @@ void _glfwSetWindowIconWin32(_GLFWwindow* window, int count, const GLFWimage* im
         window->win32.bigIcon = bigIcon;
         window->win32.smallIcon = smallIcon;
     }
+}
+
+void _glfwSetWindowProgressIndicatorWin32(_GLFWwindow* window, int progressState, double value)
+{
+    HRESULT res = S_OK;
+    int winProgressState = 0;
+    int progressValue = (int)(value * 100.0);
+
+    if(!window->win32.taskbarList)
+        return;
+
+    res = window->win32.taskbarList->lpVtbl->SetProgressValue(window->win32.taskbarList, window->win32.handle, progressValue, 100);
+    if(res != S_OK)
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar progress value");
+        return;
+    }
+
+    switch(progressState)
+	{
+        case GLFW_PROGRESS_INDICATOR_INDETERMINATE:
+            winProgressState = TBPF_INDETERMINATE;
+            break;
+        case GLFW_PROGRESS_INDICATOR_NORMAL:
+            winProgressState = TBPF_NORMAL;
+            break;
+        case GLFW_PROGRESS_INDICATOR_ERROR:
+            winProgressState = TBPF_ERROR;
+            break;
+        case GLFW_PROGRESS_INDICATOR_PAUSED:
+            winProgressState = TBPF_PAUSED;
+            break;
+
+        default:
+            winProgressState = TBPF_NOPROGRESS;
+            break;
+	}
+
+    res = window->win32.taskbarList->lpVtbl->SetProgressState(window->win32.taskbarList, window->win32.handle, winProgressState);
+    if (res != S_OK)
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar progress state");
+}
+
+typedef struct
+{
+    HDC hdc;
+    HDC hdcMem;
+    HDC hdcMemMask;
+
+    HBITMAP hBitmap;
+    HBITMAP hBitmapMask;
+    HBITMAP hOldBitmap;
+    HBITMAP hOldBitmapMask;
+
+    HBRUSH hForegroundBrush;
+    HBRUSH hBackgroundBrush;
+    HBRUSH hOldBrush;
+
+    HFONT hFont;
+    HFONT hOldFont;
+
+    COLORREF hOldColor;
+
+    int oldBkMode;
+
+    UINT oldTextAlign;
+} BadgeData;
+
+static void CleanupBadgeData(HWND hWnd, BadgeData* data)
+{
+    if(!data)
+        return;
+
+    if(data->oldTextAlign != GDI_ERROR)
+        SetTextAlign(data->hdcMem, data->oldTextAlign);
+
+    if(data->oldBkMode)
+        SetBkMode(data->hdcMem, data->oldBkMode);
+
+    if(data->hOldColor != CLR_INVALID)
+        SetTextColor(data->hdcMem, data->hOldColor);
+
+    if(data->hFont)
+        DeleteObject(data->hFont);
+    if(data->hOldFont)
+        SelectObject(data->hdcMem, data->hOldFont);
+
+    if (data->hForegroundBrush)
+        DeleteObject(data->hForegroundBrush);
+    if (data->hBackgroundBrush)
+        DeleteObject(data->hBackgroundBrush);
+
+    if(data->hOldBrush)
+        SelectObject(data->hdcMem, data->hOldBrush);
+
+    if(data->hOldBitmap)
+        SelectObject(data->hdcMem, data->hOldBitmap);
+    if(data->hOldBitmapMask)
+        SelectObject(data->hdcMem, data->hOldBitmapMask);
+
+    if(data->hBitmap)
+        DeleteObject(data->hBitmap);
+    if(data->hBitmapMask)
+        DeleteObject(data->hBitmapMask);
+
+    if(data->hdcMem)
+        DeleteDC(data->hdcMem);
+    if(data->hdcMemMask)
+        DeleteDC(data->hdcMemMask);
+
+    if(data->hdc)
+        ReleaseDC(hWnd, data->hdc);
+}
+
+static HICON GenerateTextBadgeIcon(HWND hWnd, WCHAR* text)
+{
+    BadgeData badgeData;
+
+    void* bits = NULL;
+    DWORD* pixels = NULL;
+    ICONINFO iconInfo;
+    int width = 16, height = 16;
+    int fontSize = 16, weight = FW_REGULAR;
+    RECT contentRect = { 0, 0, width, height };
+    HICON hIcon = NULL;
+    BITMAPINFO bmi = {0};
+    int x = 0, y = 0;
+
+    memset(&badgeData, 0, sizeof(BadgeData));
+
+    if (!text)
+        return NULL;
+
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = width;
+    bmi.bmiHeader.biHeight = height;
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 32;
+    bmi.bmiHeader.biCompression = BI_RGB;
+
+    badgeData.hdc = GetDC(hWnd);
+    if(!badgeData.hdc)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hdcMem = CreateCompatibleDC(badgeData.hdc);
+    if(!badgeData.hdcMem)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hdcMemMask = CreateCompatibleDC(badgeData.hdc);
+    if(!badgeData.hdcMemMask)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hBitmap = CreateDIBSection(badgeData.hdc, &bmi, DIB_RGB_COLORS, &bits, NULL, 0);
+    if(!badgeData.hBitmap)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+    pixels = (DWORD*)bits;
+
+    badgeData.hBitmapMask = CreateCompatibleBitmap(badgeData.hdc, width, height);
+    if(!badgeData.hBitmapMask)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hOldBitmap = (HBITMAP)SelectObject(badgeData.hdcMem, badgeData.hBitmap);
+    badgeData.hOldBitmapMask = (HBITMAP)SelectObject(badgeData.hdcMemMask, badgeData.hBitmapMask);
+
+    if(BitBlt(badgeData.hdcMemMask, 0, 0, width, height, badgeData.hdcMem, 0, 0, SRCCOPY) == FALSE)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hBackgroundBrush = CreateSolidBrush(RGB(0x26, 0x25, 0x2D));
+    if(!badgeData.hBackgroundBrush)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hOldBrush = (HBRUSH)SelectObject(badgeData.hdcMem, badgeData.hBackgroundBrush);
+
+    if(Ellipse(badgeData.hdcMem, 0, 0, width + 1, height + 1) == FALSE) //17x17 gives a more fancy ellipse
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    //Adjust font size depending on digits to display
+    if (lstrlen(text) > 2)
+    {
+        fontSize = 10;
+        weight = FW_LIGHT;
+    }
+    else if (lstrlen(text) > 1)
+        fontSize = 14;
+
+    //Create and set font
+    badgeData.hFont = CreateFont(fontSize, 0, 0, 0, weight, FALSE, FALSE, FALSE, 0,
+                                 OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
+                                 DEFAULT_PITCH | FF_DONTCARE, TEXT("Segoe UI"));
+    if(!badgeData.hFont)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hOldFont = (HFONT)SelectObject(badgeData.hdcMem, badgeData.hFont);
+
+    //Draw text (center aligned)
+    badgeData.hOldColor = SetTextColor(badgeData.hdcMem, RGB(255, 255, 255)); //Use white text color
+    if(badgeData.hOldColor == CLR_INVALID)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.oldBkMode = SetBkMode(badgeData.hdcMem, TRANSPARENT); //Make font background transparent
+    if(!badgeData.oldBkMode)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.oldTextAlign = SetTextAlign(badgeData.hdcMem, TA_LEFT | TA_TOP | TA_NOUPDATECP);
+    if(badgeData.oldTextAlign == GDI_ERROR)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    if(!DrawText(badgeData.hdcMem, text, lstrlen(text), &contentRect, DT_CENTER | DT_VCENTER | DT_SINGLELINE))
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    //Transparency
+    for (y = 0; y < height; ++y)
+    {
+        for (x = 0; x < width; ++x)
+        {
+            const DWORD pixel = pixels[y * width + x];
+            if (pixel == 0x0026252Du || pixel == 0x00FFFFFFu) //Pixel is text or ellipsis
+                pixels[y * width + x] |= 0xFF000000u; //Set opaque
+            else
+                pixels[y * width + x] &= 0xFF000000u; //Set fully transparent
+        }
+    }
+
+    SelectObject(badgeData.hdcMem, badgeData.hOldBitmap);
+    badgeData.hOldBitmap = NULL;
+    SelectObject(badgeData.hdcMemMask, badgeData.hOldBitmapMask);
+    badgeData.hOldBitmapMask = NULL;
+
+    //Generate icon from bitmap
+    iconInfo.fIcon = TRUE;
+    iconInfo.xHotspot = 0;
+    iconInfo.yHotspot = 0;
+    iconInfo.hbmMask = badgeData.hBitmapMask;
+    iconInfo.hbmColor = badgeData.hBitmap;
+    hIcon = CreateIconIndirect(&iconInfo);
+
+    CleanupBadgeData(hWnd, &badgeData);
+
+    return hIcon;
+}
+
+static HICON GenerateGenericBadgeIcon(HWND hWnd)
+{
+    BadgeData badgeData;
+
+    void* bits = NULL;
+    DWORD* pixels = NULL;
+    ICONINFO iconInfo;
+    int width = 32, height = 32;
+    HICON hIcon = NULL;
+    BITMAPINFO bmi;
+    int x = 0, y = 0;
+
+    memset(&badgeData, 0, sizeof(BadgeData));
+
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = width;
+    bmi.bmiHeader.biHeight = height;
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 32;
+    bmi.bmiHeader.biCompression = BI_RGB;
+
+    badgeData.hdc = GetDC(hWnd);
+    if (!badgeData.hdc)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hdcMem = CreateCompatibleDC(badgeData.hdc);
+    if (!badgeData.hdcMem)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hdcMemMask = CreateCompatibleDC(badgeData.hdc);
+    if (!badgeData.hdcMemMask)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hBitmap = CreateDIBSection(badgeData.hdc, &bmi, DIB_RGB_COLORS, &bits, NULL, 0);
+    if (!badgeData.hBitmap)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+    pixels = (DWORD*)bits;
+
+    badgeData.hBitmapMask = CreateCompatibleBitmap(badgeData.hdc, width, height);
+    if (!badgeData.hBitmapMask)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hOldBitmap = (HBITMAP)SelectObject(badgeData.hdcMem, badgeData.hBitmap);
+    badgeData.hOldBitmapMask = (HBITMAP)SelectObject(badgeData.hdcMemMask, badgeData.hBitmapMask);
+
+    if (BitBlt(badgeData.hdcMemMask, 0, 0, width, height, badgeData.hdcMem, 0, 0, SRCCOPY) == FALSE)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hBackgroundBrush = CreateSolidBrush(RGB(0xEB, 0x5A, 0x5E));
+    if (!badgeData.hBackgroundBrush)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hOldBrush = (HBRUSH)SelectObject(badgeData.hdcMem, badgeData.hBackgroundBrush);
+
+    if (Ellipse(badgeData.hdcMem, 0, 0, width + 1, height + 1) == FALSE) //17x17 gives a more fancy ellipse
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    badgeData.hForegroundBrush = CreateSolidBrush(RGB(0xFF, 0xFF, 0xFF));
+    if (!badgeData.hForegroundBrush)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    SelectObject(badgeData.hdcMem, badgeData.hForegroundBrush);
+
+    if (Ellipse(badgeData.hdcMem, 9, 9, (width - 8), (height - 8)) == FALSE)
+    {
+        CleanupBadgeData(hWnd, &badgeData);
+        return NULL;
+    }
+
+    SelectObject(badgeData.hdcMem, badgeData.hOldBitmap);
+    badgeData.hOldBitmap = NULL;
+    SelectObject(badgeData.hdcMemMask, badgeData.hOldBitmapMask);
+    badgeData.hOldBitmapMask = NULL;
+
+    //Transparency
+    for (y = 0; y < height; ++y)
+    {
+        for (x = 0; x < width; ++x)
+        {
+            const DWORD pixel = pixels[y * width + x];
+            if (pixel >= 0x00010101u) //Pixel is ellipsis
+                pixels[y * width + x] |= 0xFF000000u; //Set opaque
+            else
+                pixels[y * width + x] &= 0xFF000000u; //Set fully transparent
+        }
+    }
+
+    //Generate icon from bitmap
+    iconInfo.fIcon = TRUE;
+    iconInfo.xHotspot = 0;
+    iconInfo.yHotspot = 0;
+    iconInfo.hbmMask = badgeData.hBitmapMask;
+    iconInfo.hbmColor = badgeData.hBitmap;
+    hIcon = CreateIconIndirect(&iconInfo);
+
+    CleanupBadgeData(hWnd, &badgeData);
+
+    return hIcon;
+}
+
+void _glfwSetWindowBadgeWin32(_GLFWwindow* window, int count)
+{
+    HRESULT res = S_OK;
+    HICON icon = NULL;
+    char countStr[4];
+    WCHAR* countWStr = NULL;
+
+    if (window == NULL)
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE, "Win32: Taskbar badge requires a valid window handle");
+        return;
+    }
+
+    if (!window->win32.taskbarList)
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar badge count");
+        return;
+    }
+
+    count = _glfw_min(count, 999);
+    if (count > 0)
+    {
+        if (window->win32.genericBadge)
+            icon = GenerateGenericBadgeIcon(window->win32.handle);
+        else
+        {
+            //Convert count to string (its guaranteed to be at max 3 digits)
+            memset(countStr, 0, 4 * sizeof(char));
+            sprintf(countStr, "%d", count);
+            countWStr = _glfwCreateWideStringFromUTF8Win32(countStr);
+            if (!countWStr)
+            {
+                _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar badge count");
+                return;
+            }
+
+            icon = GenerateTextBadgeIcon(window->win32.handle, countWStr);
+        }
+
+        if (!icon)
+        {
+            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar badge count");
+            _glfw_free(countWStr);
+            return;
+        }
+    }
+
+    res = window->win32.taskbarList->lpVtbl->SetOverlayIcon(window->win32.taskbarList, window->win32.handle, icon, countWStr ? countWStr : TEXT(""));
+
+    if (countWStr)
+        _glfw_free(countWStr);
+
+    if(icon)
+        DestroyIcon(icon);
+
+    if (res != S_OK)
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR, "Win32: Failed to set taskbar badge count");
+        return;
+    }
+}
+
+void _glfwSetWindowBadgeStringWin32(_GLFWwindow* window, const char* string)
+{
+    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                    "Win32: Unable to set a string badge. Only integer badges are supported");
+    //In reality you can display a string but it could only be 3 maybe 4 characters long till it becomes an unreadable mess.
 }
 
 void _glfwGetWindowPosWin32(_GLFWwindow* window, int* xpos, int* ypos)

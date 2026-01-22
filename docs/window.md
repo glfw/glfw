@@ -1214,6 +1214,26 @@ not supported, the application as a whole.  Once the user has given it
 attention, the system will automatically end the request.
 
 
+### Window progress indicator {#window_progress_indicator}
+
+If you wish to display the progress of some action on the Dock icon or task bar, you can
+do this with @ref glfwSetWindowProgressIndicator.
+
+```c
+glfwSetWindowProgressIndicator(window, GLFW_PROGRESS_INDICATOR_NORMAL, 0.5);
+```
+
+There are different progress states available for you to use:
+    - @ref GLFW_PROGRESS_INDICATOR_DISABLED
+    - @ref GLFW_PROGRESS_INDICATOR_INDETERMINATE
+    - @ref GLFW_PROGRESS_INDICATOR_NORMAL
+    - @ref GLFW_PROGRESS_INDICATOR_ERROR
+    - @ref GLFW_PROGRESS_INDICATOR_PAUSED
+
+The last argument is the progress percentage to display.
+It has a valid range of 0.0 to 1.0.
+
+
 ### Window damage and refresh {#window_refresh}
 
 If you wish to be notified when the contents of a window is damaged and needs

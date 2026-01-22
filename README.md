@@ -120,6 +120,8 @@ information on what to include when reporting a bug.
 
 ## Changelog since 3.4
 
+ - Added `glfwSetWindowBadge` and `glfwSetWindowBadgeString` for displaying window application badge (#2248)
+ - Added `glfwSetWindowProgressIndicator` for displaying progress on the dock or taskbar (#2286,#1183)
  - Added `GLFW_UNLIMITED_MOUSE_BUTTONS` input mode that allows mouse buttons beyond
    the limit of the mouse button tokens to be reported (#2423)
  - Added `glfwGetEGLConfig` function to query the `EGLConfig` of a window (#2045)

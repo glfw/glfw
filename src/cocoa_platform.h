@@ -156,6 +156,11 @@ typedef struct _GLFWwindowNS
     // since the last cursor motion event was processed
     // This is kept to counteract Cocoa doing the same internally
     double          cursorWarpDeltaX, cursorWarpDeltaY;
+    
+    struct {
+        int state;
+        double value;
+    } dockProgressIndicator;
 } _GLFWwindowNS;
 
 // Cocoa-specific global data
@@ -189,6 +194,13 @@ typedef struct _GLFWlibraryNS
         PFN_LMGetKbdType GetKbdType;
         CFStringRef     kPropertyUnicodeKeyLayoutData;
     } tis;
+    
+    struct {
+        id view;
+        int windowCount;
+        int indeterminateCount;
+        double totalValue;
+    } dockProgressIndicator;
 } _GLFWlibraryNS;
 
 // Cocoa-specific per-monitor data
@@ -218,6 +230,9 @@ GLFWbool _glfwCreateWindowCocoa(_GLFWwindow* window, const _GLFWwndconfig* wndco
 void _glfwDestroyWindowCocoa(_GLFWwindow* window);
 void _glfwSetWindowTitleCocoa(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconCocoa(_GLFWwindow* window, int count, const GLFWimage* images);
+void _glfwSetWindowProgressIndicatorCocoa(_GLFWwindow* window, int progressState, double value);
+void _glfwSetWindowBadgeCocoa(_GLFWwindow* window, int count);
+void _glfwSetWindowBadgeStringCocoa(_GLFWwindow* window, const char* string);
 void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos);
 void _glfwSetWindowPosCocoa(_GLFWwindow* window, int xpos, int ypos);
 void _glfwGetWindowSizeCocoa(_GLFWwindow* window, int* width, int* height);

@@ -363,8 +363,12 @@ static void updateFallbackDecorationCursor(_GLFWwindow* window,
 
 static void handleFallbackDecorationButton(_GLFWwindow* window,
                                            uint32_t serial,
-                                           uint32_t button)
+                                           uint32_t button,
+                                           uint32_t state)
 {
+    if (state != WL_POINTER_BUTTON_STATE_PRESSED)
+        return;
+
     const double xpos = wl_fixed_to_double(window->wl.fallback.pointerX);
     const double ypos = wl_fixed_to_double(window->wl.fallback.pointerY);
 
@@ -1631,7 +1635,7 @@ static void pointerHandleButton(void* userData,
     else
     {
         if (window->wl.fallback.decorations)
-            handleFallbackDecorationButton(window, serial, button);
+            handleFallbackDecorationButton(window, serial, button, state);
     }
 }
 

@@ -388,7 +388,6 @@ typedef struct _GLFWwindowWayland
         struct libdecor_frame*  frame;
     } libdecor;
 
-    _GLFWcursor*                currentCursor;
     double                      cursorPosX, cursorPosY;
 
     char*                       appId;

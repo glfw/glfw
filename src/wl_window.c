@@ -1283,7 +1283,7 @@ static void incrementCursorImage(void)
     if (window->wl.surface != _glfw.wl.pointerSurface)
         return;
 
-    _GLFWcursor* cursor = window->wl.currentCursor;
+    _GLFWcursor* cursor = window->cursor;
     if (cursor && cursor->wl.cursor)
     {
         cursor->wl.currentImage += 1;
@@ -1543,7 +1543,7 @@ static void pointerHandleEnter(void* userData,
     _GLFWwindow* window = wl_surface_get_user_data(surface);
     if (window->wl.surface == surface)
     {
-        _glfwSetCursorWayland(window, window->wl.currentCursor);
+        _glfwSetCursorWayland(window, window->cursor);
         _glfwInputCursorEnter(window, GLFW_TRUE);
 
         if (window->cursorMode != GLFW_CURSOR_DISABLED)
@@ -2736,7 +2736,7 @@ void _glfwSetCursorPosWayland(_GLFWwindow* window, double x, double y)
 
 void _glfwSetCursorModeWayland(_GLFWwindow* window, int mode)
 {
-    _glfwSetCursorWayland(window, window->wl.currentCursor);
+    _glfwSetCursorWayland(window, window->cursor);
 }
 
 const char* _glfwGetScancodeNameWayland(int scancode)
@@ -3069,8 +3069,6 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
 {
     if (!_glfw.wl.pointer)
         return;
-
-    window->wl.currentCursor = cursor;
 
     if (window->wl.surface != _glfw.wl.pointerSurface)
         return;

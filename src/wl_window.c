@@ -1519,6 +1519,70 @@ static char* readDataOfferAsString(struct wl_data_offer* offer, const char* mime
     return string;
 }
 
+static void processPointerEnterSurface(struct wl_surface* surface)
+{
+    _glfw.wl.pointerSurface = surface;
+
+    _GLFWwindow* window = wl_surface_get_user_data(_glfw.wl.pointerSurface);
+    if (window->wl.surface == _glfw.wl.pointerSurface)
+    {
+        _glfwSetCursorWayland(window, window->cursor);
+        _glfwInputCursorEnter(window, GLFW_TRUE);
+    }
+}
+
+static void processPointerLeaveSurface(struct wl_surface* surface)
+{
+    _glfw.wl.pointerSurface = NULL;
+
+    _GLFWwindow* window = wl_surface_get_user_data(surface);
+    if (window->wl.surface == surface)
+        _glfwInputCursorEnter(window, GLFW_FALSE);
+    else
+    {
+        if (window->wl.fallback.decorations)
+            window->wl.fallback.cursorName = NULL;
+    }
+}
+
+static void processPointerMotion(double xpos, double ypos)
+{
+    _GLFWwindow* window = wl_surface_get_user_data(_glfw.wl.pointerSurface);
+    if (window->wl.surface == _glfw.wl.pointerSurface)
+    {
+        if (window->cursorMode != GLFW_CURSOR_DISABLED)
+        {
+            window->wl.cursorPosX = xpos;
+            window->wl.cursorPosY = ypos;
+            _glfwInputCursorPos(window, window->wl.cursorPosX, window->wl.cursorPosY);
+        }
+    }
+    else
+    {
+        if (window->wl.fallback.decorations)
+            updateFallbackDecorationCursor(window, xpos, ypos);
+    }
+}
+
+static void processPointerButton(int button, int action)
+{
+    _GLFWwindow* window = wl_surface_get_user_data(_glfw.wl.pointerSurface);
+    if (window->wl.surface == _glfw.wl.pointerSurface)
+        _glfwInputMouseClick(window, button, action, _glfw.wl.xkb.modifiers);
+    else
+    {
+        if (window->wl.fallback.decorations)
+            handleFallbackDecorationButton(window, button, action);
+    }
+}
+
+static void processPointerScroll(double xoffset, double yoffset)
+{
+    _GLFWwindow* window = wl_surface_get_user_data(_glfw.wl.pointerSurface);
+    if (window->wl.surface == _glfw.wl.pointerSurface)
+        _glfwInputScroll(window, xoffset, yoffset);
+}
+
 static void pointerHandleEnter(void* userData,
                                struct wl_pointer* pointer,
                                uint32_t serial,
@@ -1536,7 +1600,6 @@ static void pointerHandleEnter(void* userData,
     _glfw.wl.serial = serial;
     _glfw.wl.pointerEnterSerial = serial;
 
-    _GLFWwindow* window = wl_surface_get_user_data(surface);
     const double xpos = wl_fixed_to_double(sx);
     const double ypos = wl_fixed_to_double(sy);
 
@@ -1549,25 +1612,8 @@ static void pointerHandleEnter(void* userData,
     }
     else
     {
-        _glfw.wl.pointerSurface = surface;
-
-        if (window->wl.surface == _glfw.wl.pointerSurface)
-        {
-            _glfwSetCursorWayland(window, window->cursor);
-            _glfwInputCursorEnter(window, GLFW_TRUE);
-
-            if (window->cursorMode != GLFW_CURSOR_DISABLED)
-            {
-                window->wl.cursorPosX = xpos;
-                window->wl.cursorPosY = ypos;
-                _glfwInputCursorPos(window, window->wl.cursorPosX, window->wl.cursorPosY);
-            }
-        }
-        else
-        {
-            if (window->wl.fallback.decorations)
-                updateFallbackDecorationCursor(window, xpos, ypos);
-        }
+        processPointerEnterSurface(surface);
+        processPointerMotion(xpos, ypos);
     }
 }
 
@@ -1584,25 +1630,13 @@ static void pointerHandleLeave(void* userData,
 
     _glfw.wl.serial = serial;
 
-    _GLFWwindow* window = wl_surface_get_user_data(surface);
-
     if (wl_pointer_get_version(pointer) >= WL_POINTER_FRAME_SINCE_VERSION)
     {
         _glfw.wl.pending.events |= GLFW_PENDING_SURFACE;
         _glfw.wl.pending.pointerSurface = NULL;
     }
     else
-    {
-        _glfw.wl.pointerSurface = NULL;
-
-        if (window->wl.surface == surface)
-            _glfwInputCursorEnter(window, GLFW_FALSE);
-        else
-        {
-            if (window->wl.fallback.decorations)
-                window->wl.fallback.cursorName = NULL;
-        }
-    }
+        processPointerLeaveSurface(surface);
 }
 
 static void pointerHandleMotion(void* userData,
@@ -1612,10 +1646,6 @@ static void pointerHandleMotion(void* userData,
                                 wl_fixed_t sy)
 {
     if (!_glfw.wl.pointerSurface)
-        return;
-
-    _GLFWwindow* window = wl_surface_get_user_data(_glfw.wl.pointerSurface);
-    if (window->cursorMode == GLFW_CURSOR_DISABLED)
         return;
 
     const double xpos = wl_fixed_to_double(sx);
@@ -1628,16 +1658,7 @@ static void pointerHandleMotion(void* userData,
         _glfw.wl.pending.pointerY = ypos;
     }
     else
-    {
-        if (window->wl.surface == _glfw.wl.pointerSurface)
-        {
-            window->wl.cursorPosX = xpos;
-            window->wl.cursorPosY = ypos;
-            _glfwInputCursorPos(window, window->wl.cursorPosX, window->wl.cursorPosY);
-        }
-        else
-            updateFallbackDecorationCursor(window, xpos, ypos);
-    }
+        processPointerMotion(xpos, ypos);
 }
 
 static void pointerHandleButton(void* userData,
@@ -1652,10 +1673,10 @@ static void pointerHandleButton(void* userData,
 
     _glfw.wl.serial = serial;
 
-    _GLFWwindow* window = wl_surface_get_user_data(_glfw.wl.pointerSurface);
     const int button = buttonID - BTN_LEFT;
     const int action = (state == WL_POINTER_BUTTON_STATE_PRESSED);
 
+    _GLFWwindow* window = wl_surface_get_user_data(_glfw.wl.pointerSurface);
     if (window->wl.fallback.decorations)
     {
         if (action == GLFW_PRESS)
@@ -1669,15 +1690,7 @@ static void pointerHandleButton(void* userData,
         _glfw.wl.pending.action = action;
     }
     else
-    {
-        if (window->wl.surface == _glfw.wl.pointerSurface)
-            _glfwInputMouseClick(window, button, action, _glfw.wl.xkb.modifiers);
-        else
-        {
-            if (window->wl.fallback.decorations)
-                handleFallbackDecorationButton(window, button, action);
-        }
-    }
+        processPointerButton(button, action);
 }
 
 static void pointerHandleAxis(void* userData,
@@ -1687,10 +1700,6 @@ static void pointerHandleAxis(void* userData,
                               wl_fixed_t value)
 {
     if (!_glfw.wl.pointerSurface)
-        return;
-
-    _GLFWwindow* window = wl_surface_get_user_data(_glfw.wl.pointerSurface);
-    if (window->wl.surface != _glfw.wl.pointerSurface)
         return;
 
     if (wl_pointer_get_version(pointer) >= WL_POINTER_FRAME_SINCE_VERSION)
@@ -1705,9 +1714,9 @@ static void pointerHandleAxis(void* userData,
     {
         // NOTE: 10 units of motion per mouse wheel step seems to be a common ratio
         if (axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL)
-            _glfwInputScroll(window, -wl_fixed_to_double(value) / 10.0, 0.0);
+            processPointerScroll(-wl_fixed_to_double(value) / 10.0, 0.0);
         else if (axis == WL_POINTER_AXIS_VERTICAL_SCROLL)
-            _glfwInputScroll(window, 0.0, -wl_fixed_to_double(value) / 10.0);
+            processPointerScroll(0.0, -wl_fixed_to_double(value) / 10.0);
     }
 }
 
@@ -1716,80 +1725,23 @@ static void pointerHandleFrame(void* userData, struct wl_pointer* pointer)
     if (_glfw.wl.pending.events & GLFW_PENDING_SURFACE)
     {
         if (_glfw.wl.pointerSurface)
-        {
-            _GLFWwindow* window = wl_surface_get_user_data(_glfw.wl.pointerSurface);
-            if (window->wl.surface == _glfw.wl.pointerSurface)
-                _glfwInputCursorEnter(window, GLFW_FALSE);
-            else
-            {
-                if (window->wl.fallback.decorations)
-                    window->wl.fallback.cursorName = NULL;
-            }
-        }
+            processPointerLeaveSurface(_glfw.wl.pointerSurface);
 
-        _glfw.wl.pointerSurface = _glfw.wl.pending.pointerSurface;
-
-        if (_glfw.wl.pointerSurface)
-        {
-            _GLFWwindow* window = wl_surface_get_user_data(_glfw.wl.pointerSurface);
-            if (window->wl.surface == _glfw.wl.pointerSurface)
-            {
-                _glfwSetCursorWayland(window, window->cursor);
-                _glfwInputCursorEnter(window, GLFW_TRUE);
-            }
-        }
+        if (_glfw.wl.pending.pointerSurface)
+            processPointerEnterSurface(_glfw.wl.pending.pointerSurface);
     }
 
     if (!_glfw.wl.pointerSurface)
         return;
 
-    _GLFWwindow* window = wl_surface_get_user_data(_glfw.wl.pointerSurface);
-
     if (_glfw.wl.pending.events & GLFW_PENDING_MOTION)
-    {
-        if (window->wl.surface == _glfw.wl.pointerSurface)
-        {
-            window->wl.cursorPosX = _glfw.wl.pending.pointerX;
-            window->wl.cursorPosY = _glfw.wl.pending.pointerY;
-            _glfwInputCursorPos(window, window->wl.cursorPosX, window->wl.cursorPosY);
-        }
-        else
-        {
-            updateFallbackDecorationCursor(window,
-                                           _glfw.wl.pending.pointerX,
-                                           _glfw.wl.pending.pointerY);
-        }
-    }
+        processPointerMotion(_glfw.wl.pending.pointerX, _glfw.wl.pending.pointerY);
 
     if (_glfw.wl.pending.events & GLFW_PENDING_BUTTON)
-    {
-        if (window->wl.surface == _glfw.wl.pointerSurface)
-        {
-            _glfwInputMouseClick(window,
-                                 _glfw.wl.pending.button,
-                                 _glfw.wl.pending.action,
-                                 _glfw.wl.xkb.modifiers);
-        }
-        else
-        {
-            if (window->wl.fallback.decorations)
-            {
-                handleFallbackDecorationButton(window,
-                                               _glfw.wl.pending.button,
-                                               _glfw.wl.pending.action);
-            }
-        }
-    }
+        processPointerButton(_glfw.wl.pending.button, _glfw.wl.pending.action);
 
     if (_glfw.wl.pending.events & GLFW_PENDING_SCROLL)
-    {
-        if (window->wl.surface == _glfw.wl.pointerSurface)
-        {
-            _glfwInputScroll(window,
-                             _glfw.wl.pending.scrollX,
-                             _glfw.wl.pending.scrollY);
-        }
-    }
+        processPointerScroll(_glfw.wl.pending.scrollX, _glfw.wl.pending.scrollY);
 
     memset(&_glfw.wl.pending, 0, sizeof(_glfw.wl.pending));
 }

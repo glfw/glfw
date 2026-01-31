@@ -492,6 +492,20 @@ a mouse button callback.
 glfwSetMouseButtonCallback(window, mouse_button_callback);
 ```
 
+@anchor GLFW_UNLIMITED_MOUSE_BUTTONS
+To handle all mouse buttons in the callback, instead of only ones with associated
+[button tokens](@ref buttons), set the @ref GLFW_UNLIMITED_MOUSE_BUTTONS
+input mode.
+
+```c
+glfwSetInputMode(window, GLFW_UNLIMITED_MOUSE_BUTTONS, GLFW_TRUE);
+```
+
+When this input mode is enabled, GLFW doesn't limit the reported mouse buttons
+to only those that have an associated button token, for compatibility with
+earlier versions of GLFW, which never reported any buttons over
+@ref GLFW_MOUSE_BUTTON_LAST, on which users could have relied on.
+
 The callback function receives the [mouse button](@ref buttons), button action
 and [modifier bits](@ref mods).
 
@@ -503,11 +517,16 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 }
 ```
 
+The mouse button is an integer that can be one of the
+[mouse button tokens](@ref buttons) or, if the
+@ref GLFW_UNLIMITED_MOUSE_BUTTONS input mode is set, any other positive value.
+
 The action is one of `GLFW_PRESS` or `GLFW_RELEASE`.
 
-The last reported state for every [supported mouse button](@ref buttons) is also
+The last reported state for every [mouse button token](@ref buttons) is also
 saved in per-window state arrays that can be polled with @ref
-glfwGetMouseButton.
+glfwGetMouseButton. This is not effected by the @ref GLFW_UNLIMITED_MOUSE_BUTTONS
+input mode.
 
 ```c
 int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
@@ -540,7 +559,7 @@ had been processed in the meantime, the state will reset to `GLFW_RELEASE`,
 otherwise it will remain `GLFW_PRESS`.
 
 The `GLFW_MOUSE_BUTTON_LAST` constant holds the highest value of any
-[supported mouse button](@ref buttons).
+[mouse button token](@ref buttons).
 
 
 ### Scroll input {#scrolling}

@@ -32,6 +32,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include <windowsx.h>
 #include <shellapi.h>
 
@@ -377,9 +378,6 @@ static void updateFramebufferTransparency(const _GLFWwindow* window)
 {
     BOOL composition, opaque;
     DWORD color;
-
-    if (!IsWindowsVistaOrGreater())
-        return;
 
     if (FAILED(DwmIsCompositionEnabled(&composition)) || !composition)
        return;
@@ -987,7 +985,6 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
         case WM_MOUSEHWHEEL:
         {
-            // This message is only sent on Windows Vista and later
             // NOTE: The X-axis is inverted for consistency with macOS and X11
             _glfwInputScroll(window, -((SHORT) HIWORD(wParam) / (double) WHEEL_DELTA), 0.0);
             return 0;
@@ -1385,7 +1382,7 @@ static int createNativeWindow(_GLFWwindow* window,
         frameHeight = rect.bottom - rect.top;
     }
 
-    wideTitle = _glfwCreateWideStringFromUTF8Win32(wndconfig->title);
+    wideTitle = _glfwCreateWideStringFromUTF8Win32(window->title);
     if (!wideTitle)
         return GLFW_FALSE;
 
@@ -1411,15 +1408,9 @@ static int createNativeWindow(_GLFWwindow* window,
 
     SetPropW(window->win32.handle, L"GLFW", window);
 
-    if (IsWindows7OrGreater())
-    {
-        ChangeWindowMessageFilterEx(window->win32.handle,
-                                    WM_DROPFILES, MSGFLT_ALLOW, NULL);
-        ChangeWindowMessageFilterEx(window->win32.handle,
-                                    WM_COPYDATA, MSGFLT_ALLOW, NULL);
-        ChangeWindowMessageFilterEx(window->win32.handle,
-                                    WM_COPYGLOBALDATA, MSGFLT_ALLOW, NULL);
-    }
+    ChangeWindowMessageFilterEx(window->win32.handle, WM_DROPFILES, MSGFLT_ALLOW, NULL);
+    ChangeWindowMessageFilterEx(window->win32.handle, WM_COPYDATA, MSGFLT_ALLOW, NULL);
+    ChangeWindowMessageFilterEx(window->win32.handle, WM_COPYGLOBALDATA, MSGFLT_ALLOW, NULL);
 
     window->win32.scaleToMonitor = wndconfig->scaleToMonitor;
     window->win32.keymenu = wndconfig->win32.keymenu;
@@ -1985,9 +1976,6 @@ GLFWbool _glfwFramebufferTransparentWin32(_GLFWwindow* window)
     DWORD color;
 
     if (!window->win32.transparent)
-        return GLFW_FALSE;
-
-    if (!IsWindowsVistaOrGreater())
         return GLFW_FALSE;
 
     if (FAILED(DwmIsCompositionEnabled(&composition)) || !composition)
@@ -2583,7 +2571,6 @@ VkResult _glfwCreateWindowSurfaceWin32(VkInstance instance,
 
 GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_WIN32)
@@ -2592,6 +2579,9 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
                         "Win32: Platform not initialized");
         return NULL;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
 
     return window->win32.handle;
 }

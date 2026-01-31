@@ -54,7 +54,7 @@ jobs:
         timeout-minutes: 4
         env:
             CFLAGS: -Werror
-            MACOSX_DEPLOYMENT_TARGET: 10.8
+            MACOSX_DEPLOYMENT_TARGET: 10.11
             CMAKE_OSX_ARCHITECTURES: x86_64;arm64
         steps:
             - uses: actions/checkout@v4

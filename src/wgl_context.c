@@ -327,8 +327,8 @@ static void swapBuffersWGL(_GLFWwindow* window)
 {
     if (!window->monitor)
     {
-        // HACK: Use DwmFlush when desktop composition is enabled on Windows Vista and 7
-        if (!IsWindows8OrGreater() && IsWindowsVistaOrGreater())
+        // HACK: Use DwmFlush when desktop composition is enabled on Windows 7
+        if (!IsWindows8OrGreater())
         {
             BOOL enabled = FALSE;
 
@@ -353,9 +353,9 @@ static void swapIntervalWGL(int interval)
 
     if (!window->monitor)
     {
-        // HACK: Disable WGL swap interval when desktop composition is enabled on Windows
-        //       Vista and 7 to avoid interfering with DWM vsync
-        if (!IsWindows8OrGreater() && IsWindowsVistaOrGreater())
+        // HACK: Disable WGL swap interval when desktop composition is enabled on
+        //       Windows 7 to avoid interfering with DWM vsync
+        if (!IsWindows8OrGreater())
         {
             BOOL enabled = FALSE;
 
@@ -775,7 +775,6 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
 
 GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* handle)
 {
-    _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_WIN32)
@@ -784,6 +783,9 @@ GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* handle)
                         "WGL: Platform not initialized");
         return NULL;
     }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
 
     if (window->context.source != GLFW_NATIVE_CONTEXT_API)
     {

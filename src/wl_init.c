@@ -91,6 +91,19 @@
 #include "idle-inhibit-unstable-v1-client-protocol-code.h"
 #undef types
 
+static void xkbForwardError(struct xkb_context* context,
+                              enum xkb_log_level level,
+                              const char *format,
+                              va_list args)
+{
+    if (level <= XKB_LOG_LEVEL_ERROR)
+    {
+        char description[_GLFW_MESSAGE_SIZE];
+        vsnprintf(description, _GLFW_MESSAGE_SIZE, format, args);
+        _glfwInputError(GLFW_PLATFORM_ERROR, "xkbcommon: %s", description);
+    }
+}
+
 static void wmBaseHandlePing(void* userData,
                              struct xdg_wm_base* wmBase,
                              uint32_t serial)
@@ -675,6 +688,8 @@ int _glfwInitWayland(void)
         _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_context_new");
     _glfw.wl.xkb.context_unref = (PFN_xkb_context_unref)
         _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_context_unref");
+    _glfw.wl.xkb.context_set_log_fn = (PFN_xkb_context_set_log_fn)
+        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_context_set_log_fn");
     _glfw.wl.xkb.keymap_new_from_string = (PFN_xkb_keymap_new_from_string)
         _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_keymap_new_from_string");
     _glfw.wl.xkb.keymap_unref = (PFN_xkb_keymap_unref)
@@ -841,6 +856,7 @@ int _glfwInitWayland(void)
                         "Wayland: Failed to initialize xkb context");
         return GLFW_FALSE;
     }
+    xkb_context_set_log_fn(_glfw.wl.xkb.context, xkbForwardError);
 
     // Sync so we got all registry objects
     wl_display_roundtrip(_glfw.wl.display);

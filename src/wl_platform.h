@@ -170,6 +170,7 @@ typedef void (* PFN_wl_egl_window_resize)(struct wl_egl_window*, int, int, int, 
 
 typedef struct xkb_context* (* PFN_xkb_context_new)(enum xkb_context_flags);
 typedef void (* PFN_xkb_context_unref)(struct xkb_context*);
+typedef void (* PFN_xkb_context_set_log_fn)(struct xkb_context*, void(* log_fn)(struct xkb_context *context, enum xkb_log_level level, const char *format, va_list args));
 typedef struct xkb_keymap* (* PFN_xkb_keymap_new_from_string)(struct xkb_context*, const char*, enum xkb_keymap_format, enum xkb_keymap_compile_flags);
 typedef void (* PFN_xkb_keymap_unref)(struct xkb_keymap*);
 typedef xkb_mod_index_t (* PFN_xkb_keymap_mod_get_index)(struct xkb_keymap*, const char*);
@@ -185,6 +186,7 @@ typedef uint32_t (* PFN_xkb_keysym_to_utf32)(xkb_keysym_t);
 typedef int (* PFN_xkb_keysym_to_utf8)(xkb_keysym_t, char*, size_t);
 #define xkb_context_new _glfw.wl.xkb.context_new
 #define xkb_context_unref _glfw.wl.xkb.context_unref
+#define xkb_context_set_log_fn _glfw.wl.xkb.context_set_log_fn
 #define xkb_keymap_new_from_string _glfw.wl.xkb.keymap_new_from_string
 #define xkb_keymap_unref _glfw.wl.xkb.keymap_unref
 #define xkb_keymap_mod_get_index _glfw.wl.xkb.keymap_mod_get_index
@@ -490,6 +492,7 @@ typedef struct _GLFWlibraryWayland
 
         PFN_xkb_context_new context_new;
         PFN_xkb_context_unref context_unref;
+        PFN_xkb_context_set_log_fn context_set_log_fn;
         PFN_xkb_keymap_new_from_string keymap_new_from_string;
         PFN_xkb_keymap_unref keymap_unref;
         PFN_xkb_keymap_mod_get_index keymap_mod_get_index;

@@ -1622,6 +1622,12 @@ void _glfwTerminateX11(void)
         _glfw.x11.xrender.handle = NULL;
     }
 
+    if (_glfw.x11.xshape.handle)
+    {
+        _glfwPlatformFreeModule(_glfw.x11.xshape.handle);
+        _glfw.x11.xshape.handle = NULL;
+    }
+
     if (_glfw.x11.vidmode.handle)
     {
         _glfwPlatformFreeModule(_glfw.x11.vidmode.handle);

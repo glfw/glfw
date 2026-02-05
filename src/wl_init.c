@@ -1014,6 +1014,12 @@ void _glfwTerminateWayland(void)
         _glfw.wl.cursor.handle = NULL;
     }
 
+    if (_glfw.wl.client.handle)
+    {
+        _glfwPlatformFreeModule(_glfw.wl.client.handle);
+        _glfw.wl.client.handle = NULL;
+    }
+
     _glfw_free(_glfw.wl.clipboardString);
 }
 

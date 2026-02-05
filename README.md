@@ -149,6 +149,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Confining or disabling the cursor could segfault on
    compositors without `pointer-constraints-unstable-v1`
  - [Wayland] Bugfix: Key repeat did not function on very old compositors
+ - [Wayland] Bugfix: The `libwayland-client` library was not unloaded at termination
  - [X11] Bugfix: Running without a WM could trigger an assert (#2593,#2601,#2631)
  - [X11] Bugfix: Occasional crash when an idle display awakes (#2766) 
  - [X11] Bugfix: Prevent BadWindow when creating small windows with a content scale

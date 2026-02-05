@@ -57,6 +57,14 @@ if (GLFW_BUILD_WAYLAND)
                                 wl_monitor.c wl_window.c)
 endif()
 
+if (GLFW_BUILD_ANDROID)
+    target_compile_definitions(glfw PRIVATE _GLFW_ANDROID)
+    target_include_directories(glfw PRIVATE "${ANDROID_NDK}/sources/android/native_app_glue")
+    target_sources(glfw PRIVATE android_platform.h android_joystick.h android_init.c
+                                android_monitor.c android_window.c android_joystick.c
+                                "${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c")
+endif()
+
 if (GLFW_BUILD_X11 OR GLFW_BUILD_WAYLAND)
     if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
         target_sources(glfw PRIVATE linux_joystick.h linux_joystick.c)

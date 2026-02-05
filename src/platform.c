@@ -56,6 +56,9 @@ static const struct
 #if defined(_GLFW_X11)
     { GLFW_PLATFORM_X11, _glfwConnectX11 },
 #endif
+#if defined(_GLFW_ANDROID)
+    { GLFW_PLATFORM_ANDROID, _glfwConnectAndroid },
+#endif
 };
 
 GLFWbool _glfwSelectPlatform(int desiredID, _GLFWplatform* platform)
@@ -68,6 +71,7 @@ GLFWbool _glfwSelectPlatform(int desiredID, _GLFWplatform* platform)
         desiredID != GLFW_PLATFORM_COCOA &&
         desiredID != GLFW_PLATFORM_WAYLAND &&
         desiredID != GLFW_PLATFORM_X11 &&
+        desiredID != GLFW_PLATFORM_ANDROID &&
         desiredID != GLFW_PLATFORM_NULL)
     {
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid platform ID 0x%08X", desiredID);
@@ -147,6 +151,7 @@ GLFWAPI int glfwPlatformSupported(int platformID)
         platformID != GLFW_PLATFORM_COCOA &&
         platformID != GLFW_PLATFORM_WAYLAND &&
         platformID != GLFW_PLATFORM_X11 &&
+        platformID != GLFW_PLATFORM_ANDROID &&
         platformID != GLFW_PLATFORM_NULL)
     {
         _glfwInputError(GLFW_INVALID_ENUM, "Invalid platform ID 0x%08X", platformID);
@@ -182,6 +187,9 @@ GLFWAPI const char* glfwGetVersionString(void)
 #if defined(_GLFW_X11)
         " X11 GLX"
 #endif
+#if defined(_GLFW_ANDROID)
+        " Android"
+#endif
         " Null"
         " EGL"
         " OSMesa"
@@ -207,4 +215,3 @@ GLFWAPI const char* glfwGetVersionString(void)
 #endif
         ;
 }
-

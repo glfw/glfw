@@ -1131,7 +1131,7 @@ extern "C" {
 #define GLFW_WIN32_SHOWDEFAULT      0x00025002
 /*! @brief Wayland specific
  *  [window hint](@ref GLFW_WAYLAND_APP_ID_hint).
- *  
+ *
  *  Allows specification of the Wayland app_id.
  */
 #define GLFW_WAYLAND_APP_ID         0x00026001
@@ -1341,7 +1341,8 @@ extern "C" {
 #define GLFW_PLATFORM_COCOA         0x00060002
 #define GLFW_PLATFORM_WAYLAND       0x00060003
 #define GLFW_PLATFORM_X11           0x00060004
-#define GLFW_PLATFORM_NULL          0x00060005
+#define GLFW_PLATFORM_ANDROID       0x00060005
+#define GLFW_PLATFORM_NULL          0x00060006
 /*! @} */
 
 #define GLFW_DONT_CARE              -1

@@ -285,6 +285,7 @@ typedef enum VkStructureType
     VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR = 1000009000,
     VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK = 1000123000,
     VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT = 1000217000,
+    VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR = 1000008000,
     VK_STRUCTURE_TYPE_HEADLESS_SURFACE_CREATE_INFO_EXT = 1000256000,
     VK_STRUCTURE_TYPE_MAX_ENUM = 0x7FFFFFFF
 } VkStructureType;
@@ -871,6 +872,7 @@ struct _GLFWlibrary
         GLFWbool        KHR_xlib_surface;
         GLFWbool        KHR_xcb_surface;
         GLFWbool        KHR_wayland_surface;
+        GLFWbool        KHR_android_surface;
         GLFWbool        EXT_headless_surface;
     } vk;
 

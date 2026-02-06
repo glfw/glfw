@@ -2730,8 +2730,34 @@ void _glfwGetCursorPosWayland(_GLFWwindow* window, double* xpos, double* ypos)
 
 void _glfwSetCursorPosWayland(_GLFWwindow* window, double x, double y)
 {
-    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                    "Wayland: The platform does not support setting the cursor position");
+    if (!_glfw.wl.pointerConstraints)
+    {
+        _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
+                        "Wayland: The compositor does not support setting the cursor position");
+        return;
+    }
+
+    if (window->wl.lockedPointer) {
+        zwp_locked_pointer_v1_set_cursor_position_hint(window->wl.lockedPointer,
+                                                       wl_fixed_from_double(x),
+                                                       wl_fixed_from_double(y));
+    } else {
+        if (window->cursorMode != GLFW_CURSOR_DISABLED) {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Wayland: Delaying the cursor position update until "
+                            "the cursor mode is set to GLFW_CURSOR_DISABLED");
+        }
+
+        // The cursor is not currently locked, but it may be locked later. Either
+        // - the application has already set the cursor mode to GLFW_CURSOR_DISABLED,
+        //   but the cursor is currently outside of the window, or
+        // - the application has not yet set the cursor mode to GLFW_CURSOR_DISABLED,
+        //   but will do so soon.
+        // Defer setting the cursor position to _glfwSetCursorWayland.
+        window->wl.pending.cursorPosX = x;
+        window->wl.pending.cursorPosY = y;
+        window->wl.pendingCursorPos = GLFW_TRUE;
+    }
 }
 
 void _glfwSetCursorModeWayland(_GLFWwindow* window, int mode)
@@ -3080,6 +3106,13 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
             unconfinePointer(window);
         if (!window->wl.lockedPointer)
             lockPointer(window);
+
+        if (window->wl.pendingCursorPos == GLFW_TRUE) {
+            zwp_locked_pointer_v1_set_cursor_position_hint(window->wl.lockedPointer,
+                wl_fixed_from_double(window->wl.pending.cursorPosX),
+                wl_fixed_from_double(window->wl.pending.cursorPosY));
+            window->wl.pendingCursorPos = GLFW_FALSE;
+        }
     }
     else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
     {

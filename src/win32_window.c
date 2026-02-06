@@ -2562,6 +2562,28 @@ VkResult _glfwCreateWindowSurfaceWin32(VkInstance instance,
     return err;
 }
 
+typedef struct WGPUSurfaceSourceWindowsHWND
+{
+    WGPUChainedStruct chain;
+    void * hinstance;
+    void * hwnd;
+} WGPUSurfaceSourceWindowsHWND;
+
+WGPUSurface _glfwCreateWindowWGPUSurfaceWin32(WGPUInstance instance, _GLFWwindow *window)
+{
+    WGPUSurfaceSourceWindowsHWND windowsSurface;
+    windowsSurface.chain.sType = WGPUSType_SurfaceSourceWindowsHWND;
+    windowsSurface.chain.next = NULL;
+    windowsSurface.hinstance = _glfw.win32.instance;
+    windowsSurface.hwnd = window->win32.handle;
+
+    WGPUSurfaceDescriptor surfaceDescriptor;
+    surfaceDescriptor.nextInChain = &windowsSurface.chain;
+    surfaceDescriptor.label = (WGPUStringView){ NULL, SIZE_MAX };
+
+    return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
+}
+
 GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);

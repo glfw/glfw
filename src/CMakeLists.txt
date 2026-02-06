@@ -3,9 +3,10 @@ add_library(glfw ${GLFW_LIBRARY_TYPE}
                  "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"
                  "${GLFW_SOURCE_DIR}/include/GLFW/glfw3native.h"
                  internal.h platform.h mappings.h
-                 context.c init.c input.c monitor.c platform.c vulkan.c window.c
-                 egl_context.c osmesa_context.c null_platform.h null_joystick.h
-                 null_init.c null_monitor.c null_window.c null_joystick.c)
+                 context.c init.c input.c monitor.c platform.c vulkan.c webgpu.c
+                 window.c egl_context.c osmesa_context.c null_platform.h
+                 null_joystick.h null_init.c null_monitor.c null_window.c
+                 null_joystick.c)
 
 # The time, thread and module code is shared between all backends on a given OS,
 # including the null backend, which still needs those bits to be functional
@@ -128,7 +129,8 @@ set_target_properties(glfw PROPERTIES
                       C_STANDARD 99
                       C_EXTENSIONS OFF
                       DEFINE_SYMBOL _GLFW_BUILD_DLL
-                      FOLDER "GLFW3")
+                      FOLDER "GLFW3"
+                      EXPORT_COMPILE_COMMANDS ON)
 
 target_include_directories(glfw PUBLIC
                            "$<BUILD_INTERFACE:${GLFW_SOURCE_DIR}/include>"

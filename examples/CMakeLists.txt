@@ -25,6 +25,11 @@ set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"
 set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
                 "${GLFW_SOURCE_DIR}/deps/tinycthread.c")
 
+option(BUILD_WEBGPU_EXAMPLE "Build WebGPU example" False)
+if (BUILD_WEBGPU_EXAMPLE)
+    find_package(WebGPU)
+endif ()
+
 add_executable(boing WIN32 MACOSX_BUNDLE boing.c ${ICON} ${GLAD_GL})
 add_executable(gears WIN32 MACOSX_BUNDLE gears.c ${ICON} ${GLAD_GL})
 add_executable(heightmap WIN32 MACOSX_BUNDLE heightmap.c ${ICON} ${GLAD_GL})
@@ -34,6 +39,9 @@ add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c ${ICON} ${GLAD_GL})
 add_executable(splitview WIN32 MACOSX_BUNDLE splitview.c ${ICON} ${GLAD_GL})
 add_executable(triangle-opengl WIN32 MACOSX_BUNDLE triangle-opengl.c ${ICON} ${GLAD_GL})
 add_executable(triangle-opengles WIN32 MACOSX_BUNDLE triangle-opengles.c ${ICON} ${GLAD_GLES2})
+if (BUILD_WEBGPU_EXAMPLE AND WebGPU_FOUND)
+    add_executable(triangle-webgpu WIN32 MACOSX_BUNDLE triangle-webgpu.c ${ICON})
+endif ()
 add_executable(wave WIN32 MACOSX_BUNDLE wave.c ${ICON} ${GLAD_GL})
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${ICON} ${GLAD_GL})
 
@@ -42,8 +50,15 @@ if (RT_LIBRARY)
     target_link_libraries(particles "${RT_LIBRARY}")
 endif()
 
+if (BUILD_WEBGPU_EXAMPLE AND WebGPU_FOUND)
+    target_link_libraries(triangle-webgpu WebGPU::WebGPU)
+endif ()
+
 set(GUI_ONLY_BINARIES boing gears heightmap particles sharing splitview
     triangle-opengl triangle-opengles wave windows)
+if (BUILD_WEBGPU_EXAMPLE AND WebGPU_FOUND)
+    list(APPEND GUI_ONLY_BINARIES triangle-webgpu)
+endif ()
 set(CONSOLE_BINARIES offscreen)
 
 set_target_properties(${GUI_ONLY_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
@@ -68,6 +83,9 @@ if (APPLE)
     set_target_properties(sharing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Sharing")
     set_target_properties(triangle-opengl PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "OpenGL Triangle")
     set_target_properties(triangle-opengles PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "OpenGL ES Triangle")
+    if (BUILD_WEBGPU_EXAMPLE AND WebGPU_FOUND)
+        set_target_properties(triangle-webgpu PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "WebGPU Triangle")
+    endif ()
     set_target_properties(splitview PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "SplitView")
     set_target_properties(wave PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Wave")
     set_target_properties(windows PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Windows")

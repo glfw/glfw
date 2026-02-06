@@ -679,6 +679,8 @@ void _glfwGetRequiredInstanceExtensionsWayland(char** extensions);
 GLFWbool _glfwGetPhysicalDevicePresentationSupportWayland(VkInstance instance, VkPhysicalDevice device, uint32_t queuefamily);
 VkResult _glfwCreateWindowSurfaceWayland(VkInstance instance, _GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
 
+WGPUSurface _glfwCreateWindowWGPUSurfaceWayland(WGPUInstance instance, _GLFWwindow* window);
+
 void _glfwFreeMonitorWayland(_GLFWmonitor* monitor);
 void _glfwGetMonitorPosWayland(_GLFWmonitor* monitor, int* xpos, int* ypos);
 void _glfwGetMonitorContentScaleWayland(_GLFWmonitor* monitor, float* xscale, float* yscale);

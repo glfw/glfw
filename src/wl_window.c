@@ -3341,6 +3341,27 @@ VkResult _glfwCreateWindowSurfaceWayland(VkInstance instance,
     return err;
 }
 
+typedef struct WGPUSurfaceSourceWaylandSurface
+{
+    WGPUChainedStruct chain;
+    void * display;
+    void * surface;
+} WGPUSurfaceSourceWaylandSurface;
+
+WGPUSurface _glfwCreateWindowWGPUSurfaceWayland(WGPUInstance instance, _GLFWwindow* window)
+{
+    WGPUSurfaceSourceWaylandSurface waylandSurface;   
+    waylandSurface.chain.sType = WGPUSType_SurfaceSourceWaylandSurface;
+    waylandSurface.chain.next = NULL;
+    waylandSurface.surface = window->wl.surface;
+    waylandSurface.display = _glfw.wl.display;
+
+    WGPUSurfaceDescriptor surfaceDescriptor;
+    surfaceDescriptor.nextInChain = &waylandSurface.chain;
+    surfaceDescriptor.label = (WGPUStringView){ NULL, SIZE_MAX };
+
+    return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

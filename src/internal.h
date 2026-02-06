@@ -331,6 +331,45 @@ typedef PFN_vkVoidFunction (APIENTRY * PFN_vkGetInstanceProcAddr)(VkInstance,con
 typedef VkResult (APIENTRY * PFN_vkEnumerateInstanceExtensionProperties)(const char*,uint32_t*,VkExtensionProperties*);
 #define vkGetInstanceProcAddr _glfw.vk.GetInstanceProcAddr
 
+// forward declare WebGPU types
+typedef struct WGPUInstanceImpl* WGPUInstance;
+typedef struct WGPUSurfaceImpl* WGPUSurface;
+
+typedef struct WGPUStringView
+{
+    char const * data;
+    size_t length;
+} WGPUStringView;
+
+typedef enum WGPUSType
+{
+    WGPUSType_ShaderSourceSPIRV = 0x00000001,
+    WGPUSType_ShaderSourceWGSL = 0x00000002,
+    WGPUSType_RenderPassMaxDrawCount = 0x00000003,
+    WGPUSType_SurfaceSourceMetalLayer = 0x00000004,
+    WGPUSType_SurfaceSourceWindowsHWND = 0x00000005,
+    WGPUSType_SurfaceSourceXlibWindow = 0x00000006,
+    WGPUSType_SurfaceSourceWaylandSurface = 0x00000007,
+    WGPUSType_SurfaceSourceAndroidNativeWindow = 0x00000008,
+    WGPUSType_SurfaceSourceXCBWindow = 0x00000009,
+    WGPUSType_Force32 = 0x7FFFFFFF
+} WGPUSType;
+
+typedef struct WGPUChainedStruct
+{
+    struct WGPUChainedStruct const * next;
+    WGPUSType sType;
+} WGPUChainedStruct;
+
+typedef struct WGPUSurfaceDescriptor
+{
+    WGPUChainedStruct const * nextInChain;
+    WGPUStringView label;
+} WGPUSurfaceDescriptor;
+
+typedef WGPUSurface (*PFN_wgpuInstanceCreateSurface)(WGPUInstance, const WGPUSurfaceDescriptor*);
+#define wgpuInstanceCreateSurface _glfw.wgpu.instanceCreateSurface
+
 #include "platform.h"
 
 #define GLFW_NATIVE_INCLUDE_NONE
@@ -758,6 +797,8 @@ struct _GLFWplatform
     void (*getRequiredInstanceExtensions)(char**);
     GLFWbool (*getPhysicalDevicePresentationSupport)(VkInstance,VkPhysicalDevice,uint32_t);
     VkResult (*createWindowSurface)(VkInstance,_GLFWwindow*,const VkAllocationCallbacks*,VkSurfaceKHR*);
+    // webgpu
+    WGPUSurface (*createWindowWGPUSurface)(WGPUInstance, _GLFWwindow*);
 };
 
 // Library global data
@@ -873,6 +914,10 @@ struct _GLFWlibrary
         GLFWbool        KHR_wayland_surface;
         GLFWbool        EXT_headless_surface;
     } vk;
+
+    struct {
+        PFN_wgpuInstanceCreateSurface instanceCreateSurface;
+    } wgpu;
 
     struct {
         GLFWmonitorfun  monitor;

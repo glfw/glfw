@@ -115,6 +115,10 @@ extern "C" {
  * VK_USE_PLATFORM_WIN32_KHR) so we offer our replacement symbols after it.
  */
 
+#if defined(GLFW_INCLUDE_WEBGPU)
+  #include <webgpu/webgpu.h>
+#endif /* WebGPU header */
+
 /* It is customary to use APIENTRY for OpenGL function pointer declarations on
  * all platforms.  Additionally, the Windows OpenGL header needs APIENTRY.
  */
@@ -6533,6 +6537,41 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window
 
 #endif /*VK_VERSION_1_0*/
 
+#if defined(WEBGPU_H_)
+
+/*! @brief Provide the address of the `wgpuInstanceCreateSurface` function to GLFW.
+ *
+ * This function passes the address provided for the `wgpuInstanceCreateSurface` function
+ * to GLFW.
+ *
+ * @param[in] addr The address of the `wgpuInstanceCreateSurface` function.
+ *
+ * @since Added in version 3.5
+ *
+ * @ingroup webgpu
+ */
+GLFWAPI void glfwSetWGPUInstanceCreateSurfaceAddr(WGPUSurface (*addr)(WGPUInstance, const WGPUSurfaceDescriptor*));
+
+/*! @brief Creates a WebGPU surface for the specified window.
+ * 
+ * This function creates a WebGPU surface for the specified window.
+ *
+ * If the surface could not be created this function returns `NULL`.
+ *
+ * It is the callers responsibility to destroy the surface. The surface
+ * must be destroyed using `wgpuSurfaceRelease`.
+ *
+ * @param[in] instance The WebGPU instance to create the surface in.
+ * @param[in] window The window to create the surface for.
+ * @return The handle of the surface. This is `NULL` if an error occurred.
+ *
+ * @since Added in version 3.5
+ *
+ * @ingroup webgpu
+ */
+GLFWAPI WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindow* window);
+
+#endif /*WEBGPU_H_*/
 
 /*************************************************************************
  * Global definition cleanup

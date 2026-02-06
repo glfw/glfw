@@ -564,7 +564,8 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         .getEGLNativeWindow = _glfwGetEGLNativeWindowCocoa,
         .getRequiredInstanceExtensions = _glfwGetRequiredInstanceExtensionsCocoa,
         .getPhysicalDevicePresentationSupport = _glfwGetPhysicalDevicePresentationSupportCocoa,
-        .createWindowSurface = _glfwCreateWindowSurfaceCocoa
+        .createWindowSurface = _glfwCreateWindowSurfaceCocoa,
+        .createWindowWGPUSurface = _glfwCreateWindowWGPUSurfaceCocoa
     };
 
     *platform = cocoa;

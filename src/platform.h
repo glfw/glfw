@@ -39,7 +39,6 @@
 
 #include "null_platform.h"
 #define GLFW_EXPOSE_NATIVE_EGL
-#define GLFW_EXPOSE_NATIVE_OSMESA
 
 #if defined(_GLFW_WIN32)
  #include "win32_platform.h"

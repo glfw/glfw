@@ -184,7 +184,6 @@ GLFWAPI const char* glfwGetVersionString(void)
 #endif
         " Null"
         " EGL"
-        " OSMesa"
 #if defined(__MINGW64_VERSION_MAJOR)
         " MinGW-w64"
 #elif defined(_MSC_VER)

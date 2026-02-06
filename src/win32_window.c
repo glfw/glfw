@@ -2562,6 +2562,28 @@ VkResult _glfwCreateWindowSurfaceWin32(VkInstance instance,
     return err;
 }
 
+_GLFWusercontext* _glfwCreateUserContextWin32(_GLFWwindow* window)
+{
+    if (window->context.wgl.handle)
+    {
+        return _glfwCreateUserContextWGL(window);
+    }
+    else if (window->context.egl.handle)
+    {
+        return _glfwCreateUserContextEGL(window);
+    }
+    else if (window->context.osmesa.handle)
+    {
+        return _glfwCreateUserContextOSMesa(window);
+    }
+
+    return GLFW_FALSE;
+}
+
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW native API                       //////
+//////////////////////////////////////////////////////////////////////////
+
 GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);

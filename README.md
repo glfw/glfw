@@ -120,6 +120,9 @@ information on what to include when reporting a bug.
 
 ## Changelog since 3.4
 
+ - Added OpenGL and OpenGL ES user contexts for multiple window contexts via
+         `GLFWusercontext`, `glfwCreateUserContext`, `glfwDestroyUserContext`,
+         `glfwMakeUserContextCurrent`, `glfwGetCurrentUserContext` (#1687,#1870)
  - Added `GLFW_UNLIMITED_MOUSE_BUTTONS` input mode that allows mouse buttons beyond
    the limit of the mouse button tokens to be reported (#2423)
  - Added `glfwGetEGLConfig` function to query the `EGLConfig` of a window (#2045)
@@ -159,7 +162,6 @@ information on what to include when reporting a bug.
  - [Null] Added EGL context creation on Mesa via `EGL_MESA_platform_surfaceless`
  - [EGL] Allowed native access on Wayland with `GLFW_CONTEXT_CREATION_API` set to
    `GLFW_NATIVE_CONTEXT_API` (#2518)
-
 
 ## Contact
 

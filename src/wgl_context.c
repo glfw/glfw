@@ -536,46 +536,16 @@ void _glfwTerminateWGL(void)
     attribs[index++] = v; \
 }
 
-// Create the OpenGL or OpenGL ES context
+// Create the OpenGL or OpenGL ES context for the given HDC
 //
-GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
-                               const _GLFWctxconfig* ctxconfig,
-                               const _GLFWfbconfig* fbconfig)
+GLFWbool _glfwCreateContextForDCWGL(HDC dc, const _GLFWctxconfig* ctxconfig, HGLRC* context)
 {
     int attribs[40];
-    int pixelFormat;
-    PIXELFORMATDESCRIPTOR pfd;
     HGLRC share = NULL;
 
+    *context = NULL;
     if (ctxconfig->share)
         share = ctxconfig->share->context.wgl.handle;
-
-    window->context.wgl.dc = GetDC(window->win32.handle);
-    if (!window->context.wgl.dc)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "WGL: Failed to retrieve DC for window");
-        return GLFW_FALSE;
-    }
-
-    pixelFormat = choosePixelFormatWGL(window, ctxconfig, fbconfig);
-    if (!pixelFormat)
-        return GLFW_FALSE;
-
-    if (!DescribePixelFormat(window->context.wgl.dc,
-                             pixelFormat, sizeof(pfd), &pfd))
-    {
-        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                             "WGL: Failed to retrieve PFD for selected pixel format");
-        return GLFW_FALSE;
-    }
-
-    if (!SetPixelFormat(window->context.wgl.dc, pixelFormat, &pfd))
-    {
-        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                             "WGL: Failed to set selected pixel format");
-        return GLFW_FALSE;
-    }
 
     if (ctxconfig->client == GLFW_OPENGL_API)
     {
@@ -690,9 +660,9 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
 
         SET_ATTRIB(0, 0);
 
-        window->context.wgl.handle =
-            wglCreateContextAttribsARB(window->context.wgl.dc, share, attribs);
-        if (!window->context.wgl.handle)
+        *context =
+            wglCreateContextAttribsARB(dc, share, attribs);
+        if (!(*context))
         {
             const DWORD error = GetLastError();
 
@@ -742,8 +712,8 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
     }
     else
     {
-        window->context.wgl.handle = wglCreateContext(window->context.wgl.dc);
-        if (!window->context.wgl.handle)
+        *context = wglCreateContext(dc);
+        if (!(*context) )
         {
             _glfwInputErrorWin32(GLFW_VERSION_UNAVAILABLE,
                                  "WGL: Failed to create OpenGL context");
@@ -752,13 +722,57 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
 
         if (share)
         {
-            if (!wglShareLists(share, window->context.wgl.handle))
+            if (!wglShareLists(share, *context))
             {
                 _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
                                      "WGL: Failed to enable sharing with specified OpenGL context");
                 return GLFW_FALSE;
             }
         }
+    }
+
+    return GLFW_TRUE;
+}
+
+// Create the OpenGL or OpenGL ES context
+//
+GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
+                               const _GLFWctxconfig* ctxconfig,
+                               const _GLFWfbconfig* fbconfig)
+{
+    int pixelFormat;
+    PIXELFORMATDESCRIPTOR pfd;
+
+    window->context.wgl.dc = GetDC(window->win32.handle);
+    if (!window->context.wgl.dc)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "WGL: Failed to retrieve DC for window");
+        return GLFW_FALSE;
+    }
+
+    pixelFormat = choosePixelFormatWGL(window, ctxconfig, fbconfig);
+    if (!pixelFormat)
+        return GLFW_FALSE;
+
+    if (!DescribePixelFormat(window->context.wgl.dc,
+                             pixelFormat, sizeof(pfd), &pfd))
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "WGL: Failed to retrieve PFD for selected pixel format");
+        return GLFW_FALSE;
+    }
+
+    if (!SetPixelFormat(window->context.wgl.dc, pixelFormat, &pfd))
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                             "WGL: Failed to set selected pixel format");
+        return GLFW_FALSE;
+    }
+
+    if(!_glfwCreateContextForDCWGL( window->context.wgl.dc, ctxconfig, &window->context.wgl.handle ))
+    {
+        return GLFW_FALSE;
     }
 
     window->context.makeCurrent = makeContextCurrentWGL;
@@ -771,6 +785,65 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
+static void _glfwMakeUserContextCurrentWGL(_GLFWusercontext* context)
+{
+    if (context)
+    {
+        if (!wglMakeCurrent(context->window->context.wgl.dc,context->wgl.handle))
+        {
+            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                 "WGL: Failed to make user context current");
+            _glfwPlatformSetTls(&_glfw.usercontextSlot, NULL);
+            return;
+        }
+    }
+    else
+    {
+        if (!wglMakeCurrent(NULL, NULL))
+        {
+            _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                 "WGL: Failed to clear current user context");
+        }
+    }
+
+    _glfwPlatformSetTls(&_glfw.usercontextSlot, context);
+}
+
+static void _glfwDestroyUserContextWGL(_GLFWusercontext* context)
+{
+    wglDeleteContext(context->wgl.handle);
+    free(context);
+}
+
+_GLFWusercontext* _glfwCreateUserContextWGL(_GLFWwindow* window)
+{
+    _GLFWusercontext* context;
+    _GLFWctxconfig ctxconfig;
+
+    context = calloc(1, sizeof(_GLFWusercontext));
+    context->window = window;
+
+    ctxconfig = _glfw.hints.context;
+    ctxconfig.share = window;
+
+    if (!_glfwCreateContextForDCWGL(window->context.wgl.dc, &ctxconfig, &context->wgl.handle))
+    {
+        _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
+                                "WGL: Failed to create user OpenGL context");
+        free(context);
+        return NULL;
+    }
+
+    context->makeCurrent = _glfwMakeUserContextCurrentWGL;
+    context->destroy = _glfwDestroyUserContextWGL;
+
+    return context;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//////                        GLFW native API                       //////
+//////////////////////////////////////////////////////////////////////////
 #undef SET_ATTRIB
 
 GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* handle)

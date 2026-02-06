@@ -691,6 +691,8 @@ void _glfwSetGammaRampWayland(_GLFWmonitor* monitor, const GLFWgammaramp* ramp);
 void _glfwAddOutputWayland(uint32_t name, uint32_t version);
 void _glfwUpdateBufferScaleFromOutputsWayland(_GLFWwindow* window);
 
+_GLFWusercontext* _glfwCreateUserContextWayland(_GLFWwindow* window);
+
 void _glfwAddSeatListenerWayland(struct wl_seat* seat);
 void _glfwAddDataDeviceListenerWayland(struct wl_data_device* device);
 

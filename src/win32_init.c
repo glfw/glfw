@@ -665,6 +665,7 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         .waitEvents = _glfwWaitEventsWin32,
         .waitEventsTimeout = _glfwWaitEventsTimeoutWin32,
         .postEmptyEvent = _glfwPostEmptyEventWin32,
+        .createUserContext = _glfwCreateUserContextWin32,
         .getEGLPlatform = _glfwGetEGLPlatformWin32,
         .getEGLNativeDisplay = _glfwGetEGLNativeDisplayWin32,
         .getEGLNativeWindow = _glfwGetEGLNativeWindowWin32,

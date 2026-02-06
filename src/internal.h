@@ -79,6 +79,7 @@ typedef struct _GLFWmapping     _GLFWmapping;
 typedef struct _GLFWjoystick    _GLFWjoystick;
 typedef struct _GLFWtls         _GLFWtls;
 typedef struct _GLFWmutex       _GLFWmutex;
+typedef struct _GLFWusercontext _GLFWusercontext;
 
 #define GL_VERSION 0x1f02
 #define GL_NONE 0
@@ -217,6 +218,7 @@ typedef EGLBoolean (APIENTRY * PFN_eglSwapBuffers)(EGLDisplay,EGLSurface);
 typedef EGLBoolean (APIENTRY * PFN_eglSwapInterval)(EGLDisplay,EGLint);
 typedef const char* (APIENTRY * PFN_eglQueryString)(EGLDisplay,EGLint);
 typedef GLFWglproc (APIENTRY * PFN_eglGetProcAddress)(const char*);
+typedef EGLBoolean (APIENTRY * PFN_eglChooseConfig)(EGLDisplay,EGLint const*,EGLConfig*,EGLint,EGLint*);
 #define eglGetConfigAttrib _glfw.egl.GetConfigAttrib
 #define eglGetConfigs _glfw.egl.GetConfigs
 #define eglGetDisplay _glfw.egl.GetDisplay
@@ -234,6 +236,8 @@ typedef GLFWglproc (APIENTRY * PFN_eglGetProcAddress)(const char*);
 #define eglSwapInterval _glfw.egl.SwapInterval
 #define eglQueryString _glfw.egl.QueryString
 #define eglGetProcAddress _glfw.egl.GetProcAddress
+#define eglCreatePbufferSurface _glfw.egl.CreatePbufferSurface
+#define eglChooseConfig _glfw.egl.ChooseConfig
 
 typedef EGLDisplay (APIENTRY * PFNEGLGETPLATFORMDISPLAYEXTPROC)(EGLenum,void*,const EGLint*);
 typedef EGLSurface (APIENTRY * PFNEGLCREATEPLATFORMWINDOWSURFACEEXTPROC)(EGLDisplay,EGLConfig,void*,const EGLint*);
@@ -524,6 +528,29 @@ struct _GLFWcontext
     GLFW_PLATFORM_CONTEXT_STATE
 };
 
+
+// User Context structure
+//
+struct _GLFWusercontext
+{
+    _GLFWwindow* window;
+
+    void (*makeCurrent)(_GLFWusercontext* context);
+    void (*destroy)(_GLFWusercontext* context);
+
+    struct {
+       EGLContext       handle;
+       EGLSurface       surface;
+    } egl;
+
+    struct {
+        OSMesaContext   handle;
+    } osmesa;
+
+    // This is defined in platform.h
+    GLFW_PLATFORM_USER_CONTEXT_STATE
+};
+
 // Window and context structure
 //
 struct _GLFWwindow
@@ -750,6 +777,7 @@ struct _GLFWplatform
     void (*waitEvents)(void);
     void (*waitEventsTimeout)(double);
     void (*postEmptyEvent)(void);
+    _GLFWusercontext* (*createUserContext)(_GLFWwindow*);
     // EGL
     EGLenum (*getEGLPlatform)(EGLint**);
     EGLNativeDisplayType (*getEGLNativeDisplay)(void);
@@ -791,6 +819,7 @@ struct _GLFWlibrary
 
     _GLFWtls            errorSlot;
     _GLFWtls            contextSlot;
+    _GLFWtls            usercontextSlot;
     _GLFWmutex          errorLock;
 
     struct {
@@ -841,6 +870,7 @@ struct _GLFWlibrary
         PFN_eglSwapInterval         SwapInterval;
         PFN_eglQueryString          QueryString;
         PFN_eglGetProcAddress       GetProcAddress;
+        PFN_eglChooseConfig         ChooseConfig;
 
         PFNEGLGETPLATFORMDISPLAYEXTPROC GetPlatformDisplayEXT;
         PFNEGLCREATEPLATFORMWINDOWSURFACEEXTPROC CreatePlatformWindowSurfaceEXT;
@@ -991,6 +1021,7 @@ void _glfwTerminateEGL(void);
 GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig);
+_GLFWusercontext* _glfwCreateUserContextEGL(_GLFWwindow* window);
 #if defined(_GLFW_X11)
 GLFWbool _glfwChooseVisualEGL(const _GLFWwndconfig* wndconfig,
                               const _GLFWctxconfig* ctxconfig,
@@ -1003,6 +1034,7 @@ void _glfwTerminateOSMesa(void);
 GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
                                   const _GLFWctxconfig* ctxconfig,
                                   const _GLFWfbconfig* fbconfig);
+_GLFWusercontext* _glfwCreateUserContextOSMesa(_GLFWwindow* window);
 
 GLFWbool _glfwInitVulkan(int mode);
 void _glfwTerminateVulkan(void);

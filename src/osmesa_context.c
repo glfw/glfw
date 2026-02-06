@@ -194,9 +194,9 @@ void _glfwTerminateOSMesa(void)
     attribs[index++] = v; \
 }
 
-GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
-                                  const _GLFWctxconfig* ctxconfig,
-                                  const _GLFWfbconfig* fbconfig)
+GLFWbool _glfwCreateContextForConfigOSMesa(const _GLFWctxconfig* ctxconfig,
+                                           const _GLFWfbconfig* fbconfig,
+                                           OSMesaContext* context )
 {
     OSMesaContext share = NULL;
     const int accumBits = fbconfig->accumRedBits +
@@ -247,7 +247,7 @@ GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
 
         SET_ATTRIB(0, 0);
 
-        window->context.osmesa.handle =
+        *context =
             OSMesaCreateContextAttribs(attribs, share);
     }
     else
@@ -259,7 +259,7 @@ GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
             return GLFW_FALSE;
         }
 
-        window->context.osmesa.handle =
+        *context =
             OSMesaCreateContextExt(OSMESA_RGBA,
                                    fbconfig->depthBits,
                                    fbconfig->stencilBits,
@@ -267,10 +267,24 @@ GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
                                    share);
     }
 
-    if (window->context.osmesa.handle == NULL)
+    if (*context == NULL)
     {
         _glfwInputError(GLFW_VERSION_UNAVAILABLE,
                         "OSMesa: Failed to create context");
+        return GLFW_FALSE;
+    }
+
+    return GLFW_TRUE;
+}
+
+#undef setAttrib
+
+GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
+                                  const _GLFWctxconfig* ctxconfig,
+                                  const _GLFWfbconfig* fbconfig)
+{
+    if(!_glfwCreateContextForConfigOSMesa(ctxconfig,fbconfig,&window->context.osmesa.handle))
+    {
         return GLFW_FALSE;
     }
 
@@ -284,8 +298,62 @@ GLFWbool _glfwCreateContextOSMesa(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
-#undef SET_ATTRIB
+static void _glfwMakeUserContextCurrentOSMesa(_GLFWusercontext* context)
+{
+    if (context)
+    {
+        if (!OSMesaMakeCurrent(context->osmesa.handle,
+                                context->window->context.osmesa.buffer,
+                                GL_UNSIGNED_BYTE,
+                                context->window->context.osmesa.width, context->window->context.osmesa.height))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "OSMesa: Failed to make user context current");
+            _glfwPlatformSetTls(&_glfw.usercontextSlot, NULL);
+            return;
+        }
+    }
+    _glfwPlatformSetTls(&_glfw.usercontextSlot, context);
+}
 
+static void _glfwDestroyUserContextOSMesa(_GLFWusercontext* context)
+{
+    if (context->osmesa.handle)
+    {
+        OSMesaDestroyContext(context->osmesa.handle);
+    }
+    free(context);
+}
+
+_GLFWusercontext* _glfwCreateUserContextOSMesa(_GLFWwindow* window)
+{
+    _GLFWusercontext* context;
+    _GLFWctxconfig ctxconfig;
+    _GLFWfbconfig fbconfig;
+
+    context = calloc(1, sizeof(_GLFWusercontext));
+    context->window = window;
+
+    ctxconfig = _glfw.hints.context;
+    ctxconfig.share = window;
+
+    fbconfig = _glfw.hints.framebuffer;
+
+    if(!_glfwCreateContextForConfigOSMesa(&ctxconfig,&fbconfig,&context->osmesa.handle))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "OSMesa: Failed to create user OpenGL context");
+        free(context);
+        return NULL;
+    }
+
+    context->makeCurrent = _glfwMakeUserContextCurrentOSMesa;
+    context->destroy = _glfwDestroyUserContextOSMesa;
+
+    return context;
+}
+
+#undef SET_ATTRIB
 
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////

@@ -305,8 +305,9 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(
 #define GLFW_WIN32_MONITOR_STATE        _GLFWmonitorWin32 win32;
 #define GLFW_WIN32_CURSOR_STATE         _GLFWcursorWin32  win32;
 
-#define GLFW_WGL_CONTEXT_STATE          _GLFWcontextWGL wgl;
-#define GLFW_WGL_LIBRARY_CONTEXT_STATE  _GLFWlibraryWGL wgl;
+#define GLFW_WGL_CONTEXT_STATE          _GLFWcontextWGL     wgl;
+#define GLFW_WGL_LIBRARY_CONTEXT_STATE  _GLFWlibraryWGL     wgl;
+#define GLFW_WGL_USER_CONTEXT_STATE     _GLFWusercontextWGL wgl;
 
 
 // WGL-specific per-context data
@@ -349,6 +350,14 @@ typedef struct _GLFWlibraryWGL
     GLFWbool                            ARB_create_context_no_error;
     GLFWbool                            ARB_context_flush_control;
 } _GLFWlibraryWGL;
+
+// WGL-specific per-usercontext data
+//
+typedef struct _GLFWusercontextWGL
+{
+    HDC       dc;
+    HGLRC     handle;
+} _GLFWusercontextWGL;
 
 // Win32-specific per-window data
 //
@@ -565,3 +574,5 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig);
 
+_GLFWusercontext* _glfwCreateUserContextWin32(_GLFWwindow* window);
+_GLFWusercontext* _glfwCreateUserContextWGL(_GLFWwindow* window);

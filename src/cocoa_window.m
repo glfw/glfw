@@ -2021,6 +2021,25 @@ VkResult _glfwCreateWindowSurfaceCocoa(VkInstance instance,
 }
 
 
+_GLFWusercontext* _glfwCreateUserContextCocoa(_GLFWwindow* window)
+{
+    if (window->context.nsgl.object)
+    {
+        return _glfwCreateUserContextNSGL(window);
+    }
+    else if (window->context.egl.handle)
+    {
+        return _glfwCreateUserContextEGL(window);
+    }
+    else if (window->context.osmesa.handle)
+    {
+        return _glfwCreateUserContextOSMesa(window);
+    }
+
+    return NULL;
+}
+
+
 //////////////////////////////////////////////////////////////////////////
 //////                        GLFW native API                       //////
 //////////////////////////////////////////////////////////////////////////

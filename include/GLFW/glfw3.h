@@ -1403,6 +1403,18 @@ typedef struct GLFWmonitor GLFWmonitor;
  */
 typedef struct GLFWwindow GLFWwindow;
 
+/*! @brief Opaque user OpenGL & OpenGL ES context object.
+ *
+ *  Opaque user OpenGL OpenGL ES context object.
+ *
+ *  @see @ref context_user
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup window
+ */
+typedef struct GLFWusercontext GLFWusercontext;
+
 /*! @brief Opaque cursor object.
  *
  *  Opaque cursor object.
@@ -6096,6 +6108,9 @@ GLFWAPI uint64_t glfwGetTimerFrequency(void);
  *  thread can have only a single current context at a time.  Making a context
  *  current detaches any previously current context on the calling thread.
  *
+ *  Making a context of a window current on a given thread will detach
+ *  any user context which is current on that thread and visa versa.
+ *
  *  When moving a context between threads, you must detach it (make it
  *  non-current) on the old thread before making it current on the new one.
  *
@@ -6123,6 +6138,9 @@ GLFWAPI uint64_t glfwGetTimerFrequency(void);
  *
  *  @sa @ref context_current
  *  @sa @ref glfwGetCurrentContext
+ *  @sa @ref context_current_user
+ *  @sa @ref glfwMakeUserContextCurrent
+ *  @sa @ref glfwGetCurrentUserContext
  *
  *  @since Added in version 3.0.
  *
@@ -6310,6 +6328,147 @@ GLFWAPI int glfwExtensionSupported(const char* extension);
  *  @ingroup context
  */
 GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname);
+
+/*! @brief Create a new OpenGL or OpenGL ES user context for a window
+ *
+ *  This function creates a new OpenGL or OpenGL ES user context for a
+ *  window, which can be used to call OpenGL or OpenGL ES functions on
+ *  another thread. For a valid user context the window must be created
+ *  with a [GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint) other than
+ *  `GLFW_NO_API`.
+ *
+ *  User context creation uses the window context and framebuffer related
+ *  hints to ensure a valid context is created for that window, these hints
+ *  should be the same at the time of user context creation as when the
+ *  window was created.
+ *
+ *  Contexts share resources with the window context and with any other
+ *  user context created for that window.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED,
+ *  @ref GLFW_INVALID_VALUE the window parameter is `NULL`,
+ *  @ref GLFW_NO_WINDOW_CONTEXT if the window has no OpenGL or
+ *  OpenGL US context, and @ref GLFW_PLATFORM_ERROR.
+ *
+ *  @param[in] window The Window for which the user context is to be
+ *  created.
+ *  @return The handle of the user context created, or `NULL` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref context_user
+ *  @sa @ref usercontext_creation
+ *  @sa @ref glfwDestroyUserContext
+ *  @sa @ref window_creation
+ *  @sa @ref glfwCreateWindow
+ *  @sa @ref glfwDestroyWindow
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup context
+ */
+GLFWAPI GLFWusercontext* glfwCreateUserContext(GLFWwindow* window);
+
+/*! @brief Destroys the specified user context
+ *
+ *  This function destroys the specified user context.
+ *  User contexts should be destroyed before destroying the
+ *  window they were made with.
+ *
+ *  If the user context is current on the main thread, it is
+ *  detached before being destroyed.
+ *
+ *  @param[in] context The user context to destroy.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @note The user context must not be current on any other
+ *  thread when this function is called.
+ *
+ *  @reentrancy This function must not be called from a callback.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref context_user
+ *  @sa @ref usercontext_creation
+ *  @sa @ref glfwCreateUserContext
+ *  @sa @ref window_creation
+ *  @sa @ref glfwCreateWindow
+ *  @sa @ref glfwDestroyWindow
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup context
+ */
+GLFWAPI void glfwDestroyUserContext(GLFWusercontext* context);
+
+/*! @brief Makes the user context current for the calling thread.
+ *
+ *  This function makes the OpenGL or OpenGL ES context of the specified user
+ *  context current on the calling thread.  A context must only be made current on
+ *  a single thread at a time and each thread can have only a single current
+ *  context at a time.
+ *
+ *  Making a user context current on a given thread will detach the context of
+ *  any window which is current on that thread and visa versa.
+ *
+ *  When moving a context between threads, you must make it non-current on the
+ *  old thread before making it current on the new one.
+ *
+ *  By default, making a context non-current implicitly forces a pipeline flush.
+ *  On machines that support `GL_KHR_context_flush_control`, you can control
+ *  whether a context performs this flush by setting the
+ *  [GLFW_CONTEXT_RELEASE_BEHAVIOR](@ref GLFW_CONTEXT_RELEASE_BEHAVIOR_hint)
+ *  hint.
+ *
+ *  @param[in] context The user context to make current, or `NULL` to
+ *  detach the current context.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED,
+ *  and @ref GLFW_PLATFORM_ERROR.
+ *
+ *  @thread_safety This function may be called from any thread.
+ *
+ *  @sa @ref context_user
+ *  @sa @ref context_current_user
+ *  @sa @ref glfwGetCurrentUserContext
+ *  @sa @ref context_current
+ *  @sa @ref glfwMakeContextCurrent
+ *  @sa @ref glfwGetCurrentContext
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup context
+ */
+GLFWAPI void glfwMakeUserContextCurrent(GLFWusercontext* context);
+
+/*! @brief Returns the current OpenGL or OpenGL ES user context
+ *
+ *  This function returns the user context which is current
+ *  on the calling thread.
+ *
+ *  @return The user context current, or `NULL` if no user context
+ *  is current.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function may be called from any thread.
+ *
+ *  @sa @ref context_user
+ *  @sa @ref context_current_user
+ *  @sa @ref glfwMakeUserContextCurrent
+ *  @sa @ref context_current
+ *  @sa @ref glfwMakeContextCurrent
+ *  @sa @ref glfwGetCurrentContext
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup context
+ */
+GLFWAPI GLFWusercontext* glfwGetCurrentUserContext(void);
+
 
 /*! @brief Returns whether the Vulkan loader and an ICD have been found.
  *

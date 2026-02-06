@@ -158,6 +158,7 @@ information on what to include when reporting a bug.
  - [Null] Added Vulkan 'window' surface creation via `VK_EXT_headless_surface`
  - [Null] Added EGL context creation on Mesa via `EGL_MESA_platform_surfaceless`
  - [EGL] Allowed native access on Wayland with `GLFW_CONTEXT_CREATION_API` set to
+ - [Win32] Bugfix: Extended scancode of 0 was not being processed correctly
    `GLFW_NATIVE_CONTEXT_API` (#2518)
 
 

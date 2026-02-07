@@ -54,6 +54,7 @@
 
 #define GLFW_BORDER_SIZE    4
 #define GLFW_CAPTION_HEIGHT 24
+#define FILE_TRANSFER_PORTAL_MIME_TYPE "application/vnd.portal.filetransfer"
 
 static int createTmpfileCloexec(char* tmpname)
 {
@@ -1978,6 +1979,8 @@ static void dataOfferHandleOffer(void* userData,
                 _glfw.wl.offers[i].text_plain_utf8 = GLFW_TRUE;
             else if (strcmp(mimeType, "text/uri-list") == 0)
                 _glfw.wl.offers[i].text_uri_list = GLFW_TRUE;
+            else if (strcmp(mimeType, FILE_TRANSFER_PORTAL_MIME_TYPE) == 0)
+                _glfw.wl.offers[i].portal_file_transfer = GLFW_TRUE;
 
             break;
         }
@@ -2040,13 +2043,19 @@ static void dataDeviceHandleEnter(void* userData,
         _GLFWwindow* window = wl_surface_get_user_data(surface);
         if (window->wl.surface == surface)
         {
-            if (_glfw.wl.offers[i].text_uri_list)
+            GLFWbool portal = _glfw.wl.offers[i].portal_file_transfer && _glfw.wl.dbus.handle;
+            if (_glfw.wl.offers[i].text_uri_list || portal)
             {
                 _glfw.wl.dragOffer = offer;
                 _glfw.wl.dragFocus = window;
                 _glfw.wl.dragSerial = serial;
+                _glfw.wl.dragUsePortal = portal;
 
-                wl_data_offer_accept(offer, serial, "text/uri-list");
+                if (portal) {
+                    wl_data_offer_accept(offer, serial, FILE_TRANSFER_PORTAL_MIME_TYPE);
+                } else {
+                    wl_data_offer_accept(offer, serial, "text/uri-list");
+                }
             }
         }
     }
@@ -2080,11 +2089,127 @@ static void dataDeviceHandleMotion(void* userData,
 {
 }
 
+// Receives a dropped file that was sent using the
+// [File Transfer](https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.FileTransfer.html) portal.
+// This enables us to receive files when running as a Flatpak or Snap.
+static void dataDeviceHandleFileTransferPortalDrop(void* userData,
+                                                   struct wl_data_device* device)
+{
+    assert(_glfw.wl.dbus.handle != NULL);
+
+    char* key = readDataOfferAsString(_glfw.wl.dragOffer, FILE_TRANSFER_PORTAL_MIME_TYPE);
+    if (!key)
+        return;
+
+    DBusError error;
+    dbus_error_init(&error);
+    DBusConnection* connection = dbus_bus_get(DBUS_BUS_SESSION, &error);
+    if (dbus_error_is_set(&error))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "DBus: %s", error.message);
+        dbus_error_free(&error);
+        _glfw_free(key);
+        return;
+    }
+    dbus_connection_set_exit_on_disconnect(connection, DBUS_FALSE);
+
+    DBusMessage* message = dbus_message_new_method_call(
+        "org.freedesktop.portal.Documents",
+        "/org/freedesktop/portal/documents",
+        "org.freedesktop.portal.FileTransfer",
+        "RetrieveFiles"
+    );
+    if (!message)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
+        _glfw_free(key);
+        return;
+    }
+    DBusMessageIter args, options;
+    dbus_message_iter_init_append(message, &args);
+    if (!dbus_message_iter_append_basic(&args, DBUS_TYPE_STRING, &key))
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
+        dbus_message_unref(message);
+        _glfw_free(key);
+        return;
+    }
+    if (!dbus_message_iter_open_container(&args, DBUS_TYPE_ARRAY, "{sv}", &options))
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
+        dbus_message_unref(message);
+        _glfw_free(key);
+        return;
+    }
+    if (!dbus_message_iter_close_container(&args, &options))
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
+        dbus_message_unref(message);
+        _glfw_free(key);
+        return;
+    }
+
+    DBusMessage* reply = dbus_connection_send_with_reply_and_block(connection, message, DBUS_TIMEOUT_INFINITE, &error);
+    if (dbus_error_is_set(&error))
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "DBus: %s", error.message);
+        dbus_error_free(&error);
+        dbus_message_unref(message);
+        _glfw_free(key);
+        return;
+    }
+
+    DBusMessageIter out, array;
+    if (!dbus_message_iter_init(reply, &out))
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
+        dbus_message_unref(reply);
+        dbus_message_unref(message);
+        _glfw_free(key);
+        return;
+    }
+    if (dbus_message_iter_get_arg_type(&out) != DBUS_TYPE_ARRAY
+        || dbus_message_iter_get_element_type(&out) != DBUS_TYPE_STRING) {
+        _glfwInputError(GLFW_PLATFORM_ERROR, "DBus: Reply is not an array of strings");
+        dbus_message_unref(reply);
+        dbus_message_unref(message);
+        _glfw_free(key);
+        return;
+    }
+    dbus_message_iter_recurse(&out, &array);
+    int elements = dbus_message_iter_get_element_count(&out);
+    char** paths = _glfw_calloc(elements, sizeof(char*));
+    if (!paths) {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
+        dbus_message_unref(reply);
+        dbus_message_unref(message);
+        _glfw_free(key);
+        return;
+    }
+    int i = 0;
+    do {
+        dbus_message_iter_get_basic(&array, &paths[i++]);
+    } while (dbus_message_iter_next(&array));
+
+    _glfwInputDrop(_glfw.wl.dragFocus, elements, (const char**) paths);
+
+    _glfw_free(paths);
+    dbus_message_unref(reply);
+    dbus_message_unref(message);
+    _glfw_free(key);
+}
+
 static void dataDeviceHandleDrop(void* userData,
                                  struct wl_data_device* device)
 {
     if (!_glfw.wl.dragOffer)
         return;
+
+    if (_glfw.wl.dragUsePortal)
+    {
+        dataDeviceHandleFileTransferPortalDrop(userData, device);
+        return;
+    }
 
     char* string = readDataOfferAsString(_glfw.wl.dragOffer, "text/uri-list");
     if (string)

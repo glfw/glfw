@@ -148,6 +148,7 @@ information on what to include when reporting a bug.
    potential segmentation fault (#2744)
  - [Wayland] Bugfix: Confining or disabling the cursor could segfault on
    compositors without `pointer-constraints-unstable-v1`
+ - [Wayland]: Add support for dropping files when sandboxed
  - [X11] Bugfix: Running without a WM could trigger an assert (#2593,#2601,#2631)
  - [X11] Bugfix: Occasional crash when an idle display awakes (#2766) 
  - [X11] Bugfix: Prevent BadWindow when creating small windows with a content scale
@@ -175,4 +176,3 @@ request, please file it in the
 
 Finally, if you're interested in helping out with the development of GLFW or
 porting it to your favorite platform, join us on the forum or GitHub.
-

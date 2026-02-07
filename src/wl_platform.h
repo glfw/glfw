@@ -330,6 +330,97 @@ typedef void (* PFN_libdecor_state_free)(struct libdecor_state*);
 #define libdecor_state_new _glfw.wl.libdecor.libdecor_state_new_
 #define libdecor_state_free _glfw.wl.libdecor.libdecor_state_free_
 
+#define DBUS_FALSE 0
+#define DBUS_TYPE_STRING ((int) 's')
+#define DBUS_TYPE_ARRAY ((int) 'a')
+#define DBUS_TIMEOUT_INFINITE ((int) 0x7fffffff)
+
+typedef uint32_t dbus_bool_t;
+
+typedef struct DBusError
+{
+  const char *name;
+  const char *message;
+  unsigned int dummy1 : 1;
+  unsigned int dummy2 : 1;
+  unsigned int dummy3 : 1;
+  unsigned int dummy4 : 1;
+  unsigned int dummy5 : 1;
+  void *padding1;
+} DBusError;
+
+typedef struct DBusConnection DBusConnection;
+
+typedef enum DBusBusType
+{
+  DBUS_BUS_SESSION,
+  DBUS_BUS_SYSTEM,
+  DBUS_BUS_STARTER,
+} DBusBusType;
+
+typedef struct DBusMessage DBusMessage;
+
+typedef struct DBusMessageIter
+{
+#if DBUS_SIZEOF_VOID_P > 8
+  void *dummy[16];
+#else
+  void *dummy1;
+  void *dummy2;
+  uint32_t dummy3;
+  int dummy4;
+  int dummy5;
+  int dummy6;
+  int dummy7;
+  int dummy8;
+  int dummy9;
+  int dummy10;
+  int dummy11;
+  int pad1;
+  void *pad2;
+  void *pad3;
+#endif
+} DBusMessageIter;
+
+typedef void (* PFN_dbus_error_init) (DBusError*);
+typedef void (* PFN_dbus_error_free) (DBusError*);
+typedef dbus_bool_t (* PFN_dbus_error_is_set) (const DBusError*);
+typedef DBusConnection* (* PFN_dbus_bus_get) (enum DBusBusType, DBusError*);
+typedef void (* PFN_dbus_connection_set_exit_on_disconnect) (DBusConnection*, dbus_bool_t);
+typedef DBusMessage* (* PFN_dbus_connection_send_with_reply_and_block) (DBusConnection*, DBusMessage*, int, DBusError*);
+typedef DBusMessage* (* PFN_dbus_message_new_method_call) (const char*, const char*, const char*, const char*);
+typedef void (* PFN_dbus_message_unref) (DBusMessage*);
+typedef dbus_bool_t (* PFN_dbus_message_iter_init) (DBusMessage*, DBusMessageIter*);
+typedef void (* PFN_dbus_message_iter_init_append) (DBusMessage*, DBusMessageIter*);
+typedef dbus_bool_t (* PFN_dbus_message_iter_append_basic) (DBusMessageIter*, int, const void*);
+typedef dbus_bool_t (* PFN_dbus_message_iter_open_container) (DBusMessageIter*, int, const char*, DBusMessageIter*);
+typedef dbus_bool_t (* PFN_dbus_message_iter_close_container) (DBusMessageIter*, DBusMessageIter*);
+typedef int (* PFN_dbus_message_iter_get_arg_type) (DBusMessageIter*);
+typedef int (* PFN_dbus_message_iter_get_element_type) (DBusMessageIter*);
+typedef void (* PFN_dbus_message_iter_recurse) (DBusMessageIter*, DBusMessageIter*);
+typedef int (* PFN_dbus_message_iter_get_element_count) (DBusMessageIter*);
+typedef void (* PFN_dbus_message_iter_get_basic) (DBusMessageIter*, void*);
+typedef dbus_bool_t (* PFN_dbus_message_iter_next) (DBusMessageIter*);
+#define dbus_error_init _glfw.wl.dbus.dbus_error_init_
+#define dbus_error_free _glfw.wl.dbus.dbus_error_free_
+#define dbus_error_is_set _glfw.wl.dbus.dbus_error_is_set_
+#define dbus_bus_get _glfw.wl.dbus.dbus_bus_get_
+#define dbus_connection_set_exit_on_disconnect _glfw.wl.dbus.dbus_connection_set_exit_on_disconnect_
+#define dbus_connection_send_with_reply_and_block _glfw.wl.dbus.dbus_connection_send_with_reply_and_block_
+#define dbus_message_new_method_call _glfw.wl.dbus.dbus_message_new_method_call_
+#define dbus_message_unref _glfw.wl.dbus.dbus_message_unref_
+#define dbus_message_iter_init _glfw.wl.dbus.dbus_message_iter_init_
+#define dbus_message_iter_init_append _glfw.wl.dbus.dbus_message_iter_init_append_
+#define dbus_message_iter_append_basic _glfw.wl.dbus.dbus_message_iter_append_basic_
+#define dbus_message_iter_open_container _glfw.wl.dbus.dbus_message_iter_open_container_
+#define dbus_message_iter_close_container _glfw.wl.dbus.dbus_message_iter_close_container_
+#define dbus_message_iter_get_arg_type _glfw.wl.dbus.dbus_message_iter_get_arg_type_
+#define dbus_message_iter_get_element_type _glfw.wl.dbus.dbus_message_iter_get_element_type_
+#define dbus_message_iter_recurse _glfw.wl.dbus.dbus_message_iter_recurse_
+#define dbus_message_iter_get_element_count _glfw.wl.dbus.dbus_message_iter_get_element_count_
+#define dbus_message_iter_get_basic _glfw.wl.dbus.dbus_message_iter_get_basic_
+#define dbus_message_iter_next _glfw.wl.dbus.dbus_message_iter_next_
+
 typedef struct _GLFWfallbackEdgeWayland
 {
     struct wl_surface*          surface;
@@ -342,6 +433,7 @@ typedef struct _GLFWofferWayland
     struct wl_data_offer*       offer;
     GLFWbool                    text_plain_utf8;
     GLFWbool                    text_uri_list;
+    GLFWbool                    portal_file_transfer;
 } _GLFWofferWayland;
 
 typedef struct _GLFWscaleWayland
@@ -451,6 +543,7 @@ typedef struct _GLFWlibraryWayland
     struct wl_data_offer*       dragOffer;
     _GLFWwindow*                dragFocus;
     uint32_t                    dragSerial;
+    GLFWbool                    dragUsePortal;
 
     const char*                 tag;
 
@@ -586,6 +679,29 @@ typedef struct _GLFWlibraryWayland
         PFN_libdecor_state_new libdecor_state_new_;
         PFN_libdecor_state_free libdecor_state_free_;
     } libdecor;
+
+    struct {
+        void* handle;
+        PFN_dbus_error_init dbus_error_init_;
+        PFN_dbus_error_free dbus_error_free_;
+        PFN_dbus_error_is_set dbus_error_is_set_;
+        PFN_dbus_bus_get dbus_bus_get_;
+        PFN_dbus_connection_set_exit_on_disconnect dbus_connection_set_exit_on_disconnect_;
+        PFN_dbus_connection_send_with_reply_and_block dbus_connection_send_with_reply_and_block_;
+        PFN_dbus_message_new_method_call dbus_message_new_method_call_;
+        PFN_dbus_message_unref dbus_message_unref_;
+        PFN_dbus_message_iter_init dbus_message_iter_init_;
+        PFN_dbus_message_iter_init_append dbus_message_iter_init_append_;
+        PFN_dbus_message_iter_append_basic dbus_message_iter_append_basic_;
+        PFN_dbus_message_iter_open_container dbus_message_iter_open_container_;
+        PFN_dbus_message_iter_close_container dbus_message_iter_close_container_;
+        PFN_dbus_message_iter_get_arg_type dbus_message_iter_get_arg_type_;
+        PFN_dbus_message_iter_get_element_type dbus_message_iter_get_element_type_;
+        PFN_dbus_message_iter_recurse dbus_message_iter_recurse_;
+        PFN_dbus_message_iter_get_element_count dbus_message_iter_get_element_count_;
+        PFN_dbus_message_iter_get_basic dbus_message_iter_get_basic_;
+        PFN_dbus_message_iter_next dbus_message_iter_next_;
+    } dbus;
 } _GLFWlibraryWayland;
 
 // Wayland-specific per-monitor data

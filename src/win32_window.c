@@ -2171,16 +2171,27 @@ void _glfwPollEventsWin32(void)
 
 void _glfwWaitEventsWin32(void)
 {
-    WaitMessage();
+    while (_glfw.newEventsRcvd == GLFW_FALSE)
+    {
+        WaitMessage();
 
-    _glfwPollEventsWin32();
+        _glfwPollEventsWin32();
+    }
 }
 
 void _glfwWaitEventsTimeoutWin32(double timeout)
 {
-    MsgWaitForMultipleObjects(0, NULL, FALSE, (DWORD) (timeout * 1e3), QS_ALLINPUT);
+    double timeStart, timeEnd, timeWait;
+    timeStart = glfwGetTime();
+    timeWait = timeout;
+    do
+    {
+        MsgWaitForMultipleObjects(0, NULL, FALSE, (DWORD) (timeWait * 1e3), QS_ALLINPUT);
 
-    _glfwPollEventsWin32();
+        _glfwPollEventsWin32();
+        timeEnd = glfwGetTime();
+        timeWait = timeout - (timeEnd - timeStart);
+    } while (_glfw.newEventsRcvd == GLFW_FALSE && timeWait > 0.0 );
 }
 
 void _glfwPostEmptyEventWin32(void)

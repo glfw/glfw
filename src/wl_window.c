@@ -1365,6 +1365,7 @@ static void handleEvents(double* timeout)
 #endif
 
     GLFWbool event = GLFW_FALSE;
+	GLFWbool wlcanread = GLFW_FALSE;
     enum { DISPLAY_FD, KEYREPEAT_FD, CURSOR_FD, LIBDECOR_FD };
     struct pollfd fds[] =
     {
@@ -1379,42 +1380,70 @@ static void handleEvents(double* timeout)
 
     while (!event)
     {
-        while (wl_display_prepare_read(_glfw.wl.display) != 0)
+        wlcanread = GLFW_FALSE;
+        while (!wlcanread && !event)
         {
-            if (wl_display_dispatch_pending(_glfw.wl.display) > 0)
-                return;
+			if (wl_display_prepare_read(_glfw.wl.display) == 0)
+			{
+				wlcanread = GLFW_TRUE;
+			}
+			else if (wl_display_dispatch_pending(_glfw.wl.display) > 0)
+			{
+				event = GLFW_TRUE;
+				if (wl_display_prepare_read(_glfw.wl.display) == 0)
+				{
+					wlcanread = GLFW_TRUE;
+				}
+			}
         }
 
-        // If an error other than EAGAIN happens, we have likely been disconnected
-        // from the Wayland session; try to handle that the best we can.
-        if (!flushDisplay())
-        {
-            wl_display_cancel_read(_glfw.wl.display);
+		if (wlcanread)
+		{
+			// If an error other than EAGAIN happens, we have likely been disconnected
+			// from the Wayland session; try to handle that the best we can.
+			if (!flushDisplay())
+			{
+				wl_display_cancel_read(_glfw.wl.display);
 
-            _GLFWwindow* window = _glfw.windowListHead;
-            while (window)
-            {
-                _glfwInputWindowCloseRequest(window);
-                window = window->next;
-            }
+				_GLFWwindow* window = _glfw.windowListHead;
+				while (window)
+				{
+					_glfwInputWindowCloseRequest(window);
+					window = window->next;
+				}
 
-            return;
-        }
+				return;
+			}
 
-        if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), timeout))
-        {
-            wl_display_cancel_read(_glfw.wl.display);
-            return;
-        }
+			double* ptimeout = timeout;
+			double notimeout = 0.0;
+			if (event)
+				ptimeout = &notimeout; // do not wait if we already have an event
+			
+			if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), ptimeout))
+			{
+				wl_display_cancel_read(_glfw.wl.display);
+				return;
+			}
 
-        if (fds[DISPLAY_FD].revents & POLLIN)
-        {
-            wl_display_read_events(_glfw.wl.display);
-            if (wl_display_dispatch_pending(_glfw.wl.display) > 0)
-                event = GLFW_TRUE;
-        }
-        else
-            wl_display_cancel_read(_glfw.wl.display);
+			if (fds[DISPLAY_FD].revents & POLLIN)
+			{
+				wl_display_read_events(_glfw.wl.display);
+				if (wl_display_dispatch_pending(_glfw.wl.display) > 0)
+					event = GLFW_TRUE;
+			}
+			else
+				wl_display_cancel_read(_glfw.wl.display);
+		}
+		else
+		{
+			fds[DISPLAY_FD].fd = -1; // ignore wl events
+			double notimeout = 0.0;
+			if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), &notimeout))
+			{
+				return;
+			}
+		}
 
         if (fds[KEYREPEAT_FD].revents & POLLIN)
         {
@@ -1436,7 +1465,6 @@ static void handleEvents(double* timeout)
 
                     event = GLFW_TRUE;
                 }
-
             }
         }
 

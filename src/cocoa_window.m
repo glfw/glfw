@@ -752,19 +752,19 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 //------------------------------------------------------------------------
 
 @interface GLFWWindow : NSWindow {}
+@property _GLFWwindow* glfwWindow;
 @end
 
 @implementation GLFWWindow
 
 - (BOOL)canBecomeKeyWindow
 {
-    // Required for NSWindowStyleMaskBorderless windows
-    return YES;
+    return self.glfwWindow->canBecomeKey;
 }
 
 - (BOOL)canBecomeMainWindow
 {
-    return YES;
+    return self.glfwWindow->canBecomeMain;
 }
 
 @end
@@ -834,6 +834,8 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
         _glfwInputError(GLFW_PLATFORM_ERROR, "Cocoa: Failed to create window");
         return GLFW_FALSE;
     }
+
+    ((GLFWWindow*)window->ns.object).glfwWindow = window;
 
     if (window->monitor)
         [window->ns.object setLevel:NSMainMenuWindowLevel + 1];

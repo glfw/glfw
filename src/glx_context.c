@@ -626,6 +626,8 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
+    window->context.glx.fbconfig = native;
+
     window->context.makeCurrent = makeContextCurrentGLX;
     window->context.swapBuffers = swapBuffersGLX;
     window->context.swapInterval = swapIntervalGLX;
@@ -717,6 +719,30 @@ GLFWAPI GLXWindow glfwGetGLXWindow(GLFWwindow* handle)
     }
 
     return window->context.glx.window;
+}
+
+GLFWAPI int glfwGetGLXFBConfig(GLFWwindow* handle, GLXFBConfig* config)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(GLFW_FALSE);
+
+    if (_glfw.platform.platformID != GLFW_PLATFORM_X11)
+    {
+        _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "GLX: Platform not initialized");
+        return GLFW_FALSE;
+    }
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+    assert(config != NULL);
+
+    if (window->context.source != GLFW_NATIVE_CONTEXT_API)
+    {
+        _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
+        return GLFW_FALSE;
+    }
+
+    *config = window->context.glx.fbconfig;
+    return GLFW_TRUE;
 }
 
 #endif // _GLFW_X11

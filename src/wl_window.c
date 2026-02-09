@@ -1942,6 +1942,13 @@ static void seatHandleCapabilities(void* userData,
     {
         _glfw.wl.keyboard = wl_seat_get_keyboard(seat);
         wl_keyboard_add_listener(_glfw.wl.keyboard, &keyboardListener, NULL);
+
+        if (wl_keyboard_get_version(_glfw.wl.keyboard) <
+            WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION)
+        {
+            _glfw.wl.keyRepeatRate = 4;
+            _glfw.wl.keyRepeatDelay = 500;
+        }
     }
     else if (!(caps & WL_SEAT_CAPABILITY_KEYBOARD) && _glfw.wl.keyboard)
     {

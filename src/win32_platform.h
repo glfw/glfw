@@ -355,6 +355,7 @@ typedef struct _GLFWlibraryWGL
 typedef struct _GLFWwindowWin32
 {
     HWND                handle;
+    HWND                handleParent;
     HICON               bigIcon;
     HICON               smallIcon;
 

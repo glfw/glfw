@@ -46,17 +46,22 @@ static DWORD getWindowStyle(const _GLFWwindow* window)
         style |= WS_POPUP;
     else
     {
-        style |= WS_SYSMENU | WS_MINIMIZEBOX;
-
-        if (window->decorated)
+        if (!window->win32.handleParent)
         {
-            style |= WS_CAPTION;
+            style |= WS_SYSMENU | WS_MINIMIZEBOX;
 
-            if (window->resizable)
-                style |= WS_MAXIMIZEBOX | WS_THICKFRAME;
+            if (window->decorated)
+            {
+                style |= WS_CAPTION;
+
+                if (window->resizable)
+                    style |= WS_MAXIMIZEBOX | WS_THICKFRAME;
+            }
+            else
+                style |= WS_POPUP;
         }
         else
-            style |= WS_POPUP;
+            style |= WS_CHILD;
     }
 
     return style;
@@ -1387,7 +1392,7 @@ static int createNativeWindow(_GLFWwindow* window,
                                            style,
                                            frameX, frameY,
                                            frameWidth, frameHeight,
-                                           NULL, // No parent window
+                                           (HWND)wndconfig->win32.handleParent,
                                            NULL, // No window menu
                                            _glfw.win32.instance,
                                            (LPVOID) wndconfig);
@@ -1487,6 +1492,8 @@ GLFWbool _glfwCreateWindowWin32(_GLFWwindow* window,
                                 const _GLFWctxconfig* ctxconfig,
                                 const _GLFWfbconfig* fbconfig)
 {
+    window->win32.handleParent = wndconfig->win32.handleParent;
+
     if (!createNativeWindow(window, wndconfig, fbconfig))
         return GLFW_FALSE;
 

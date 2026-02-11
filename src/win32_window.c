@@ -530,7 +530,7 @@ static void maximizeWindowManually(_GLFWwindow* window)
 //
 static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    _GLFWwindow* window = GetPropW(hWnd, L"GLFW");
+    _GLFWwindow* window = (_GLFWwindow*)GetPropW(hWnd, L"GLFW");
     if (!window)
     {
         if (uMsg == WM_NCCREATE)
@@ -538,7 +538,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             if (_glfwIsWindows10Version1607OrGreaterWin32())
             {
                 const CREATESTRUCTW* cs = (const CREATESTRUCTW*) lParam;
-                const _GLFWwndconfig* wndconfig = cs->lpCreateParams;
+                const _GLFWwndconfig* wndconfig = (const _GLFWwndconfig*)cs->lpCreateParams;
 
                 // On per-monitor DPI aware V1 systems, only enable
                 // non-client scaling for windows that scale the client area
@@ -910,7 +910,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             if (size > (UINT) _glfw.win32.rawInputSize)
             {
                 _glfw_free(_glfw.win32.rawInput);
-                _glfw.win32.rawInput = _glfw_calloc(size, 1);
+                _glfw.win32.rawInput = (RAWINPUT *)_glfw_calloc(size, 1);
                 _glfw.win32.rawInputSize = size;
             }
 
@@ -1236,7 +1236,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             int i;
 
             const int count = DragQueryFileW(drop, 0xffffffff, NULL, 0);
-            char** paths = _glfw_calloc(count, sizeof(char*));
+            char** paths = (char**)_glfw_calloc(count, sizeof(char*));
 
             // Move the mouse to the position of the drop
             DragQueryPoint(drop, &pt);
@@ -1245,7 +1245,7 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             for (i = 0;  i < count;  i++)
             {
                 const UINT length = DragQueryFileW(drop, i, NULL, 0);
-                WCHAR* buffer = _glfw_calloc((size_t) length + 1, sizeof(WCHAR));
+                WCHAR* buffer = (WCHAR*)_glfw_calloc((size_t) length + 1, sizeof(WCHAR));
 
                 DragQueryFileW(drop, i, buffer, length + 1);
                 paths[i] = _glfwCreateUTF8FromWideStringWin32(buffer);
@@ -1291,13 +1291,13 @@ static int createNativeWindow(_GLFWwindow* window,
         wc.lpszClassName = L"GLFW30";
 #endif
         // Load user-provided icon if available
-        wc.hIcon = LoadImageW(GetModuleHandleW(NULL),
+        wc.hIcon = (HICON)LoadImageW(GetModuleHandleW(NULL),
                               L"GLFW_ICON", IMAGE_ICON,
                               0, 0, LR_DEFAULTSIZE | LR_SHARED);
         if (!wc.hIcon)
         {
             // No user-provided icon found, load default icon
-            wc.hIcon = LoadImageW(NULL,
+            wc.hIcon = (HICON)LoadImageW(NULL,
                                   IDI_APPLICATION, IMAGE_ICON,
                                   0, 0, LR_DEFAULTSIZE | LR_SHARED);
         }
@@ -1321,7 +1321,7 @@ static int createNativeWindow(_GLFWwindow* window,
             const int cursorWidth = GetSystemMetrics(SM_CXCURSOR);
             const int cursorHeight = GetSystemMetrics(SM_CYCURSOR);
 
-            unsigned char* cursorPixels = _glfw_calloc(cursorWidth * cursorHeight, 4);
+            unsigned char* cursorPixels = (unsigned char*)_glfw_calloc(cursorWidth * cursorHeight, 4);
             if (!cursorPixels)
                 return GLFW_FALSE;
 
@@ -1769,7 +1769,7 @@ void _glfwGetWindowContentScaleWin32(_GLFWwindow* window, float* xscale, float* 
 {
     const HANDLE handle = MonitorFromWindow(window->win32.handle,
                                             MONITOR_DEFAULTTONEAREST);
-    _glfwGetHMONITORContentScaleWin32(handle, xscale, yscale);
+    _glfwGetHMONITORContentScaleWin32((HMONITOR)handle, xscale, yscale);
 }
 
 void _glfwIconifyWindowWin32(_GLFWwindow* window)
@@ -2124,7 +2124,7 @@ void _glfwPollEventsWin32(void)
     handle = GetActiveWindow();
     if (handle)
     {
-        window = GetPropW(handle, L"GLFW");
+        window = (_GLFWwindow*)GetPropW(handle, L"GLFW");
         if (window)
         {
             int i;
@@ -2326,7 +2326,7 @@ GLFWbool _glfwCreateStandardCursorWin32(_GLFWcursor* cursor, int shape)
             return GLFW_FALSE;
     }
 
-    cursor->win32.handle = LoadImageW(NULL,
+    cursor->win32.handle = (HCURSOR)LoadImageW(NULL,
                                       MAKEINTRESOURCEW(id), IMAGE_CURSOR, 0, 0,
                                       LR_DEFAULTSIZE | LR_SHARED);
     if (!cursor->win32.handle)
@@ -2369,7 +2369,7 @@ void _glfwSetClipboardStringWin32(const char* string)
         return;
     }
 
-    buffer = GlobalLock(object);
+    buffer = (WCHAR *)GlobalLock(object);
     if (!buffer)
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
@@ -2432,7 +2432,7 @@ const char* _glfwGetClipboardStringWin32(void)
         return NULL;
     }
 
-    buffer = GlobalLock(object);
+    buffer = (WCHAR *)GlobalLock(object);
     if (!buffer)
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
@@ -2480,7 +2480,7 @@ EGLenum _glfwGetEGLPlatformWin32(EGLint** attribs)
 
         if (type)
         {
-            *attribs = _glfw_calloc(3, sizeof(EGLint));
+            *attribs = (EGLint *)_glfw_calloc(3, sizeof(EGLint));
             (*attribs)[0] = EGL_PLATFORM_ANGLE_TYPE_ANGLE;
             (*attribs)[1] = type;
             (*attribs)[2] = EGL_NONE;

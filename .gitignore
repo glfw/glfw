@@ -102,3 +102,4 @@ tests/triangle-vulkan
 tests/window
 tests/windows
 
+*.o

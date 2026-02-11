@@ -706,8 +706,8 @@ void _glfwGetRequiredInstanceExtensionsNull(char** extensions)
     if (!_glfw.vk.KHR_surface || !_glfw.vk.EXT_headless_surface)
         return;
 
-    extensions[0] = "VK_KHR_surface";
-    extensions[1] = "VK_EXT_headless_surface";
+    extensions[0] = (char*)"VK_KHR_surface";
+    extensions[1] = (char*)"VK_EXT_headless_surface";
 }
 
 GLFWbool _glfwGetPhysicalDevicePresentationSupportNull(VkInstance instance,
@@ -746,4 +746,3 @@ VkResult _glfwCreateWindowSurfaceNull(VkInstance instance,
 
     return err;
 }
-

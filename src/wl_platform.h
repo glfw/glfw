@@ -400,8 +400,10 @@ typedef struct _GLFWwindowWayland
     size_t                      outputScaleSize;
 
     struct wp_viewport*             scalingViewport;
-    uint32_t                        scalingNumerator;
-    struct wp_fractional_scale_v1*  fractionalScale;
+    uint32_t                        fractionalScaleV1Numerator;
+    struct wp_fractional_scale_v1*  fractionalScaleV1;
+    double fractionalScaleV2Factor;
+    struct wp_fractional_scale_v2* fractionalScaleV2;
 
     struct zwp_relative_pointer_v1* relativePointer;
     struct zwp_locked_pointer_v1*   lockedPointer;
@@ -441,6 +443,7 @@ typedef struct _GLFWlibraryWayland
     struct zwp_idle_inhibit_manager_v1*     idleInhibitManager;
     struct xdg_activation_v1*               activationManager;
     struct wp_fractional_scale_manager_v1*  fractionalScaleManager;
+    struct wp_fractional_scale_manager_v2*  fractionalScaleV2Manager;
 
     _GLFWofferWayland*          offers;
     unsigned int                offerCount;

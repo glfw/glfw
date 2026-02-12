@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="fractional_scale_v2">
+  <copyright>
+    Copyright © 2022 Xaver Hugl
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice (including the next
+    paragraph) shall be included in all copies or substantial portions of the
+    Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+  </copyright>
+
+  <description summary="Protocol for fractional scaling">
+    This protocol allows compositors and clients to communicate the
+    coordinate space their surfaces act in.
+  </description>
+
+  <interface name="wp_fractional_scale_manager_v2" version="1">
+    <description summary="creates surface scale interfaces">
+      A global interface to create wp_fractional_scale_v2 interfaces.
+    </description>
+
+    <request name="destroy" type="destructor">
+      <description summary="release the global">
+        Informs the server that the client will not be using this protocol
+        object anymore. This does not affect any other objects.
+      </description>
+    </request>
+
+    <enum name="error">
+      <entry name="fractional_scale_exists" value="0"
+        summary="wp_fractional_scale_v2 for the surface already exists"/>
+    </enum>
+
+    <request name="get_fractional_scale">
+      <description summary="create an interface to enable fractional scaling">
+        Create an interface object for a wl_surface to communicate scale.
+        If the given wl_surface already has a wp_fractional_scale_v2 object
+        associated, the fractional_scale_exists protocol error is raised.
+      </description>
+      <arg name="id" type="new_id" interface="wp_fractional_scale_v2"
+           summary="the new scale interface"/>
+      <arg name="surface" type="object" interface="wl_surface"
+           summary="the surface"/>
+    </request>
+  </interface>
+
+  <interface name="wp_fractional_scale_v2" version="1">
+    <description summary="interface for fractional scaling">
+      An additional interface for a wl_surface object that allows compositor and
+      client to communicate in a different coordinate space, in order to enable
+      them to accurately describe coordinates and sizes in pixels.
+      The two coordinate spaces in consideration are logical and pixels, where
+      logical coordinates describe the size content should have and pixels
+      describe the size of buffers.
+
+      A scale of one equals a lack of scaling, where the communicated values
+      define both logical coordinates and pixels.
+      A scale greater than one describes that for every logical coordinate,
+      more than one pixel is used, and a scale less than one describes that
+      multiple logical coordinates make up one pixel.
+      In mathematical terms, logical coordinates can be obtained by dividing
+      the provided values by the currently active scale.
+
+      The initial compositor and client coordinate scale factors are 1.
+    </description>
+
+    <event name="scale_factor">
+      <description summary="set the compositor coordinate space scale factor">
+        This event sets a scale factor for the associated wl_surface that
+        describes the coordinate system the compositor will use for events
+        following wp_fractional_scale_v2.scale_factor.
+
+        The scale factor is encoded in a 8.24 fixed point format.
+
+        The compositor must not send a scale of zero.
+
+        The client should re-render and commit a new buffer with the new scale
+        as soon as possible, in order to avoid artifacts caused by the mismatch
+        in compositor and client scales.
+      </description>
+      <arg name="scale_8_24" type="uint" summary="surface scale factor"/>
+    </event>
+
+    <request name="set_scale_factor">
+      <description summary="set the client coordinate space scale factor">
+        This request sets a scale factor for the associated wl_surface that
+        describes the coordinate system the client uses for requests following
+        wp_fractional_scale_v2.set_scale_factor.
+
+        The scale factor is encoded in a 8.24 fixed point format.
+
+        If this scale factor does not match the scale factor provided by the
+        compositor with wp_fractional_scale_v2.scale_factor, the compositor may
+        apply transformations to the wl_surface that can result in blurriness
+        or other artifacts.
+
+        If scale_8_24 is zero, the error invalid_scale will be raised.
+      </description>
+      <arg name="scale_8_24" type="uint" summary="surface scale factor"/>
+    </request>
+
+    <request name="destroy" type="destructor">
+      <description summary="remove the scale interface from the surface">
+        The wl_surface's wp_fractional_scale_v2 object is destroyed, and the
+        associated scale is reset to 1.
+      </description>
+    </request>
+
+    <enum name="error">
+      <entry name="invalid_scale" value="0"
+        summary="scale value is not valid"/>
+    </enum>
+
+  </interface>
+</protocol>

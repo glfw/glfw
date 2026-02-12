@@ -51,6 +51,7 @@
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
 #include "fractional-scale-v1-client-protocol.h"
+#include "fractional-scale-v2-client-protocol.h"
 
 #define GLFW_BORDER_SIZE    4
 #define GLFW_CAPTION_HEIGHT 24
@@ -466,10 +467,15 @@ static void setContentAreaOpaque(_GLFWwindow* window)
 
 static void resizeFramebuffer(_GLFWwindow* window)
 {
-    if (window->wl.fractionalScale)
+    if (window->wl.fractionalScaleV2)
     {
-        window->wl.fbWidth = (window->wl.width * window->wl.scalingNumerator) / 120;
-        window->wl.fbHeight = (window->wl.height * window->wl.scalingNumerator) / 120;
+        window->wl.fbWidth = (window->wl.width * window->wl.fractionalScaleV2Factor) / 120;
+        window->wl.fbHeight = (window->wl.height * window->wl.fractionalScaleV2Factor) / 120;
+    }
+    else if (window->wl.fractionalScaleV1)
+    {
+        window->wl.fbWidth = (window->wl.width * window->wl.fractionalScaleV1Numerator) / 120;
+        window->wl.fbHeight = (window->wl.height * window->wl.fractionalScaleV1Numerator) / 120;
     }
     else
     {
@@ -553,7 +559,7 @@ void _glfwUpdateBufferScaleFromOutputsWayland(_GLFWwindow* window)
         return;
 
     // When using fractional scaling, the buffer scale should remain at 1
-    if (window->wl.fractionalScale)
+    if (window->wl.fractionalScaleV1 || window->wl.fractionalScaleV2)
         return;
 
     // Get the scale factor from the highest scale monitor.
@@ -631,6 +637,30 @@ static const struct wl_surface_listener surfaceListener =
     surfaceHandleLeave
 };
 
+void handleScaleFactor(void *userData,
+                       struct wp_fractional_scale_v2 *wp_fractional_scale_v2,
+                       uint32_t scale_8_24)
+{
+    _GLFWwindow* window = userData;
+
+    const double oldScale = window->wl.fractionalScaleV2Factor;
+    const double newScale = scale_8_24 / (double)(1UL << 24);
+    if (newScale != oldScale) {
+        window->wl.fractionalScaleV2Factor = newScale;
+        wp_fractional_scale_v2_set_scale_factor(wp_fractional_scale_v2, scale_8_24);
+        _glfwInputWindowContentScale(window, newScale, newScale);
+        // keep the effective size of the window the same
+        resizeWindow(window,
+                     window->wl.width * newScale / oldScale,
+                     window->wl.height * newScale / oldScale);
+    }
+}
+
+static const struct wp_fractional_scale_v2_listener scaleListener =
+{
+    handleScaleFactor
+};
+
 static void setIdleInhibitor(_GLFWwindow* window, GLFWbool enable)
 {
     if (enable && !window->wl.idleInhibitor && _glfw.wl.idleInhibitManager)
@@ -695,7 +725,7 @@ void fractionalScaleHandlePreferredScale(void* userData,
 {
     _GLFWwindow* window = userData;
 
-    window->wl.scalingNumerator = numerator;
+    window->wl.fractionalScaleV1Numerator = numerator;
     _glfwInputWindowContentScale(window, numerator / 120.f, numerator / 120.f);
     resizeFramebuffer(window);
 
@@ -1194,8 +1224,9 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     window->wl.appId = _glfw_strdup(wndconfig->wl.appId);
 
     window->wl.bufferScale = 1;
-    window->wl.scalingNumerator = 120;
+    window->wl.fractionalScaleV1Numerator = 120;
     window->wl.scaleFramebuffer = wndconfig->scaleFramebuffer;
+    window->wl.fractionalScaleV2Factor = 1;
 
     window->wl.maximized = wndconfig->maximized;
 
@@ -1203,7 +1234,12 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     if (!window->wl.transparent)
         setContentAreaOpaque(window);
 
-    if (_glfw.wl.fractionalScaleManager)
+    if (_glfw.wl.fractionalScaleV2Manager)
+    {
+        window->wl.fractionalScaleV2 = wp_fractional_scale_manager_v2_get_fractional_scale(_glfw.wl.fractionalScaleV2Manager, window->wl.surface);
+        wp_fractional_scale_v2_add_listener(window->wl.fractionalScaleV2, &scaleListener, window);
+    }
+    else if (_glfw.wl.fractionalScaleManager)
     {
         if (window->wl.scaleFramebuffer)
         {
@@ -1214,12 +1250,12 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
                                         window->wl.width,
                                         window->wl.height);
 
-            window->wl.fractionalScale =
+            window->wl.fractionalScaleV1 =
                 wp_fractional_scale_manager_v1_get_fractional_scale(
                     _glfw.wl.fractionalScaleManager,
                     window->wl.surface);
 
-            wp_fractional_scale_v1_add_listener(window->wl.fractionalScale,
+            wp_fractional_scale_v1_add_listener(window->wl.fractionalScaleV1,
                                                 &fractionalScaleListener,
                                                 window);
         }
@@ -2240,8 +2276,8 @@ void _glfwDestroyWindowWayland(_GLFWwindow* window)
         _glfw.wl.keyboardFocus = NULL;
     }
 
-    if (window->wl.fractionalScale)
-        wp_fractional_scale_v1_destroy(window->wl.fractionalScale);
+    if (window->wl.fractionalScaleV1)
+        wp_fractional_scale_v1_destroy(window->wl.fractionalScaleV1);
 
     if (window->wl.scalingViewport)
         wp_viewport_destroy(window->wl.scalingViewport);
@@ -2426,12 +2462,18 @@ void _glfwGetWindowFrameSizeWayland(_GLFWwindow* window,
 void _glfwGetWindowContentScaleWayland(_GLFWwindow* window,
                                        float* xscale, float* yscale)
 {
-    if (window->wl.fractionalScale)
+    if (window->wl.fractionalScaleV2) {
+        if (xscale)
+            *xscale = window->wl.fractionalScaleV2Factor;
+        if (yscale)
+            *yscale = window->wl.fractionalScaleV2Factor;
+    }
+    else if (window->wl.fractionalScaleV1)
     {
         if (xscale)
-            *xscale = (float) window->wl.scalingNumerator / 120.f;
+            *xscale = (float) window->wl.fractionalScaleV1Numerator / 120.f;
         if (yscale)
-            *yscale = (float) window->wl.scalingNumerator / 120.f;
+            *yscale = (float) window->wl.fractionalScaleV1Numerator / 120.f;
     }
     else
     {
@@ -2945,13 +2987,13 @@ static void relativePointerHandleRelativeMotion(void* userData,
 
     if (window->rawMouseMotion)
     {
-        xpos += wl_fixed_to_double(dxUnaccel);
-        ypos += wl_fixed_to_double(dyUnaccel);
+        xpos += wl_fixed_to_double(dxUnaccel) / window->wl.fractionalScaleV2Factor;
+        ypos += wl_fixed_to_double(dyUnaccel) / window->wl.fractionalScaleV2Factor;
     }
     else
     {
-        xpos += wl_fixed_to_double(dx);
-        ypos += wl_fixed_to_double(dy);
+        xpos += wl_fixed_to_double(dx) / window->wl.fractionalScaleV2Factor;
+        ypos += wl_fixed_to_double(dy) / window->wl.fractionalScaleV2Factor;
     }
 
     _glfwInputCursorPos(window, xpos, ypos);

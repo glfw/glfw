@@ -51,6 +51,8 @@ freely, subject to the following restrictions:
 #if !defined(_TTHREAD_PLATFORM_DEFINED_)
   #if defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
     #define _TTHREAD_WIN32_
+  #elif defined(GEKKO)
+    #define _TTHREAD_OGC_
   #else
     #define _TTHREAD_POSIX_
   #endif
@@ -80,6 +82,8 @@ freely, subject to the following restrictions:
 #if defined(_TTHREAD_POSIX_)
   #include <sys/time.h>
   #include <pthread.h>
+#elif defined(_TTHREAD_OGC_)
+  #include <ogcsys.h>
 #elif defined(_TTHREAD_WIN32_)
   #ifndef WIN32_LEAN_AND_MEAN
     #define WIN32_LEAN_AND_MEAN
@@ -313,6 +317,8 @@ int cnd_timedwait(cnd_t *cond, mtx_t *mtx, const struct timespec *ts);
 /* Thread */
 #if defined(_TTHREAD_WIN32_)
 typedef HANDLE thrd_t;
+#elif defined(_TTHREAD_OGC_)
+typedef lwp_t thrd_t;
 #else
 typedef pthread_t thrd_t;
 #endif

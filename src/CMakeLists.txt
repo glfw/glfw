@@ -139,7 +139,8 @@ target_include_directories(glfw PRIVATE
 target_link_libraries(glfw PRIVATE Threads::Threads)
 
 if (GLFW_BUILD_WIN32)
-    list(APPEND glfw_PKG_LIBS "-lgdi32")
+    list(APPEND glfw_PKG_LIBS "-lgdi32" "-limm32")
+    target_link_libraries(glfw PRIVATE imm32)
 endif()
 
 if (GLFW_BUILD_COCOA)
@@ -338,4 +339,3 @@ if (GLFW_INSTALL)
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 endif()
-

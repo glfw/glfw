@@ -34,6 +34,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(_GLFW_WIN32)
+ #include <imm.h>
+#endif
+
 // Internal key state used for sticky keys
 #define _GLFW_STICK 3
 
@@ -843,6 +847,48 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, double xpos, double ypos)
     }
 }
 
+GLFWAPI void glfwSetInputMethodCursorPos(GLFWwindow* handle, double xpos, double ypos)
+{
+    _GLFW_REQUIRE_INIT();
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    window->inputMethodCursorPosX = xpos;
+    window->inputMethodCursorPosY = ypos;
+
+#if defined(_GLFW_WIN32)
+    if (window->win32.handle)
+    {
+        HIMC context = ImmGetContext(window->win32.handle);
+        if (context)
+        {
+            float xscale = 1.f, yscale = 1.f;
+            _glfwGetWindowContentScaleWin32(window, &xscale, &yscale);
+
+            POINT pos;
+            pos.x = (LONG) (xpos * xscale);
+            pos.y = (LONG) (ypos * yscale);
+
+            CANDIDATEFORM candidate;
+            memset(&candidate, 0, sizeof(candidate));
+            candidate.dwIndex = 0;
+            candidate.dwStyle = CFS_CANDIDATEPOS;
+            candidate.ptCurrentPos = pos;
+            ImmSetCandidateWindow(context, &candidate);
+
+            COMPOSITIONFORM composition;
+            memset(&composition, 0, sizeof(composition));
+            composition.dwStyle = CFS_POINT;
+            composition.ptCurrentPos = pos;
+            ImmSetCompositionWindow(context, &composition);
+
+            ImmReleaseContext(window->win32.handle, context);
+        }
+    }
+#endif
+}
+
 GLFWAPI GLFWcursor* glfwCreateCursor(const GLFWimage* image, int xhot, int yhot)
 {
     _GLFWcursor* cursor;
@@ -1520,4 +1566,3 @@ GLFWAPI uint64_t glfwGetTimerFrequency(void)
     _GLFW_REQUIRE_INIT_OR_RETURN(0);
     return _glfwPlatformGetTimerFrequency();
 }
-

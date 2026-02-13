@@ -358,8 +358,6 @@ static void destroyContextEGL(_GLFWwindow* window)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-// Initialize EGL
-//
 GLFWbool _glfwInitEGL(void)
 {
     int i;
@@ -545,8 +543,6 @@ GLFWbool _glfwInitEGL(void)
     return GLFW_TRUE;
 }
 
-// Terminate EGL
-//
 void _glfwTerminateEGL(void)
 {
     if (_glfw.egl.display)
@@ -570,8 +566,6 @@ void _glfwTerminateEGL(void)
     attribs[index++] = v; \
 }
 
-// Create the OpenGL or OpenGL ES context
-//
 GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig)

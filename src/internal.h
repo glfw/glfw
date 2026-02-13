@@ -717,6 +717,7 @@ struct _GLFWplatform
     void (*destroyWindow)(_GLFWwindow*);
     void (*setWindowTitle)(_GLFWwindow*,const char*);
     void (*setWindowIcon)(_GLFWwindow*,int,const GLFWimage*);
+    void (*setWindowProgressIndicator)(_GLFWwindow*,const int,double);
     void (*getWindowPos)(_GLFWwindow*,int*,int*);
     void (*setWindowPos)(_GLFWwindow*,int,int);
     void (*getWindowSize)(_GLFWwindow*,int*,int*);
@@ -883,6 +884,7 @@ struct _GLFWlibrary
     GLFW_PLATFORM_LIBRARY_WINDOW_STATE
     GLFW_PLATFORM_LIBRARY_CONTEXT_STATE
     GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE
+    GLFW_PLATFORM_LIBRARY_DBUS_STATE
 };
 
 // Global state shared between compilation units of GLFW

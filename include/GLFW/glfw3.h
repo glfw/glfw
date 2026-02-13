@@ -5024,6 +5024,28 @@ GLFWAPI void glfwGetCursorPos(GLFWwindow* window, double* xpos, double* ypos);
  */
 GLFWAPI void glfwSetCursorPos(GLFWwindow* window, double xpos, double ypos);
 
+/*! @brief Sets input method cursor anchor position relative to the content area.
+ *
+ *  This function sets the anchor position used by platform input method
+ *  systems (such as IME candidate windows).  The position is specified in
+ *  screen coordinates relative to the upper-left corner of the content area.
+ *
+ *  @param[in] window The desired window.
+ *  @param[in] xpos The desired x-coordinate, relative to the left edge of the
+ *  content area.
+ *  @param[in] ypos The desired y-coordinate, relative to the top edge of the
+ *  content area.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @since Added in version 3.5.
+ *
+ *  @ingroup input
+ */
+GLFWAPI void glfwSetInputMethodCursorPos(GLFWwindow* window, double xpos, double ypos);
+
 /*! @brief Creates a custom cursor.
  *
  *  Creates a new custom cursor image that can be set for a window with @ref
@@ -6566,4 +6588,3 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window
 #endif
 
 #endif /* _glfw3_h_ */
-

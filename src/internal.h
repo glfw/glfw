@@ -558,6 +558,8 @@ struct _GLFWwindow
     char                keys[GLFW_KEY_LAST + 1];
     // Virtual cursor position when cursor is disabled
     double              virtualCursorPosX, virtualCursorPosY;
+    // Input method cursor anchor position (for IME candidate windows)
+    double              inputMethodCursorPosX, inputMethodCursorPosY;
     GLFWbool            rawMouseMotion;
 
     _GLFWcontext        context;
@@ -1018,4 +1020,3 @@ int _glfw_max(int a, int b);
 void* _glfw_calloc(size_t count, size_t size);
 void* _glfw_realloc(void* pointer, size_t size);
 void _glfw_free(void* pointer);
-

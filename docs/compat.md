@@ -159,6 +159,12 @@ less than the actual scale.
 
 [fractional-scale-v1]: https://wayland.app/protocols/fractional-scale-v1
 
+GLFW uses the [pointer-warp-v1][] protocol to implement setting the cursor position.
+If the running compositor does not support this protocol, `glfwSetCursorPos` while the cursor is in any mode
+other than `GLFW_CURSOR_DISABLED` will return @ref GLFW_FEATURE_UNAVAILABLE.
+
+[pointer-warp-v1]: https://wayland.app/protocols/pointer-warp-v1
+
 
 ## GLX extensions {#compat_glx}
 

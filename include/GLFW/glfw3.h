@@ -247,6 +247,10 @@ extern "C" {
 
 #endif /* OpenGL and OpenGL ES headers */
 
+#if defined(GLFW_INCLUDE_WEBGPU)
+  #include <webgpu/webgpu.h>
+#endif /* webgpu header */
+
 #if defined(GLFW_DLL) && defined(_GLFW_BUILD_DLL)
  /* GLFW_DLL must be defined by applications that are linking against the DLL
   * version of the GLFW library.  _GLFW_BUILD_DLL is defined by the GLFW
@@ -6533,6 +6537,29 @@ GLFWAPI VkResult glfwCreateWindowSurface(VkInstance instance, GLFWwindow* window
 
 #endif /*VK_VERSION_1_0*/
 
+#if defined(WEBGPU_H_)
+
+/*! @brief Creates a WebGPU surface for the specified window.
+ *
+ *  This function creates a WGPUSurface object for the specified window.
+ *
+ *  If the surface cannot be created, this function returns `NULL`.
+ *
+ *  It is the responsibility of the caller to destroy the window surface. The
+ *  window surface must be destroyed using `wgpuSurfaceRelease`.
+ *
+ *  @param[in] instance The WebGPU instance to create the surface in.
+ *  @param[in] window The window to create the surface for.
+ *  @return The handle of the surface.  This is set to `NULL` if an error
+ *  occurred.
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup webgpu
+ */
+GLFWAPI WGPUSurface glfwCreateWindowWGPUSurface(WGPUInstance instance, GLFWwindow* window);
+
+#endif /* WEBGPU_H_ */
 
 /*************************************************************************
  * Global definition cleanup

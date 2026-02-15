@@ -1261,11 +1261,8 @@ GLFWAPI void* glfwGetJoystickUserPointer(int jid)
 GLFWAPI GLFWjoystickfun glfwSetJoystickCallback(GLFWjoystickfun cbfun)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
-
-    if (!initJoysticks())
-        return NULL;
-
     _GLFW_SWAP(GLFWjoystickfun, _glfw.callbacks.joystick, cbfun);
+    initJoysticks();
     return cbfun;
 }
 

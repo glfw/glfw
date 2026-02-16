@@ -260,5 +260,6 @@ void _glfwTerminateNull(void)
     free(_glfw.null.clipboardString);
     _glfwTerminateOSMesa();
     _glfwTerminateEGL();
+    memset(&_glfw.null, 0, sizeof(_glfw.null));
 }
 

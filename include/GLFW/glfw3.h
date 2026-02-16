@@ -1344,6 +1344,10 @@ extern "C" {
 #define GLFW_PLATFORM_NULL          0x00060005
 /*! @} */
 
+/* Reserved platform define for external Emscripten ports: 0x00060006
+ * See https://github.com/pongasoft/emscripten-glfw
+ */
+
 #define GLFW_DONT_CARE              -1
 
 

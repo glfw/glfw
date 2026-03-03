@@ -29,6 +29,8 @@
     defined(GLFW_BUILD_WIN32_MODULE) || \
     defined(GLFW_BUILD_WIN32_THREAD) || \
     defined(GLFW_BUILD_COCOA_TIMER) || \
+    defined(GLFW_BUILD_OGC_MODULE) || \
+    defined(GLFW_BUILD_OGC_THREAD) || \
     defined(GLFW_BUILD_POSIX_TIMER) || \
     defined(GLFW_BUILD_POSIX_MODULE) || \
     defined(GLFW_BUILD_POSIX_THREAD) || \
@@ -90,6 +92,16 @@
  #define GLFW_GLX_LIBRARY_CONTEXT_STATE
 #endif
 
+#if defined(_GLFW_OGC)
+ #include "ogc_platform.h"
+ #define GLFW_EXPOSE_NATIVE_OGC
+#else
+ #define GLFW_OGC_WINDOW_STATE
+ #define GLFW_OGC_MONITOR_STATE
+ #define GLFW_OGC_CURSOR_STATE
+ #define GLFW_OGC_LIBRARY_WINDOW_STATE
+#endif
+
 #include "null_joystick.h"
 
 #if defined(_GLFW_WIN32)
@@ -104,6 +116,13 @@
 #else
  #define GLFW_COCOA_JOYSTICK_STATE
  #define GLFW_COCOA_LIBRARY_JOYSTICK_STATE
+#endif
+
+#if defined(_GLFW_OGC)
+ #include "ogc_joystick.h"
+#else
+ #define GLFW_OGC_JOYSTICK_STATE
+ #define GLFW_OGC_LIBRARY_JOYSTICK_STATE
 #endif
 
 #if (defined(_GLFW_X11) || defined(_GLFW_WAYLAND)) && defined(__linux__)
@@ -123,6 +142,7 @@
         GLFW_WAYLAND_WINDOW_STATE \
         GLFW_X11_WINDOW_STATE \
         GLFW_NULL_WINDOW_STATE \
+        GLFW_OGC_WINDOW_STATE \
 
 #define GLFW_PLATFORM_MONITOR_STATE \
         GLFW_WIN32_MONITOR_STATE \
@@ -130,6 +150,7 @@
         GLFW_WAYLAND_MONITOR_STATE \
         GLFW_X11_MONITOR_STATE \
         GLFW_NULL_MONITOR_STATE \
+        GLFW_OGC_MONITOR_STATE \
 
 #define GLFW_PLATFORM_CURSOR_STATE \
         GLFW_WIN32_CURSOR_STATE \
@@ -137,11 +158,13 @@
         GLFW_WAYLAND_CURSOR_STATE \
         GLFW_X11_CURSOR_STATE \
         GLFW_NULL_CURSOR_STATE \
+        GLFW_OGC_CURSOR_STATE \
 
 #define GLFW_PLATFORM_JOYSTICK_STATE \
         GLFW_WIN32_JOYSTICK_STATE \
         GLFW_COCOA_JOYSTICK_STATE \
-        GLFW_LINUX_JOYSTICK_STATE
+        GLFW_LINUX_JOYSTICK_STATE \
+        GLFW_OGC_JOYSTICK_STATE \
 
 #define GLFW_PLATFORM_LIBRARY_WINDOW_STATE \
         GLFW_WIN32_LIBRARY_WINDOW_STATE \
@@ -149,11 +172,13 @@
         GLFW_WAYLAND_LIBRARY_WINDOW_STATE \
         GLFW_X11_LIBRARY_WINDOW_STATE \
         GLFW_NULL_LIBRARY_WINDOW_STATE \
+        GLFW_OGC_LIBRARY_WINDOW_STATE \
 
 #define GLFW_PLATFORM_LIBRARY_JOYSTICK_STATE \
         GLFW_WIN32_LIBRARY_JOYSTICK_STATE \
         GLFW_COCOA_LIBRARY_JOYSTICK_STATE \
-        GLFW_LINUX_LIBRARY_JOYSTICK_STATE
+        GLFW_LINUX_LIBRARY_JOYSTICK_STATE \
+        GLFW_OGC_LIBRARY_JOYSTICK_STATE \
 
 #define GLFW_PLATFORM_CONTEXT_STATE \
         GLFW_WGL_CONTEXT_STATE \
@@ -167,6 +192,8 @@
 
 #if defined(_WIN32)
  #define GLFW_BUILD_WIN32_THREAD
+#elif defined(_GLFW_OGC)
+ #define GLFW_BUILD_OGC_THREAD
 #else
  #define GLFW_BUILD_POSIX_THREAD
 #endif
@@ -179,12 +206,18 @@
  #include "posix_thread.h"
  #define GLFW_PLATFORM_TLS_STATE    GLFW_POSIX_TLS_STATE
  #define GLFW_PLATFORM_MUTEX_STATE  GLFW_POSIX_MUTEX_STATE
+#elif defined(GLFW_BUILD_OGC_THREAD)
+ #include "ogc_thread.h"
+ #define GLFW_PLATFORM_TLS_STATE    GLFW_OGC_TLS_STATE
+ #define GLFW_PLATFORM_MUTEX_STATE  GLFW_OGC_MUTEX_STATE
 #endif
 
 #if defined(_WIN32)
  #define GLFW_BUILD_WIN32_TIMER
 #elif defined(__APPLE__)
  #define GLFW_BUILD_COCOA_TIMER
+#elif defined(_GLFW_OGC)
+ #define GLFW_BUILD_OGC_TIMER
 #else
  #define GLFW_BUILD_POSIX_TIMER
 #endif
@@ -198,10 +231,15 @@
 #elif defined(GLFW_BUILD_POSIX_TIMER)
  #include "posix_time.h"
  #define GLFW_PLATFORM_LIBRARY_TIMER_STATE  GLFW_POSIX_LIBRARY_TIMER_STATE
+#elif defined(GLFW_BUILD_OGC_TIMER)
+ #include "ogc_time.h"
+ #define GLFW_PLATFORM_LIBRARY_TIMER_STATE  GLFW_OGC_LIBRARY_TIMER_STATE
 #endif
 
 #if defined(_WIN32)
  #define GLFW_BUILD_WIN32_MODULE
+#elif defined(__wii__) || defined(__gamecube)
+ #define GLFW_BUILD_OGC_MODULE
 #else
  #define GLFW_BUILD_POSIX_MODULE
 #endif

@@ -37,7 +37,9 @@ add_executable(triangle-opengles WIN32 MACOSX_BUNDLE triangle-opengles.c ${ICON}
 add_executable(wave WIN32 MACOSX_BUNDLE wave.c ${ICON} ${GLAD_GL})
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${ICON} ${GLAD_GL})
 
-target_link_libraries(particles Threads::Threads)
+if (Threads_FOUND)
+    target_link_libraries(particles Threads::Threads)
+endif()
 if (RT_LIBRARY)
     target_link_libraries(particles "${RT_LIBRARY}")
 endif()

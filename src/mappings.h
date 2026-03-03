@@ -997,5 +997,13 @@ const char* _glfwDefaultMappings[] =
 "03000000120c0000100e000011010000,ZEROPLUS P4 Gamepad,a:b1,b:b2,back:b8,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b4,leftstick:b10,lefttrigger:a3,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b11,righttrigger:a4,rightx:a2,righty:a5,start:b9,x:b0,y:b3,platform:Linux,",
 "03000000120c0000101e000011010000,ZEROPLUS P4 Wired Gamepad,a:b1,b:b2,back:b8,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,dpup:h0.1,guide:b12,leftshoulder:b4,leftstick:b10,lefttrigger:a3,leftx:a0,lefty:a1,rightshoulder:b5,rightstick:b11,righttrigger:a4,rightx:a2,righty:a5,start:b9,x:b0,y:b3,platform:Linux,",
 #endif // GLFW_BUILD_LINUX_JOYSTICK
+
+#if defined(_GLFW_OGC)
+"05002bf87e0500000105000001000000,Nintendo Wiimote 1,a:b0,b:b1,x:b2,y:b3,back:b6,guide:b4,start:b5,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,platform:Ogc,",
+"0500ea387e0500000106000001000000,Nintendo Wiimote 2,a:b0,b:b1,x:b2,y:b3,back:b6,guide:b4,start:b5,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,platform:Ogc,",
+"0500aa397e0500000107000001000000,Nintendo Wiimote 3,a:b0,b:b1,x:b2,y:b3,back:b6,guide:b4,start:b5,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,platform:Ogc,",
+"05006bf97e0500000108000001000000,Nintendo Wiimote 4,a:b0,b:b1,x:b2,y:b3,back:b6,guide:b4,start:b5,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,platform:Ogc,",
+"0500b98e7e0500000305000001000000,Nintendo Wii Classic 1,a:b0,b:b1,x:b2,y:b3,back:b6,guide:b4,start:b5,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,platform:Ogc,",
+#endif
 };
 

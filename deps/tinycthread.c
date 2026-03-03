@@ -40,6 +40,8 @@ freely, subject to the following restrictions:
 #elif defined(_TTHREAD_WIN32_)
   #include <process.h>
   #include <sys/timeb.h>
+#elif defined(_TTHREAD_OGC_)
+  #include <ogcsys.h>
 #endif
 
 /* Standard, good-to-have defines */
@@ -60,6 +62,8 @@ int mtx_init(mtx_t *mtx, int type)
   mtx->mRecursive = type & mtx_recursive;
   InitializeCriticalSection(&mtx->mHandle);
   return thrd_success;
+#elif defined(_TTHREAD_OGC_)
+  return thrd_error;
 #else
   int ret;
   pthread_mutexattr_t attr;
@@ -78,6 +82,7 @@ void mtx_destroy(mtx_t *mtx)
 {
 #if defined(_TTHREAD_WIN32_)
   DeleteCriticalSection(&mtx->mHandle);
+#elif defined(_TTHREAD_OGC_)
 #else
   pthread_mutex_destroy(mtx);
 #endif
@@ -93,6 +98,8 @@ int mtx_lock(mtx_t *mtx)
     mtx->mAlreadyLocked = TRUE;
   }
   return thrd_success;
+#elif defined(_TTHREAD_OGC_)
+  return thrd_error;
 #else
   return pthread_mutex_lock(mtx) == 0 ? thrd_success : thrd_error;
 #endif
@@ -116,6 +123,8 @@ int mtx_trylock(mtx_t *mtx)
     ret = thrd_busy;
   }
   return ret;
+#elif defined(_TTHREAD_OGC_)
+  return thrd_error;
 #else
   return (pthread_mutex_trylock(mtx) == 0) ? thrd_success : thrd_busy;
 #endif
@@ -127,6 +136,8 @@ int mtx_unlock(mtx_t *mtx)
   mtx->mAlreadyLocked = FALSE;
   LeaveCriticalSection(&mtx->mHandle);
   return thrd_success;
+#elif defined(_TTHREAD_OGC_)
+  return thrd_error;
 #else
   return pthread_mutex_unlock(mtx) == 0 ? thrd_success : thrd_error;;
 #endif
@@ -161,6 +172,8 @@ int cnd_init(cnd_t *cond)
   }
 
   return thrd_success;
+#elif defined(_TTHREAD_OGC_)
+  return thrd_error;
 #else
   return pthread_cond_init(cond, NULL) == 0 ? thrd_success : thrd_error;
 #endif
@@ -178,6 +191,7 @@ void cnd_destroy(cnd_t *cond)
     CloseHandle(cond->mEvents[_CONDITION_EVENT_ALL]);
   }
   DeleteCriticalSection(&cond->mWaitersCountLock);
+#elif defined(_TTHREAD_OGC_)
 #else
   pthread_cond_destroy(cond);
 #endif
@@ -203,6 +217,8 @@ int cnd_signal(cnd_t *cond)
   }
 
   return thrd_success;
+#elif defined(_TTHREAD_OGC_)
+  return thrd_error;
 #else
   return pthread_cond_signal(cond) == 0 ? thrd_success : thrd_error;
 #endif
@@ -228,6 +244,8 @@ int cnd_broadcast(cnd_t *cond)
   }
 
   return thrd_success;
+#elif defined(_TTHREAD_OGC_)
+  return thrd_error;
 #else
   return pthread_cond_signal(cond) == 0 ? thrd_success : thrd_error;
 #endif
@@ -286,6 +304,8 @@ int cnd_wait(cnd_t *cond, mtx_t *mtx)
 {
 #if defined(_TTHREAD_WIN32_)
   return _cnd_timedwait_win32(cond, mtx, INFINITE);
+#elif defined(_TTHREAD_OGC_)
+  return thrd_error;
 #else
   return pthread_cond_wait(cond, mtx) == 0 ? thrd_success : thrd_error;
 #endif
@@ -303,6 +323,8 @@ int cnd_timedwait(cnd_t *cond, mtx_t *mtx, const struct timespec *ts)
   }
   else
     return thrd_error;
+#elif defined(_TTHREAD_OGC_)
+  return thrd_error;
 #else
   int ret;
   ret = pthread_cond_timedwait(cond, mtx, ts);
@@ -324,14 +346,14 @@ typedef struct {
 /* Thread wrapper function. */
 #if defined(_TTHREAD_WIN32_)
 static unsigned WINAPI _thrd_wrapper_function(void * aArg)
-#elif defined(_TTHREAD_POSIX_)
+#else
 static void * _thrd_wrapper_function(void * aArg)
 #endif
 {
   thrd_start_t fun;
   void *arg;
   int  res;
-#if defined(_TTHREAD_POSIX_)
+#if defined(_TTHREAD_POSIX_) || defined(_TTHREAD_OGC_)
   void *pres;
 #endif
 
@@ -394,6 +416,8 @@ thrd_t thrd_current(void)
 {
 #if defined(_TTHREAD_WIN32_)
   return GetCurrentThread();
+#elif defined(_TTHREAD_OGC_)
+  return LWP_GetSelf();
 #else
   return pthread_self();
 #endif

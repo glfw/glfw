@@ -1348,6 +1348,10 @@ extern "C" {
 #define GLFW_PLATFORM_NULL          0x00060005
 /*! @} */
 
+/* Reserved platform define for external Emscripten ports: 0x00060006
+ * See https://github.com/pongasoft/emscripten-glfw
+ */
+
 #define GLFW_DONT_CARE              -1
 
 
@@ -4524,7 +4528,8 @@ GLFWAPI GLFWwindowcontentscalefun glfwSetWindowContentScaleCallback(GLFWwindow* 
  *  GLFW will pass those events on to the application callbacks before
  *  returning.
  *
- *  Event processing is not required for joystick input to work.
+ *  Event processing is not required to receive joystick input.  Joystick state
+ *  is polled when a joystick input or gamepad input function is called.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
@@ -4569,7 +4574,8 @@ GLFWAPI void glfwPollEvents(void);
  *  GLFW will pass those events on to the application callbacks before
  *  returning.
  *
- *  Event processing is not required for joystick input to work.
+ *  Event processing is not required to receive joystick input.  Joystick state
+ *  is polled when a joystick input or gamepad input function is called.
  *
  *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
  *  GLFW_PLATFORM_ERROR.
@@ -4616,7 +4622,8 @@ GLFWAPI void glfwWaitEvents(void);
  *  GLFW will pass those events on to the application callbacks before
  *  returning.
  *
- *  Event processing is not required for joystick input to work.
+ *  Event processing is not required to receive joystick input.  Joystick state
+ *  is polled when a joystick input or gamepad input function is called.
  *
  *  @param[in] timeout The maximum amount of time, in seconds, to wait.
  *

@@ -253,8 +253,6 @@ static void destroyContextGLX(_GLFWwindow* window)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-// Initialize GLX
-//
 GLFWbool _glfwInitGLX(void)
 {
     const char* sonames[] =
@@ -426,18 +424,13 @@ GLFWbool _glfwInitGLX(void)
     return GLFW_TRUE;
 }
 
-// Terminate GLX
-//
 void _glfwTerminateGLX(void)
 {
     // NOTE: This function must not call any X11 functions, as it is called
     //       after XCloseDisplay (see _glfwTerminateX11 for details)
 
-    if (_glfw.glx.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.glx.handle);
-        _glfw.glx.handle = NULL;
-    }
+    _glfwPlatformFreeModule(_glfw.glx.handle);
+    _glfw.glx.handle = NULL;
 }
 
 #define SET_ATTRIB(a, v) \
@@ -447,8 +440,6 @@ void _glfwTerminateGLX(void)
     attribs[index++] = v; \
 }
 
-// Create the OpenGL or OpenGL ES context
-//
 GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig)

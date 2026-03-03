@@ -79,6 +79,7 @@ video tutorials.
  - Jason Francis
  - Gerald Franz
  - Mário Freitas
+ - Friz64
  - GeO4d
  - Marcus Geelnard
  - Gegy

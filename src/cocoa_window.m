@@ -1065,7 +1065,13 @@ void _glfwSetWindowPosCocoa(_GLFWwindow* window, int x, int y)
 
 void _glfwStartInteractiveMoveCocoa(_GLFWwindow* window)
 {
-    // macOS: not implemented 
+    @autoreleasepool {
+
+    NSEvent* event = [NSApp currentEvent];
+    if (event)
+        [window->ns.object performWindowDragWithEvent:event];
+
+    } // autoreleasepool
 }
 
 void _glfwGetWindowSizeCocoa(_GLFWwindow* window, int* width, int* height)

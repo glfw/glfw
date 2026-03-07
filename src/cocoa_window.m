@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.5 macOS - www.glfw.org
+// GLFW 3.5 Cocoa - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2019 Camilla Löwy <elmindreda@glfw.org>
 //
@@ -884,7 +884,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 
     [window->ns.object setContentView:window->ns.view];
     [window->ns.object makeFirstResponder:window->ns.view];
-    [window->ns.object setTitle:@(wndconfig->title)];
+    [window->ns.object setTitle:@(window->title)];
     [window->ns.object setDelegate:window->ns.delegate];
     [window->ns.object setAcceptsMouseMovedEvents:YES];
     [window->ns.object setRestorable:NO];

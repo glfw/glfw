@@ -423,6 +423,11 @@ NK_STATIC_ASSERT(sizeof(nk_rune) >= 4);
 NK_STATIC_ASSERT(sizeof(nk_size) >= sizeof(void*));
 NK_STATIC_ASSERT(sizeof(nk_ptr) >= sizeof(void*));
 
+#if defined(_MSC_VER)
+/* disable `operands are different enum types` warning on MSVC */ 
+#pragma warning( disable: 5287 )
+#endif
+
 /* ============================================================================
  *
  *                                  API

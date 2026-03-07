@@ -35,7 +35,7 @@ By default, GLFW will load the Vulkan loader dynamically at runtime via its stan
 `vulkan-1.dll` on Windows, `libvulkan.so.1` on Linux and other Unix-like systems and
 `libvulkan.1.dylib` on macOS.
 
-@macos GLFW will also look up and search the `Frameworks` subdirectory of your
+__macOS:__ GLFW will also look up and search the `Frameworks` subdirectory of your
 application bundle.
 
 If your code is using a Vulkan loader with a different name or in a non-standard location
@@ -47,7 +47,7 @@ entry point retrieval.  This prevents GLFW from dynamically loading the Vulkan l
 glfwInitVulkanLoader(vkGetInstanceProcAddr);
 ```
 
-@macos To make your application be redistributable you will need to set up the application
+__macOS:__ To make your application be redistributable you will need to set up the application
 bundle according to the LunarG SDK documentation.  This is explained in more detail in the
 [SDK documentation for macOS](https://vulkan.lunarg.com/doc/sdk/latest/mac/getting_started.html).
 
@@ -186,7 +186,7 @@ check whether any extensions you wish to enable are already in the returned
 array, as it is an error to specify an extension more than once in the
 `VkInstanceCreateInfo` struct.
 
-@macos MoltenVK is (as of July 2022) not yet a fully conformant implementation
+__macOS:__ MoltenVK is (as of July 2022) not yet a fully conformant implementation
 of Vulkan.  As of Vulkan SDK 1.3.216.0, this means you must also enable the
 `VK_KHR_portability_enumeration` instance extension and set the
 `VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR` bit in the instance creation

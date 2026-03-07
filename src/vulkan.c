@@ -34,6 +34,40 @@
 #define _GLFW_FIND_LOADER    1
 #define _GLFW_REQUIRE_LOADER 2
 
+#if defined(__APPLE__)
+
+#include <CoreFoundation/CoreFoundation.h>
+
+static void* loadLocalVulkanLoaderMacOS(void)
+{
+    CFBundleRef bundle = CFBundleGetMainBundle();
+    if (!bundle)
+        return NULL;
+
+    CFURLRef frameworksUrl = CFBundleCopyPrivateFrameworksURL(bundle);
+    if (!frameworksUrl)
+        return NULL;
+
+    CFURLRef loaderUrl = CFURLCreateCopyAppendingPathComponent(
+        kCFAllocatorDefault, frameworksUrl, CFSTR("libvulkan.1.dylib"), false);
+    if (!loaderUrl)
+    {
+        CFRelease(frameworksUrl);
+        return NULL;
+    }
+
+    char path[PATH_MAX];
+    void* handle = NULL;
+
+    if (CFURLGetFileSystemRepresentation(loaderUrl, true, (UInt8*) path, sizeof(path) - 1))
+        handle = _glfwPlatformLoadModule(path);
+
+    CFRelease(loaderUrl);
+    CFRelease(frameworksUrl);
+    return handle;
+}
+
+#endif // __APPLE__
 
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW internal API                      //////
@@ -55,12 +89,12 @@ GLFWbool _glfwInitVulkan(int mode)
     {
 #if defined(_GLFW_VULKAN_LIBRARY)
         _glfw.vk.handle = _glfwPlatformLoadModule(_GLFW_VULKAN_LIBRARY);
-#elif defined(_GLFW_WIN32)
+#elif defined(_WIN32)
         _glfw.vk.handle = _glfwPlatformLoadModule("vulkan-1.dll");
-#elif defined(_GLFW_COCOA)
+#elif defined(__APPLE__)
         _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.1.dylib");
         if (!_glfw.vk.handle)
-            _glfw.vk.handle = _glfwLoadLocalVulkanLoaderCocoa();
+            _glfw.vk.handle = loadLocalVulkanLoaderMacOS();
 #elif defined(__OpenBSD__) || defined(__NetBSD__)
         _glfw.vk.handle = _glfwPlatformLoadModule("libvulkan.so");
 #else
@@ -157,8 +191,8 @@ GLFWbool _glfwInitVulkan(int mode)
 
 void _glfwTerminateVulkan(void)
 {
-    if (_glfw.vk.handle)
-        _glfwPlatformFreeModule(_glfw.vk.handle);
+    _glfwPlatformFreeModule(_glfw.vk.handle);
+    _glfw.vk.handle = NULL;
 }
 
 const char* _glfwGetVulkanResultString(VkResult result)

@@ -452,9 +452,6 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR)(V
 typedef VkResult (APIENTRY *PFN_vkCreateXcbSurfaceKHR)(VkInstance,const VkXcbSurfaceCreateInfoKHR*,const VkAllocationCallbacks*,VkSurfaceKHR*);
 typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)(VkPhysicalDevice,uint32_t,xcb_connection_t*,xcb_visualid_t);
 
-#include "xkb_unicode.h"
-#include "posix_poll.h"
-
 #define GLFW_X11_WINDOW_STATE           _GLFWwindowX11 x11;
 #define GLFW_X11_LIBRARY_WINDOW_STATE   _GLFWlibraryX11 x11;
 #define GLFW_X11_MONITOR_STATE          _GLFWmonitorX11 x11;
@@ -463,6 +460,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)(Vk
 #define GLFW_GLX_CONTEXT_STATE          _GLFWcontextGLX glx;
 #define GLFW_GLX_LIBRARY_CONTEXT_STATE  _GLFWlibraryGLX glx;
 
+#define GLFW_INVALID_CODEPOINT 0xffffffffu
 
 // GLX-specific per-context data
 //
@@ -470,6 +468,7 @@ typedef struct _GLFWcontextGLX
 {
     GLXContext      handle;
     GLXWindow       window;
+    GLXFBConfig     fbconfig;
 } _GLFWcontextGLX;
 
 // GLX-specific global data
@@ -984,6 +983,8 @@ unsigned long _glfwGetWindowPropertyX11(Window window,
                                         Atom type,
                                         unsigned char** value);
 GLFWbool _glfwIsVisualTransparentX11(Visual* visual);
+
+uint32_t _glfwKeySym2UnicodeX11(unsigned int keysym);
 
 void _glfwGrabErrorHandlerX11(void);
 void _glfwReleaseErrorHandlerX11(void);

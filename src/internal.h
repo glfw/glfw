@@ -109,6 +109,7 @@ typedef void (APIENTRY * PFNGLCLEARPROC)(GLbitfield);
 typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGPROC)(GLenum);
 typedef void (APIENTRY * PFNGLGETINTEGERVPROC)(GLenum,GLint*);
 typedef const GLubyte* (APIENTRY * PFNGLGETSTRINGIPROC)(GLenum,GLuint);
+typedef void (APIENTRY * PFNGLFLUSHPROC)(void);
 
 #define EGL_SUCCESS 0x3000
 #define EGL_NOT_INITIALIZED 0x3001
@@ -374,16 +375,16 @@ struct _GLFWerror
 //
 struct _GLFWinitconfig
 {
-    GLFWbool      hatButtons;
+    bool          hatButtons;
     int           angleType;
     int           platformID;
     PFN_vkGetInstanceProcAddr vulkanLoader;
     struct {
-        GLFWbool  menubar;
-        GLFWbool  chdir;
+        bool      menubar;
+        bool      chdir;
     } ns;
     struct {
-        GLFWbool  xcbVulkanSurface;
+        bool      xcbVulkanSurface;
     } x11;
     struct {
         int       libdecorMode;
@@ -402,19 +403,18 @@ struct _GLFWwndconfig
     int           ypos;
     int           width;
     int           height;
-    const char*   title;
-    GLFWbool      resizable;
-    GLFWbool      visible;
-    GLFWbool      decorated;
-    GLFWbool      focused;
-    GLFWbool      autoIconify;
-    GLFWbool      floating;
-    GLFWbool      maximized;
-    GLFWbool      centerCursor;
-    GLFWbool      focusOnShow;
-    GLFWbool      mousePassthrough;
-    GLFWbool      scaleToMonitor;
-    GLFWbool      scaleFramebuffer;
+    bool          resizable;
+    bool          visible;
+    bool          decorated;
+    bool          focused;
+    bool          autoIconify;
+    bool          floating;
+    bool          maximized;
+    bool          centerCursor;
+    bool          focusOnShow;
+    bool          mousePassthrough;
+    bool          scaleToMonitor;
+    bool          scaleFramebuffer;
     struct {
         char      frameName[256];
     } ns;
@@ -423,8 +423,8 @@ struct _GLFWwndconfig
         char      instanceName[256];
     } x11;
     struct {
-        GLFWbool  keymenu;
-        GLFWbool  showDefault;
+        bool      keymenu;
+        bool      showDefault;
     } win32;
     struct {
         char      appId[256];
@@ -443,15 +443,15 @@ struct _GLFWctxconfig
     int           source;
     int           major;
     int           minor;
-    GLFWbool      forward;
-    GLFWbool      debug;
-    GLFWbool      noerror;
+    bool          forward;
+    bool          debug;
+    bool          noerror;
     int           profile;
     int           robustness;
     int           release;
     _GLFWwindow*  share;
     struct {
-        GLFWbool  offline;
+        bool      offline;
     } nsgl;
 };
 
@@ -476,11 +476,11 @@ struct _GLFWfbconfig
     int         accumBlueBits;
     int         accumAlphaBits;
     int         auxBuffers;
-    GLFWbool    stereo;
+    bool        stereo;
     int         samples;
-    GLFWbool    sRGB;
-    GLFWbool    doublebuffer;
-    GLFWbool    transparent;
+    bool        sRGB;
+    bool        doublebuffer;
+    bool        transparent;
     uintptr_t   handle;
 };
 
@@ -499,6 +499,7 @@ struct _GLFWcontext
     PFNGLGETSTRINGIPROC  GetStringi;
     PFNGLGETINTEGERVPROC GetIntegerv;
     PFNGLGETSTRINGPROC   GetString;
+    PFNGLFLUSHPROC       Flush;
 
     void (*makeCurrent)(_GLFWwindow*);
     void (*swapBuffers)(_GLFWwindow*);

@@ -333,10 +333,8 @@ void _glfwInputChar(_GLFWwindow* window, uint32_t codepoint, int mods, GLFWbool 
 void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset)
 {
     assert(window != NULL);
-    assert(xoffset > -FLT_MAX);
-    assert(xoffset < FLT_MAX);
-    assert(yoffset > -FLT_MAX);
-    assert(yoffset < FLT_MAX);
+    assert(isfinite(xoffset));
+    assert(isfinite(yoffset));
 
     if (window->callbacks.scroll)
         window->callbacks.scroll((GLFWwindow*) window, xoffset, yoffset);
@@ -375,10 +373,8 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
 void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos)
 {
     assert(window != NULL);
-    assert(xpos > -FLT_MAX);
-    assert(xpos < FLT_MAX);
-    assert(ypos > -FLT_MAX);
-    assert(ypos < FLT_MAX);
+    assert(isfinite(xpos));
+    assert(isfinite(ypos));
 
     if (window->virtualCursorPosX == xpos && window->virtualCursorPosY == ypos)
         return;
@@ -436,6 +432,7 @@ void _glfwInputJoystickAxis(_GLFWjoystick* js, int axis, float value)
     assert(js != NULL);
     assert(axis >= 0);
     assert(axis < js->axisCount);
+    assert(isfinite(value));
 
     js->axes[axis] = value;
 }
@@ -818,8 +815,7 @@ GLFWAPI void glfwSetCursorPos(GLFWwindow* handle, double xpos, double ypos)
     _GLFWwindow* window = (_GLFWwindow*) handle;
     assert(window != NULL);
 
-    if (xpos != xpos || xpos < -DBL_MAX || xpos > DBL_MAX ||
-        ypos != ypos || ypos < -DBL_MAX || ypos > DBL_MAX)
+    if (!isfinite(xpos) || !isfinite(ypos))
     {
         _glfwInputError(GLFW_INVALID_VALUE,
                         "Invalid cursor position %f %f",
@@ -1499,7 +1495,7 @@ GLFWAPI void glfwSetTime(double time)
 {
     _GLFW_REQUIRE_INIT();
 
-    if (time != time || time < 0.0 || time > 18446744073.0)
+    if (!isfinite(time) || time < 0.0 || time > 18446744073.0)
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid time %f", time);
         return;

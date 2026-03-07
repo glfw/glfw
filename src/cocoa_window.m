@@ -1065,7 +1065,7 @@ void _glfwSetWindowPosCocoa(_GLFWwindow* window, int x, int y)
 
 void _glfwStartInteractiveMoveCocoa(_GLFWwindow* window)
 {
-    // macOS: handled via manual SetPosition in the imgui title bar; nothing to do here.
+    // macOS: not implemented 
 }
 
 void _glfwGetWindowSizeCocoa(_GLFWwindow* window, int* width, int* height)

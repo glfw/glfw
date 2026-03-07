@@ -2256,6 +2256,19 @@ void _glfwSetWindowPosWayland(_GLFWwindow* window, int xpos, int ypos)
                     "Wayland: The platform does not support setting the window position");
 }
 
+void _glfwStartInteractiveMoveWayland(_GLFWwindow* window)
+{
+    struct xdg_toplevel* toplevel = NULL;
+
+    if (window->wl.libdecor.frame)
+        toplevel = libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame);
+    else
+        toplevel = window->wl.xdg.toplevel;
+
+    if (toplevel)
+        xdg_toplevel_move(toplevel, _glfw.wl.seat, _glfw.wl.serial);
+}
+
 void _glfwGetWindowSizeWayland(_GLFWwindow* window, int* width, int* height)
 {
     if (width)

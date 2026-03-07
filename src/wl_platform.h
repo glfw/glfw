@@ -616,6 +616,7 @@ void _glfwSetWindowTitleWayland(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconWayland(_GLFWwindow* window, int count, const GLFWimage* images);
 void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos);
 void _glfwSetWindowPosWayland(_GLFWwindow* window, int xpos, int ypos);
+void _glfwStartInteractiveMoveWayland(_GLFWwindow* window);
 void _glfwGetWindowSizeWayland(_GLFWwindow* window, int* width, int* height);
 void _glfwSetWindowSizeWayland(_GLFWwindow* window, int width, int height);
 void _glfwSetWindowSizeLimitsWayland(_GLFWwindow* window, int minwidth, int minheight, int maxwidth, int maxheight);

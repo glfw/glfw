@@ -528,6 +528,7 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         .setWindowIcon = _glfwSetWindowIconCocoa,
         .getWindowPos = _glfwGetWindowPosCocoa,
         .setWindowPos = _glfwSetWindowPosCocoa,
+        .startInteractiveMove = _glfwStartInteractiveMoveCocoa,
         .getWindowSize = _glfwGetWindowSizeCocoa,
         .setWindowSize = _glfwSetWindowSizeCocoa,
         .setWindowSizeLimits = _glfwSetWindowSizeLimitsCocoa,

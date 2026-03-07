@@ -220,6 +220,7 @@ void _glfwSetWindowTitleCocoa(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconCocoa(_GLFWwindow* window, int count, const GLFWimage* images);
 void _glfwGetWindowPosCocoa(_GLFWwindow* window, int* xpos, int* ypos);
 void _glfwSetWindowPosCocoa(_GLFWwindow* window, int xpos, int ypos);
+void _glfwStartInteractiveMoveCocoa(_GLFWwindow* window);
 void _glfwGetWindowSizeCocoa(_GLFWwindow* window, int* width, int* height);
 void _glfwSetWindowSizeCocoa(_GLFWwindow* window, int width, int height);
 void _glfwSetWindowSizeLimitsCocoa(_GLFWwindow* window, int minwidth, int minheight, int maxwidth, int maxheight);

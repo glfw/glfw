@@ -226,6 +226,7 @@ void _glfwSetWindowIconNull(_GLFWwindow* window, int count, const GLFWimage* ima
 void _glfwSetWindowMonitorNull(_GLFWwindow* window, _GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);
 void _glfwGetWindowPosNull(_GLFWwindow* window, int* xpos, int* ypos);
 void _glfwSetWindowPosNull(_GLFWwindow* window, int xpos, int ypos);
+void _glfwStartInteractiveMoveNull(_GLFWwindow* window);
 void _glfwGetWindowSizeNull(_GLFWwindow* window, int* width, int* height);
 void _glfwSetWindowSizeNull(_GLFWwindow* window, int width, int height);
 void _glfwSetWindowSizeLimitsNull(_GLFWwindow* window, int minwidth, int minheight, int maxwidth, int maxheight);

@@ -1209,6 +1209,7 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
         .setWindowIcon = _glfwSetWindowIconX11,
         .getWindowPos = _glfwGetWindowPosX11,
         .setWindowPos = _glfwSetWindowPosX11,
+        .startInteractiveMove = _glfwStartInteractiveMoveX11,
         .getWindowSize = _glfwGetWindowSizeX11,
         .setWindowSize = _glfwSetWindowSizeX11,
         .setWindowSizeLimits = _glfwSetWindowSizeLimitsX11,

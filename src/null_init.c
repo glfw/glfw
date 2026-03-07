@@ -74,6 +74,7 @@ GLFWbool _glfwConnectNull(int platformID, _GLFWplatform* platform)
         .setWindowIcon = _glfwSetWindowIconNull,
         .getWindowPos = _glfwGetWindowPosNull,
         .setWindowPos = _glfwSetWindowPosNull,
+        .startInteractiveMove = _glfwStartInteractiveMoveNull,
         .getWindowSize = _glfwGetWindowSizeNull,
         .setWindowSize = _glfwSetWindowSizeNull,
         .setWindowSizeLimits = _glfwSetWindowSizeLimitsNull,

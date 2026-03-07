@@ -2710,6 +2710,30 @@ void _glfwSetWindowFloatingX11(_GLFWwindow* window, GLFWbool enabled)
     XFlush(_glfw.x11.display);
 }
 
+void _glfwStartInteractiveMoveX11(_GLFWwindow* window)
+{
+    // Release the implicit grab the button press created so the WM can take over
+    XUngrabPointer(_glfw.x11.display, CurrentTime);
+    XFlush(_glfw.x11.display);
+
+    // Query the current pointer position in root coordinates
+    Window dummyWin;
+    int dummyInt;
+    unsigned int dummyMask;
+    int rootX = 0, rootY = 0;
+    XQueryPointer(_glfw.x11.display, _glfw.x11.root,
+                  &dummyWin, &dummyWin,
+                  &rootX, &rootY,
+                  &dummyInt, &dummyInt,
+                  &dummyMask);
+
+    // Send _NET_WM_MOVERESIZE to ask the WM to begin an interactive move
+    // direction 8 = _NET_WM_MOVERESIZE_MOVE, button 1, source 1 (application)
+    Atom moveResize = XInternAtom(_glfw.x11.display, "_NET_WM_MOVERESIZE", False);
+    sendEventToWM(window, moveResize, rootX, rootY, 8, 1, 1);
+    XFlush(_glfw.x11.display);
+}
+
 void _glfwSetWindowMousePassthroughX11(_GLFWwindow* window, GLFWbool enabled)
 {
     if (!_glfw.x11.xshape.available)

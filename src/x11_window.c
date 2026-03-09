@@ -128,6 +128,8 @@ static void drainEmptyEvents(void)
     {
         char dummy[64];
         const ssize_t result = read(_glfw.x11.emptyEventPipe[0], dummy, sizeof(dummy));
+		if (result > 0)
+			_glfw.newEventsRcvd = GLFW_TRUE;
         if (result == -1 && errno != EINTR)
             break;
     }
@@ -2842,14 +2844,20 @@ void _glfwPollEventsX11(void)
 
 void _glfwWaitEventsX11(void)
 {
-    waitForAnyEvent(NULL);
-    _glfwPollEventsX11();
+	while (_glfw.newEventsRcvd == GLFW_FALSE)
+	{
+		waitForAnyEvent(NULL);
+		_glfwPollEventsX11();
+	}
 }
 
 void _glfwWaitEventsTimeoutX11(double timeout)
 {
-    waitForAnyEvent(&timeout);
-    _glfwPollEventsX11();
+	do
+    {
+		waitForAnyEvent(&timeout);
+		_glfwPollEventsX11();
+	} while (_glfw.newEventsRcvd == GLFW_FALSE && timeout > 0.0 );
 }
 
 void _glfwPostEmptyEventX11(void)

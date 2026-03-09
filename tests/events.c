@@ -670,6 +670,8 @@ int main(int argc, char** argv)
             break;
 
         glfwWaitEvents();
+        printf("%08x at %0.3f: glfwWaitEvents() returned\n",
+               counter++, glfwGetTime());
 
         // Workaround for an issue with msvcrt and mintty
         fflush(stdout);

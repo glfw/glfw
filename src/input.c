@@ -301,6 +301,8 @@ void _glfwInputKey(_GLFWwindow* window, int key, int scancode, int action, int m
 
     if (window->callbacks.key)
         window->callbacks.key((GLFWwindow*) window, key, scancode, action, mods);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code of a Unicode codepoint input event
@@ -326,6 +328,8 @@ void _glfwInputChar(_GLFWwindow* window, uint32_t codepoint, int mods, GLFWbool 
         if (window->callbacks.character)
             window->callbacks.character((GLFWwindow*) window, codepoint);
     }
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code of a scroll event
@@ -338,6 +342,8 @@ void _glfwInputScroll(_GLFWwindow* window, double xoffset, double yoffset)
 
     if (window->callbacks.scroll)
         window->callbacks.scroll((GLFWwindow*) window, xoffset, yoffset);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code of a mouse button click event
@@ -365,6 +371,8 @@ void _glfwInputMouseClick(_GLFWwindow* window, int button, int action, int mods)
 
     if (window->callbacks.mouseButton)
         window->callbacks.mouseButton((GLFWwindow*) window, button, action, mods);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code of a cursor motion event
@@ -384,6 +392,8 @@ void _glfwInputCursorPos(_GLFWwindow* window, double xpos, double ypos)
 
     if (window->callbacks.cursorPos)
         window->callbacks.cursorPos((GLFWwindow*) window, xpos, ypos);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code of a cursor enter/leave event
@@ -395,6 +405,8 @@ void _glfwInputCursorEnter(_GLFWwindow* window, GLFWbool entered)
 
     if (window->callbacks.cursorEnter)
         window->callbacks.cursorEnter((GLFWwindow*) window, entered);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code of files or directories dropped on a window
@@ -407,6 +419,8 @@ void _glfwInputDrop(_GLFWwindow* window, int count, const char** paths)
 
     if (window->callbacks.drop)
         window->callbacks.drop((GLFWwindow*) window, count, paths);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code of a joystick connection or disconnection
@@ -423,6 +437,8 @@ void _glfwInputJoystick(_GLFWjoystick* js, int event)
 
     if (_glfw.callbacks.joystick)
         _glfw.callbacks.joystick((int) (js - _glfw.joysticks), event);
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code of the new value of a joystick axis
@@ -447,6 +463,8 @@ void _glfwInputJoystickButton(_GLFWjoystick* js, int button, char value)
     assert(value == GLFW_PRESS || value == GLFW_RELEASE);
 
     js->buttons[button] = value;
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code of the new value of a joystick hat
@@ -473,6 +491,8 @@ void _glfwInputJoystickHat(_GLFWjoystick* js, int hat, char value)
     js->buttons[base + 3] = (value & 0x08) ? GLFW_PRESS : GLFW_RELEASE;
 
     js->hats[hat] = value;
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 

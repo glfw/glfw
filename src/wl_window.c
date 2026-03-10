@@ -2925,9 +2925,20 @@ void _glfwWaitEventsTimeoutWayland(double timeout)
     handleEvents(&timeout);
 }
 
+static void sync_done_handler(void* data, struct wl_callback* callback, uint32_t callback_data)
+{
+    /* Nothing to do, just destroy the callback */
+    wl_callback_destroy(callback);
+}
+
+static struct wl_callback_listener sync_listener = {
+    sync_done_handler
+};
+
 void _glfwPostEmptyEventWayland(void)
 {
-    wl_display_sync(_glfw.wl.display);
+    struct wl_callback *cb = wl_display_sync(_glfw.wl.display);
+    wl_callback_add_listener(cb, &sync_listener, NULL);
     flushDisplay();
 }
 

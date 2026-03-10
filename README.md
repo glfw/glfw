@@ -155,6 +155,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: Mouse wheel scroll distance was incorrect on some compositors
  - [Wayland] Bugfix: `glfwSwapBuffers` would halt with nonzero swap interval when window
    was suspended (#1350,#2582,#2640,#2719,#2723,#2800,#2827)
+ - [Wayland] Bugfix: Fix memory leak in _glfwPostEmptyEventWayland by cleaning up callback
  - [X11] Bugfix: Running without a WM could trigger an assert (#2593,#2601,#2631)
  - [X11] Bugfix: Occasional crash when an idle display awakes (#2766) 
  - [X11] Bugfix: Prevent BadWindow when creating small windows with a content scale

@@ -922,6 +922,15 @@ extern "C" {
  */
 #define GLFW_FOCUS_ON_SHOW          0x0002000C
 
+/*! @brief Window has titlebar window hint and attribute
+ *
+ *  Window has titlebar [window hint](@ref GLFW_TITLEBAR_hint) and
+ *  [window attribute](@ref GLFW_TITLEBAR_attrib).
+ *
+ *  NOTE: Added by Hazel
+ */
+#define GLFW_TITLEBAR               0x00C2000D
+
 /*! @brief Mouse input transparency window hint and attribute
  *
  *  Mouse input transparency [window hint](@ref GLFW_MOUSE_PASSTHROUGH_hint) or
@@ -1616,6 +1625,22 @@ typedef void (* GLFWerrorfun)(int error_code, const char* description);
  *  @ingroup window
  */
 typedef void (* GLFWwindowposfun)(GLFWwindow* window, int xpos, int ypos);
+
+/*! @brief The function pointer type for titlebar hit test callbacks.
+ *
+ *  This is the function pointer type for titlebar hit test callbacks.
+ *
+ *  @param[in] window The window that was moved.
+ *  @param[in] xpos The x-coordinate of mouse, in screen coordinates.
+ *  @param[in] ypos The y-coordinate of mouse, in screen coordinates.
+ *  @param[out] hit 'true' or '1' if mouse hovering titlebar.
+ *
+ *  @sa @ref window_pos
+ *  @sa @ref glfwSetTitlebarHitTestCallback
+ *
+ *  @ingroup window
+ */
+typedef void (*GLFWtitlebarhittestfun)(GLFWwindow*, int, int, int*);
 
 /*! @brief The function pointer type for window size callbacks.
  *
@@ -4236,6 +4261,31 @@ GLFWAPI void* glfwGetWindowUserPointer(GLFWwindow* window);
  *  @ingroup window
  */
 GLFWAPI GLFWwindowposfun glfwSetWindowPosCallback(GLFWwindow* window, GLFWwindowposfun callback);
+
+/*! @brief Sets the titlebar hit test callback for the specified window.
+ *
+ *  This function sets the titlebar hit test callback of the specified window,
+ *  which is called when the system needs to determine if the mouse is over the
+ *  titlebar area for window dragging.
+ *
+ *  @param[in] window The window whose callback to set.
+ *  @param[in] callback The new callback, or `NULL` to remove the currently set
+ *  callback.
+ *  @return The previously set callback, or `NULL` if no callback was set or the
+ *  library had not been [initialized](@ref intro_init).
+ *
+ *  For more information about the callback parameters, see the
+ *  [function pointer type](@ref GLFWtitlebarhittestfun).
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref window_pos
+ *
+ *  @ingroup window
+ */
+GLFWAPI GLFWtitlebarhittestfun glfwSetTitlebarHitTestCallback(GLFWwindow* window, GLFWtitlebarhittestfun callback);
 
 /*! @brief Sets the size callback for the specified window.
  *

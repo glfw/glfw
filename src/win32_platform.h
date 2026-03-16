@@ -511,6 +511,7 @@ GLFWbool _glfwWindowHoveredWin32(_GLFWwindow* window);
 GLFWbool _glfwFramebufferTransparentWin32(_GLFWwindow* window);
 void _glfwSetWindowResizableWin32(_GLFWwindow* window, GLFWbool enabled);
 void _glfwSetWindowDecoratedWin32(_GLFWwindow* window, GLFWbool enabled);
+void _glfwSetWindowTitlebarWin32(_GLFWwindow* window, GLFWbool enabled);
 void _glfwSetWindowFloatingWin32(_GLFWwindow* window, GLFWbool enabled);
 void _glfwSetWindowMousePassthroughWin32(_GLFWwindow* window, GLFWbool enabled);
 float _glfwGetWindowOpacityWin32(_GLFWwindow* window);

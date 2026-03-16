@@ -241,6 +241,7 @@ GLFWbool _glfwWindowHoveredNull(_GLFWwindow* window);
 GLFWbool _glfwFramebufferTransparentNull(_GLFWwindow* window);
 void _glfwSetWindowResizableNull(_GLFWwindow* window, GLFWbool enabled);
 void _glfwSetWindowDecoratedNull(_GLFWwindow* window, GLFWbool enabled);
+void _glfwSetWindowTitlebarNull(_GLFWwindow* window, GLFWbool enabled);
 void _glfwSetWindowFloatingNull(_GLFWwindow* window, GLFWbool enabled);
 void _glfwSetWindowMousePassthroughNull(_GLFWwindow* window, GLFWbool enabled);
 float _glfwGetWindowOpacityNull(_GLFWwindow* window);

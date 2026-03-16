@@ -101,6 +101,7 @@ GLFWbool _glfwConnectNull(int platformID, _GLFWplatform* platform)
         .setWindowFloating = _glfwSetWindowFloatingNull,
         .setWindowOpacity = _glfwSetWindowOpacityNull,
         .setWindowMousePassthrough = _glfwSetWindowMousePassthroughNull,
+        .setWindowTitleBar = _glfwSetWindowTitlebarNull,
         .pollEvents = _glfwPollEventsNull,
         .waitEvents = _glfwWaitEventsNull,
         .waitEventsTimeout = _glfwWaitEventsTimeoutNull,

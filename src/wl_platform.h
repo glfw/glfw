@@ -683,6 +683,7 @@ GLFWbool _glfwWindowHoveredWayland(_GLFWwindow* window);
 GLFWbool _glfwFramebufferTransparentWayland(_GLFWwindow* window);
 void _glfwSetWindowResizableWayland(_GLFWwindow* window, GLFWbool enabled);
 void _glfwSetWindowDecoratedWayland(_GLFWwindow* window, GLFWbool enabled);
+void _glfwSetWindowTitlebarWayland(_GLFWwindow* window, GLFWbool enabled);
 void _glfwSetWindowFloatingWayland(_GLFWwindow* window, GLFWbool enabled);
 float _glfwGetWindowOpacityWayland(_GLFWwindow* window);
 void _glfwSetWindowOpacityWayland(_GLFWwindow* window, float opacity);

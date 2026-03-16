@@ -499,6 +499,7 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         .setWindowFloating = _glfwSetWindowFloatingWayland,
         .setWindowOpacity = _glfwSetWindowOpacityWayland,
         .setWindowMousePassthrough = _glfwSetWindowMousePassthroughWayland,
+        .setWindowTitleBar = _glfwSetWindowTitlebarWayland,
         .pollEvents = _glfwPollEventsWayland,
         .waitEvents = _glfwWaitEventsWayland,
         .waitEventsTimeout = _glfwWaitEventsTimeoutWayland,

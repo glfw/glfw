@@ -1237,6 +1237,7 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
         .setWindowFloating = _glfwSetWindowFloatingX11,
         .setWindowOpacity = _glfwSetWindowOpacityX11,
         .setWindowMousePassthrough = _glfwSetWindowMousePassthroughX11,
+        .setWindowTitleBar = _glfwSetWindowTitlebarX11,
         .pollEvents = _glfwPollEventsX11,
         .waitEvents = _glfwWaitEventsX11,
         .waitEventsTimeout = _glfwWaitEventsTimeoutX11,

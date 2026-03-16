@@ -2870,6 +2870,12 @@ void _glfwSetWindowDecoratedWayland(_GLFWwindow* window, GLFWbool enabled)
     }
 }
 
+void _glfwSetWindowTitlebarWayland(_GLFWwindow* window, GLFWbool enabled)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "Wayland: Window titlebar attribute setting not implemented yet");
+}
+
 void _glfwSetWindowFloatingWayland(_GLFWwindow* window, GLFWbool enabled)
 {
     _glfwInputError(GLFW_FEATURE_UNAVAILABLE,

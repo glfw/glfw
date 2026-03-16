@@ -2683,6 +2683,12 @@ void _glfwSetWindowDecoratedX11(_GLFWwindow* window, GLFWbool enabled)
                     sizeof(hints) / sizeof(long));
 }
 
+void _glfwSetWindowTitlebarX11(_GLFWwindow* window, GLFWbool enabled)
+{
+    _glfwInputError(GLFW_PLATFORM_ERROR,
+                    "X11: Window titlebar attribute setting not implemented yet");
+}
+
 void _glfwSetWindowFloatingX11(_GLFWwindow* window, GLFWbool enabled)
 {
     if (!_glfw.x11.NET_WM_STATE || !_glfw.x11.NET_WM_STATE_ABOVE)

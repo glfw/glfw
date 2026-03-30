@@ -1411,7 +1411,27 @@ static void processEvent(XEvent *event)
                         int titlebarHit = 0;
                         _glfwInputTitleBarHitTest(window, x, y, &titlebarHit);
                         if (titlebarHit)
+                        {
+                            static Time lastTitlebarClickTime = 0;
+                            static Window lastTitlebarClickWindow = 0;
+                            const Time doubleClickMs = 400; // 400ms matches GTK and QT defaults
+                            const Time now = event->xbutton.time;
+
+                            if (lastTitlebarClickWindow == window->x11.handle &&
+                                now - lastTitlebarClickTime <= doubleClickMs)
+                            {
+                                lastTitlebarClickTime = 0;
+                                if (_glfwWindowMaximizedX11(window))
+                                    _glfwRestoreWindowX11(window);
+                                else
+                                    _glfwMaximizeWindowX11(window);
+                                return;
+                            }
+
+                            lastTitlebarClickTime = now;
+                            lastTitlebarClickWindow = window->x11.handle;
                             dir = 8; // MOVE
+                        }
                     }
 
                     if (dir >= 0)

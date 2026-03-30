@@ -962,6 +962,8 @@ static GLFWbool initExtensions(void)
         XInternAtom(_glfw.x11.display, "_NET_WM_ICON", False);
     _glfw.x11.NET_WM_PING =
         XInternAtom(_glfw.x11.display, "_NET_WM_PING", False);
+    _glfw.x11.NET_WM_MOVERESIZE =
+        XInternAtom(_glfw.x11.display, "_NET_WM_MOVERESIZE", False);
     _glfw.x11.NET_WM_PID =
         XInternAtom(_glfw.x11.display, "_NET_WM_PID", False);
     _glfw.x11.NET_WM_NAME =

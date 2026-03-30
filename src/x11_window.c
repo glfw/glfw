@@ -603,6 +603,14 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                     ExposureMask | FocusChangeMask | VisibilityChangeMask |
                     EnterWindowMask | LeaveWindowMask | PropertyChangeMask;
 
+    // Anchor existing pixels at top-left during resize and fill any newly
+    // exposed areas with black.  This matches the DWM behaviour on Windows
+    // (clip when shrinking, black letterbox when growing) instead of the
+    // default X11/compositor behaviour of stretching or tiling the old
+    // content
+    wa.bit_gravity = NorthWestGravity;
+    wa.background_pixel = 0;
+
     _glfwGrabErrorHandlerX11();
 
     window->x11.parent = _glfw.x11.root;
@@ -614,7 +622,8 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                                        depth,  // Color depth
                                        InputOutput,
                                        visual,
-                                       CWBorderPixel | CWColormap | CWEventMask,
+                                       CWBorderPixel | CWColormap | CWEventMask |
+                                       CWBitGravity | CWBackPixel,
                                        &wa);
 
     _glfwReleaseErrorHandlerX11();
@@ -1362,7 +1371,74 @@ static void processEvent(XEvent *event)
             const int mods = translateState(event->xbutton.state);
 
             if (event->xbutton.button == Button1)
+            {
+                // For undecorated windows, provide OS-level resize borders
+                // and titlebar drag via _NET_WM_MOVERESIZE — matching the
+                // behaviour of Win32's GLFW_TITLEBAR=false, which keeps the
+                // native resize frame while removing the caption bar
+                //
+                // Resize edges are checked first (highest priority at window
+                // borders), then titlebar hit test for drag, then normal click
+                if (!window->decorated && _glfw.x11.NET_WM_MOVERESIZE)
+                {
+                    const int x = event->xbutton.x;
+                    const int y = event->xbutton.y;
+                    int w, h;
+                    _glfwGetWindowSizeX11(window, &w, &h);
+
+                    // _NET_WM_MOVERESIZE directions
+                    // 0=TL 1=T 2=TR 3=R 4=BR 5=B 6=BL 7=L 8=MOVE
+                    const int border = 8; // px — resize hit zone
+                    int dir = -1;
+
+                    const GLFWbool onLeft   = (x < border);
+                    const GLFWbool onRight  = (x >= w - border);
+                    const GLFWbool onTop    = (y < border);
+                    const GLFWbool onBottom = (y >= h - border);
+
+                    if      (onTop    && onLeft)  dir = 0; // TL
+                    else if (onTop    && onRight) dir = 2; // TR
+                    else if (onBottom && onLeft)  dir = 6; // BL
+                    else if (onBottom && onRight) dir = 4; // BR
+                    else if (onTop)               dir = 1; // T
+                    else if (onBottom)            dir = 5; // B
+                    else if (onLeft)              dir = 7; // L
+                    else if (onRight)             dir = 3; // R
+
+                    // If not a resize edge, check titlebar for drag
+                    if (dir < 0)
+                    {
+                        int titlebarHit = 0;
+                        _glfwInputTitleBarHitTest(window, x, y, &titlebarHit);
+                        if (titlebarHit)
+                            dir = 8; // MOVE
+                    }
+
+                    if (dir >= 0)
+                    {
+                        XUngrabPointer(_glfw.x11.display, CurrentTime);
+
+                        XEvent xev = { 0 };
+                        xev.type = ClientMessage;
+                        xev.xclient.window = window->x11.handle;
+                        xev.xclient.message_type = _glfw.x11.NET_WM_MOVERESIZE;
+                        xev.xclient.format = 32;
+                        xev.xclient.data.l[0] = event->xbutton.x_root;
+                        xev.xclient.data.l[1] = event->xbutton.y_root;
+                        xev.xclient.data.l[2] = dir;
+                        xev.xclient.data.l[3] = Button1;
+                        xev.xclient.data.l[4] = 1; // source: normal app
+
+                        XSendEvent(_glfw.x11.display, _glfw.x11.root, False,
+                                   SubstructureRedirectMask | SubstructureNotifyMask,
+                                   &xev);
+                        XFlush(_glfw.x11.display);
+                        return;
+                    }
+                }
+
                 _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS, mods);
+            }
             else if (event->xbutton.button == Button2)
                 _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_MIDDLE, GLFW_PRESS, mods);
             else if (event->xbutton.button == Button3)
@@ -1489,6 +1565,17 @@ static void processEvent(XEvent *event)
 
         case ConfigureNotify:
         {
+            // Consume all pending ConfigureNotify events for this window and only process the final one
+            {
+                XEvent next;
+                while (XCheckTypedWindowEvent(_glfw.x11.display,
+                                              event->xany.window,
+                                              ConfigureNotify, &next))
+                {
+                    *event = next;
+                }
+            }
+
             if (event->xconfigure.width != window->x11.width ||
                 event->xconfigure.height != window->x11.height)
             {

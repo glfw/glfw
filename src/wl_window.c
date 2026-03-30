@@ -1357,6 +1357,9 @@ static void inputText(_GLFWwindow* window, uint32_t scancode)
 
 static void handleEvents(double* timeout)
 {
+    double *effective_timeout = timeout;
+    double timeout_override = 0.0;
+
 #if defined(GLFW_BUILD_LINUX_JOYSTICK)
     if (_glfw.joysticksInitialized)
         _glfwDetectJoystickConnectionLinux();
@@ -1377,6 +1380,12 @@ static void handleEvents(double* timeout)
 
     while (!event)
     {
+        if (_glfw.wl.libdecor.context)
+        {
+            if (libdecor_dispatch(_glfw.wl.libdecor.context, 0) > 0)
+                effective_timeout = &timeout_override;
+        }
+
         while (wl_display_prepare_read(_glfw.wl.display) != 0)
         {
             if (wl_display_dispatch_pending(_glfw.wl.display) > 0)
@@ -1399,7 +1408,7 @@ static void handleEvents(double* timeout)
             return;
         }
 
-        if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), timeout))
+        if (!_glfwPollPOSIX(fds, sizeof(fds) / sizeof(fds[0]), effective_timeout))
         {
             wl_display_cancel_read(_glfw.wl.display);
             return;

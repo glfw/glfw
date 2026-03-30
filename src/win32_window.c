@@ -1651,6 +1651,12 @@ void _glfwSetWindowPosWin32(_GLFWwindow* window, int xpos, int ypos)
                  SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
 }
 
+void _glfwStartInteractiveMoveWin32(_GLFWwindow* window)
+{
+    ReleaseCapture();
+    SendMessageW(window->win32.handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+}
+
 void _glfwGetWindowSizeWin32(_GLFWwindow* window, int* width, int* height)
 {
     RECT area;

@@ -611,6 +611,7 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         .setWindowIcon = _glfwSetWindowIconWin32,
         .getWindowPos = _glfwGetWindowPosWin32,
         .setWindowPos = _glfwSetWindowPosWin32,
+        .startInteractiveMove = _glfwStartInteractiveMoveWin32,
         .getWindowSize = _glfwGetWindowSizeWin32,
         .setWindowSize = _glfwSetWindowSizeWin32,
         .setWindowSizeLimits = _glfwSetWindowSizeLimitsWin32,

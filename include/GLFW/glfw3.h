@@ -3484,6 +3484,17 @@ GLFWAPI void glfwGetWindowPos(GLFWwindow* window, int* xpos, int* ypos);
  */
 GLFWAPI void glfwSetWindowPos(GLFWwindow* window, int xpos, int ypos);
 
+/*! @brief Starts an interactive move of the window managed by the compositor.
+ *
+ *  On Wayland this calls xdg_toplevel_move / libdecor_frame_move so the
+ *  compositor handles the drag.  On X11 it sends _NET_WM_MOVERESIZE.
+ *  Call this from a left-button-press handler on your custom title bar.
+ *
+ *  @param[in] window The window to move.
+ *  @ingroup window
+ */
+GLFWAPI void glfwStartInteractiveMove(GLFWwindow* window);
+
 /*! @brief Retrieves the size of the content area of the specified window.
  *
  *  This function retrieves the size, in screen coordinates, of the content area

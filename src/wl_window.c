@@ -965,36 +965,39 @@ static GLFWbool createLibdecorFrame(_GLFWwindow* window)
         return GLFW_FALSE;
     }
 
-    struct libdecor_state* frameState =
-        libdecor_state_new(window->wl.width, window->wl.height);
-    libdecor_frame_commit(window->wl.libdecor.frame, frameState, NULL);
-    libdecor_state_free(frameState);
-
     if (strlen(window->wl.appId))
         libdecor_frame_set_app_id(window->wl.libdecor.frame, window->wl.appId);
 
     libdecor_frame_set_title(window->wl.libdecor.frame, window->title);
 
-    if (window->minwidth != GLFW_DONT_CARE &&
-        window->minheight != GLFW_DONT_CARE)
+    if (window->resizable)
     {
-        libdecor_frame_set_min_content_size(window->wl.libdecor.frame,
-                                            window->minwidth,
-                                            window->minheight);
-    }
+        if (window->minwidth != GLFW_DONT_CARE &&
+            window->minheight != GLFW_DONT_CARE)
+        {
+            libdecor_frame_set_min_content_size(window->wl.libdecor.frame,
+                                                window->minwidth,
+                                                window->minheight);
+        }
 
-    if (window->maxwidth != GLFW_DONT_CARE &&
-        window->maxheight != GLFW_DONT_CARE)
-    {
-        libdecor_frame_set_max_content_size(window->wl.libdecor.frame,
-                                            window->maxwidth,
-                                            window->maxheight);
+        if (window->maxwidth != GLFW_DONT_CARE &&
+            window->maxheight != GLFW_DONT_CARE)
+        {
+            libdecor_frame_set_max_content_size(window->wl.libdecor.frame,
+                                                window->maxwidth,
+                                                window->maxheight);
+        }
     }
-
-    if (!window->resizable)
+    else
     {
         libdecor_frame_unset_capabilities(window->wl.libdecor.frame,
                                           LIBDECOR_ACTION_RESIZE);
+        libdecor_frame_set_min_content_size(window->wl.libdecor.frame,
+                                            window->wl.width,
+                                            window->wl.height);
+        libdecor_frame_set_max_content_size(window->wl.libdecor.frame,
+                                            window->wl.width,
+                                            window->wl.height);
     }
 
     if (window->monitor)

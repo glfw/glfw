@@ -1133,13 +1133,25 @@ void _glfwGetFramebufferSizeCocoa(_GLFWwindow* window, int* width, int* height)
     @autoreleasepool {
 
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
 
-    if (width)
-        *width = (int) fbRect.size.width;
-    if (height)
-        *height = (int) fbRect.size.height;
+    if (window->ns.scaleFramebuffer)
+    {
+        const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
 
+        if (width)
+            *width = (int) fbRect.size.width;
+        if (height)
+            *height = (int) fbRect.size.height;
+    }
+    else
+    {
+        if (width)
+            *width = (int) contentRect.size.width;
+        if (height)
+            *height = (int) contentRect.size.height;
+
+    }
+    
     } // autoreleasepool
 }
 

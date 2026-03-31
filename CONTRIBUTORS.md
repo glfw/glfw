@@ -273,6 +273,7 @@ video tutorials.
  - Jared Tiala
  - Sergey Tikhomirov
  - Arthur Tombs
+ - Luis Torres
  - TronicLabs
  - Ioannis Tsakpinis
  - Samuli Tuomola

@@ -248,27 +248,24 @@ int _glfw_max(int a, int b)
 
 void* _glfw_calloc(size_t count, size_t size)
 {
-    if (count && size)
-    {
-        void* block;
-
-        if (count > SIZE_MAX / size)
-        {
-            _glfwInputError(GLFW_INVALID_VALUE, "Allocation size overflow");
-            return NULL;
-        }
-
-        block = _glfw.allocator.allocate(count * size, _glfw.allocator.user);
-        if (block)
-            return memset(block, 0, count * size);
-        else
-        {
-            _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
-            return NULL;
-        }
-    }
-    else
+    if (!count || !size)
         return NULL;
+
+    if (count > SIZE_MAX / size)
+    {
+        _glfwInputError(GLFW_INVALID_VALUE, "Allocation size overflow");
+        return NULL;
+    }
+
+    const size_t total_size = count * size;
+    void* block = _glfw.allocator.allocate(total_size, _glfw.allocator.user);
+    if (!block)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
+        return NULL;
+    }
+    
+    return memset(block, 0, total_size);
 }
 
 void* _glfw_realloc(void* block, size_t size)

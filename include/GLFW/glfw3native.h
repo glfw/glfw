@@ -117,6 +117,7 @@ extern "C" {
  #if defined(GLFW_EXPOSE_NATIVE_X11) || defined(GLFW_EXPOSE_NATIVE_GLX)
   #include <X11/Xlib.h>
   #include <X11/extensions/Xrandr.h>
+  typedef struct xcb_connection_t xcb_connection_t;
  #endif
 
  #if defined(GLFW_EXPOSE_NATIVE_WAYLAND)
@@ -442,6 +443,38 @@ GLFWAPI void glfwSetX11SelectionString(const char* string);
  *  @ingroup native
  */
 GLFWAPI const char* glfwGetX11SelectionString(void);
+
+/*! @brief Returns the default `VisualID` used by GLFW.
+ *
+ *  @return The `VisualID` used by GLFW, or `NULL` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup native
+ */
+GLFWAPI VisualID glfwGetX11Visual(void);
+
+/*! @brief Returns the XCB connection used by GLFW, if any.
+ *
+ *  @return The XCB connection used by GLFW, or `NULL` if XCB is not used, or an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED.
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @since Added in version 3.4.
+ *
+ *  @ingroup native
+ */
+GLFWAPI xcb_connection_t* glfwGetXCBConnection(void);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_GLX)

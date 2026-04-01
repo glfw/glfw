@@ -43,7 +43,8 @@ what kind of context is created.  See
 
 When creating a window and its OpenGL or OpenGL ES context with @ref
 glfwCreateWindow, you can specify another window whose context the new one
-should share its objects (textures, vertex and element buffers, etc.) with.
+should share its shareable objects (textures, vertex and element buffers, etc.)
+with.
 
 ```c
 GLFWwindow* second_window = glfwCreateWindow(640, 480, "Second Window", NULL, first_window);
@@ -51,7 +52,7 @@ GLFWwindow* second_window = glfwCreateWindow(640, 480, "Second Window", NULL, fi
 
 Object sharing is implemented by the operating system and graphics driver.  On
 platforms where it is possible to choose which types of objects are shared, GLFW
-requests that all types are shared.
+requests that all shareable types are shared.
 
 See the relevant chapter of the [OpenGL](https://www.opengl.org/registry/) or
 [OpenGL ES](https://www.khronos.org/opengles/) reference documents for more

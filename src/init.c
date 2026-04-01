@@ -273,24 +273,23 @@ void* _glfw_calloc(size_t count, size_t size)
 
 void* _glfw_realloc(void* block, size_t size)
 {
-    if (block && size)
-    {
-        void* resized = _glfw.allocator.reallocate(block, size, _glfw.allocator.user);
-        if (resized)
-            return resized;
-        else
-        {
-            _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
-            return NULL;
-        }
-    }
-    else if (block)
+    if (!block)
+        return _glfw_calloc(1, size);
+
+    if (!size)
     {
         _glfw_free(block);
         return NULL;
     }
-    else
-        return _glfw_calloc(1, size);
+    
+    void* resized = _glfw.allocator.reallocate(block, size, _glfw.allocator.user);
+    if (!resized)
+    {
+        _glfwInputError(GLFW_OUT_OF_MEMORY, NULL);
+        return NULL;
+    }
+
+    return resized;
 }
 
 void _glfw_free(void* block)

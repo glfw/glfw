@@ -437,6 +437,11 @@ GLFWAPI void glfwTerminate(void)
     terminate();
 }
 
+GLFWAPI int glfwIsInitialized(void)
+{
+    return _glfw.initialized;
+}
+
 GLFWAPI void glfwInitHint(int hint, int value)
 {
     switch (hint)

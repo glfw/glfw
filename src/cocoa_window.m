@@ -560,6 +560,36 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     [super updateTrackingAreas];
 }
 
+- (BOOL)performKeyEquivalent:(NSEvent *)nsevent
+{
+    // At the moment the only reason we define this method
+    // is Ctrl-tab key event never reaching any view at all.
+    // After -performKeyEquivalent: returns NO on all responders,
+    // we receve Ctrl-tab in our QNSWindow's -sendEvent:,
+    // but somehow it never reaches QNSView's -keyDown:.
+    // Apparently, it's treated in a special (and undocumented)
+    // way by Cocoa. 'Illegal' but really nice, clear and safe solution
+    // would be to define _wantsKeyDownForEvent, but it's a
+    // private/undocumented API.
+    if ([[self window] firstResponder] == self)
+    {
+        const NSUInteger modifierFlags = [nsevent modifierFlags];
+        NSString *chs = [nsevent charactersIgnoringModifiers];
+        if (modifierFlags & NSEventModifierFlagControl)
+        {
+            if ([chs characterAtIndex:0] == NSTabCharacter)
+            {
+                if (![[NSApp mainMenu] performKeyEquivalent:nsevent])
+                {
+                    [self keyDown:nsevent];
+                }
+                return YES;
+            }
+        }
+    }
+    return NO;
+}
+
 - (void)keyDown:(NSEvent *)event
 {
     const int key = translateKey([event keyCode]);

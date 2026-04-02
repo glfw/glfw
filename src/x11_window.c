@@ -2755,6 +2755,51 @@ void _glfwSetWindowMousePassthroughX11(_GLFWwindow* window, GLFWbool enabled)
     }
 }
 
+GLFWbool _glfwGetWindowIsFullscreenX11(_GLFWwindow* window)
+{
+    Atom wm_state = XInternAtom(_glfw.x11.display, "_NET_WM_STATE", True);
+    Atom wm_state_fullscreen = XInternAtom(_glfw.x11.display, "_NET_WM_STATE_FULLSCREEN", True);
+
+    Atom type = XA_ATOM;
+    int format;
+    size_t nItems;
+    size_t bytesAfterReturn;
+    Atom* prop;
+    
+    int result = XGetWindowProperty(
+        _glfw.x11.display,
+        window->x11.handle,
+        wm_state, 
+        0,
+        ~0L,
+        False,
+        AnyPropertyType,
+        &type,
+        &format,
+        &nItems,
+        &bytesAfterReturn,
+        (unsigned char**)&prop 
+    );
+
+    assert(result == Success);
+    assert(nItems > 0);
+
+    if (!prop) {
+        return 0;
+    }
+
+    GLFWbool isFullscreen = 0;
+    for (int i = 0; i < nItems; i++) {
+        if (prop[i] == wm_state_fullscreen) {
+            isFullscreen = 1;
+        }
+    }
+
+    XFree(prop);
+    
+    return isFullscreen;
+}
+
 float _glfwGetWindowOpacityX11(_GLFWwindow* window)
 {
     float opacity = 1.f;

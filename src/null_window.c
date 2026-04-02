@@ -408,6 +408,11 @@ void _glfwSetWindowMousePassthroughNull(_GLFWwindow* window, GLFWbool enabled)
 {
 }
 
+GLFWbool _glfwGetWindowIsFullscreenNull(_GLFWwindow* window)
+{
+    return 0;
+}
+
 float _glfwGetWindowOpacityNull(_GLFWwindow* window)
 {
     return window->null.opacity;

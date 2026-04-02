@@ -1102,6 +1102,7 @@ extern "C" {
  *  [window hint](@ref GLFW_SCALE_FRAMEBUFFER_hint).
  */
 #define GLFW_SCALE_FRAMEBUFFER      0x0002200D
+#define GLFW_FULLSCREEN             0x0002200E
 /*! @brief Legacy name for compatibility.
  *
  *  This is an alias for the

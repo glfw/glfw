@@ -572,6 +572,45 @@ void _glfwDetectJoystickDisconnectionWin32(void)
 
 GLFWbool _glfwInitJoysticksWin32(void)
 {
+    // These dlls loads used to be in win32_init/loadLibraries but even 
+    // loading these libraries can cause the process to terminate when 
+    // running under a Windows service on some operating systems (e.g. 
+    // Windows Server 2019). Thus, only load them if joystick functionality
+    // is requested by the application.
+    _glfw.win32.dinput8.instance = _glfwPlatformLoadModule("dinput8.dll");
+    if (_glfw.win32.dinput8.instance)
+    {
+        _glfw.win32.dinput8.Create = (PFN_DirectInput8Create)
+            _glfwPlatformGetModuleSymbol(_glfw.win32.dinput8.instance, "DirectInput8Create");
+    }
+
+    {
+        int i;
+        const char* names[] =
+        {
+            "xinput1_4.dll",
+            "xinput1_3.dll",
+            "xinput9_1_0.dll",
+            "xinput1_2.dll",
+            "xinput1_1.dll",
+            NULL
+        };
+
+        for (i = 0;  names[i];  i++)
+        {
+            _glfw.win32.xinput.instance = _glfwPlatformLoadModule(names[i]);
+            if (_glfw.win32.xinput.instance)
+            {
+                _glfw.win32.xinput.GetCapabilities = (PFN_XInputGetCapabilities)
+                    _glfwPlatformGetModuleSymbol(_glfw.win32.xinput.instance, "XInputGetCapabilities");
+                _glfw.win32.xinput.GetState = (PFN_XInputGetState)
+                    _glfwPlatformGetModuleSymbol(_glfw.win32.xinput.instance, "XInputGetState");
+
+                break;
+            }
+        }
+    }
+
     if (_glfw.win32.dinput8.instance)
     {
         if (FAILED(DirectInput8Create(_glfw.win32.instance,

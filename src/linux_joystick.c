@@ -158,8 +158,17 @@ static GLFWbool openJoystickDevice(const char* path)
     }
 
     // Ensure this device supports the events expected of a joystick
-    if (!isBitSet(EV_ABS, evBits))
+    // NOTE: SDL2 based Joystick Check
+    if (isBitSet(BTN_STYLUS, keyBits) ||
+        isBitSet(BTN_TOOL_PEN, keyBits) ||
+        isBitSet(BTN_TOOL_FINGER, keyBits) ||
+        isBitSet(BTN_MOUSE, keyBits) ||
+        isBitSet(BTN_TOUCH, keyBits) ||
+        (keyBits[0] & 0xFFFFFFFE) != 0)
     {
+        close(linjs.fd);
+        return GLFW_FALSE;
+    } else if (!isBitSet(EV_ABS, evBits)) {
         close(linjs.fd);
         return GLFW_FALSE;
     }
@@ -169,6 +178,17 @@ static GLFWbool openJoystickDevice(const char* path)
     if (ioctl(linjs.fd, EVIOCGNAME(sizeof(name)), name) < 0)
         strncpy(name, "Unknown", sizeof(name));
 
+    // NOTE: Some devices are still indentified as Gamepad devices (Rapsbery PI 500, Hypertouch Square Display).
+    // They are filtered out for enumeration. I wish there is a more robust way to detect if a device is really
+    // a gamecontroller/gamepad, but I wasn't able to find a way.
+    if (strstr(name, "Keyboard System Control") || 
+        strstr(name, "Keyboard Consumer Control") ||
+        strstr(name, "11-0048 EP0110M09") ||
+        strstr(name, "HID 046a:0023")) { 
+        close(linjs.fd);
+        return GLFW_FALSE;
+    } 
+    
     char guid[33] = "";
 
     // Generate a joystick GUID that matches the SDL 2.0.5+ one
@@ -434,4 +454,3 @@ void _glfwUpdateGamepadGUIDLinux(char* guid)
 }
 
 #endif // GLFW_BUILD_LINUX_JOYSTICK
-

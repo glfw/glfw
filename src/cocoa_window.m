@@ -46,6 +46,27 @@ static GLFWbool cursorInContentArea(_GLFWwindow* window)
     return [window->ns.view mouse:pos inRect:[window->ns.view frame]];
 }
 
+static GLFWbool isIMEEditingKey(int key)
+{
+    switch (key)
+    {
+        case GLFW_KEY_BACKSPACE:
+        case GLFW_KEY_DELETE:
+        case GLFW_KEY_ENTER:
+        case GLFW_KEY_KP_ENTER:
+        case GLFW_KEY_LEFT:
+        case GLFW_KEY_RIGHT:
+        case GLFW_KEY_UP:
+        case GLFW_KEY_DOWN:
+        case GLFW_KEY_HOME:
+        case GLFW_KEY_END:
+        case GLFW_KEY_ESCAPE:
+            return GLFW_TRUE;
+        default:
+            return GLFW_FALSE;
+    }
+}
+
 // Hides the cursor if not already hidden
 //
 static void hideCursor(_GLFWwindow* window)
@@ -333,6 +354,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     _GLFWwindow* window;
     NSTrackingArea* trackingArea;
     NSMutableAttributedString* markedText;
+    BOOL imeComposing;
 }
 
 - (instancetype)initWithGlfwWindow:(_GLFWwindow *)initWindow;
@@ -349,6 +371,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         window = initWindow;
         trackingArea = nil;
         markedText = [[NSMutableAttributedString alloc] init];
+        imeComposing = NO;
 
         [self updateTrackingAreas];
         [self registerForDraggedTypes:@[NSPasteboardTypeURL]];
@@ -564,8 +587,14 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 {
     const int key = translateKey([event keyCode]);
     const int mods = translateFlags([event modifierFlags]);
+    if (imeComposing && [markedText length] == 0)
+        imeComposing = NO;
 
-    _glfwInputKey(window, key, [event keyCode], GLFW_PRESS, mods);
+    // During IME composition, let IME handle editing keys to avoid deleting
+    // already committed text in the app-level input field.
+    const BOOL shouldForward = !(imeComposing && isIMEEditingKey(key));
+    if (shouldForward)
+        _glfwInputKey(window, key, [event keyCode], GLFW_PRESS, mods);
 
     [self interpretKeyEvents:@[event]];
 }
@@ -596,7 +625,9 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 {
     const int key = translateKey([event keyCode]);
     const int mods = translateFlags([event modifierFlags]);
-    _glfwInputKey(window, key, [event keyCode], GLFW_RELEASE, mods);
+    const BOOL shouldForward = !(imeComposing && isIMEEditingKey(key));
+    if (shouldForward)
+        _glfwInputKey(window, key, [event keyCode], GLFW_RELEASE, mods);
 }
 
 - (void)scrollWheel:(NSEvent *)event
@@ -677,11 +708,14 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         markedText = [[NSMutableAttributedString alloc] initWithAttributedString:string];
     else
         markedText = [[NSMutableAttributedString alloc] initWithString:string];
+
+    imeComposing = [markedText length] > 0;
 }
 
 - (void)unmarkText
 {
     [[markedText mutableString] setString:@""];
+    imeComposing = NO;
 }
 
 - (NSArray*)validAttributesForMarkedText
@@ -704,7 +738,13 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
                          actualRange:(NSRangePointer)actualRange
 {
     const NSRect frame = [window->ns.view frame];
-    return NSMakeRect(frame.origin.x, frame.origin.y, 0.0, 0.0);
+    const double x = window->inputMethodCursorPosX;
+    const double y = window->inputMethodCursorPosY;
+
+    NSRect rect = NSMakeRect(x, frame.size.height - y, 0.0, 0.0);
+    rect = [window->ns.view convertRect:rect toView:nil];
+    rect = [window->ns.object convertRectToScreen:rect];
+    return rect;
 }
 
 - (void)insertText:(id)string replacementRange:(NSRange)replacementRange
@@ -718,6 +758,9 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         characters = [string string];
     else
         characters = (NSString*) string;
+
+    [[markedText mutableString] setString:@""];
+    imeComposing = NO;
 
     NSRange range = NSMakeRange(0, [characters length]);
     while (range.length)
@@ -2060,4 +2103,3 @@ GLFWAPI id glfwGetCocoaView(GLFWwindow* handle)
 }
 
 #endif // _GLFW_COCOA
-

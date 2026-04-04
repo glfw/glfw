@@ -391,6 +391,7 @@ typedef struct _GLFWwindowWayland
         GLFWbool                iconified;
         GLFWbool                activated;
         GLFWbool                fullscreen;
+        double                  cursorPosX, cursorPosY;
     } pending;
 
     struct {
@@ -405,6 +406,7 @@ typedef struct _GLFWwindowWayland
     } libdecor;
 
     double                      cursorPosX, cursorPosY;
+    GLFWbool                    pendingCursorPos;
 
     char*                       appId;
 

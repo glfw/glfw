@@ -374,7 +374,47 @@ void _glfwGetMonitorPosWin32(_GLFWmonitor* monitor, int* xpos, int* ypos)
 void _glfwGetMonitorContentScaleWin32(_GLFWmonitor* monitor,
                                       float* xscale, float* yscale)
 {
-    _glfwGetHMONITORContentScaleWin32(monitor->win32.handle, xscale, yscale);
+    UINT xdpi = USER_DEFAULT_SCREEN_DPI, ydpi = USER_DEFAULT_SCREEN_DPI;
+
+    if (IsWindows8Point1OrGreater())
+    {
+        HRESULT hr = GetDpiForMonitor(monitor->win32.handle,
+                                      MDT_EFFECTIVE_DPI, &xdpi, &ydpi);
+        if (FAILED(hr) || xdpi == 0 || ydpi == 0)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Win32: Failed to query monitor DPI, retrying with refreshed handle");
+
+            // Try to refresh the monitor handle and query again
+            EnumDisplayMonitors(NULL, NULL, monitorCallback, (LPARAM) monitor);
+            if (monitor->win32.handle)
+            {
+                hr = GetDpiForMonitor(monitor->win32.handle,
+                                      MDT_EFFECTIVE_DPI, &xdpi, &ydpi);
+                if (FAILED(hr) || xdpi == 0 || ydpi == 0)
+                {
+                    _glfwInputError(GLFW_PLATFORM_ERROR,
+                                    "Win32: Failed to query monitor DPI, using fallback");
+                    xdpi = ydpi = USER_DEFAULT_SCREEN_DPI;
+                }
+            }
+        }
+    }
+    else
+    {
+        HDC dc = GetDC(NULL);
+        if (dc)
+        {
+            xdpi = GetDeviceCaps(dc, LOGPIXELSX);
+            ydpi = GetDeviceCaps(dc, LOGPIXELSY);
+            ReleaseDC(NULL, dc);
+        }
+    }
+
+    if (xscale)
+        *xscale = xdpi / (float) USER_DEFAULT_SCREEN_DPI;
+    if (yscale)
+        *yscale = ydpi / (float) USER_DEFAULT_SCREEN_DPI;
 }
 
 void _glfwGetMonitorWorkareaWin32(_GLFWmonitor* monitor,
@@ -479,8 +519,15 @@ GLFWbool _glfwGetVideoModeWin32(_GLFWmonitor* monitor, GLFWvidmode* mode)
 
     if (!EnumDisplaySettingsW(monitor->win32.adapterName, ENUM_CURRENT_SETTINGS, &dm))
     {
-        _glfwInputError(GLFW_PLATFORM_ERROR, "Win32: Failed to query display settings");
-        return GLFW_FALSE;
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+            "Win32: Failed to query display settings, using fallback");
+
+        mode->width = GetSystemMetrics(SM_CXSCREEN);
+        mode->height = GetSystemMetrics(SM_CYSCREEN);
+        mode->refreshRate = 60;
+        mode->redBits = mode->greenBits = mode->blueBits = 8;
+
+        return GLFW_TRUE;
     }
 
     mode->width  = dm.dmPelsWidth;

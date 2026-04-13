@@ -942,6 +942,8 @@ GLFWbool _glfwCreateWindowCocoa(_GLFWwindow* window,
             // need to get the layer for EGL window surface creation.
             [window->ns.view setWantsLayer:YES];
             window->ns.layer = [window->ns.view layer];
+            if (window->ns.scaleFramebuffer && window->ns.layer)
+                [window->ns.layer setContentsScale:[window->ns.object backingScaleFactor]];
 
             if (!_glfwInitEGL())
                 return GLFW_FALSE;

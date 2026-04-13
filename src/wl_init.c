@@ -49,7 +49,6 @@
 #include "fractional-scale-v1-client-protocol.h"
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
-#include "tablet-unstable-v2-client-protocol.h"
 #include "cursor-shape-v1-client-protocol.h"
 
 // NOTE: Versions of wayland-scanner prior to 1.17.91 named every global array of
@@ -91,10 +90,6 @@
 
 #define types _glfw_idle_inhibit_types
 #include "idle-inhibit-unstable-v1-client-protocol-code.h"
-#undef types
-
-#define types _glfw_tablet_types
-#include "tablet-unstable-v2-client-protocol-code.h"
 #undef types
 
 #define types _glfw_cursor_shape_types
@@ -218,7 +213,7 @@ static void registryHandleGlobal(void* userData,
                              &wp_fractional_scale_manager_v1_interface,
                              1);
     }
-    else if (strcmp(interface, wp_cursor_shape_manager_v1_interface.name) == 0)
+    else if (strcmp(interface, "wp_cursor_shape_manager_v1") == 0)
     {
         _glfw.wl.cursorShapeManager =
             wl_registry_bind(registry, name,
@@ -895,7 +890,7 @@ int _glfwInitWayland(void)
         return GLFW_FALSE;
     }
 
-    if (!loadCursorTheme())
+    if (!_glfw.wl.cursorShapeDevice && !loadCursorTheme())
         return GLFW_FALSE;
 
     if (_glfw.wl.seat && _glfw.wl.dataDeviceManager)

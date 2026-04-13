@@ -1076,7 +1076,8 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
-GLFWbool setCursorShape(int shape) {
+static GLFWbool setCursorShape(int shape)
+{
     int xdgShape = -1;
 
     switch (shape)
@@ -1111,15 +1112,15 @@ GLFWbool setCursorShape(int shape) {
         case GLFW_NOT_ALLOWED_CURSOR:
             xdgShape = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_NOT_ALLOWED;
             break;
+        default:
+            break;
     }
 
     if (xdgShape == -1)
-    {
         return GLFW_FALSE;
-    }
 
     wp_cursor_shape_device_v1_set_shape(_glfw.wl.cursorShapeDevice,
-        _glfw.wl.pointerEnterSerial, 
+        _glfw.wl.pointerEnterSerial,
         xdgShape);
 
     return GLFW_TRUE;
@@ -1130,11 +1131,8 @@ static void setCursorImage(_GLFWwindow* window,
 {
     if (_glfw.wl.cursorShapeDevice && cursorWayland->shape != 0)
     {
-        GLFWbool ok = setCursorShape(cursorWayland->shape);
-        if (ok == GLFW_TRUE)
-        {
+        if (setCursorShape(cursorWayland->shape))
             return;
-        }
     }
 
     struct itimerspec timer = {0};
@@ -1944,10 +1942,9 @@ static void seatHandleCapabilities(void* userData,
     {
         _glfw.wl.pointer = wl_seat_get_pointer(seat);
         wl_pointer_add_listener(_glfw.wl.pointer, &pointerListener, NULL);
-        if (_glfw.wl.cursorShapeManager) 
-        {
+
+        if (_glfw.wl.cursorShapeManager)
             _glfw.wl.cursorShapeDevice = wp_cursor_shape_manager_v1_get_pointer(_glfw.wl.cursorShapeManager, _glfw.wl.pointer);
-        }
     }
     else if (!(caps & WL_SEAT_CAPABILITY_POINTER) && _glfw.wl.pointer)
     {
@@ -2826,7 +2823,11 @@ GLFWbool _glfwCreateCursorWayland(_GLFWcursor* cursor,
 
 GLFWbool _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape)
 {
-    cursor->wl.shape = shape;
+    if (!_glfw.wl.cursorTheme)
+    {
+        cursor->wl.shape = shape;
+        return GLFW_TRUE;
+    }
 
     const char* name = NULL;
 
@@ -2966,6 +2967,9 @@ static void relativePointerHandleRelativeMotion(void* userData,
 
     _glfwInputCursorPos(window, xpos, ypos);
 }
+
+// Dummy Tablet Tool Interface struct
+const struct wl_interface zwp_tablet_tool_v2_interface = {};
 
 static const struct zwp_relative_pointer_v1_listener relativePointerListener =
 {

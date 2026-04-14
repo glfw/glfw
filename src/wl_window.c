@@ -1569,7 +1569,30 @@ static void processPointerButton(int button, int action)
 {
     _GLFWwindow* window = wl_surface_get_user_data(_glfw.wl.pointerSurface);
     if (window->wl.surface == _glfw.wl.pointerSurface)
+    {
+        // For undecorated windows, check titlebar hit test on left-click
+        // to initiate compositor-driven window drag (mirrors the X11 path)
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && !window->decorated)
+        {
+            int titlebarHit = 0;
+            _glfwInputTitleBarHitTest(window, (int) window->wl.cursorPosX, (int) window->wl.cursorPosY, &titlebarHit);
+
+            if (titlebarHit)
+            {
+                struct xdg_toplevel* toplevel = window->wl.xdg.toplevel;
+                if (window->wl.libdecor.frame)
+                    toplevel = libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame);
+
+                if (toplevel)
+                {
+                    xdg_toplevel_move(toplevel, _glfw.wl.seat, _glfw.wl.serial);
+                    return;
+                }
+            }
+        }
+
         _glfwInputMouseClick(window, button, action, _glfw.wl.xkb.modifiers);
+    }
     else
     {
         if (window->wl.fallback.decorations)

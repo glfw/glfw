@@ -459,6 +459,8 @@ typedef struct _GLFWlibraryWayland
     struct zwp_idle_inhibit_manager_v1*     idleInhibitManager;
     struct xdg_activation_v1*               activationManager;
     struct wp_fractional_scale_manager_v1*  fractionalScaleManager;
+    struct wp_cursor_shape_manager_v1*      cursorShapeManager;
+    struct wp_cursor_shape_device_v1*       cursorShapeDevice;
 
     _GLFWofferWayland*          offers;
     unsigned int                offerCount;
@@ -649,6 +651,7 @@ typedef struct _GLFWcursorWayland
     int                         width, height;
     int                         xhot, yhot;
     int                         currentImage;
+    uint32_t                    cursorShape; // WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_* (0 if custom image)
 } _GLFWcursorWayland;
 
 GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform);

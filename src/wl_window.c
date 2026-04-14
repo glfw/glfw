@@ -51,6 +51,7 @@
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
 #include "fractional-scale-v1-client-protocol.h"
+#include "cursor-shape-v1-client-protocol.h"
 
 #define GLFW_BORDER_SIZE    4
 #define GLFW_CAPTION_HEIGHT 24
@@ -60,6 +61,73 @@
 #define GLFW_PENDING_MOTION     4
 #define GLFW_PENDING_SCROLL     8
 #define GLFW_PENDING_DISCRETE   16
+
+// Unified cursor descriptor table.  Each row maps a GLFW standard cursor
+// shape and/or an xdg_toplevel resize edge to the wp_cursor_shape protocol
+// enum, plus XDG and X11 fallback cursor name strings for compositors that
+// don't support wp_cursor_shape_v1.
+//
+// Rows with resizeEdge == NONE are the canonical entries for a GLFW shape
+// (used by _glfwCreateStandardCursorWayland).  Rows with a specific edge
+// are used by applyCursor for directional resize cursors.
+//
+typedef struct {
+    int                 glfwShape;  // GLFW_*_CURSOR
+    uint32_t            resizeEdge; // XDG_TOPLEVEL_RESIZE_EDGE_* (NONE if N/A)
+    uint32_t            shape;      // WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_*
+    const char*         name;       // XDG cursor name
+    const char*         fallback;   // X11 core cursor name
+} _GLFWcursorDesc;
+
+static const _GLFWcursorDesc cursorTable[] =
+{
+    // Non-resize cursors
+    { GLFW_ARROW_CURSOR,         XDG_TOPLEVEL_RESIZE_EDGE_NONE,        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DEFAULT,     "default",       "left_ptr"            },
+    { GLFW_IBEAM_CURSOR,         XDG_TOPLEVEL_RESIZE_EDGE_NONE,        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_TEXT,        "text",          "xterm"              },
+    { GLFW_CROSSHAIR_CURSOR,     XDG_TOPLEVEL_RESIZE_EDGE_NONE,        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_CROSSHAIR,   "crosshair",     "crosshair"          },
+    { GLFW_POINTING_HAND_CURSOR, XDG_TOPLEVEL_RESIZE_EDGE_NONE,        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_POINTER,     "pointer",       "hand2"              },
+    { GLFW_RESIZE_ALL_CURSOR,    XDG_TOPLEVEL_RESIZE_EDGE_NONE,        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_ALL_SCROLL,  "all-scroll",    "fleur"              },
+    { GLFW_NOT_ALLOWED_CURSOR,   XDG_TOPLEVEL_RESIZE_EDGE_NONE,        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_NOT_ALLOWED, "not-allowed",   "not-allowed"        },
+
+    // Bidirectional resize cursors (canonical GLFW entries, no specific edge)
+    { GLFW_RESIZE_EW_CURSOR,     XDG_TOPLEVEL_RESIZE_EDGE_NONE,        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_EW_RESIZE,   "ew-resize",     "sb_h_double_arrow"  },
+    { GLFW_RESIZE_NS_CURSOR,     XDG_TOPLEVEL_RESIZE_EDGE_NONE,        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_NS_RESIZE,   "ns-resize",     "sb_v_double_arrow"  },
+    { GLFW_RESIZE_NWSE_CURSOR,   XDG_TOPLEVEL_RESIZE_EDGE_NONE,        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_NWSE_RESIZE, "nwse-resize",   "nwse-resize"        },
+    { GLFW_RESIZE_NESW_CURSOR,   XDG_TOPLEVEL_RESIZE_EDGE_NONE,        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_NESW_RESIZE, "nesw-resize",   "nesw-resize"        },
+
+    // Directional resize cursors (per-edge)
+    { GLFW_RESIZE_NS_CURSOR,     XDG_TOPLEVEL_RESIZE_EDGE_TOP,         WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_N_RESIZE,    "n-resize",      "top_side"           },
+    { GLFW_RESIZE_NS_CURSOR,     XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM,      WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_S_RESIZE,    "s-resize",      "bottom_side"        },
+    { GLFW_RESIZE_EW_CURSOR,     XDG_TOPLEVEL_RESIZE_EDGE_LEFT,        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_W_RESIZE,    "w-resize",      "left_side"          },
+    { GLFW_RESIZE_EW_CURSOR,     XDG_TOPLEVEL_RESIZE_EDGE_RIGHT,       WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_E_RESIZE,    "e-resize",      "right_side"         },
+    { GLFW_RESIZE_NWSE_CURSOR,   XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT,    WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_NW_RESIZE,   "nw-resize",     "top_left_corner"    },
+    { GLFW_RESIZE_NWSE_CURSOR,   XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT,WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_SE_RESIZE,   "se-resize",     "bottom_right_corner"},
+    { GLFW_RESIZE_NESW_CURSOR,   XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT,   WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_NE_RESIZE,   "ne-resize",     "top_right_corner"   },
+    { GLFW_RESIZE_NESW_CURSOR,   XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT, WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_SW_RESIZE,   "sw-resize",     "bottom_left_corner" },
+};
+
+// Finds the canonical entry for a GLFW standard cursor shape (edge == NONE).
+static const _GLFWcursorDesc* findCursorDescByShape(int glfwShape)
+{
+    for (size_t i = 0; i < sizeof(cursorTable) / sizeof(cursorTable[0]); i++)
+    {
+        if (cursorTable[i].glfwShape == glfwShape &&
+            cursorTable[i].resizeEdge == XDG_TOPLEVEL_RESIZE_EDGE_NONE)
+            return &cursorTable[i];
+    }
+    return NULL;
+}
+
+// Finds the directional entry for a specific resize edge.
+static const _GLFWcursorDesc* findCursorDescByEdge(uint32_t edge)
+{
+    for (size_t i = 0; i < sizeof(cursorTable) / sizeof(cursorTable[0]); i++)
+    {
+        if (cursorTable[i].resizeEdge == edge)
+            return &cursorTable[i];
+    }
+    return NULL;
+}
 
 static int createTmpfileCloexec(char* tmpname)
 {
@@ -334,41 +402,16 @@ static _GLFWcursorWayland lookupNamedCursor(const char* name, const char* fallba
     _GLFWcursorWayland cw = { NULL, NULL, NULL, 0, 0, 0, 0, 0 };
 
     cw.cursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, name);
-    if (!cw.cursor && fallback)
+    if (!cw.cursor)
         cw.cursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, fallback);
 
     if (_glfw.wl.cursorThemeHiDPI)
     {
         cw.cursorHiDPI = wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI, name);
-        if (!cw.cursorHiDPI && fallback)
+        if (!cw.cursorHiDPI)
             cw.cursorHiDPI = wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI, fallback);
     }
 
-    return cw;
-}
-
-static _GLFWcursorWayland lookupResizeEdgeCursor(uint32_t edge)
-{
-    const char* name = NULL;
-    const char* fallback = NULL;
-
-    switch (edge)
-    {
-        case XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT:     name = "nw-resize"; fallback = "top_left_corner";     break;
-        case XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT:    name = "ne-resize"; fallback = "top_right_corner";    break;
-        case XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT:  name = "sw-resize"; fallback = "bottom_left_corner";  break;
-        case XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT: name = "se-resize"; fallback = "bottom_right_corner"; break;
-        case XDG_TOPLEVEL_RESIZE_EDGE_TOP:          name = "n-resize";  fallback = "top_side";            break;
-        case XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM:       name = "s-resize";  fallback = "bottom_side";         break;
-        case XDG_TOPLEVEL_RESIZE_EDGE_LEFT:         name = "w-resize";  fallback = "left_side";           break;
-        case XDG_TOPLEVEL_RESIZE_EDGE_RIGHT:        name = "e-resize";  fallback = "right_side";          break;
-        default: break;
-    }
-
-    if (name)
-        return lookupNamedCursor(name, fallback);
-
-    _GLFWcursorWayland cw = { NULL, NULL, NULL, 0, 0, 0, 0, 0 };
     return cw;
 }
 
@@ -429,6 +472,25 @@ static uint32_t detectResizeEdge(_GLFWwindow* window, int x, int y)
     return XDG_TOPLEVEL_RESIZE_EDGE_NONE;
 }
 
+// Sets the cursor from a descriptor, preferring wp_cursor_shape_v1 when
+// available and falling back to wl_cursor_theme lookup.
+static void setDescCursor(_GLFWwindow* window, const _GLFWcursorDesc* desc)
+{
+    if (_glfw.wl.cursorShapeDevice)
+    {
+        wp_cursor_shape_device_v1_set_shape(
+            _glfw.wl.cursorShapeDevice,
+            _glfw.wl.pointerEnterSerial,
+            desc->shape);
+    }
+    else
+    {
+        _GLFWcursorWayland cw = lookupNamedCursor(desc->name, desc->fallback);
+        if (cw.cursor)
+            setCursorImage(window, &cw);
+    }
+}
+
 /* Anything that wants to change the cursor shape should call this. */
 static void applyCursor(_GLFWwindow* window)
 {
@@ -439,59 +501,66 @@ static void applyCursor(_GLFWwindow* window)
 
         if (pointerWindow == window)
         {
+            // Determine the resize edge (if any) for both main and
+            // fallback decoration surfaces
+            uint32_t edge = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
+
             if (window->wl.surface == _glfw.wl.pointerSurface)
             {
-                // Main surface
-                if (window->cursorMode == GLFW_CURSOR_HIDDEN ||
-                    window->cursorMode == GLFW_CURSOR_DISABLED)
-                {
-                    wl_pointer_set_cursor(_glfw.wl.pointer,
-                                          _glfw.wl.pointerEnterSerial,
-                                          NULL, 0, 0);
-                }
-                else if (window->wl.resizeEdge != XDG_TOPLEVEL_RESIZE_EDGE_NONE)
-                {
-                    _GLFWcursorWayland cw = lookupResizeEdgeCursor(window->wl.resizeEdge);
-                    if (cw.cursor)
-                        setCursorImage(window, &cw);
-                }
-                else if (window->cursor)
-                {
-                    setCursorImage(window, &window->cursor->wl);
-                }
-                else
-                {
-                    _GLFWcursorWayland cw = lookupNamedCursor("left_ptr", NULL);
-                    if (cw.cursor)
-                        setCursorImage(window, &cw);
-                    else
-                        _glfwInputError(GLFW_PLATFORM_ERROR,
-                                        "Wayland: Standard cursor not found");
-                }
+                edge = window->wl.resizeEdge;
             }
-            else if (window->wl.fallback.decorations)
+            else if (window->wl.fallback.decorations && window->resizable)
             {
-                // Fallback decoration surface
-                // coordinates and reuse the same edge detection
                 int wx, wy;
-                uint32_t edge = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
-                if (window->resizable &&
-                    fallbackToWindowCoords(window,
+                if (fallbackToWindowCoords(window,
                                            window->wl.fallback.pointerX,
                                            window->wl.fallback.pointerY,
                                            &wx, &wy))
                 {
                     edge = detectResizeEdge(window, wx, wy);
                 }
+            }
 
-                _GLFWcursorWayland cw;
-                if (edge != XDG_TOPLEVEL_RESIZE_EDGE_NONE)
-                    cw = lookupResizeEdgeCursor(edge);
+            // Hidden/disabled cursor
+            if (window->wl.surface == _glfw.wl.pointerSurface &&
+                (window->cursorMode == GLFW_CURSOR_HIDDEN ||
+                 window->cursorMode == GLFW_CURSOR_DISABLED))
+            {
+                wl_pointer_set_cursor(_glfw.wl.pointer,
+                                      _glfw.wl.pointerEnterSerial,
+                                      NULL, 0, 0);
+            }
+            // Resize edge cursor
+            else if (edge != XDG_TOPLEVEL_RESIZE_EDGE_NONE)
+            {
+                const _GLFWcursorDesc* desc = findCursorDescByEdge(edge);
+                if (desc)
+                    setDescCursor(window, desc);
+            }
+            // Application cursor (main surface only)
+            else if (window->wl.surface == _glfw.wl.pointerSurface &&
+                     window->cursor)
+            {
+                if (_glfw.wl.cursorShapeDevice &&
+                    window->cursor->wl.cursorShape)
+                {
+                    wp_cursor_shape_device_v1_set_shape(
+                        _glfw.wl.cursorShapeDevice,
+                        _glfw.wl.pointerEnterSerial,
+                        window->cursor->wl.cursorShape);
+                }
                 else
-                    cw = lookupNamedCursor("left_ptr", NULL);
-
-                if (cw.cursor)
-                    setCursorImage(window, &cw);
+                    setCursorImage(window, &window->cursor->wl);
+            }
+            // Default cursor
+            else
+            {
+                const _GLFWcursorDesc* desc = findCursorDescByShape(GLFW_ARROW_CURSOR);
+                if (desc)
+                    setDescCursor(window, desc);
+                else
+                    _glfwInputError(GLFW_PLATFORM_ERROR,
+                                    "Wayland: Standard cursor not found");
             }
         }
     }
@@ -2185,9 +2254,22 @@ static void seatHandleCapabilities(void* userData,
     {
         _glfw.wl.pointer = wl_seat_get_pointer(seat);
         wl_pointer_add_listener(_glfw.wl.pointer, &pointerListener, NULL);
+
+        if (_glfw.wl.cursorShapeManager)
+        {
+            _glfw.wl.cursorShapeDevice =
+                wp_cursor_shape_manager_v1_get_pointer(
+                    _glfw.wl.cursorShapeManager, _glfw.wl.pointer);
+        }
     }
     else if (!(caps & WL_SEAT_CAPABILITY_POINTER) && _glfw.wl.pointer)
     {
+        if (_glfw.wl.cursorShapeDevice)
+        {
+            wp_cursor_shape_device_v1_destroy(_glfw.wl.cursorShapeDevice);
+            _glfw.wl.cursorShapeDevice = NULL;
+        }
+
         if (wl_pointer_get_version(_glfw.wl.pointer) >= WL_POINTER_RELEASE_SINCE_VERSION)
             wl_pointer_release(_glfw.wl.pointer);
         else
@@ -3164,102 +3246,26 @@ GLFWbool _glfwCreateCursorWayland(_GLFWcursor* cursor,
 
 GLFWbool _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape)
 {
-    const char* name = NULL;
-
-    // Try the XDG names first
-    switch (shape)
+    const _GLFWcursorDesc* desc = findCursorDescByShape(shape);
+    if (!desc)
     {
-        case GLFW_ARROW_CURSOR:
-            name = "default";
-            break;
-        case GLFW_IBEAM_CURSOR:
-            name = "text";
-            break;
-        case GLFW_CROSSHAIR_CURSOR:
-            name = "crosshair";
-            break;
-        case GLFW_POINTING_HAND_CURSOR:
-            name = "pointer";
-            break;
-        case GLFW_RESIZE_EW_CURSOR:
-            name = "ew-resize";
-            break;
-        case GLFW_RESIZE_NS_CURSOR:
-            name = "ns-resize";
-            break;
-        case GLFW_RESIZE_NWSE_CURSOR:
-            name = "nwse-resize";
-            break;
-        case GLFW_RESIZE_NESW_CURSOR:
-            name = "nesw-resize";
-            break;
-        case GLFW_RESIZE_ALL_CURSOR:
-            name = "all-scroll";
-            break;
-        case GLFW_NOT_ALLOWED_CURSOR:
-            name = "not-allowed";
-            break;
+        _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
+                        "Wayland: Standard cursor shape unavailable");
+        return GLFW_FALSE;
     }
 
-    cursor->wl.cursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, name);
-
-    if (_glfw.wl.cursorThemeHiDPI)
+    _GLFWcursorWayland cw = lookupNamedCursor(desc->name, desc->fallback);
+    if (!cw.cursor)
     {
-        cursor->wl.cursorHiDPI =
-            wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI, name);
+        _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
+                        "Wayland: Failed to create standard cursor \"%s\"",
+                        desc->name);
+        return GLFW_FALSE;
     }
 
-    if (!cursor->wl.cursor)
-    {
-        // Fall back to the core X11 names
-        switch (shape)
-        {
-            case GLFW_ARROW_CURSOR:
-                name = "left_ptr";
-                break;
-            case GLFW_IBEAM_CURSOR:
-                name = "xterm";
-                break;
-            case GLFW_CROSSHAIR_CURSOR:
-                name = "crosshair";
-                break;
-            case GLFW_POINTING_HAND_CURSOR:
-                name = "hand2";
-                break;
-            case GLFW_RESIZE_EW_CURSOR:
-                name = "sb_h_double_arrow";
-                break;
-            case GLFW_RESIZE_NS_CURSOR:
-                name = "sb_v_double_arrow";
-                break;
-            case GLFW_RESIZE_ALL_CURSOR:
-                name = "fleur";
-                break;
-            default:
-                _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
-                                "Wayland: Standard cursor shape unavailable");
-                return GLFW_FALSE;
-        }
-
-        cursor->wl.cursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, name);
-        if (!cursor->wl.cursor)
-        {
-            _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
-                            "Wayland: Failed to create standard cursor \"%s\"",
-                            name);
-            return GLFW_FALSE;
-        }
-
-        if (_glfw.wl.cursorThemeHiDPI)
-        {
-            if (!cursor->wl.cursorHiDPI)
-            {
-                cursor->wl.cursorHiDPI =
-                    wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI, name);
-            }
-        }
-    }
-
+    cursor->wl.cursor = cw.cursor;
+    cursor->wl.cursorHiDPI = cw.cursorHiDPI;
+    cursor->wl.cursorShape = desc->shape;
     return GLFW_TRUE;
 }
 

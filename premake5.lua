@@ -66,6 +66,8 @@ project "GLFW"
 			"viewporter",
 			"wayland",
 			"xdg-activation-v1",
+			"cursor-shape-v1",
+			"tablet-v2",
 			"xdg-decoration-unstable-v1",
 			"xdg-shell"
 		}

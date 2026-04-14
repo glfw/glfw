@@ -1683,7 +1683,8 @@ static void updateResizeEdge(_GLFWwindow* window)
 {
     uint32_t edge = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
 
-    if (window->resizable && !window->decorated && !window->monitor)
+    if (window->resizable && !window->decorated && !window->monitor &&
+        !window->wl.maximized && !window->wl.fullscreen)
     {
         edge = detectResizeEdge(window,
                                 (int) window->wl.cursorPosX,
@@ -1732,7 +1733,8 @@ static void processPointerButton(int button, int action)
         GLFWbool handled = GLFW_FALSE;
 
         if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS &&
-            !window->decorated && !window->monitor)
+            !window->decorated && !window->monitor &&
+            !window->wl.maximized && !window->wl.fullscreen)
         {
             struct xdg_toplevel* toplevel = window->wl.xdg.toplevel;
             if (window->wl.libdecor.frame)

@@ -105,3 +105,5 @@ tests/windows
 # Hazel-specific
 bin
 bin-int
+src/*-client-protocol.h
+src/*-client-protocol-code.h

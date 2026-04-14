@@ -46,13 +46,43 @@ project "GLFW"
 			"src/glx_context.c",
 			"src/egl_context.c",
 			"src/osmesa_context.c",
-			"src/linux_joystick.c"
+			"src/linux_joystick.c",
+			"src/wl_init.c",
+			"src/wl_monitor.c",
+			"src/wl_window.c"
 		}
 
 		defines
 		{
-			"_GLFW_X11"
+			"_GLFW_X11",
+			"_GLFW_WAYLAND"
 		}
+
+		local protocols = {
+			"fractional-scale-v1",
+			"idle-inhibit-unstable-v1",
+			"pointer-constraints-unstable-v1",
+			"relative-pointer-unstable-v1",
+			"viewporter",
+			"wayland",
+			"xdg-activation-v1",
+			"xdg-decoration-unstable-v1",
+			"xdg-shell"
+		}
+
+		for _, protocol in ipairs(protocols) do
+			local out_file = "src/" .. protocol .. "-client-protocol.h"
+			local out_code_file = "src/" .. protocol .. "-client-protocol-code.h"
+
+			prebuildcommands {
+				"wayland-scanner client-header deps/wayland/" .. protocol .. ".xml " .. out_file,
+				"wayland-scanner private-code deps/wayland/" .. protocol .. ".xml " .. out_code_file
+			}
+
+			buildoutputs {
+				out_file
+			}
+		end
 
 	filter "system:macosx"
 		pic "On"

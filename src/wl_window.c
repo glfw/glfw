@@ -284,88 +284,219 @@ static void destroyFallbackDecorations(_GLFWwindow* window)
     destroyFallbackEdge(&window->wl.fallback.bottom);
 }
 
-static void setNamedCursor(_GLFWwindow* window, const char* cursorName)
+static void setCursorImage(_GLFWwindow* window, _GLFWcursorWayland* cursorWayland)
 {
+    struct itimerspec timer = {0};
+    struct wl_cursor* wlCursor = cursorWayland->cursor;
+    struct wl_cursor_image* image;
+    struct wl_buffer* buffer;
     struct wl_surface* surface = _glfw.wl.cursorSurface;
-    struct wl_cursor_theme* theme = _glfw.wl.cursorTheme;
     int scale = 1;
 
-    if (window->wl.bufferScale > 1 && _glfw.wl.cursorThemeHiDPI)
+    if (!wlCursor)
+        buffer = cursorWayland->buffer;
+    else
     {
-        // We only support up to scale=2 for now, since libwayland-cursor
-        // requires us to load a different theme for each size.
-        scale = 2;
-        theme = _glfw.wl.cursorThemeHiDPI;
+        if (window->wl.bufferScale > 1 && cursorWayland->cursorHiDPI)
+        {
+            wlCursor = cursorWayland->cursorHiDPI;
+            scale = 2;
+        }
+
+        image = wlCursor->images[cursorWayland->currentImage];
+        buffer = wl_cursor_image_get_buffer(image);
+        if (!buffer)
+            return;
+
+        timer.it_value.tv_sec = image->delay / 1000;
+        timer.it_value.tv_nsec = (image->delay % 1000) * 1000000;
+        timerfd_settime(_glfw.wl.cursorTimerfd, 0, &timer, NULL);
+
+        cursorWayland->width = image->width;
+        cursorWayland->height = image->height;
+        cursorWayland->xhot = image->hotspot_x;
+        cursorWayland->yhot = image->hotspot_y;
     }
-
-    struct wl_cursor* cursor = wl_cursor_theme_get_cursor(theme, cursorName);
-    if (!cursor)
-        return;
-
-    // TODO: handle animated cursors too.
-    struct wl_cursor_image* image = cursor->images[0];
-    if (!image)
-        return;
-
-    struct wl_buffer* buffer = wl_cursor_image_get_buffer(image);
-    if (!buffer)
-        return;
 
     wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial,
                           surface,
-                          image->hotspot_x / scale,
-                          image->hotspot_y / scale);
+                          cursorWayland->xhot / scale,
+                          cursorWayland->yhot / scale);
     wl_surface_set_buffer_scale(surface, scale);
     wl_surface_attach(surface, buffer, 0, 0);
-    wl_surface_damage(surface, 0, 0, image->width, image->height);
+    wl_surface_damage(surface, 0, 0,
+                      cursorWayland->width, cursorWayland->height);
     wl_surface_commit(surface);
 }
 
-static void updateFallbackDecorationCursor(_GLFWwindow* window, double xpos, double ypos)
+static _GLFWcursorWayland lookupNamedCursor(const char* name, const char* fallback)
 {
-    window->wl.fallback.pointerX = xpos;
-    window->wl.fallback.pointerY = ypos;
+    _GLFWcursorWayland cw = { NULL, NULL, NULL, 0, 0, 0, 0, 0 };
 
-    const char* cursorName = "left_ptr";
+    cw.cursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, name);
+    if (!cw.cursor && fallback)
+        cw.cursor = wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, fallback);
 
-    if (window->resizable)
+    if (_glfw.wl.cursorThemeHiDPI)
     {
-        if (_glfw.wl.pointerSurface == window->wl.fallback.top.surface)
-        {
-            if (ypos < GLFW_BORDER_SIZE)
-                cursorName = "n-resize";
-        }
-        else if (_glfw.wl.pointerSurface == window->wl.fallback.left.surface)
-        {
-            if (ypos < GLFW_BORDER_SIZE)
-                cursorName = "nw-resize";
-            else
-                cursorName = "w-resize";
-        }
-        else if (_glfw.wl.pointerSurface == window->wl.fallback.right.surface)
-        {
-            if (ypos < GLFW_BORDER_SIZE)
-                cursorName = "ne-resize";
-            else
-                cursorName = "e-resize";
-        }
-        else if (_glfw.wl.pointerSurface == window->wl.fallback.bottom.surface)
-        {
-            if (xpos < GLFW_BORDER_SIZE)
-                cursorName = "sw-resize";
-            else if (xpos > window->wl.width + GLFW_BORDER_SIZE)
-                cursorName = "se-resize";
-            else
-                cursorName = "s-resize";
-        }
+        cw.cursorHiDPI = wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI, name);
+        if (!cw.cursorHiDPI && fallback)
+            cw.cursorHiDPI = wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI, fallback);
     }
 
-    if (window->wl.fallback.cursorName != cursorName)
+    return cw;
+}
+
+static _GLFWcursorWayland lookupResizeEdgeCursor(uint32_t edge)
+{
+    const char* name = NULL;
+    const char* fallback = NULL;
+
+    switch (edge)
     {
-        setNamedCursor(window, cursorName);
-        window->wl.fallback.cursorName = cursorName;
+        case XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT:     name = "nw-resize"; fallback = "top_left_corner";     break;
+        case XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT:    name = "ne-resize"; fallback = "top_right_corner";    break;
+        case XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT:  name = "sw-resize"; fallback = "bottom_left_corner";  break;
+        case XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT: name = "se-resize"; fallback = "bottom_right_corner"; break;
+        case XDG_TOPLEVEL_RESIZE_EDGE_TOP:          name = "n-resize";  fallback = "top_side";            break;
+        case XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM:       name = "s-resize";  fallback = "bottom_side";         break;
+        case XDG_TOPLEVEL_RESIZE_EDGE_LEFT:         name = "w-resize";  fallback = "left_side";           break;
+        case XDG_TOPLEVEL_RESIZE_EDGE_RIGHT:        name = "e-resize";  fallback = "right_side";          break;
+        default: break;
+    }
+
+    if (name)
+        return lookupNamedCursor(name, fallback);
+
+    _GLFWcursorWayland cw = { NULL, NULL, NULL, 0, 0, 0, 0, 0 };
+    return cw;
+}
+
+// Translates fallback decoration subsurface-local coordinates to
+// main window coordinates so detectResizeEdge can handle both paths.
+static GLFWbool fallbackToWindowCoords(_GLFWwindow* window,
+                                       double sx, double sy,
+                                       int* wx, int* wy)
+{
+    if (_glfw.wl.pointerSurface == window->wl.fallback.top.surface)
+    {
+        *wx = (int) sx;
+        *wy = (int) sy - GLFW_CAPTION_HEIGHT;
+    }
+    else if (_glfw.wl.pointerSurface == window->wl.fallback.left.surface)
+    {
+        *wx = (int) sx - GLFW_BORDER_SIZE;
+        *wy = (int) sy - GLFW_CAPTION_HEIGHT;
+    }
+    else if (_glfw.wl.pointerSurface == window->wl.fallback.right.surface)
+    {
+        *wx = (int) sx + window->wl.width;
+        *wy = (int) sy - GLFW_CAPTION_HEIGHT;
+    }
+    else if (_glfw.wl.pointerSurface == window->wl.fallback.bottom.surface)
+    {
+        *wx = (int) sx - GLFW_BORDER_SIZE;
+        *wy = (int) sy + window->wl.height;
+    }
+    else
+        return GLFW_FALSE;
+
+    return GLFW_TRUE;
+}
+
+static uint32_t detectResizeEdge(_GLFWwindow* window, int x, int y)
+{
+    const int w = window->wl.width;
+    const int h = window->wl.height;
+    // Note that this is not the same as GLFW_BORDER_SIZE, because undecorated windows need a bigger
+    // hit zone than decorated ones, where a resize can be started from slightly outside the window.
+    const int border = 8;
+
+    const GLFWbool onLeft   = (x < border);
+    const GLFWbool onRight  = (x >= w - border);
+    const GLFWbool onTop    = (y < border);
+    const GLFWbool onBottom = (y >= h - border);
+
+    if      (onTop    && onLeft)  return XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT;
+    else if (onTop    && onRight) return XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT;
+    else if (onBottom && onLeft)  return XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT;
+    else if (onBottom && onRight) return XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT;
+    else if (onTop)               return XDG_TOPLEVEL_RESIZE_EDGE_TOP;
+    else if (onBottom)            return XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM;
+    else if (onLeft)              return XDG_TOPLEVEL_RESIZE_EDGE_LEFT;
+    else if (onRight)             return XDG_TOPLEVEL_RESIZE_EDGE_RIGHT;
+
+    return XDG_TOPLEVEL_RESIZE_EDGE_NONE;
+}
+
+/* Anything that wants to change the cursor shape should call this. */
+static void applyCursor(_GLFWwindow* window)
+{
+    if (_glfw.wl.pointer && _glfw.wl.pointerSurface)
+    {
+        _GLFWwindow* pointerWindow =
+            wl_surface_get_user_data(_glfw.wl.pointerSurface);
+
+        if (pointerWindow == window)
+        {
+            if (window->wl.surface == _glfw.wl.pointerSurface)
+            {
+                // Main surface
+                if (window->cursorMode == GLFW_CURSOR_HIDDEN ||
+                    window->cursorMode == GLFW_CURSOR_DISABLED)
+                {
+                    wl_pointer_set_cursor(_glfw.wl.pointer,
+                                          _glfw.wl.pointerEnterSerial,
+                                          NULL, 0, 0);
+                }
+                else if (window->wl.resizeEdge != XDG_TOPLEVEL_RESIZE_EDGE_NONE)
+                {
+                    _GLFWcursorWayland cw = lookupResizeEdgeCursor(window->wl.resizeEdge);
+                    if (cw.cursor)
+                        setCursorImage(window, &cw);
+                }
+                else if (window->cursor)
+                {
+                    setCursorImage(window, &window->cursor->wl);
+                }
+                else
+                {
+                    _GLFWcursorWayland cw = lookupNamedCursor("left_ptr", NULL);
+                    if (cw.cursor)
+                        setCursorImage(window, &cw);
+                    else
+                        _glfwInputError(GLFW_PLATFORM_ERROR,
+                                        "Wayland: Standard cursor not found");
+                }
+            }
+            else if (window->wl.fallback.decorations)
+            {
+                // Fallback decoration surface
+                // coordinates and reuse the same edge detection
+                int wx, wy;
+                uint32_t edge = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
+                if (window->resizable &&
+                    fallbackToWindowCoords(window,
+                                           window->wl.fallback.pointerX,
+                                           window->wl.fallback.pointerY,
+                                           &wx, &wy))
+                {
+                    edge = detectResizeEdge(window, wx, wy);
+                }
+
+                _GLFWcursorWayland cw;
+                if (edge != XDG_TOPLEVEL_RESIZE_EDGE_NONE)
+                    cw = lookupResizeEdgeCursor(edge);
+                else
+                    cw = lookupNamedCursor("left_ptr", NULL);
+
+                if (cw.cursor)
+                    setCursorImage(window, &cw);
+            }
+        }
     }
 }
+
 
 static void handleFallbackDecorationButton(_GLFWwindow* window, int button, int action)
 {
@@ -378,41 +509,18 @@ static void handleFallbackDecorationButton(_GLFWwindow* window, int button, int 
 
     if (button == GLFW_MOUSE_BUTTON_LEFT)
     {
+        int wx, wy;
         uint32_t edges = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
-
-        if (_glfw.wl.pointerSurface == window->wl.fallback.top.surface)
+        if (window->resizable &&
+            fallbackToWindowCoords(window, xpos, ypos, &wx, &wy))
         {
-            if (ypos < GLFW_BORDER_SIZE)
-                edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP;
-            else
-                xdg_toplevel_move(window->wl.xdg.toplevel, _glfw.wl.seat, serial);
-        }
-        else if (_glfw.wl.pointerSurface == window->wl.fallback.left.surface)
-        {
-            if (ypos < GLFW_BORDER_SIZE)
-                edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT;
-            else
-                edges = XDG_TOPLEVEL_RESIZE_EDGE_LEFT;
-        }
-        else if (_glfw.wl.pointerSurface == window->wl.fallback.right.surface)
-        {
-            if (ypos < GLFW_BORDER_SIZE)
-                edges = XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT;
-            else
-                edges = XDG_TOPLEVEL_RESIZE_EDGE_RIGHT;
-        }
-        else if (_glfw.wl.pointerSurface == window->wl.fallback.bottom.surface)
-        {
-            if (xpos < GLFW_BORDER_SIZE)
-                edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT;
-            else if (xpos > window->wl.width + GLFW_BORDER_SIZE)
-                edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT;
-            else
-                edges = XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM;
+            edges = detectResizeEdge(window, wx, wy);
         }
 
         if (edges != XDG_TOPLEVEL_RESIZE_EDGE_NONE)
             xdg_toplevel_resize(window->wl.xdg.toplevel, _glfw.wl.seat, serial, edges);
+        else if (_glfw.wl.pointerSurface == window->wl.fallback.top.surface)
+            xdg_toplevel_move(window->wl.xdg.toplevel, _glfw.wl.seat, serial);
     }
     else if (button == GLFW_MOUSE_BUTTON_RIGHT)
     {
@@ -1230,67 +1338,21 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
-static void setCursorImage(_GLFWwindow* window,
-                           _GLFWcursorWayland* cursorWayland)
-{
-    struct itimerspec timer = {0};
-    struct wl_cursor* wlCursor = cursorWayland->cursor;
-    struct wl_cursor_image* image;
-    struct wl_buffer* buffer;
-    struct wl_surface* surface = _glfw.wl.cursorSurface;
-    int scale = 1;
-
-    if (!wlCursor)
-        buffer = cursorWayland->buffer;
-    else
-    {
-        if (window->wl.bufferScale > 1 && cursorWayland->cursorHiDPI)
-        {
-            wlCursor = cursorWayland->cursorHiDPI;
-            scale = 2;
-        }
-
-        image = wlCursor->images[cursorWayland->currentImage];
-        buffer = wl_cursor_image_get_buffer(image);
-        if (!buffer)
-            return;
-
-        timer.it_value.tv_sec = image->delay / 1000;
-        timer.it_value.tv_nsec = (image->delay % 1000) * 1000000;
-        timerfd_settime(_glfw.wl.cursorTimerfd, 0, &timer, NULL);
-
-        cursorWayland->width = image->width;
-        cursorWayland->height = image->height;
-        cursorWayland->xhot = image->hotspot_x;
-        cursorWayland->yhot = image->hotspot_y;
-    }
-
-    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial,
-                          surface,
-                          cursorWayland->xhot / scale,
-                          cursorWayland->yhot / scale);
-    wl_surface_set_buffer_scale(surface, scale);
-    wl_surface_attach(surface, buffer, 0, 0);
-    wl_surface_damage(surface, 0, 0,
-                      cursorWayland->width, cursorWayland->height);
-    wl_surface_commit(surface);
-}
-
 static void incrementCursorImage(void)
 {
-    if (!_glfw.wl.pointerSurface)
-        return;
-
-    _GLFWwindow* window = wl_surface_get_user_data(_glfw.wl.pointerSurface);
-    if (window->wl.surface != _glfw.wl.pointerSurface)
-        return;
-
-    _GLFWcursor* cursor = window->cursor;
-    if (cursor && cursor->wl.cursor)
+    if (_glfw.wl.pointerSurface)
     {
-        cursor->wl.currentImage += 1;
-        cursor->wl.currentImage %= cursor->wl.cursor->image_count;
-        setCursorImage(window, &cursor->wl);
+        _GLFWwindow* window = wl_surface_get_user_data(_glfw.wl.pointerSurface);
+        if (window->wl.surface == _glfw.wl.pointerSurface)
+        {
+            _GLFWcursor* cursor = window->cursor;
+            if (cursor && cursor->wl.cursor)
+            {
+                cursor->wl.currentImage += 1;
+                cursor->wl.currentImage %= cursor->wl.cursor->image_count;
+                applyCursor(window);
+            }
+        }
     }
 }
 
@@ -1546,50 +1608,6 @@ static void processPointerLeaveSurface(struct wl_surface* surface)
         window->wl.resizeEdge = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
         _glfwInputCursorEnter(window, GLFW_FALSE);
     }
-    else
-    {
-        if (window->wl.fallback.decorations)
-            window->wl.fallback.cursorName = NULL;
-    }
-}
-
-static uint32_t detectResizeEdge(_GLFWwindow* window, int x, int y)
-{
-    const int w = window->wl.width;
-    const int h = window->wl.height;
-    const int border = 8;
-
-    const GLFWbool onLeft   = (x < border);
-    const GLFWbool onRight  = (x >= w - border);
-    const GLFWbool onTop    = (y < border);
-    const GLFWbool onBottom = (y >= h - border);
-
-    if      (onTop    && onLeft)  return XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT;
-    else if (onTop    && onRight) return XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT;
-    else if (onBottom && onLeft)  return XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT;
-    else if (onBottom && onRight) return XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT;
-    else if (onTop)               return XDG_TOPLEVEL_RESIZE_EDGE_TOP;
-    else if (onBottom)            return XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM;
-    else if (onLeft)              return XDG_TOPLEVEL_RESIZE_EDGE_LEFT;
-    else if (onRight)             return XDG_TOPLEVEL_RESIZE_EDGE_RIGHT;
-
-    return XDG_TOPLEVEL_RESIZE_EDGE_NONE;
-}
-
-static const char* resizeEdgeCursorName(uint32_t edge)
-{
-    switch (edge)
-    {
-        case XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT:     return "nw-resize";
-        case XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT:    return "ne-resize";
-        case XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT:  return "sw-resize";
-        case XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT: return "se-resize";
-        case XDG_TOPLEVEL_RESIZE_EDGE_TOP:          return "n-resize";
-        case XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM:       return "s-resize";
-        case XDG_TOPLEVEL_RESIZE_EDGE_LEFT:         return "w-resize";
-        case XDG_TOPLEVEL_RESIZE_EDGE_RIGHT:        return "e-resize";
-        default:                                    return NULL;
-    }
 }
 
 static void updateResizeEdge(_GLFWwindow* window)
@@ -1603,11 +1621,11 @@ static void updateResizeEdge(_GLFWwindow* window)
                                 (int) window->wl.cursorPosY);
     }
 
-    if (edge == window->wl.resizeEdge)
-        return;
-
-    window->wl.resizeEdge = edge;
-    _glfwSetCursorWayland(window, window->cursor);
+    if (edge != window->wl.resizeEdge)
+    {
+        window->wl.resizeEdge = edge;
+        applyCursor(window);
+    }
 }
 
 static void processPointerMotion(double xpos, double ypos)
@@ -1626,7 +1644,11 @@ static void processPointerMotion(double xpos, double ypos)
     else
     {
         if (window->wl.fallback.decorations)
-            updateFallbackDecorationCursor(window, xpos, ypos);
+        {
+            window->wl.fallback.pointerX = xpos;
+            window->wl.fallback.pointerY = ypos;
+            applyCursor(window);
+        }
     }
 }
 
@@ -3421,52 +3443,7 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
             unconfinePointer(window);
     }
 
-    if (window->cursorMode == GLFW_CURSOR_NORMAL ||
-        window->cursorMode == GLFW_CURSOR_CAPTURED)
-    {
-        // Resize edge cursor takes priority over the application cursor
-        if (window->wl.resizeEdge != XDG_TOPLEVEL_RESIZE_EDGE_NONE)
-        {
-            setNamedCursor(window, resizeEdgeCursorName(window->wl.resizeEdge));
-        }
-        else if (cursor)
-            setCursorImage(window, &cursor->wl);
-        else
-        {
-            struct wl_cursor* defaultCursor =
-                wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, "left_ptr");
-            if (!defaultCursor)
-            {
-                _glfwInputError(GLFW_PLATFORM_ERROR,
-                                "Wayland: Standard cursor not found");
-                return;
-            }
-
-            struct wl_cursor* defaultCursorHiDPI = NULL;
-            if (_glfw.wl.cursorThemeHiDPI)
-            {
-                defaultCursorHiDPI =
-                    wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI, "left_ptr");
-            }
-
-            _GLFWcursorWayland cursorWayland =
-            {
-                defaultCursor,
-                defaultCursorHiDPI,
-                NULL,
-                0, 0,
-                0, 0,
-                0
-            };
-
-            setCursorImage(window, &cursorWayland);
-        }
-    }
-    else if (window->cursorMode == GLFW_CURSOR_HIDDEN ||
-             window->cursorMode == GLFW_CURSOR_DISABLED)
-    {
-        wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial, NULL, 0, 0);
-    }
+    applyCursor(window);
 }
 
 static void dataSourceHandleTarget(void* userData,

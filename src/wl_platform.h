@@ -432,7 +432,6 @@ typedef struct _GLFWwindowWayland
         _GLFWfallbackEdgeWayland    top, left, right, bottom;
         double                      pointerX, pointerY;
         uint32_t                    buttonPressSerial;
-        const char*                 cursorName;
     } fallback;
 
     uint32_t                        resizeEdge;

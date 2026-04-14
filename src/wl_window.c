@@ -284,6 +284,43 @@ static void destroyFallbackDecorations(_GLFWwindow* window)
     destroyFallbackEdge(&window->wl.fallback.bottom);
 }
 
+static void setNamedCursor(_GLFWwindow* window, const char* cursorName)
+{
+    struct wl_surface* surface = _glfw.wl.cursorSurface;
+    struct wl_cursor_theme* theme = _glfw.wl.cursorTheme;
+    int scale = 1;
+
+    if (window->wl.bufferScale > 1 && _glfw.wl.cursorThemeHiDPI)
+    {
+        // We only support up to scale=2 for now, since libwayland-cursor
+        // requires us to load a different theme for each size.
+        scale = 2;
+        theme = _glfw.wl.cursorThemeHiDPI;
+    }
+
+    struct wl_cursor* cursor = wl_cursor_theme_get_cursor(theme, cursorName);
+    if (!cursor)
+        return;
+
+    // TODO: handle animated cursors too.
+    struct wl_cursor_image* image = cursor->images[0];
+    if (!image)
+        return;
+
+    struct wl_buffer* buffer = wl_cursor_image_get_buffer(image);
+    if (!buffer)
+        return;
+
+    wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial,
+                          surface,
+                          image->hotspot_x / scale,
+                          image->hotspot_y / scale);
+    wl_surface_set_buffer_scale(surface, scale);
+    wl_surface_attach(surface, buffer, 0, 0);
+    wl_surface_damage(surface, 0, 0, image->width, image->height);
+    wl_surface_commit(surface);
+}
+
 static void updateFallbackDecorationCursor(_GLFWwindow* window, double xpos, double ypos)
 {
     window->wl.fallback.pointerX = xpos;
@@ -325,40 +362,7 @@ static void updateFallbackDecorationCursor(_GLFWwindow* window, double xpos, dou
 
     if (window->wl.fallback.cursorName != cursorName)
     {
-        struct wl_surface* surface = _glfw.wl.cursorSurface;
-        struct wl_cursor_theme* theme = _glfw.wl.cursorTheme;
-        int scale = 1;
-
-        if (window->wl.bufferScale > 1 && _glfw.wl.cursorThemeHiDPI)
-        {
-            // We only support up to scale=2 for now, since libwayland-cursor
-            // requires us to load a different theme for each size.
-            scale = 2;
-            theme = _glfw.wl.cursorThemeHiDPI;
-        }
-
-        struct wl_cursor* cursor = wl_cursor_theme_get_cursor(theme, cursorName);
-        if (!cursor)
-            return;
-
-        // TODO: handle animated cursors too.
-        struct wl_cursor_image* image = cursor->images[0];
-        if (!image)
-            return;
-
-        struct wl_buffer* buffer = wl_cursor_image_get_buffer(image);
-        if (!buffer)
-            return;
-
-        wl_pointer_set_cursor(_glfw.wl.pointer, _glfw.wl.pointerEnterSerial,
-                              surface,
-                              image->hotspot_x / scale,
-                              image->hotspot_y / scale);
-        wl_surface_set_buffer_scale(surface, scale);
-        wl_surface_attach(surface, buffer, 0, 0);
-        wl_surface_damage(surface, 0, 0, image->width, image->height);
-        wl_surface_commit(surface);
-
+        setNamedCursor(window, cursorName);
         window->wl.fallback.cursorName = cursorName;
     }
 }
@@ -1538,12 +1542,72 @@ static void processPointerLeaveSurface(struct wl_surface* surface)
 
     _GLFWwindow* window = wl_surface_get_user_data(surface);
     if (window->wl.surface == surface)
+    {
+        window->wl.resizeEdge = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
         _glfwInputCursorEnter(window, GLFW_FALSE);
+    }
     else
     {
         if (window->wl.fallback.decorations)
             window->wl.fallback.cursorName = NULL;
     }
+}
+
+static uint32_t detectResizeEdge(_GLFWwindow* window, int x, int y)
+{
+    const int w = window->wl.width;
+    const int h = window->wl.height;
+    const int border = 8;
+
+    const GLFWbool onLeft   = (x < border);
+    const GLFWbool onRight  = (x >= w - border);
+    const GLFWbool onTop    = (y < border);
+    const GLFWbool onBottom = (y >= h - border);
+
+    if      (onTop    && onLeft)  return XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT;
+    else if (onTop    && onRight) return XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT;
+    else if (onBottom && onLeft)  return XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT;
+    else if (onBottom && onRight) return XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT;
+    else if (onTop)               return XDG_TOPLEVEL_RESIZE_EDGE_TOP;
+    else if (onBottom)            return XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM;
+    else if (onLeft)              return XDG_TOPLEVEL_RESIZE_EDGE_LEFT;
+    else if (onRight)             return XDG_TOPLEVEL_RESIZE_EDGE_RIGHT;
+
+    return XDG_TOPLEVEL_RESIZE_EDGE_NONE;
+}
+
+static const char* resizeEdgeCursorName(uint32_t edge)
+{
+    switch (edge)
+    {
+        case XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT:     return "nw-resize";
+        case XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT:    return "ne-resize";
+        case XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT:  return "sw-resize";
+        case XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT: return "se-resize";
+        case XDG_TOPLEVEL_RESIZE_EDGE_TOP:          return "n-resize";
+        case XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM:       return "s-resize";
+        case XDG_TOPLEVEL_RESIZE_EDGE_LEFT:         return "w-resize";
+        case XDG_TOPLEVEL_RESIZE_EDGE_RIGHT:        return "e-resize";
+        default:                                    return NULL;
+    }
+}
+
+static void updateResizeEdge(_GLFWwindow* window)
+{
+    uint32_t edge = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
+
+    if (window->resizable && !window->decorated && !window->monitor)
+    {
+        edge = detectResizeEdge(window,
+                                (int) window->wl.cursorPosX,
+                                (int) window->wl.cursorPosY);
+    }
+
+    if (edge == window->wl.resizeEdge)
+        return;
+
+    window->wl.resizeEdge = edge;
+    _glfwSetCursorWayland(window, window->cursor);
 }
 
 static void processPointerMotion(double xpos, double ypos)
@@ -1556,6 +1620,7 @@ static void processPointerMotion(double xpos, double ypos)
             window->wl.cursorPosX = xpos;
             window->wl.cursorPosY = ypos;
             _glfwInputCursorPos(window, window->wl.cursorPosX, window->wl.cursorPosY);
+            updateResizeEdge(window);
         }
     }
     else
@@ -1570,28 +1635,47 @@ static void processPointerButton(int button, int action)
     _GLFWwindow* window = wl_surface_get_user_data(_glfw.wl.pointerSurface);
     if (window->wl.surface == _glfw.wl.pointerSurface)
     {
-        // For undecorated windows, check titlebar hit test on left-click
-        // to initiate compositor-driven window drag (mirrors the X11 path)
-        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && !window->decorated)
+        // For undecorated windows, provide OS-level resize borders
+        // and titlebar drag via xdg_toplevel — matching the X11
+        // _NET_WM_MOVERESIZE behaviour
+        GLFWbool handled = GLFW_FALSE;
+
+        if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS &&
+            !window->decorated && !window->monitor)
         {
-            int titlebarHit = 0;
-            _glfwInputTitleBarHitTest(window, (int) window->wl.cursorPosX, (int) window->wl.cursorPosY, &titlebarHit);
+            struct xdg_toplevel* toplevel = window->wl.xdg.toplevel;
+            if (window->wl.libdecor.frame)
+                toplevel = libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame);
 
-            if (titlebarHit)
+            if (toplevel)
             {
-                struct xdg_toplevel* toplevel = window->wl.xdg.toplevel;
-                if (window->wl.libdecor.frame)
-                    toplevel = libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame);
+                const int x = (int) window->wl.cursorPosX;
+                const int y = (int) window->wl.cursorPosY;
+                uint32_t edges = window->resizable
+                    ? detectResizeEdge(window, x, y)
+                    : XDG_TOPLEVEL_RESIZE_EDGE_NONE;
 
-                if (toplevel)
+                if (edges != XDG_TOPLEVEL_RESIZE_EDGE_NONE)
                 {
-                    xdg_toplevel_move(toplevel, _glfw.wl.seat, _glfw.wl.serial);
-                    return;
+                    xdg_toplevel_resize(toplevel, _glfw.wl.seat,
+                                        _glfw.wl.serial, edges);
+                    handled = GLFW_TRUE;
+                }
+                else
+                {
+                    int titlebarHit = 0;
+                    _glfwInputTitleBarHitTest(window, x, y, &titlebarHit);
+                    if (titlebarHit)
+                    {
+                        xdg_toplevel_move(toplevel, _glfw.wl.seat, _glfw.wl.serial);
+                        handled = GLFW_TRUE;
+                    }
                 }
             }
         }
 
-        _glfwInputMouseClick(window, button, action, _glfw.wl.xkb.modifiers);
+        if (!handled)
+            _glfwInputMouseClick(window, button, action, _glfw.wl.xkb.modifiers);
     }
     else
     {
@@ -3340,7 +3424,12 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
     if (window->cursorMode == GLFW_CURSOR_NORMAL ||
         window->cursorMode == GLFW_CURSOR_CAPTURED)
     {
-        if (cursor)
+        // Resize edge cursor takes priority over the application cursor
+        if (window->wl.resizeEdge != XDG_TOPLEVEL_RESIZE_EDGE_NONE)
+        {
+            setNamedCursor(window, resizeEdgeCursorName(window->wl.resizeEdge));
+        }
+        else if (cursor)
             setCursorImage(window, &cursor->wl);
         else
         {

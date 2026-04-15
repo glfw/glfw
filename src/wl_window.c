@@ -62,27 +62,19 @@
 #define GLFW_PENDING_SCROLL     8
 #define GLFW_PENDING_DISCRETE   16
 
-// Unified cursor descriptor table.  Each row maps a GLFW standard cursor
-// shape and/or an xdg_toplevel resize edge to the wp_cursor_shape protocol
-// enum, plus XDG and X11 fallback cursor name strings for compositors that
-// don't support wp_cursor_shape_v1.
-//
-// Rows with resizeEdge == NONE are the canonical entries for a GLFW shape
-// (used by _glfwCreateStandardCursorWayland).  Rows with a specific edge
-// are used by applyCursor for directional resize cursors.
-//
 typedef struct {
     int                 glfwShape;  // GLFW_*_CURSOR
-    uint32_t            resizeEdge; // XDG_TOPLEVEL_RESIZE_EDGE_* (NONE if N/A)
+    uint32_t            resizeEdge; // XDG_TOPLEVEL_RESIZE_EDGE_* (NONE for non-resizing-related shapes)
     uint32_t            shape;      // WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_*
     const char*         name;       // XDG cursor name
     const char*         fallback;   // X11 core cursor name
 } _GLFWcursorDesc;
 
+// This table relates various mouse-cursor-shape-related constants to each other so if you already
+// have one you can find an equivalent value for a different library/context.
 static const _GLFWcursorDesc cursorTable[] =
 {
-    // Non-resize cursors
-    { GLFW_ARROW_CURSOR,         XDG_TOPLEVEL_RESIZE_EDGE_NONE,        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DEFAULT,     "default",       "left_ptr"            },
+    { GLFW_ARROW_CURSOR,         XDG_TOPLEVEL_RESIZE_EDGE_NONE,        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DEFAULT,     "default",       "left_ptr"           },
     { GLFW_IBEAM_CURSOR,         XDG_TOPLEVEL_RESIZE_EDGE_NONE,        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_TEXT,        "text",          "xterm"              },
     { GLFW_CROSSHAIR_CURSOR,     XDG_TOPLEVEL_RESIZE_EDGE_NONE,        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_CROSSHAIR,   "crosshair",     "crosshair"          },
     { GLFW_POINTING_HAND_CURSOR, XDG_TOPLEVEL_RESIZE_EDGE_NONE,        WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_POINTER,     "pointer",       "hand2"              },
@@ -1733,8 +1725,7 @@ static void processPointerButton(int button, int action)
         GLFWbool handled = GLFW_FALSE;
 
         if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS &&
-            !window->decorated && !window->monitor &&
-            !window->wl.maximized && !window->wl.fullscreen)
+            !window->decorated && !window->monitor)
         {
             struct xdg_toplevel* toplevel = window->wl.xdg.toplevel;
             if (window->wl.libdecor.frame)
@@ -1744,9 +1735,14 @@ static void processPointerButton(int button, int action)
             {
                 const int x = (int) window->wl.cursorPosX;
                 const int y = (int) window->wl.cursorPosY;
-                uint32_t edges = window->resizable
-                    ? detectResizeEdge(window, x, y)
-                    : XDG_TOPLEVEL_RESIZE_EDGE_NONE;
+
+                // Resize edges are only active when not maximized/fullscreen
+                uint32_t edges = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
+                if (window->resizable &&
+                    !window->wl.maximized && !window->wl.fullscreen)
+                {
+                    edges = detectResizeEdge(window, x, y);
+                }
 
                 if (edges != XDG_TOPLEVEL_RESIZE_EDGE_NONE)
                 {

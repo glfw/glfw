@@ -3257,7 +3257,7 @@ GLFWbool _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape)
     }
 
     _GLFWcursorWayland cw = lookupNamedCursor(desc->name, desc->fallback);
-    if (!cw.cursor)
+    if (!cw.cursor && !_glfw.wl.cursorShapeManager)
     {
         _glfwInputError(GLFW_CURSOR_UNAVAILABLE,
                         "Wayland: Failed to create standard cursor \"%s\"",

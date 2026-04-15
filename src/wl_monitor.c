@@ -207,10 +207,16 @@ void _glfwGetMonitorPosWayland(_GLFWmonitor* monitor, int* xpos, int* ypos)
 void _glfwGetMonitorContentScaleWayland(_GLFWmonitor* monitor,
                                         float* xscale, float* yscale)
 {
+    float scale;
+    if (monitor->wl.fractionalScaleNumerator)
+        scale = (float) monitor->wl.fractionalScaleNumerator / 120.f;
+    else
+        scale = (float) monitor->wl.scale;
+
     if (xscale)
-        *xscale = (float) monitor->wl.scale;
+        *xscale = scale;
     if (yscale)
-        *yscale = (float) monitor->wl.scale;
+        *yscale = scale;
 }
 
 void _glfwGetMonitorWorkareaWayland(_GLFWmonitor* monitor,

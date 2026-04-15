@@ -870,6 +870,11 @@ void fractionalScaleHandlePreferredScale(void* userData,
     _glfwInputWindowContentScale(window, numerator / 120.f, numerator / 120.f);
     resizeFramebuffer(window);
 
+    // Update all monitors with the fractional scale so glfwGetMonitorContentScale
+    // returns the accurate value instead of the integer wl_output scale.
+    for (int i = 0; i < _glfw.monitorCount; i++)
+        _glfw.monitors[i]->wl.fractionalScaleNumerator = numerator;
+
     if (window->wl.visible)
         _glfwInputWindowDamage(window);
 }

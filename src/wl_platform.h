@@ -639,6 +639,7 @@ typedef struct _GLFWmonitorWayland
     int                         x;
     int                         y;
     int32_t                     scale;
+    int32_t                     fractionalScaleNumerator; // wp_fractional_scale_v1 numerator (0 = unknown, scale = N/120)
 } _GLFWmonitorWayland;
 
 // Wayland-specific per-cursor data

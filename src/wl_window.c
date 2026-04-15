@@ -738,8 +738,11 @@ void _glfwUpdateBufferScaleFromOutputsWayland(_GLFWwindow* window)
     {
         window->wl.bufferScale = maxScale;
         wl_surface_set_buffer_scale(window->wl.surface, maxScale);
-        _glfwInputWindowContentScale(window, maxScale, maxScale);
         resizeFramebuffer(window);
+
+        float xscale, yscale;
+        _glfwGetWindowContentScaleWayland(window, &xscale, &yscale);
+        _glfwInputWindowContentScale(window, xscale, yscale);
 
         if (window->wl.visible)
             _glfwInputWindowDamage(window);
@@ -867,8 +870,11 @@ void fractionalScaleHandlePreferredScale(void* userData,
     _GLFWwindow* window = userData;
 
     window->wl.scalingNumerator = numerator;
-    _glfwInputWindowContentScale(window, numerator / 120.f, numerator / 120.f);
     resizeFramebuffer(window);
+
+    float xscale, yscale;
+    _glfwGetWindowContentScaleWayland(window, &xscale, &yscale);
+    _glfwInputWindowContentScale(window, xscale, yscale);
 
     // Update all monitors with the fractional scale so glfwGetMonitorContentScale
     // returns the accurate value instead of the integer wl_output scale.

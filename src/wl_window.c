@@ -1281,8 +1281,6 @@ static GLFWbool setCursorShape(int shape)
         case GLFW_NOT_ALLOWED_CURSOR:
             xdgShape = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_NOT_ALLOWED;
             break;
-        default:
-            break;
     }
 
     if (xdgShape == -1)

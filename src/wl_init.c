@@ -206,7 +206,7 @@ static void registryHandleGlobal(void* userData,
                              &wp_fractional_scale_manager_v1_interface,
                              1);
     }
-    else if (strcmp(interface, "wp_cursor_shape_manager_v1") == 0)
+    else if (strcmp(interface, wp_cursor_shape_manager_v1_interface.name) == 0)
     {
         _glfw.wl.cursorShapeManager =
             wl_registry_bind(registry, name,

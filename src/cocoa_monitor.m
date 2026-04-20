@@ -319,6 +319,9 @@ void _glfwPollMonitorsCocoa(void)
         if (CGDisplayIsAsleep(displays[i]))
             continue;
 
+        if (CGDisplayMirrorsDisplay(displays[i]) != kCGNullDirectDisplay)
+           continue;
+
         const uint32_t unitNumber = CGDisplayUnitNumber(displays[i]);
         NSScreen* screen = nil;
 

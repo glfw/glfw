@@ -399,33 +399,40 @@ static void createKeyTables(void)
 
 static GLFWbool loadCursorTheme(void)
 {
-    int cursorSize = 16;
-
-    const char* sizeString = getenv("XCURSOR_SIZE");
-    if (sizeString)
+    if (!_glfw.wl.cursorShapeDevice)
     {
-        errno = 0;
-        const long cursorSizeLong = strtol(sizeString, NULL, 10);
-        if (errno == 0 && cursorSizeLong > 0 && cursorSizeLong < INT_MAX)
-            cursorSize = (int) cursorSizeLong;
+        int cursorSize = 16;
+
+        const char* sizeString = getenv("XCURSOR_SIZE");
+        if (sizeString)
+        {
+            errno = 0;
+            const long cursorSizeLong = strtol(sizeString, NULL, 10);
+            if (errno == 0 && cursorSizeLong > 0 && cursorSizeLong < INT_MAX)
+                cursorSize = (int) cursorSizeLong;
+        }
+
+        const char* themeName = getenv("XCURSOR_THEME");
+
+        _glfw.wl.cursorTheme =
+            wl_cursor_theme_load(themeName, cursorSize, _glfw.wl.shm);
+        if (!_glfw.wl.cursorTheme)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Wayland: Failed to load default cursor theme");
+            return GLFW_FALSE;
+        }
+
+        // If this happens to be NULL, we just fallback to the scale=1 version.
+        _glfw.wl.cursorThemeHiDPI =
+            wl_cursor_theme_load(themeName, cursorSize * 2, _glfw.wl.shm);
+
+        _glfw.wl.cursorTimerfd =
+            timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
     }
 
-    const char* themeName = getenv("XCURSOR_THEME");
-
-    _glfw.wl.cursorTheme = wl_cursor_theme_load(themeName, cursorSize, _glfw.wl.shm);
-    if (!_glfw.wl.cursorTheme)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Failed to load default cursor theme");
-        return GLFW_FALSE;
-    }
-
-    // If this happens to be NULL, we just fallback to the scale=1 version.
-    _glfw.wl.cursorThemeHiDPI =
-        wl_cursor_theme_load(themeName, cursorSize * 2, _glfw.wl.shm);
-
+    // Cursor Surface is always required in order to set custom cursor shapes
     _glfw.wl.cursorSurface = wl_compositor_create_surface(_glfw.wl.compositor);
-    _glfw.wl.cursorTimerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
     return GLFW_TRUE;
 }
 
@@ -912,7 +919,7 @@ int _glfwInitWayland(void)
         return GLFW_FALSE;
     }
 
-    if (!(_glfw.wl.cursorShapeDevice || loadCursorTheme()))
+    if (!loadCursorTheme())
         return GLFW_FALSE;
 
     if (_glfw.wl.seat && _glfw.wl.dataDeviceManager)

@@ -50,7 +50,14 @@
 #include "pointer-constraints-unstable-v1-client-protocol.h"
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
+#include "xdg-toplevel-drag-v1-client-protocol.h"
 #include "fractional-scale-v1-client-protocol.h"
+
+// Mime type advertised by the wl_data_source we create for self-initiated
+// toplevel drags (see _glfwDragWindowWayland). No actual payload is
+// transferred — it's just a marker so the compositor will deliver
+// wl_data_device enter/motion/leave events to this client's surfaces.
+#define GLFW_WAYLAND_WINDOW_DRAG_MIME "application/x.glfw-window-drag"
 #include "cursor-shape-v1-client-protocol.h"
 
 #define GLFW_BORDER_SIZE    4
@@ -1476,6 +1483,8 @@ static GLFWbool createXdgShellObjects(_GLFWwindow* window)
     return GLFW_TRUE;
 }
 
+static GLFWbool startToplevelDragSession(_GLFWwindow* window, uint32_t serial);
+
 static void issuePendingDragMove(_GLFWwindow* window)
 {
     if (!window->wl.dragPending || !_glfw.wl.seat)
@@ -1487,6 +1496,9 @@ static void issuePendingDragMove(_GLFWwindow* window)
     if (_glfw.wl.pointerButtonsDown <= 0)
         return;
 
+    if (startToplevelDragSession(window, window->wl.dragPendingSerial))
+        return;
+
     struct xdg_toplevel* toplevel = window->wl.xdg.toplevel;
     if (!toplevel && window->wl.libdecor.frame)
         toplevel = libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame);
@@ -1494,6 +1506,11 @@ static void issuePendingDragMove(_GLFWwindow* window)
         return;
 
     xdg_toplevel_move(toplevel, _glfw.wl.seat, window->wl.dragPendingSerial);
+
+    // Fallback path: compositor swallows release, synthesize one.
+    if (_glfw.wl.pointerButtonsDown > 0)
+        _glfw.wl.pointerButtonsDown--;
+    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE, 0);
 }
 
 static void mappedFrameHandleDone(void* userData,
@@ -2119,6 +2136,7 @@ static void pointerHandleButton(void* userData,
     if (state == WL_POINTER_BUTTON_STATE_PRESSED)
     {
         _glfw.wl.pointerButtonSerial = serial;
+        _glfw.wl.pointerButtonSurface = _glfw.wl.pointerSurface;
         _glfw.wl.pointerButtonsDown++;
     }
     else if (_glfw.wl.pointerButtonsDown > 0)
@@ -2579,15 +2597,36 @@ static void dataOfferHandleOffer(void* userData,
                 _glfw.wl.offers[i].text_plain_utf8 = GLFW_TRUE;
             else if (strcmp(mimeType, "text/uri-list") == 0)
                 _glfw.wl.offers[i].text_uri_list = GLFW_TRUE;
+            else if (strcmp(mimeType, GLFW_WAYLAND_WINDOW_DRAG_MIME) == 0)
+                _glfw.wl.offers[i].glfw_window_drag = GLFW_TRUE;
 
             break;
         }
     }
 }
 
+static void dataOfferHandleSourceActions(void* userData,
+                                         struct wl_data_offer* offer,
+                                         uint32_t source_actions)
+{
+    // v3+ only. We don't act on it directly — the source's advertised action
+    // set is negotiated by the compositor and reported back via .action.
+    (void)userData; (void)offer; (void)source_actions;
+}
+
+static void dataOfferHandleAction(void* userData,
+                                  struct wl_data_offer* offer,
+                                  uint32_t dnd_action)
+{
+    // v3+ only. No-op: we don't branch behavior on the negotiated action.
+    (void)userData; (void)offer; (void)dnd_action;
+}
+
 static const struct wl_data_offer_listener dataOfferListener =
 {
-    dataOfferHandleOffer
+    dataOfferHandleOffer,
+    dataOfferHandleSourceActions,
+    dataOfferHandleAction,
 };
 
 static void dataDeviceHandleDataOffer(void* userData,
@@ -2649,6 +2688,28 @@ static void dataDeviceHandleEnter(void* userData,
 
                 wl_data_offer_accept(offer, serial, "text/uri-list");
             }
+            else if (_glfw.wl.offers[i].glfw_window_drag)
+            {
+                // Our own xdg_toplevel_drag session. Accept so the compositor
+                // keeps sending motion events to this surface, and prime the
+                // cursor position so the app sees the drag entering this
+                // window.
+                _glfw.wl.dragOffer = offer;
+                _glfw.wl.dragFocus = window;
+                _glfw.wl.dragSerial = serial;
+
+                wl_data_offer_accept(offer, serial, GLFW_WAYLAND_WINDOW_DRAG_MIME);
+                if (wl_data_offer_get_version(offer) >= 3)
+                {
+                    wl_data_offer_set_actions(offer,
+                        WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE,
+                        WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE);
+                }
+
+                const double xpos = wl_fixed_to_double(x);
+                const double ypos = wl_fixed_to_double(y);
+                _glfwInputCursorPos(window, xpos, ypos);
+            }
         }
     }
 
@@ -2679,6 +2740,16 @@ static void dataDeviceHandleMotion(void* userData,
                                    wl_fixed_t x,
                                    wl_fixed_t y)
 {
+    // During our own toplevel drag, the compositor captures pointer input,
+    // so wl_pointer.motion never fires. Forward the DnD motion as a cursor
+    // move so the client sees the drag passing over its surfaces and can
+    // drive drop-target hit-testing (dock regions, etc.) in ImGui.
+    if (_glfw.wl.dragFocus && _glfw.wl.toplevelDragSession.source)
+    {
+        const double xpos = wl_fixed_to_double(x);
+        const double ypos = wl_fixed_to_double(y);
+        _glfwInputCursorPos(_glfw.wl.dragFocus, xpos, ypos);
+    }
 }
 
 static void dataDeviceHandleDrop(void* userData,
@@ -2686,6 +2757,23 @@ static void dataDeviceHandleDrop(void* userData,
 {
     if (!_glfw.wl.dragOffer)
         return;
+
+    // For a self-initiated toplevel drag we have no payload to transfer; just
+    // finish the offer so the compositor completes the drag protocol and
+    // dnd_finished fires on the source. Without this the compositor keeps
+    // the drag in a half-completed state and normal pointer input stays
+    // routed to DnD handlers instead of returning to the application.
+    if (_glfw.wl.toplevelDragSession.source)
+    {
+        // wl_data_offer.finish and set_actions are v3+. Calling either on
+        // an older offer raises a protocol error (which aborts the client).
+        if (wl_data_offer_get_version(_glfw.wl.dragOffer) >= 3)
+            wl_data_offer_finish(_glfw.wl.dragOffer);
+        wl_data_offer_destroy(_glfw.wl.dragOffer);
+        _glfw.wl.dragOffer = NULL;
+        _glfw.wl.dragFocus = NULL;
+        return;
+    }
 
     char* string = readDataOfferAsString(_glfw.wl.dragOffer, "text/uri-list");
     if (string)
@@ -3247,17 +3335,207 @@ void _glfwFocusWindowWayland(_GLFWwindow* window)
     xdg_activation_token_v1_commit(window->wl.activationToken);
 }
 
+static void endToplevelDragSession(void)
+{
+    _GLFWwindow* window = _glfw.wl.toplevelDragSession.window;
+
+    if (_glfw.wl.toplevelDragSession.drag)
+    {
+        xdg_toplevel_drag_v1_destroy(_glfw.wl.toplevelDragSession.drag);
+        _glfw.wl.toplevelDragSession.drag = NULL;
+    }
+    if (_glfw.wl.toplevelDragSession.source)
+    {
+        wl_data_source_destroy(_glfw.wl.toplevelDragSession.source);
+        _glfw.wl.toplevelDragSession.source = NULL;
+    }
+    _glfw.wl.toplevelDragSession.window = NULL;
+
+    // Also decrement the counter since the real wl_pointer.button release was
+    // consumed by the compositor for the drag. Keeping it above zero would
+    // wrongly suggest a button is still held for future logic (deferred move
+    // gates, drag trigger heuristics, ...).
+    if (_glfw.wl.pointerButtonsDown > 0)
+        _glfw.wl.pointerButtonsDown--;
+
+    // Synthesize the swallowed left-button release so the application's
+    // input pipeline gets to see "drag ended" and run its drop logic
+    // (e.g. ImGui dock-to-target detection).
+    if (window)
+        _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE, 0);
+}
+
+static void dragSourceHandleTarget(void* data,
+                                   struct wl_data_source* source,
+                                   const char* mime) { (void)data; (void)source; (void)mime; }
+
+static void dragSourceHandleSend(void* data, struct wl_data_source* source,
+                                 const char* mime, int32_t fd)
+{
+    // No payload is transferred — this data source exists only to carry the
+    // xdg_toplevel_drag attachment. Close the fd so the reader doesn't hang.
+    (void)data; (void)source; (void)mime;
+    close(fd);
+}
+
+static void dragSourceHandleCancelled(void* data, struct wl_data_source* source)
+{
+    (void)data; (void)source;
+    endToplevelDragSession();
+}
+
+static void dragSourceHandleDndDropPerformed(void* data, struct wl_data_source* source)
+{
+    (void)data; (void)source;
+    // The user released. Clean up here rather than waiting for
+    // dnd_finished: the latter only fires if a target actually called
+    // wl_data_offer_finish, which we can't guarantee when the drop lands
+    // on a foreign client. endToplevelDragSession is idempotent (clears
+    // its own state) so a later dnd_finished is a safe no-op.
+    endToplevelDragSession();
+}
+
+static void dragSourceHandleDndFinished(void* data, struct wl_data_source* source)
+{
+    (void)data; (void)source;
+    endToplevelDragSession();
+}
+
+static void dragSourceHandleAction(void* data, struct wl_data_source* source,
+                                   uint32_t action) { (void)data; (void)source; (void)action; }
+
+static const struct wl_data_source_listener dragSourceListener =
+{
+    dragSourceHandleTarget,
+    dragSourceHandleSend,
+    dragSourceHandleCancelled,
+    dragSourceHandleDndDropPerformed,
+    dragSourceHandleDndFinished,
+    dragSourceHandleAction,
+};
+
+// Start a self-initiated toplevel drag using xdg_toplevel_drag_v1. Returns
+// GLFW_TRUE on success; caller should fall back to xdg_toplevel.move otherwise.
+// The critical property of this path vs plain move: the compositor delivers
+// wl_data_device enter/motion/leave events to our surfaces under the cursor,
+// so the application can detect drop targets (e.g. dock regions) while the
+// dragged window follows the cursor.
+static GLFWbool startToplevelDragSession(_GLFWwindow* window, uint32_t serial)
+{
+    if (!_glfw.wl.toplevelDragManager ||
+        !_glfw.wl.dataDeviceManager ||
+        !_glfw.wl.dataDevice)
+    {
+        return GLFW_FALSE;
+    }
+
+    struct xdg_toplevel* toplevel = window->wl.xdg.toplevel;
+    if (!toplevel && window->wl.libdecor.frame)
+        toplevel = libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame);
+    if (!toplevel)
+        return GLFW_FALSE;
+
+    // One session at a time. If we're already in a drag, end it first.
+    if (_glfw.wl.toplevelDragSession.source)
+        endToplevelDragSession();
+
+    struct wl_data_source* source =
+        wl_data_device_manager_create_data_source(_glfw.wl.dataDeviceManager);
+    if (!source)
+        return GLFW_FALSE;
+    wl_data_source_add_listener(source, &dragSourceListener, NULL);
+    wl_data_source_offer(source, GLFW_WAYLAND_WINDOW_DRAG_MIME);
+
+    // Advertise "move" as the DnD action. Without negotiated actions the
+    // compositor (on v3+) won't deliver dnd_drop_performed / dnd_finished,
+    // leaving the drag in a half-completed state after the user releases.
+    if (wl_data_source_get_version(source) >= 3)
+    {
+        wl_data_source_set_actions(source,
+            WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE);
+    }
+
+    struct xdg_toplevel_drag_v1* drag =
+        xdg_toplevel_drag_manager_v1_get_xdg_toplevel_drag(
+            _glfw.wl.toplevelDragManager, source);
+    if (!drag)
+    {
+        wl_data_source_destroy(source);
+        return GLFW_FALSE;
+    }
+
+    _glfw.wl.toplevelDragSession.source = source;
+    _glfw.wl.toplevelDragSession.drag = drag;
+    _glfw.wl.toplevelDragSession.window = window;
+
+    // Per spec, when the dragged toplevel is already mapped (our case, since
+    // we only reach here after the window is mapped) attach() must come
+    // before start_drag(). The offset hints where the cursor hotspot should
+    // sit relative to the toplevel's top-left in surface-local coords —
+    // passing (0, 0) snaps the window so the cursor is in its top-left
+    // corner.
+    //
+    // Two cases:
+    //  - Dragging the window that received the press (regular titlebar
+    //    drag): use that window's own tracked cursor position.
+    //  - Tab-tear: the press happened on a different window (e.g. main
+    //    window's tab bar), then a new toplevel was created under the
+    //    cursor. The new toplevel hasn't received any motion events yet, so
+    //    its cursorPosX/Y is 0, which is why it grabs from the top-left.
+    //    Compute the cursor position inside the new window as the source
+    //    window's cursor pos minus the new window's caller-intended
+    //    position (ImGui wrote this via glfwSetWindowPos before show).
+    int offsetX = 0;
+    int offsetY = 0;
+    if (_glfw.wl.pointerButtonSurface == window->wl.surface)
+    {
+        offsetX = (int) window->wl.cursorPosX;
+        offsetY = (int) window->wl.cursorPosY;
+    }
+    else if (_glfw.wl.pointerButtonSurface &&
+             wl_proxy_get_tag((struct wl_proxy*) _glfw.wl.pointerButtonSurface)
+                 == &_glfw.wl.tag)
+    {
+        _GLFWwindow* src =
+            wl_surface_get_user_data(_glfw.wl.pointerButtonSurface);
+        if (src)
+        {
+            offsetX = (int)(src->wl.cursorPosX - window->wl.pendingPosX);
+            offsetY = (int)(src->wl.cursorPosY - window->wl.pendingPosY);
+        }
+    }
+    if (offsetX < 0) offsetX = 0;
+    if (offsetY < 0) offsetY = 0;
+    xdg_toplevel_drag_v1_attach(drag, toplevel, offsetX, offsetY);
+
+    struct wl_surface* origin = _glfw.wl.pointerButtonSurface;
+    if (!origin)
+        origin = window->wl.surface;
+    wl_data_device_start_drag(_glfw.wl.dataDevice, source,
+                              origin, NULL, serial);
+    return GLFW_TRUE;
+}
+
 void _glfwDragWindowWayland(_GLFWwindow* window)
 {
     if (!_glfw.wl.seat || !_glfw.wl.pointerButtonSerial)
         return;
 
-    // Fire immediately when the toplevel is already mapped; otherwise stash
-    // the press serial and let the mapped-frame callback issue the move once
-    // the compositor has processed the first buffer. The pre-show case
-    // matters for tab-tear (caller invokes this before glfwShowWindow maps
-    // anything), and the pre-map case matters because calling
-    // xdg_toplevel.move on an unmapped surface crashes KWin.
+    // A drag session is already in flight for this window — no-op. ImGui's
+    // Platform_SetWindowPos fires each frame during its drag math, but we
+    // only want to hand the drag to the compositor once per user press.
+    if (_glfw.wl.toplevelDragSession.source &&
+        _glfw.wl.toplevelDragSession.window == window)
+    {
+        return;
+    }
+
+    // Pre-map: stash the request and let the mapped-frame callback fire it
+    // once the compositor has processed the first buffer. Calling
+    // xdg_toplevel.move (or starting a drag attached to an unmapped toplevel)
+    // on an unmapped surface has been observed to crash KWin. The pre-show
+    // case matters for tab-tear (caller invokes this before glfwShowWindow
+    // maps anything).
     if (!window->wl.mapped)
     {
         window->wl.dragPendingSerial = _glfw.wl.pointerButtonSerial;
@@ -3265,6 +3543,14 @@ void _glfwDragWindowWayland(_GLFWwindow* window)
         return;
     }
 
+    // Preferred path: xdg_toplevel_drag_v1 (staging) — same visual effect as
+    // xdg_toplevel.move but the compositor keeps delivering DnD events to
+    // our surfaces under the cursor. That's what lets the dock system see
+    // the dragged window passing over drop targets.
+    if (startToplevelDragSession(window, _glfw.wl.pointerButtonSerial))
+        return;
+
+    // Fallback for compositors that don't advertise the manager global.
     struct xdg_toplevel* toplevel = window->wl.xdg.toplevel;
     if (!toplevel && window->wl.libdecor.frame)
         toplevel = libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame);
@@ -3272,6 +3558,13 @@ void _glfwDragWindowWayland(_GLFWwindow* window)
         return;
 
     xdg_toplevel_move(toplevel, _glfw.wl.seat, _glfw.wl.pointerButtonSerial);
+
+    // xdg_toplevel.move swallows the release event, so synthesize one now so
+    // the application's input state doesn't stay stuck in "button held" after
+    // the move ends.
+    if (_glfw.wl.pointerButtonsDown > 0)
+        _glfw.wl.pointerButtonsDown--;
+    _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE, 0);
 }
 
 void _glfwSetWindowMonitorWayland(_GLFWwindow* window,

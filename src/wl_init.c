@@ -51,6 +51,7 @@
 #include "tablet-v2-client-protocol.h"
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
+#include "xdg-toplevel-drag-v1-client-protocol.h"
 
 // NOTE: Versions of wayland-scanner prior to 1.17.91 named every global array of
 //       wl_interface pointers 'types', making it impossible to combine several unmodified
@@ -99,6 +100,10 @@
 
 #define types _glfw_idle_inhibit_types
 #include "idle-inhibit-unstable-v1-client-protocol-code.h"
+#undef types
+
+#define types _glfw_xdg_toplevel_drag_types
+#include "xdg-toplevel-drag-v1-client-protocol-code.h"
 #undef types
 
 static void wmBaseHandlePing(void* userData,
@@ -153,9 +158,16 @@ static void registryHandleGlobal(void* userData,
     {
         if (!_glfw.wl.dataDeviceManager)
         {
+            // Bind at version 3 when the compositor supports it — this is
+            // what enables wl_data_offer_set_actions / .finish and
+            // wl_data_source.dnd_drop_performed / .dnd_finished, all of
+            // which we rely on to complete a self-initiated toplevel drag
+            // cleanly. Fall back to lower versions transparently.
+            const uint32_t bindVersion = version >= 3 ? 3 : version;
             _glfw.wl.dataDeviceManager =
                 wl_registry_bind(registry, name,
-                                 &wl_data_device_manager_interface, 1);
+                                 &wl_data_device_manager_interface,
+                                 bindVersion);
         }
     }
     else if (strcmp(interface, "xdg_wm_base") == 0)
@@ -202,6 +214,13 @@ static void registryHandleGlobal(void* userData,
         _glfw.wl.activationManager =
             wl_registry_bind(registry, name,
                              &xdg_activation_v1_interface,
+                             1);
+    }
+    else if (strcmp(interface, "xdg_toplevel_drag_manager_v1") == 0)
+    {
+        _glfw.wl.toplevelDragManager =
+            wl_registry_bind(registry, name,
+                             &xdg_toplevel_drag_manager_v1_interface,
                              1);
     }
     else if (strcmp(interface, "wp_fractional_scale_manager_v1") == 0)
@@ -1012,6 +1031,8 @@ void _glfwTerminateWayland(void)
         zwp_idle_inhibit_manager_v1_destroy(_glfw.wl.idleInhibitManager);
     if (_glfw.wl.activationManager)
         xdg_activation_v1_destroy(_glfw.wl.activationManager);
+    if (_glfw.wl.toplevelDragManager)
+        xdg_toplevel_drag_manager_v1_destroy(_glfw.wl.toplevelDragManager);
     if (_glfw.wl.fractionalScaleManager)
         wp_fractional_scale_manager_v1_destroy(_glfw.wl.fractionalScaleManager);
     if (_glfw.wl.cursorShapeManager)

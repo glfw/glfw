@@ -69,7 +69,8 @@ project "GLFW"
 			"cursor-shape-v1",
 			"tablet-v2",
 			"xdg-decoration-unstable-v1",
-			"xdg-shell"
+			"xdg-shell",
+			"xdg-toplevel-drag-v1"
 		}
 
 		for _, protocol in ipairs(protocols) do

@@ -356,6 +356,12 @@ typedef struct _GLFWofferWayland
     struct wl_data_offer*       offer;
     GLFWbool                    text_plain_utf8;
     GLFWbool                    text_uri_list;
+    // Marker for our self-initiated toplevel drag (see glfwDragWindow on
+    // Wayland). Whenever we see an offer advertising this mime type we
+    // accept it so the compositor delivers motion events to us — which lets
+    // ImGui detect dock targets while the dragged toplevel is following
+    // the cursor via xdg_toplevel_drag_v1.
+    GLFWbool                    glfw_window_drag;
 } _GLFWofferWayland;
 
 typedef struct _GLFWscaleWayland
@@ -479,6 +485,7 @@ typedef struct _GLFWlibraryWayland
     struct zwp_pointer_constraints_v1*      pointerConstraints;
     struct zwp_idle_inhibit_manager_v1*     idleInhibitManager;
     struct xdg_activation_v1*               activationManager;
+    struct xdg_toplevel_drag_manager_v1*    toplevelDragManager;
     struct wp_fractional_scale_manager_v1*  fractionalScaleManager;
     struct wp_cursor_shape_manager_v1*      cursorShapeManager;
     struct wp_cursor_shape_device_v1*       cursorShapeDevice;
@@ -492,6 +499,18 @@ typedef struct _GLFWlibraryWayland
     struct wl_data_offer*       dragOffer;
     _GLFWwindow*                dragFocus;
     uint32_t                    dragSerial;
+
+    // Self-initiated window-drag session via xdg_toplevel_drag_v1. Set up by
+    // _glfwDragWindowWayland when the manager global is available. While the
+    // session is active, DnD motion events over this client's surfaces are
+    // converted into cursor-move events so ImGui (or any app) can detect
+    // drop targets (dock bars, etc.) even though pointer input is captured
+    // by the drag.
+    struct {
+        struct wl_data_source*          source;
+        struct xdg_toplevel_drag_v1*    drag;
+        _GLFWwindow*                    window;
+    } toplevelDragSession;
 
     const char*                 tag;
 
@@ -508,6 +527,11 @@ typedef struct _GLFWlibraryWayland
     // keyboard), which is invalid for those requests and can crash strict
     // compositors (KWin has been observed to crash).
     uint32_t                    pointerButtonSerial;
+    // Surface that received the press associated with pointerButtonSerial.
+    // Used as the `origin` for wl_data_device.start_drag — the compositor
+    // rejects (silently) any drag whose origin doesn't match the pressed
+    // surface tied to the serial.
+    struct wl_surface*          pointerButtonSurface;
     // Count of currently-held pointer buttons. Deferred drag-moves only fire
     // while this is non-zero; otherwise the press serial is stale and passing
     // it to xdg_toplevel.move is undefined per spec.

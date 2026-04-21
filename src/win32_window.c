@@ -1974,12 +1974,26 @@ void _glfwFocusWindowWin32(_GLFWwindow* window)
 
 void _glfwDragWindowWin32(_GLFWwindow* window)
 {
-    // Hand the in-progress pointer drag off to the window manager. Windows
-    // uses the cursor's current location to anchor the move, same as
-    // xdg_toplevel.move on Wayland. Standard pattern for custom titlebar
-    // drag (Chrome, Electron, anything with a non-native caption).
-    ReleaseCapture();
-    SendMessageW(window->win32.handle, WM_SYSCOMMAND, SC_MOVE | HTCAPTION, 0);
+    // No-op on Win32. Mirrors the X11 behaviour: rely on Windows' implicit
+    // mouse capture (WM_LBUTTONDOWN captures subsequent motion/release events
+    // for the originating window until release) so the caller can drive a
+    // drag via glfwSetWindowPos each frame and still receive the mouse-up
+    // event at the end.
+    //
+    // The earlier SC_MOVE + HTCAPTION implementation worked for the simple
+    // case but has two defects: DefWindowProc's SC_MOVE modal loop consumes
+    // the WM_LBUTTONUP rather than forwarding it, so GLFW (and callers such
+    // as ImGui multi-viewport) never see the release — they stay stuck in
+    // drag state; and SendMessageW blocks until the modal loop returns,
+    // which on the GLFW fork used by LuckyEngine means the render thread
+    // holds a cross-thread send on the main thread for the duration of the
+    // user's drag.
+    //
+    // Callers that want classic WM-driven move behaviour can use the
+    // titlebar hit-test callback (glfwSetTitlebarHitTestCallback) — that
+    // path returns HTCAPTION from WM_NCHITTEST and Windows handles the
+    // drag directly without involving SendMessage.
+    (void)window;
 }
 
 void _glfwSetWindowMonitorWin32(_GLFWwindow* window,

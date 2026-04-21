@@ -358,9 +358,8 @@ typedef struct _GLFWofferWayland
     GLFWbool                    text_uri_list;
     // Marker for our self-initiated toplevel drag (see glfwDragWindow on
     // Wayland). Whenever we see an offer advertising this mime type we
-    // accept it so the compositor delivers motion events to us — which lets
-    // ImGui detect dock targets while the dragged toplevel is following
-    // the cursor via xdg_toplevel_drag_v1.
+    // accept it so the compositor delivers motion events to us while the
+    // dragged toplevel is following the cursor via xdg_toplevel_drag_v1.
     GLFWbool                    glfw_window_drag;
 } _GLFWofferWayland;
 
@@ -421,6 +420,13 @@ typedef struct _GLFWwindowWayland
     // crash KWin, so we defer the request until this is true.
     GLFWbool                    mapped;
     struct wl_callback*         mappedCallback;
+
+    // Captured from wndconfig.focused at create time. Callers that create
+    // secondary/transient windows should set GLFW_FOCUSED=false; top-level
+    // application windows leave the default `true`. Gives us a reliable
+    // "this is a secondary window" marker that survives mapping, so we can
+    // apply set_parent and other secondary-window behavior later.
+    GLFWbool                    createdUnfocused;
 
     // If glfwDragWindow was called before the surface was mapped, the press
     // serial is stashed here and the move is issued from the map callback.
@@ -503,9 +509,8 @@ typedef struct _GLFWlibraryWayland
     // Self-initiated window-drag session via xdg_toplevel_drag_v1. Set up by
     // _glfwDragWindowWayland when the manager global is available. While the
     // session is active, DnD motion events over this client's surfaces are
-    // converted into cursor-move events so ImGui (or any app) can detect
-    // drop targets (dock bars, etc.) even though pointer input is captured
-    // by the drag.
+    // converted into cursor-move events so the application can hit-test for
+    // drop targets even though pointer input is captured by the drag.
     struct {
         struct wl_data_source*          source;
         struct xdg_toplevel_drag_v1*    drag;
@@ -532,6 +537,12 @@ typedef struct _GLFWlibraryWayland
     // rejects (silently) any drag whose origin doesn't match the pressed
     // surface tied to the serial.
     struct wl_surface*          pointerButtonSurface;
+    // Cursor position (surface-local, logical) at the moment of the most
+    // recent press. Used as the attach offset for xdg_toplevel_drag_v1 so
+    // the compositor keeps the cursor where the user clicked rather than
+    // snapping to the window's top-left. Must be sampled at press time
+    // because cursorPosX/Y drifts between press and drag-start.
+    double                      pointerButtonX, pointerButtonY;
     // Count of currently-held pointer buttons. Deferred drag-moves only fire
     // while this is non-zero; otherwise the press serial is stale and passing
     // it to xdg_toplevel.move is undefined per spec.

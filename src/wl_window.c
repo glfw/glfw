@@ -32,6 +32,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+#include <float.h>
 #include <errno.h>
 #include <assert.h>
 #include <unistd.h>
@@ -1139,6 +1141,8 @@ static const struct libdecor_frame_interface libdecorFrameInterface =
     libdecorFrameHandleDismissPopup
 };
 
+static _GLFWwindow* findWaylandPopupParent(_GLFWwindow* self);
+
 static GLFWbool createLibdecorFrame(_GLFWwindow* window)
 {
     // Allow libdecor to finish initialization of itself and its plugin
@@ -1203,6 +1207,25 @@ static GLFWbool createLibdecorFrame(_GLFWwindow* window)
             libdecor_frame_set_visibility(window->wl.libdecor.frame, false);
 
         setIdleInhibitor(window, GLFW_FALSE);
+    }
+
+    // Parent secondary libdecor toplevels to the first existing toplevel.
+    // See the matching comment in createXdgShellObjects. libdecor exposes the
+    // underlying xdg_toplevel via get_xdg_toplevel, so we set the parent on
+    // that directly.
+    if (window->wl.createdUnfocused && !window->monitor)
+    {
+        _GLFWwindow* parent = findWaylandPopupParent(window);
+        if (parent)
+        {
+            struct xdg_toplevel* parentToplevel = parent->wl.xdg.toplevel;
+            if (!parentToplevel && parent->wl.libdecor.frame)
+                parentToplevel = libdecor_frame_get_xdg_toplevel(parent->wl.libdecor.frame);
+            struct xdg_toplevel* ownToplevel =
+                libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame);
+            if (parentToplevel && ownToplevel)
+                xdg_toplevel_set_parent(ownToplevel, parentToplevel);
+        }
     }
 
     libdecor_frame_map(window->wl.libdecor.frame);
@@ -1281,8 +1304,8 @@ static void xdgPopupHandleConfigure(void* userData,
                                     int32_t x, int32_t y,
                                     int32_t width, int32_t height)
 {
-    // Compositor-confirmed popup geometry. ImGui already has its own layout,
-    // so nothing to propagate here beyond the surface-level size sync.
+    // Compositor-confirmed popup geometry. Propagate surface-level size sync
+    // so the framebuffer stays in step with the compositor's view.
     _GLFWwindow* window = userData;
     if (width > 0 && height > 0 &&
         (width != window->wl.width || height != window->wl.height))
@@ -1297,7 +1320,8 @@ static void xdgPopupHandleConfigure(void* userData,
 static void xdgPopupHandlePopupDone(void* userData, struct xdg_popup* popup)
 {
     // Compositor dismissed the popup (e.g. user clicked outside). Ask the
-    // owning application to close the window; ImGui will tear down the viewport.
+    // owning application to close the window; it is responsible for
+    // teardown.
     _GLFWwindow* window = userData;
     _glfwInputWindowCloseRequest(window);
 }
@@ -1371,9 +1395,8 @@ static GLFWbool createXdgPopupShellObjects(_GLFWwindow* window,
     xdg_positioner_set_size(positioner, w, h);
 
     // Treat the coords handed to glfwSetWindowPos as parent-relative, because
-    // on Wayland there is no global coordinate space. ImGui's main viewport
-    // lives at (0, 0) in its own space, so menus/tooltips positioned against
-    // it already carry correct parent-relative offsets.
+    // on Wayland there is no global coordinate space. Callers are expected
+    // to supply coordinates in the parent window's local frame.
     const int px = window->wl.pendingPosSet ? window->wl.pendingPosX : 0;
     const int py = window->wl.pendingPosSet ? window->wl.pendingPosY : 0;
     xdg_positioner_set_anchor_rect(positioner, px, py, 1, 1);
@@ -1438,6 +1461,25 @@ static GLFWbool createXdgShellObjects(_GLFWwindow* window)
         xdg_toplevel_set_app_id(window->wl.xdg.toplevel, window->wl.appId);
 
     xdg_toplevel_set_title(window->wl.xdg.toplevel, window->title);
+
+    // Parent secondary toplevels (created with GLFW_FOCUSED=false) to the
+    // first existing application toplevel so the compositor keeps them
+    // logically grouped. Concretely, during a DnD-based drag
+    // (xdg_toplevel_drag_v1), the compositor typically raises the hovered
+    // window's app to the front; without set_parent, the primary window
+    // gets left behind when the cursor passes over other apps.
+    if (window->wl.createdUnfocused && !window->monitor)
+    {
+        _GLFWwindow* parent = findWaylandPopupParent(window);
+        if (parent)
+        {
+            struct xdg_toplevel* parentToplevel = parent->wl.xdg.toplevel;
+            if (!parentToplevel && parent->wl.libdecor.frame)
+                parentToplevel = libdecor_frame_get_xdg_toplevel(parent->wl.libdecor.frame);
+            if (parentToplevel)
+                xdg_toplevel_set_parent(window->wl.xdg.toplevel, parentToplevel);
+        }
+    }
 
     if (window->monitor)
     {
@@ -1547,8 +1589,8 @@ static void armMappedFrameCallback(_GLFWwindow* window)
 static GLFWbool createShellObjects(_GLFWwindow* window)
 {
     // Opt into xdg_popup for windows the caller marked as menu-style via
-    // GLFW_FOCUS_ON_SHOW=false. Undecorated alone isn't enough — detached
-    // dockable viewports are also undecorated but should remain real
+    // GLFW_FOCUS_ON_SHOW=false. Undecorated alone isn't enough — other
+    // secondary toplevels may also be undecorated but should remain real
     // toplevels so they can be moved by the compositor (xdg_toplevel.move)
     // and participate in normal window stacking.
     if (!window->focusOnShow && !window->decorated && !window->monitor)
@@ -2137,6 +2179,17 @@ static void pointerHandleButton(void* userData,
     {
         _glfw.wl.pointerButtonSerial = serial;
         _glfw.wl.pointerButtonSurface = _glfw.wl.pointerSurface;
+        if (_glfw.wl.pointerSurface &&
+            wl_proxy_get_tag((struct wl_proxy*) _glfw.wl.pointerSurface)
+                == &_glfw.wl.tag)
+        {
+            _GLFWwindow* w = wl_surface_get_user_data(_glfw.wl.pointerSurface);
+            if (w)
+            {
+                _glfw.wl.pointerButtonX = w->wl.cursorPosX;
+                _glfw.wl.pointerButtonY = w->wl.cursorPosY;
+            }
+        }
         _glfw.wl.pointerButtonsDown++;
     }
     else if (_glfw.wl.pointerButtonsDown > 0)
@@ -2688,12 +2741,16 @@ static void dataDeviceHandleEnter(void* userData,
 
                 wl_data_offer_accept(offer, serial, "text/uri-list");
             }
-            else if (_glfw.wl.offers[i].glfw_window_drag)
+            else if (_glfw.wl.offers[i].glfw_window_drag &&
+                     window != _glfw.wl.toplevelDragSession.window)
             {
-                // Our own xdg_toplevel_drag session. Accept so the compositor
-                // keeps sending motion events to this surface, and prime the
-                // cursor position so the app sees the drag entering this
-                // window.
+                // Our own xdg_toplevel_drag session. Ignore enters on the
+                // *dragged* window itself — per the xdg-shell spec the
+                // attached toplevel doesn't participate in drop-target
+                // selection, but KWin has been observed to deliver DnD
+                // events to it anyway. Forwarding those as cursor motion
+                // would trigger hover effects on the dragged window's own
+                // widgets while the user is dragging.
                 _glfw.wl.dragOffer = offer;
                 _glfw.wl.dragFocus = window;
                 _glfw.wl.dragSerial = serial;
@@ -2726,6 +2783,22 @@ static void dataDeviceHandleEnter(void* userData,
 static void dataDeviceHandleLeave(void* userData,
                                   struct wl_data_device* device)
 {
+    // During our own toplevel drag, park the reported cursor position far
+    // off-screen while the cursor is outside all of our surfaces. The value
+    // is chosen to be large-negative but not close to float limits, so
+    // applications that treat extreme positions as "invalid" (and would
+    // tear down drag state) see it as valid-but-nowhere, letting the drag
+    // stay live and tracking resume on re-entry. Also invalidate the cached
+    // virtual pos so the next enter's _glfwInputCursorPos doesn't early-out
+    // on a coord match.
+    if (_glfw.wl.toplevelDragSession.source && _glfw.wl.dragFocus)
+    {
+        _GLFWwindow* focus = _glfw.wl.dragFocus;
+        focus->virtualCursorPosX = -DBL_MAX;
+        focus->virtualCursorPosY = -DBL_MAX;
+        _glfwInputCursorPos(focus, -100000.0, -100000.0);
+    }
+
     if (_glfw.wl.dragOffer)
     {
         wl_data_offer_destroy(_glfw.wl.dragOffer);
@@ -2743,7 +2816,7 @@ static void dataDeviceHandleMotion(void* userData,
     // During our own toplevel drag, the compositor captures pointer input,
     // so wl_pointer.motion never fires. Forward the DnD motion as a cursor
     // move so the client sees the drag passing over its surfaces and can
-    // drive drop-target hit-testing (dock regions, etc.) in ImGui.
+    // drive drop-target hit-testing.
     if (_glfw.wl.dragFocus && _glfw.wl.toplevelDragSession.source)
     {
         const double xpos = wl_fixed_to_double(x);
@@ -2914,6 +2987,8 @@ GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
                                   const _GLFWctxconfig* ctxconfig,
                                   const _GLFWfbconfig* fbconfig)
 {
+    window->wl.createdUnfocused = !wndconfig->focused;
+
     if (!createNativeSurface(window, wndconfig, fbconfig))
         return GLFW_FALSE;
 
@@ -2984,6 +3059,16 @@ GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
 
 void _glfwDestroyWindowWayland(_GLFWwindow* window)
 {
+    // If any drag-session state pointed at this window, clear it now.
+    // Otherwise end-of-drag callbacks (endToplevelDragSession, DnD motion
+    // forwarding) would try to synthesize input events on the freed window
+    // — which can happen when the application destroys an OS window while
+    // the compositor still holds a drag open on it.
+    if (_glfw.wl.toplevelDragSession.window == window)
+        _glfw.wl.toplevelDragSession.window = NULL;
+    if (_glfw.wl.dragFocus == window)
+        _glfw.wl.dragFocus = NULL;
+
     if (window->wl.surface == _glfw.wl.pointerSurface)
         _glfw.wl.pointerSurface = NULL;
 
@@ -3064,8 +3149,8 @@ void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos)
     // we do know the requested parent-relative anchor we were created at, so
     // report that; for toplevels, there's no meaningful value to return.
     //
-    // Stay silent: ImGui's viewport code polls this every frame and the
-    // warning would flood the log.
+    // Stay silent: applications often poll this every frame and a warning
+    // would flood the log.
     if (window->wl.pendingPosSet)
     {
         if (xpos) *xpos = window->wl.pendingPosX;
@@ -3076,14 +3161,11 @@ void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos)
 void _glfwSetWindowPosWayland(_GLFWwindow* window, int xpos, int ypos)
 {
     // Wayland has no global coordinate space, so we can't physically move a
-    // mapped toplevel. But we still mirror whatever the caller writes:
-    // ImGui's multi-viewport input-forwarding adds glfwGetWindowPos to each
-    // per-surface pointer coord to produce absolute coordinates, and its
-    // hit-testing assumes viewport->Pos matches that same value. The two
-    // drift together harmlessly as long as we always mirror the write;
-    // making one stable while the other isn't breaks widget clicks.
-    // Before mapping, this stashed value also feeds the xdg_popup
-    // positioner as the anchor-rect origin.
+    // mapped toplevel. But we still mirror whatever the caller writes so
+    // later glfwGetWindowPos returns what was last set — callers that use
+    // the stored position to translate per-surface pointer coordinates
+    // rely on write/read consistency. Before mapping, this stashed value
+    // also feeds the xdg_popup positioner as the anchor-rect origin.
     window->wl.pendingPosX = xpos;
     window->wl.pendingPosY = ypos;
     window->wl.pendingPosSet = GLFW_TRUE;
@@ -3359,8 +3441,7 @@ static void endToplevelDragSession(void)
         _glfw.wl.pointerButtonsDown--;
 
     // Synthesize the swallowed left-button release so the application's
-    // input pipeline gets to see "drag ended" and run its drop logic
-    // (e.g. ImGui dock-to-target detection).
+    // input pipeline gets to see "drag ended" and can run any drop logic.
     if (window)
         _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE, 0);
 }
@@ -3418,8 +3499,8 @@ static const struct wl_data_source_listener dragSourceListener =
 // GLFW_TRUE on success; caller should fall back to xdg_toplevel.move otherwise.
 // The critical property of this path vs plain move: the compositor delivers
 // wl_data_device enter/motion/leave events to our surfaces under the cursor,
-// so the application can detect drop targets (e.g. dock regions) while the
-// dragged window follows the cursor.
+// so the application can detect drop targets while the dragged window
+// follows the cursor.
 static GLFWbool startToplevelDragSession(_GLFWwindow* window, uint32_t serial)
 {
     if (!_glfw.wl.toplevelDragManager ||
@@ -3478,32 +3559,35 @@ static GLFWbool startToplevelDragSession(_GLFWwindow* window, uint32_t serial)
     // Two cases:
     //  - Dragging the window that received the press (regular titlebar
     //    drag): use that window's own tracked cursor position.
-    //  - Tab-tear: the press happened on a different window (e.g. main
-    //    window's tab bar), then a new toplevel was created under the
-    //    cursor. The new toplevel hasn't received any motion events yet, so
-    //    its cursorPosX/Y is 0, which is why it grabs from the top-left.
-    //    Compute the cursor position inside the new window as the source
-    //    window's cursor pos minus the new window's caller-intended
-    //    position (ImGui wrote this via glfwSetWindowPos before show).
-    int offsetX = 0;
-    int offsetY = 0;
+    //  - Press-on-other-window: the press happened on a different window
+    //    than the one being dragged (the caller may have created a new
+    //    toplevel for the drag under the cursor). The new toplevel hasn't
+    //    received any motion events yet, so its cursorPosX/Y is 0, which
+    //    is why it grabs from the top-left. Compute the cursor position
+    //    inside the new window as the source window's cursor pos minus
+    //    the new window's caller-intended position (passed via an earlier
+    //    glfwSetWindowPos before show).
+    // Use the cursor position captured at the press itself, not the live
+    // cursor pos — it drifts between the press and when SetWindowPos
+    // actually triggers this drag, and the drift varied per-drag.
+    // Round rather than truncate so fractional cursor positions don't
+    // systematically lose a pixel to the bottom-left.
+    double rawOffsetX, rawOffsetY;
     if (_glfw.wl.pointerButtonSurface == window->wl.surface)
     {
-        offsetX = (int) window->wl.cursorPosX;
-        offsetY = (int) window->wl.cursorPosY;
+        rawOffsetX = _glfw.wl.pointerButtonX;
+        rawOffsetY = _glfw.wl.pointerButtonY;
     }
-    else if (_glfw.wl.pointerButtonSurface &&
-             wl_proxy_get_tag((struct wl_proxy*) _glfw.wl.pointerButtonSurface)
-                 == &_glfw.wl.tag)
+    else
     {
-        _GLFWwindow* src =
-            wl_surface_get_user_data(_glfw.wl.pointerButtonSurface);
-        if (src)
-        {
-            offsetX = (int)(src->wl.cursorPosX - window->wl.pendingPosX);
-            offsetY = (int)(src->wl.cursorPosY - window->wl.pendingPosY);
-        }
+        // Tab-tear: press was on a different surface (main window's tab
+        // bar). Convert the press position into the new window's surface
+        // coords by subtracting the new window's intended top-left.
+        rawOffsetX = _glfw.wl.pointerButtonX - window->wl.pendingPosX;
+        rawOffsetY = _glfw.wl.pointerButtonY - window->wl.pendingPosY;
     }
+    int offsetX = (int) lround(rawOffsetX);
+    int offsetY = (int) lround(rawOffsetY);
     if (offsetX < 0) offsetX = 0;
     if (offsetY < 0) offsetY = 0;
     xdg_toplevel_drag_v1_attach(drag, toplevel, offsetX, offsetY);
@@ -3521,9 +3605,9 @@ void _glfwDragWindowWayland(_GLFWwindow* window)
     if (!_glfw.wl.seat || !_glfw.wl.pointerButtonSerial)
         return;
 
-    // A drag session is already in flight for this window — no-op. ImGui's
-    // Platform_SetWindowPos fires each frame during its drag math, but we
-    // only want to hand the drag to the compositor once per user press.
+    // A drag session is already in flight for this window — no-op. Callers
+    // may invoke this every frame during their own drag math, but we only
+    // want to hand the drag to the compositor once per user press.
     if (_glfw.wl.toplevelDragSession.source &&
         _glfw.wl.toplevelDragSession.window == window)
     {
@@ -3533,9 +3617,9 @@ void _glfwDragWindowWayland(_GLFWwindow* window)
     // Pre-map: stash the request and let the mapped-frame callback fire it
     // once the compositor has processed the first buffer. Calling
     // xdg_toplevel.move (or starting a drag attached to an unmapped toplevel)
-    // on an unmapped surface has been observed to crash KWin. The pre-show
-    // case matters for tab-tear (caller invokes this before glfwShowWindow
-    // maps anything).
+    // on an unmapped surface has been observed to crash KWin. This matters
+    // for callers that invoke glfwDragWindow on a window they just created
+    // but haven't yet shown.
     if (!window->wl.mapped)
     {
         window->wl.dragPendingSerial = _glfw.wl.pointerButtonSerial;
@@ -3545,8 +3629,8 @@ void _glfwDragWindowWayland(_GLFWwindow* window)
 
     // Preferred path: xdg_toplevel_drag_v1 (staging) — same visual effect as
     // xdg_toplevel.move but the compositor keeps delivering DnD events to
-    // our surfaces under the cursor. That's what lets the dock system see
-    // the dragged window passing over drop targets.
+    // our surfaces under the cursor, so the application can hit-test the
+    // dragged window against drop targets.
     if (startToplevelDragSession(window, _glfw.wl.pointerButtonSerial))
         return;
 

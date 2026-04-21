@@ -2613,6 +2613,40 @@ void _glfwFocusWindowX11(_GLFWwindow* window)
     XFlush(_glfw.x11.display);
 }
 
+void _glfwDragWindowX11(_GLFWwindow* window)
+{
+    // Equivalent of xdg_toplevel.move / WM_SYSCOMMAND SC_MOVE for X11: send
+    // _NET_WM_MOVERESIZE with direction=MOVE, and the WM takes over pointer
+    // tracking until the user releases the button. Matches the behaviour
+    // used by the titlebar-drag path in the button-press handler.
+    if (!_glfw.x11.NET_WM_MOVERESIZE)
+        return;
+
+    Window root, child;
+    int rootX, rootY, winX, winY;
+    unsigned int mask;
+    if (!XQueryPointer(_glfw.x11.display, window->x11.handle,
+                       &root, &child, &rootX, &rootY, &winX, &winY, &mask))
+        return;
+
+    XUngrabPointer(_glfw.x11.display, CurrentTime);
+
+    XEvent xev = { 0 };
+    xev.type = ClientMessage;
+    xev.xclient.window = window->x11.handle;
+    xev.xclient.message_type = _glfw.x11.NET_WM_MOVERESIZE;
+    xev.xclient.format = 32;
+    xev.xclient.data.l[0] = rootX;
+    xev.xclient.data.l[1] = rootY;
+    xev.xclient.data.l[2] = 8; // _NET_WM_MOVERESIZE_MOVE
+    xev.xclient.data.l[3] = Button1;
+    xev.xclient.data.l[4] = 1; // source: normal app
+
+    XSendEvent(_glfw.x11.display, _glfw.x11.root, False,
+               SubstructureRedirectMask | SubstructureNotifyMask, &xev);
+    XFlush(_glfw.x11.display);
+}
+
 void _glfwSetWindowMonitorX11(_GLFWwindow* window,
                               _GLFWmonitor* monitor,
                               int xpos, int ypos,

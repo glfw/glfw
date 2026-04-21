@@ -1240,6 +1240,22 @@ void _glfwFocusWindowCocoa(_GLFWwindow* window)
     } // autoreleasepool
 }
 
+void _glfwDragWindowCocoa(_GLFWwindow* window)
+{
+    @autoreleasepool {
+    // -[NSWindow performWindowDragWithEvent:] requires a currently-dispatching
+    // mouse-down NSEvent. We don't have easy access to the original event here,
+    // so fall back to the closest available current event. If there isn't a
+    // live drag event, this is a no-op — matching Wayland's "no serial" gate.
+    NSEvent* event = [NSApp currentEvent];
+    if (event && ([event type] == NSEventTypeLeftMouseDown ||
+                  [event type] == NSEventTypeLeftMouseDragged))
+    {
+        [window->ns.object performWindowDragWithEvent:event];
+    }
+    } // autoreleasepool
+}
+
 void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
                                 _GLFWmonitor* monitor,
                                 int xpos, int ypos,

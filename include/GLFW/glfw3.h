@@ -3998,6 +3998,33 @@ GLFWAPI void glfwHideWindow(GLFWwindow* window);
  */
 GLFWAPI void glfwFocusWindow(GLFWwindow* window);
 
+/*! @brief Hand off an in-progress pointer drag to the window manager so it
+ *  moves this window until the user releases the pointer button.
+ *
+ *  This is the equivalent of the standard custom-titlebar drag pattern, but
+ *  initiated explicitly rather than from a titlebar hit test. It's primarily
+ *  useful when a window is created mid-drag (e.g. tearing out a docked tab
+ *  into a new viewport) and should seamlessly follow the cursor as if the
+ *  initial button press had been on this new window.
+ *
+ *  Requires a pointer button to currently be held. On Wayland this issues
+ *  xdg_toplevel.move (or libdecor_frame_move) using the latest user-event
+ *  serial. On Win32 it issues ReleaseCapture + WM_SYSCOMMAND SC_MOVE. On
+ *  X11 it sends a _NET_WM_MOVERESIZE ClientMessage. All of these use the
+ *  cursor's current location to anchor the drag, so no position needs to
+ *  be passed in.
+ *
+ *  @param[in] window The window to move.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @ingroup window
+ */
+GLFWAPI void glfwDragWindow(GLFWwindow* window);
+
 /*! @brief Requests user attention to the specified window.
  *
  *  This function requests user attention to the specified window.  On

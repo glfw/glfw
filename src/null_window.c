@@ -474,6 +474,11 @@ void _glfwFocusWindowNull(_GLFWwindow* window)
     _glfwInputWindowFocus(window, GLFW_TRUE);
 }
 
+void _glfwDragWindowNull(_GLFWwindow* window)
+{
+    // No windowing system to hand the drag off to.
+}
+
 GLFWbool _glfwWindowFocusedNull(_GLFWwindow* window)
 {
     return _glfw.null.focusedWindow == window;

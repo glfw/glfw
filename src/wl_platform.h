@@ -409,12 +409,17 @@ typedef struct _GLFWwindowWayland
     int                         pendingPosX, pendingPosY;
     GLFWbool                    pendingPosSet;
 
-    // Captured from wndconfig.focused at create time. ImGui's GLFW backend
-    // unconditionally calls glfwWindowHint(GLFW_FOCUSED, false) for viewports;
-    // app-created toplevels (splash, main editor) leave the default `true`.
-    // That gives us a reliable "this is an ImGui viewport" signal that doesn't
-    // depend on version-gated hints like GLFW_FOCUS_ON_SHOW.
-    GLFWbool                    createdUnfocused;
+    // Set on the first wl_surface.frame fire, which only happens after the
+    // compositor has processed a real buffer commit (Vulkan's first present).
+    // xdg_toplevel.move against an unmapped surface has been observed to
+    // crash KWin, so we defer the request until this is true.
+    GLFWbool                    mapped;
+    struct wl_callback*         mappedCallback;
+
+    // If glfwDragWindow was called before the surface was mapped, the press
+    // serial is stashed here and the move is issued from the map callback.
+    GLFWbool                    dragPending;
+    uint32_t                    dragPendingSerial;
 
     struct {
         struct libdecor_frame*  frame;
@@ -497,6 +502,16 @@ typedef struct _GLFWlibraryWayland
     int                         cursorTimerfd;
     uint32_t                    serial;
     uint32_t                    pointerEnterSerial;
+    // Most-recently-received wl_pointer.button press serial. xdg_toplevel.move
+    // and xdg_popup.grab both require a serial tied to a user press event;
+    // _glfw.wl.serial is the latest serial of *any* kind (motion, enter,
+    // keyboard), which is invalid for those requests and can crash strict
+    // compositors (KWin has been observed to crash).
+    uint32_t                    pointerButtonSerial;
+    // Count of currently-held pointer buttons. Deferred drag-moves only fire
+    // while this is non-zero; otherwise the press serial is stale and passing
+    // it to xdg_toplevel.move is undefined per spec.
+    int                         pointerButtonsDown;
 
     int                         keyRepeatTimerfd;
     int32_t                     keyRepeatRate;
@@ -696,6 +711,7 @@ void _glfwShowWindowWayland(_GLFWwindow* window);
 void _glfwHideWindowWayland(_GLFWwindow* window);
 void _glfwRequestWindowAttentionWayland(_GLFWwindow* window);
 void _glfwFocusWindowWayland(_GLFWwindow* window);
+void _glfwDragWindowWayland(_GLFWwindow* window);
 void _glfwSetWindowMonitorWayland(_GLFWwindow* window, _GLFWmonitor* monitor, int xpos, int ypos, int width, int height, int refreshRate);
 GLFWbool _glfwWindowFocusedWayland(_GLFWwindow* window);
 GLFWbool _glfwWindowIconifiedWayland(_GLFWwindow* window);

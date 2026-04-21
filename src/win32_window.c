@@ -1972,6 +1972,16 @@ void _glfwFocusWindowWin32(_GLFWwindow* window)
     SetFocus(window->win32.handle);
 }
 
+void _glfwDragWindowWin32(_GLFWwindow* window)
+{
+    // Hand the in-progress pointer drag off to the window manager. Windows
+    // uses the cursor's current location to anchor the move, same as
+    // xdg_toplevel.move on Wayland. Standard pattern for custom titlebar
+    // drag (Chrome, Electron, anything with a non-native caption).
+    ReleaseCapture();
+    SendMessageW(window->win32.handle, WM_SYSCOMMAND, SC_MOVE | HTCAPTION, 0);
+}
+
 void _glfwSetWindowMonitorWin32(_GLFWwindow* window,
                                 _GLFWmonitor* monitor,
                                 int xpos, int ypos,

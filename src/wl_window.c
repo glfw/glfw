@@ -1391,6 +1391,14 @@ static GLFWbool createXdgPopupShellObjects(_GLFWwindow* window,
     }
     xdg_popup_add_listener(window->wl.xdg.popup, &xdgPopupListener, window);
 
+    // Request a grab tied to the most recent pointer-button press. This is
+    // what makes the compositor auto-dismiss the popup (sending popup_done)
+    // on any outside click, app switch, etc. — matching native menu behavior.
+    // Must use a press serial; any other kind is undefined per the spec and
+    // strict compositors may reject or crash.
+    if (_glfw.wl.seat && _glfw.wl.pointerButtonSerial)
+        xdg_popup_grab(window->wl.xdg.popup, _glfw.wl.seat, _glfw.wl.pointerButtonSerial);
+
     wl_surface_commit(window->wl.surface);
     wl_display_roundtrip(_glfw.wl.display);
     return GLFW_TRUE;
@@ -1468,28 +1476,84 @@ static GLFWbool createXdgShellObjects(_GLFWwindow* window)
     return GLFW_TRUE;
 }
 
+static void issuePendingDragMove(_GLFWwindow* window)
+{
+    if (!window->wl.dragPending || !_glfw.wl.seat)
+        return;
+    window->wl.dragPending = GLFW_FALSE;
+
+    // If the user released the button while we were waiting for map, the
+    // stashed serial is stale — passing it to move is undefined per spec.
+    if (_glfw.wl.pointerButtonsDown <= 0)
+        return;
+
+    struct xdg_toplevel* toplevel = window->wl.xdg.toplevel;
+    if (!toplevel && window->wl.libdecor.frame)
+        toplevel = libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame);
+    if (!toplevel)
+        return;
+
+    xdg_toplevel_move(toplevel, _glfw.wl.seat, window->wl.dragPendingSerial);
+}
+
+static void mappedFrameHandleDone(void* userData,
+                                  struct wl_callback* callback,
+                                  uint32_t data)
+{
+    _GLFWwindow* window = userData;
+    wl_callback_destroy(callback);
+    window->wl.mappedCallback = NULL;
+    window->wl.mapped = GLFW_TRUE;
+
+    // A pending drag request queued before mapping fires now; the compositor
+    // has processed at least one buffer so xdg_toplevel.move is safe.
+    issuePendingDragMove(window);
+}
+
+static const struct wl_callback_listener mappedFrameListener =
+{
+    mappedFrameHandleDone
+};
+
+static void armMappedFrameCallback(_GLFWwindow* window)
+{
+    if (window->wl.mapped || window->wl.mappedCallback)
+        return;
+    window->wl.mappedCallback = wl_surface_frame(window->wl.surface);
+    if (window->wl.mappedCallback)
+    {
+        wl_callback_add_listener(window->wl.mappedCallback,
+                                 &mappedFrameListener, window);
+    }
+}
+
 static GLFWbool createShellObjects(_GLFWwindow* window)
 {
-    // Treat ImGui-style transient viewports as xdg_popups so they appear
-    // relative to the main window on Wayland (toplevel positioning is
-    // protocol-forbidden). The signal is `createdUnfocused` — ImGui's GLFW
-    // backend unconditionally sets GLFW_FOCUSED=false for viewport windows,
-    // whereas app-created toplevels (splash, main editor) leave the default
-    // `true`, so they stay as real toplevels.
-    if (window->wl.createdUnfocused && !window->decorated && !window->monitor)
+    // Opt into xdg_popup for windows the caller marked as menu-style via
+    // GLFW_FOCUS_ON_SHOW=false. Undecorated alone isn't enough — detached
+    // dockable viewports are also undecorated but should remain real
+    // toplevels so they can be moved by the compositor (xdg_toplevel.move)
+    // and participate in normal window stacking.
+    if (!window->focusOnShow && !window->decorated && !window->monitor)
     {
         _GLFWwindow* parent = findWaylandPopupParent(window);
         if (parent)
             return createXdgPopupShellObjects(window, parent);
     }
 
-    if (_glfw.wl.libdecor.context)
-    {
-        if (createLibdecorFrame(window))
-            return GLFW_TRUE;
-    }
+    GLFWbool ok;
+    if (_glfw.wl.libdecor.context && createLibdecorFrame(window))
+        ok = GLFW_TRUE;
+    else
+        ok = createXdgShellObjects(window);
 
-    return createXdgShellObjects(window);
+    // Register a one-shot frame callback so we learn when the compositor has
+    // first processed a buffer — our "truly mapped" signal. Any deferred
+    // drag-move waits for this before firing.
+    if (ok)
+        armMappedFrameCallback(window);
+
+    return ok;
 }
 
 static void destroyShellObjects(_GLFWwindow* window)
@@ -1511,12 +1575,18 @@ static void destroyShellObjects(_GLFWwindow* window)
     if (window->wl.xdg.surface)
         xdg_surface_destroy(window->wl.xdg.surface);
 
+    if (window->wl.mappedCallback)
+        wl_callback_destroy(window->wl.mappedCallback);
+
     window->wl.libdecor.frame = NULL;
     window->wl.xdg.decoration = NULL;
     window->wl.xdg.decorationMode = 0;
     window->wl.xdg.popup = NULL;
     window->wl.xdg.toplevel = NULL;
     window->wl.xdg.surface = NULL;
+    window->wl.mappedCallback = NULL;
+    window->wl.mapped = GLFW_FALSE;
+    window->wl.dragPending = GLFW_FALSE;
 }
 
 static GLFWbool createNativeSurface(_GLFWwindow* window,
@@ -2046,6 +2116,15 @@ static void pointerHandleButton(void* userData,
         return;
 
     _glfw.wl.serial = serial;
+    if (state == WL_POINTER_BUTTON_STATE_PRESSED)
+    {
+        _glfw.wl.pointerButtonSerial = serial;
+        _glfw.wl.pointerButtonsDown++;
+    }
+    else if (_glfw.wl.pointerButtonsDown > 0)
+    {
+        _glfw.wl.pointerButtonsDown--;
+    }
 
     const int button = buttonID - BTN_LEFT;
     const int action = (state == WL_POINTER_BUTTON_STATE_PRESSED);
@@ -2747,8 +2826,6 @@ GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
                                   const _GLFWctxconfig* ctxconfig,
                                   const _GLFWfbconfig* fbconfig)
 {
-    window->wl.createdUnfocused = !wndconfig->focused;
-
     if (!createNativeSurface(window, wndconfig, fbconfig))
         return GLFW_FALSE;
 
@@ -2910,16 +2987,18 @@ void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos)
 
 void _glfwSetWindowPosWayland(_GLFWwindow* window, int xpos, int ypos)
 {
-    if (!window->wl.xdg.surface && !window->wl.libdecor.frame)
-    {
-        window->wl.pendingPosX = xpos;
-        window->wl.pendingPosY = ypos;
-        window->wl.pendingPosSet = GLFW_TRUE;
-        return;
-    }
-
-    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                    "Wayland: The platform does not support setting the window position after it has been mapped");
+    // Wayland has no global coordinate space, so we can't physically move a
+    // mapped toplevel. But we still mirror whatever the caller writes:
+    // ImGui's multi-viewport input-forwarding adds glfwGetWindowPos to each
+    // per-surface pointer coord to produce absolute coordinates, and its
+    // hit-testing assumes viewport->Pos matches that same value. The two
+    // drift together harmlessly as long as we always mirror the write;
+    // making one stable while the other isn't breaks widget clicks.
+    // Before mapping, this stashed value also feeds the xdg_popup
+    // positioner as the anchor-rect origin.
+    window->wl.pendingPosX = xpos;
+    window->wl.pendingPosY = ypos;
+    window->wl.pendingPosSet = GLFW_TRUE;
 }
 
 void _glfwGetWindowSizeWayland(_GLFWwindow* window, int* width, int* height)
@@ -3166,6 +3245,33 @@ void _glfwFocusWindowWayland(_GLFWwindow* window)
     }
 
     xdg_activation_token_v1_commit(window->wl.activationToken);
+}
+
+void _glfwDragWindowWayland(_GLFWwindow* window)
+{
+    if (!_glfw.wl.seat || !_glfw.wl.pointerButtonSerial)
+        return;
+
+    // Fire immediately when the toplevel is already mapped; otherwise stash
+    // the press serial and let the mapped-frame callback issue the move once
+    // the compositor has processed the first buffer. The pre-show case
+    // matters for tab-tear (caller invokes this before glfwShowWindow maps
+    // anything), and the pre-map case matters because calling
+    // xdg_toplevel.move on an unmapped surface crashes KWin.
+    if (!window->wl.mapped)
+    {
+        window->wl.dragPendingSerial = _glfw.wl.pointerButtonSerial;
+        window->wl.dragPending = GLFW_TRUE;
+        return;
+    }
+
+    struct xdg_toplevel* toplevel = window->wl.xdg.toplevel;
+    if (!toplevel && window->wl.libdecor.frame)
+        toplevel = libdecor_frame_get_xdg_toplevel(window->wl.libdecor.frame);
+    if (!toplevel)
+        return;
+
+    xdg_toplevel_move(toplevel, _glfw.wl.seat, _glfw.wl.pointerButtonSerial);
 }
 
 void _glfwSetWindowMonitorWayland(_GLFWwindow* window,

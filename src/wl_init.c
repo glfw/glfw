@@ -821,6 +821,11 @@ int _glfwInitWayland(void)
             _glfwPlatformGetModuleSymbol(_glfw.wl.libdecor.handle, "libdecor_frame_set_visibility");
         _glfw.wl.libdecor.libdecor_frame_get_xdg_toplevel_ = (PFN_libdecor_frame_get_xdg_toplevel)
             _glfwPlatformGetModuleSymbol(_glfw.wl.libdecor.handle, "libdecor_frame_get_xdg_toplevel");
+        // Optional: only present in libdecor 0.2+. Not in the required-set below
+        // (its absence doesn't prevent libdecor from working for toplevels), but
+        // when present it lets xdg_popup windows be parented to libdecor frames.
+        _glfw.wl.libdecor.libdecor_frame_get_xdg_surface_ = (PFN_libdecor_frame_get_xdg_surface)
+            _glfwPlatformGetModuleSymbol(_glfw.wl.libdecor.handle, "libdecor_frame_get_xdg_surface");
         _glfw.wl.libdecor.libdecor_configuration_get_content_size_ = (PFN_libdecor_configuration_get_content_size)
             _glfwPlatformGetModuleSymbol(_glfw.wl.libdecor.handle, "libdecor_configuration_get_content_size");
         _glfw.wl.libdecor.libdecor_configuration_get_window_state_ = (PFN_libdecor_configuration_get_window_state)

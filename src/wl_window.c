@@ -1247,6 +1247,155 @@ static void updateXdgSizeLimits(_GLFWwindow* window)
     xdg_toplevel_set_max_size(window->wl.xdg.toplevel, maxwidth, maxheight);
 }
 
+static void xdgPopupSurfaceHandleConfigure(void* userData,
+                                           struct xdg_surface* surface,
+                                           uint32_t serial)
+{
+    // Popups don't go through the toplevel state machine, so just ACK the
+    // configure and mark the window as visible. Size is already known from
+    // the positioner we handed to the compositor at creation.
+    _GLFWwindow* window = userData;
+    xdg_surface_ack_configure(surface, serial);
+
+    if (!window->wl.visible)
+    {
+        window->wl.visible = GLFW_TRUE;
+        _glfwInputWindowDamage(window);
+    }
+}
+
+static const struct xdg_surface_listener xdgPopupSurfaceListener =
+{
+    xdgPopupSurfaceHandleConfigure
+};
+
+static void xdgPopupHandleConfigure(void* userData,
+                                    struct xdg_popup* popup,
+                                    int32_t x, int32_t y,
+                                    int32_t width, int32_t height)
+{
+    // Compositor-confirmed popup geometry. ImGui already has its own layout,
+    // so nothing to propagate here beyond the surface-level size sync.
+    _GLFWwindow* window = userData;
+    if (width > 0 && height > 0 &&
+        (width != window->wl.width || height != window->wl.height))
+    {
+        window->wl.width = width;
+        window->wl.height = height;
+        resizeFramebuffer(window);
+        _glfwInputWindowSize(window, width, height);
+    }
+}
+
+static void xdgPopupHandlePopupDone(void* userData, struct xdg_popup* popup)
+{
+    // Compositor dismissed the popup (e.g. user clicked outside). Ask the
+    // owning application to close the window; ImGui will tear down the viewport.
+    _GLFWwindow* window = userData;
+    _glfwInputWindowCloseRequest(window);
+}
+
+static void xdgPopupHandleRepositioned(void* userData,
+                                       struct xdg_popup* popup,
+                                       uint32_t token)
+{
+    // Unused: we don't currently issue xdg_popup.reposition requests.
+}
+
+static const struct xdg_popup_listener xdgPopupListener =
+{
+    xdgPopupHandleConfigure,
+    xdgPopupHandlePopupDone,
+    xdgPopupHandleRepositioned,
+};
+
+// Resolve the xdg_surface of a window that owns a mapped toplevel, whether
+// created directly via xdg-shell or wrapped by libdecor. Returns NULL if the
+// window has no queryable xdg_surface (libdecor < 0.2 lacks the accessor).
+static struct xdg_surface* getWindowXdgSurface(_GLFWwindow* w)
+{
+    if (w->wl.xdg.surface)
+        return w->wl.xdg.surface;
+    if (w->wl.libdecor.frame && _glfw.wl.libdecor.libdecor_frame_get_xdg_surface_)
+        return libdecor_frame_get_xdg_surface(w->wl.libdecor.frame);
+    return NULL;
+}
+
+// Walk the GLFW window list and return the first window that owns a mapped
+// xdg_toplevel (directly or through libdecor) and has a queryable xdg_surface.
+// That window acts as the parent surface for any popup we spawn.
+static _GLFWwindow* findWaylandPopupParent(_GLFWwindow* self)
+{
+    for (_GLFWwindow* w = _glfw.windowListHead; w; w = w->next)
+    {
+        if (w == self) continue;
+        if (w->wl.xdg.popup) continue;
+        if (!getWindowXdgSurface(w)) continue;
+        if (w->wl.xdg.toplevel || w->wl.libdecor.frame)
+            return w;
+    }
+    return NULL;
+}
+
+static GLFWbool createXdgPopupShellObjects(_GLFWwindow* window,
+                                           _GLFWwindow* parent)
+{
+    window->wl.xdg.surface = xdg_wm_base_get_xdg_surface(_glfw.wl.wmBase,
+                                                         window->wl.surface);
+    if (!window->wl.xdg.surface)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to create xdg-surface for popup");
+        return GLFW_FALSE;
+    }
+    xdg_surface_add_listener(window->wl.xdg.surface, &xdgPopupSurfaceListener, window);
+
+    struct xdg_positioner* positioner =
+        xdg_wm_base_create_positioner(_glfw.wl.wmBase);
+    if (!positioner)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to create xdg-positioner for popup");
+        return GLFW_FALSE;
+    }
+
+    const int w = window->wl.width  > 0 ? window->wl.width  : 1;
+    const int h = window->wl.height > 0 ? window->wl.height : 1;
+    xdg_positioner_set_size(positioner, w, h);
+
+    // Treat the coords handed to glfwSetWindowPos as parent-relative, because
+    // on Wayland there is no global coordinate space. ImGui's main viewport
+    // lives at (0, 0) in its own space, so menus/tooltips positioned against
+    // it already carry correct parent-relative offsets.
+    const int px = window->wl.pendingPosSet ? window->wl.pendingPosX : 0;
+    const int py = window->wl.pendingPosSet ? window->wl.pendingPosY : 0;
+    xdg_positioner_set_anchor_rect(positioner, px, py, 1, 1);
+    xdg_positioner_set_anchor(positioner, XDG_POSITIONER_ANCHOR_TOP_LEFT);
+    xdg_positioner_set_gravity(positioner, XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT);
+    xdg_positioner_set_constraint_adjustment(positioner,
+        XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_SLIDE_X |
+        XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_SLIDE_Y |
+        XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_X |
+        XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y);
+
+    window->wl.xdg.popup = xdg_surface_get_popup(window->wl.xdg.surface,
+                                                 getWindowXdgSurface(parent),
+                                                 positioner);
+    xdg_positioner_destroy(positioner);
+
+    if (!window->wl.xdg.popup)
+    {
+        _glfwInputError(GLFW_PLATFORM_ERROR,
+                        "Wayland: Failed to create xdg-popup");
+        return GLFW_FALSE;
+    }
+    xdg_popup_add_listener(window->wl.xdg.popup, &xdgPopupListener, window);
+
+    wl_surface_commit(window->wl.surface);
+    wl_display_roundtrip(_glfw.wl.display);
+    return GLFW_TRUE;
+}
+
 static GLFWbool createXdgShellObjects(_GLFWwindow* window)
 {
     window->wl.xdg.surface = xdg_wm_base_get_xdg_surface(_glfw.wl.wmBase,
@@ -1321,6 +1470,19 @@ static GLFWbool createXdgShellObjects(_GLFWwindow* window)
 
 static GLFWbool createShellObjects(_GLFWwindow* window)
 {
+    // Treat ImGui-style transient viewports as xdg_popups so they appear
+    // relative to the main window on Wayland (toplevel positioning is
+    // protocol-forbidden). The signal is `createdUnfocused` — ImGui's GLFW
+    // backend unconditionally sets GLFW_FOCUSED=false for viewport windows,
+    // whereas app-created toplevels (splash, main editor) leave the default
+    // `true`, so they stay as real toplevels.
+    if (window->wl.createdUnfocused && !window->decorated && !window->monitor)
+    {
+        _GLFWwindow* parent = findWaylandPopupParent(window);
+        if (parent)
+            return createXdgPopupShellObjects(window, parent);
+    }
+
     if (_glfw.wl.libdecor.context)
     {
         if (createLibdecorFrame(window))
@@ -1340,6 +1502,9 @@ static void destroyShellObjects(_GLFWwindow* window)
     if (window->wl.xdg.decoration)
         zxdg_toplevel_decoration_v1_destroy(window->wl.xdg.decoration);
 
+    if (window->wl.xdg.popup)
+        xdg_popup_destroy(window->wl.xdg.popup);
+
     if (window->wl.xdg.toplevel)
         xdg_toplevel_destroy(window->wl.xdg.toplevel);
 
@@ -1349,6 +1514,7 @@ static void destroyShellObjects(_GLFWwindow* window)
     window->wl.libdecor.frame = NULL;
     window->wl.xdg.decoration = NULL;
     window->wl.xdg.decorationMode = 0;
+    window->wl.xdg.popup = NULL;
     window->wl.xdg.toplevel = NULL;
     window->wl.xdg.surface = NULL;
 }
@@ -2581,6 +2747,8 @@ GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
                                   const _GLFWctxconfig* ctxconfig,
                                   const _GLFWfbconfig* fbconfig)
 {
+    window->wl.createdUnfocused = !wndconfig->focused;
+
     if (!createNativeSurface(window, wndconfig, fbconfig))
         return GLFW_FALSE;
 
@@ -2727,19 +2895,31 @@ void _glfwSetWindowIconWayland(_GLFWwindow* window,
 
 void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos)
 {
-    // A Wayland client is not aware of its position, so just warn and leave it
-    // as (0, 0)
-
-    _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                    "Wayland: The platform does not provide the window position");
+    // A Wayland client is not aware of its global position. For popup windows
+    // we do know the requested parent-relative anchor we were created at, so
+    // report that; for toplevels, there's no meaningful value to return.
+    //
+    // Stay silent: ImGui's viewport code polls this every frame and the
+    // warning would flood the log.
+    if (window->wl.pendingPosSet)
+    {
+        if (xpos) *xpos = window->wl.pendingPosX;
+        if (ypos) *ypos = window->wl.pendingPosY;
+    }
 }
 
 void _glfwSetWindowPosWayland(_GLFWwindow* window, int xpos, int ypos)
 {
-    // A Wayland client can not set its position, so just warn
+    if (!window->wl.xdg.surface && !window->wl.libdecor.frame)
+    {
+        window->wl.pendingPosX = xpos;
+        window->wl.pendingPosY = ypos;
+        window->wl.pendingPosSet = GLFW_TRUE;
+        return;
+    }
 
     _glfwInputError(GLFW_FEATURE_UNAVAILABLE,
-                    "Wayland: The platform does not support setting the window position");
+                    "Wayland: The platform does not support setting the window position after it has been mapped");
 }
 
 void _glfwGetWindowSizeWayland(_GLFWwindow* window, int* width, int* height)
@@ -2916,7 +3096,7 @@ void _glfwMaximizeWindowWayland(_GLFWwindow* window)
 
 void _glfwShowWindowWayland(_GLFWwindow* window)
 {
-    if (!window->wl.libdecor.frame && !window->wl.xdg.toplevel)
+    if (!window->wl.libdecor.frame && !window->wl.xdg.toplevel && !window->wl.xdg.popup)
     {
         // NOTE: The XDG surface and role are created here so command-line applications
         //       with off-screen windows do not appear in for example the Unity dock

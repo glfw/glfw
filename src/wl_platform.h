@@ -312,6 +312,7 @@ typedef void (* PFN_libdecor_frame_set_capabilities)(struct libdecor_frame*,enum
 typedef void (* PFN_libdecor_frame_unset_capabilities)(struct libdecor_frame*,enum libdecor_capabilities);
 typedef void (* PFN_libdecor_frame_set_visibility)(struct libdecor_frame*,bool visible);
 typedef struct xdg_toplevel* (* PFN_libdecor_frame_get_xdg_toplevel)(struct libdecor_frame*);
+typedef struct xdg_surface* (* PFN_libdecor_frame_get_xdg_surface)(struct libdecor_frame*);
 typedef bool (* PFN_libdecor_configuration_get_content_size)(struct libdecor_configuration*,struct libdecor_frame*,int*,int*);
 typedef bool (* PFN_libdecor_configuration_get_window_state)(struct libdecor_configuration*,enum libdecor_window_state*);
 typedef struct libdecor_state* (* PFN_libdecor_state_new)(int,int);
@@ -337,6 +338,7 @@ typedef void (* PFN_libdecor_state_free)(struct libdecor_state*);
 #define libdecor_frame_unset_capabilities _glfw.wl.libdecor.libdecor_frame_unset_capabilities_
 #define libdecor_frame_set_visibility _glfw.wl.libdecor.libdecor_frame_set_visibility_
 #define libdecor_frame_get_xdg_toplevel _glfw.wl.libdecor.libdecor_frame_get_xdg_toplevel_
+#define libdecor_frame_get_xdg_surface _glfw.wl.libdecor.libdecor_frame_get_xdg_surface_
 #define libdecor_configuration_get_content_size _glfw.wl.libdecor.libdecor_configuration_get_content_size_
 #define libdecor_configuration_get_window_state _glfw.wl.libdecor.libdecor_configuration_get_window_state_
 #define libdecor_state_new _glfw.wl.libdecor.libdecor_state_new_
@@ -396,9 +398,23 @@ typedef struct _GLFWwindowWayland
     struct {
         struct xdg_surface*     surface;
         struct xdg_toplevel*    toplevel;
+        struct xdg_popup*       popup;
         struct zxdg_toplevel_decoration_v1* decoration;
         uint32_t                decorationMode;
     } xdg;
+
+    // Set via glfwSetWindowPos before shell objects exist. Used as the
+    // anchor-rect origin (relative to the parent toplevel) when this window
+    // is created as an xdg_popup.
+    int                         pendingPosX, pendingPosY;
+    GLFWbool                    pendingPosSet;
+
+    // Captured from wndconfig.focused at create time. ImGui's GLFW backend
+    // unconditionally calls glfwWindowHint(GLFW_FOCUSED, false) for viewports;
+    // app-created toplevels (splash, main editor) leave the default `true`.
+    // That gives us a reliable "this is an ImGui viewport" signal that doesn't
+    // depend on version-gated hints like GLFW_FOCUS_ON_SHOW.
+    GLFWbool                    createdUnfocused;
 
     struct {
         struct libdecor_frame*  frame;
@@ -621,6 +637,7 @@ typedef struct _GLFWlibraryWayland
         PFN_libdecor_frame_unset_capabilities libdecor_frame_unset_capabilities_;
         PFN_libdecor_frame_set_visibility libdecor_frame_set_visibility_;
         PFN_libdecor_frame_get_xdg_toplevel libdecor_frame_get_xdg_toplevel_;
+        PFN_libdecor_frame_get_xdg_surface libdecor_frame_get_xdg_surface_;
         PFN_libdecor_configuration_get_content_size libdecor_configuration_get_content_size_;
         PFN_libdecor_configuration_get_window_state libdecor_configuration_get_window_state_;
         PFN_libdecor_state_new libdecor_state_new_;

@@ -519,12 +519,33 @@ void _glfwDetectJoystickConnectionWin32(void)
             if (jid <= GLFW_JOYSTICK_LAST)
                 continue;
 
-            if (XInputGetCapabilities(index, 0, &xic) != ERROR_SUCCESS)
+            if (XInputGetCapabilities(index, XINPUT_FLAG_GAMEPAD, &xic) != ERROR_SUCCESS)
                 continue;
 
-            // Generate a joystick GUID that matches the SDL 2.0.5+ one
-            sprintf(guid, "78696e707574%02x000000000000000000",
-                    xic.SubType & 0xff);
+            GLFW_XINPUT_CAPABILITIES_EX xic_ex;
+            if (!XInputGetCapabilitiesEx || XInputGetCapabilitiesEx(1, index, 0, &xic_ex) != ERROR_SUCCESS)
+            {
+                // use a generic VID/PID representing an XInput controller
+                xic_ex.VendorId = USB_VENDOR_MICROSOFT;
+                xic_ex.ProductId = USB_PRODUCT_XBOX360_XUSB_CONTROLLER;
+                xic_ex.VersionNumber = 0;
+            }
+            else
+            {
+                // fixup for Wireless Xbox 360 Controller
+                if (xic_ex.ProductId == 0 && xic_ex.Capabilities.Flags & XINPUT_CAPS_WIRELESS)
+                {
+                    xic_ex.VendorId = USB_VENDOR_MICROSOFT;
+                    xic_ex.ProductId = USB_PRODUCT_XBOX360_XUSB_CONTROLLER;
+                }
+            }
+
+            // Generate a joystick GUID that matches the SDL one
+            // SDL_xinputjoystick.c:207
+            uint8_t* vid = (uint8_t*)&xic_ex.VendorId;
+            uint8_t* pid = (uint8_t*)&xic_ex.ProductId;
+            uint8_t* ver = (uint8_t*)&xic_ex.VersionNumber;
+            sprintf(guid, "03000000%02x%02x0000%02x%02x0000%02x%02x0000", vid[0], vid[1], pid[0], pid[1], ver[0], ver[1]);
 
             js = _glfwAllocJoystick(getDeviceDescription(&xic), guid, 6, 10, 1);
             if (!js)

@@ -126,6 +126,9 @@ static GLFWbool loadLibraries(void)
             {
                 _glfw.win32.xinput.GetCapabilities = (PFN_XInputGetCapabilities)
                     _glfwPlatformGetModuleSymbol(_glfw.win32.xinput.instance, "XInputGetCapabilities");
+                // 108 is the ordinal for _XInputGetCapabilitiesEx, which additionally returns VID/PID of the controller.
+                _glfw.win32.xinput.GetCapabilitiesEx = (PFN_XInputGetCapabilitiesEx)
+                    _glfwPlatformGetModuleSymbol(_glfw.win32.xinput.instance, (LPCSTR)108);
                 _glfw.win32.xinput.GetState = (PFN_XInputGetState)
                     _glfwPlatformGetModuleSymbol(_glfw.win32.xinput.instance, "XInputGetState");
 

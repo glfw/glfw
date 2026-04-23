@@ -515,6 +515,7 @@ typedef struct _GLFWlibraryWayland
         struct wl_data_source*          source;
         struct xdg_toplevel_drag_v1*    drag;
         _GLFWwindow*                    window;
+        int                             offsetX, offsetY;
     } toplevelDragSession;
 
     const char*                 tag;

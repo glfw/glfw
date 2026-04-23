@@ -2766,6 +2766,20 @@ static void dataDeviceHandleEnter(void* userData,
                 const double xpos = wl_fixed_to_double(x);
                 const double ypos = wl_fixed_to_double(y);
                 _glfwInputCursorPos(window, xpos, ypos);
+
+                // Re-sync dragged window position (see dataDeviceHandleMotion)
+                _GLFWwindow* dragged = _glfw.wl.toplevelDragSession.window;
+                if (dragged)
+                {
+                    int newX = window->wl.pendingPosX
+                             + (int) lround(xpos) - _glfw.wl.toplevelDragSession.offsetX;
+                    int newY = window->wl.pendingPosY
+                             + (int) lround(ypos) - _glfw.wl.toplevelDragSession.offsetY;
+                    dragged->wl.pendingPosX = newX;
+                    dragged->wl.pendingPosY = newY;
+                    dragged->wl.pendingPosSet = GLFW_TRUE;
+                    _glfwInputWindowPos(dragged, newX, newY);
+                }
             }
         }
     }
@@ -2822,6 +2836,28 @@ static void dataDeviceHandleMotion(void* userData,
         const double xpos = wl_fixed_to_double(x);
         const double ypos = wl_fixed_to_double(y);
         _glfwInputCursorPos(_glfw.wl.dragFocus, xpos, ypos);
+
+        // Re-synchronize the dragged window's stored position from the
+        // compositor's actual placement.  The cursor is at (xpos, ypos) in
+        // dragFocus's surface frame and the dragged toplevel was attached
+        // at (offsetX, offsetY) from the cursor, so the dragged window's
+        // origin is at (cursor - offset) relative to dragFocus's origin.
+        _GLFWwindow* dragged = _glfw.wl.toplevelDragSession.window;
+        if (dragged && _glfw.wl.dragFocus != dragged)
+        {
+            int newX = _glfw.wl.dragFocus->wl.pendingPosX
+                     + (int) lround(xpos) - _glfw.wl.toplevelDragSession.offsetX;
+            int newY = _glfw.wl.dragFocus->wl.pendingPosY
+                     + (int) lround(ypos) - _glfw.wl.toplevelDragSession.offsetY;
+            if (newX != dragged->wl.pendingPosX ||
+                newY != dragged->wl.pendingPosY)
+            {
+                dragged->wl.pendingPosX = newX;
+                dragged->wl.pendingPosY = newY;
+                dragged->wl.pendingPosSet = GLFW_TRUE;
+                _glfwInputWindowPos(dragged, newX, newY);
+            }
+        }
     }
 }
 
@@ -3590,6 +3626,8 @@ static GLFWbool startToplevelDragSession(_GLFWwindow* window, uint32_t serial)
     int offsetY = (int) lround(rawOffsetY);
     if (offsetX < 0) offsetX = 0;
     if (offsetY < 0) offsetY = 0;
+    _glfw.wl.toplevelDragSession.offsetX = offsetX;
+    _glfw.wl.toplevelDragSession.offsetY = offsetY;
     xdg_toplevel_drag_v1_attach(drag, toplevel, offsetX, offsetY);
 
     struct wl_surface* origin = _glfw.wl.pointerButtonSurface;

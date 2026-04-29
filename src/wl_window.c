@@ -1973,7 +1973,12 @@ static void processPointerLeaveSurface(struct wl_surface* surface)
     if (window->wl.surface == surface)
     {
         window->wl.resizeEdge = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
-        _glfwInputCursorEnter(window, GLFW_FALSE);
+        // During a toplevel drag session, the compositor steals the pointer
+        // for DnD. Suppress the cursor-leave notification so the application
+        // doesn't park the cursor at FLT_MAX and lose hover state. DnD
+        // enter/motion events provide cursor position while the drag is live.
+        if (!_glfw.wl.toplevelDragSession.source)
+            _glfwInputCursorEnter(window, GLFW_FALSE);
     }
 }
 
@@ -2022,6 +2027,16 @@ static void processPointerMotion(double xpos, double ypos)
 
 static void processPointerButton(int button, int action)
 {
+    // When a toplevel drag session is active, the compositor sends a button
+    // release as it transfers the implicit grab to the DnD session. Suppress
+    // it so the application's input state keeps the button held throughout
+    // the drag. endToplevelDragSession synthesizes the release when done.
+    if (_glfw.wl.toplevelDragSession.source &&
+        button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+    {
+        return;
+    }
+
     _GLFWwindow* window = wl_surface_get_user_data(_glfw.wl.pointerSurface);
     if (window->wl.surface == _glfw.wl.pointerSurface)
     {
@@ -2175,6 +2190,18 @@ static void pointerHandleButton(void* userData,
         return;
 
     _glfw.wl.serial = serial;
+
+    // Suppress the button release the compositor sends when transferring the
+    // implicit grab to the DnD session. Without this, pointerButtonsDown drops
+    // to 0 and downstream logic thinks no button is held during the drag.
+    const int btnIdx = buttonID - BTN_LEFT;
+    if (_glfw.wl.toplevelDragSession.source &&
+        btnIdx == GLFW_MOUSE_BUTTON_LEFT &&
+        state != WL_POINTER_BUTTON_STATE_PRESSED)
+    {
+        return;
+    }
+
     if (state == WL_POINTER_BUTTON_STATE_PRESSED)
     {
         _glfw.wl.pointerButtonSerial = serial;
@@ -2450,7 +2477,29 @@ static void keyboardHandleLeave(void* userData,
 
     _glfw.wl.serial = serial;
     _glfw.wl.keyboardFocus = NULL;
-    _glfwInputWindowFocus(window, GLFW_FALSE);
+
+    // On Wayland, keyboard focus follows the pointer. Creating a new window
+    // under the cursor triggers wl_keyboard.leave on the old window, and
+    // _glfwInputWindowFocus synthesizes button releases for all held buttons.
+    // This is wrong when the physical button is still held (e.g. mid-drag
+    // tab tear-out). Temporarily mark buttons as released so
+    // _glfwInputWindowFocus's loop has nothing to release, then restore them.
+    if (_glfw.wl.pointerButtonsDown > 0)
+    {
+        GLFWbool savedButtons[GLFW_MOUSE_BUTTON_LAST + 1];
+        for (int i = 0; i <= GLFW_MOUSE_BUTTON_LAST; i++)
+        {
+            savedButtons[i] = window->mouseButtons[i];
+            window->mouseButtons[i] = GLFW_RELEASE;
+        }
+        _glfwInputWindowFocus(window, GLFW_FALSE);
+        for (int i = 0; i <= GLFW_MOUSE_BUTTON_LAST; i++)
+            window->mouseButtons[i] = savedButtons[i];
+    }
+    else
+    {
+        _glfwInputWindowFocus(window, GLFW_FALSE);
+    }
 }
 
 static void keyboardHandleKey(void* userData,
@@ -2726,7 +2775,9 @@ static void dataDeviceHandleEnter(void* userData,
     }
 
     if (i == _glfw.wl.offerCount)
+    {
         return;
+    }
 
     if (surface && wl_proxy_get_tag((struct wl_proxy*) surface) == &_glfw.wl.tag)
     {
@@ -2741,16 +2792,8 @@ static void dataDeviceHandleEnter(void* userData,
 
                 wl_data_offer_accept(offer, serial, "text/uri-list");
             }
-            else if (_glfw.wl.offers[i].glfw_window_drag &&
-                     window != _glfw.wl.toplevelDragSession.window)
+            else if (_glfw.wl.offers[i].glfw_window_drag)
             {
-                // Our own xdg_toplevel_drag session. Ignore enters on the
-                // *dragged* window itself — per the xdg-shell spec the
-                // attached toplevel doesn't participate in drop-target
-                // selection, but KWin has been observed to deliver DnD
-                // events to it anyway. Forwarding those as cursor motion
-                // would trigger hover effects on the dragged window's own
-                // widgets while the user is dragging.
                 _glfw.wl.dragOffer = offer;
                 _glfw.wl.dragFocus = window;
                 _glfw.wl.dragSerial = serial;
@@ -2766,20 +2809,6 @@ static void dataDeviceHandleEnter(void* userData,
                 const double xpos = wl_fixed_to_double(x);
                 const double ypos = wl_fixed_to_double(y);
                 _glfwInputCursorPos(window, xpos, ypos);
-
-                // Re-sync dragged window position (see dataDeviceHandleMotion)
-                _GLFWwindow* dragged = _glfw.wl.toplevelDragSession.window;
-                if (dragged)
-                {
-                    int newX = window->wl.pendingPosX
-                             + (int) lround(xpos) - _glfw.wl.toplevelDragSession.offsetX;
-                    int newY = window->wl.pendingPosY
-                             + (int) lround(ypos) - _glfw.wl.toplevelDragSession.offsetY;
-                    dragged->wl.pendingPosX = newX;
-                    dragged->wl.pendingPosY = newY;
-                    dragged->wl.pendingPosSet = GLFW_TRUE;
-                    _glfwInputWindowPos(dragged, newX, newY);
-                }
             }
         }
     }
@@ -2837,13 +2866,8 @@ static void dataDeviceHandleMotion(void* userData,
         const double ypos = wl_fixed_to_double(y);
         _glfwInputCursorPos(_glfw.wl.dragFocus, xpos, ypos);
 
-        // Re-synchronize the dragged window's stored position from the
-        // compositor's actual placement.  The cursor is at (xpos, ypos) in
-        // dragFocus's surface frame and the dragged toplevel was attached
-        // at (offsetX, offsetY) from the cursor, so the dragged window's
-        // origin is at (cursor - offset) relative to dragFocus's origin.
         _GLFWwindow* dragged = _glfw.wl.toplevelDragSession.window;
-        if (dragged && _glfw.wl.dragFocus != dragged)
+        if (dragged)
         {
             int newX = _glfw.wl.dragFocus->wl.pendingPosX
                      + (int) lround(xpos) - _glfw.wl.toplevelDragSession.offsetX;
@@ -3592,22 +3616,17 @@ static GLFWbool startToplevelDragSession(_GLFWwindow* window, uint32_t serial)
     // passing (0, 0) snaps the window so the cursor is in its top-left
     // corner.
     //
+    // Compute where the cursor sits relative to the toplevel's top-left.
+    //
     // Two cases:
-    //  - Dragging the window that received the press (regular titlebar
-    //    drag): use that window's own tracked cursor position.
-    //  - Press-on-other-window: the press happened on a different window
-    //    than the one being dragged (the caller may have created a new
-    //    toplevel for the drag under the cursor). The new toplevel hasn't
-    //    received any motion events yet, so its cursorPosX/Y is 0, which
-    //    is why it grabs from the top-left. Compute the cursor position
-    //    inside the new window as the source window's cursor pos minus
-    //    the new window's caller-intended position (passed via an earlier
-    //    glfwSetWindowPos before show).
-    // Use the cursor position captured at the press itself, not the live
-    // cursor pos — it drifts between the press and when SetWindowPos
-    // actually triggers this drag, and the drift varied per-drag.
-    // Round rather than truncate so fractional cursor positions don't
-    // systematically lose a pixel to the bottom-left.
+    //  - Same-window drag (regular titlebar drag): use the window's own
+    //    tracked cursor position — it's current and surface-local.
+    //  - Cross-window drag (tab tear-out): the press happened on a
+    //    different surface (main window's tab bar), a new toplevel was
+    //    created under the cursor, and its pendingPos was set from the
+    //    CURRENT cursor minus ImGui's click offset. Use the origin
+    //    window's live cursor (not the press-time capture) so the
+    //    compositor attachment offset matches ImGui's click offset.
     double rawOffsetX, rawOffsetY;
     if (_glfw.wl.pointerButtonSurface == window->wl.surface)
     {
@@ -3616,11 +3635,10 @@ static GLFWbool startToplevelDragSession(_GLFWwindow* window, uint32_t serial)
     }
     else
     {
-        // Tab-tear: press was on a different surface (main window's tab
-        // bar). Convert the press position into the new window's surface
-        // coords by subtracting the new window's intended top-left.
-        rawOffsetX = _glfw.wl.pointerButtonX - window->wl.pendingPosX;
-        rawOffsetY = _glfw.wl.pointerButtonY - window->wl.pendingPosY;
+        _GLFWwindow* origin = wl_surface_get_user_data(
+            _glfw.wl.pointerButtonSurface);
+        rawOffsetX = origin->wl.cursorPosX - window->wl.pendingPosX;
+        rawOffsetY = origin->wl.cursorPosY - window->wl.pendingPosY;
     }
     int offsetX = (int) lround(rawOffsetX);
     int offsetY = (int) lround(rawOffsetY);

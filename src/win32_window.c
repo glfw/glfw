@@ -1974,25 +1974,9 @@ void _glfwFocusWindowWin32(_GLFWwindow* window)
 
 void _glfwDragWindowWin32(_GLFWwindow* window)
 {
-    // No-op on Win32. Mirrors the X11 behaviour: rely on Windows' implicit
-    // mouse capture (WM_LBUTTONDOWN captures subsequent motion/release events
-    // for the originating window until release) so the caller can drive a
-    // drag via glfwSetWindowPos each frame and still receive the mouse-up
-    // event at the end.
-    //
-    // The earlier SC_MOVE + HTCAPTION implementation worked for the simple
-    // case but has two defects: DefWindowProc's SC_MOVE modal loop consumes
-    // the WM_LBUTTONUP rather than forwarding it, so GLFW (and callers such
-    // as ImGui multi-viewport) never see the release — they stay stuck in
-    // drag state; and SendMessageW blocks until the modal loop returns,
-    // which on the GLFW fork used by LuckyEngine means the render thread
-    // holds a cross-thread send on the main thread for the duration of the
-    // user's drag.
-    //
-    // Callers that want classic WM-driven move behaviour can use the
-    // titlebar hit-test callback (glfwSetTitlebarHitTestCallback) — that
-    // path returns HTCAPTION from WM_NCHITTEST and Windows handles the
-    // drag directly without involving SendMessage.
+    // No-op: Win32's implicit mouse capture lets callers drive the drag
+    // via glfwSetWindowPos. SC_MOVE's modal loop swallows WM_LBUTTONUP,
+    // which breaks callers that need to see the release (e.g. ImGui).
     (void)window;
 }
 

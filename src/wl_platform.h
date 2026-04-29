@@ -356,10 +356,7 @@ typedef struct _GLFWofferWayland
     struct wl_data_offer*       offer;
     GLFWbool                    text_plain_utf8;
     GLFWbool                    text_uri_list;
-    // Marker for our self-initiated toplevel drag (see glfwDragWindow on
-    // Wayland). Whenever we see an offer advertising this mime type we
-    // accept it so the compositor delivers motion events to us while the
-    // dragged toplevel is following the cursor via xdg_toplevel_drag_v1.
+    // Set when the offer advertises our toplevel-drag marker mime.
     GLFWbool                    glfw_window_drag;
 } _GLFWofferWayland;
 
@@ -408,28 +405,20 @@ typedef struct _GLFWwindowWayland
         uint32_t                decorationMode;
     } xdg;
 
-    // Set via glfwSetWindowPos before shell objects exist. Used as the
-    // anchor-rect origin (relative to the parent toplevel) when this window
-    // is created as an xdg_popup.
+    // Parent-relative position; doubles as xdg_popup anchor-rect origin.
     int                         pendingPosX, pendingPosY;
     GLFWbool                    pendingPosSet;
 
-    // Set on the first wl_surface.frame fire, which only happens after the
-    // compositor has processed a real buffer commit (Vulkan's first present).
-    // xdg_toplevel.move against an unmapped surface has been observed to
-    // crash KWin, so we defer the request until this is true.
+    // True after the first wl_surface.frame callback (first buffer
+    // committed). Drag requests are deferred until then to avoid crashing
+    // KWin with xdg_toplevel.move on an unmapped surface.
     GLFWbool                    mapped;
     struct wl_callback*         mappedCallback;
 
-    // Captured from wndconfig.focused at create time. Callers that create
-    // secondary/transient windows should set GLFW_FOCUSED=false; top-level
-    // application windows leave the default `true`. Gives us a reliable
-    // "this is a secondary window" marker that survives mapping, so we can
-    // apply set_parent and other secondary-window behavior later.
+    // GLFW_FOCUSED was false at create time, i.e. a secondary window.
     GLFWbool                    createdUnfocused;
 
-    // If glfwDragWindow was called before the surface was mapped, the press
-    // serial is stashed here and the move is issued from the map callback.
+    // Deferred drag: serial is stashed here until the map callback fires.
     GLFWbool                    dragPending;
     uint32_t                    dragPendingSerial;
 
@@ -506,11 +495,8 @@ typedef struct _GLFWlibraryWayland
     _GLFWwindow*                dragFocus;
     uint32_t                    dragSerial;
 
-    // Self-initiated window-drag session via xdg_toplevel_drag_v1. Set up by
-    // _glfwDragWindowWayland when the manager global is available. While the
-    // session is active, DnD motion events over this client's surfaces are
-    // converted into cursor-move events so the application can hit-test for
-    // drop targets even though pointer input is captured by the drag.
+    // Active xdg_toplevel_drag_v1 session (drag-and-drop motion forwarded as cursor
+    // events so the app can hit-test drop targets during the drag).
     struct {
         struct wl_data_source*          source;
         struct xdg_toplevel_drag_v1*    drag;
@@ -527,26 +513,12 @@ typedef struct _GLFWlibraryWayland
     int                         cursorTimerfd;
     uint32_t                    serial;
     uint32_t                    pointerEnterSerial;
-    // Most-recently-received wl_pointer.button press serial. xdg_toplevel.move
-    // and xdg_popup.grab both require a serial tied to a user press event;
-    // _glfw.wl.serial is the latest serial of *any* kind (motion, enter,
-    // keyboard), which is invalid for those requests and can crash strict
-    // compositors (KWin has been observed to crash).
+    // Press-event serial (not generic serial) -- required by
+    // xdg_toplevel.move, xdg_popup.grab, and start_drag.
     uint32_t                    pointerButtonSerial;
-    // Surface that received the press associated with pointerButtonSerial.
-    // Used as the `origin` for wl_data_device.start_drag — the compositor
-    // rejects (silently) any drag whose origin doesn't match the pressed
-    // surface tied to the serial.
     struct wl_surface*          pointerButtonSurface;
-    // Cursor position (surface-local, logical) at the moment of the most
-    // recent press. Used as the attach offset for xdg_toplevel_drag_v1 so
-    // the compositor keeps the cursor where the user clicked rather than
-    // snapping to the window's top-left. Must be sampled at press time
-    // because cursorPosX/Y drifts between press and drag-start.
+    // Surface-local cursor pos at press time, for drag attach offset.
     double                      pointerButtonX, pointerButtonY;
-    // Count of currently-held pointer buttons. Deferred drag-moves only fire
-    // while this is non-zero; otherwise the press serial is stale and passing
-    // it to xdg_toplevel.move is undefined per spec.
     int                         pointerButtonsDown;
 
     int                         keyRepeatTimerfd;

@@ -158,11 +158,8 @@ static void registryHandleGlobal(void* userData,
     {
         if (!_glfw.wl.dataDeviceManager)
         {
-            // Bind at version 3 when the compositor supports it — this is
-            // what enables wl_data_offer_set_actions / .finish and
-            // wl_data_source.dnd_drop_performed / .dnd_finished, all of
-            // which we rely on to complete a self-initiated toplevel drag
-            // cleanly. Fall back to lower versions transparently.
+            // v3 adds set_actions/finish/dnd_drop_performed/dnd_finished,
+            // needed for clean toplevel drag completion.
             const uint32_t bindVersion = version >= 3 ? 3 : version;
             _glfw.wl.dataDeviceManager =
                 wl_registry_bind(registry, name,
@@ -841,9 +838,7 @@ int _glfwInitWayland(void)
             _glfwPlatformGetModuleSymbol(_glfw.wl.libdecor.handle, "libdecor_frame_set_visibility");
         _glfw.wl.libdecor.libdecor_frame_get_xdg_toplevel_ = (PFN_libdecor_frame_get_xdg_toplevel)
             _glfwPlatformGetModuleSymbol(_glfw.wl.libdecor.handle, "libdecor_frame_get_xdg_toplevel");
-        // Optional: only present in libdecor 0.2+. Not in the required-set below
-        // (its absence doesn't prevent libdecor from working for toplevels), but
-        // when present it lets xdg_popup windows be parented to libdecor frames.
+        // Optional (libdecor 0.2+): lets xdg_popup parent to libdecor frames.
         _glfw.wl.libdecor.libdecor_frame_get_xdg_surface_ = (PFN_libdecor_frame_get_xdg_surface)
             _glfwPlatformGetModuleSymbol(_glfw.wl.libdecor.handle, "libdecor_frame_get_xdg_surface");
         _glfw.wl.libdecor.libdecor_configuration_get_content_size_ = (PFN_libdecor_configuration_get_content_size)

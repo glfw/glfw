@@ -55,10 +55,7 @@
 #include "xdg-toplevel-drag-v1-client-protocol.h"
 #include "fractional-scale-v1-client-protocol.h"
 
-// Mime type advertised by the wl_data_source we create for self-initiated
-// toplevel drags (see _glfwDragWindowWayland). No actual payload is
-// transferred — it's just a marker so the compositor will deliver
-// wl_data_device enter/motion/leave events to this client's surfaces.
+// Marker mime for self-initiated toplevel drags; no payload transferred.
 #define GLFW_WAYLAND_WINDOW_DRAG_MIME "application/x.glfw-window-drag"
 #include "cursor-shape-v1-client-protocol.h"
 
@@ -1209,10 +1206,7 @@ static GLFWbool createLibdecorFrame(_GLFWwindow* window)
         setIdleInhibitor(window, GLFW_FALSE);
     }
 
-    // Parent secondary libdecor toplevels to the first existing toplevel.
-    // See the matching comment in createXdgShellObjects. libdecor exposes the
-    // underlying xdg_toplevel via get_xdg_toplevel, so we set the parent on
-    // that directly.
+    // Same as createXdgShellObjects: parent secondary toplevels.
     if (window->wl.createdUnfocused && !window->monitor)
     {
         _GLFWwindow* parent = findWaylandPopupParent(window);
@@ -1281,9 +1275,7 @@ static void xdgPopupSurfaceHandleConfigure(void* userData,
                                            struct xdg_surface* surface,
                                            uint32_t serial)
 {
-    // Popups don't go through the toplevel state machine, so just ACK the
-    // configure and mark the window as visible. Size is already known from
-    // the positioner we handed to the compositor at creation.
+    // Popups skip the toplevel state machine; just ACK and mark visible.
     _GLFWwindow* window = userData;
     xdg_surface_ack_configure(surface, serial);
 
@@ -1304,8 +1296,7 @@ static void xdgPopupHandleConfigure(void* userData,
                                     int32_t x, int32_t y,
                                     int32_t width, int32_t height)
 {
-    // Compositor-confirmed popup geometry. Propagate surface-level size sync
-    // so the framebuffer stays in step with the compositor's view.
+    // Resize framebuffer to match compositor-confirmed popup geometry.
     _GLFWwindow* window = userData;
     if (width > 0 && height > 0 &&
         (width != window->wl.width || height != window->wl.height))
@@ -1319,9 +1310,7 @@ static void xdgPopupHandleConfigure(void* userData,
 
 static void xdgPopupHandlePopupDone(void* userData, struct xdg_popup* popup)
 {
-    // Compositor dismissed the popup (e.g. user clicked outside). Ask the
-    // owning application to close the window; it is responsible for
-    // teardown.
+    // Compositor dismissed the popup (e.g. outside click).
     _GLFWwindow* window = userData;
     _glfwInputWindowCloseRequest(window);
 }
@@ -1394,9 +1383,7 @@ static GLFWbool createXdgPopupShellObjects(_GLFWwindow* window,
     const int h = window->wl.height > 0 ? window->wl.height : 1;
     xdg_positioner_set_size(positioner, w, h);
 
-    // Treat the coords handed to glfwSetWindowPos as parent-relative, because
-    // on Wayland there is no global coordinate space. Callers are expected
-    // to supply coordinates in the parent window's local frame.
+    // pendingPos is parent-relative (no global coords on Wayland).
     const int px = window->wl.pendingPosSet ? window->wl.pendingPosX : 0;
     const int py = window->wl.pendingPosSet ? window->wl.pendingPosY : 0;
     xdg_positioner_set_anchor_rect(positioner, px, py, 1, 1);
@@ -1421,11 +1408,7 @@ static GLFWbool createXdgPopupShellObjects(_GLFWwindow* window,
     }
     xdg_popup_add_listener(window->wl.xdg.popup, &xdgPopupListener, window);
 
-    // Request a grab tied to the most recent pointer-button press. This is
-    // what makes the compositor auto-dismiss the popup (sending popup_done)
-    // on any outside click, app switch, etc. — matching native menu behavior.
-    // Must use a press serial; any other kind is undefined per the spec and
-    // strict compositors may reject or crash.
+    // Grab with a press serial so the compositor auto-dismisses on outside click.
     if (_glfw.wl.seat && _glfw.wl.pointerButtonSerial)
         xdg_popup_grab(window->wl.xdg.popup, _glfw.wl.seat, _glfw.wl.pointerButtonSerial);
 
@@ -1462,12 +1445,8 @@ static GLFWbool createXdgShellObjects(_GLFWwindow* window)
 
     xdg_toplevel_set_title(window->wl.xdg.toplevel, window->title);
 
-    // Parent secondary toplevels (created with GLFW_FOCUSED=false) to the
-    // first existing application toplevel so the compositor keeps them
-    // logically grouped. Concretely, during a DnD-based drag
-    // (xdg_toplevel_drag_v1), the compositor typically raises the hovered
-    // window's app to the front; without set_parent, the primary window
-    // gets left behind when the cursor passes over other apps.
+    // Parent secondary toplevels so the compositor keeps them grouped
+    // (prevents the main window from getting buried during drags).
     if (window->wl.createdUnfocused && !window->monitor)
     {
         _GLFWwindow* parent = findWaylandPopupParent(window);
@@ -1533,8 +1512,7 @@ static void issuePendingDragMove(_GLFWwindow* window)
         return;
     window->wl.dragPending = GLFW_FALSE;
 
-    // If the user released the button while we were waiting for map, the
-    // stashed serial is stale — passing it to move is undefined per spec.
+    // Button was released while waiting for map; serial is stale.
     if (_glfw.wl.pointerButtonsDown <= 0)
         return;
 
@@ -1564,8 +1542,7 @@ static void mappedFrameHandleDone(void* userData,
     window->wl.mappedCallback = NULL;
     window->wl.mapped = GLFW_TRUE;
 
-    // A pending drag request queued before mapping fires now; the compositor
-    // has processed at least one buffer so xdg_toplevel.move is safe.
+    // Now that the surface is mapped, fire any deferred drag request.
     issuePendingDragMove(window);
 }
 
@@ -1588,11 +1565,7 @@ static void armMappedFrameCallback(_GLFWwindow* window)
 
 static GLFWbool createShellObjects(_GLFWwindow* window)
 {
-    // Opt into xdg_popup for windows the caller marked as menu-style via
-    // GLFW_FOCUS_ON_SHOW=false. Undecorated alone isn't enough — other
-    // secondary toplevels may also be undecorated but should remain real
-    // toplevels so they can be moved by the compositor (xdg_toplevel.move)
-    // and participate in normal window stacking.
+    // Menu-style windows (undecorated + !focusOnShow) become xdg_popups.
     if (!window->focusOnShow && !window->decorated && !window->monitor)
     {
         _GLFWwindow* parent = findWaylandPopupParent(window);
@@ -1606,9 +1579,7 @@ static GLFWbool createShellObjects(_GLFWwindow* window)
     else
         ok = createXdgShellObjects(window);
 
-    // Register a one-shot frame callback so we learn when the compositor has
-    // first processed a buffer — our "truly mapped" signal. Any deferred
-    // drag-move waits for this before firing.
+    // Deferred drag-moves wait for this "truly mapped" signal.
     if (ok)
         armMappedFrameCallback(window);
 
@@ -1973,10 +1944,8 @@ static void processPointerLeaveSurface(struct wl_surface* surface)
     if (window->wl.surface == surface)
     {
         window->wl.resizeEdge = XDG_TOPLEVEL_RESIZE_EDGE_NONE;
-        // During a toplevel drag session, the compositor steals the pointer
-        // for DnD. Suppress the cursor-leave notification so the application
-        // doesn't park the cursor at FLT_MAX and lose hover state. DnD
-        // enter/motion events provide cursor position while the drag is live.
+        // Suppress cursor-leave during toplevel drag so the app doesn't
+        // park the cursor at FLT_MAX. Drag-and-drop events provide position instead.
         if (!_glfw.wl.toplevelDragSession.source)
             _glfwInputCursorEnter(window, GLFW_FALSE);
     }
@@ -2027,10 +1996,8 @@ static void processPointerMotion(double xpos, double ypos)
 
 static void processPointerButton(int button, int action)
 {
-    // When a toplevel drag session is active, the compositor sends a button
-    // release as it transfers the implicit grab to the DnD session. Suppress
-    // it so the application's input state keeps the button held throughout
-    // the drag. endToplevelDragSession synthesizes the release when done.
+    // Compositor sends a spurious release when transferring the grab to drag-and-drop.
+    // Suppress it; endToplevelDragSession synthesizes the real release.
     if (_glfw.wl.toplevelDragSession.source &&
         button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
     {
@@ -2191,9 +2158,8 @@ static void pointerHandleButton(void* userData,
 
     _glfw.wl.serial = serial;
 
-    // Suppress the button release the compositor sends when transferring the
-    // implicit grab to the DnD session. Without this, pointerButtonsDown drops
-    // to 0 and downstream logic thinks no button is held during the drag.
+    // Suppress the spurious release the compositor sends when transferring
+    // the implicit grab to the drag-and-drop session.
     const int btnIdx = buttonID - BTN_LEFT;
     if (_glfw.wl.toplevelDragSession.source &&
         btnIdx == GLFW_MOUSE_BUTTON_LEFT &&
@@ -2478,12 +2444,8 @@ static void keyboardHandleLeave(void* userData,
     _glfw.wl.serial = serial;
     _glfw.wl.keyboardFocus = NULL;
 
-    // On Wayland, keyboard focus follows the pointer. Creating a new window
-    // under the cursor triggers wl_keyboard.leave on the old window, and
-    // _glfwInputWindowFocus synthesizes button releases for all held buttons.
-    // This is wrong when the physical button is still held (e.g. mid-drag
-    // tab tear-out). Temporarily mark buttons as released so
-    // _glfwInputWindowFocus's loop has nothing to release, then restore them.
+    // _glfwInputWindowFocus synthesizes button releases, but during a drag
+    // the physical button is still held. Hide button state across the call.
     if (_glfw.wl.pointerButtonsDown > 0)
     {
         GLFWbool savedButtons[GLFW_MOUSE_BUTTON_LAST + 1];
@@ -2826,14 +2788,8 @@ static void dataDeviceHandleEnter(void* userData,
 static void dataDeviceHandleLeave(void* userData,
                                   struct wl_data_device* device)
 {
-    // During our own toplevel drag, park the reported cursor position far
-    // off-screen while the cursor is outside all of our surfaces. The value
-    // is chosen to be large-negative but not close to float limits, so
-    // applications that treat extreme positions as "invalid" (and would
-    // tear down drag state) see it as valid-but-nowhere, letting the drag
-    // stay live and tracking resume on re-entry. Also invalidate the cached
-    // virtual pos so the next enter's _glfwInputCursorPos doesn't early-out
-    // on a coord match.
+    // Park cursor off-screen during drag leave so the app keeps the drag
+    // alive. Invalidate virtualCursorPos so the next enter isn't deduped.
     if (_glfw.wl.toplevelDragSession.source && _glfw.wl.dragFocus)
     {
         _GLFWwindow* focus = _glfw.wl.dragFocus;
@@ -2856,10 +2812,7 @@ static void dataDeviceHandleMotion(void* userData,
                                    wl_fixed_t x,
                                    wl_fixed_t y)
 {
-    // During our own toplevel drag, the compositor captures pointer input,
-    // so wl_pointer.motion never fires. Forward the DnD motion as a cursor
-    // move so the client sees the drag passing over its surfaces and can
-    // drive drop-target hit-testing.
+    // wl_pointer.motion is captured during drag-and-drop; forward as cursor events.
     if (_glfw.wl.dragFocus && _glfw.wl.toplevelDragSession.source)
     {
         const double xpos = wl_fixed_to_double(x);
@@ -2891,11 +2844,8 @@ static void dataDeviceHandleDrop(void* userData,
     if (!_glfw.wl.dragOffer)
         return;
 
-    // For a self-initiated toplevel drag we have no payload to transfer; just
-    // finish the offer so the compositor completes the drag protocol and
-    // dnd_finished fires on the source. Without this the compositor keeps
-    // the drag in a half-completed state and normal pointer input stays
-    // routed to DnD handlers instead of returning to the application.
+    // No payload for our own toplevel drag; just complete the protocol so
+    // the compositor stops routing input to drag-and-drop handlers.
     if (_glfw.wl.toplevelDragSession.source)
     {
         // wl_data_offer.finish and set_actions are v3+. Calling either on
@@ -3119,11 +3069,8 @@ GLFWbool _glfwCreateWindowWayland(_GLFWwindow* window,
 
 void _glfwDestroyWindowWayland(_GLFWwindow* window)
 {
-    // If any drag-session state pointed at this window, clear it now.
-    // Otherwise end-of-drag callbacks (endToplevelDragSession, DnD motion
-    // forwarding) would try to synthesize input events on the freed window
-    // — which can happen when the application destroys an OS window while
-    // the compositor still holds a drag open on it.
+    // Detach from any active drag session so end-of-drag callbacks don't
+    // touch a freed window.
     if (_glfw.wl.toplevelDragSession.window == window)
         _glfw.wl.toplevelDragSession.window = NULL;
     if (_glfw.wl.dragFocus == window)
@@ -3205,12 +3152,7 @@ void _glfwSetWindowIconWayland(_GLFWwindow* window,
 
 void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos)
 {
-    // A Wayland client is not aware of its global position. For popup windows
-    // we do know the requested parent-relative anchor we were created at, so
-    // report that; for toplevels, there's no meaningful value to return.
-    //
-    // Stay silent: applications often poll this every frame and a warning
-    // would flood the log.
+    // Popups have a parent-relative position; toplevels don't.
     if (window->wl.pendingPosSet)
     {
         if (xpos) *xpos = window->wl.pendingPosX;
@@ -3220,12 +3162,8 @@ void _glfwGetWindowPosWayland(_GLFWwindow* window, int* xpos, int* ypos)
 
 void _glfwSetWindowPosWayland(_GLFWwindow* window, int xpos, int ypos)
 {
-    // Wayland has no global coordinate space, so we can't physically move a
-    // mapped toplevel. But we still mirror whatever the caller writes so
-    // later glfwGetWindowPos returns what was last set — callers that use
-    // the stored position to translate per-surface pointer coordinates
-    // rely on write/read consistency. Before mapping, this stashed value
-    // also feeds the xdg_popup positioner as the anchor-rect origin.
+    // Can't move a mapped toplevel on Wayland, but callers rely on
+    // write/read consistency. Also used as the xdg_popup anchor origin.
     window->wl.pendingPosX = xpos;
     window->wl.pendingPosY = ypos;
     window->wl.pendingPosSet = GLFW_TRUE;
@@ -3493,15 +3431,10 @@ static void endToplevelDragSession(void)
     }
     _glfw.wl.toplevelDragSession.window = NULL;
 
-    // Also decrement the counter since the real wl_pointer.button release was
-    // consumed by the compositor for the drag. Keeping it above zero would
-    // wrongly suggest a button is still held for future logic (deferred move
-    // gates, drag trigger heuristics, ...).
+    // The compositor consumed the real release; account for it and synthesize
+    // one so the application sees "drag ended".
     if (_glfw.wl.pointerButtonsDown > 0)
         _glfw.wl.pointerButtonsDown--;
-
-    // Synthesize the swallowed left-button release so the application's
-    // input pipeline gets to see "drag ended" and can run any drop logic.
     if (window)
         _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE, 0);
 }
@@ -3528,11 +3461,8 @@ static void dragSourceHandleCancelled(void* data, struct wl_data_source* source)
 static void dragSourceHandleDndDropPerformed(void* data, struct wl_data_source* source)
 {
     (void)data; (void)source;
-    // The user released. Clean up here rather than waiting for
-    // dnd_finished: the latter only fires if a target actually called
-    // wl_data_offer_finish, which we can't guarantee when the drop lands
-    // on a foreign client. endToplevelDragSession is idempotent (clears
-    // its own state) so a later dnd_finished is a safe no-op.
+    // Clean up immediately; dnd_finished may not fire if the drop landed
+    // on a foreign client. endToplevelDragSession is idempotent.
     endToplevelDragSession();
 }
 
@@ -3555,12 +3485,8 @@ static const struct wl_data_source_listener dragSourceListener =
     dragSourceHandleAction,
 };
 
-// Start a self-initiated toplevel drag using xdg_toplevel_drag_v1. Returns
-// GLFW_TRUE on success; caller should fall back to xdg_toplevel.move otherwise.
-// The critical property of this path vs plain move: the compositor delivers
-// wl_data_device enter/motion/leave events to our surfaces under the cursor,
-// so the application can detect drop targets while the dragged window
-// follows the cursor.
+// Start a toplevel drag via xdg_toplevel_drag_v1 so the compositor delivers
+// drag-and-drop events for drop-target hit-testing. Falls back to xdg_toplevel.move.
 static GLFWbool startToplevelDragSession(_GLFWwindow* window, uint32_t serial)
 {
     if (!_glfw.wl.toplevelDragManager ||
@@ -3587,9 +3513,8 @@ static GLFWbool startToplevelDragSession(_GLFWwindow* window, uint32_t serial)
     wl_data_source_add_listener(source, &dragSourceListener, NULL);
     wl_data_source_offer(source, GLFW_WAYLAND_WINDOW_DRAG_MIME);
 
-    // Advertise "move" as the DnD action. Without negotiated actions the
-    // compositor (on v3+) won't deliver dnd_drop_performed / dnd_finished,
-    // leaving the drag in a half-completed state after the user releases.
+    // Without a negotiated action, v3+ compositors won't deliver
+    // dnd_drop_performed / dnd_finished.
     if (wl_data_source_get_version(source) >= 3)
     {
         wl_data_source_set_actions(source,
@@ -3609,24 +3534,10 @@ static GLFWbool startToplevelDragSession(_GLFWwindow* window, uint32_t serial)
     _glfw.wl.toplevelDragSession.drag = drag;
     _glfw.wl.toplevelDragSession.window = window;
 
-    // Per spec, when the dragged toplevel is already mapped (our case, since
-    // we only reach here after the window is mapped) attach() must come
-    // before start_drag(). The offset hints where the cursor hotspot should
-    // sit relative to the toplevel's top-left in surface-local coords —
-    // passing (0, 0) snaps the window so the cursor is in its top-left
-    // corner.
-    //
-    // Compute where the cursor sits relative to the toplevel's top-left.
-    //
-    // Two cases:
-    //  - Same-window drag (regular titlebar drag): use the window's own
-    //    tracked cursor position — it's current and surface-local.
-    //  - Cross-window drag (tab tear-out): the press happened on a
-    //    different surface (main window's tab bar), a new toplevel was
-    //    created under the cursor, and its pendingPos was set from the
-    //    CURRENT cursor minus ImGui's click offset. Use the origin
-    //    window's live cursor (not the press-time capture) so the
-    //    compositor attachment offset matches ImGui's click offset.
+    // attach() must precede start_drag() for already-mapped toplevels.
+    // The offset is where the cursor sits relative to the window's
+    // top-left. For cross-window drags (tab tear-out), use the origin
+    // window's live cursor so the offset matches ImGui's click offset.
     double rawOffsetX, rawOffsetY;
     if (_glfw.wl.pointerButtonSurface == window->wl.surface)
     {
@@ -3661,21 +3572,14 @@ void _glfwDragWindowWayland(_GLFWwindow* window)
     if (!_glfw.wl.seat || !_glfw.wl.pointerButtonSerial)
         return;
 
-    // A drag session is already in flight for this window — no-op. Callers
-    // may invoke this every frame during their own drag math, but we only
-    // want to hand the drag to the compositor once per user press.
+    // Already dragging this window.
     if (_glfw.wl.toplevelDragSession.source &&
         _glfw.wl.toplevelDragSession.window == window)
     {
         return;
     }
 
-    // Pre-map: stash the request and let the mapped-frame callback fire it
-    // once the compositor has processed the first buffer. Calling
-    // xdg_toplevel.move (or starting a drag attached to an unmapped toplevel)
-    // on an unmapped surface has been observed to crash KWin. This matters
-    // for callers that invoke glfwDragWindow on a window they just created
-    // but haven't yet shown.
+    // Defer until mapped; dragging an unmapped surface crashes KWin.
     if (!window->wl.mapped)
     {
         window->wl.dragPendingSerial = _glfw.wl.pointerButtonSerial;
@@ -3683,10 +3587,7 @@ void _glfwDragWindowWayland(_GLFWwindow* window)
         return;
     }
 
-    // Preferred path: xdg_toplevel_drag_v1 (staging) — same visual effect as
-    // xdg_toplevel.move but the compositor keeps delivering DnD events to
-    // our surfaces under the cursor, so the application can hit-test the
-    // dragged window against drop targets.
+    // Preferred: xdg_toplevel_drag_v1 delivers drag-and-drop events for hit-testing.
     if (startToplevelDragSession(window, _glfw.wl.pointerButtonSerial))
         return;
 
@@ -3699,9 +3600,7 @@ void _glfwDragWindowWayland(_GLFWwindow* window)
 
     xdg_toplevel_move(toplevel, _glfw.wl.seat, _glfw.wl.pointerButtonSerial);
 
-    // xdg_toplevel.move swallows the release event, so synthesize one now so
-    // the application's input state doesn't stay stuck in "button held" after
-    // the move ends.
+    // xdg_toplevel.move swallows the release; synthesize one.
     if (_glfw.wl.pointerButtonsDown > 0)
         _glfw.wl.pointerButtonsDown--;
     _glfwInputMouseClick(window, GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE, 0);

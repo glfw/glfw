@@ -2615,19 +2615,9 @@ void _glfwFocusWindowX11(_GLFWwindow* window)
 
 void _glfwDragWindowX11(_GLFWwindow* window)
 {
-    // No-op on X11. The equivalent of xdg_toplevel.move is
-    // _NET_WM_MOVERESIZE, but handing the drag to the WM that way captures
-    // pointer events for the duration of the move, which would prevent the
-    // application from hit-testing the dragged window against drop targets.
-    //
-    // X11 has implicit pointer capture: once a button is pressed on a
-    // window, all subsequent motion/release events are delivered to that
-    // window regardless of where the cursor physically is. That's enough
-    // for an application to drive a drag via glfwSetWindowPos each frame,
-    // while still receiving motion events that it can use for drop
-    // detection. Callers can use the titlebar hit-test callback
-    // (glfwSetTitlebarHitTestCallback) when they want the classic
-    // WM-driven move behaviour.
+    // No-op: X11's implicit pointer capture lets callers drive the drag
+    // via glfwSetWindowPos. _NET_WM_MOVERESIZE would steal pointer events
+    // and prevent drop-target hit-testing.
     (void)window;
 }
 

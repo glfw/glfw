@@ -371,6 +371,7 @@ typedef struct _GLFWscaleWayland
 typedef struct _GLFWwindowWayland
 {
     int                         width, height;
+    int                         floatingWidth, floatingHeight;
     int                         fbWidth, fbHeight;
     GLFWbool                    visible;
     GLFWbool                    maximized;

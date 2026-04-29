@@ -941,6 +941,14 @@ static void xdgToplevelHandleConfigure(void* userData,
             window->wl.pending.height = height;
         }
     }
+    else if ((window->wl.maximized && !window->wl.pending.maximized) ||
+             (window->wl.fullscreen && !window->wl.pending.fullscreen))
+    {
+        // Transitioning out of maximized/fullscreen with no suggested size:
+        // restore the saved floating size.
+        window->wl.pending.width  = window->wl.floatingWidth;
+        window->wl.pending.height = window->wl.floatingHeight;
+    }
     else
     {
         window->wl.pending.width  = window->wl.width;
@@ -1001,6 +1009,9 @@ static void xdgSurfaceHandleConfigure(void* userData,
             else if (aspectRatio > targetRatio)
                 width = height * targetRatio;
         }
+
+        window->wl.floatingWidth = width;
+        window->wl.floatingHeight = height;
     }
 
     if (resizeWindow(window, width, height))
@@ -1053,8 +1064,19 @@ void libdecorFrameHandleConfigure(struct libdecor_frame* frame,
 
     if (!libdecor_configuration_get_content_size(config, frame, &width, &height))
     {
-        width = window->wl.width;
-        height = window->wl.height;
+        // Transitioning out of maximized/fullscreen: restore the saved
+        // floating size so the window doesn't stay screen-sized.
+        if ((window->wl.maximized && !maximized) ||
+            (window->wl.fullscreen && !fullscreen))
+        {
+            width = window->wl.floatingWidth;
+            height = window->wl.floatingHeight;
+        }
+        else
+        {
+            width = window->wl.width;
+            height = window->wl.height;
+        }
     }
 
     if (!maximized && !fullscreen)
@@ -1068,6 +1090,9 @@ void libdecorFrameHandleConfigure(struct libdecor_frame* frame,
             else if (aspectRatio > targetRatio)
                 width = height * targetRatio;
         }
+
+        window->wl.floatingWidth = width;
+        window->wl.floatingHeight = height;
     }
 
     struct libdecor_state* frameState = libdecor_state_new(width, height);
@@ -1637,6 +1662,8 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
 
     window->wl.width = wndconfig->width;
     window->wl.height = wndconfig->height;
+    window->wl.floatingWidth = wndconfig->width;
+    window->wl.floatingHeight = wndconfig->height;
     window->wl.fbWidth = wndconfig->width;
     window->wl.fbHeight = wndconfig->height;
     window->wl.appId = _glfw_strdup(wndconfig->wl.appId);
@@ -3187,6 +3214,12 @@ void _glfwSetWindowSizeWayland(_GLFWwindow* window, int width, int height)
     {
         if (!resizeWindow(window, width, height))
             return;
+
+        if (!window->wl.maximized && !window->wl.fullscreen)
+        {
+            window->wl.floatingWidth = width;
+            window->wl.floatingHeight = height;
+        }
 
         if (window->wl.libdecor.frame)
         {

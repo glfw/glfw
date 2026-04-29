@@ -580,6 +580,8 @@ static void detectEWMH(void)
         getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_MAXIMIZED_HORZ");
     _glfw.x11.NET_WM_STATE_DEMANDS_ATTENTION =
         getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_DEMANDS_ATTENTION");
+    _glfw.x11.NET_WM_STATE_SKIP_TASKBAR =
+        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_SKIP_TASKBAR");
     _glfw.x11.NET_WM_FULLSCREEN_MONITORS =
         getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_FULLSCREEN_MONITORS");
     _glfw.x11.NET_WM_WINDOW_TYPE =

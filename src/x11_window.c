@@ -645,7 +645,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
 
     if (_glfw.x11.NET_WM_STATE && !window->monitor)
     {
-        Atom states[3];
+        Atom states[4];
         int count = 0;
 
         if (wndconfig->floating)
@@ -663,6 +663,12 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                 states[count++] = _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ;
                 window->x11.maximized = GLFW_TRUE;
             }
+        }
+
+        if (!wndconfig->focusOnShow)
+        {
+            if (_glfw.x11.NET_WM_STATE_SKIP_TASKBAR)
+                states[count++] = _glfw.x11.NET_WM_STATE_SKIP_TASKBAR;
         }
 
         if (count)

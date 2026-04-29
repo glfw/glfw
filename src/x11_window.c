@@ -1890,7 +1890,35 @@ static void processEvent(XEvent *event)
             if (window->monitor && window->autoIconify)
                 _glfwIconifyWindowX11(window);
 
-            _glfwInputWindowFocus(window, GLFW_FALSE);
+            // Check if a pointer button is physically held. If so, hide
+            // button state so _glfwInputWindowFocus doesn't synthesize
+            // releases that break in-progress drags.
+            {
+                Window root, child;
+                int rootX, rootY, winX, winY;
+                unsigned int mask;
+                XQueryPointer(_glfw.x11.display, window->x11.handle,
+                              &root, &child, &rootX, &rootY,
+                              &winX, &winY, &mask);
+
+                if (mask & (Button1Mask | Button2Mask | Button3Mask |
+                            Button4Mask | Button5Mask))
+                {
+                    GLFWbool saved[GLFW_MOUSE_BUTTON_LAST + 1];
+                    for (int i = 0; i <= GLFW_MOUSE_BUTTON_LAST; i++)
+                    {
+                        saved[i] = window->mouseButtons[i];
+                        window->mouseButtons[i] = GLFW_RELEASE;
+                    }
+                    _glfwInputWindowFocus(window, GLFW_FALSE);
+                    for (int i = 0; i <= GLFW_MOUSE_BUTTON_LAST; i++)
+                        window->mouseButtons[i] = saved[i];
+                }
+                else
+                {
+                    _glfwInputWindowFocus(window, GLFW_FALSE);
+                }
+            }
             return;
         }
 

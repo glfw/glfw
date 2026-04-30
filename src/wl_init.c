@@ -52,6 +52,7 @@
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
 #include "xdg-toplevel-drag-v1-client-protocol.h"
+#include "kde-shadow-client-protocol.h"
 
 // NOTE: Versions of wayland-scanner prior to 1.17.91 named every global array of
 //       wl_interface pointers 'types', making it impossible to combine several unmodified
@@ -104,6 +105,10 @@
 
 #define types _glfw_xdg_toplevel_drag_types
 #include "xdg-toplevel-drag-v1-client-protocol-code.h"
+#undef types
+
+#define types _glfw_kde_shadow_types
+#include "kde-shadow-client-protocol-code.h"
 #undef types
 
 static void wmBaseHandlePing(void* userData,
@@ -233,6 +238,13 @@ static void registryHandleGlobal(void* userData,
             wl_registry_bind(registry, name,
                              &wp_cursor_shape_manager_v1_interface,
                              1);
+    }
+    else if (strcmp(interface, "org_kde_kwin_shadow_manager") == 0)
+    {
+        _glfw.wl.shadowManager =
+            wl_registry_bind(registry, name,
+                             &org_kde_kwin_shadow_manager_interface,
+                             _glfw_min(version, 2));
     }
 }
 
@@ -998,6 +1010,13 @@ void _glfwTerminateWayland(void)
         wl_shm_destroy(_glfw.wl.shm);
     if (_glfw.wl.viewporter)
         wp_viewporter_destroy(_glfw.wl.viewporter);
+    if (_glfw.wl.shadowManager)
+    {
+        if (wl_proxy_get_version((struct wl_proxy*) _glfw.wl.shadowManager) >= ORG_KDE_KWIN_SHADOW_MANAGER_DESTROY_SINCE_VERSION)
+            org_kde_kwin_shadow_manager_destroy(_glfw.wl.shadowManager);
+        else
+            wl_proxy_destroy((struct wl_proxy*) _glfw.wl.shadowManager);
+    }
     if (_glfw.wl.decorationManager)
         zxdg_decoration_manager_v1_destroy(_glfw.wl.decorationManager);
     if (_glfw.wl.wmBase)

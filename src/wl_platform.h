@@ -458,6 +458,9 @@ typedef struct _GLFWwindowWayland
     } fallback;
 
     uint32_t                        resizeEdge;
+
+    struct org_kde_kwin_shadow*     shadow;
+    struct wl_buffer*               shadowBuffers[8];
 } _GLFWwindowWayland;
 
 // Wayland-specific global data
@@ -485,6 +488,7 @@ typedef struct _GLFWlibraryWayland
     struct wp_fractional_scale_manager_v1*  fractionalScaleManager;
     struct wp_cursor_shape_manager_v1*      cursorShapeManager;
     struct wp_cursor_shape_device_v1*       cursorShapeDevice;
+    struct org_kde_kwin_shadow_manager*     shadowManager;
 
     _GLFWofferWayland*          offers;
     unsigned int                offerCount;

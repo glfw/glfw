@@ -54,6 +54,7 @@
 #include "idle-inhibit-unstable-v1-client-protocol.h"
 #include "xdg-toplevel-drag-v1-client-protocol.h"
 #include "fractional-scale-v1-client-protocol.h"
+#include "kde-shadow-client-protocol.h"
 
 // Marker mime for self-initiated toplevel drags; no payload transferred.
 #define GLFW_WAYLAND_WINDOW_DRAG_MIME "application/x.glfw-window-drag"
@@ -263,6 +264,120 @@ static struct wl_buffer* createShmBuffer(const GLFWimage* image)
     wl_shm_pool_destroy(pool);
 
     return buffer;
+}
+
+static struct wl_buffer* createShadowTile(int width, int height,
+                                          float maxAlpha,
+                                          GLFWbool horizontal, GLFWbool vertical,
+                                          GLFWbool invertX, GLFWbool invertY)
+{
+    const int stride = width * 4;
+    const int length = stride * height;
+    const int fd = createAnonymousFile(length);
+    if (fd < 0)
+        return NULL;
+
+    unsigned char* data = mmap(NULL, length, PROT_READ | PROT_WRITE,
+                               MAP_SHARED, fd, 0);
+    if (data == MAP_FAILED)
+    {
+        close(fd);
+        return NULL;
+    }
+
+    struct wl_shm_pool* pool = wl_shm_create_pool(_glfw.wl.shm, fd, length);
+    close(fd);
+
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            // dx/dy = 0 at window edge, 1 at outer edge
+            float dx = horizontal ? (float)x / (width > 1 ? width - 1 : 1) : 0.0f;
+            float dy = vertical   ? (float)y / (height > 1 ? height - 1 : 1) : 0.0f;
+            if (invertX) dx = 1.0f - dx;
+            if (invertY) dy = 1.0f - dy;
+            float d2 = dx * dx + dy * dy + dx * dy;
+            const float k = 8.0f;
+            const float tail = expf(-k);
+            float alpha = maxAlpha * fmaxf(0.0f, expf(-k * d2) - tail) / (1.0f - tail);
+            unsigned char a = (unsigned char)(alpha * 255.0f + 0.5f);
+            int off = (y * width + x) * 4;
+            data[off + 0] = 0;
+            data[off + 1] = 0;
+            data[off + 2] = 0;
+            data[off + 3] = a;
+        }
+    }
+
+    struct wl_buffer* buffer =
+        wl_shm_pool_create_buffer(pool, 0, width, height,
+                                  stride, WL_SHM_FORMAT_ARGB8888);
+    munmap(data, length);
+    wl_shm_pool_destroy(pool);
+    return buffer;
+}
+
+// KDE shadow tiles: top-left, top, top-right, right,
+//                   bottom-right, bottom, bottom-left, left
+static void createKdeShadow(_GLFWwindow* window, GLFWbool focused)
+{
+    if (!_glfw.wl.shadowManager)
+        return;
+
+    const int sz = 64;
+    const float maxAlpha = focused ? 0.17f : 0.10f;
+
+    // d=0 is opaque (window edge), d=1 is transparent (outer edge).
+    // invertX/invertY put d=0 on the side facing the window.
+    window->wl.shadowBuffers[0] = createShadowTile(sz, sz, maxAlpha, GLFW_TRUE, GLFW_TRUE, GLFW_TRUE, GLFW_TRUE);     // top-left
+    window->wl.shadowBuffers[1] = createShadowTile(1, sz, maxAlpha, GLFW_FALSE, GLFW_TRUE, GLFW_FALSE, GLFW_TRUE);    // top
+    window->wl.shadowBuffers[2] = createShadowTile(sz, sz, maxAlpha, GLFW_TRUE, GLFW_TRUE, GLFW_FALSE, GLFW_TRUE);    // top-right
+    window->wl.shadowBuffers[3] = createShadowTile(sz, 1, maxAlpha, GLFW_TRUE, GLFW_FALSE, GLFW_FALSE, GLFW_FALSE);   // right
+    window->wl.shadowBuffers[4] = createShadowTile(sz, sz, maxAlpha, GLFW_TRUE, GLFW_TRUE, GLFW_FALSE, GLFW_FALSE);   // bottom-right
+    window->wl.shadowBuffers[5] = createShadowTile(1, sz, maxAlpha, GLFW_FALSE, GLFW_TRUE, GLFW_FALSE, GLFW_FALSE);   // bottom
+    window->wl.shadowBuffers[6] = createShadowTile(sz, sz, maxAlpha, GLFW_TRUE, GLFW_TRUE, GLFW_TRUE, GLFW_FALSE);    // bottom-left
+    window->wl.shadowBuffers[7] = createShadowTile(sz, 1, maxAlpha, GLFW_TRUE, GLFW_FALSE, GLFW_TRUE, GLFW_FALSE);    // left
+
+    window->wl.shadow = org_kde_kwin_shadow_manager_create(
+        _glfw.wl.shadowManager, window->wl.surface);
+
+    org_kde_kwin_shadow_attach_top_left(window->wl.shadow, window->wl.shadowBuffers[0]);
+    org_kde_kwin_shadow_attach_top(window->wl.shadow, window->wl.shadowBuffers[1]);
+    org_kde_kwin_shadow_attach_top_right(window->wl.shadow, window->wl.shadowBuffers[2]);
+    org_kde_kwin_shadow_attach_right(window->wl.shadow, window->wl.shadowBuffers[3]);
+    org_kde_kwin_shadow_attach_bottom_right(window->wl.shadow, window->wl.shadowBuffers[4]);
+    org_kde_kwin_shadow_attach_bottom(window->wl.shadow, window->wl.shadowBuffers[5]);
+    org_kde_kwin_shadow_attach_bottom_left(window->wl.shadow, window->wl.shadowBuffers[6]);
+    org_kde_kwin_shadow_attach_left(window->wl.shadow, window->wl.shadowBuffers[7]);
+
+    wl_fixed_t offset = wl_fixed_from_int(sz);
+    org_kde_kwin_shadow_set_top_offset(window->wl.shadow, offset);
+    org_kde_kwin_shadow_set_right_offset(window->wl.shadow, offset);
+    org_kde_kwin_shadow_set_bottom_offset(window->wl.shadow, offset);
+    org_kde_kwin_shadow_set_left_offset(window->wl.shadow, offset);
+
+    org_kde_kwin_shadow_commit(window->wl.shadow);
+}
+
+static void destroyKdeShadow(_GLFWwindow* window)
+{
+    if (window->wl.shadow)
+    {
+        if (wl_proxy_get_version((struct wl_proxy*) window->wl.shadow) >= ORG_KDE_KWIN_SHADOW_DESTROY_SINCE_VERSION)
+            org_kde_kwin_shadow_destroy(window->wl.shadow);
+        else
+            wl_proxy_destroy((struct wl_proxy*) window->wl.shadow);
+        window->wl.shadow = NULL;
+    }
+    for (int i = 0; i < 8; i++)
+    {
+        if (window->wl.shadowBuffers[i])
+        {
+            wl_buffer_destroy(window->wl.shadowBuffers[i]);
+            window->wl.shadowBuffers[i] = NULL;
+        }
+    }
 }
 
 static void createFallbackEdge(_GLFWwindow* window,
@@ -662,7 +777,7 @@ static void resizeFramebuffer(_GLFWwindow* window)
                              0, 0);
     }
 
-    if (!window->wl.transparent)
+    if (!window->wl.transparent && window->decorated)
         setContentAreaOpaque(window);
 
     _glfwInputFramebufferSize(window, window->wl.fbWidth, window->wl.fbHeight);
@@ -1608,11 +1723,15 @@ static GLFWbool createShellObjects(_GLFWwindow* window)
     if (ok)
         armMappedFrameCallback(window);
 
+    if (ok && !window->decorated)
+        createKdeShadow(window, GLFW_TRUE);
+
     return ok;
 }
 
 static void destroyShellObjects(_GLFWwindow* window)
 {
+    destroyKdeShadow(window);
     destroyFallbackDecorations(window);
 
     if (window->wl.libdecor.frame)
@@ -1675,7 +1794,7 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     window->wl.maximized = wndconfig->maximized;
 
     window->wl.transparent = fbconfig->transparent;
-    if (!window->wl.transparent)
+    if (!window->wl.transparent && window->decorated)
         setContentAreaOpaque(window);
 
     if (_glfw.wl.fractionalScaleManager)
@@ -2452,6 +2571,11 @@ static void keyboardHandleEnter(void* userData,
 
     _glfw.wl.serial = serial;
     _glfw.wl.keyboardFocus = window;
+    if (!window->decorated && window->wl.shadow)
+    {
+        destroyKdeShadow(window);
+        createKdeShadow(window, GLFW_TRUE);
+    }
     _glfwInputWindowFocus(window, GLFW_TRUE);
 }
 
@@ -2470,6 +2594,12 @@ static void keyboardHandleLeave(void* userData,
 
     _glfw.wl.serial = serial;
     _glfw.wl.keyboardFocus = NULL;
+
+    if (!window->decorated && window->wl.shadow)
+    {
+        destroyKdeShadow(window);
+        createKdeShadow(window, GLFW_FALSE);
+    }
 
     // _glfwInputWindowFocus synthesizes button releases, but during a drag
     // the physical button is still held. Hide button state across the call.

@@ -70,7 +70,8 @@ project "GLFW"
 			"tablet-v2",
 			"xdg-decoration-unstable-v1",
 			"xdg-shell",
-			"xdg-toplevel-drag-v1"
+			"xdg-toplevel-drag-v1",
+			"kde-shadow"
 		}
 
 		for _, protocol in ipairs(protocols) do

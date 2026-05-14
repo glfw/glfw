@@ -425,6 +425,7 @@ struct _GLFWwndconfig
     struct {
         bool      keymenu;
         bool      showDefault;
+        void*     handleParent;
     } win32;
     struct {
         char      appId[256];

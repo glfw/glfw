@@ -435,6 +435,18 @@ GLFWAPI void glfwWindowHint(int hint, int value)
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint 0x%08X", hint);
 }
 
+GLFWAPI void glfwWindowHintPointer(int hint, void* value)
+{
+    _GLFW_REQUIRE_INIT();
+
+    switch (hint)
+    {
+    case GLFW_WIN32_HWND_PARENT:
+        _glfw.hints.window.win32.handleParent = value;
+        break;
+    }
+}
+
 GLFWAPI void glfwWindowHintString(int hint, const char* value)
 {
     assert(value != NULL);

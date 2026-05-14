@@ -394,7 +394,7 @@ static GLFWbool loadCursorTheme(void)
     {
         errno = 0;
         const long cursorSizeLong = strtol(sizeString, NULL, 10);
-        if (errno == 0 && cursorSizeLong > 0 && cursorSizeLong < INT_MAX)
+        if (errno == 0 && cursorSizeLong > 0 && cursorSizeLong < INT_MAX / 2)
             cursorSize = (int) cursorSizeLong;
     }
 

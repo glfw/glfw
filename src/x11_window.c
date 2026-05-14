@@ -3267,7 +3267,7 @@ VkResult _glfwCreateWindowSurfaceX11(VkInstance instance,
         sci.window = window->x11.handle;
 
         err = vkCreateXcbSurfaceKHR(instance, &sci, allocator, surface);
-        if (err)
+        if (err != VK_SUCCESS)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "X11: Failed to create Vulkan XCB surface: %s",
@@ -3297,7 +3297,7 @@ VkResult _glfwCreateWindowSurfaceX11(VkInstance instance,
         sci.window = window->x11.handle;
 
         err = vkCreateXlibSurfaceKHR(instance, &sci, allocator, surface);
-        if (err)
+        if (err != VK_SUCCESS)
         {
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "X11: Failed to create Vulkan X11 surface: %s",

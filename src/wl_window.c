@@ -3559,7 +3559,7 @@ VkResult _glfwCreateWindowSurfaceWayland(VkInstance instance,
     sci.surface = window->wl.surface;
 
     err = vkCreateWaylandSurfaceKHR(instance, &sci, allocator, surface);
-    if (err)
+    if (err != VK_SUCCESS)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
                         "Wayland: Failed to create Vulkan surface: %s",

@@ -1,5 +1,5 @@
 
-link_libraries(glfw)
+link_libraries(glfw m)
 
 include_directories("${GLFW_SOURCE_DIR}/deps")
 

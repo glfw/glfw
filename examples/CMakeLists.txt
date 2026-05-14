@@ -37,10 +37,20 @@ add_executable(triangle-opengles WIN32 MACOSX_BUNDLE triangle-opengles.c ${ICON}
 add_executable(wave WIN32 MACOSX_BUNDLE wave.c ${ICON} ${GLAD_GL})
 add_executable(windows WIN32 MACOSX_BUNDLE windows.c ${ICON} ${GLAD_GL})
 
-target_link_libraries(particles Threads::Threads)
+target_link_libraries(boing m)
+target_link_libraries(gears m)
+target_link_libraries(heightmap m)
+target_link_libraries(offscreen m)
+target_link_libraries(particles Threads::Threads m)
 if (RT_LIBRARY)
     target_link_libraries(particles "${RT_LIBRARY}")
 endif()
+target_link_libraries(sharing m)
+target_link_libraries(splitview m)
+target_link_libraries(triangle-opengl m)
+target_link_libraries(triangle-opengles m)
+target_link_libraries(wave m)
+target_link_libraries(windows m)
 
 set(GUI_ONLY_BINARIES boing gears heightmap particles sharing splitview
     triangle-opengl triangle-opengles wave windows)
@@ -80,4 +90,3 @@ if (APPLE)
                           MACOSX_BUNDLE_ICON_FILE glfw.icns
                           MACOSX_BUNDLE_INFO_PLIST "${GLFW_SOURCE_DIR}/CMake/Info.plist.in")
 endif()
-

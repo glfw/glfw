@@ -746,9 +746,10 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     // Set ICCCM WM_CLASS property
     {
         XClassHint* hint = XAllocClassHint();
+        size_t instanceNameLen = strlen(wndconfig->x11.instanceName);
+        size_t classNameLen = strlen(wndconfig->x11.className);
 
-        if (strlen(wndconfig->x11.instanceName) &&
-            strlen(wndconfig->x11.className))
+        if (instanceNameLen && classNameLen)
         {
             hint->res_name = (char*) wndconfig->x11.instanceName;
             hint->res_class = (char*) wndconfig->x11.className;
@@ -1279,7 +1280,6 @@ static void processEvent(XEvent *event)
                                               &event->xkey,
                                               buffer, sizeof(buffer) - 1,
                                               NULL, &status);
-
                     if (status == XBufferOverflow)
                     {
                         chars = _glfw_calloc(count + 1, 1);
@@ -2093,15 +2093,17 @@ void _glfwSetWindowTitleX11(_GLFWwindow* window, const char* title)
                              NULL, NULL, NULL);
     }
 
+    const size_t titleLen = strlen(title);
+
     XChangeProperty(_glfw.x11.display,  window->x11.handle,
                     _glfw.x11.NET_WM_NAME, _glfw.x11.UTF8_STRING, 8,
                     PropModeReplace,
-                    (unsigned char*) title, strlen(title));
+                    (unsigned char*) title, titleLen);
 
     XChangeProperty(_glfw.x11.display,  window->x11.handle,
                     _glfw.x11.NET_WM_ICON_NAME, _glfw.x11.UTF8_STRING, 8,
                     PropModeReplace,
-                    (unsigned char*) title, strlen(title));
+                    (unsigned char*) title, titleLen);
 
     XFlush(_glfw.x11.display);
 }
@@ -3210,7 +3212,7 @@ GLFWbool _glfwGetPhysicalDevicePresentationSupportX11(VkInstance instance,
 
         return vkGetPhysicalDeviceXcbPresentationSupportKHR(device,
                                                             queuefamily,
-                                                            connection,
+                                                                                                                        connection,
                                                             visualID);
     }
     else
@@ -3384,4 +3386,3 @@ GLFWAPI const char* glfwGetX11SelectionString(void)
 }
 
 #endif // _GLFW_X11
-

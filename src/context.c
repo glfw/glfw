@@ -590,6 +590,7 @@ GLFWbool _glfwRefreshContextAttribs(_GLFWwindow* window,
 GLFWbool _glfwStringInExtensionString(const char* string, const char* extensions)
 {
     const char* start = extensions;
+    const size_t length = strlen(string);
 
     for (;;)
     {
@@ -600,7 +601,7 @@ GLFWbool _glfwStringInExtensionString(const char* string, const char* extensions
         if (!where)
             return GLFW_FALSE;
 
-        terminator = where + strlen(string);
+        terminator = where + length;
         if (where == start || *(where - 1) == ' ')
         {
             if (*terminator == ' ' || *terminator == '\0')
@@ -767,4 +768,3 @@ GLFWAPI GLFWglproc glfwGetProcAddress(const char* procname)
 
     return window->context.getProcAddress(procname);
 }
-

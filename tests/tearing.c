@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <limits.h>
 
 #include "linmath.h"
 
@@ -103,7 +104,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     {
         case GLFW_KEY_UP:
         {
-            if (swap_interval + 1 > swap_interval)
+            if (swap_interval <= INT_MAX - 1)
                 set_swap_interval(window, swap_interval + 1);
             break;
         }
@@ -112,12 +113,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         {
             if (swap_tear)
             {
-                if (swap_interval - 1 < swap_interval)
+                if (swap_interval >= INT_MIN + 1)
                     set_swap_interval(window, swap_interval - 1);
             }
             else
             {
-                if (swap_interval - 1 >= 0)
+                if (swap_interval >= 1)
                     set_swap_interval(window, swap_interval - 1);
             }
             break;

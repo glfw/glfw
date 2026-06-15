@@ -194,6 +194,17 @@ static NSUInteger translateKeyToModifierFlag(int key)
     return 0;
 }
 
+static void processEvent(NSEvent* event)
+{
+    [NSApp sendEvent:event];
+
+    // This event is sent for the empty posted event, which isn't handled elsewhere
+    if (event.type == NSEventTypeApplicationDefined)
+    {
+        _glfw.newEventsRcvd = GLFW_TRUE;
+    }
+}
+
 // Defines a constant for empty ranges in NSTextInputClient
 //
 static const NSRange kEmptyRange = { NSNotFound, 0 };
@@ -1527,7 +1538,7 @@ void _glfwPollEventsCocoa(void)
         if (event == nil)
             break;
 
-        [NSApp sendEvent:event];
+        processEvent(event);
     }
 
     } // autoreleasepool
@@ -1536,18 +1547,23 @@ void _glfwPollEventsCocoa(void)
 void _glfwWaitEventsCocoa(void)
 {
     @autoreleasepool {
+        
+    while (_glfw.newEventsRcvd == GLFW_FALSE)
+    {
+        // I wanted to pass NO to dequeue:, and rely on PollEvents to
+        // dequeue and send.  For reasons not at all clear to me, passing
+        // NO to dequeue: causes this method never to return.
+        NSEvent *event = [NSApp nextEventMatchingMask:NSEventMaskAny
+                                            untilDate:[NSDate distantFuture]
+                                               inMode:NSDefaultRunLoopMode
+                                              dequeue:YES];
 
-    // I wanted to pass NO to dequeue:, and rely on PollEvents to
-    // dequeue and send.  For reasons not at all clear to me, passing
-    // NO to dequeue: causes this method never to return.
-    NSEvent *event = [NSApp nextEventMatchingMask:NSEventMaskAny
-                                        untilDate:[NSDate distantFuture]
-                                           inMode:NSDefaultRunLoopMode
-                                          dequeue:YES];
-    [NSApp sendEvent:event];
+        if (event)
+            processEvent(event);
 
-    _glfwPollEventsCocoa();
-
+        _glfwPollEventsCocoa();
+    }
+        
     } // autoreleasepool
 }
 
@@ -1555,15 +1571,26 @@ void _glfwWaitEventsTimeoutCocoa(double timeout)
 {
     @autoreleasepool {
 
-    NSDate* date = [NSDate dateWithTimeIntervalSinceNow:timeout];
-    NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
-                                        untilDate:date
-                                           inMode:NSDefaultRunLoopMode
-                                          dequeue:YES];
-    if (event)
-        [NSApp sendEvent:event];
+    double timeStart, timeEnd, timeWait;
+    timeWait = timeout;
 
-    _glfwPollEventsCocoa();
+    while (_glfw.newEventsRcvd == GLFW_FALSE && timeWait > 0.0)
+    {
+        timeStart = glfwGetTime();
+        NSDate* date = [NSDate dateWithTimeIntervalSinceNow:timeWait];
+        NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
+                                            untilDate:date
+                                               inMode:NSDefaultRunLoopMode
+                                              dequeue:YES];
+
+        if (event)
+            processEvent(event);
+
+        _glfwPollEventsCocoa();
+
+        timeEnd = glfwGetTime();
+        timeWait = timeout - (timeEnd - timeStart);
+    }
 
     } // autoreleasepool
 }

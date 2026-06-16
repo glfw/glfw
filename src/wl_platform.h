@@ -698,7 +698,7 @@ void _glfwPostEmptyEventWayland(void);
 void _glfwGetCursorPosWayland(_GLFWwindow* window, double* xpos, double* ypos);
 void _glfwSetCursorPosWayland(_GLFWwindow* window, double xpos, double ypos);
 void _glfwSetCursorModeWayland(_GLFWwindow* window, int mode);
-const char* _glfwGetScancodeNameWayland(int scancode);
+const char* _glfwGetScancodeNameWayland(int scancode, int modifiers);
 int _glfwGetKeyScancodeWayland(int key);
 GLFWbool _glfwCreateCursorWayland(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot);
 GLFWbool _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape);

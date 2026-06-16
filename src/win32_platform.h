@@ -527,7 +527,7 @@ void _glfwPostEmptyEventWin32(void);
 void _glfwGetCursorPosWin32(_GLFWwindow* window, double* xpos, double* ypos);
 void _glfwSetCursorPosWin32(_GLFWwindow* window, double xpos, double ypos);
 void _glfwSetCursorModeWin32(_GLFWwindow* window, int mode);
-const char* _glfwGetScancodeNameWin32(int scancode);
+const char* _glfwGetScancodeNameWin32(int scancode, int modifiers);
 int _glfwGetKeyScancodeWin32(int key);
 GLFWbool _glfwCreateCursorWin32(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot);
 GLFWbool _glfwCreateStandardCursorWin32(_GLFWcursor* cursor, int shape);

@@ -569,7 +569,7 @@ EGLNativeWindowType _glfwGetEGLNativeWindowNull(_GLFWwindow* window)
     return 0;
 }
 
-const char* _glfwGetScancodeNameNull(int scancode)
+const char* _glfwGetScancodeNameNull(int scancode, int modifiers)
 {
     if (scancode < GLFW_NULL_SC_FIRST || scancode > GLFW_NULL_SC_LAST)
     {

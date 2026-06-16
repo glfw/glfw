@@ -2967,7 +2967,7 @@ void _glfwSetCursorModeWayland(_GLFWwindow* window, int mode)
     _glfwSetCursorWayland(window, window->cursor);
 }
 
-const char* _glfwGetScancodeNameWayland(int scancode)
+const char* _glfwGetScancodeNameWayland(int scancode, int modifiers)
 {
     if (scancode < 0 || scancode > 255)
     {
@@ -2991,11 +2991,14 @@ const char* _glfwGetScancodeNameWayland(int scancode)
         return NULL;
     }
 
+    // FIXME: can't seem to find any way in libxkbcommon to translate an xkb_mod_mask_t into
+    // a xkb_level_index_t . Sigh.
+    int level = (modifiers & GLFW_MOD_SHIFT)? 1 : 0;
     const xkb_keysym_t* keysyms = NULL;
     xkb_keymap_key_get_syms_by_level(_glfw.wl.xkb.keymap,
                                      keycode,
                                      layout,
-                                     0,
+                                     level,
                                      &keysyms);
     if (keysyms == NULL)
     {

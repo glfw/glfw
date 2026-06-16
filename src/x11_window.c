@@ -233,6 +233,28 @@ static int translateState(int state)
     return mods;
 }
 
+// Translates an X event modifier state mask
+//
+static int translateStateInverse(int mods)
+{
+  int state = 0;
+
+  if (mods & GLFW_MOD_SHIFT)
+    state |= ShiftMask;
+  if (mods & GLFW_MOD_CONTROL)
+    state |= ControlMask;
+  if (mods & GLFW_MOD_ALT)
+    state |= Mod1Mask;
+  if (mods & GLFW_MOD_SUPER)
+    state |= Mod4Mask;
+  if (mods & GLFW_MOD_CAPS_LOCK)
+    state |= LockMask;
+  if (mods & GLFW_MOD_NUM_LOCK)
+    state |= Mod2Mask;
+
+  return state;
+}
+
 // Translates an X11 key code to a GLFW key token
 //
 static int translateKey(int scancode)
@@ -2924,7 +2946,7 @@ void _glfwSetCursorModeX11(_GLFWwindow* window, int mode)
     XFlush(_glfw.x11.display);
 }
 
-const char* _glfwGetScancodeNameX11(int scancode)
+const char* _glfwGetScancodeNameX11(int scancode, int modifiers)
 {
     if (!_glfw.x11.xkb.available)
         return NULL;
@@ -2939,9 +2961,9 @@ const char* _glfwGetScancodeNameX11(int scancode)
     if (key == GLFW_KEY_UNKNOWN)
         return NULL;
 
-    const KeySym keysym = XkbKeycodeToKeysym(_glfw.x11.display,
-                                             scancode, _glfw.x11.xkb.group, 0);
-    if (keysym == NoSymbol)
+    unsigned int state = translateStateInverse(modifiers);
+    KeySym keysym;
+    if (XkbLookupKeysym(_glfw.x11.display, scancode, state, &state, &keysym) != True)
         return NULL;
 
     const uint32_t codepoint = _glfwKeySym2UnicodeX11(keysym);

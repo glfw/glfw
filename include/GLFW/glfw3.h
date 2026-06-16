@@ -4852,6 +4852,8 @@ GLFWAPI int glfwRawMouseMotionSupported(void);
  */
 GLFWAPI const char* glfwGetKeyName(int key, int scancode);
 
+GLFWAPI const char* glfwGetKeyNameModifiers(int key, int scancode, int modifiers);
+
 /*! @brief Returns the platform-specific scancode of the specified key.
  *
  *  This function returns the platform-specific scancode of the specified key.

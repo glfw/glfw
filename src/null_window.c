@@ -569,6 +569,139 @@ EGLNativeWindowType _glfwGetEGLNativeWindowNull(_GLFWwindow* window)
     return 0;
 }
 
+// Store the string representations of the scan codes.
+// This relies on the index in the array corresponding to the
+// GLFW_NULL_SC_* constant. For each element, it defines the different
+// names depending on that key's shift level, which can be either 0
+// (no modifiers), 1 (shift held), 2 (ctrl+alt/altgr held), or 3 (both
+// shift and altgr held).
+//
+// The used key names are from the en-US ANSI keyboard layout.
+const char* keyNames[GLFW_NULL_SC_LAST+1][4] = {
+    // 0 = neutral, 1 = shift, 2 = altgr, 3 = shift+altgr
+    {/**/               NULL, NULL, NULL, NULL},
+    {/*SPACE*/          " ", " ", " ", " "},
+    {/*APOSTROPHE*/     "'", "\"", NULL, NULL},
+    {/*COMMA*/          ",", "<", NULL, NULL},
+    {/*MINUS*/          "-", "_", NULL, NULL},
+    {/*PERIOD*/         ".", ">", NULL, NULL},
+    {/*SLASH*/          "/", "?", NULL, NULL},
+    {/*0*/              "0", ")", NULL, NULL},
+    {/*1*/              "1", "!", NULL, NULL},
+    {/*2*/              "2", "@", NULL, NULL},
+    {/*3*/              "3", "#", NULL, NULL},
+    {/*4*/              "4", "$", NULL, NULL},
+    {/*5*/              "5", "%", NULL, NULL},
+    {/*6*/              "6", "^", NULL, NULL},
+    {/*7*/              "7", "&", NULL, NULL},
+    {/*8*/              "8", "*", NULL, NULL},
+    {/*9*/              "9", "(", NULL, NULL},
+    {/*SEMICOLON*/      ";", ":", NULL, NULL},
+    {/*EQUAL*/          "=", "+", NULL, NULL},
+    {/*LEFT_BRACKET*/   "[", "{", NULL, NULL},
+    {/*BACKSLASH*/      "\\", "|", NULL, NULL},
+    {/*RIGHT_BRACKET*/  "]", "}", NULL, NULL},
+    {/*GRAVE_ACCENT*/   NULL, NULL, NULL, NULL},
+    {/*WORLD_1*/        "\\", NULL, NULL, NULL},
+    {/*WORLD_2*/        "\\", NULL, NULL, NULL},
+    {/*ESCAPE*/         NULL, NULL, NULL, NULL},
+    {/*ENTER*/          NULL, NULL, NULL, NULL},
+    {/*TAB*/            NULL, NULL, NULL, NULL},
+    {/*BACKSPACE*/      NULL, NULL, NULL, NULL},
+    {/*INSERT*/         NULL, NULL, NULL, NULL},
+    {/*DELETE*/         NULL, NULL, NULL, NULL},
+    {/*RIGHT*/          NULL, NULL, NULL, NULL},
+    {/*LEFT*/           NULL, NULL, NULL, NULL},
+    {/*DOWN*/           NULL, NULL, NULL, NULL},
+    {/*UP*/             NULL, NULL, NULL, NULL},
+    {/*PAGE_UP*/        NULL, NULL, NULL, NULL},
+    {/*PAGE_DOWN*/      NULL, NULL, NULL, NULL},
+    {/*HOME*/           NULL, NULL, NULL, NULL},
+    {/*END*/            NULL, NULL, NULL, NULL},
+    {/*CAPS_LOCK*/      NULL, NULL, NULL, NULL},
+    {/*SCROLL_LOCK*/    NULL, NULL, NULL, NULL},
+    {/*NUM_LOCK*/       NULL, NULL, NULL, NULL},
+    {/*PRINT_SCREEN*/   NULL, NULL, NULL, NULL},
+    {/*PAUSE*/          NULL, NULL, NULL, NULL},
+    {/*A*/              "a", "A", NULL, NULL},
+    {/*B*/              "b", "B", NULL, NULL},
+    {/*C*/              "c", "C", NULL, NULL},
+    {/*D*/              "d", "D", NULL, NULL},
+    {/*E*/              "e", "E", NULL, NULL},
+    {/*F*/              "f", "F", NULL, NULL},
+    {/*G*/              "g", "G", NULL, NULL},
+    {/*H*/              "h", "H", NULL, NULL},
+    {/*I*/              "i", "I", NULL, NULL},
+    {/*J*/              "j", "J", NULL, NULL},
+    {/*K*/              "k", "K", NULL, NULL},
+    {/*L*/              "l", "L", NULL, NULL},
+    {/*M*/              "m", "M", NULL, NULL},
+    {/*N*/              "n", "N", NULL, NULL},
+    {/*O*/              "o", "O", NULL, NULL},
+    {/*P*/              "p", "P", NULL, NULL},
+    {/*Q*/              "q", "Q", NULL, NULL},
+    {/*R*/              "r", "R", NULL, NULL},
+    {/*S*/              "s", "S", NULL, NULL},
+    {/*T*/              "t", "T", NULL, NULL},
+    {/*U*/              "u", "U", NULL, NULL},
+    {/*V*/              "v", "V", NULL, NULL},
+    {/*W*/              "w", "W", NULL, NULL},
+    {/*X*/              "x", "X", NULL, NULL},
+    {/*Y*/              "y", "Y", NULL, NULL},
+    {/*Z*/              "z", "Z", NULL, NULL},
+    {/*F1*/             NULL, NULL, NULL, NULL},
+    {/*F2*/             NULL, NULL, NULL, NULL},
+    {/*F3*/             NULL, NULL, NULL, NULL},
+    {/*F4*/             NULL, NULL, NULL, NULL},
+    {/*F5*/             NULL, NULL, NULL, NULL},
+    {/*F6*/             NULL, NULL, NULL, NULL},
+    {/*F7*/             NULL, NULL, NULL, NULL},
+    {/*F8*/             NULL, NULL, NULL, NULL},
+    {/*F9*/             NULL, NULL, NULL, NULL},
+    {/*F10*/            NULL, NULL, NULL, NULL},
+    {/*F11*/            NULL, NULL, NULL, NULL},
+    {/*F12*/            NULL, NULL, NULL, NULL},
+    {/*F13*/            NULL, NULL, NULL, NULL},
+    {/*F14*/            NULL, NULL, NULL, NULL},
+    {/*F15*/            NULL, NULL, NULL, NULL},
+    {/*F16*/            NULL, NULL, NULL, NULL},
+    {/*F17*/            NULL, NULL, NULL, NULL},
+    {/*F18*/            NULL, NULL, NULL, NULL},
+    {/*F19*/            NULL, NULL, NULL, NULL},
+    {/*F20*/            NULL, NULL, NULL, NULL},
+    {/*F21*/            NULL, NULL, NULL, NULL},
+    {/*F22*/            NULL, NULL, NULL, NULL},
+    {/*F23*/            NULL, NULL, NULL, NULL},
+    {/*F24*/            NULL, NULL, NULL, NULL},
+    {/*F25*/            NULL, NULL, NULL, NULL},
+    {/*KP_0*/           "0", NULL, NULL, NULL},
+    {/*KP_1*/           "1", NULL, NULL, NULL},
+    {/*KP_2*/           "2", NULL, NULL, NULL},
+    {/*KP_3*/           "3", NULL, NULL, NULL},
+    {/*KP_4*/           "4", NULL, NULL, NULL},
+    {/*KP_5*/           "5", NULL, NULL, NULL},
+    {/*KP_6*/           "6", NULL, NULL, NULL},
+    {/*KP_7*/           "7", NULL, NULL, NULL},
+    {/*KP_8*/           "8", NULL, NULL, NULL},
+    {/*KP_9*/           "9", NULL, NULL, NULL},
+    {/*KP_DECIMAL*/     ".", NULL, NULL, NULL},
+    {/*KP_DIVIDE*/      "/", NULL, NULL, NULL},
+    {/*KP_MULTIPLY*/    "*", NULL, NULL, NULL},
+    {/*KP_SUBTRACT*/    "-", NULL, NULL, NULL},
+    {/*KP_ADD*/         "+", NULL, NULL, NULL},
+    {/*KP_ENTER*/       NULL, NULL, NULL, NULL},
+    {/*KP_EQUAL*/       "=", NULL, NULL, NULL},
+    {/*LEFT_SHIFT*/     NULL, NULL, NULL, NULL},
+    {/*LEFT_CONTROL*/   NULL, NULL, NULL, NULL},
+    {/*LEFT_ALT*/       NULL, NULL, NULL, NULL},
+    {/*LEFT_SUPER*/     NULL, NULL, NULL, NULL},
+    {/*RIGHT_SHIFT*/    NULL, NULL, NULL, NULL},
+    {/*RIGHT_CONTROL*/  NULL, NULL, NULL, NULL},
+    {/*RIGHT_ALT*/      NULL, NULL, NULL, NULL},
+    {/*RIGHT_SUPER*/    NULL, NULL, NULL, NULL},
+    {/*MENUP*/          NULL, NULL, NULL, NULL},
+};
+
 const char* _glfwGetScancodeNameNull(int scancode, int modifiers)
 {
     if (scancode < GLFW_NULL_SC_FIRST || scancode > GLFW_NULL_SC_LAST)
@@ -577,123 +710,12 @@ const char* _glfwGetScancodeNameNull(int scancode, int modifiers)
         return NULL;
     }
 
-    switch (scancode)
-    {
-        case GLFW_NULL_SC_APOSTROPHE:
-            return "'";
-        case GLFW_NULL_SC_COMMA:
-            return ",";
-        case GLFW_NULL_SC_MINUS:
-        case GLFW_NULL_SC_KP_SUBTRACT:
-            return "-";
-        case GLFW_NULL_SC_PERIOD:
-        case GLFW_NULL_SC_KP_DECIMAL:
-            return ".";
-        case GLFW_NULL_SC_SLASH:
-        case GLFW_NULL_SC_KP_DIVIDE:
-            return "/";
-        case GLFW_NULL_SC_SEMICOLON:
-            return ";";
-        case GLFW_NULL_SC_EQUAL:
-        case GLFW_NULL_SC_KP_EQUAL:
-            return "=";
-        case GLFW_NULL_SC_LEFT_BRACKET:
-            return "[";
-        case GLFW_NULL_SC_RIGHT_BRACKET:
-            return "]";
-        case GLFW_NULL_SC_KP_MULTIPLY:
-            return "*";
-        case GLFW_NULL_SC_KP_ADD:
-            return "+";
-        case GLFW_NULL_SC_BACKSLASH:
-        case GLFW_NULL_SC_WORLD_1:
-        case GLFW_NULL_SC_WORLD_2:
-            return "\\";
-        case GLFW_NULL_SC_0:
-        case GLFW_NULL_SC_KP_0:
-            return "0";
-        case GLFW_NULL_SC_1:
-        case GLFW_NULL_SC_KP_1:
-            return "1";
-        case GLFW_NULL_SC_2:
-        case GLFW_NULL_SC_KP_2:
-            return "2";
-        case GLFW_NULL_SC_3:
-        case GLFW_NULL_SC_KP_3:
-            return "3";
-        case GLFW_NULL_SC_4:
-        case GLFW_NULL_SC_KP_4:
-            return "4";
-        case GLFW_NULL_SC_5:
-        case GLFW_NULL_SC_KP_5:
-            return "5";
-        case GLFW_NULL_SC_6:
-        case GLFW_NULL_SC_KP_6:
-            return "6";
-        case GLFW_NULL_SC_7:
-        case GLFW_NULL_SC_KP_7:
-            return "7";
-        case GLFW_NULL_SC_8:
-        case GLFW_NULL_SC_KP_8:
-            return "8";
-        case GLFW_NULL_SC_9:
-        case GLFW_NULL_SC_KP_9:
-            return "9";
-        case GLFW_NULL_SC_A:
-            return "a";
-        case GLFW_NULL_SC_B:
-            return "b";
-        case GLFW_NULL_SC_C:
-            return "c";
-        case GLFW_NULL_SC_D:
-            return "d";
-        case GLFW_NULL_SC_E:
-            return "e";
-        case GLFW_NULL_SC_F:
-            return "f";
-        case GLFW_NULL_SC_G:
-            return "g";
-        case GLFW_NULL_SC_H:
-            return "h";
-        case GLFW_NULL_SC_I:
-            return "i";
-        case GLFW_NULL_SC_J:
-            return "j";
-        case GLFW_NULL_SC_K:
-            return "k";
-        case GLFW_NULL_SC_L:
-            return "l";
-        case GLFW_NULL_SC_M:
-            return "m";
-        case GLFW_NULL_SC_N:
-            return "n";
-        case GLFW_NULL_SC_O:
-            return "o";
-        case GLFW_NULL_SC_P:
-            return "p";
-        case GLFW_NULL_SC_Q:
-            return "q";
-        case GLFW_NULL_SC_R:
-            return "r";
-        case GLFW_NULL_SC_S:
-            return "s";
-        case GLFW_NULL_SC_T:
-            return "t";
-        case GLFW_NULL_SC_U:
-            return "u";
-        case GLFW_NULL_SC_V:
-            return "v";
-        case GLFW_NULL_SC_W:
-            return "w";
-        case GLFW_NULL_SC_X:
-            return "x";
-        case GLFW_NULL_SC_Y:
-            return "y";
-        case GLFW_NULL_SC_Z:
-            return "z";
-    }
-
-    return NULL;
+    int level = 0;
+    if (modifiers & GLFW_MOD_SHIFT)
+        level |= 0b01;
+    if ((modifiers & GLFW_MOD_CONTROL) && (modifiers & GLFW_MOD_ALT))
+        level |= 0b10;
+    return keyNames[scancode][level];
 }
 
 int _glfwGetKeyScancodeNull(int key)

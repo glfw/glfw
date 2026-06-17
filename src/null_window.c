@@ -712,9 +712,9 @@ const char* _glfwGetScancodeNameNull(int scancode, int modifiers)
 
     int level = 0;
     if (modifiers & GLFW_MOD_SHIFT)
-        level |= 0b01;
+        level |= 1;
     if ((modifiers & GLFW_MOD_CONTROL) && (modifiers & GLFW_MOD_ALT))
-        level |= 0b10;
+        level |= 2;
     return keyNames[scancode][level];
 }
 

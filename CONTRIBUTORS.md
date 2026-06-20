@@ -193,6 +193,7 @@ video tutorials.
  - F. Nedelec
  - n3rdopolis
  - Kristian Nielsen
+ - Thor Gabelgaard Nielsen
  - Joel Niemelä
  - Victor Nova
  - Kamil Nowakowski

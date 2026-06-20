@@ -2224,6 +2224,13 @@ static void dataDeviceHandleMotion(void* userData,
                                    wl_fixed_t x,
                                    wl_fixed_t y)
 {
+    if (!_glfw.wl.dragFocus)
+        return;
+
+    _GLFWwindow* window = _glfw.wl.dragFocus;
+    window->wl.cursorPosX = wl_fixed_to_double(x);
+    window->wl.cursorPosY = wl_fixed_to_double(y);
+    _glfwInputCursorPos(window, window->wl.cursorPosX, window->wl.cursorPosY);
 }
 
 static void dataDeviceHandleDrop(void* userData,

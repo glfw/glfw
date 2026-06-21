@@ -573,7 +573,14 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     if (![self hasMarkedText])
         _glfwInputKey(window, key, [event keyCode], GLFW_PRESS, mods);
 
-    [self interpretKeyEvents:@[event]];
+    if (!window->textInputFocusInitialized || window->textInputFocus)
+        [self interpretKeyEvents:@[event]];
+    else
+    {
+        NSString* characters = [event characters];
+        if (characters)
+            [self insertText:characters replacementRange:[self selectedRange]];
+    }
 }
 
 - (void)flagsChanged:(NSEvent *)event
@@ -2039,7 +2046,8 @@ void _glfwResetPreeditTextCocoa(_GLFWwindow* window)
 
 void _glfwSetTextInputFocusCocoa(_GLFWwindow* window, GLFWbool focused)
 {
-    // TODO: Add a safe NSTextInputContext mapping without changing TIS behavior.
+    if (!focused)
+        _glfwResetPreeditTextCocoa(window);
 }
 
 void _glfwSetIMEStatusCocoa(_GLFWwindow* window, int active)

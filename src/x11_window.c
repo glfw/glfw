@@ -1961,8 +1961,11 @@ static void processEvent(XEvent *event)
             else if (window->cursorMode == GLFW_CURSOR_CAPTURED)
                 captureCursor(window);
 
-            if (window->x11.ic)
+            if (window->x11.ic &&
+                (!window->textInputFocusInitialized || window->textInputFocus))
+            {
                 XSetICFocus(window->x11.ic);
+            }
 
             _glfwInputWindowFocus(window, GLFW_TRUE);
             return;
@@ -3431,6 +3434,18 @@ void _glfwSetIMEStatusX11(_GLFWwindow* window, int active)
 
 void _glfwSetTextInputFocusX11(_GLFWwindow* window, GLFWbool focused)
 {
+    XIC ic = window->x11.ic;
+
+    if (!ic)
+        return;
+
+    if (focused)
+        XSetICFocus(ic);
+    else
+    {
+        _glfwResetPreeditTextX11(window);
+        XUnsetICFocus(ic);
+    }
 }
 
 int _glfwGetIMEStatusX11(_GLFWwindow* window)

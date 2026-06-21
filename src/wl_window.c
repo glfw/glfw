@@ -734,6 +734,11 @@ static void deactivateTextInputV1(_GLFWwindow* window)
     zwp_text_input_v1_deactivate(window->wl.textInputV1, _glfw.wl.seat);
 }
 
+static GLFWbool textInputFocusDisabled(_GLFWwindow* window)
+{
+    return window->textInputFocusInitialized && !window->textInputFocus;
+}
+
 static void xdgToplevelHandleConfigure(void* userData,
                                        struct xdg_toplevel* toplevel,
                                        int32_t width,
@@ -761,7 +766,8 @@ static void xdgToplevelHandleConfigure(void* userData,
                 break;
             case XDG_TOPLEVEL_STATE_ACTIVATED:
                 window->wl.pending.activated = GLFW_TRUE;
-                activateTextInputV1(window);
+                if (!textInputFocusDisabled(window))
+                    activateTextInputV1(window);
                 break;
         }
     }
@@ -1706,7 +1712,8 @@ static void pointerHandleButton(void* userData,
     // On weston, pressing the title bar will cause leave event and never emit
     // enter event even though back to content area by pressing mouse button
     // just after it. So activate it here explicitly.
-    activateTextInputV1(window);
+    if (!textInputFocusDisabled(window))
+        activateTextInputV1(window);
 
     _glfw.wl.serial = serial;
 
@@ -2399,8 +2406,13 @@ static void textInputV3Enter(void* data,
                              struct zwp_text_input_v3* textInputV3,
                              struct wl_surface* surface)
 {
-    zwp_text_input_v3_enable(textInputV3);
-    zwp_text_input_v3_commit(textInputV3);
+    _GLFWwindow* window = (_GLFWwindow*) data;
+
+    if (!textInputFocusDisabled(window))
+    {
+        zwp_text_input_v3_enable(textInputV3);
+        zwp_text_input_v3_commit(textInputV3);
+    }
 }
 
 static void textInputV3Reset(_GLFWwindow* window)
@@ -2439,6 +2451,9 @@ static void textInputV3PreeditString(void* data,
     _GLFWpreedit* preedit = &window->preedit;
     const char* cur = text;
     unsigned int cursorLength = 0;
+
+    if (textInputFocusDisabled(window))
+        return;
 
     preedit->textCount = 0;
     preedit->blockSizesCount = 0;
@@ -2513,6 +2528,9 @@ static void textInputV3CommitString(void* data,
     _GLFWwindow* window = (_GLFWwindow*) data;
     const char* cur = text;
 
+    if (textInputFocusDisabled(window))
+        return;
+
     if (!window->callbacks.character)
         return;
 
@@ -2535,6 +2553,9 @@ static void textInputV3Done(void* data,
                             uint32_t serial)
 {
     _GLFWwindow* window = (_GLFWwindow*) data;
+    if (textInputFocusDisabled(window))
+        return;
+
     _glfwUpdatePreeditCursorRectangleWayland(window);
     _glfwInputPreedit(window);
 }
@@ -2560,7 +2581,9 @@ static void textInputV1Enter(void* data,
                              struct wl_surface* surface)
 {
     _GLFWwindow* window = (_GLFWwindow*) data;
-    activateTextInputV1(window);
+
+    if (!textInputFocusDisabled(window))
+        activateTextInputV1(window);
 }
 
 static void textInputV1Reset(_GLFWwindow* window)
@@ -2586,6 +2609,13 @@ static void textInputV1Leave(void* data,
     _GLFWwindow* window = (_GLFWwindow*) data;
     char* commitText = window->wl.textInputV1Context.commitTextOnReset;
 
+    if (textInputFocusDisabled(window))
+    {
+        textInputV1Reset(window);
+        deactivateTextInputV1(window);
+        return;
+    }
+
     textInputV3CommitString(data, NULL, commitText);
     textInputV1Reset(window);
     deactivateTextInputV1(window);
@@ -2610,6 +2640,9 @@ static void textInputV1PreeditString(void* data,
                                      const char* commit)
 {
     _GLFWwindow* window = (_GLFWwindow*) data;
+
+    if (textInputFocusDisabled(window))
+        return;
 
     _glfw_free(window->wl.textInputV1Context.preeditText);
     _glfw_free(window->wl.textInputV1Context.commitTextOnReset);
@@ -2637,6 +2670,9 @@ static void textInputV1PreeditCursor(void* data,
     const char* text = window->wl.textInputV1Context.preeditText;
     const char* cur = text;
 
+    if (textInputFocusDisabled(window))
+        return;
+
     preedit->caretIndex = 0;
     if (index <= 0 || preedit->textCount == 0)
         return;
@@ -2658,6 +2694,9 @@ static void textInputV1CommitString(void* data,
                                     const char* text)
 {
     _GLFWwindow* window = (_GLFWwindow*) data;
+
+    if (textInputFocusDisabled(window))
+        return;
 
     textInputV1Reset(window);
     textInputV3CommitString(data, NULL, text);
@@ -2686,6 +2725,10 @@ static void textInputV1Keysym(void* data,
                               uint32_t state,
                               uint32_t modifiers)
 {
+    _GLFWwindow* window = (_GLFWwindow*) data;
+    if (textInputFocusDisabled(window))
+        return;
+
     uint32_t scancode;
 
     // This code supports only weston-keyboard because we aren't aware
@@ -3934,7 +3977,29 @@ void _glfwResetPreeditTextWayland(_GLFWwindow* window)
 
 void _glfwSetTextInputFocusWayland(_GLFWwindow* window, GLFWbool focused)
 {
-    // TODO: Wire this to text-input-v3 enable/disable or focus integration.
+    if (window->wl.textInputV3)
+    {
+        if (focused)
+            zwp_text_input_v3_enable(window->wl.textInputV3);
+        else
+        {
+            zwp_text_input_v3_disable(window->wl.textInputV3);
+            textInputV3Reset(window);
+        }
+
+        zwp_text_input_v3_commit(window->wl.textInputV3);
+    }
+    else if (window->wl.textInputV1)
+    {
+        if (focused)
+            activateTextInputV1(window);
+        else
+        {
+            zwp_text_input_v1_reset(window->wl.textInputV1);
+            textInputV1Reset(window);
+            deactivateTextInputV1(window);
+        }
+    }
 }
 
 void _glfwSetIMEStatusWayland(_GLFWwindow* window, int active)

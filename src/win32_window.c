@@ -834,6 +834,11 @@ static void clearImmPreedit(_GLFWwindow* window)
     _glfwInputPreedit(window);
 }
 
+static GLFWbool textInputFocusDisabled(_GLFWwindow* window)
+{
+    return window->textInputFocusInitialized && !window->textInputFocus;
+}
+
 // Commit the result texts of Imm32 to character-callback
 //
 static GLFWbool commitImmResultStr(_GLFWwindow* window)
@@ -904,6 +909,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
     {
         case WM_IME_SETCONTEXT:
         {
+            if (textInputFocusDisabled(window))
+                break;
+
             // To draw preedit text by an application side
             if (lParam & ISC_SHOWUICOMPOSITIONWINDOW)
                 lParam &= ~ISC_SHOWUICOMPOSITIONWINDOW;
@@ -1145,6 +1153,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
         case WM_IME_COMPOSITION:
         {
+            if (textInputFocusDisabled(window))
+                return 0;
+
             if (lParam & (GCS_RESULTSTR | GCS_COMPSTR))
             {
                 if (lParam & GCS_RESULTSTR)
@@ -1158,6 +1169,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
         case WM_IME_ENDCOMPOSITION:
         {
+            if (textInputFocusDisabled(window))
+                return 0;
+
             clearImmPreedit(window);
             // Usually clearing candidates in IMN_CLOSECANDIDATE is sufficient.
             // However, some IME need it here, e.g. Google Japanese Input.
@@ -1167,6 +1181,9 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
         case WM_IME_NOTIFY:
         {
+            if (textInputFocusDisabled(window))
+                return 0;
+
             switch (wParam)
             {
                 case IMN_SETOPENSTATUS:
@@ -1954,6 +1971,9 @@ void _glfwDestroyWindowWin32(_GLFWwindow* window)
 
     if (window->win32.handle)
     {
+        if (window->win32.textInputContext)
+            ImmAssociateContext(window->win32.handle, window->win32.textInputContext);
+
         RemovePropW(window->win32.handle, L"GLFW");
         DestroyWindow(window->win32.handle);
         window->win32.handle = NULL;
@@ -2856,6 +2876,9 @@ void _glfwUpdatePreeditCursorRectangleWin32(_GLFWwindow* window)
     int h = preedit->cursorHeight;
 
     COMPOSITIONFORM areaRect = { CFS_RECT, { x, y }, { x, y, x + w, y + h } };
+    if (!hIMC)
+        return;
+
     ImmSetCompositionWindow(hIMC, &areaRect);
 
     CANDIDATEFORM excludeRect = { 0, CFS_EXCLUDE, { x, y }, { x, y, x + w, y + h } };
@@ -2868,29 +2891,91 @@ void _glfwResetPreeditTextWin32(_GLFWwindow* window)
 {
     HWND hWnd = window->win32.handle;
     HIMC hIMC = ImmGetContext(hWnd);
-    ImmNotifyIME(hIMC, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
-    ImmReleaseContext(hWnd, hIMC);
+    GLFWbool releaseContext = GLFW_TRUE;
+
+    if (!hIMC && window->win32.textInputContext)
+    {
+        hIMC = window->win32.textInputContext;
+        releaseContext = GLFW_FALSE;
+    }
+
+    if (hIMC)
+    {
+        ImmNotifyIME(hIMC, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
+        if (releaseContext)
+            ImmReleaseContext(hWnd, hIMC);
+    }
+
+    clearImmPreedit(window);
+    clearImmCandidate(window);
 }
 
 void _glfwSetTextInputFocusWin32(_GLFWwindow* window, GLFWbool focused)
 {
-    // TODO: Add safe IMM/TSF text input focus plumbing without changing IME status.
+    if (focused)
+    {
+        if (window->win32.textInputContext)
+        {
+            ImmAssociateContext(window->win32.handle,
+                                window->win32.textInputContext);
+            window->win32.textInputContext = NULL;
+            _glfwUpdatePreeditCursorRectangleWin32(window);
+        }
+    }
+    else
+    {
+        _glfwResetPreeditTextWin32(window);
+
+        if (!window->win32.textInputContext)
+        {
+            window->win32.textInputContext =
+                ImmAssociateContext(window->win32.handle, NULL);
+        }
+    }
 }
 
 void _glfwSetIMEStatusWin32(_GLFWwindow* window, int active)
 {
     HWND hWnd = window->win32.handle;
-    HIMC hIMC = ImmGetContext(hWnd);
+    HIMC hIMC = window->win32.textInputContext;
+    GLFWbool releaseContext = GLFW_FALSE;
+
+    if (!hIMC)
+    {
+        hIMC = ImmGetContext(hWnd);
+        releaseContext = GLFW_TRUE;
+    }
+
+    if (!hIMC)
+        return;
+
     ImmSetOpenStatus(hIMC, active ? TRUE : FALSE);
-    ImmReleaseContext(hWnd, hIMC);
+
+    if (releaseContext)
+        ImmReleaseContext(hWnd, hIMC);
 }
 
 int _glfwGetIMEStatusWin32(_GLFWwindow* window)
 {
     HWND hWnd = window->win32.handle;
-    HIMC hIMC = ImmGetContext(hWnd);
-    BOOL result = ImmGetOpenStatus(hIMC);
-    ImmReleaseContext(hWnd, hIMC);
+    HIMC hIMC = window->win32.textInputContext;
+    GLFWbool releaseContext = GLFW_FALSE;
+    BOOL result;
+
+    if (!hIMC)
+    {
+        hIMC = ImmGetContext(hWnd);
+        releaseContext = GLFW_TRUE;
+    }
+
+    if (!hIMC)
+        return GLFW_FALSE;
+
+    result = ImmGetOpenStatus(hIMC);
+
+    if (releaseContext)
+        ImmReleaseContext(hWnd, hIMC);
+
     return result ? GLFW_TRUE : GLFW_FALSE;
 }
 

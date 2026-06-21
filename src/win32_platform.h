@@ -263,6 +263,7 @@ typedef LONG (WINAPI * PFN_RtlVerifyVersionInfo)(OSVERSIONINFOEXW*,ULONG,ULONGLO
 typedef DWORD  (WINAPI * PFN_ImmGetCandidateListW)(HIMC,DWORD,LPCANDIDATELIST,DWORD);
 typedef LONG (WINAPI * PFN_ImmGetCompositionStringW)(HIMC,DWORD,LPVOID,DWORD);
 typedef HIMC (WINAPI * PFN_ImmGetContext)(HWND);
+typedef HIMC (WINAPI * PFN_ImmAssociateContext)(HWND,HIMC);
 typedef BOOL (WINAPI * PFN_ImmGetConversionStatus)(HIMC,LPDWORD,LPDWORD);
 typedef UINT (WINAPI * PFN_ImmGetDescriptionW)(HKL,LPWSTR,UINT);
 typedef BOOL (WINAPI * PFN_ImmGetOpenStatus)(HIMC);
@@ -274,6 +275,7 @@ typedef BOOL (WINAPI * PFN_ImmSetOpenStatus)(HIMC,BOOL);
 #define ImmGetCandidateListW _glfw.win32.imm32.ImmGetCandidateListW_
 #define ImmGetCompositionStringW _glfw.win32.imm32.ImmGetCompositionStringW_
 #define ImmGetContext _glfw.win32.imm32.ImmGetContext_
+#define ImmAssociateContext _glfw.win32.imm32.ImmAssociateContext_
 #define ImmGetConversionStatus _glfw.win32.imm32.ImmGetConversionStatus_
 #define ImmGetDescriptionW _glfw.win32.imm32.ImmGetDescriptionW_
 #define ImmGetOpenStatus _glfw.win32.imm32.ImmGetOpenStatus_
@@ -380,6 +382,7 @@ typedef struct _GLFWlibraryWGL
 typedef struct _GLFWwindowWin32
 {
     HWND                handle;
+    HIMC                textInputContext;
     HICON               bigIcon;
     HICON               smallIcon;
 
@@ -473,6 +476,7 @@ typedef struct _GLFWlibraryWin32
         PFN_ImmGetCandidateListW        ImmGetCandidateListW_;
         PFN_ImmGetCompositionStringW    ImmGetCompositionStringW_;
         PFN_ImmGetContext               ImmGetContext_;
+        PFN_ImmAssociateContext         ImmAssociateContext_;
         PFN_ImmGetConversionStatus      ImmGetConversionStatus_;
         PFN_ImmGetDescriptionW          ImmGetDescriptionW_;
         PFN_ImmGetOpenStatus            ImmGetOpenStatus_;

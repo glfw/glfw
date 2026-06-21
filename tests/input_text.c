@@ -112,6 +112,14 @@ static int fontNum = 0;
 static int currentFontIndex = 0;
 
 static int currentIMEStatus = GLFW_FALSE;
+enum text_input_focus_status
+{
+    TEXT_INPUT_FOCUS_COMPATIBLE,
+    TEXT_INPUT_FOCUS_IN,
+    TEXT_INPUT_FOCUS_OUT
+};
+static enum text_input_focus_status currentTextInputFocusStatus =
+    TEXT_INPUT_FOCUS_COMPATIBLE;
 #define MAX_PREEDIT_LEN 128
 static char preeditBuf[MAX_PREEDIT_LEN] = "";
 
@@ -510,11 +518,25 @@ static int set_font_selecter(GLFWwindow* window, struct nk_context* nk, int heig
 
 static void set_ime_buttons(GLFWwindow* window, struct nk_context* nk, int height)
 {
-    nk_layout_row_dynamic(nk, height, 2);
+    nk_layout_row_dynamic(nk, height, 3);
 
     if (nk_button_label(nk, "Toggle IME status"))
     {
         glfwSetInputMode(window, GLFW_IME, !currentIMEStatus);
+    }
+
+    if (nk_button_label(nk, "Toggle text input focus"))
+    {
+        if (currentTextInputFocusStatus == TEXT_INPUT_FOCUS_IN)
+        {
+            glfwSetTextInputFocus(window, GLFW_FALSE);
+            currentTextInputFocusStatus = TEXT_INPUT_FOCUS_OUT;
+        }
+        else
+        {
+            glfwSetTextInputFocus(window, GLFW_TRUE);
+            currentTextInputFocusStatus = TEXT_INPUT_FOCUS_IN;
+        }
     }
 
     if (nk_button_label(nk, "Reset preedit text"))
@@ -615,8 +637,23 @@ static void set_preedit_cursor_edit(GLFWwindow* window, struct nk_context* nk, i
 
 static void set_ime_stauts_labels(GLFWwindow* window, struct nk_context* nk, int height)
 {
-    nk_layout_row_dynamic(nk, height, 1);
+    const char* textInputFocusStatus = "Text input focus: compatible";
+
+    switch (currentTextInputFocusStatus)
+    {
+        case TEXT_INPUT_FOCUS_IN:
+            textInputFocusStatus = "Text input focus: Focus In";
+            break;
+        case TEXT_INPUT_FOCUS_OUT:
+            textInputFocusStatus = "Text input focus: Focus Out";
+            break;
+        case TEXT_INPUT_FOCUS_COMPATIBLE:
+            break;
+    }
+
+    nk_layout_row_dynamic(nk, height, 2);
     nk_value_bool(nk, "IME status", currentIMEStatus);
+    nk_label(nk, textInputFocusStatus, NK_TEXT_LEFT);
 }
 
 static void set_preedit_labels(GLFWwindow* window, struct nk_context* nk, int height)

@@ -718,6 +718,7 @@ const char* _glfwGetClipboardStringWayland(void);
 
 void _glfwUpdatePreeditCursorRectangleWayland(_GLFWwindow* window);
 void _glfwResetPreeditTextWayland(_GLFWwindow* window);
+void _glfwSetTextInputFocusWayland(_GLFWwindow* window, GLFWbool focused);
 void _glfwSetIMEStatusWayland(_GLFWwindow* window, int active);
 int _glfwGetIMEStatusWayland(_GLFWwindow* window);
 

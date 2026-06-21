@@ -559,6 +559,10 @@ void _glfwResetPreeditTextNull(_GLFWwindow* window)
 {
 }
 
+void _glfwSetTextInputFocusNull(_GLFWwindow* window, GLFWbool focused)
+{
+}
+
 void _glfwSetIMEStatusNull(_GLFWwindow* window, int active)
 {
 }

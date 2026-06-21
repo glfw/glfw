@@ -272,6 +272,7 @@ int _glfwGetKeyScancodeNull(int key);
 
 void _glfwUpdatePreeditCursorRectangleNull(_GLFWwindow* window);
 void _glfwResetPreeditTextNull(_GLFWwindow* window);
+void _glfwSetTextInputFocusNull(_GLFWwindow* window, GLFWbool focused);
 void _glfwSetIMEStatusNull(_GLFWwindow* window, int active);
 int _glfwGetIMEStatusNull(_GLFWwindow* window);
 

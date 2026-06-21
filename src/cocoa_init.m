@@ -536,6 +536,7 @@ GLFWbool _glfwConnectCocoa(int platformID, _GLFWplatform* platform)
         .getClipboardString = _glfwGetClipboardStringCocoa,
         .updatePreeditCursorRectangle = _glfwUpdatePreeditCursorRectangleCocoa,
         .resetPreeditText = _glfwResetPreeditTextCocoa,
+        .setTextInputFocus = _glfwSetTextInputFocusCocoa,
         .setIMEStatus = _glfwSetIMEStatusCocoa,
         .getIMEStatus = _glfwGetIMEStatusCocoa,
         .initJoysticks = _glfwInitJoysticksCocoa,

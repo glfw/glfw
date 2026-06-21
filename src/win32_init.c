@@ -621,6 +621,7 @@ GLFWbool _glfwConnectWin32(int platformID, _GLFWplatform* platform)
         .getClipboardString = _glfwGetClipboardStringWin32,
         .updatePreeditCursorRectangle = _glfwUpdatePreeditCursorRectangleWin32,
         .resetPreeditText = _glfwResetPreeditTextWin32,
+        .setTextInputFocus = _glfwSetTextInputFocusWin32,
         .setIMEStatus = _glfwSetIMEStatusWin32,
         .getIMEStatus = _glfwGetIMEStatusWin32,
         .initJoysticks = _glfwInitJoysticksWin32,

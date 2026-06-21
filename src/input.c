@@ -1040,6 +1040,19 @@ GLFWAPI void glfwResetPreeditText(GLFWwindow* handle)
     _glfw.platform.resetPreeditText(window);
 }
 
+GLFWAPI void glfwSetTextInputFocus(GLFWwindow* handle, int focused)
+{
+    _GLFW_REQUIRE_INIT();
+
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    focused = focused ? GLFW_TRUE : GLFW_FALSE;
+    window->textInputFocusInitialized = GLFW_TRUE;
+    window->textInputFocus = focused;
+    _glfw.platform.setTextInputFocus(window, focused);
+}
+
 GLFWAPI unsigned int* glfwGetPreeditCandidate(GLFWwindow* handle, int index, int* textCount)
 {
     _GLFWwindow* window = (_GLFWwindow*) handle;

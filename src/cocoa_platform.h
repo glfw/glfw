@@ -300,6 +300,7 @@ const char* _glfwGetClipboardStringCocoa(void);
 
 void _glfwUpdatePreeditCursorRectangleCocoa(_GLFWwindow* window);
 void _glfwResetPreeditTextCocoa(_GLFWwindow* window);
+void _glfwSetTextInputFocusCocoa(_GLFWwindow* window, GLFWbool focused);
 void _glfwSetIMEStatusCocoa(_GLFWwindow* window, int active);
 int _glfwGetIMEStatusCocoa(_GLFWwindow* window);
 

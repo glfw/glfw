@@ -1190,6 +1190,7 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
         .getClipboardString = _glfwGetClipboardStringX11,
         .updatePreeditCursorRectangle = _glfwUpdatePreeditCursorRectangleX11,
         .resetPreeditText = _glfwResetPreeditTextX11,
+        .setTextInputFocus = _glfwSetTextInputFocusX11,
         .setIMEStatus = _glfwSetIMEStatusX11,
         .getIMEStatus = _glfwGetIMEStatusX11,
 #if defined(GLFW_BUILD_LINUX_JOYSTICK)

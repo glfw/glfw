@@ -981,6 +981,7 @@ const char* _glfwGetClipboardStringX11(void);
 
 void _glfwUpdatePreeditCursorRectangleX11(_GLFWwindow* window);
 void _glfwResetPreeditTextX11(_GLFWwindow* window);
+void _glfwSetTextInputFocusX11(_GLFWwindow* window, GLFWbool focused);
 void _glfwSetIMEStatusX11(_GLFWwindow* window, int active);
 int _glfwGetIMEStatusX11(_GLFWwindow* window);
 

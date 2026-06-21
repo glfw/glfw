@@ -592,6 +592,12 @@ struct _GLFWwindow
     GLFWbool            stickyMouseButtons;
     GLFWbool            lockKeyMods;
     GLFWbool            disableMouseButtonLimit;
+
+    // Preserve legacy text input behavior for backward compatibility until
+    // glfwSetTextInputFocus is used for this window.
+    GLFWbool            textInputFocusInitialized;
+    GLFWbool            textInputFocus;
+
     int                 cursorMode;
     char                mouseButtons[GLFW_MOUSE_BUTTON_LAST + 1];
     char                keys[GLFW_KEY_LAST + 1];
@@ -744,6 +750,7 @@ struct _GLFWplatform
     const char* (*getClipboardString)(void);
     void (*updatePreeditCursorRectangle)(_GLFWwindow*);
     void (*resetPreeditText)(_GLFWwindow*);
+    void (*setTextInputFocus)(_GLFWwindow*,GLFWbool);
     void (*setIMEStatus)(_GLFWwindow*,int);
     int  (*getIMEStatus)(_GLFWwindow*);
     GLFWbool (*initJoysticks)(void);

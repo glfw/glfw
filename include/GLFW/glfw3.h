@@ -5310,6 +5310,43 @@ GLFWAPI void glfwSetPreeditCursorRectangle(GLFWwindow* window, int x, int y, int
  */
 GLFWAPI void glfwResetPreeditText(GLFWwindow* window);
 
+/*! @brief Sets whether the application is in a text input context.
+ *
+ *  This function tells GLFW whether the specified window is currently handling
+ *  application text input, such as a chat box, text field, search box, rename
+ *  dialog or editor.  Text input focus is separate from native window focus.
+ *
+ *  Pass `GLFW_TRUE` when the application enters a text input context and
+ *  `GLFW_FALSE` when it leaves that context.  This does not turn the IME on or
+ *  off, switch input languages or force a specific platform input source.
+ *
+ *  For compatibility, applications that never call this function keep the same
+ *  platform text input behavior as before this API was introduced.  Once this
+ *  function is called for a window, the application is responsible for
+ *  notifying GLFW when text input begins and ends.
+ *
+ *  This function is related to but distinct from `GLFW_IME`.  Applications
+ *  should normally prefer this function unless they specifically need
+ *  platform-dependent IME state control.
+ *
+ *  @param[in] window The window whose text input focus state to set.
+ *  @param[in] focused `GLFW_TRUE` to enter text input focus, or `GLFW_FALSE`
+ *  to leave it.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref ime_support
+ *  @sa @ref glfwSetInputMode
+ *
+ *  @since Added in GLFW 3.X.
+ *
+ *  @ingroup input
+ */
+GLFWAPI void glfwSetTextInputFocus(GLFWwindow* window, int focused);
+
 /*! @brief Returns the preedit candidate.
  *
  *  This function returns the text and the text-count of the preedit candidate.

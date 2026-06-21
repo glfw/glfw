@@ -468,6 +468,7 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         .getClipboardString = _glfwGetClipboardStringWayland,
         .updatePreeditCursorRectangle = _glfwUpdatePreeditCursorRectangleWayland,
         .resetPreeditText = _glfwResetPreeditTextWayland,
+        .setTextInputFocus = _glfwSetTextInputFocusWayland,
         .setIMEStatus = _glfwSetIMEStatusWayland,
         .getIMEStatus = _glfwGetIMEStatusWayland,
 #if defined(GLFW_BUILD_LINUX_JOYSTICK)

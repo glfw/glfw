@@ -276,6 +276,47 @@ In this case, the preedit callback also works on X11.  However, on-the-spot styl
 X11 is unstable, so it is not recommended.
 
 
+@subsection input_text_focus Text input focus
+
+Text input focus describes whether the application is currently in a text input
+context.  Examples include a chat box, text field, search box, rename dialog or
+editor.  This is distinct from native window focus.
+
+This is useful for applications that render their own user interface inside a
+single native window, such as games and browsers.  In these applications, the
+native window may remain focused while the application switches between
+gameplay, menus, chat input, search fields, editors and other UI elements.  The
+application is the only component that reliably knows when text input is
+expected.
+
+Use @ref glfwSetTextInputFocus to tell GLFW when the application enters or
+leaves a text input context:
+
+@code
+glfwSetTextInputFocus(window, GLFW_TRUE);  // Text field became active
+glfwSetTextInputFocus(window, GLFW_FALSE); // Text field lost focus
+@endcode
+
+This function does not turn the IME on or off.  It expresses whether GLFW should
+route text input through the platform text input or IME path for this window.
+It does not request an input language change, force a specific IME state or
+force a specific input source.
+
+For compatibility, GLFW preserves the previous platform text input behavior for
+applications that never call @ref glfwSetTextInputFocus.  Once an application
+calls it for a window, that window enters explicit text input focus management.
+The application is then responsible for calling it with `GLFW_TRUE` when text
+input begins and with `GLFW_FALSE` when text input ends.
+
+Applications that opt into explicit text input focus management should set the
+initial state explicitly, usually to `GLFW_FALSE`, after window creation.  They
+should then set it to `GLFW_TRUE` only while a text input widget is active.
+
+Individual platforms map this abstraction to their native text input
+mechanisms.  Some platforms may also cancel or clear active preedit text when
+text input focus is set to `GLFW_FALSE`.
+
+
 @subsection input_preedit Preedit input
 
 When inputting text with IME, the text is temporarily inputted, then conversion
@@ -406,6 +447,16 @@ You can also change the IME status by the following function:
 glfwSetInputMode(window, GLFW_IME, GLFW_TRUE);
 glfwSetInputMode(window, GLFW_IME, GLFW_FALSE);
 @endcode
+
+This is related to but distinct from @ref glfwSetTextInputFocus.  Text input
+focus describes application intent: the application has entered or left a text
+input context.  `GLFW_IME` controls platform-specific IME state.  Applications
+should normally prefer @ref glfwSetTextInputFocus unless they specifically need
+platform-dependent IME state control.
+
+As a rule of thumb, if you think you need to enable or disable IME because a
+chat box, text field, search field, rename dialog or editor gained or lost
+focus, you probably want text input focus instead.
 
 You can use the following function to clear the current preedit.
 

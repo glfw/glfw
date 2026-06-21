@@ -578,6 +578,7 @@ const char* _glfwGetClipboardStringWin32(void);
 
 void _glfwUpdatePreeditCursorRectangleWin32(_GLFWwindow* window);
 void _glfwResetPreeditTextWin32(_GLFWwindow* window);
+void _glfwSetTextInputFocusWin32(_GLFWwindow* window, GLFWbool focused);
 void _glfwSetIMEStatusWin32(_GLFWwindow* window, int active);
 int _glfwGetIMEStatusWin32(_GLFWwindow* window);
 

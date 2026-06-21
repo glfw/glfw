@@ -2037,6 +2037,11 @@ void _glfwResetPreeditTextCocoa(_GLFWwindow* window)
     } // autoreleasepool
 }
 
+void _glfwSetTextInputFocusCocoa(_GLFWwindow* window, GLFWbool focused)
+{
+    // TODO: Add a safe NSTextInputContext mapping without changing TIS behavior.
+}
+
 void _glfwSetIMEStatusCocoa(_GLFWwindow* window, int active)
 {
     @autoreleasepool {

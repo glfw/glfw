@@ -3429,6 +3429,10 @@ void _glfwSetIMEStatusX11(_GLFWwindow* window, int active)
         XUnsetICFocus(ic);
 }
 
+void _glfwSetTextInputFocusX11(_GLFWwindow* window, GLFWbool focused)
+{
+}
+
 int _glfwGetIMEStatusX11(_GLFWwindow* window)
 {
     if (!window->x11.ic)

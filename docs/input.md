@@ -233,14 +233,21 @@ void character_callback(GLFWwindow* window, unsigned int codepoint)
 ### Key names {#input_key_name}
 
 If you wish to refer to keys by name, you can query the keyboard layout
-dependent name of printable keys with @ref glfwGetKeyName.
+dependent name of printable keys with @ref glfwGetKeyName
+and @ref glfwGetKeyNameModifiers.
 
 ```c
 const char* key_name = glfwGetKeyName(GLFW_KEY_W, 0);
 show_tutorial_hint("Press %s to move forward", key_name);
 ```
 
-This function can handle both [keys and scancodes](@ref input_key).  If the
+```c
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+  printf("You pressed: %s\n", glfwGetKeyNameModifiers(key, scancode, mods));
+}
+```
+
+These functions can handle both [keys and scancodes](@ref input_key).  If the
 specified key is `GLFW_KEY_UNKNOWN` then the scancode is used, otherwise it is
 ignored.  This matches the behavior of the key callback, meaning the callback
 arguments can always be passed unmodified to this function.

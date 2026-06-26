@@ -26,6 +26,11 @@ the `EGLConfig` of a window that has a `EGLSurface`.
 GLFW now provides the @ref glfwGetGLXFBConfig native access function for
 querying the `GLXFBConfig` of a window that has a `GLXWindow`.
 
+### Key translations with modifiers {#glfwGetKeyNameModifiers}
+
+GLFW now provides the @ref glfwGetKeyNameModifiers function to obtain the native
+key translation including active modifier sets in order to accurately display
+key state and handle key chords in the presence of shift and other modifiers.
 
 ## Caveats {#caveats}
 
@@ -54,6 +59,7 @@ actively maintained and available on many platforms.
 
  - @ref glfwGetEGLConfig
  - @ref glfwGetGLXFBConfig
+ - @ref glfwGetKeyNameModifiers
 
 
 ### New types {#new_types}

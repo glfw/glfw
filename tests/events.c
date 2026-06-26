@@ -411,7 +411,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     }
     else
     {
-        const char* name = glfwGetKeyName(key, scancode);
+        const char* name = glfwGetKeyNameModifiers(key, scancode, mods);
         if (name)
         {
             printf("%08x to %i at %0.3f: Key 0x%04x (%s) Scancode 0x%04x Name %s (with%s) was %s\n",

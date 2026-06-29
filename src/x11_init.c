@@ -1499,7 +1499,7 @@ int _glfwInitX11(void)
     _glfw.x11.xkb.KeycodeToKeysym = (PFN_XkbKeycodeToKeysym)
         _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XkbKeycodeToKeysym");
     _glfw.x11.xkb.LookupKeysym = (PFN_XkbLookupKeysym)
-        _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XkbLookupKeysym");
+        _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XkbLookupKeySym");
     _glfw.x11.xkb.QueryExtension = (PFN_XkbQueryExtension)
         _glfwPlatformGetModuleSymbol(_glfw.x11.xlib.handle, "XkbQueryExtension");
     _glfw.x11.xkb.SelectEventDetails = (PFN_XkbSelectEventDetails)

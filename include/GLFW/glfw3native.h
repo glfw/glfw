@@ -554,6 +554,29 @@ GLFWAPI struct wl_output* glfwGetWaylandMonitor(GLFWmonitor* monitor);
  *  @ingroup native
  */
 GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* window);
+
+/*! @brief Returns the native `struct xdg_toplevel*` of the specified window.
+ *
+ * If the window is managed by libdecor, this function dynamic-links and calls
+ * `libdecor_frame_get_xdg_toplevel` to retrieve the true underlying top-level
+ * surface from the active decoration plugin. If libdecor is inactive, it returns
+ * the standard XDG-shell top-level handle.
+ *
+ * @param[in] window The window whose top-level surface to retrieve.
+ * @return The native `struct xdg_toplevel*` of the specified window, or `NULL` if
+ * the window is not fully mapped or an [error](@ref error_handling) occurred.
+ *
+ * @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ * GLFW_PLATFORM_UNAVAILABLE.
+ *
+ * @thread_safety This function may be called from any thread. Access is not
+ * synchronized.
+ *
+ * @since Added in version 3.5.
+ *
+ * @ingroup native
+ */
+GLFWAPI struct xdg_toplevel* glfwGetWaylandToplevel(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_EGL)

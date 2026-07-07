@@ -3615,5 +3615,28 @@ GLFWAPI struct wl_surface* glfwGetWaylandWindow(GLFWwindow* handle)
     return window->wl.surface;
 }
 
+GLFWAPI struct xdg_toplevel* glfwGetWaylandToplevel(GLFWwindow* handle)
+{
+    _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
+    _GLFWwindow* window = (_GLFWwindow*) handle;
+    assert(window != NULL);
+
+    if (_glfw.wl.libdecor.context && window->wl.libdecor.frame)
+    {
+        extern void* dlsym(void* handle, const char* symbol);
+
+        PFN_libdecor_frame_get_xdg_toplevel real_libdecor_get_toplevel = 
+            (PFN_libdecor_frame_get_xdg_toplevel)dlsym(_glfw.wl.libdecor.handle, 
+                                                       "libdecor_frame_get_xdg_toplevel");
+
+        if (real_libdecor_get_toplevel)
+        {
+            return real_libdecor_get_toplevel(window->wl.libdecor.frame);
+        }
+    }
+
+    return window->wl.xdg.toplevel;    
+}
+
 #endif // _GLFW_WAYLAND
 

@@ -807,7 +807,13 @@ static void xdgSurfaceHandleConfigure(void* userData,
         _glfwInputWindowMaximize(window, window->wl.maximized);
     }
 
-    window->wl.fullscreen = window->wl.pending.fullscreen;
+    GLFWbool damaged = GLFW_FALSE;
+
+    if (window->wl.fullscreen != window->wl.pending.fullscreen)
+    {
+        window->wl.fullscreen = window->wl.pending.fullscreen;
+        damaged = GLFW_TRUE;
+    }
 
     int width  = window->wl.pending.width;
     int height = window->wl.pending.height;
@@ -828,10 +834,11 @@ static void xdgSurfaceHandleConfigure(void* userData,
     if (resizeWindow(window, width, height))
     {
         _glfwInputWindowSize(window, window->wl.width, window->wl.height);
-
-        if (window->wl.visible)
-            _glfwInputWindowDamage(window);
+        damaged = GLFW_TRUE;
     }
+
+    if (damaged && window->wl.visible)
+        _glfwInputWindowDamage(window);
 
     if (!window->wl.visible)
     {

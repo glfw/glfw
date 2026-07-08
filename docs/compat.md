@@ -50,10 +50,11 @@ compositing window manager to un-redirect full screen GLFW windows.  If the
 running window manager uses compositing but does not support this property then
 additional copying may be performed for each buffer swap of full screen windows.
 
-GLFW uses the [clipboard manager protocol][ClipboardManager] to push a clipboard
-string (i.e. selection) owned by a GLFW window about to be destroyed to the
-clipboard manager.  If there is no running clipboard manager, the clipboard
-string will be unavailable once the window has been destroyed.
+GLFW uses the [clipboard manager protocol][ClipboardManager] to keep the
+clipboard string availble for the user after the libary has been terminated.  If
+there is no running clipboard manager and the clipboard contents has been set
+with @ref glfwSetClipboardString, the clipboard will be emptied when the library
+is terminated.
 
 [clipboardManager]: https://www.freedesktop.org/wiki/ClipboardManager/
 

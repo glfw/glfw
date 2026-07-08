@@ -32,7 +32,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <float.h>
-
+#include <math.h>
 
 //////////////////////////////////////////////////////////////////////////
 //////                         GLFW event API                       //////
@@ -135,9 +135,9 @@ void _glfwInputWindowContentScale(_GLFWwindow* window, float xscale, float yscal
 {
     assert(window != NULL);
     assert(xscale > 0.f);
-    assert(xscale < FLT_MAX);
+    assert(isfinite(xscale));
     assert(yscale > 0.f);
-    assert(yscale < FLT_MAX);
+    assert(isfinite(yscale));
 
     if (window->callbacks.scale)
         window->callbacks.scale((GLFWwindow*) window, xscale, yscale);
@@ -208,7 +208,6 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
 
     wndconfig.width   = width;
     wndconfig.height  = height;
-    wndconfig.title   = title;
     ctxconfig.share   = (_GLFWwindow*) share;
 
     if (!_glfwIsValidContextConfig(&ctxconfig))
@@ -266,16 +265,16 @@ void glfwDefaultWindowHints(void)
 
     // The default is a focused, visible, resizable window with decorations
     memset(&_glfw.hints.window, 0, sizeof(_glfw.hints.window));
-    _glfw.hints.window.resizable    = GLFW_TRUE;
-    _glfw.hints.window.visible      = GLFW_TRUE;
-    _glfw.hints.window.decorated    = GLFW_TRUE;
-    _glfw.hints.window.focused      = GLFW_TRUE;
-    _glfw.hints.window.autoIconify  = GLFW_TRUE;
-    _glfw.hints.window.centerCursor = GLFW_TRUE;
-    _glfw.hints.window.focusOnShow  = GLFW_TRUE;
+    _glfw.hints.window.resizable    = true;
+    _glfw.hints.window.visible      = true;
+    _glfw.hints.window.decorated    = true;
+    _glfw.hints.window.focused      = true;
+    _glfw.hints.window.autoIconify  = true;
+    _glfw.hints.window.centerCursor = true;
+    _glfw.hints.window.focusOnShow  = true;
     _glfw.hints.window.xpos         = GLFW_ANY_POSITION;
     _glfw.hints.window.ypos         = GLFW_ANY_POSITION;
-    _glfw.hints.window.scaleFramebuffer = GLFW_TRUE;
+    _glfw.hints.window.scaleFramebuffer = true;
 
     // The default is 24 bits of color, 24 bits of depth and 8 bits of stencil,
     // double buffered
@@ -286,7 +285,7 @@ void glfwDefaultWindowHints(void)
     _glfw.hints.framebuffer.alphaBits    = 8;
     _glfw.hints.framebuffer.depthBits    = 24;
     _glfw.hints.framebuffer.stencilBits  = 8;
-    _glfw.hints.framebuffer.doublebuffer = GLFW_TRUE;
+    _glfw.hints.framebuffer.doublebuffer = true;
 
     // The default is to select the highest available refresh rate
     _glfw.hints.refreshRate = GLFW_DONT_CARE;
@@ -332,40 +331,40 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             _glfw.hints.framebuffer.auxBuffers = value;
             return;
         case GLFW_STEREO:
-            _glfw.hints.framebuffer.stereo = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.framebuffer.stereo = value;
             return;
         case GLFW_DOUBLEBUFFER:
-            _glfw.hints.framebuffer.doublebuffer = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.framebuffer.doublebuffer = value;
             return;
         case GLFW_TRANSPARENT_FRAMEBUFFER:
-            _glfw.hints.framebuffer.transparent = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.framebuffer.transparent = value;
             return;
         case GLFW_SAMPLES:
             _glfw.hints.framebuffer.samples = value;
             return;
         case GLFW_SRGB_CAPABLE:
-            _glfw.hints.framebuffer.sRGB = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.framebuffer.sRGB = value;
             return;
         case GLFW_RESIZABLE:
-            _glfw.hints.window.resizable = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.window.resizable = value;
             return;
         case GLFW_DECORATED:
-            _glfw.hints.window.decorated = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.window.decorated = value;
             return;
         case GLFW_FOCUSED:
-            _glfw.hints.window.focused = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.window.focused = value;
             return;
         case GLFW_AUTO_ICONIFY:
-            _glfw.hints.window.autoIconify = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.window.autoIconify = value;
             return;
         case GLFW_FLOATING:
-            _glfw.hints.window.floating = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.window.floating = value;
             return;
         case GLFW_MAXIMIZED:
-            _glfw.hints.window.maximized = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.window.maximized = value;
             return;
         case GLFW_VISIBLE:
-            _glfw.hints.window.visible = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.window.visible = value;
             return;
         case GLFW_POSITION_X:
             _glfw.hints.window.xpos = value;
@@ -374,29 +373,29 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             _glfw.hints.window.ypos = value;
             return;
         case GLFW_WIN32_KEYBOARD_MENU:
-            _glfw.hints.window.win32.keymenu = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.window.win32.keymenu = value;
             return;
         case GLFW_WIN32_SHOWDEFAULT:
-            _glfw.hints.window.win32.showDefault = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.window.win32.showDefault = value;
             return;
         case GLFW_COCOA_GRAPHICS_SWITCHING:
-            _glfw.hints.context.nsgl.offline = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.context.nsgl.offline = value;
             return;
         case GLFW_SCALE_TO_MONITOR:
-            _glfw.hints.window.scaleToMonitor = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.window.scaleToMonitor = value;
             return;
         case GLFW_SCALE_FRAMEBUFFER:
         case GLFW_COCOA_RETINA_FRAMEBUFFER:
-            _glfw.hints.window.scaleFramebuffer = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.window.scaleFramebuffer = value;
             return;
         case GLFW_CENTER_CURSOR:
-            _glfw.hints.window.centerCursor = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.window.centerCursor = value;
             return;
         case GLFW_FOCUS_ON_SHOW:
-            _glfw.hints.window.focusOnShow = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.window.focusOnShow = value;
             return;
         case GLFW_MOUSE_PASSTHROUGH:
-            _glfw.hints.window.mousePassthrough = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.window.mousePassthrough = value;
             return;
         case GLFW_CLIENT_API:
             _glfw.hints.context.client = value;
@@ -414,13 +413,13 @@ GLFWAPI void glfwWindowHint(int hint, int value)
             _glfw.hints.context.robustness = value;
             return;
         case GLFW_OPENGL_FORWARD_COMPAT:
-            _glfw.hints.context.forward = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.context.forward = value;
             return;
         case GLFW_CONTEXT_DEBUG:
-            _glfw.hints.context.debug = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.context.debug = value;
             return;
         case GLFW_CONTEXT_NO_ERROR:
-            _glfw.hints.context.noerror = value ? GLFW_TRUE : GLFW_FALSE;
+            _glfw.hints.context.noerror = value;
             return;
         case GLFW_OPENGL_PROFILE:
             _glfw.hints.context.profile = value;
@@ -777,7 +776,7 @@ GLFWAPI float glfwGetWindowOpacity(GLFWwindow* handle)
 
 GLFWAPI void glfwSetWindowOpacity(GLFWwindow* handle, float opacity)
 {
-    assert(opacity == opacity);
+    assert(isfinite(opacity));
     assert(opacity >= 0.f);
     assert(opacity <= 1.f);
 
@@ -786,7 +785,7 @@ GLFWAPI void glfwSetWindowOpacity(GLFWwindow* handle, float opacity)
     _GLFWwindow* window = (_GLFWwindow*) handle;
     assert(window != NULL);
 
-    if (opacity != opacity || opacity < 0.f || opacity > 1.f)
+    if (!isfinite(opacity) || opacity < 0.f || opacity > 1.f)
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid window opacity %f", opacity);
         return;
@@ -1179,11 +1178,10 @@ GLFWAPI void glfwWaitEvents(void)
 GLFWAPI void glfwWaitEventsTimeout(double timeout)
 {
     _GLFW_REQUIRE_INIT();
-    assert(timeout == timeout);
+    assert(isfinite(timeout));
     assert(timeout >= 0.0);
-    assert(timeout <= DBL_MAX);
 
-    if (timeout != timeout || timeout < 0.0 || timeout > DBL_MAX)
+    if (!isfinite(timeout) || timeout < 0.0)
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid time %f", timeout);
         return;

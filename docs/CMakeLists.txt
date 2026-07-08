@@ -1,4 +1,8 @@
 
+# Because of bugs and limitations in its Markdown support, only fairly recent
+# versions of Doxygen can produce acceptable output
+set(MINIMUM_DOXYGEN_VERSION 1.9.8)
+
 # NOTE: The order of this list determines the order of items in the Guides
 #       (i.e. Pages) list in the generated documentation
 set(source_files
@@ -32,10 +36,10 @@ foreach(file IN LISTS source_files)
 endforeach()
 
 set(DOXYGEN_SKIP_DOT TRUE)
-find_package(Doxygen)
+find_package(Doxygen ${MINIMUM_DOXYGEN_VERSION} QUIET)
 
-if (NOT DOXYGEN_FOUND OR DOXYGEN_VERSION VERSION_LESS "1.9.8")
-    message(STATUS "Documentation generation requires Doxygen 1.9.8 or later")
+if (NOT DOXYGEN_FOUND)
+    message(STATUS "Documentation generation requires Doxygen ${MINIMUM_DOXYGEN_VERSION} or later")
 else()
     configure_file(Doxyfile.in Doxyfile @ONLY)
     add_custom_command(OUTPUT "html/index.html"
@@ -46,7 +50,7 @@ else()
                        COMMENT "Generating HTML documentation"
                        VERBATIM)
 
-    add_custom_target(docs ALL SOURCES "html/index.html")
+    add_custom_target(docs ALL SOURCES ${source_files} DEPENDS "html/index.html")
     set_target_properties(docs PROPERTIES FOLDER "GLFW3")
 
     if (GLFW_INSTALL)

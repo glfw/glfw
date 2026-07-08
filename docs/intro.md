@@ -63,7 +63,7 @@ before the application exits.  Modern systems are very good at freeing resources
 allocated by programs that exit, but GLFW sometimes has to change global system
 settings and these might not be restored without termination.
 
-@macos When the library is initialized the main menu and dock icon are created.
+__macOS:__ When the library is initialized the main menu and dock icon are created.
 These are not desirable for a command-line only program.  The creation of the
 main menu and dock icon can be disabled with the @ref GLFW_COCOA_MENUBAR init
 hint.
@@ -621,11 +621,11 @@ The format of the string is as follows:
  - The names of the always supported context creation APIs EGL and OSMesa
  - Any additional compile-time options, APIs and (on Windows) what compiler was used
 
-For example, compiling GLFW 3.5 with MinGW as a DLL for Windows, may result in a version string
-like this:
+For example, compiling GLFW 3.5 with MinGW-64 as a DLL for Windows, may result
+in a version string like this:
 
 ```c
-3.5.0 Win32 WGL Null EGL OSMesa MinGW DLL
+3.5.0 Win32 WGL Null EGL OSMesa MinGW-w64 DLL
 ```
 
 Compiling GLFW as a static library for Linux, with both Wayland and X11 enabled, may

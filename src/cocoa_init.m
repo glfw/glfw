@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.5 macOS - www.glfw.org
+// GLFW 3.5 Cocoa - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2019 Camilla Löwy <elmindreda@glfw.org>
 //
@@ -450,41 +450,6 @@ static GLFWbool initializeTIS(void)
 
 @end // GLFWApplicationDelegate
 
-
-//////////////////////////////////////////////////////////////////////////
-//////                       GLFW internal API                      //////
-//////////////////////////////////////////////////////////////////////////
-
-void* _glfwLoadLocalVulkanLoaderCocoa(void)
-{
-    CFBundleRef bundle = CFBundleGetMainBundle();
-    if (!bundle)
-        return NULL;
-
-    CFURLRef frameworksUrl = CFBundleCopyPrivateFrameworksURL(bundle);
-    if (!frameworksUrl)
-        return NULL;
-
-    CFURLRef loaderUrl = CFURLCreateCopyAppendingPathComponent(
-        kCFAllocatorDefault, frameworksUrl, CFSTR("libvulkan.1.dylib"), false);
-    if (!loaderUrl)
-    {
-        CFRelease(frameworksUrl);
-        return NULL;
-    }
-
-    char path[PATH_MAX];
-    void* handle = NULL;
-
-    if (CFURLGetFileSystemRepresentation(loaderUrl, true, (UInt8*) path, sizeof(path) - 1))
-        handle = _glfwPlatformLoadModule(path);
-
-    CFRelease(loaderUrl);
-    CFRelease(frameworksUrl);
-    return handle;
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 //////                       GLFW platform API                      //////
 //////////////////////////////////////////////////////////////////////////
@@ -687,6 +652,8 @@ void _glfwTerminateCocoa(void)
     _glfwTerminateNSGL();
     _glfwTerminateEGL();
     _glfwTerminateOSMesa();
+
+    memset(&_glfw.ns, 0, sizeof(_glfw.ns));
 
     } // autoreleasepool
 }

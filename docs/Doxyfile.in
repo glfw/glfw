@@ -278,13 +278,7 @@ ALIASES                = "thread_safety=@par Thread safety^^" \
                          "analysis=@par Analysis^^" \
                          "reentrancy=@par Reentrancy^^" \
                          "errors=@par Errors^^" \
-                         "callback_signature=@par Callback signature^^" \
-                         "glfw3=__GLFW 3:__" \
-                         "x11=__X11:__" \
-                         "wayland=__Wayland:__" \
-                         "win32=__Windows:__" \
-                         "macos=__macOS:__" \
-                         "linux=__Linux:__"
+                         "callback_signature=@par Callback signature^^"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources
 # only. Doxygen will then generate output that is more tailored for C. For

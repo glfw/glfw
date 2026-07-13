@@ -182,6 +182,8 @@ information on what to include when reporting a bug.
    area (#2130)
  - Added `glfwResetPreeditText` function to reset preedit of input method
    (#2130)
+ - Added `glfwSetTextInputFocus` function to set application text input
+   focus for input method handling (#2130)
  - Added `glfwSetPreeditCandidateCallback` function and
    `GLFWpreeditcandidatefun` type for preedit candidates (#2130)
  - Added `glfwGetPreeditCandidate` function to get a preeidt candidate text

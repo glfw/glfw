@@ -2441,6 +2441,25 @@ static void textInputV3Leave(void* data,
     textInputV3Reset(window);
 }
 
+static int utf8OffsetToCodepointIndex(const char* text, int32_t offset)
+{
+    const char* cur = text;
+    const char* end;
+    int index = 0;
+
+    if (!text || offset <= 0)
+        return 0;
+
+    end = text + offset;
+    while (*cur && cur < end)
+    {
+        _glfwDecodeUTF8(&cur);
+        index++;
+    }
+
+    return index;
+}
+
 static void textInputV3PreeditString(void* data,
                                      struct zwp_text_input_v3* textInputV3,
                                      const char* text,
@@ -2450,7 +2469,7 @@ static void textInputV3PreeditString(void* data,
     _GLFWwindow* window = (_GLFWwindow*) data;
     _GLFWpreedit* preedit = &window->preedit;
     const char* cur = text;
-    unsigned int cursorLength = 0;
+    int cursorPos = 0;
 
     if (textInputFocusDisabled(window))
         return;
@@ -2460,17 +2479,14 @@ static void textInputV3PreeditString(void* data,
     preedit->focusedBlockIndex = 0;
     preedit->caretIndex = 0;
 
+    cursorPos = utf8OffsetToCodepointIndex(text, cursorBegin);
+
     // Store preedit text
     while (cur && *cur)
     {
         uint32_t codepoint = _glfwDecodeUTF8(&cur);
 
         ++preedit->textCount;
-
-        if (cur == text + cursorBegin)
-            preedit->caretIndex = preedit->textCount;
-        if (cursorBegin != cursorEnd && cur == text + cursorEnd)
-            cursorLength = preedit->textCount - cursorBegin;
 
         if (preedit->textBufferCount < preedit->textCount + 1)
         {
@@ -2489,12 +2505,14 @@ static void textInputV3PreeditString(void* data,
     if (preedit->text)
         preedit->text[preedit->textCount] = 0;
 
+    if (cursorPos > preedit->textCount)
+        cursorPos = preedit->textCount;
+    preedit->caretIndex = cursorPos;
+
     // Store preedit blocks
     if (preedit->textCount)
     {
         int* blocks = preedit->blockSizes;
-        int blockCount = preedit->blockSizesCount;
-        int cursorPos = preedit->caretIndex;
         int textCount = preedit->textCount;
 
         if (!preedit->blockSizes)
@@ -2508,16 +2526,9 @@ static void textInputV3PreeditString(void* data,
             blocks = preedit->blockSizes;
         }
 
-        if (cursorLength && cursorPos)
-            blocks[blockCount++] = cursorPos;
-
-        preedit->focusedBlockIndex = blockCount;
-        blocks[blockCount++] = cursorLength ? cursorLength : textCount;
-
-        if (cursorLength && cursorPos + cursorLength != textCount)
-            blocks[blockCount++] = textCount - cursorPos - cursorLength;
-
-        preedit->blockSizesCount = blockCount;
+        blocks[0] = textCount;
+        preedit->focusedBlockIndex = 0;
+        preedit->blockSizesCount = 1;
     }
 }
 
@@ -2530,6 +2541,8 @@ static void textInputV3CommitString(void* data,
 
     if (textInputFocusDisabled(window))
         return;
+
+    textInputV3Reset(window);
 
     if (!window->callbacks.character)
         return;

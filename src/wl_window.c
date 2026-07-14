@@ -1245,7 +1245,8 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
-GLFWbool setCursorShape(int shape) {
+static GLFWbool setCursorShape(int shape)
+{
     int xdgShape = -1;
 
     switch (shape)
@@ -1283,12 +1284,10 @@ GLFWbool setCursorShape(int shape) {
     }
 
     if (xdgShape == -1)
-    {
         return GLFW_FALSE;
-    }
 
     wp_cursor_shape_device_v1_set_shape(_glfw.wl.cursorShapeDevice,
-        _glfw.wl.pointerEnterSerial, 
+        _glfw.wl.pointerEnterSerial,
         xdgShape);
 
     return GLFW_TRUE;
@@ -1299,11 +1298,8 @@ static void setCursorImage(_GLFWwindow* window,
 {
     if (_glfw.wl.cursorShapeDevice && cursorWayland->shape != 0)
     {
-        GLFWbool ok = setCursorShape(cursorWayland->shape);
-        if (ok == GLFW_TRUE)
-        {
+        if (setCursorShape(cursorWayland->shape))
             return;
-        }
     }
 
     struct itimerspec timer = {0};
@@ -2135,10 +2131,9 @@ static void seatHandleCapabilities(void* userData,
     {
         _glfw.wl.pointer = wl_seat_get_pointer(seat);
         wl_pointer_add_listener(_glfw.wl.pointer, &pointerListener, NULL);
-        if (_glfw.wl.cursorShapeManager) 
-        {
+
+        if (_glfw.wl.cursorShapeManager)
             _glfw.wl.cursorShapeDevice = wp_cursor_shape_manager_v1_get_pointer(_glfw.wl.cursorShapeManager, _glfw.wl.pointer);
-        }
     }
     else if (!(caps & WL_SEAT_CAPABILITY_POINTER) && _glfw.wl.pointer)
     {
@@ -3120,6 +3115,8 @@ GLFWbool _glfwCreateCursorWayland(_GLFWcursor* cursor,
 GLFWbool _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape)
 {
     cursor->wl.shape = shape;
+    if (!_glfw.wl.cursorTheme)
+        return GLFW_TRUE;
 
     const char* name = NULL;
 
@@ -3259,6 +3256,9 @@ static void relativePointerHandleRelativeMotion(void* userData,
 
     _glfwInputCursorPos(window, xpos, ypos);
 }
+
+// Dummy Tablet Tool Interface struct
+const struct wl_interface zwp_tablet_tool_v2_interface = {};
 
 static const struct zwp_relative_pointer_v1_listener relativePointerListener =
 {
@@ -3407,20 +3407,18 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
             setCursorImage(window, &cursor->wl);
         else
         {
-            struct wl_cursor* defaultCursor =
-                wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, "left_ptr");
-            if (!defaultCursor)
+            struct wl_cursor* defaultCursor = _glfw.wl.cursorTheme ?
+                wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, "left_ptr") : NULL;
+
+            struct wl_cursor* defaultCursorHiDPI = _glfw.wl.cursorThemeHiDPI ?
+                wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI, "left_ptr") : NULL;
+
+            // If protocol is unsupported and no themes are loaded
+            if (!(defaultCursor || defaultCursorHiDPI || _glfw.wl.cursorShapeDevice))
             {
                 _glfwInputError(GLFW_PLATFORM_ERROR,
                                 "Wayland: Standard cursor not found");
                 return;
-            }
-
-            struct wl_cursor* defaultCursorHiDPI = NULL;
-            if (_glfw.wl.cursorThemeHiDPI)
-            {
-                defaultCursorHiDPI =
-                    wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI, "left_ptr");
             }
 
             _GLFWcursorWayland cursorWayland =

@@ -162,6 +162,7 @@ information on what to include when reporting a bug.
  - [Wayland] Bugfix: `glfwHideWindow` did not always send its request immediately
  - [Wayland] Bugfix: Some event types were not always processed by `glfwPollEvents` or
    `glfwWait*Events` (#2793,#2795)
+ - [Wayland]: Fix sonames for loaded libraries on OpenBSD
  - [X11] Bugfix: Running without a WM could trigger an assert (#2593,#2601,#2631)
  - [X11] Bugfix: Occasional crash when an idle display awakes (#2766) 
  - [X11] Bugfix: Prevent BadWindow when creating small windows with a content scale

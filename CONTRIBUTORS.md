@@ -57,6 +57,7 @@ video tutorials.
  - Bill Currie
  - Jason Daly
  - danhambleton
+ - danijel1023
  - Jarrod Davis
  - Aaron Day
  - decce
@@ -230,6 +231,7 @@ video tutorials.
  - Philip Rideout
  - Eddie Ringle
  - Max Risuhin
+ - road2react
  - Joe Roback
  - Jorge Rodriguez
  - Jari Ronkainen

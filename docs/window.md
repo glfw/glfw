@@ -1345,6 +1345,10 @@ See @ref window_iconify for details.
 __GLFW_MAXIMIZED__ indicates whether the specified window is maximized.  See
 @ref window_maximize for details.
 
+@anchor GLFW_TILED_attrib
+__GLFW_TILED__ indicates whether the compositor has tiled the specified window.
+It is currently implemented on Wayland and always false on other platforms.
+
 @anchor GLFW_HOVERED_attrib
 __GLFW_HOVERED__ indicates whether the cursor is currently directly over the
 content area of the window, with no other windows between.  See @ref

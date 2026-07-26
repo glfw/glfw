@@ -893,6 +893,8 @@ GLFWAPI int glfwGetWindowAttrib(GLFWwindow* handle, int attrib)
             return _glfw.platform.windowVisible(window);
         case GLFW_MAXIMIZED:
             return _glfw.platform.windowMaximized(window);
+        case GLFW_TILED:
+            return window->tiled;
         case GLFW_HOVERED:
             return _glfw.platform.windowHovered(window);
         case GLFW_FOCUS_ON_SHOW:

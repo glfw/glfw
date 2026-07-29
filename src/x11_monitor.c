@@ -40,7 +40,7 @@
 //
 static GLFWbool modeIsGood(const XRRModeInfo* mi)
 {
-    return (mi->modeFlags & RR_Interlace) == 0;
+    return mi && ((mi->modeFlags & RR_Interlace) == 0);
 }
 
 // Calculates the refresh rate, in Hz, from the specified RandR mode info
@@ -368,16 +368,22 @@ void _glfwGetMonitorWorkareaX11(_GLFWmonitor* monitor,
         areaY = ci->y;
 
         const XRRModeInfo* mi = getModeInfo(sr, ci->mode);
-
-        if (ci->rotation == RR_Rotate_90 || ci->rotation == RR_Rotate_270)
+        if (!modeIsGood(mi))
         {
-            areaWidth  = mi->height;
-            areaHeight = mi->width;
+            _glfwInputError(GLFW_PLATFORM_ERROR, "X11: Invalid video mode");
         }
         else
         {
-            areaWidth  = mi->width;
-            areaHeight = mi->height;
+            if (ci->rotation == RR_Rotate_90 || ci->rotation == RR_Rotate_270)
+            {
+                areaWidth  = mi->height;
+                areaHeight = mi->width;
+            }
+            else
+            {
+                areaWidth  = mi->width;
+                areaHeight = mi->height;
+            }
         }
 
         XRRFreeCrtcInfo(ci);

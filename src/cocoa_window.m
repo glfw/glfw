@@ -159,6 +159,26 @@ static int translateFlags(NSUInteger flags)
     return mods;
 }
 
+// Translates GLFW key modifiers into macOS ones
+//
+static int translateFlagsInverse(int mods)
+{
+  NSUInteger flags = 0;
+
+  if (mods & GLFW_MOD_SHIFT)
+    flags |= NSEventModifierFlagShift;
+  if (mods & GLFW_MOD_CONTROL)
+    flags |= NSEventModifierFlagControl;
+  if (mods & GLFW_MOD_ALT)
+    flags |= NSEventModifierFlagOption;
+  if (mods & GLFW_MOD_SUPER)
+    flags |= NSEventModifierFlagCommand;
+  if (mods & GLFW_MOD_CAPS_LOCK)
+    flags |= NSEventModifierFlagCapsLock;
+
+  return flags;
+}
+
 // Translates a macOS keycode to a GLFW keycode
 //
 static int translateKey(unsigned int key)
@@ -1682,7 +1702,7 @@ void _glfwSetCursorModeCocoa(_GLFWwindow* window, int mode)
     } // autoreleasepool
 }
 
-const char* _glfwGetScancodeNameCocoa(int scancode)
+const char* _glfwGetScancodeNameCocoa(int scancode, int modifiers)
 {
     @autoreleasepool {
 
@@ -1703,7 +1723,7 @@ const char* _glfwGetScancodeNameCocoa(int scancode)
     if (UCKeyTranslate([(NSData*) _glfw.ns.unicodeData bytes],
                        scancode,
                        kUCKeyActionDisplay,
-                       0,
+                       translateFlagsInverse(modifiers),
                        LMGetKbdType(),
                        kUCKeyTranslateNoDeadKeysBit,
                        &deadKeyState,

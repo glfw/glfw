@@ -488,7 +488,7 @@ void _glfwInputErrorWin32(int error, const char* description)
 //
 void _glfwUpdateKeyNamesWin32(void)
 {
-    int key;
+    int key, level;
     BYTE state[256] = {0};
 
     memset(_glfw.win32.keynames, 0, sizeof(_glfw.win32.keynames));
@@ -518,26 +518,35 @@ void _glfwUpdateKeyNamesWin32(void)
         else
             vk = MapVirtualKeyW(scancode, MAPVK_VSC_TO_VK);
 
-        length = ToUnicode(vk, scancode, state,
-                           chars, sizeof(chars) / sizeof(WCHAR),
-                           0);
-
-        if (length == -1)
+        for (level = 0; level < 8; ++level)
         {
-            // This is a dead key, so we need a second simulated key press
-            // to make it output its own character (usually a diacritic)
+            int mods = _GLFWmodelevels[level];
+            state[(int) VK_SHIFT] = (mods & GLFW_MOD_SHIFT)? 0xff : 0x00;
+            state[(int) VK_CONTROL] = (mods & GLFW_MOD_CONTROL)? 0xff : 0x00;
+            state[(int) VK_MENU] = (mods & GLFW_MOD_ALT)? 0xff : 0x00;
+            state[(int) VK_CAPITAL] = (mods & GLFW_MOD_CAPS_LOCK)? 0xff : 0x00;
+
             length = ToUnicode(vk, scancode, state,
                                chars, sizeof(chars) / sizeof(WCHAR),
                                0);
+
+            if (length == -1)
+            {
+                // This is a dead key, so we need a second simulated key press
+                // to make it output its own character (usually a diacritic)
+                length = ToUnicode(vk, scancode, state,
+                                   chars, sizeof(chars) / sizeof(WCHAR),
+                                   0);
+            }
+
+            if (length < 1)
+                continue;
+
+            WideCharToMultiByte(CP_UTF8, 0, chars, 1,
+                                _glfw.win32.keynames[key][level],
+                                sizeof(_glfw.win32.keynames[key][level]),
+                                NULL, NULL);
         }
-
-        if (length < 1)
-            continue;
-
-        WideCharToMultiByte(CP_UTF8, 0, chars, 1,
-                            _glfw.win32.keynames[key],
-                            sizeof(_glfw.win32.keynames[key]),
-                            NULL, NULL);
     }
 }
 

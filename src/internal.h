@@ -696,7 +696,7 @@ struct _GLFWplatform
     GLFWbool (*createStandardCursor)(_GLFWcursor*,int);
     void (*destroyCursor)(_GLFWcursor*);
     void (*setCursor)(_GLFWwindow*,_GLFWcursor*);
-    const char* (*getScancodeName)(int);
+    const char* (*getScancodeName)(int, int);
     int (*getKeyScancode)(int);
     void (*setClipboardString)(const char*);
     const char* (*getClipboardString)(void);

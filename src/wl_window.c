@@ -2978,7 +2978,29 @@ void _glfwSetCursorModeWayland(_GLFWwindow* window, int mode)
     _glfwSetCursorWayland(window, window->cursor);
 }
 
-const char* _glfwGetScancodeNameWayland(int scancode)
+// Translates an xkb modifier state mask
+//
+static xkb_mod_mask_t translateStateInverse(int mods)
+{
+  xkb_mod_mask_t mask = 0;
+
+  if (mods & GLFW_MOD_SHIFT)
+    mask |= xkb_keymap_mod_get_mask2(_glfw.wl.xkb.keymap, _glfw.wl.xkb.shiftIndex);
+  if (mods & GLFW_MOD_CONTROL)
+    mask |= xkb_keymap_mod_get_mask2(_glfw.wl.xkb.keymap, _glfw.wl.xkb.controlIndex);
+  if (mods & GLFW_MOD_ALT)
+    mask |= xkb_keymap_mod_get_mask2(_glfw.wl.xkb.keymap, _glfw.wl.xkb.altIndex);
+  if (mods & GLFW_MOD_SUPER)
+    mask |= xkb_keymap_mod_get_mask2(_glfw.wl.xkb.keymap, _glfw.wl.xkb.superIndex);
+  if (mods & GLFW_MOD_CAPS_LOCK)
+    mask |= xkb_keymap_mod_get_mask2(_glfw.wl.xkb.keymap, _glfw.wl.xkb.capsLockIndex);
+  if (mods & GLFW_MOD_NUM_LOCK)
+    mask |= xkb_keymap_mod_get_mask2(_glfw.wl.xkb.keymap, _glfw.wl.xkb.numLockIndex);
+
+  return mask;
+}
+
+const char* _glfwGetScancodeNameWayland(int scancode, int modifiers)
 {
     if (scancode < 0 || scancode > 255)
     {
@@ -3002,11 +3024,44 @@ const char* _glfwGetScancodeNameWayland(int scancode)
         return NULL;
     }
 
+    xkb_level_index_t found_level = 0;
+    if (0 < modifiers)
+    {
+        // Figure out the corresponding level set for the modifier set
+        // that the user requested. This involves a relatively annoying
+        // loop of trying things out. Could cache this information if
+        // lookup speed is of concern.
+        xkb_mod_mask_t mask = translateStateInverse(modifiers);
+        const int num_levels = xkb_keymap_num_levels_for_key(_glfw.wl.xkb.keymap,
+                                                             keycode,
+                                                             layout);
+        xkb_level_index_t level;
+        for (level = 0; level < num_levels && found_level == 0; ++level)
+        {
+            size_t num_masks;
+            xkb_mod_mask_t masks[128];
+            num_masks = xkb_keymap_key_get_mods_for_level(_glfw.wl.xkb.keymap,
+                                                          keycode,
+                                                          layout,
+                                                          level,
+                                                          masks,
+                                                          128);
+            for (int i=0; i < num_masks; ++i)
+            {
+                if ((masks[i] & mask) == mask)
+                {
+                    found_level = level;
+                    break;
+                }
+            }
+        }
+    }
+
     const xkb_keysym_t* keysyms = NULL;
     xkb_keymap_key_get_syms_by_level(_glfw.wl.xkb.keymap,
                                      keycode,
                                      layout,
-                                     0,
+                                     found_level,
                                      &keysyms);
     if (keysyms == NULL)
     {

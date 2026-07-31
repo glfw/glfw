@@ -4838,6 +4838,82 @@ GLFWAPI int glfwRawMouseMotionSupported(void);
  *
  *  @remark The contents of the returned string may change when a keyboard
  *  layout change event is received.
+ *  
+ *  @remark This function is the same as calling @ref glfwGetKeyNameModifiers
+ *  with the `modifiers` set to `0`.
+ *
+ *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
+ *  should not free it yourself.  It is valid until the library is terminated.
+ *
+ *  @thread_safety This function must only be called from the main thread.
+ *
+ *  @sa @ref input_key_name
+ *  @sa @ref glfwGetKeyNameModifiers
+ *
+ *  @since Added in version 3.2.
+ *
+ *  @ingroup input
+ */
+GLFWAPI const char* glfwGetKeyName(int key, int scancode);
+
+/*! @brief Returns the layout-specific name of the specified printable key
+ *  modifier combination.
+ *
+ *  This function returns the name of the specified printable key, when pressed
+ *  together with the given set of modifiers, encoded as UTF-8. This is
+ *  intended for displaying key bindings and chords to the user.
+ *
+ *  __Do not use this function__ for [text input](@ref input_char).  You will
+ *  break text input for many languages even if it happens to work for yours.
+ *  This applies even though the modifiers are respected. Keyboard input
+ *  methods often apply transformations that go beyond a single key combination.
+ *
+ *  If the key is `GLFW_KEY_UNKNOWN`, the scancode is used to identify the key,
+ *  otherwise the scancode is ignored.  If you specify a non-printable key, or
+ *  `GLFW_KEY_UNKNOWN` and a scancode that maps to a non-printable key, this
+ *  function returns `NULL` but does not emit an error.
+ *
+ *  This behavior allows you to always pass in the arguments in the
+ *  [key callback](@ref input_key) without modification.
+ *
+ *  The printable keys are:
+ *  - `GLFW_KEY_APOSTROPHE`
+ *  - `GLFW_KEY_COMMA`
+ *  - `GLFW_KEY_MINUS`
+ *  - `GLFW_KEY_PERIOD`
+ *  - `GLFW_KEY_SLASH`
+ *  - `GLFW_KEY_SEMICOLON`
+ *  - `GLFW_KEY_EQUAL`
+ *  - `GLFW_KEY_LEFT_BRACKET`
+ *  - `GLFW_KEY_RIGHT_BRACKET`
+ *  - `GLFW_KEY_BACKSLASH`
+ *  - `GLFW_KEY_WORLD_1`
+ *  - `GLFW_KEY_WORLD_2`
+ *  - `GLFW_KEY_0` to `GLFW_KEY_9`
+ *  - `GLFW_KEY_A` to `GLFW_KEY_Z`
+ *  - `GLFW_KEY_KP_0` to `GLFW_KEY_KP_9`
+ *  - `GLFW_KEY_KP_DECIMAL`
+ *  - `GLFW_KEY_KP_DIVIDE`
+ *  - `GLFW_KEY_KP_MULTIPLY`
+ *  - `GLFW_KEY_KP_SUBTRACT`
+ *  - `GLFW_KEY_KP_ADD`
+ *  - `GLFW_KEY_KP_EQUAL`
+ *
+ *  Names for printable keys depend on keyboard layout, while names for
+ *  non-printable keys are the same across layouts but depend on the application
+ *  language and should be localized along with other user interface text.
+ *
+ *  @param[in] key The key to query, or `GLFW_KEY_UNKNOWN`.
+ *  @param[in] scancode The scancode of the key to query.
+ *  @param[in] modifiers The modifier set of the key combination to query.
+ *  @return The UTF-8 encoded, layout-specific name of the key combination, or
+ *  `NULL`.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_INVALID_VALUE, @ref GLFW_INVALID_ENUM and @ref GLFW_PLATFORM_ERROR.
+ *
+ *  @remark The contents of the returned string may change when a keyboard
+ *  layout change event is received.
  *
  *  @pointer_lifetime The returned string is allocated and freed by GLFW.  You
  *  should not free it yourself.  It is valid until the library is terminated.
@@ -4846,11 +4922,11 @@ GLFWAPI int glfwRawMouseMotionSupported(void);
  *
  *  @sa @ref input_key_name
  *
- *  @since Added in version 3.2.
+ *  @since Added in version 3.5.
  *
  *  @ingroup input
  */
-GLFWAPI const char* glfwGetKeyName(int key, int scancode);
+GLFWAPI const char* glfwGetKeyNameModifiers(int key, int scancode, int modifiers);
 
 /*! @brief Returns the platform-specific scancode of the specified key.
  *

@@ -185,6 +185,9 @@ typedef void (* PFN_xkb_context_unref)(struct xkb_context*);
 typedef struct xkb_keymap* (* PFN_xkb_keymap_new_from_string)(struct xkb_context*, const char*, enum xkb_keymap_format, enum xkb_keymap_compile_flags);
 typedef void (* PFN_xkb_keymap_unref)(struct xkb_keymap*);
 typedef xkb_mod_index_t (* PFN_xkb_keymap_mod_get_index)(struct xkb_keymap*, const char*);
+typedef xkb_mod_mask_t (* PFN_xkb_keymap_mod_get_mask2)(struct xkb_keymap*, const xkb_mod_index_t);
+typedef xkb_level_index_t (* PFN_xkb_keymap_num_levels_for_key)(struct xkb_keymap*, const xkb_keycode_t, const xkb_layout_index_t);
+typedef size_t (* PFN_xkb_keymap_key_get_mods_for_level)(struct xkb_keymap*, const xkb_keycode_t, const xkb_layout_index_t, const xkb_level_index_t, xkb_mod_mask_t *, const size_t);
 typedef int (* PFN_xkb_keymap_key_repeats)(struct xkb_keymap*, xkb_keycode_t);
 typedef int (* PFN_xkb_keymap_key_get_syms_by_level)(struct xkb_keymap*,xkb_keycode_t,xkb_layout_index_t,xkb_level_index_t,const xkb_keysym_t**);
 typedef struct xkb_state* (* PFN_xkb_state_new)(struct xkb_keymap*);
@@ -200,6 +203,9 @@ typedef int (* PFN_xkb_keysym_to_utf8)(xkb_keysym_t, char*, size_t);
 #define xkb_keymap_new_from_string _glfw.wl.xkb.keymap_new_from_string
 #define xkb_keymap_unref _glfw.wl.xkb.keymap_unref
 #define xkb_keymap_mod_get_index _glfw.wl.xkb.keymap_mod_get_index
+#define xkb_keymap_mod_get_mask2 _glfw.wl.xkb.keymap_mod_get_mask2
+#define xkb_keymap_num_levels_for_key _glfw.wl.xkb.keymap_num_levels_for_key
+#define xkb_keymap_key_get_mods_for_level _glfw.wl.xkb.keymap_key_get_mods_for_level
 #define xkb_keymap_key_repeats _glfw.wl.xkb.keymap_key_repeats
 #define xkb_keymap_key_get_syms_by_level _glfw.wl.xkb.keymap_key_get_syms_by_level
 #define xkb_state_new _glfw.wl.xkb.state_new
@@ -524,8 +530,11 @@ typedef struct _GLFWlibraryWayland
         PFN_xkb_keymap_new_from_string keymap_new_from_string;
         PFN_xkb_keymap_unref keymap_unref;
         PFN_xkb_keymap_mod_get_index keymap_mod_get_index;
+        PFN_xkb_keymap_mod_get_mask2 keymap_mod_get_mask2;
         PFN_xkb_keymap_key_repeats keymap_key_repeats;
         PFN_xkb_keymap_key_get_syms_by_level keymap_key_get_syms_by_level;
+        PFN_xkb_keymap_num_levels_for_key keymap_num_levels_for_key;
+        PFN_xkb_keymap_key_get_mods_for_level keymap_key_get_mods_for_level;
         PFN_xkb_state_new state_new;
         PFN_xkb_state_unref state_unref;
         PFN_xkb_state_key_get_syms state_key_get_syms;
@@ -700,7 +709,7 @@ void _glfwPostEmptyEventWayland(void);
 void _glfwGetCursorPosWayland(_GLFWwindow* window, double* xpos, double* ypos);
 void _glfwSetCursorPosWayland(_GLFWwindow* window, double xpos, double ypos);
 void _glfwSetCursorModeWayland(_GLFWwindow* window, int mode);
-const char* _glfwGetScancodeNameWayland(int scancode);
+const char* _glfwGetScancodeNameWayland(int scancode, int modifiers);
 int _glfwGetKeyScancodeWayland(int key);
 GLFWbool _glfwCreateCursorWayland(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot);
 GLFWbool _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape);

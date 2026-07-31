@@ -2255,7 +2255,7 @@ void _glfwSetCursorModeWin32(_GLFWwindow* window, int mode)
         updateCursorImage(window);
 }
 
-const char* _glfwGetScancodeNameWin32(int scancode)
+const char* _glfwGetScancodeNameWin32(int scancode, int modifiers)
 {
     if (scancode < 0 || scancode > (KF_EXTENDED | 0xff))
     {
@@ -2267,7 +2267,20 @@ const char* _glfwGetScancodeNameWin32(int scancode)
     if (key == GLFW_KEY_UNKNOWN)
         return NULL;
 
-    return _glfw.win32.keynames[key];
+    // Determine corresponding modifier level
+    int level = 0;
+    if (modifiers)
+    {
+      for (level = 0; level < 8; ++level)
+        {
+          if ((_GLFWmodelevels[level] & modifiers) == modifiers)
+            break;
+        }
+      if (level == 8)
+        level = 0;
+    }
+    
+    return _glfw.win32.keynames[key][level];
 }
 
 int _glfwGetKeyScancodeWin32(int key)

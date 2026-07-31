@@ -259,7 +259,7 @@ void _glfwPostEmptyEventCocoa(void);
 void _glfwGetCursorPosCocoa(_GLFWwindow* window, double* xpos, double* ypos);
 void _glfwSetCursorPosCocoa(_GLFWwindow* window, double xpos, double ypos);
 void _glfwSetCursorModeCocoa(_GLFWwindow* window, int mode);
-const char* _glfwGetScancodeNameCocoa(int scancode);
+const char* _glfwGetScancodeNameCocoa(int scancode, int modifiers);
 int _glfwGetKeyScancodeCocoa(int key);
 GLFWbool _glfwCreateCursorCocoa(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot);
 GLFWbool _glfwCreateStandardCursorCocoa(_GLFWcursor* cursor, int shape);

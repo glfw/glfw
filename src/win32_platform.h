@@ -377,6 +377,17 @@ typedef struct _GLFWwindowWin32
     WCHAR               highSurrogate;
 } _GLFWwindowWin32;
 
+const static int _GLFWmodelevels[] = {
+  0,
+  GLFW_MOD_SHIFT,
+  GLFW_MOD_CAPS_LOCK,
+  GLFW_MOD_SHIFT | GLFW_MOD_CAPS_LOCK,
+  GLFW_MOD_CONTROL | GLFW_MOD_ALT,
+  GLFW_MOD_CONTROL | GLFW_MOD_ALT | GLFW_MOD_SHIFT,
+  GLFW_MOD_CONTROL | GLFW_MOD_ALT | GLFW_MOD_CAPS_LOCK,
+  GLFW_MOD_CONTROL | GLFW_MOD_ALT | GLFW_MOD_SHIFT | GLFW_MOD_CAPS_LOCK
+};
+
 // Win32-specific global data
 //
 typedef struct _GLFWlibraryWin32
@@ -390,7 +401,7 @@ typedef struct _GLFWlibraryWin32
     char*               clipboardString;
     short int           keycodes[512];
     short int           scancodes[GLFW_KEY_LAST + 1];
-    char                keynames[GLFW_KEY_LAST + 1][5];
+    char                keynames[GLFW_KEY_LAST + 1][8][5];
     // Where to place the cursor when re-enabled
     double              restoreCursorPosX, restoreCursorPosY;
     // The window whose disabled cursor mode is active
@@ -527,7 +538,7 @@ void _glfwPostEmptyEventWin32(void);
 void _glfwGetCursorPosWin32(_GLFWwindow* window, double* xpos, double* ypos);
 void _glfwSetCursorPosWin32(_GLFWwindow* window, double xpos, double ypos);
 void _glfwSetCursorModeWin32(_GLFWwindow* window, int mode);
-const char* _glfwGetScancodeNameWin32(int scancode);
+const char* _glfwGetScancodeNameWin32(int scancode, int modifiers);
 int _glfwGetKeyScancodeWin32(int key);
 GLFWbool _glfwCreateCursorWin32(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot);
 GLFWbool _glfwCreateStandardCursorWin32(_GLFWcursor* cursor, int shape);

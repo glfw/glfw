@@ -124,6 +124,9 @@ None.
 
 ## Changelog since 3.4
 
+ - Added `glfwGetKeyNameModifiers` to obtain the native key translation including
+   active modifier sets in order to accurately display key state and handle key
+   chords in the presence of shift and other modifiers (#2685)
  - Added `GLFW_UNLIMITED_MOUSE_BUTTONS` input mode that allows mouse buttons beyond
    the limit of the mouse button tokens to be reported (#2423)
  - Added `glfwGetEGLConfig` function to query the `EGLConfig` of a window (#2045)

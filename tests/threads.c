@@ -146,6 +146,10 @@ int main(void)
     for (i = 0;  i < count;  i++)
         thrd_join(threads[i].id, &result);
 
+    for (i = 0;  i < count;  i++)
+        glfwDestroyWindow(threads[i].window);
+
+    glfwTerminate();
     exit(EXIT_SUCCESS);
 }
 

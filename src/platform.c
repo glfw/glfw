@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 - www.glfw.org
+// GLFW 3.5 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2018 Camilla Löwy <elmindreda@glfw.org>
@@ -187,8 +187,6 @@ GLFWAPI const char* glfwGetVersionString(void)
         " OSMesa"
 #if defined(__MINGW64_VERSION_MAJOR)
         " MinGW-w64"
-#elif defined(__MINGW32__)
-        " MinGW"
 #elif defined(_MSC_VER)
         " VisualC"
 #endif

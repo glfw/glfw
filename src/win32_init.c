@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 Win32 - www.glfw.org
+// GLFW 3.5 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
@@ -89,10 +89,6 @@ static GLFWbool loadLibraries(void)
         return GLFW_FALSE;
     }
 
-    _glfw.win32.user32.SetProcessDPIAware_ = (PFN_SetProcessDPIAware)
-        _glfwPlatformGetModuleSymbol(_glfw.win32.user32.instance, "SetProcessDPIAware");
-    _glfw.win32.user32.ChangeWindowMessageFilterEx_ = (PFN_ChangeWindowMessageFilterEx)
-        _glfwPlatformGetModuleSymbol(_glfw.win32.user32.instance, "ChangeWindowMessageFilterEx");
     _glfw.win32.user32.EnableNonClientDpiScaling_ = (PFN_EnableNonClientDpiScaling)
         _glfwPlatformGetModuleSymbol(_glfw.win32.user32.instance, "EnableNonClientDpiScaling");
     _glfw.win32.user32.SetProcessDpiAwarenessContext_ = (PFN_SetProcessDpiAwarenessContext)
@@ -168,29 +164,6 @@ static GLFWbool loadLibraries(void)
     }
 
     return GLFW_TRUE;
-}
-
-// Unload used libraries (DLLs)
-//
-static void freeLibraries(void)
-{
-    if (_glfw.win32.xinput.instance)
-        _glfwPlatformFreeModule(_glfw.win32.xinput.instance);
-
-    if (_glfw.win32.dinput8.instance)
-        _glfwPlatformFreeModule(_glfw.win32.dinput8.instance);
-
-    if (_glfw.win32.user32.instance)
-        _glfwPlatformFreeModule(_glfw.win32.user32.instance);
-
-    if (_glfw.win32.dwmapi.instance)
-        _glfwPlatformFreeModule(_glfw.win32.dwmapi.instance);
-
-    if (_glfw.win32.shcore.instance)
-        _glfwPlatformFreeModule(_glfw.win32.shcore.instance);
-
-    if (_glfw.win32.ntdll.instance)
-        _glfwPlatformFreeModule(_glfw.win32.ntdll.instance);
 }
 
 // Create key code translation tables
@@ -532,7 +505,8 @@ void _glfwUpdateKeyNamesWin32(void)
 
         if (key >= GLFW_KEY_KP_0 && key <= GLFW_KEY_KP_ADD)
         {
-            const UINT vks[] = {
+            const UINT vks[] =
+            {
                 VK_NUMPAD0,  VK_NUMPAD1,  VK_NUMPAD2, VK_NUMPAD3,
                 VK_NUMPAD4,  VK_NUMPAD5,  VK_NUMPAD6, VK_NUMPAD7,
                 VK_NUMPAD8,  VK_NUMPAD9,  VK_DECIMAL, VK_DIVIDE,
@@ -692,7 +666,7 @@ int _glfwInitWin32(void)
         SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
     else if (IsWindows8Point1OrGreater())
         SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
-    else if (IsWindowsVistaOrGreater())
+    else
         SetProcessDPIAware();
 
     if (!createHelperWindow())
@@ -724,7 +698,14 @@ void _glfwTerminateWin32(void)
     _glfwTerminateEGL();
     _glfwTerminateOSMesa();
 
-    freeLibraries();
+    _glfwPlatformFreeModule(_glfw.win32.xinput.instance);
+    _glfwPlatformFreeModule(_glfw.win32.dinput8.instance);
+    _glfwPlatformFreeModule(_glfw.win32.user32.instance);
+    _glfwPlatformFreeModule(_glfw.win32.dwmapi.instance);
+    _glfwPlatformFreeModule(_glfw.win32.shcore.instance);
+    _glfwPlatformFreeModule(_glfw.win32.ntdll.instance);
+
+    memset(&_glfw.win32, 0, sizeof(_glfw.win32));
 }
 
 #endif // _GLFW_WIN32

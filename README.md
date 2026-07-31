@@ -179,6 +179,7 @@ None.
  - [Null] Added EGL context creation on Mesa via `EGL_MESA_platform_surfaceless`
  - [EGL] Allowed native access on Wayland with `GLFW_CONTEXT_CREATION_API` set to
    `GLFW_NATIVE_CONTEXT_API` (#2518)
+ - [Win32] Bugfix: Fix `windowProc` to work when `SetPropW` fails silently
 
 
 ## Contact

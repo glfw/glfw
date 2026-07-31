@@ -251,6 +251,7 @@ void _glfwShowWindowNull(_GLFWwindow* window);
 void _glfwRequestWindowAttentionNull(_GLFWwindow* window);
 void _glfwHideWindowNull(_GLFWwindow* window);
 void _glfwFocusWindowNull(_GLFWwindow* window);
+void _glfwDragWindowNull(_GLFWwindow* window);
 GLFWbool _glfwWindowFocusedNull(_GLFWwindow* window);
 GLFWbool _glfwWindowIconifiedNull(_GLFWwindow* window);
 GLFWbool _glfwWindowVisibleNull(_GLFWwindow* window);

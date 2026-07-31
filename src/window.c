@@ -243,6 +243,11 @@ GLFWAPI GLFWwindow* glfwCreateWindow(int width, int height,
     window->denom       = GLFW_DONT_CARE;
     window->title       = _glfw_strdup(title);
 
+    window->preedit.cursorPosX = 0;
+    window->preedit.cursorPosY = height;
+    window->preedit.cursorWidth = 0;
+    window->preedit.cursorHeight = 0;
+
     if (!_glfw.platform.createWindow(window, &wndconfig, &ctxconfig, &fbconfig))
     {
         glfwDestroyWindow((GLFWwindow*) window);
@@ -494,6 +499,11 @@ GLFWAPI void glfwDestroyWindow(GLFWwindow* handle)
         *prev = window->next;
     }
 
+    // Clear memory for preedit text
+    if (window->preedit.text)
+        _glfw_free(window->preedit.text);
+    if (window->preedit.blockSizes)
+        _glfw_free(window->preedit.blockSizes);
     _glfw_free(window->title);
     _glfw_free(window);
 }

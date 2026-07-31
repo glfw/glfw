@@ -32,6 +32,7 @@ add_executable(cursor cursor.c ${GLAD_GL})
 add_executable(empty WIN32 MACOSX_BUNDLE empty.c ${TINYCTHREAD} ${GLAD_GL})
 add_executable(gamma WIN32 MACOSX_BUNDLE gamma.c ${GLAD_GL})
 add_executable(icon WIN32 MACOSX_BUNDLE icon.c ${GLAD_GL})
+add_executable(input_text WIN32 MACOSX_BUNDLE input_text.c ${GETOPT} ${GLAD_GL})
 add_executable(inputlag WIN32 MACOSX_BUNDLE inputlag.c ${GETOPT} ${GLAD_GL})
 add_executable(joysticks WIN32 MACOSX_BUNDLE joysticks.c ${GLAD_GL})
 add_executable(tearing WIN32 MACOSX_BUNDLE tearing.c ${GLAD_GL})
@@ -48,8 +49,12 @@ if (RT_LIBRARY)
     target_link_libraries(threads "${RT_LIBRARY}")
 endif()
 
-set(GUI_ONLY_BINARIES empty gamma icon inputlag joysticks tearing threads
-    timeout title triangle-vulkan window)
+if (GLFW_BUILD_X11 OR GLFW_BUILD_WAYLAND)
+    target_compile_definitions(input_text PRIVATE FONTCONFIG_ENABLED)
+endif()
+
+set(GUI_ONLY_BINARIES empty gamma icon input_text inputlag joysticks tearing
+    threads timeout title triangle-vulkan window)
 set(CONSOLE_BINARIES allocator clipboard events msaa glfwinfo iconify monitors
     reopen cursor)
 
@@ -70,6 +75,7 @@ endif()
 if (APPLE)
     set_target_properties(empty PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Empty Event")
     set_target_properties(gamma PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Gamma")
+    set_target_properties(input_text PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Input Text")
     set_target_properties(inputlag PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Input Lag")
     set_target_properties(joysticks PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Joysticks")
     set_target_properties(tearing PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Tearing")

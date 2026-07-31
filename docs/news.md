@@ -34,6 +34,12 @@ the `EGLConfig` of a window that has a `EGLSurface`.
 GLFW now provides the @ref glfwGetGLXFBConfig native access function for
 querying the `GLXFBConfig` of a window that has a `GLXWindow`.
 
+### Window tiling attribute {#window_tiling}
+
+GLFW now provides the @ref GLFW_TILED window attribute for querying whether the
+compositor has tiled a window.  This attribute is currently implemented on
+Wayland.
+
 
 ## Caveats {#caveats}
 
@@ -68,6 +74,7 @@ actively maintained and available on many platforms.
 
 ### New constants {#new_constants}
 
+- @ref GLFW_TILED
 - @ref GLFW_UNLIMITED_MOUSE_BUTTONS
 
 ## Release notes for earlier versions {#news_archive}

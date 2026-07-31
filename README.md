@@ -124,6 +124,7 @@ None.
 
 ## Changelog since 3.4
 
+ - Added `GLFW_TILED` window attribute for querying compositor tiling state
  - Added `GLFW_UNLIMITED_MOUSE_BUTTONS` input mode that allows mouse buttons beyond
    the limit of the mouse button tokens to be reported (#2423)
  - Added `glfwGetEGLConfig` function to query the `EGLConfig` of a window (#2045)

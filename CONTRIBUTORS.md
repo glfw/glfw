@@ -241,6 +241,7 @@ video tutorials.
  - Mikko Rytkönen
  - saikyun
  - Riku Salminen
+ - Anton Samokhvalov
  - Yoshinori Sano
  - Brandon Schaefer
  - Sebastian Schuberth

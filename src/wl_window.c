@@ -731,6 +731,7 @@ static void xdgToplevelHandleConfigure(void* userData,
     window->wl.pending.activated  = GLFW_FALSE;
     window->wl.pending.maximized  = GLFW_FALSE;
     window->wl.pending.fullscreen = GLFW_FALSE;
+    window->wl.pending.tiled      = GLFW_FALSE;
 
     wl_array_for_each(state, states)
     {
@@ -741,6 +742,12 @@ static void xdgToplevelHandleConfigure(void* userData,
                 break;
             case XDG_TOPLEVEL_STATE_FULLSCREEN:
                 window->wl.pending.fullscreen = GLFW_TRUE;
+                break;
+            case XDG_TOPLEVEL_STATE_TILED_LEFT:
+            case XDG_TOPLEVEL_STATE_TILED_RIGHT:
+            case XDG_TOPLEVEL_STATE_TILED_TOP:
+            case XDG_TOPLEVEL_STATE_TILED_BOTTOM:
+                window->wl.pending.tiled = GLFW_TRUE;
                 break;
             case XDG_TOPLEVEL_STATE_RESIZING:
                 break;
@@ -809,6 +816,7 @@ static void xdgSurfaceHandleConfigure(void* userData,
     }
 
     window->wl.fullscreen = window->wl.pending.fullscreen;
+    window->tiled = window->wl.pending.tiled;
 
     int width  = window->wl.pending.width;
     int height = window->wl.pending.height;
@@ -859,19 +867,24 @@ void libdecorFrameHandleConfigure(struct libdecor_frame* frame,
     int width, height;
 
     enum libdecor_window_state windowState;
-    GLFWbool fullscreen, activated, maximized;
+    GLFWbool fullscreen, activated, maximized, tiled;
 
     if (libdecor_configuration_get_window_state(config, &windowState))
     {
         fullscreen = (windowState & LIBDECOR_WINDOW_STATE_FULLSCREEN) != 0;
         activated = (windowState & LIBDECOR_WINDOW_STATE_ACTIVE) != 0;
         maximized = (windowState & LIBDECOR_WINDOW_STATE_MAXIMIZED) != 0;
+        tiled = (windowState & (LIBDECOR_WINDOW_STATE_TILED_LEFT |
+                                LIBDECOR_WINDOW_STATE_TILED_RIGHT |
+                                LIBDECOR_WINDOW_STATE_TILED_TOP |
+                                LIBDECOR_WINDOW_STATE_TILED_BOTTOM)) != 0;
     }
     else
     {
         fullscreen = window->wl.fullscreen;
         activated = window->wl.activated;
         maximized = window->wl.maximized;
+        tiled = window->tiled;
     }
 
     if (!libdecor_configuration_get_content_size(config, frame, &width, &height))
@@ -918,6 +931,7 @@ void libdecorFrameHandleConfigure(struct libdecor_frame* frame,
     }
 
     window->wl.fullscreen = fullscreen;
+    window->tiled = tiled;
 
     GLFWbool damaged = GLFW_FALSE;
 

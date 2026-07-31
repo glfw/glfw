@@ -392,6 +392,7 @@ typedef struct _GLFWwindowWayland
         GLFWbool                iconified;
         GLFWbool                activated;
         GLFWbool                fullscreen;
+        GLFWbool                tiled;
     } pending;
 
     struct {

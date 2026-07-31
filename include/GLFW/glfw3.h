@@ -941,6 +941,12 @@ extern "C" {
  */
 #define GLFW_POSITION_Y             0x0002000F
 
+/*! @brief Window tiling window attribute.
+ *
+ *  Window tiling [window attribute](@ref GLFW_TILED_attrib).
+ */
+#define GLFW_TILED                  0x00020010
+
 /*! @brief Framebuffer bit depth hint.
  *
  *  Framebuffer bit depth [hint](@ref GLFW_RED_BITS).

@@ -176,41 +176,61 @@ if (GLFW_BUILD_X11)
     find_package(X11 REQUIRED)
     target_include_directories(glfw PRIVATE "${X11_X11_INCLUDE_PATH}")
 
+    set(missing_X11_deps)
+
     # Check for XRandR (modern resolution switching and gamma control)
     if (NOT X11_Xrandr_INCLUDE_PATH)
-        message(FATAL_ERROR "RandR headers not found; install libxrandr development package")
+        list(APPEND missing_X11_deps
+             "RandR headers not found (install libxrandr development package)")
+    else()
+        target_include_directories(glfw PRIVATE "${X11_Xrandr_INCLUDE_PATH}")
     endif()
-    target_include_directories(glfw PRIVATE "${X11_Xrandr_INCLUDE_PATH}")
 
     # Check for Xinerama (legacy multi-monitor support)
     if (NOT X11_Xinerama_INCLUDE_PATH)
-        message(FATAL_ERROR "Xinerama headers not found; install libxinerama development package")
+        list(APPEND missing_X11_deps
+             "Xinerama headers not found (install libxinerama development package)")
+    else()
+        target_include_directories(glfw PRIVATE "${X11_Xinerama_INCLUDE_PATH}")
     endif()
-    target_include_directories(glfw PRIVATE "${X11_Xinerama_INCLUDE_PATH}")
 
     # Check for Xkb (X keyboard extension)
     if (NOT X11_Xkb_INCLUDE_PATH)
-        message(FATAL_ERROR "XKB headers not found; install X11 development package")
+        list(APPEND missing_X11_deps
+             "XKB headers not found (install X11 development package)")
+    else()
+        target_include_directories(glfw PRIVATE "${X11_Xkb_INCLUDE_PATH}")
     endif()
-    target_include_directories(glfw PRIVATE "${X11_Xkb_INCLUDE_PATH}")
 
     # Check for Xcursor (cursor creation from RGBA images)
     if (NOT X11_Xcursor_INCLUDE_PATH)
-        message(FATAL_ERROR "Xcursor headers not found; install libxcursor development package")
+        list(APPEND missing_X11_deps
+             "Xcursor headers not found (install libxcursor development package)")
+    else()
+        target_include_directories(glfw PRIVATE "${X11_Xcursor_INCLUDE_PATH}")
     endif()
-    target_include_directories(glfw PRIVATE "${X11_Xcursor_INCLUDE_PATH}")
 
     # Check for XInput (modern HID input)
     if (NOT X11_Xi_INCLUDE_PATH)
-        message(FATAL_ERROR "XInput headers not found; install libxi development package")
+        list(APPEND missing_X11_deps
+             "XInput headers not found (install libxi development package)")
+    else()
+        target_include_directories(glfw PRIVATE "${X11_Xi_INCLUDE_PATH}")
     endif()
-    target_include_directories(glfw PRIVATE "${X11_Xi_INCLUDE_PATH}")
 
     # Check for X Shape (custom window input shape)
     if (NOT X11_Xshape_INCLUDE_PATH)
-        message(FATAL_ERROR "X Shape headers not found; install libxext development package")
+        list(APPEND missing_X11_deps
+             "X Shape headers not found (install libxext development package)")
+    else()
+        target_include_directories(glfw PRIVATE "${X11_Xshape_INCLUDE_PATH}")
     endif()
-    target_include_directories(glfw PRIVATE "${X11_Xshape_INCLUDE_PATH}")
+
+    if (missing_X11_deps)
+        list(TRANSFORM missing_X11_deps PREPEND " - ")
+        list(JOIN missing_X11_deps "\n" missing_X11_deps_text)
+        message(FATAL_ERROR "Missing X11 dependencies:\n${missing_X11_deps_text}")
+    endif()
 endif()
 
 if (UNIX AND NOT APPLE)

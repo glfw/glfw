@@ -129,6 +129,7 @@ None.
  - Added `glfwGetEGLConfig` function to query the `EGLConfig` of a window (#2045)
  - Added `glfwGetGLXFBConfig` function to query the `GLXFBConfig` of a window (#1925)
  - Updated minimum CMake version to 3.16 (#2541)
+ - Improved CMake reporting of missing X11 build dependencies (#2844)
  - Removed support for building with original MinGW (#2540)
  - [Win32] Removed support for Windows XP and Vista (#2505)
  - [Win32] Bugfix: Media keys were reported with a scancode of 256 (#1768,#2417,#2625)

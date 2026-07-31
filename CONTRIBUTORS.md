@@ -166,6 +166,7 @@ video tutorials.
  - David Medlock
  - Bryce Mehring
  - Jonathan Mercier
+ - meta-legend
  - Marcel Metz
  - Lucas Michaudel
  - Liam Middlebrook

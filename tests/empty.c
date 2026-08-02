@@ -23,7 +23,10 @@
 //
 //========================================================================
 //
-// This test is intended to verify that posting of empty events works
+// This test is intended to verify that the posting of empty events works.
+// Background colors are produced on a secondary thread, which then wakes
+// the main thread with glfwPostEmptyEvent when a new one is available.
+// This allows the main thread to wait for events unconditionally.
 //
 //========================================================================
 
@@ -37,25 +40,53 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
-static volatile int running = GLFW_TRUE;
+struct State
+{
+    mtx_t lock;
+    bool running;
+    bool needs_update;
+    int width;
+    int height;
+    float r, g, b;
+};
 
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
 }
 
+static void generate_color(struct State* state)
+{
+    const float r = (float) rand() / (float) RAND_MAX;
+    const float g = (float) rand() / (float) RAND_MAX;
+    const float b = (float) rand() / (float) RAND_MAX;
+    const float l = sqrtf(r * r + g * g + b * b);
+
+    mtx_lock(&state->lock);
+    state->r = r / l;
+    state->g = g / l;
+    state->b = b / l;
+    state->needs_update = true;
+    mtx_unlock(&state->lock);
+}
+
 static int thread_main(void* data)
 {
-    struct timespec time;
+    struct State* const state = data;
 
-    while (running)
+    srand((unsigned int) time(NULL));
+
+    while (state->running)
     {
+        generate_color(state);
+        glfwPostEmptyEvent();
+
+        struct timespec time;
         clock_gettime(CLOCK_REALTIME, &time);
         time.tv_sec += 1;
         thrd_sleep(&time, NULL);
-
-        glfwPostEmptyEvent();
     }
 
     return 0;
@@ -64,28 +95,38 @@ static int thread_main(void* data)
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
+        glfwSetWindowShouldClose(window, true);
 }
 
-static float nrand(void)
+static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    return (float) rand() / (float) RAND_MAX;
+    struct State* const state = glfwGetWindowUserPointer(window);
+
+    mtx_lock(&state->lock);
+    state->width = width;
+    state->height = height;
+    state->needs_update = true;
+    mtx_unlock(&state->lock);
 }
 
 int main(void)
 {
-    int result;
-    thrd_t thread;
-    GLFWwindow* window;
+    struct State state = { .running = true };
 
-    srand((unsigned int) time(NULL));
+    if (mtx_init(&state.lock, mtx_plain) != thrd_success)
+    {
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
+
+    generate_color(&state);
 
     glfwSetErrorCallback(error_callback);
 
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    window = glfwCreateWindow(640, 480, "Empty Event Test", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(640, 480, "Empty Event Test", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -95,8 +136,13 @@ int main(void)
     glfwMakeContextCurrent(window);
     gladLoadGL(glfwGetProcAddress);
     glfwSetKeyCallback(window, key_callback);
+    glfwSetWindowUserPointer(window, &state);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwGetFramebufferSize(window, &state.width, &state.height);
 
-    if (thrd_create(&thread, thread_main, NULL) != thrd_success)
+    thrd_t color_thread;
+
+    if (thrd_create(&color_thread, thread_main, &state) != thrd_success)
     {
         fprintf(stderr, "Failed to create secondary thread\n");
 
@@ -104,28 +150,27 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    while (running)
+    while (!glfwWindowShouldClose(window))
     {
-        int width, height;
-        float r = nrand(), g = nrand(), b = nrand();
-        float l = (float) sqrt(r * r + g * g + b * b);
+        if (state.needs_update)
+        {
+            mtx_lock(&state.lock);
+            glViewport(0, 0, state.width, state.height);
+            glClearColor(state.r, state.g, state.b, 1.f);
+            state.needs_update = false;
+            mtx_unlock(&state.lock);
 
-        glfwGetFramebufferSize(window, &width, &height);
-
-        glViewport(0, 0, width, height);
-        glClearColor(r / l, g / l, b / l, 1.f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glfwSwapBuffers(window);
+            glClear(GL_COLOR_BUFFER_BIT);
+            glfwSwapBuffers(window);
+        }
 
         glfwWaitEvents();
-
-        if (glfwWindowShouldClose(window))
-            running = GLFW_FALSE;
     }
 
     glfwHideWindow(window);
-    thrd_join(thread, &result);
-    glfwDestroyWindow(window);
+    state.running = false;
+    thrd_join(color_thread, NULL);
+    mtx_destroy(&state.lock);
 
     glfwTerminate();
     exit(EXIT_SUCCESS);

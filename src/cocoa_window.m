@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.5 macOS - www.glfw.org
+// GLFW 3.5 Cocoa - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2019 Camilla Löwy <elmindreda@glfw.org>
 //
@@ -597,6 +597,34 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     const int key = translateKey([event keyCode]);
     const int mods = translateFlags([event modifierFlags]);
     _glfwInputKey(window, key, [event keyCode], GLFW_RELEASE, mods);
+}
+
+- (BOOL)performKeyEquivalent:(NSEvent *)event
+{
+    // HACK: Some key combinations are consumed before reaching keyDown:
+    //       so we claim those events and emit them here
+    const int key = translateKey([event keyCode]);
+    const int mods = translateFlags([event modifierFlags]);
+
+    if (mods & GLFW_MOD_CONTROL)
+    {
+        if (key == GLFW_KEY_TAB || key == GLFW_KEY_ESCAPE)
+        {
+            _glfwInputKey(window, key, [event keyCode], GLFW_PRESS, mods);
+            return YES;
+        }
+    }
+
+    if (mods & GLFW_MOD_SUPER)
+    {
+        if (key == GLFW_KEY_PERIOD)
+        {
+            _glfwInputKey(window, key, [event keyCode], GLFW_PRESS, mods);
+            return YES;
+        }
+    }
+
+    return [super performKeyEquivalent:event];
 }
 
 - (void)scrollWheel:(NSEvent *)event

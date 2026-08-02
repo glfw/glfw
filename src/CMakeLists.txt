@@ -10,7 +10,7 @@ add_library(glfw ${GLFW_LIBRARY_TYPE}
 # The time, thread and module code is shared between all backends on a given OS,
 # including the null backend, which still needs those bits to be functional
 if (APPLE)
-    target_sources(glfw PRIVATE cocoa_time.h cocoa_time.c posix_thread.h
+    target_sources(glfw PRIVATE macos_time.h macos_time.c posix_thread.h
                                 posix_module.c posix_thread.c)
 elseif (WIN32)
     target_sources(glfw PRIVATE win32_time.h win32_thread.h win32_module.c
@@ -46,7 +46,7 @@ endif()
 
 if (GLFW_BUILD_X11)
     target_compile_definitions(glfw PRIVATE _GLFW_X11)
-    target_sources(glfw PRIVATE x11_platform.h xkb_unicode.h x11_init.c
+    target_sources(glfw PRIVATE x11_platform.h x11_init.c
                                 x11_monitor.c x11_window.c xkb_unicode.c
                                 glx_context.c)
 endif()
@@ -145,11 +145,11 @@ endif()
 if (GLFW_BUILD_COCOA)
     target_link_libraries(glfw PRIVATE "-framework Cocoa"
                                        "-framework IOKit"
-                                       "-framework CoreFoundation"
                                        "-framework QuartzCore")
 
-    set(glfw_PKG_DEPS "")
-    set(glfw_PKG_LIBS "-framework Cocoa -framework IOKit -framework CoreFoundation -framework QuartzCore")
+    list(APPEND glfw_PKG_LIBS "-framework Cocoa"
+                              "-framework IOKit"
+                              "-framework QuartzCore")
 endif()
 
 if (GLFW_BUILD_WAYLAND)
@@ -232,6 +232,11 @@ if (UNIX AND NOT APPLE)
         target_link_libraries(glfw PRIVATE "${CMAKE_DL_LIBS}")
         list(APPEND glfw_PKG_LIBS "-l${CMAKE_DL_LIBS}")
     endif()
+endif()
+
+if (APPLE)
+    target_link_libraries(glfw PRIVATE "-framework CoreFoundation")
+    list(APPEND glfw_PKG_LIBS "-framework CoreFoundation")
 endif()
 
 if (WIN32)

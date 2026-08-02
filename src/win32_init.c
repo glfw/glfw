@@ -166,29 +166,6 @@ static GLFWbool loadLibraries(void)
     return GLFW_TRUE;
 }
 
-// Unload used libraries (DLLs)
-//
-static void freeLibraries(void)
-{
-    if (_glfw.win32.xinput.instance)
-        _glfwPlatformFreeModule(_glfw.win32.xinput.instance);
-
-    if (_glfw.win32.dinput8.instance)
-        _glfwPlatformFreeModule(_glfw.win32.dinput8.instance);
-
-    if (_glfw.win32.user32.instance)
-        _glfwPlatformFreeModule(_glfw.win32.user32.instance);
-
-    if (_glfw.win32.dwmapi.instance)
-        _glfwPlatformFreeModule(_glfw.win32.dwmapi.instance);
-
-    if (_glfw.win32.shcore.instance)
-        _glfwPlatformFreeModule(_glfw.win32.shcore.instance);
-
-    if (_glfw.win32.ntdll.instance)
-        _glfwPlatformFreeModule(_glfw.win32.ntdll.instance);
-}
-
 // Create key code translation tables
 //
 static void createKeyTables(void)
@@ -528,7 +505,8 @@ void _glfwUpdateKeyNamesWin32(void)
 
         if (key >= GLFW_KEY_KP_0 && key <= GLFW_KEY_KP_ADD)
         {
-            const UINT vks[] = {
+            const UINT vks[] =
+            {
                 VK_NUMPAD0,  VK_NUMPAD1,  VK_NUMPAD2, VK_NUMPAD3,
                 VK_NUMPAD4,  VK_NUMPAD5,  VK_NUMPAD6, VK_NUMPAD7,
                 VK_NUMPAD8,  VK_NUMPAD9,  VK_DECIMAL, VK_DIVIDE,
@@ -721,7 +699,14 @@ void _glfwTerminateWin32(void)
     _glfwTerminateEGL();
     _glfwTerminateOSMesa();
 
-    freeLibraries();
+    _glfwPlatformFreeModule(_glfw.win32.xinput.instance);
+    _glfwPlatformFreeModule(_glfw.win32.dinput8.instance);
+    _glfwPlatformFreeModule(_glfw.win32.user32.instance);
+    _glfwPlatformFreeModule(_glfw.win32.dwmapi.instance);
+    _glfwPlatformFreeModule(_glfw.win32.shcore.instance);
+    _glfwPlatformFreeModule(_glfw.win32.ntdll.instance);
+
+    memset(&_glfw.win32, 0, sizeof(_glfw.win32));
 }
 
 #endif // _GLFW_WIN32

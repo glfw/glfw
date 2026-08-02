@@ -3,6 +3,14 @@
 [TOC]
 
 
+## Why was there no 3.5.0 release?
+
+Due to a misconfigured tool, an incorrect `3.5.0` tag was briefly made available in the
+main Git repository.  Thanks to the manual intervention of many packaging volunteers this
+has been almost entirely rolled back.  To make sure the first actual release of GLFW 3.5
+replaces the incorrect tag everywhere, the first release is named 3.5.1.
+
+
 ## New features {#features}
 
 ### Multiple window contexts {#multiple_window_contexts}

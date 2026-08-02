@@ -454,6 +454,8 @@ void _glfwInputJoystickAxis(_GLFWjoystick* js, int axis, float value)
     assert(axis < js->axisCount);
 
     js->axes[axis] = value;
+
+    _glfw.newEventsRcvd = GLFW_TRUE;
 }
 
 // Notifies shared code of the new value of a joystick button

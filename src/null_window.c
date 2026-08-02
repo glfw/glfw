@@ -747,3 +747,12 @@ VkResult _glfwCreateWindowSurfaceNull(VkInstance instance,
     return err;
 }
 
+_GLFWusercontext* _glfwCreateUserContextNull(_GLFWwindow* window)
+{
+    if (window->context.osmesa.handle)
+    {
+        return _glfwCreateUserContextOSMesa(window);
+    }
+
+    return NULL;
+}

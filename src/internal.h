@@ -237,7 +237,6 @@ typedef EGLBoolean (APIENTRY * PFN_eglChooseConfig)(EGLDisplay,EGLint const*,EGL
 #define eglSwapInterval _glfw.egl.SwapInterval
 #define eglQueryString _glfw.egl.QueryString
 #define eglGetProcAddress _glfw.egl.GetProcAddress
-#define eglCreatePbufferSurface _glfw.egl.CreatePbufferSurface
 #define eglChooseConfig _glfw.egl.ChooseConfig
 
 typedef EGLDisplay (APIENTRY * PFNEGLGETPLATFORMDISPLAYEXTPROC)(EGLenum,void*,const EGLint*);

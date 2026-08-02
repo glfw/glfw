@@ -457,8 +457,6 @@ GLFWbool _glfwInitEGL(void)
         _glfwPlatformGetModuleSymbol(_glfw.egl.handle, "eglQueryString");
     _glfw.egl.GetProcAddress = (PFN_eglGetProcAddress)
         _glfwPlatformGetModuleSymbol(_glfw.egl.handle, "eglGetProcAddress");
-    _glfw.egl.CreatePbufferSurface = (PFN_eglCreatePbufferSurface)
-        _glfwPlatformGetModuleSymbol(_glfw.egl.handle, "eglCreatePbufferSurface");
     _glfw.egl.ChooseConfig = (PFN_eglChooseConfig)
         _glfwPlatformGetModuleSymbol(_glfw.egl.handle, "eglChooseConfig");
 
@@ -479,7 +477,6 @@ GLFWbool _glfwInitEGL(void)
         !_glfw.egl.SwapInterval ||
         !_glfw.egl.QueryString ||
         !_glfw.egl.GetProcAddress ||
-        !_glfw.egl.CreatePbufferSurface||
         !_glfw.egl.ChooseConfig)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,

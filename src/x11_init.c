@@ -1592,65 +1592,29 @@ void _glfwTerminateX11(void)
         _glfw.x11.display = NULL;
     }
 
-    if (_glfw.x11.x11xcb.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.x11.x11xcb.handle);
-        _glfw.x11.x11xcb.handle = NULL;
-    }
-
-    if (_glfw.x11.xcursor.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.x11.xcursor.handle);
-        _glfw.x11.xcursor.handle = NULL;
-    }
-
-    if (_glfw.x11.randr.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.x11.randr.handle);
-        _glfw.x11.randr.handle = NULL;
-    }
-
-    if (_glfw.x11.xinerama.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.x11.xinerama.handle);
-        _glfw.x11.xinerama.handle = NULL;
-    }
-
-    if (_glfw.x11.xrender.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.x11.xrender.handle);
-        _glfw.x11.xrender.handle = NULL;
-    }
-
-    if (_glfw.x11.vidmode.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.x11.vidmode.handle);
-        _glfw.x11.vidmode.handle = NULL;
-    }
-
-    if (_glfw.x11.xi.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.x11.xi.handle);
-        _glfw.x11.xi.handle = NULL;
-    }
-
     _glfwTerminateOSMesa();
     // NOTE: These need to be unloaded after XCloseDisplay, as they register
     //       cleanup callbacks that get called by that function
     _glfwTerminateEGL();
     _glfwTerminateGLX();
 
-    if (_glfw.x11.xlib.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.x11.xlib.handle);
-        _glfw.x11.xlib.handle = NULL;
-    }
+    _glfwPlatformFreeModule(_glfw.x11.x11xcb.handle);
+    _glfwPlatformFreeModule(_glfw.x11.xcursor.handle);
+    _glfwPlatformFreeModule(_glfw.x11.randr.handle);
+    _glfwPlatformFreeModule(_glfw.x11.xinerama.handle);
+    _glfwPlatformFreeModule(_glfw.x11.xrender.handle);
+    _glfwPlatformFreeModule(_glfw.x11.xshape.handle);
+    _glfwPlatformFreeModule(_glfw.x11.vidmode.handle);
+    _glfwPlatformFreeModule(_glfw.x11.xi.handle);
+    _glfwPlatformFreeModule(_glfw.x11.xlib.handle);
 
     if (_glfw.x11.emptyEventPipe[0] || _glfw.x11.emptyEventPipe[1])
     {
         close(_glfw.x11.emptyEventPipe[0]);
         close(_glfw.x11.emptyEventPipe[1]);
     }
+
+    memset(&_glfw.x11, 0, sizeof(_glfw.x11));
 }
 
 #endif // _GLFW_X11

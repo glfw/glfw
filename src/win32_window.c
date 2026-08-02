@@ -711,11 +711,12 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             const int mods = getKeyMods();
 
             scancode = (HIWORD(lParam) & (KF_EXTENDED | 0xff));
-            if (!scancode)
+            if (!(scancode & 0xff))
             {
-                // NOTE: Some synthetic key messages have a scancode of zero
-                // HACK: Map the virtual key back to a usable scancode
-                scancode = MapVirtualKeyW((UINT) wParam, MAPVK_VK_TO_VSC);
+                // NOTE: Both media keys and the synthetic key messages from Windows
+                //       Clipboard History are reported with a scancode of zero
+                // HACK: Map the virtual key to a scancode but preserve extended bit
+                scancode |= MapVirtualKeyW((UINT) wParam, MAPVK_VK_TO_VSC);
             }
 
             // HACK: Alt+PrtSc has a different scancode than just PrtSc

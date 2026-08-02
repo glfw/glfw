@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16...3.28 FATAL_ERROR)
 
-project(GLFW VERSION 3.5.0 LANGUAGES C HOMEPAGE_URL "https://www.glfw.org/")
+project(GLFW VERSION 3.5.1 LANGUAGES C HOMEPAGE_URL "https://www.glfw.org/")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -38,11 +38,7 @@ set(GLFW_LIBRARY_TYPE "${GLFW_LIBRARY_TYPE}" CACHE STRING
     "Library type override for GLFW (SHARED, STATIC, OBJECT, or empty to follow BUILD_SHARED_LIBS)")
 
 if (GLFW_LIBRARY_TYPE)
-    if (GLFW_LIBRARY_TYPE STREQUAL "SHARED")
-        set(GLFW_BUILD_SHARED_LIBRARY TRUE)
-    else()
-        set(GLFW_BUILD_SHARED_LIBRARY FALSE)
-    endif()
+    string(COMPARE EQUAL "${GLFW_LIBRARY_TYPE}" "SHARED" GLFW_BUILD_SHARED_LIBRARY)
 else()
     set(GLFW_BUILD_SHARED_LIBRARY ${BUILD_SHARED_LIBS})
 endif()

@@ -1310,7 +1310,7 @@ static void processEvent(XEvent *event)
 
                 _glfwInputKey(window, key, keycode, GLFW_PRESS, mods);
 
-                const uint32_t codepoint = _glfwKeySym2Unicode(keysym);
+                const uint32_t codepoint = _glfwKeySym2UnicodeX11(keysym);
                 if (codepoint != GLFW_INVALID_CODEPOINT)
                     _glfwInputChar(window, codepoint, mods, plain);
             }
@@ -2209,10 +2209,10 @@ void _glfwGetWindowSizeX11(_GLFWwindow* window, int* width, int* height)
 
 void _glfwSetWindowSizeX11(_GLFWwindow* window, int width, int height)
 {
-	// The dimensions must be nonzero, or a BadValue error results.
+    // The dimensions must be nonzero, or a BadValue error results
     width = _glfw_max(1, width);
     height = _glfw_max(1, height);
-	
+
     if (window->monitor)
     {
         if (window->monitor->window == window)
@@ -2439,6 +2439,38 @@ void _glfwShowWindowX11(_GLFWwindow* window)
 {
     if (_glfwWindowVisibleX11(window))
         return;
+
+    if (window->floating && _glfw.x11.NET_WM_STATE && _glfw.x11.NET_WM_STATE_ABOVE)
+    {
+        Atom* states = NULL;
+        const unsigned long count =
+            _glfwGetWindowPropertyX11(window->x11.handle,
+                                      _glfw.x11.NET_WM_STATE,
+                                      XA_ATOM, (unsigned char**) &states);
+
+        // NOTE: We don't check for failure as this property may not exist yet
+        //       and that's fine (and we'll create it implicitly with append)
+
+        unsigned long i;
+
+        for (i = 0;  i < count;  i++)
+        {
+            if (states[i] == _glfw.x11.NET_WM_STATE_ABOVE)
+                break;
+        }
+
+        if (i == count)
+        {
+            XChangeProperty(_glfw.x11.display, window->x11.handle,
+                            _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
+                            PropModeAppend,
+                            (unsigned char*) &_glfw.x11.NET_WM_STATE_ABOVE,
+                            1);
+        }
+
+        if (states)
+            XFree(states);
+    }
 
     XMapWindow(_glfw.x11.display, window->x11.handle);
     waitForVisibilityNotify(window);
@@ -2669,6 +2701,10 @@ void _glfwSetWindowFloatingX11(_GLFWwindow* window, GLFWbool enabled)
     }
     else
     {
+        // NOTE: _NET_WM_STATE_ABOVE is added when the window is shown
+        if (enabled)
+            return;
+
         Atom* states = NULL;
         const unsigned long count =
             _glfwGetWindowPropertyX11(window->x11.handle,
@@ -2679,38 +2715,20 @@ void _glfwSetWindowFloatingX11(_GLFWwindow* window, GLFWbool enabled)
         // NOTE: We don't check for failure as this property may not exist yet
         //       and that's fine (and we'll create it implicitly with append)
 
-        if (enabled)
+        unsigned long i;
+
+        for (i = 0;  i < count;  i++)
         {
-            unsigned long i;
-
-            for (i = 0;  i < count;  i++)
-            {
-                if (states[i] == _glfw.x11.NET_WM_STATE_ABOVE)
-                    break;
-            }
-
-            if (i == count)
-            {
-                XChangeProperty(_glfw.x11.display, window->x11.handle,
-                                _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
-                                PropModeAppend,
-                                (unsigned char*) &_glfw.x11.NET_WM_STATE_ABOVE,
-                                1);
-            }
+            if (states[i] == _glfw.x11.NET_WM_STATE_ABOVE)
+                break;
         }
-        else if (states)
+
+        if (i < count)
         {
-            for (unsigned long i = 0;  i < count;  i++)
-            {
-                if (states[i] == _glfw.x11.NET_WM_STATE_ABOVE)
-                {
-                    states[i] = states[count - 1];
-                    XChangeProperty(_glfw.x11.display, window->x11.handle,
-                                    _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
-                                    PropModeReplace, (unsigned char*) states, count - 1);
-                    break;
-                }
-            }
+            states[i] = states[count - 1];
+            XChangeProperty(_glfw.x11.display, window->x11.handle,
+                            _glfw.x11.NET_WM_STATE, XA_ATOM, 32,
+                            PropModeReplace, (unsigned char*) states, count - 1);
         }
 
         if (states)
@@ -2934,7 +2952,7 @@ const char* _glfwGetScancodeNameX11(int scancode)
     if (keysym == NoSymbol)
         return NULL;
 
-    const uint32_t codepoint = _glfwKeySym2Unicode(keysym);
+    const uint32_t codepoint = _glfwKeySym2UnicodeX11(keysym);
     if (codepoint == GLFW_INVALID_CODEPOINT)
         return NULL;
 
@@ -3334,8 +3352,6 @@ GLFWAPI Window glfwGetX11Window(GLFWwindow* handle)
 
 GLFWAPI void glfwSetX11SelectionString(const char* string)
 {
-    assert(string != NULL);
-
     _GLFW_REQUIRE_INIT();
 
     if (_glfw.platform.platformID != GLFW_PLATFORM_X11)
@@ -3343,6 +3359,8 @@ GLFWAPI void glfwSetX11SelectionString(const char* string)
         _glfwInputError(GLFW_PLATFORM_UNAVAILABLE, "X11: Platform not initialized");
         return;
     }
+
+    assert(string != NULL);
 
     _glfw_free(_glfw.x11.primarySelectionString);
     _glfw.x11.primarySelectionString = _glfw_strdup(string);

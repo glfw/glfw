@@ -1,5 +1,5 @@
 /*************************************************************************
- * GLFW 3.5 - www.glfw.org
+ * GLFW 3.6 - www.glfw.org
  * A library for OpenGL, window and input
  *------------------------------------------------------------------------
  * Copyright (c) 2002-2006 Marcus Geelnard
@@ -291,14 +291,14 @@ extern "C" {
  *  features are added to the API but it remains backward-compatible.
  *  @ingroup init
  */
-#define GLFW_VERSION_MINOR          5
+#define GLFW_VERSION_MINOR          6
 /*! @brief The revision number of the GLFW header.
  *
  *  The revision number of the GLFW header.  This is incremented when a bug fix
  *  release is made that does not contain any API changes.
  *  @ingroup init
  */
-#define GLFW_VERSION_REVISION       1
+#define GLFW_VERSION_REVISION       0
 /*! @} */
 
 /*! @brief One.

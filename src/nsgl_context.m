@@ -199,7 +199,6 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
     NSOpenGLPixelFormatAttribute attribs[40];
     int index = 0;
 
-    ADD_ATTRIB(NSOpenGLPFAAccelerated);
     ADD_ATTRIB(NSOpenGLPFAClosestPolicy);
 
     if (ctxconfig->nsgl.offline)

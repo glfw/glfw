@@ -1,3 +1,7 @@
+# Requires "Allow GitHub Actions to create and approve pull requests" under
+# Settings -> Actions -> General -> Workflow permissions. Without it the branch is still
+# pushed, but opening the pull request fails with
+# "GitHub Actions is not permitted to create or approve pull requests".
 name: Update mappings
 
 on:

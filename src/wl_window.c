@@ -2141,9 +2141,23 @@ static void dataOfferHandleOffer(void* userData,
     }
 }
 
+static void dataOfferHandleSourceActions(void* userData,
+                                         struct wl_data_offer* offer,
+                                         uint32_t sourceActions)
+{
+}
+
+static void dataOfferHandleAction(void* userData,
+                                  struct wl_data_offer* offer,
+                                  uint32_t dndAction)
+{
+}
+
 static const struct wl_data_offer_listener dataOfferListener =
 {
-    dataOfferHandleOffer
+    dataOfferHandleOffer,
+    dataOfferHandleSourceActions,
+    dataOfferHandleAction
 };
 
 static void dataDeviceHandleDataOffer(void* userData,

@@ -389,6 +389,9 @@ struct _GLFWinitconfig
     struct {
         int       libdecorMode;
     } wl;
+    struct {
+        GLFWbool  msgInFiber;
+    } win32;
 };
 
 // Window configuration

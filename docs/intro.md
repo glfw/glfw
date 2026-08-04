@@ -153,17 +153,31 @@ the `VK_KHR_xlib_surface` extension.  Possible values are `GLFW_TRUE` and
 `GLFW_FALSE`.  This is ignored on other platforms.
 
 
+#### Windows specific init hints {#init_hints_windows}
+
+@anchor GLFW_WIN32_MESSAGES_IN_FIBER_hint
+__GLFW_WIN32_MESSAGES_IN_FIBER__ specifies whether to use separate fiber for
+processing Windows message, and not the main thread. This allows to unblock
+window move and resize operations, and application can do updates and rendering
+in its main loop. __Warning__ - setting this hint is not safe for environments
+or frameworks where stack inspection is required (for example, moving garbage
+collected languages such as Java or C#).  Set this with @ref glfwInitHint.
+
+
 #### Supported and default values {#init_hints_values}
 
-Initialization hint              | Default value                   | Supported values
--------------------------------- | ------------------------------- | ----------------
-@ref GLFW_PLATFORM               | `GLFW_ANY_PLATFORM`             | `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`, `GLFW_PLATFORM_WAYLAND`, `GLFW_PLATFORM_X11` or `GLFW_PLATFORM_NULL`
-@ref GLFW_JOYSTICK_HAT_BUTTONS   | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_ANGLE_PLATFORM_TYPE    | `GLFW_ANGLE_PLATFORM_TYPE_NONE` | `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGLES`, `GLFW_ANGLE_PLATFORM_TYPE_D3D9`, `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` or `GLFW_ANGLE_PLATFORM_TYPE_METAL`
-@ref GLFW_COCOA_CHDIR_RESOURCES  | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_COCOA_MENUBAR          | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
-@ref GLFW_WAYLAND_LIBDECOR       | `GLFW_WAYLAND_PREFER_LIBDECOR`  | `GLFW_WAYLAND_PREFER_LIBDECOR` or `GLFW_WAYLAND_DISABLE_LIBDECOR`
-@ref GLFW_X11_XCB_VULKAN_SURFACE | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+Initialization hint               | Default value                   | Supported values
+--------------------------------- | ------------------------------- | ----------------
+
+--------------------------------- | ------------------------------- | ----------------
+@ref GLFW_PLATFORM                | `GLFW_ANY_PLATFORM`             | `GLFW_ANY_PLATFORM`, `GLFW_PLATFORM_WIN32`, `GLFW_PLATFORM_COCOA`, `GLFW_PLATFORM_WAYLAND`, `GLFW_PLATFORM_X11` or `GLFW_PLATFORM_NULL`
+@ref GLFW_JOYSTICK_HAT_BUTTONS    | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_ANGLE_PLATFORM_TYPE     | `GLFW_ANGLE_PLATFORM_TYPE_NONE` | `GLFW_ANGLE_PLATFORM_TYPE_NONE`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGL`, `GLFW_ANGLE_PLATFORM_TYPE_OPENGLES`, `GLFW_ANGLE_PLATFORM_TYPE_D3D9`, `GLFW_ANGLE_PLATFORM_TYPE_D3D11`, `GLFW_ANGLE_PLATFORM_TYPE_VULKAN` or `GLFW_ANGLE_PLATFORM_TYPE_METAL`
+@ref GLFW_COCOA_CHDIR_RESOURCES   | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_COCOA_MENUBAR           | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_WAYLAND_LIBDECOR        | `GLFW_WAYLAND_PREFER_LIBDECOR`  | `GLFW_WAYLAND_PREFER_LIBDECOR` or `GLFW_WAYLAND_DISABLE_LIBDECOR`
+@ref GLFW_X11_XCB_VULKAN_SURFACE  | `GLFW_TRUE`                     | `GLFW_TRUE` or `GLFW_FALSE`
+@ref GLFW_WIN32_MESSAGES_IN_FIBER | `GLFW_FALSE`                    | `GLFW_TRUE` or `GLFW_FALSE`
 
 
 ### Runtime platform selection {#platform}

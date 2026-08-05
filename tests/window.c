@@ -441,6 +441,7 @@ int main(int argc, char** argv)
             nk_value_bool(nk, "Visible", glfwGetWindowAttrib(window, GLFW_VISIBLE));
             nk_value_bool(nk, "Iconified", glfwGetWindowAttrib(window, GLFW_ICONIFIED));
             nk_value_bool(nk, "Maximized", glfwGetWindowAttrib(window, GLFW_MAXIMIZED));
+            nk_value_bool(nk, "Fullscreen", glfwGetWindowAttrib(window, GLFW_FULLSCREEN));
         }
         nk_end(nk);
 

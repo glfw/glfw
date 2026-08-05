@@ -469,6 +469,7 @@ GLFWbool _glfwConnectWayland(int platformID, _GLFWplatform* platform)
         .setWindowIcon = _glfwSetWindowIconWayland,
         .getWindowPos = _glfwGetWindowPosWayland,
         .setWindowPos = _glfwSetWindowPosWayland,
+        .startInteractiveMove = _glfwStartInteractiveMoveWayland,
         .getWindowSize = _glfwGetWindowSizeWayland,
         .setWindowSize = _glfwSetWindowSizeWayland,
         .setWindowSizeLimits = _glfwSetWindowSizeLimitsWayland,

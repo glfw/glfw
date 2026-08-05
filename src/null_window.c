@@ -242,6 +242,8 @@ void _glfwSetWindowPosNull(_GLFWwindow* window, int xpos, int ypos)
     }
 }
 
+void _glfwStartInteractiveMoveNull(_GLFWwindow* window) {}
+
 void _glfwGetWindowSizeNull(_GLFWwindow* window, int* width, int* height)
 {
     if (width)

@@ -906,6 +906,7 @@ void _glfwSetWindowTitleX11(_GLFWwindow* window, const char* title);
 void _glfwSetWindowIconX11(_GLFWwindow* window, int count, const GLFWimage* images);
 void _glfwGetWindowPosX11(_GLFWwindow* window, int* xpos, int* ypos);
 void _glfwSetWindowPosX11(_GLFWwindow* window, int xpos, int ypos);
+void _glfwStartInteractiveMoveX11(_GLFWwindow* window);
 void _glfwGetWindowSizeX11(_GLFWwindow* window, int* width, int* height);
 void _glfwSetWindowSizeX11(_GLFWwindow* window, int width, int height);
 void _glfwSetWindowSizeLimitsX11(_GLFWwindow* window, int minwidth, int minheight, int maxwidth, int maxheight);

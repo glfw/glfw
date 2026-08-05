@@ -721,6 +721,7 @@ struct _GLFWplatform
     void (*setWindowIcon)(_GLFWwindow*,int,const GLFWimage*);
     void (*getWindowPos)(_GLFWwindow*,int*,int*);
     void (*setWindowPos)(_GLFWwindow*,int,int);
+    void (*startInteractiveMove)(_GLFWwindow*);
     void (*getWindowSize)(_GLFWwindow*,int*,int*);
     void (*setWindowSize)(_GLFWwindow*,int,int);
     void (*setWindowSizeLimits)(_GLFWwindow*,int,int,int,int);

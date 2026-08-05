@@ -157,6 +157,7 @@ video tutorials.
  - Jean-Luc Mackail
  - Hans Mackowiak
  - Ramiro Magno
+ - Liam Malone
  - Дмитри Малышев
  - Zbigniew Mandziejewicz
  - Adam Marcus

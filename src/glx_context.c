@@ -442,7 +442,7 @@ GLFWbool _glfwCreateContextGLX(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig)
 {
-    int attribs[40];
+    int attribs[40] = {0};
     GLXFBConfig native = NULL;
     GLXContext share = NULL;
 

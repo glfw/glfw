@@ -49,6 +49,7 @@
 #include "fractional-scale-v1-client-protocol.h"
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
+#include "cursor-shape-v1-client-protocol.h"
 
 // NOTE: Versions of wayland-scanner prior to 1.17.91 named every global array of
 //       wl_interface pointers 'types', making it impossible to combine several unmodified
@@ -89,6 +90,10 @@
 
 #define types _glfw_idle_inhibit_types
 #include "idle-inhibit-unstable-v1-client-protocol-code.h"
+#undef types
+
+#define types _glfw_cursor_shape_types
+#include "cursor-shape-v1-client-protocol-code.h"
 #undef types
 
 static void wmBaseHandlePing(void* userData,
@@ -199,6 +204,13 @@ static void registryHandleGlobal(void* userData,
         _glfw.wl.fractionalScaleManager =
             wl_registry_bind(registry, name,
                              &wp_fractional_scale_manager_v1_interface,
+                             1);
+    }
+    else if (strcmp(interface, wp_cursor_shape_manager_v1_interface.name) == 0)
+    {
+        _glfw.wl.cursorShapeManager =
+            wl_registry_bind(registry, name,
+                             &wp_cursor_shape_manager_v1_interface,
                              1);
     }
 }
@@ -387,33 +399,40 @@ static void createKeyTables(void)
 
 static GLFWbool loadCursorTheme(void)
 {
-    int cursorSize = 16;
-
-    const char* sizeString = getenv("XCURSOR_SIZE");
-    if (sizeString)
+    if (!_glfw.wl.cursorShapeDevice)
     {
-        errno = 0;
-        const long cursorSizeLong = strtol(sizeString, NULL, 10);
-        if (errno == 0 && cursorSizeLong > 0 && cursorSizeLong < INT_MAX)
-            cursorSize = (int) cursorSizeLong;
+        int cursorSize = 16;
+
+        const char* sizeString = getenv("XCURSOR_SIZE");
+        if (sizeString)
+        {
+            errno = 0;
+            const long cursorSizeLong = strtol(sizeString, NULL, 10);
+            if (errno == 0 && cursorSizeLong > 0 && cursorSizeLong < INT_MAX)
+                cursorSize = (int) cursorSizeLong;
+        }
+
+        const char* themeName = getenv("XCURSOR_THEME");
+
+        _glfw.wl.cursorTheme =
+            wl_cursor_theme_load(themeName, cursorSize, _glfw.wl.shm);
+        if (!_glfw.wl.cursorTheme)
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "Wayland: Failed to load default cursor theme");
+            return GLFW_FALSE;
+        }
+
+        // If this happens to be NULL, we just fallback to the scale=1 version.
+        _glfw.wl.cursorThemeHiDPI =
+            wl_cursor_theme_load(themeName, cursorSize * 2, _glfw.wl.shm);
+
+        _glfw.wl.cursorTimerfd =
+            timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
     }
 
-    const char* themeName = getenv("XCURSOR_THEME");
-
-    _glfw.wl.cursorTheme = wl_cursor_theme_load(themeName, cursorSize, _glfw.wl.shm);
-    if (!_glfw.wl.cursorTheme)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Wayland: Failed to load default cursor theme");
-        return GLFW_FALSE;
-    }
-
-    // If this happens to be NULL, we just fallback to the scale=1 version.
-    _glfw.wl.cursorThemeHiDPI =
-        wl_cursor_theme_load(themeName, cursorSize * 2, _glfw.wl.shm);
-
+    // Cursor Surface is always required in order to set custom cursor shapes
     _glfw.wl.cursorSurface = wl_compositor_create_surface(_glfw.wl.compositor);
-    _glfw.wl.cursorTimerfd = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC | TFD_NONBLOCK);
     return GLFW_TRUE;
 }
 
@@ -988,6 +1007,10 @@ void _glfwTerminateWayland(void)
         xdg_activation_v1_destroy(_glfw.wl.activationManager);
     if (_glfw.wl.fractionalScaleManager)
         wp_fractional_scale_manager_v1_destroy(_glfw.wl.fractionalScaleManager);
+    if (_glfw.wl.cursorShapeManager)
+        wp_cursor_shape_manager_v1_destroy(_glfw.wl.cursorShapeManager);
+    if (_glfw.wl.cursorShapeDevice)
+        wp_cursor_shape_device_v1_destroy(_glfw.wl.cursorShapeDevice);
     if (_glfw.wl.registry)
         wl_registry_destroy(_glfw.wl.registry);
     if (_glfw.wl.display)

@@ -53,6 +53,7 @@
 #include "xdg-activation-v1-client-protocol.h"
 #include "idle-inhibit-unstable-v1-client-protocol.h"
 #include "fractional-scale-v1-client-protocol.h"
+#include "cursor-shape-v1-client-protocol.h"
 
 #define GLFW_BORDER_SIZE    4
 #define GLFW_CAPTION_HEIGHT 24
@@ -1245,9 +1246,63 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
     return GLFW_TRUE;
 }
 
+static GLFWbool setCursorShape(int shape)
+{
+    int xdgShape = -1;
+
+    switch (shape)
+    {
+        case GLFW_ARROW_CURSOR:
+            xdgShape = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DEFAULT;
+            break;
+        case GLFW_IBEAM_CURSOR:
+            xdgShape = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_TEXT;
+            break;
+        case GLFW_CROSSHAIR_CURSOR:
+            xdgShape = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_CROSSHAIR;
+            break;
+        case GLFW_POINTING_HAND_CURSOR:
+            xdgShape = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_POINTER;
+            break;
+        case GLFW_RESIZE_EW_CURSOR:
+            xdgShape = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_EW_RESIZE;
+            break;
+        case GLFW_RESIZE_NS_CURSOR:
+            xdgShape = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_NS_RESIZE;
+            break;
+        case GLFW_RESIZE_NWSE_CURSOR:
+            xdgShape = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_NWSE_RESIZE;
+            break;
+        case GLFW_RESIZE_NESW_CURSOR:
+            xdgShape = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_NESW_RESIZE;
+            break;
+        case GLFW_RESIZE_ALL_CURSOR:
+            xdgShape = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_ALL_SCROLL;
+            break;
+        case GLFW_NOT_ALLOWED_CURSOR:
+            xdgShape = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_NOT_ALLOWED;
+            break;
+    }
+
+    if (xdgShape == -1)
+        return GLFW_FALSE;
+
+    wp_cursor_shape_device_v1_set_shape(_glfw.wl.cursorShapeDevice,
+        _glfw.wl.pointerEnterSerial,
+        xdgShape);
+
+    return GLFW_TRUE;
+}
+
 static void setCursorImage(_GLFWwindow* window,
                            _GLFWcursorWayland* cursorWayland)
 {
+    if (_glfw.wl.cursorShapeDevice && cursorWayland->shape != 0)
+    {
+        if (setCursorShape(cursorWayland->shape))
+            return;
+    }
+
     struct itimerspec timer = {0};
     struct wl_cursor* wlCursor = cursorWayland->cursor;
     struct wl_cursor_image* image;
@@ -2077,6 +2132,9 @@ static void seatHandleCapabilities(void* userData,
     {
         _glfw.wl.pointer = wl_seat_get_pointer(seat);
         wl_pointer_add_listener(_glfw.wl.pointer, &pointerListener, NULL);
+
+        if (_glfw.wl.cursorShapeManager)
+            _glfw.wl.cursorShapeDevice = wp_cursor_shape_manager_v1_get_pointer(_glfw.wl.cursorShapeManager, _glfw.wl.pointer);
     }
     else if (!(caps & WL_SEAT_CAPABILITY_POINTER) && _glfw.wl.pointer)
     {
@@ -3057,6 +3115,10 @@ GLFWbool _glfwCreateCursorWayland(_GLFWcursor* cursor,
 
 GLFWbool _glfwCreateStandardCursorWayland(_GLFWcursor* cursor, int shape)
 {
+    cursor->wl.shape = shape;
+    if (!_glfw.wl.cursorTheme)
+        return GLFW_TRUE;
+
     const char* name = NULL;
 
     // Try the XDG names first
@@ -3195,6 +3257,9 @@ static void relativePointerHandleRelativeMotion(void* userData,
 
     _glfwInputCursorPos(window, xpos, ypos);
 }
+
+// Dummy Tablet Tool Interface struct
+const struct wl_interface zwp_tablet_tool_v2_interface = {};
 
 static const struct zwp_relative_pointer_v1_listener relativePointerListener =
 {
@@ -3343,20 +3408,18 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
             setCursorImage(window, &cursor->wl);
         else
         {
-            struct wl_cursor* defaultCursor =
-                wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, "left_ptr");
-            if (!defaultCursor)
+            struct wl_cursor* defaultCursor = _glfw.wl.cursorTheme ?
+                wl_cursor_theme_get_cursor(_glfw.wl.cursorTheme, "left_ptr") : NULL;
+
+            struct wl_cursor* defaultCursorHiDPI = _glfw.wl.cursorThemeHiDPI ?
+                wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI, "left_ptr") : NULL;
+
+            // If protocol is unsupported and no themes are loaded
+            if (!(defaultCursor || defaultCursorHiDPI || _glfw.wl.cursorShapeDevice))
             {
                 _glfwInputError(GLFW_PLATFORM_ERROR,
                                 "Wayland: Standard cursor not found");
                 return;
-            }
-
-            struct wl_cursor* defaultCursorHiDPI = NULL;
-            if (_glfw.wl.cursorThemeHiDPI)
-            {
-                defaultCursorHiDPI =
-                    wl_cursor_theme_get_cursor(_glfw.wl.cursorThemeHiDPI, "left_ptr");
             }
 
             _GLFWcursorWayland cursorWayland =
@@ -3366,7 +3429,8 @@ void _glfwSetCursorWayland(_GLFWwindow* window, _GLFWcursor* cursor)
                 NULL,
                 0, 0,
                 0, 0,
-                0
+                0,
+                GLFW_ARROW_CURSOR
             };
 
             setCursorImage(window, &cursorWayland);

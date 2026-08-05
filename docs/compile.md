@@ -66,7 +66,7 @@ On Fedora and derivatives like Red Hat you will need the `wayland-devel` and
 These will pull in all other dependencies.
 
 ```sh
-sudo dnf install wayland-devel libxkbcommon-devel libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel
+sudo dnf install wayland-devel libxkbcommon-devel libXcursor-devel libXi-devel libXinerama-devel libXrandr-devel libXxf86vm-devel
 ```
 
 On FreeBSD you will need the `wayland`, `libxkbcommon` and `evdev-proto` packages to

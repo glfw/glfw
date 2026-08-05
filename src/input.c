@@ -85,12 +85,29 @@ static _GLFWmapping* findMapping(const char* guid)
 static GLFWbool isValidElementForJoystick(const _GLFWmapelement* e,
                                           const _GLFWjoystick* js)
 {
-    if (e->type == _GLFW_JOYSTICK_HATBIT && (e->index >> 4) >= js->hatCount)
-        return GLFW_FALSE;
-    else if (e->type == _GLFW_JOYSTICK_BUTTON && e->index >= js->buttonCount)
-        return GLFW_FALSE;
-    else if (e->type == _GLFW_JOYSTICK_AXIS && e->index >= js->axisCount)
-        return GLFW_FALSE;
+    if (e->type == _GLFW_JOYSTICK_HATBIT)
+    {
+        if ((e->index >> 4) >= js->hatCount)
+            return GLFW_TRUE; // ignore, not fail
+    }
+
+    if (e->type == _GLFW_JOYSTICK_BUTTON)
+    {
+        if (e->index == (uint8_t)-1)
+            return GLFW_TRUE;
+
+        if (e->index >= js->buttonCount)
+            return GLFW_TRUE;
+    }
+
+    if (e->type == _GLFW_JOYSTICK_AXIS)
+    {
+        if (e->index == (uint8_t)-1)
+            return GLFW_TRUE;
+
+        if (e->index >= js->axisCount)
+            return GLFW_TRUE;
+    }
 
     return GLFW_TRUE;
 }

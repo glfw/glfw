@@ -216,11 +216,26 @@ typedef enum
 #define ERROR_INVALID_PROFILE_ARB 0x2096
 #define ERROR_INCOMPATIBLE_DEVICE_CONTEXTS_ARB 0x2054
 
+// this struct might not defined in XInput headers
+typedef struct
+{
+    XINPUT_CAPABILITIES Capabilities;
+    WORD VendorId;
+    WORD ProductId;
+    WORD VersionNumber;
+    WORD unk1;
+    DWORD unk2;
+} GLFW_XINPUT_CAPABILITIES_EX;
+
 // xinput.dll function pointer typedefs
 typedef DWORD (WINAPI * PFN_XInputGetCapabilities)(DWORD,DWORD,XINPUT_CAPABILITIES*);
+typedef DWORD (WINAPI * PFN_XInputGetCapabilitiesEx)(DWORD,DWORD,DWORD,GLFW_XINPUT_CAPABILITIES_EX*);
 typedef DWORD (WINAPI * PFN_XInputGetState)(DWORD,XINPUT_STATE*);
 #define XInputGetCapabilities _glfw.win32.xinput.GetCapabilities
+#define XInputGetCapabilitiesEx _glfw.win32.xinput.GetCapabilitiesEx
 #define XInputGetState _glfw.win32.xinput.GetState
+#define USB_VENDOR_MICROSOFT                 0x045e
+#define USB_PRODUCT_XBOX360_XUSB_CONTROLLER  0x02a1 // XUSB driver software PID
 
 // dinput8.dll function pointer typedefs
 typedef HRESULT (WINAPI * PFN_DirectInput8Create)(HINSTANCE,DWORD,REFIID,LPVOID*,LPUNKNOWN);
@@ -412,6 +427,7 @@ typedef struct _GLFWlibraryWin32
     struct {
         HINSTANCE                       instance;
         PFN_XInputGetCapabilities       GetCapabilities;
+        PFN_XInputGetCapabilitiesEx     GetCapabilitiesEx;
         PFN_XInputGetState              GetState;
     } xinput;
 

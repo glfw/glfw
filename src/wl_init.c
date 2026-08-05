@@ -24,6 +24,8 @@
 //
 //========================================================================
 
+#define _GNU_SOURCE
+
 #include "internal.h"
 
 #if defined(_GLFW_WAYLAND)

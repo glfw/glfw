@@ -181,6 +181,7 @@ size_t _glfwEncodeUTF8(char* s, uint32_t codepoint)
 char** _glfwParseUriList(char* text, int* count)
 {
     const char* prefix = "file://";
+    const size_t prefixLength = strlen(prefix);
     char** paths = NULL;
     char* line;
 
@@ -195,9 +196,9 @@ char** _glfwParseUriList(char* text, int* count)
         if (line[0] == '#')
             continue;
 
-        if (strncmp(line, prefix, strlen(prefix)) == 0)
+        if (strncmp(line, prefix, prefixLength) == 0)
         {
-            line += strlen(prefix);
+            line += prefixLength;
             // TODO: Validate hostname
             while (*line != '/')
                 line++;
@@ -525,4 +526,3 @@ GLFWAPI GLFWerrorfun glfwSetErrorCallback(GLFWerrorfun cbfun)
     _GLFW_SWAP(GLFWerrorfun, _glfwErrorCallback, cbfun);
     return cbfun;
 }
-

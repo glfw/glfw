@@ -1246,7 +1246,8 @@ GLFWbool _glfwConnectX11(int platformID, _GLFWplatform* platform)
         .getEGLNativeWindow = _glfwGetEGLNativeWindowX11,
         .getRequiredInstanceExtensions = _glfwGetRequiredInstanceExtensionsX11,
         .getPhysicalDevicePresentationSupport = _glfwGetPhysicalDevicePresentationSupportX11,
-        .createWindowSurface = _glfwCreateWindowSurfaceX11
+        .createWindowSurface = _glfwCreateWindowSurfaceX11,
+        .createWindowWGPUSurface = _glfwCreateWindowWGPUSurfaceX11
     };
 
     // HACK: If the application has left the locale as "C" then both wide

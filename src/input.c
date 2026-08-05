@@ -159,7 +159,7 @@ static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
     length = strcspn(c, ",");
     if (length != 32 || c[length] != ',')
     {
-        _glfwInputError(GLFW_INVALID_VALUE, NULL);
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid GUID in mapping string");
         return GLFW_FALSE;
     }
 
@@ -169,7 +169,7 @@ static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
     length = strcspn(c, ",");
     if (length >= sizeof(mapping->name) || c[length] != ',')
     {
-        _glfwInputError(GLFW_INVALID_VALUE, NULL);
+        _glfwInputError(GLFW_INVALID_VALUE, "Invalid name in mapping string");
         return GLFW_FALSE;
     }
 
@@ -1516,4 +1516,3 @@ GLFWAPI uint64_t glfwGetTimerFrequency(void)
     _GLFW_REQUIRE_INIT_OR_RETURN(0);
     return _glfwPlatformGetTimerFrequency();
 }
-

@@ -305,6 +305,19 @@ GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
         [[NSOpenGLPixelFormat alloc] initWithAttributes:attribs];
     if (window->context.nsgl.pixelFormat == nil)
     {
+        // Fall back to the software renderer on systems with no accelerated
+        // renderer (e.g. VM guests). attribs[0] is always NSOpenGLPFAAccelerated
+        // (added at the top of this function); no pixel format can satisfy it
+        // without hardware acceleration. Retry once from attribs+1 so macOS can
+        // return its software (kCGLRendererGenericFloatID) renderer instead of
+        // failing. Hardware stays strictly preferred: the accelerated attempt
+        // runs first, so machines with a GPU never reach here.
+        assert(attribs[0] == NSOpenGLPFAAccelerated);
+        window->context.nsgl.pixelFormat =
+            [[NSOpenGLPixelFormat alloc] initWithAttributes:(attribs + 1)];
+    }
+    if (window->context.nsgl.pixelFormat == nil)
+    {
         _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
                         "NSGL: Failed to find a suitable pixel format");
         return GLFW_FALSE;

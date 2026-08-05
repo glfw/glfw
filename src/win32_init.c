@@ -100,40 +100,6 @@ static GLFWbool loadLibraries(void)
     _glfw.win32.user32.GetSystemMetricsForDpi_ = (PFN_GetSystemMetricsForDpi)
         _glfwPlatformGetModuleSymbol(_glfw.win32.user32.instance, "GetSystemMetricsForDpi");
 
-    _glfw.win32.dinput8.instance = _glfwPlatformLoadModule("dinput8.dll");
-    if (_glfw.win32.dinput8.instance)
-    {
-        _glfw.win32.dinput8.Create = (PFN_DirectInput8Create)
-            _glfwPlatformGetModuleSymbol(_glfw.win32.dinput8.instance, "DirectInput8Create");
-    }
-
-    {
-        int i;
-        const char* names[] =
-        {
-            "xinput1_4.dll",
-            "xinput1_3.dll",
-            "xinput9_1_0.dll",
-            "xinput1_2.dll",
-            "xinput1_1.dll",
-            NULL
-        };
-
-        for (i = 0;  names[i];  i++)
-        {
-            _glfw.win32.xinput.instance = _glfwPlatformLoadModule(names[i]);
-            if (_glfw.win32.xinput.instance)
-            {
-                _glfw.win32.xinput.GetCapabilities = (PFN_XInputGetCapabilities)
-                    _glfwPlatformGetModuleSymbol(_glfw.win32.xinput.instance, "XInputGetCapabilities");
-                _glfw.win32.xinput.GetState = (PFN_XInputGetState)
-                    _glfwPlatformGetModuleSymbol(_glfw.win32.xinput.instance, "XInputGetState");
-
-                break;
-            }
-        }
-    }
-
     _glfw.win32.dwmapi.instance = _glfwPlatformLoadModule("dwmapi.dll");
     if (_glfw.win32.dwmapi.instance)
     {

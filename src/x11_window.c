@@ -962,6 +962,14 @@ static const char* getSelectionString(Atom selection)
     _glfw_free(*selectionString);
     *selectionString = NULL;
 
+    XEvent stale;
+    while (XCheckTypedWindowEvent(_glfw.x11.display,
+                                  _glfw.x11.helperWindowHandle,
+                                  SelectionNotify,
+                                  &stale))
+    {
+    }
+
     for (size_t i = 0;  i < targetCount;  i++)
     {
         char* data;
@@ -969,6 +977,7 @@ static const char* getSelectionString(Atom selection)
         int actualFormat;
         unsigned long itemCount, bytesAfter;
         XEvent notification, dummy;
+        double timeout = 0.5;
 
         XConvertSelection(_glfw.x11.display,
                           selection,
@@ -982,7 +991,12 @@ static const char* getSelectionString(Atom selection)
                                        SelectionNotify,
                                        &notification))
         {
-            waitForX11Event(NULL);
+            if (!waitForX11Event(&timeout))
+            {
+                _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "X11: Timed out waiting for selection owner to convert selection");
+                return NULL;
+            }
         }
 
         if (notification.xselection.property == None)
@@ -1013,12 +1027,21 @@ static const char* getSelectionString(Atom selection)
 
             for (;;)
             {
+                timeout = 0.5;
+
                 while (!XCheckIfEvent(_glfw.x11.display,
                                       &dummy,
                                       isSelPropNewValueNotify,
                                       (XPointer) &notification))
                 {
-                    waitForX11Event(NULL);
+                    if (!waitForX11Event(&timeout))
+                    {
+                        _glfwInputError(GLFW_PLATFORM_ERROR,
+                                        "X11: Timed out waiting for incremental selection transfer");
+                        _glfw_free(string);
+                        XFree(data);
+                        return NULL;
+                    }
                 }
 
                 XFree(data);
@@ -1890,6 +1913,8 @@ void _glfwPushSelectionToManagerX11(void)
                       _glfw.x11.helperWindowHandle,
                       CurrentTime);
 
+    double timeout = 0.5;
+
     for (;;)
     {
         XEvent event;
@@ -1919,7 +1944,12 @@ void _glfwPushSelectionToManagerX11(void)
             }
         }
 
-        waitForX11Event(NULL);
+        if (!waitForX11Event(&timeout))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Timed out transferring clipboard to clipboard manager");
+            return;
+        }
     }
 }
 

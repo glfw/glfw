@@ -91,6 +91,28 @@ You can disable context creation by setting the
 Windows without contexts should not be passed to @ref glfwMakeContextCurrent or
 @ref glfwSwapBuffers.  Doing this generates a @ref GLFW_NO_WINDOW_CONTEXT error.
 
+@subsection context_user User contexts for multi context windows
+
+GLFW supports multiple OpenGL or OpenGL ES contexts per window. Providing
+a window with an existing OpenGL or OpenGL ES context has been created further
+user contexts can be created using @ref glfwCreateUserContext with the same
+API sharing the window context objects.
+
+@code
+GLFWusercontext* usercontext = glfwCreateUserContext(window);
+
+/* make the user context current */
+glfwMakeUserContextCurrent(usercontext);
+
+/* make the window context current */
+glfwMakeContextCurrent(window);
+
+/* destroy the user context */
+glfwDestroyUserContext(usercontext);
+
+@endcode
+
+User contexts See also the test program `usercontext`.
 
 ## Current context {#context_current}
 
@@ -121,6 +143,26 @@ error.
  - @ref glfwExtensionSupported
  - @ref glfwGetProcAddress
 
+@subsection context_current_user Current user context
+
+When using [user contexts](@ref context_user) the user context can be
+made current using @ref glfwMakeUserContextCurrent.
+
+@code
+glfwMakeUserContextCurrent(usercontext);
+@endcode
+
+This makes the any window context non-current on the calling thread, such that
+a call to @ref glfwGetCurrentContext will return `NULL`.
+
+The current user context is returned by @ref glfwGetCurrentUserContext.
+
+@code
+GLFWusercontext* usercontext = glfwGetCurrentUserContext();
+@endcode
+
+This will return the current user context or `NULL` if either the main window context
+or no context is current.
 
 ## Buffer swapping {#context_swap}
 

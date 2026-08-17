@@ -32,6 +32,7 @@
 #define GLFW_NULL_CONTEXT_STATE
 #define GLFW_NULL_CURSOR_STATE
 #define GLFW_NULL_LIBRARY_CONTEXT_STATE
+#define GLFW_NULL_USER_CONTEXT_STATE
 
 #define GLFW_NULL_SC_FIRST          GLFW_NULL_SC_SPACE
 #define GLFW_NULL_SC_SPACE          1
@@ -279,4 +280,6 @@ GLFWbool _glfwGetPhysicalDevicePresentationSupportNull(VkInstance instance, VkPh
 VkResult _glfwCreateWindowSurfaceNull(VkInstance instance, _GLFWwindow* window, const VkAllocationCallbacks* allocator, VkSurfaceKHR* surface);
 
 void _glfwPollMonitorsNull(void);
+
+_GLFWusercontext* _glfwCreateUserContextNull(_GLFWwindow* window);
 

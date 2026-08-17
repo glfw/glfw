@@ -459,6 +459,7 @@ typedef VkBool32 (APIENTRY *PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR)(Vk
 
 #define GLFW_GLX_CONTEXT_STATE          _GLFWcontextGLX glx;
 #define GLFW_GLX_LIBRARY_CONTEXT_STATE  _GLFWlibraryGLX glx;
+#define GLFW_GLX_USER_CONTEXT_STATE     _GLFWusercontextGLX glx;
 
 #define GLFW_INVALID_CODEPOINT 0xffffffffu
 
@@ -516,6 +517,13 @@ typedef struct _GLFWlibraryGLX
     bool            ARB_create_context_no_error;
     bool            ARB_context_flush_control;
 } _GLFWlibraryGLX;
+
+// GLX-specific per usercontext data
+//
+typedef struct _GLFWusercontextGLX
+{
+    GLXContext      handle;
+} _GLFWusercontextGLX;
 
 // X11-specific per-window data
 //
@@ -1003,3 +1011,5 @@ GLFWbool _glfwChooseVisualGLX(const _GLFWwndconfig* wndconfig,
                               const _GLFWfbconfig* fbconfig,
                               Visual** visual, int* depth);
 
+_GLFWusercontext* _glfwCreateUserContextX11(_GLFWwindow* window);
+_GLFWusercontext* _glfwCreateUserContextGLX(_GLFWwindow* window);

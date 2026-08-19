@@ -188,6 +188,9 @@ typedef void (APIENTRY * PFNGLFLUSHPROC)(void);
 #define EGL_PLATFORM_ANGLE_TYPE_METAL_ANGLE 0x3489
 #define EGL_PLATFORM_ANGLE_NATIVE_PLATFORM_TYPE_ANGLE 0x348f
 #define EGL_PLATFORM_SURFACELESS_MESA 0x31dd
+#define EGL_DIRECT_COMPOSITION_ANGLE 0x33A5
+#define EGL_FALSE 0
+#define EGL_TRUE 1
 
 typedef int EGLint;
 typedef unsigned int EGLBoolean;
@@ -449,6 +452,7 @@ struct _GLFWctxconfig
     int           profile;
     int           robustness;
     int           release;
+    bool          angleDirectComposition;
     _GLFWwindow*  share;
     struct {
         bool      offline;
@@ -812,6 +816,7 @@ struct _GLFWlibrary
         bool            KHR_gl_colorspace;
         bool            KHR_get_all_proc_addresses;
         bool            KHR_context_flush_control;
+        bool            ANGLE_direct_composition;
         bool            EXT_client_extensions;
         bool            EXT_platform_base;
         bool            EXT_platform_x11;

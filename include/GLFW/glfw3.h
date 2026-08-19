@@ -1307,6 +1307,19 @@ extern "C" {
  *
  *  Platform selection [init hint](@ref GLFW_PLATFORM).
  */
+
+#define GLFW_ANGLE_SURFACE_DIRECT_COMPOSITION 0x00050004
+/*! @brief ANGLE DirectComposition surface hint.
+ *
+ *  Specifies whether to use EGL_DIRECT_COMPOSITION_ANGLE for surface creation
+ *  when using ANGLE on Windows.
+ *
+ *  Possible values are `GLFW_TRUE` and `GLFW_FALSE`. This hint is ignored on
+ *  other platforms or context APIs.
+ *
+ *  @ingroup window
+ */
+
 #define GLFW_PLATFORM               0x00050003
 /*! @brief macOS specific init hint.
  *

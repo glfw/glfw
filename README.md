@@ -120,7 +120,7 @@ information on what to include when reporting a bug.
 
 ## Changelog since 3.5
 
-None.
+- Added `GLFW_ANGLE_SURFACE_DIRECT_COMPOSITION` window hint for ANGLE on Windows (#2876)
 
 
 ## Contact

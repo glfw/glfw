@@ -562,6 +562,8 @@ GLFWbool _glfwInitEGL(void)
         extensionSupportedEGL("EGL_KHR_context_flush_control");
     _glfw.egl.EXT_present_opaque =
         extensionSupportedEGL("EGL_EXT_present_opaque");
+    _glfw.egl.ANGLE_direct_composition =
+        _glfwStringInExtensionString("EGL_ANGLE_direct_composition", extensions);
 
     return GLFW_TRUE;
 }
@@ -743,6 +745,13 @@ GLFWbool _glfwCreateContextEGL(_GLFWwindow* window,
         SET_ATTRIB(EGL_WIDTH, width);
         SET_ATTRIB(EGL_HEIGHT, height);
     }
+
+    // ANGLE surface creation attributes
+    if (ctxconfig->angleDirectComposition && _glfw.egl.ANGLE_direct_composition)
+    {
+        SET_ATTRIB(EGL_DIRECT_COMPOSITION_ANGLE, EGL_TRUE);
+    }
+
 
     SET_ATTRIB(EGL_NONE, EGL_NONE);
 

@@ -65,7 +65,7 @@
 //****                KeySym to Unicode mapping table                 ****
 //************************************************************************
 
-static const struct codepair {
+static const struct _glfwCodepair {
   unsigned short keysym;
   unsigned short ucs;
 } keysymtab[] = {
@@ -909,7 +909,7 @@ static const struct codepair {
 uint32_t _glfwKeySym2UnicodeX11(unsigned int keysym)
 {
     int min = 0;
-    int max = sizeof(keysymtab) / sizeof(struct codepair) - 1;
+    int max = sizeof(keysymtab) / sizeof(struct _glfwCodepair) - 1;
     int mid;
 
     // First check for Latin-1 characters (1:1 mapping)

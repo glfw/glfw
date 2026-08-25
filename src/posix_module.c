@@ -47,7 +47,7 @@ void _glfwPlatformFreeModule(void* module)
 
 GLFWproc _glfwPlatformGetModuleSymbol(void* module, const char* name)
 {
-    return dlsym(module, name);
+    return (GLFWproc) dlsym(module, name);
 }
 
 #endif // GLFW_BUILD_POSIX_MODULE

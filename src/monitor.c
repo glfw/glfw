@@ -37,10 +37,10 @@
 
 // Lexically compare video modes, used by qsort
 //
-static int compareVideoModes(const void* fp, const void* sp)
+static int _glfwQsortCompareVideoModes(const void* fp, const void* sp)
 {
-    const GLFWvidmode* fm = fp;
-    const GLFWvidmode* sm = sp;
+    const GLFWvidmode* fm = (const GLFWvidmode*) fp;
+    const GLFWvidmode* sm = (const GLFWvidmode*) sp;
     const int fbpp = fm->redBits + fm->greenBits + fm->blueBits;
     const int sbpp = sm->redBits + sm->greenBits + sm->blueBits;
     const int farea = fm->width * fm->height;
@@ -64,7 +64,7 @@ static int compareVideoModes(const void* fp, const void* sp)
 
 // Retrieves the available modes for the specified monitor
 //
-static GLFWbool refreshVideoModes(_GLFWmonitor* monitor)
+static GLFWbool _glfwRefreshVideoModes(_GLFWmonitor* monitor)
 {
     int modeCount;
     GLFWvidmode* modes;
@@ -76,7 +76,7 @@ static GLFWbool refreshVideoModes(_GLFWmonitor* monitor)
     if (!modes)
         return GLFW_FALSE;
 
-    qsort(modes, modeCount, sizeof(GLFWvidmode), compareVideoModes);
+    qsort(modes, modeCount, sizeof(GLFWvidmode), _glfwQsortCompareVideoModes);
 
     _glfw_free(monitor->modes);
     monitor->modes = modes;
@@ -102,6 +102,7 @@ void _glfwInputMonitor(_GLFWmonitor* monitor, int action, int placement)
     {
         _glfw.monitorCount++;
         _glfw.monitors =
+            (_GLFWmonitor**)
             _glfw_realloc(_glfw.monitors,
                           sizeof(_GLFWmonitor*) * _glfw.monitorCount);
 
@@ -170,7 +171,7 @@ void _glfwInputMonitorWindow(_GLFWmonitor* monitor, _GLFWwindow* window)
 //
 _GLFWmonitor* _glfwAllocMonitor(const char* name, int widthMM, int heightMM)
 {
-    _GLFWmonitor* monitor = _glfw_calloc(1, sizeof(_GLFWmonitor));
+    _GLFWmonitor* monitor = (_GLFWmonitor*) _glfw_calloc(1, sizeof(_GLFWmonitor));
     monitor->widthMM = widthMM;
     monitor->heightMM = heightMM;
 
@@ -199,9 +200,9 @@ void _glfwFreeMonitor(_GLFWmonitor* monitor)
 //
 void _glfwAllocGammaArrays(GLFWgammaramp* ramp, unsigned int size)
 {
-    ramp->red = _glfw_calloc(size, sizeof(unsigned short));
-    ramp->green = _glfw_calloc(size, sizeof(unsigned short));
-    ramp->blue = _glfw_calloc(size, sizeof(unsigned short));
+    ramp->red = (unsigned short*) _glfw_calloc(size, sizeof(unsigned short));
+    ramp->green = (unsigned short*) _glfw_calloc(size, sizeof(unsigned short));
+    ramp->blue = (unsigned short*) _glfw_calloc(size, sizeof(unsigned short));
     ramp->size = size;
 }
 
@@ -228,7 +229,7 @@ const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
     const GLFWvidmode* current;
     const GLFWvidmode* closest = NULL;
 
-    if (!refreshVideoModes(monitor))
+    if (!_glfwRefreshVideoModes(monitor))
         return NULL;
 
     for (i = 0;  i < monitor->modeCount;  i++)
@@ -272,7 +273,7 @@ const GLFWvidmode* _glfwChooseVideoMode(_GLFWmonitor* monitor,
 //
 int _glfwCompareVideoModes(const GLFWvidmode* fm, const GLFWvidmode* sm)
 {
-    return compareVideoModes(fm, sm);
+    return _glfwQsortCompareVideoModes(fm, sm);
 }
 
 // Splits a color depth into red, green and blue bit depths
@@ -441,7 +442,7 @@ GLFWAPI const GLFWvidmode* glfwGetVideoModes(GLFWmonitor* handle, int* count)
     _GLFWmonitor* monitor = (_GLFWmonitor*) handle;
     assert(monitor != NULL);
 
-    if (!refreshVideoModes(monitor))
+    if (!_glfwRefreshVideoModes(monitor))
         return NULL;
 
     *count = monitor->modeCount;
@@ -485,7 +486,7 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
     if (!original)
         return;
 
-    values = _glfw_calloc(original->size, sizeof(unsigned short));
+    values = (unsigned short*) _glfw_calloc(original->size, sizeof(unsigned short));
 
     for (i = 0;  i < original->size;  i++)
     {

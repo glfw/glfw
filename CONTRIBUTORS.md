@@ -16,6 +16,7 @@ video tutorials.
  - Luca Bacci
  - Keith Bauer
  - John Bartholomew
+ - Garett Bass
  - Coşku Baş
  - Bayemite
  - Niklas Behrens

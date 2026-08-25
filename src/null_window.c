@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
+static void _glfwApplySizeLimitsNull(_GLFWwindow* window, int* width, int* height)
 {
     if (window->numer != GLFW_DONT_CARE && window->denom != GLFW_DONT_CARE)
     {
@@ -49,7 +49,7 @@ static void applySizeLimits(_GLFWwindow* window, int* width, int* height)
         *height = _glfw_max(*height, window->maxheight);
 }
 
-static void fitToMonitor(_GLFWwindow* window)
+static void _glfwFitToMonitorNull(_GLFWwindow* window)
 {
     GLFWvidmode mode;
     _glfwGetVideoModeNull(window->monitor, &mode);
@@ -60,12 +60,12 @@ static void fitToMonitor(_GLFWwindow* window)
     window->null.height = mode.height;
 }
 
-static void acquireMonitor(_GLFWwindow* window)
+static void _glfwAcquireMonitorNull(_GLFWwindow* window)
 {
     _glfwInputMonitorWindow(window->monitor, window);
 }
 
-static void releaseMonitor(_GLFWwindow* window)
+static void _glfwReleaseMonitorNull(_GLFWwindow* window)
 {
     if (window->monitor->window != window)
         return;
@@ -73,12 +73,12 @@ static void releaseMonitor(_GLFWwindow* window)
     _glfwInputMonitorWindow(window->monitor, NULL);
 }
 
-static int createNativeWindow(_GLFWwindow* window,
-                              const _GLFWwndconfig* wndconfig,
-                              const _GLFWfbconfig* fbconfig)
+static int _glfwCreateNativeWindowNull(_GLFWwindow* window,
+                                       const _GLFWwndconfig* wndconfig,
+                                       const _GLFWfbconfig* fbconfig)
 {
     if (window->monitor)
-        fitToMonitor(window);
+        _glfwFitToMonitorNull(window);
     else
     {
         if (wndconfig->xpos == GLFW_ANY_POSITION && wndconfig->ypos == GLFW_ANY_POSITION)
@@ -116,7 +116,7 @@ GLFWbool _glfwCreateWindowNull(_GLFWwindow* window,
                                const _GLFWctxconfig* ctxconfig,
                                const _GLFWfbconfig* fbconfig)
 {
-    if (!createNativeWindow(window, wndconfig, fbconfig))
+    if (!_glfwCreateNativeWindowNull(window, wndconfig, fbconfig))
         return GLFW_FALSE;
 
     if (ctxconfig->client != GLFW_NO_API)
@@ -148,7 +148,7 @@ GLFWbool _glfwCreateWindowNull(_GLFWwindow* window,
     {
         _glfwShowWindowNull(window);
         _glfwFocusWindowNull(window);
-        acquireMonitor(window);
+        _glfwAcquireMonitorNull(window);
 
         if (wndconfig->centerCursor)
             _glfwCenterCursorInContentArea(window);
@@ -169,7 +169,7 @@ GLFWbool _glfwCreateWindowNull(_GLFWwindow* window,
 void _glfwDestroyWindowNull(_GLFWwindow* window)
 {
     if (window->monitor)
-        releaseMonitor(window);
+        _glfwReleaseMonitorNull(window);
 
     if (_glfw.null.focusedWindow == window)
         _glfw.null.focusedWindow = NULL;
@@ -204,15 +204,15 @@ void _glfwSetWindowMonitorNull(_GLFWwindow* window,
     }
 
     if (window->monitor)
-        releaseMonitor(window);
+        _glfwReleaseMonitorNull(window);
 
     _glfwInputWindowMonitor(window, monitor);
 
     if (window->monitor)
     {
         window->null.visible = GLFW_TRUE;
-        acquireMonitor(window);
-        fitToMonitor(window);
+        _glfwAcquireMonitorNull(window);
+        _glfwFitToMonitorNull(window);
     }
     else
     {
@@ -271,7 +271,7 @@ void _glfwSetWindowSizeLimitsNull(_GLFWwindow* window,
 {
     int width = window->null.width;
     int height = window->null.height;
-    applySizeLimits(window, &width, &height);
+    _glfwApplySizeLimitsNull(window, &width, &height);
     _glfwSetWindowSizeNull(window, width, height);
 }
 
@@ -279,7 +279,7 @@ void _glfwSetWindowAspectRatioNull(_GLFWwindow* window, int n, int d)
 {
     int width = window->null.width;
     int height = window->null.height;
-    applySizeLimits(window, &width, &height);
+    _glfwApplySizeLimitsNull(window, &width, &height);
     _glfwSetWindowSizeNull(window, width, height);
 }
 
@@ -341,7 +341,7 @@ void _glfwIconifyWindowNull(_GLFWwindow* window)
         _glfwInputWindowIconify(window, GLFW_TRUE);
 
         if (window->monitor)
-            releaseMonitor(window);
+            _glfwReleaseMonitorNull(window);
     }
 }
 
@@ -353,7 +353,7 @@ void _glfwRestoreWindowNull(_GLFWwindow* window)
         _glfwInputWindowIconify(window, GLFW_FALSE);
 
         if (window->monitor)
-            acquireMonitor(window);
+            _glfwAcquireMonitorNull(window);
     }
     else if (window->null.maximized)
     {
@@ -706,8 +706,8 @@ void _glfwGetRequiredInstanceExtensionsNull(char** extensions)
     if (!_glfw.vk.KHR_surface || !_glfw.vk.EXT_headless_surface)
         return;
 
-    extensions[0] = "VK_KHR_surface";
-    extensions[1] = "VK_EXT_headless_surface";
+    extensions[0] = (char*) "VK_KHR_surface";
+    extensions[1] = (char*) "VK_EXT_headless_surface";
 }
 
 GLFWbool _glfwGetPhysicalDevicePresentationSupportNull(VkInstance instance,

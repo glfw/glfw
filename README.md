@@ -38,7 +38,41 @@ features, reviewing or testing code, debugging, proofreading docs, suggesting
 features or fixing bugs.
 
 
-## System requirements
+## Compiling GLFW
+
+GLFW itself requires only the headers and libraries for your OS and window
+system.  It does not need the headers for any context creation API (WGL, GLX,
+EGL, NSGL, OSMesa) or rendering API (OpenGL, OpenGL ES, Vulkan) to enable
+support for them.
+
+GLFW supports compilation on Windows with Visual C++ 2010 and later, MinGW and
+MinGW-w64, on macOS with Clang and on Linux and other Unix-like systems with GCC
+and Clang.  It will likely compile in other environments as well, but this is
+not regularly tested.
+
+There are [pre-compiled Windows binaries](https://www.glfw.org/download.html)
+available for all supported compilers.
+
+See the [compilation guide](https://www.glfw.org/docs/latest/compile.html) for
+more information about how to compile GLFW yourself.
+
+Alternatively, you can `#include <GLFW/glfw3impl.h>` in exactly one compilation
+unit of a C or C++ project to compile the entire implementation directly into
+your application, avoiding the need to separately compile and link with GLFW.
+
+
+## Using GLFW
+
+See the [documentation](https://www.glfw.org/docs/latest/) for tutorials, guides
+and the API reference.
+
+
+## Contributing to GLFW
+
+See the [contribution
+guide](https://github.com/glfw/glfw/blob/master/docs/CONTRIBUTING.md) for
+more information.
+
 
 GLFW supports Windows 7 and later and macOS 10.11 and later.  On GNOME Wayland,
 window decorations will be very basic unless the

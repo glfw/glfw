@@ -40,7 +40,7 @@
 
 // Returns whether the cursor is in the content area of the specified window
 //
-static GLFWbool cursorInContentArea(_GLFWwindow* window)
+static GLFWbool _glfwCursorInContentAreaCocoa(_GLFWwindow* window)
 {
     const NSPoint pos = [window->ns.object mouseLocationOutsideOfEventStream];
     return [window->ns.view mouse:pos inRect:[window->ns.view frame]];
@@ -48,7 +48,7 @@ static GLFWbool cursorInContentArea(_GLFWwindow* window)
 
 // Hides the cursor if not already hidden
 //
-static void hideCursor(_GLFWwindow* window)
+static void _glfwHideCursorCocoa(_GLFWwindow* window)
 {
     if (!_glfw.ns.cursorHidden)
     {
@@ -59,7 +59,7 @@ static void hideCursor(_GLFWwindow* window)
 
 // Shows the cursor if not already shown
 //
-static void showCursor(_GLFWwindow* window)
+static void _glfwShowCursorCocoa(_GLFWwindow* window)
 {
     if (_glfw.ns.cursorHidden)
     {
@@ -70,11 +70,11 @@ static void showCursor(_GLFWwindow* window)
 
 // Updates the cursor image according to its cursor mode
 //
-static void updateCursorImage(_GLFWwindow* window)
+static void _glfwUpdateCursorImageCocoa(_GLFWwindow* window)
 {
     if (window->cursorMode == GLFW_CURSOR_NORMAL)
     {
-        showCursor(window);
+        _glfwShowCursorCocoa(window);
 
         if (window->cursor)
             [(NSCursor*) window->cursor->ns.object set];
@@ -82,12 +82,12 @@ static void updateCursorImage(_GLFWwindow* window)
             [[NSCursor arrowCursor] set];
     }
     else
-        hideCursor(window);
+        _glfwHideCursorCocoa(window);
 }
 
 // Apply chosen cursor mode to a focused window
 //
-static void updateCursorMode(_GLFWwindow* window)
+static void _glfwUpdateCursorModeCocoa(_GLFWwindow* window)
 {
     if (window->cursorMode == GLFW_CURSOR_DISABLED)
     {
@@ -108,13 +108,13 @@ static void updateCursorMode(_GLFWwindow* window)
         //       made in _glfwSetCursorPosCocoa as part of a workaround
     }
 
-    if (cursorInContentArea(window))
-        updateCursorImage(window);
+    if (_glfwCursorInContentAreaCocoa(window))
+        _glfwUpdateCursorImageCocoa(window);
 }
 
 // Make the specified window and its video mode active on its monitor
 //
-static void acquireMonitor(_GLFWwindow* window)
+static void _glfwAcquireMonitorCocoa(_GLFWwindow* window)
 {
     _glfwSetVideoModeCocoa(window->monitor, &window->videoMode);
     const CGRect bounds = CGDisplayBounds(window->monitor->ns.displayID);
@@ -130,7 +130,7 @@ static void acquireMonitor(_GLFWwindow* window)
 
 // Remove the window and restore the original video mode
 //
-static void releaseMonitor(_GLFWwindow* window)
+static void _glfwReleaseMonitorCocoa(_GLFWwindow* window)
 {
     if (window->monitor->window != window)
         return;
@@ -141,7 +141,7 @@ static void releaseMonitor(_GLFWwindow* window)
 
 // Translates macOS key modifiers into GLFW ones
 //
-static int translateFlags(NSUInteger flags)
+static int _glfwTranslateFlagsCocoa(NSUInteger flags)
 {
     int mods = 0;
 
@@ -161,7 +161,7 @@ static int translateFlags(NSUInteger flags)
 
 // Translates a macOS keycode to a GLFW keycode
 //
-static int translateKey(unsigned int key)
+static int _glfwTranslateKeyCocoa(unsigned int key)
 {
     if (key >= sizeof(_glfw.ns.keycodes) / sizeof(_glfw.ns.keycodes[0]))
         return GLFW_KEY_UNKNOWN;
@@ -171,7 +171,7 @@ static int translateKey(unsigned int key)
 
 // Translate a GLFW keycode to a Cocoa modifier flag
 //
-static NSUInteger translateKeyToModifierFlag(int key)
+static NSUInteger _glfwTranslateKeyToModifierFlagCocoa(int key)
 {
     switch (key)
     {
@@ -196,7 +196,7 @@ static NSUInteger translateKeyToModifierFlag(int key)
 
 // Defines a constant for empty ranges in NSTextInputClient
 //
-static const NSRange kEmptyRange = { NSNotFound, 0 };
+static const NSRange _glfwKEmptyRangeCocoa = { NSNotFound, 0 };
 
 
 //------------------------------------------------------------------------
@@ -280,7 +280,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 - (void)windowDidMiniaturize:(NSNotification *)notification
 {
     if (window->monitor)
-        releaseMonitor(window);
+        _glfwReleaseMonitorCocoa(window);
 
     _glfwInputWindowIconify(window, GLFW_TRUE);
 }
@@ -288,7 +288,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 - (void)windowDidDeminiaturize:(NSNotification *)notification
 {
     if (window->monitor)
-        acquireMonitor(window);
+        _glfwAcquireMonitorCocoa(window);
 
     _glfwInputWindowIconify(window, GLFW_FALSE);
 }
@@ -299,7 +299,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
         _glfwCenterCursorInContentArea(window);
 
     _glfwInputWindowFocus(window, GLFW_TRUE);
-    updateCursorMode(window);
+    _glfwUpdateCursorModeCocoa(window);
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
@@ -394,7 +394,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)cursorUpdate:(NSEvent *)event
 {
-    updateCursorImage(window);
+    _glfwUpdateCursorImageCocoa(window);
 }
 
 - (BOOL)acceptsFirstMouse:(NSEvent *)event
@@ -407,7 +407,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_LEFT,
                          GLFW_PRESS,
-                         translateFlags([event modifierFlags]));
+                         _glfwTranslateFlagsCocoa([event modifierFlags]));
 }
 
 - (void)mouseDragged:(NSEvent *)event
@@ -420,7 +420,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_LEFT,
                          GLFW_RELEASE,
-                         translateFlags([event modifierFlags]));
+                         _glfwTranslateFlagsCocoa([event modifierFlags]));
 }
 
 - (void)mouseMoved:(NSEvent *)event
@@ -452,7 +452,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_RIGHT,
                          GLFW_PRESS,
-                         translateFlags([event modifierFlags]));
+                         _glfwTranslateFlagsCocoa([event modifierFlags]));
 }
 
 - (void)rightMouseDragged:(NSEvent *)event
@@ -465,7 +465,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     _glfwInputMouseClick(window,
                          GLFW_MOUSE_BUTTON_RIGHT,
                          GLFW_RELEASE,
-                         translateFlags([event modifierFlags]));
+                         _glfwTranslateFlagsCocoa([event modifierFlags]));
 }
 
 - (void)otherMouseDown:(NSEvent *)event
@@ -473,7 +473,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     _glfwInputMouseClick(window,
                          (int) [event buttonNumber],
                          GLFW_PRESS,
-                         translateFlags([event modifierFlags]));
+                         _glfwTranslateFlagsCocoa([event modifierFlags]));
 }
 
 - (void)otherMouseDragged:(NSEvent *)event
@@ -486,13 +486,13 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     _glfwInputMouseClick(window,
                          (int) [event buttonNumber],
                          GLFW_RELEASE,
-                         translateFlags([event modifierFlags]));
+                         _glfwTranslateFlagsCocoa([event modifierFlags]));
 }
 
 - (void)mouseExited:(NSEvent *)event
 {
     if (window->cursorMode == GLFW_CURSOR_HIDDEN)
-        showCursor(window);
+        _glfwShowCursorCocoa(window);
 
     _glfwInputCursorEnter(window, GLFW_FALSE);
 }
@@ -500,7 +500,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 - (void)mouseEntered:(NSEvent *)event
 {
     if (window->cursorMode == GLFW_CURSOR_HIDDEN)
-        hideCursor(window);
+        _glfwHideCursorCocoa(window);
 
     _glfwInputCursorEnter(window, GLFW_TRUE);
 }
@@ -562,8 +562,8 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)keyDown:(NSEvent *)event
 {
-    const int key = translateKey([event keyCode]);
-    const int mods = translateFlags([event modifierFlags]);
+    const int key = _glfwTranslateKeyCocoa([event keyCode]);
+    const int mods = _glfwTranslateFlagsCocoa([event modifierFlags]);
 
     _glfwInputKey(window, key, [event keyCode], GLFW_PRESS, mods);
 
@@ -575,9 +575,9 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     int action;
     const unsigned int modifierFlags =
         [event modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
-    const int key = translateKey([event keyCode]);
-    const int mods = translateFlags(modifierFlags);
-    const NSUInteger keyFlag = translateKeyToModifierFlag(key);
+    const int key = _glfwTranslateKeyCocoa([event keyCode]);
+    const int mods = _glfwTranslateFlagsCocoa(modifierFlags);
+    const NSUInteger keyFlag = _glfwTranslateKeyToModifierFlagCocoa(key);
 
     if (keyFlag & modifierFlags)
     {
@@ -594,8 +594,8 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 - (void)keyUp:(NSEvent *)event
 {
-    const int key = translateKey([event keyCode]);
-    const int mods = translateFlags([event modifierFlags]);
+    const int key = _glfwTranslateKeyCocoa([event keyCode]);
+    const int mods = _glfwTranslateFlagsCocoa([event modifierFlags]);
     _glfwInputKey(window, key, [event keyCode], GLFW_RELEASE, mods);
 }
 
@@ -603,8 +603,8 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 {
     // HACK: Some key combinations are consumed before reaching keyDown:
     //       so we claim those events and emit them here
-    const int key = translateKey([event keyCode]);
-    const int mods = translateFlags([event modifierFlags]);
+    const int key = _glfwTranslateKeyCocoa([event keyCode]);
+    const int mods = _glfwTranslateFlagsCocoa([event modifierFlags]);
 
     if (mods & GLFW_MOD_CONTROL)
     {
@@ -663,7 +663,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     const NSUInteger count = [urls count];
     if (count)
     {
-        char** paths = _glfw_calloc(count, sizeof(char*));
+        char** paths = (char**) _glfw_calloc(count, sizeof(char*));
 
         for (NSUInteger i = 0;  i < count;  i++)
             paths[i] = _glfw_strdup([urls[i] fileSystemRepresentation]);
@@ -688,12 +688,12 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
     if ([markedText length] > 0)
         return NSMakeRange(0, [markedText length] - 1);
     else
-        return kEmptyRange;
+        return _glfwKEmptyRangeCocoa;
 }
 
 - (NSRange)selectedRange
 {
-    return kEmptyRange;
+    return _glfwKEmptyRangeCocoa;
 }
 
 - (void)setMarkedText:(id)string
@@ -739,7 +739,7 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 {
     NSString* characters;
     NSEvent* event = [NSApp currentEvent];
-    const int mods = translateFlags([event modifierFlags]);
+    const int mods = _glfwTranslateFlagsCocoa([event modifierFlags]);
     const int plain = !(mods & GLFW_MOD_SUPER);
 
     if ([string isKindOfClass:[NSAttributedString class]])
@@ -800,9 +800,9 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 
 // Create the Cocoa window
 //
-static GLFWbool createNativeWindow(_GLFWwindow* window,
-                                   const _GLFWwndconfig* wndconfig,
-                                   const _GLFWfbconfig* fbconfig)
+static GLFWbool _glfwCreateNativeWindowCocoa(_GLFWwindow* window,
+                                        const _GLFWwndconfig* wndconfig,
+                                        const _GLFWfbconfig* fbconfig)
 {
     window->ns.delegate = [[GLFWWindowDelegate alloc] initWithGlfwWindow:window];
     if (window->ns.delegate == nil)
@@ -952,7 +952,7 @@ GLFWbool _glfwCreateWindowCocoa(_GLFWwindow* window,
 {
     @autoreleasepool {
 
-    if (!createNativeWindow(window, wndconfig, fbconfig))
+    if (!_glfwCreateNativeWindowCocoa(window, wndconfig, fbconfig))
         return GLFW_FALSE;
 
     if (ctxconfig->client != GLFW_NO_API)
@@ -995,7 +995,7 @@ GLFWbool _glfwCreateWindowCocoa(_GLFWwindow* window,
     {
         _glfwShowWindowCocoa(window);
         _glfwFocusWindowCocoa(window);
-        acquireMonitor(window);
+        _glfwAcquireMonitorCocoa(window);
 
         if (wndconfig->centerCursor)
             _glfwCenterCursorInContentArea(window);
@@ -1025,7 +1025,7 @@ void _glfwDestroyWindowCocoa(_GLFWwindow* window)
     [window->ns.object orderOut:nil];
 
     if (window->monitor)
-        releaseMonitor(window);
+        _glfwReleaseMonitorCocoa(window);
 
     if (window->context.destroy)
         window->context.destroy(window);
@@ -1112,7 +1112,7 @@ void _glfwSetWindowSizeCocoa(_GLFWwindow* window, int width, int height)
     if (window->monitor)
     {
         if (window->monitor->window == window)
-            acquireMonitor(window);
+            _glfwAcquireMonitorCocoa(window);
     }
     else
     {
@@ -1281,7 +1281,7 @@ void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
         if (monitor)
         {
             if (monitor->window == window)
-                acquireMonitor(window);
+                _glfwAcquireMonitorCocoa(window);
         }
         else
         {
@@ -1299,7 +1299,7 @@ void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
     }
 
     if (window->monitor)
-        releaseMonitor(window);
+        _glfwReleaseMonitorCocoa(window);
 
     _glfwInputWindowMonitor(window, monitor);
 
@@ -1337,7 +1337,7 @@ void _glfwSetWindowMonitorCocoa(_GLFWwindow* window,
         [window->ns.object setLevel:NSMainMenuWindowLevel + 1];
         [window->ns.object setHasShadow:NO];
 
-        acquireMonitor(window);
+        _glfwAcquireMonitorCocoa(window);
     }
     else
     {
@@ -1634,7 +1634,7 @@ void _glfwSetCursorPosCocoa(_GLFWwindow* window, double x, double y)
 {
     @autoreleasepool {
 
-    updateCursorImage(window);
+    _glfwUpdateCursorImageCocoa(window);
 
     const NSRect contentRect = [window->ns.view frame];
     // NOTE: The returned location uses base 0,1 not 0,0
@@ -1677,7 +1677,7 @@ void _glfwSetCursorModeCocoa(_GLFWwindow* window, int mode)
     }
 
     if (_glfwWindowFocusedCocoa(window))
-        updateCursorMode(window);
+        _glfwUpdateCursorModeCocoa(window);
 
     } // autoreleasepool
 }
@@ -1700,7 +1700,8 @@ const char* _glfwGetScancodeNameCocoa(int scancode)
     UniChar characters[4];
     UniCharCount characterCount = 0;
 
-    if (UCKeyTranslate([(NSData*) _glfw.ns.unicodeData bytes],
+    if (UCKeyTranslate((const UCKeyboardLayout *)
+                       [(NSData*) _glfw.ns.unicodeData bytes],
                        scancode,
                        kUCKeyActionDisplay,
                        0,
@@ -1866,8 +1867,8 @@ void _glfwDestroyCursorCocoa(_GLFWcursor* cursor)
 void _glfwSetCursorCocoa(_GLFWwindow* window, _GLFWcursor* cursor)
 {
     @autoreleasepool {
-    if (cursorInContentArea(window))
-        updateCursorImage(window);
+    if (_glfwCursorInContentAreaCocoa(window))
+        _glfwUpdateCursorImageCocoa(window);
     } // autoreleasepool
 }
 
@@ -1929,7 +1930,7 @@ EGLenum _glfwGetEGLPlatformCocoa(EGLint** attribs)
 
         if (type)
         {
-            *attribs = _glfw_calloc(3, sizeof(EGLint));
+            *attribs = (EGLint*) _glfw_calloc(3, sizeof(EGLint));
             (*attribs)[0] = EGL_PLATFORM_ANGLE_TYPE_ANGLE;
             (*attribs)[1] = type;
             (*attribs)[2] = EGL_NONE;
@@ -1954,13 +1955,13 @@ void _glfwGetRequiredInstanceExtensionsCocoa(char** extensions)
 {
     if (_glfw.vk.KHR_surface && _glfw.vk.EXT_metal_surface)
     {
-        extensions[0] = "VK_KHR_surface";
-        extensions[1] = "VK_EXT_metal_surface";
+        extensions[0] = (char*) "VK_KHR_surface";
+        extensions[1] = (char*) "VK_EXT_metal_surface";
     }
     else if (_glfw.vk.KHR_surface && _glfw.vk.MVK_macos_surface)
     {
-        extensions[0] = "VK_KHR_surface";
-        extensions[1] = "VK_MVK_macos_surface";
+        extensions[0] = (char*) "VK_KHR_surface";
+        extensions[1] = (char*) "VK_MVK_macos_surface";
     }
 }
 

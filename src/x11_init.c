@@ -44,7 +44,7 @@
 // NOTE: This is only used as a fallback, in case the XKB method fails
 //       It is layout-dependent and will fail partially on most non-US layouts
 //
-static int translateKeySyms(const KeySym* keysyms, int width)
+static int _glfwTranslateKeySymsX11(const KeySym* keysyms, int width)
 {
     if (width > 1)
     {
@@ -210,7 +210,7 @@ static int translateKeySyms(const KeySym* keysyms, int width)
 
 // Create key code translation tables
 //
-static void createKeyTables(void)
+static void _glfwCreateKeyTablesX11(void)
 {
     int scancodeMin, scancodeMax;
 
@@ -234,127 +234,127 @@ static void createKeyTables(void)
             char* name;
         } keymap[] =
         {
-            { GLFW_KEY_GRAVE_ACCENT, "TLDE" },
-            { GLFW_KEY_1, "AE01" },
-            { GLFW_KEY_2, "AE02" },
-            { GLFW_KEY_3, "AE03" },
-            { GLFW_KEY_4, "AE04" },
-            { GLFW_KEY_5, "AE05" },
-            { GLFW_KEY_6, "AE06" },
-            { GLFW_KEY_7, "AE07" },
-            { GLFW_KEY_8, "AE08" },
-            { GLFW_KEY_9, "AE09" },
-            { GLFW_KEY_0, "AE10" },
-            { GLFW_KEY_MINUS, "AE11" },
-            { GLFW_KEY_EQUAL, "AE12" },
-            { GLFW_KEY_Q, "AD01" },
-            { GLFW_KEY_W, "AD02" },
-            { GLFW_KEY_E, "AD03" },
-            { GLFW_KEY_R, "AD04" },
-            { GLFW_KEY_T, "AD05" },
-            { GLFW_KEY_Y, "AD06" },
-            { GLFW_KEY_U, "AD07" },
-            { GLFW_KEY_I, "AD08" },
-            { GLFW_KEY_O, "AD09" },
-            { GLFW_KEY_P, "AD10" },
-            { GLFW_KEY_LEFT_BRACKET, "AD11" },
-            { GLFW_KEY_RIGHT_BRACKET, "AD12" },
-            { GLFW_KEY_A, "AC01" },
-            { GLFW_KEY_S, "AC02" },
-            { GLFW_KEY_D, "AC03" },
-            { GLFW_KEY_F, "AC04" },
-            { GLFW_KEY_G, "AC05" },
-            { GLFW_KEY_H, "AC06" },
-            { GLFW_KEY_J, "AC07" },
-            { GLFW_KEY_K, "AC08" },
-            { GLFW_KEY_L, "AC09" },
-            { GLFW_KEY_SEMICOLON, "AC10" },
-            { GLFW_KEY_APOSTROPHE, "AC11" },
-            { GLFW_KEY_Z, "AB01" },
-            { GLFW_KEY_X, "AB02" },
-            { GLFW_KEY_C, "AB03" },
-            { GLFW_KEY_V, "AB04" },
-            { GLFW_KEY_B, "AB05" },
-            { GLFW_KEY_N, "AB06" },
-            { GLFW_KEY_M, "AB07" },
-            { GLFW_KEY_COMMA, "AB08" },
-            { GLFW_KEY_PERIOD, "AB09" },
-            { GLFW_KEY_SLASH, "AB10" },
-            { GLFW_KEY_BACKSLASH, "BKSL" },
-            { GLFW_KEY_WORLD_1, "LSGT" },
-            { GLFW_KEY_SPACE, "SPCE" },
-            { GLFW_KEY_ESCAPE, "ESC" },
-            { GLFW_KEY_ENTER, "RTRN" },
-            { GLFW_KEY_TAB, "TAB" },
-            { GLFW_KEY_BACKSPACE, "BKSP" },
-            { GLFW_KEY_INSERT, "INS" },
-            { GLFW_KEY_DELETE, "DELE" },
-            { GLFW_KEY_RIGHT, "RGHT" },
-            { GLFW_KEY_LEFT, "LEFT" },
-            { GLFW_KEY_DOWN, "DOWN" },
-            { GLFW_KEY_UP, "UP" },
-            { GLFW_KEY_PAGE_UP, "PGUP" },
-            { GLFW_KEY_PAGE_DOWN, "PGDN" },
-            { GLFW_KEY_HOME, "HOME" },
-            { GLFW_KEY_END, "END" },
-            { GLFW_KEY_CAPS_LOCK, "CAPS" },
-            { GLFW_KEY_SCROLL_LOCK, "SCLK" },
-            { GLFW_KEY_NUM_LOCK, "NMLK" },
-            { GLFW_KEY_PRINT_SCREEN, "PRSC" },
-            { GLFW_KEY_PAUSE, "PAUS" },
-            { GLFW_KEY_F1, "FK01" },
-            { GLFW_KEY_F2, "FK02" },
-            { GLFW_KEY_F3, "FK03" },
-            { GLFW_KEY_F4, "FK04" },
-            { GLFW_KEY_F5, "FK05" },
-            { GLFW_KEY_F6, "FK06" },
-            { GLFW_KEY_F7, "FK07" },
-            { GLFW_KEY_F8, "FK08" },
-            { GLFW_KEY_F9, "FK09" },
-            { GLFW_KEY_F10, "FK10" },
-            { GLFW_KEY_F11, "FK11" },
-            { GLFW_KEY_F12, "FK12" },
-            { GLFW_KEY_F13, "FK13" },
-            { GLFW_KEY_F14, "FK14" },
-            { GLFW_KEY_F15, "FK15" },
-            { GLFW_KEY_F16, "FK16" },
-            { GLFW_KEY_F17, "FK17" },
-            { GLFW_KEY_F18, "FK18" },
-            { GLFW_KEY_F19, "FK19" },
-            { GLFW_KEY_F20, "FK20" },
-            { GLFW_KEY_F21, "FK21" },
-            { GLFW_KEY_F22, "FK22" },
-            { GLFW_KEY_F23, "FK23" },
-            { GLFW_KEY_F24, "FK24" },
-            { GLFW_KEY_F25, "FK25" },
-            { GLFW_KEY_KP_0, "KP0" },
-            { GLFW_KEY_KP_1, "KP1" },
-            { GLFW_KEY_KP_2, "KP2" },
-            { GLFW_KEY_KP_3, "KP3" },
-            { GLFW_KEY_KP_4, "KP4" },
-            { GLFW_KEY_KP_5, "KP5" },
-            { GLFW_KEY_KP_6, "KP6" },
-            { GLFW_KEY_KP_7, "KP7" },
-            { GLFW_KEY_KP_8, "KP8" },
-            { GLFW_KEY_KP_9, "KP9" },
-            { GLFW_KEY_KP_DECIMAL, "KPDL" },
-            { GLFW_KEY_KP_DIVIDE, "KPDV" },
-            { GLFW_KEY_KP_MULTIPLY, "KPMU" },
-            { GLFW_KEY_KP_SUBTRACT, "KPSU" },
-            { GLFW_KEY_KP_ADD, "KPAD" },
-            { GLFW_KEY_KP_ENTER, "KPEN" },
-            { GLFW_KEY_KP_EQUAL, "KPEQ" },
-            { GLFW_KEY_LEFT_SHIFT, "LFSH" },
-            { GLFW_KEY_LEFT_CONTROL, "LCTL" },
-            { GLFW_KEY_LEFT_ALT, "LALT" },
-            { GLFW_KEY_LEFT_SUPER, "LWIN" },
-            { GLFW_KEY_RIGHT_SHIFT, "RTSH" },
-            { GLFW_KEY_RIGHT_CONTROL, "RCTL" },
-            { GLFW_KEY_RIGHT_ALT, "RALT" },
-            { GLFW_KEY_RIGHT_ALT, "LVL3" },
-            { GLFW_KEY_RIGHT_ALT, "MDSW" },
-            { GLFW_KEY_RIGHT_SUPER, "RWIN" },
-            { GLFW_KEY_MENU, "MENU" }
+            { GLFW_KEY_GRAVE_ACCENT, (char*) "TLDE" },
+            { GLFW_KEY_1, (char*) "AE01" },
+            { GLFW_KEY_2, (char*) "AE02" },
+            { GLFW_KEY_3, (char*) "AE03" },
+            { GLFW_KEY_4, (char*) "AE04" },
+            { GLFW_KEY_5, (char*) "AE05" },
+            { GLFW_KEY_6, (char*) "AE06" },
+            { GLFW_KEY_7, (char*) "AE07" },
+            { GLFW_KEY_8, (char*) "AE08" },
+            { GLFW_KEY_9, (char*) "AE09" },
+            { GLFW_KEY_0, (char*) "AE10" },
+            { GLFW_KEY_MINUS, (char*) "AE11" },
+            { GLFW_KEY_EQUAL, (char*) "AE12" },
+            { GLFW_KEY_Q, (char*) "AD01" },
+            { GLFW_KEY_W, (char*) "AD02" },
+            { GLFW_KEY_E, (char*) "AD03" },
+            { GLFW_KEY_R, (char*) "AD04" },
+            { GLFW_KEY_T, (char*) "AD05" },
+            { GLFW_KEY_Y, (char*) "AD06" },
+            { GLFW_KEY_U, (char*) "AD07" },
+            { GLFW_KEY_I, (char*) "AD08" },
+            { GLFW_KEY_O, (char*) "AD09" },
+            { GLFW_KEY_P, (char*) "AD10" },
+            { GLFW_KEY_LEFT_BRACKET, (char*) "AD11" },
+            { GLFW_KEY_RIGHT_BRACKET, (char*) "AD12" },
+            { GLFW_KEY_A, (char*) "AC01" },
+            { GLFW_KEY_S, (char*) "AC02" },
+            { GLFW_KEY_D, (char*) "AC03" },
+            { GLFW_KEY_F, (char*) "AC04" },
+            { GLFW_KEY_G, (char*) "AC05" },
+            { GLFW_KEY_H, (char*) "AC06" },
+            { GLFW_KEY_J, (char*) "AC07" },
+            { GLFW_KEY_K, (char*) "AC08" },
+            { GLFW_KEY_L, (char*) "AC09" },
+            { GLFW_KEY_SEMICOLON, (char*) "AC10" },
+            { GLFW_KEY_APOSTROPHE, (char*) "AC11" },
+            { GLFW_KEY_Z, (char*) "AB01" },
+            { GLFW_KEY_X, (char*) "AB02" },
+            { GLFW_KEY_C, (char*) "AB03" },
+            { GLFW_KEY_V, (char*) "AB04" },
+            { GLFW_KEY_B, (char*) "AB05" },
+            { GLFW_KEY_N, (char*) "AB06" },
+            { GLFW_KEY_M, (char*) "AB07" },
+            { GLFW_KEY_COMMA, (char*) "AB08" },
+            { GLFW_KEY_PERIOD, (char*) "AB09" },
+            { GLFW_KEY_SLASH, (char*) "AB10" },
+            { GLFW_KEY_BACKSLASH, (char*) "BKSL" },
+            { GLFW_KEY_WORLD_1, (char*) "LSGT" },
+            { GLFW_KEY_SPACE, (char*) "SPCE" },
+            { GLFW_KEY_ESCAPE, (char*) "ESC" },
+            { GLFW_KEY_ENTER, (char*) "RTRN" },
+            { GLFW_KEY_TAB, (char*) "TAB" },
+            { GLFW_KEY_BACKSPACE, (char*) "BKSP" },
+            { GLFW_KEY_INSERT, (char*) "INS" },
+            { GLFW_KEY_DELETE, (char*) "DELE" },
+            { GLFW_KEY_RIGHT, (char*) "RGHT" },
+            { GLFW_KEY_LEFT, (char*) "LEFT" },
+            { GLFW_KEY_DOWN, (char*) "DOWN" },
+            { GLFW_KEY_UP, (char*) "UP" },
+            { GLFW_KEY_PAGE_UP, (char*) "PGUP" },
+            { GLFW_KEY_PAGE_DOWN, (char*) "PGDN" },
+            { GLFW_KEY_HOME, (char*) "HOME" },
+            { GLFW_KEY_END, (char*) "END" },
+            { GLFW_KEY_CAPS_LOCK, (char*) "CAPS" },
+            { GLFW_KEY_SCROLL_LOCK, (char*) "SCLK" },
+            { GLFW_KEY_NUM_LOCK, (char*) "NMLK" },
+            { GLFW_KEY_PRINT_SCREEN, (char*) "PRSC" },
+            { GLFW_KEY_PAUSE, (char*) "PAUS" },
+            { GLFW_KEY_F1, (char*) "FK01" },
+            { GLFW_KEY_F2, (char*) "FK02" },
+            { GLFW_KEY_F3, (char*) "FK03" },
+            { GLFW_KEY_F4, (char*) "FK04" },
+            { GLFW_KEY_F5, (char*) "FK05" },
+            { GLFW_KEY_F6, (char*) "FK06" },
+            { GLFW_KEY_F7, (char*) "FK07" },
+            { GLFW_KEY_F8, (char*) "FK08" },
+            { GLFW_KEY_F9, (char*) "FK09" },
+            { GLFW_KEY_F10, (char*) "FK10" },
+            { GLFW_KEY_F11, (char*) "FK11" },
+            { GLFW_KEY_F12, (char*) "FK12" },
+            { GLFW_KEY_F13, (char*) "FK13" },
+            { GLFW_KEY_F14, (char*) "FK14" },
+            { GLFW_KEY_F15, (char*) "FK15" },
+            { GLFW_KEY_F16, (char*) "FK16" },
+            { GLFW_KEY_F17, (char*) "FK17" },
+            { GLFW_KEY_F18, (char*) "FK18" },
+            { GLFW_KEY_F19, (char*) "FK19" },
+            { GLFW_KEY_F20, (char*) "FK20" },
+            { GLFW_KEY_F21, (char*) "FK21" },
+            { GLFW_KEY_F22, (char*) "FK22" },
+            { GLFW_KEY_F23, (char*) "FK23" },
+            { GLFW_KEY_F24, (char*) "FK24" },
+            { GLFW_KEY_F25, (char*) "FK25" },
+            { GLFW_KEY_KP_0, (char*) "KP0" },
+            { GLFW_KEY_KP_1, (char*) "KP1" },
+            { GLFW_KEY_KP_2, (char*) "KP2" },
+            { GLFW_KEY_KP_3, (char*) "KP3" },
+            { GLFW_KEY_KP_4, (char*) "KP4" },
+            { GLFW_KEY_KP_5, (char*) "KP5" },
+            { GLFW_KEY_KP_6, (char*) "KP6" },
+            { GLFW_KEY_KP_7, (char*) "KP7" },
+            { GLFW_KEY_KP_8, (char*) "KP8" },
+            { GLFW_KEY_KP_9, (char*) "KP9" },
+            { GLFW_KEY_KP_DECIMAL, (char*) "KPDL" },
+            { GLFW_KEY_KP_DIVIDE, (char*) "KPDV" },
+            { GLFW_KEY_KP_MULTIPLY, (char*) "KPMU" },
+            { GLFW_KEY_KP_SUBTRACT, (char*) "KPSU" },
+            { GLFW_KEY_KP_ADD, (char*) "KPAD" },
+            { GLFW_KEY_KP_ENTER, (char*) "KPEN" },
+            { GLFW_KEY_KP_EQUAL, (char*) "KPEQ" },
+            { GLFW_KEY_LEFT_SHIFT, (char*) "LFSH" },
+            { GLFW_KEY_LEFT_CONTROL, (char*) "LCTL" },
+            { GLFW_KEY_LEFT_ALT, (char*) "LALT" },
+            { GLFW_KEY_LEFT_SUPER, (char*) "LWIN" },
+            { GLFW_KEY_RIGHT_SHIFT, (char*) "RTSH" },
+            { GLFW_KEY_RIGHT_CONTROL, (char*) "RCTL" },
+            { GLFW_KEY_RIGHT_ALT, (char*) "RALT" },
+            { GLFW_KEY_RIGHT_ALT, (char*) "LVL3" },
+            { GLFW_KEY_RIGHT_ALT, (char*) "MDSW" },
+            { GLFW_KEY_RIGHT_SUPER, (char*) "RWIN" },
+            { GLFW_KEY_MENU, (char*) "MENU" }
         };
 
         // Find the X11 key code -> GLFW key code mapping
@@ -424,7 +424,7 @@ static void createKeyTables(void)
         if (_glfw.x11.keycodes[scancode] < 0)
         {
             const size_t base = (scancode - scancodeMin) * width;
-            _glfw.x11.keycodes[scancode] = translateKeySyms(&keysyms[base], width);
+            _glfw.x11.keycodes[scancode] = _glfwTranslateKeySymsX11(&keysyms[base], width);
         }
 
         // Store the reverse translation for faster key name lookup
@@ -437,7 +437,7 @@ static void createKeyTables(void)
 
 // Check whether the IM has a usable style
 //
-static GLFWbool hasUsableInputMethodStyle(void)
+static GLFWbool _glfwHasUsableInputMethodStyleX11(void)
 {
     GLFWbool found = GLFW_FALSE;
     XIMStyles* styles = NULL;
@@ -458,14 +458,14 @@ static GLFWbool hasUsableInputMethodStyle(void)
     return found;
 }
 
-static void inputMethodDestroyCallback(XIM im, XPointer clientData, XPointer callData)
+static void _glfwInputMethodDestroyCallbackX11(XIM im, XPointer clientData, XPointer callData)
 {
     _glfw.x11.im = NULL;
 }
 
-static void inputMethodInstantiateCallback(Display* display,
-                                           XPointer clientData,
-                                           XPointer callData)
+static void _glfwInputMethodInstantiateCallbackX11(Display* display,
+                                                   XPointer clientData,
+                                                   XPointer callData)
 {
     if (_glfw.x11.im)
         return;
@@ -473,7 +473,7 @@ static void inputMethodInstantiateCallback(Display* display,
     _glfw.x11.im = XOpenIM(_glfw.x11.display, 0, NULL, NULL);
     if (_glfw.x11.im)
     {
-        if (!hasUsableInputMethodStyle())
+        if (!_glfwHasUsableInputMethodStyleX11())
         {
             XCloseIM(_glfw.x11.im);
             _glfw.x11.im = NULL;
@@ -483,7 +483,7 @@ static void inputMethodInstantiateCallback(Display* display,
     if (_glfw.x11.im)
     {
         XIMCallback callback;
-        callback.callback = (XIMProc) inputMethodDestroyCallback;
+        callback.callback = (XIMProc) _glfwInputMethodDestroyCallbackX11;
         callback.client_data = NULL;
         XSetIMValues(_glfw.x11.im, XNDestroyCallback, &callback, NULL);
 
@@ -494,7 +494,7 @@ static void inputMethodInstantiateCallback(Display* display,
 
 // Return the atom ID only if it is listed in the specified array
 //
-static Atom getAtomIfSupported(Atom* supportedAtoms,
+static Atom _glfwGetAtomIfSupportedX11(Atom* supportedAtoms,
                                unsigned long atomCount,
                                const char* atomName)
 {
@@ -511,7 +511,7 @@ static Atom getAtomIfSupported(Atom* supportedAtoms,
 
 // Check whether the running window manager is EWMH-compliant
 //
-static void detectEWMH(void)
+static void _glfwdetectEWMHX11(void)
 {
     // First we read the _NET_SUPPORTING_WM_CHECK property on the root window
 
@@ -569,33 +569,33 @@ static void detectEWMH(void)
     // See which of the atoms we support that are supported by the WM
 
     _glfw.x11.NET_WM_STATE =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_STATE");
     _glfw.x11.NET_WM_STATE_ABOVE =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_ABOVE");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_STATE_ABOVE");
     _glfw.x11.NET_WM_STATE_FULLSCREEN =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_FULLSCREEN");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_STATE_FULLSCREEN");
     _glfw.x11.NET_WM_STATE_MAXIMIZED_VERT =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_MAXIMIZED_VERT");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_STATE_MAXIMIZED_VERT");
     _glfw.x11.NET_WM_STATE_MAXIMIZED_HORZ =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_MAXIMIZED_HORZ");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_STATE_MAXIMIZED_HORZ");
     _glfw.x11.NET_WM_STATE_DEMANDS_ATTENTION =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_STATE_DEMANDS_ATTENTION");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_STATE_DEMANDS_ATTENTION");
     _glfw.x11.NET_WM_FULLSCREEN_MONITORS =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_FULLSCREEN_MONITORS");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_FULLSCREEN_MONITORS");
     _glfw.x11.NET_WM_WINDOW_TYPE =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_WINDOW_TYPE");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_WINDOW_TYPE");
     _glfw.x11.NET_WM_WINDOW_TYPE_NORMAL =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WM_WINDOW_TYPE_NORMAL");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WM_WINDOW_TYPE_NORMAL");
     _glfw.x11.NET_WORKAREA =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_WORKAREA");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_WORKAREA");
     _glfw.x11.NET_CURRENT_DESKTOP =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_CURRENT_DESKTOP");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_CURRENT_DESKTOP");
     _glfw.x11.NET_ACTIVE_WINDOW =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_ACTIVE_WINDOW");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_ACTIVE_WINDOW");
     _glfw.x11.NET_FRAME_EXTENTS =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_FRAME_EXTENTS");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_FRAME_EXTENTS");
     _glfw.x11.NET_REQUEST_FRAME_EXTENTS =
-        getAtomIfSupported(supportedAtoms, atomCount, "_NET_REQUEST_FRAME_EXTENTS");
+        _glfwGetAtomIfSupportedX11(supportedAtoms, atomCount, "_NET_REQUEST_FRAME_EXTENTS");
 
     if (supportedAtoms)
         XFree(supportedAtoms);
@@ -603,7 +603,7 @@ static void detectEWMH(void)
 
 // Look for and initialize supported X11 extensions
 //
-static GLFWbool initExtensions(void)
+static GLFWbool _glfwInitExtensionsX11(void)
 {
 #if defined(__OpenBSD__) || defined(__NetBSD__)
     _glfw.x11.vidmode.handle = _glfwPlatformLoadModule("libXxf86vm.so");
@@ -909,7 +909,7 @@ static GLFWbool initExtensions(void)
     // Update the key code LUT
     // FIXME: We should listen to XkbMapNotify events to track changes to
     // the keyboard mapping.
-    createKeyTables();
+    _glfwCreateKeyTablesX11();
 
     // String format atoms
     _glfw.x11.NULL_ = XInternAtom(_glfw.x11.display, "NULL", False);
@@ -947,7 +947,7 @@ static GLFWbool initExtensions(void)
 
     // ICCCM, EWMH and Motif window property atoms
     // These can be set safely even without WM support
-    // The EWMH atoms that require WM support are handled in detectEWMH
+    // The EWMH atoms that require WM support are handled in _glfwdetectEWMHX11
     _glfw.x11.WM_PROTOCOLS =
         XInternAtom(_glfw.x11.display, "WM_PROTOCOLS", False);
     _glfw.x11.WM_STATE =
@@ -983,14 +983,14 @@ static GLFWbool initExtensions(void)
     }
 
     // Detect whether an EWMH-conformant window manager is running
-    detectEWMH();
+    _glfwdetectEWMHX11();
 
     return GLFW_TRUE;
 }
 
 // Retrieve system content scale via folklore heuristics
 //
-static void getSystemContentScale(float* xscale, float* yscale)
+static void _glfwGetSystemContentScaleX11(float* xscale, float* yscale)
 {
     // Start by assuming the default X11 DPI
     // NOTE: Some desktop environments (KDE) may remove the Xft.dpi field when it
@@ -1025,7 +1025,7 @@ static void getSystemContentScale(float* xscale, float* yscale)
 
 // Create a blank cursor for hidden and disabled cursor modes
 //
-static Cursor createHiddenCursor(void)
+static Cursor _glfwCreateHiddenCursorX11(void)
 {
     unsigned char pixels[16 * 16 * 4] = { 0 };
     GLFWimage image = { 16, 16, pixels };
@@ -1034,7 +1034,7 @@ static Cursor createHiddenCursor(void)
 
 // Create a helper window for IPC
 //
-static Window createHelperWindow(void)
+static Window _glfwCreateHelperWindowX11(void)
 {
     XSetWindowAttributes wa;
     wa.event_mask = PropertyChangeMask;
@@ -1048,7 +1048,7 @@ static Window createHelperWindow(void)
 
 // Create the pipe for empty events without assumuing the OS has pipe2(2)
 //
-static GLFWbool createEmptyEventPipe(void)
+static GLFWbool _glfwCreateEmptyEventPipeX11(void)
 {
     if (pipe(_glfw.x11.emptyEventPipe) != 0)
     {
@@ -1079,7 +1079,7 @@ static GLFWbool createEmptyEventPipe(void)
 
 // X error handler
 //
-static int errorHandler(Display *display, XErrorEvent* event)
+static int _glfwErrorHandlerX11(Display *display, XErrorEvent* event)
 {
     if (_glfw.x11.display != display)
         return 0;
@@ -1099,7 +1099,7 @@ void _glfwGrabErrorHandlerX11(void)
 {
     assert(_glfw.x11.errorHandler == NULL);
     _glfw.x11.errorCode = Success;
-    _glfw.x11.errorHandler = XSetErrorHandler(errorHandler);
+    _glfw.x11.errorHandler = XSetErrorHandler(_glfwErrorHandlerX11);
 }
 
 // Clears the X error handler callback
@@ -1526,16 +1526,16 @@ int _glfwInitX11(void)
     _glfw.x11.root = RootWindow(_glfw.x11.display, _glfw.x11.screen);
     _glfw.x11.context = XUniqueContext();
 
-    getSystemContentScale(&_glfw.x11.contentScaleX, &_glfw.x11.contentScaleY);
+    _glfwGetSystemContentScaleX11(&_glfw.x11.contentScaleX, &_glfw.x11.contentScaleY);
 
-    if (!createEmptyEventPipe())
+    if (!_glfwCreateEmptyEventPipeX11())
         return GLFW_FALSE;
 
-    if (!initExtensions())
+    if (!_glfwInitExtensionsX11())
         return GLFW_FALSE;
 
-    _glfw.x11.helperWindowHandle = createHelperWindow();
-    _glfw.x11.hiddenCursorHandle = createHiddenCursor();
+    _glfw.x11.helperWindowHandle = _glfwCreateHelperWindowX11();
+    _glfw.x11.hiddenCursorHandle = _glfwCreateHiddenCursorX11();
 
     if (XSupportsLocale() && _glfw.x11.xlib.utf8)
     {
@@ -1544,7 +1544,7 @@ int _glfwInitX11(void)
         // If an IM is already present our callback will be called right away
         XRegisterIMInstantiateCallback(_glfw.x11.display,
                                        NULL, NULL, NULL,
-                                       inputMethodInstantiateCallback,
+                                       _glfwInputMethodInstantiateCallbackX11,
                                        NULL);
     }
 
@@ -1577,7 +1577,7 @@ void _glfwTerminateX11(void)
 
     XUnregisterIMInstantiateCallback(_glfw.x11.display,
                                      NULL, NULL, NULL,
-                                     inputMethodInstantiateCallback,
+                                     _glfwInputMethodInstantiateCallbackX11,
                                      NULL);
 
     if (_glfw.x11.im)

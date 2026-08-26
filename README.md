@@ -120,7 +120,7 @@ information on what to include when reporting a bug.
 
 ## Changelog since 3.5
 
-None.
+- [Wayland]: Add support for dropping files when sandboxed
 
 
 ## Contact

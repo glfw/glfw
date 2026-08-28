@@ -5,7 +5,7 @@
     <tab type="mainpage" visible="yes" title="Introduction"/>
     <tab type="user" url="quick_guide.html" title="Tutorial"/>
     <tab type="pages" visible="yes" title="Guides" intro=""/>
-    <tab type="topics" visible="yes" title="Reference" intro=""/>
+    <tab type="modules" visible="yes" title="Reference" intro=""/>
     <tab type="filelist" visible="yes" title="Files"/>
   </navindex>
 

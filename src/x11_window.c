@@ -56,21 +56,39 @@
 
 #define _GLFW_XDND_VERSION 5
 
-// Wait for event data to arrive on the X11 display socket
+// Returns the timer value at which a wait started now should give up
+//
+static uint64_t deadlineIn(double seconds)
+{
+    return _glfwPlatformGetTimerValue() +
+           (uint64_t) (seconds * _glfwPlatformGetTimerFrequency());
+}
+
+// Wait for event data to arrive on the X11 display socket until the deadline passes
 // This avoids blocking other threads via the per-display Xlib lock that also
 // covers GLX functions
+// The deadline is checked even when the queue is not empty, so that a caller looking for one
+// specific event cannot be kept waiting forever by unrelated events arriving
 //
-static GLFWbool waitForX11Event(double* timeout)
+static GLFWbool waitForX11Event(uint64_t deadline)
 {
     struct pollfd fd = { ConnectionNumber(_glfw.x11.display), POLLIN };
 
-    while (!XPending(_glfw.x11.display))
+    for (;;)
     {
-        if (!_glfwPollPOSIX(&fd, 1, timeout))
+        const uint64_t now = _glfwPlatformGetTimerValue();
+        if (now >= deadline)
+            return GLFW_FALSE;
+
+        if (XPending(_glfw.x11.display))
+            return GLFW_TRUE;
+
+        double timeout = (double) (deadline - now) /
+                         (double) _glfwPlatformGetTimerFrequency();
+
+        if (!_glfwPollPOSIX(&fd, 1, &timeout))
             return GLFW_FALSE;
     }
-
-    return GLFW_TRUE;
 }
 
 // Wait for event data to arrive on any event file descriptor
@@ -139,14 +157,14 @@ static void drainEmptyEvents(void)
 static GLFWbool waitForVisibilityNotify(_GLFWwindow* window)
 {
     XEvent dummy;
-    double timeout = 0.1;
+    const uint64_t deadline = deadlineIn(0.1);
 
     while (!XCheckTypedWindowEvent(_glfw.x11.display,
                                    window->x11.handle,
                                    VisibilityNotify,
                                    &dummy))
     {
-        if (!waitForX11Event(&timeout))
+        if (!waitForX11Event(deadline))
             return GLFW_FALSE;
     }
 
@@ -962,6 +980,14 @@ static const char* getSelectionString(Atom selection)
     _glfw_free(*selectionString);
     *selectionString = NULL;
 
+    XEvent stale;
+    while (XCheckTypedWindowEvent(_glfw.x11.display,
+                                  _glfw.x11.helperWindowHandle,
+                                  SelectionNotify,
+                                  &stale))
+    {
+    }
+
     for (size_t i = 0;  i < targetCount;  i++)
     {
         char* data;
@@ -969,6 +995,7 @@ static const char* getSelectionString(Atom selection)
         int actualFormat;
         unsigned long itemCount, bytesAfter;
         XEvent notification, dummy;
+        uint64_t deadline = deadlineIn(0.5);
 
         XConvertSelection(_glfw.x11.display,
                           selection,
@@ -982,7 +1009,12 @@ static const char* getSelectionString(Atom selection)
                                        SelectionNotify,
                                        &notification))
         {
-            waitForX11Event(NULL);
+            if (!waitForX11Event(deadline))
+            {
+                _glfwInputError(GLFW_PLATFORM_ERROR,
+                                "X11: Timed out waiting for selection owner to convert selection");
+                return NULL;
+            }
         }
 
         if (notification.xselection.property == None)
@@ -1013,12 +1045,21 @@ static const char* getSelectionString(Atom selection)
 
             for (;;)
             {
+                deadline = deadlineIn(0.5);
+
                 while (!XCheckIfEvent(_glfw.x11.display,
                                       &dummy,
                                       isSelPropNewValueNotify,
                                       (XPointer) &notification))
                 {
-                    waitForX11Event(NULL);
+                    if (!waitForX11Event(deadline))
+                    {
+                        _glfwInputError(GLFW_PLATFORM_ERROR,
+                                        "X11: Timed out waiting for incremental selection transfer");
+                        _glfw_free(string);
+                        XFree(data);
+                        return NULL;
+                    }
                 }
 
                 XFree(data);
@@ -1890,6 +1931,8 @@ void _glfwPushSelectionToManagerX11(void)
                       _glfw.x11.helperWindowHandle,
                       CurrentTime);
 
+    const uint64_t deadline = deadlineIn(0.5);
+
     for (;;)
     {
         XEvent event;
@@ -1919,7 +1962,12 @@ void _glfwPushSelectionToManagerX11(void)
             }
         }
 
-        waitForX11Event(NULL);
+        if (!waitForX11Event(deadline))
+        {
+            _glfwInputError(GLFW_PLATFORM_ERROR,
+                            "X11: Timed out transferring clipboard to clipboard manager");
+            return;
+        }
     }
 }
 
@@ -2266,7 +2314,7 @@ void _glfwGetWindowFrameSizeX11(_GLFWwindow* window,
         _glfw.x11.NET_REQUEST_FRAME_EXTENTS)
     {
         XEvent event;
-        double timeout = 0.5;
+        const uint64_t deadline = deadlineIn(0.5);
 
         // Ensure _NET_FRAME_EXTENTS is set, allowing glfwGetWindowFrameSize to
         // function before the window is mapped
@@ -2283,7 +2331,7 @@ void _glfwGetWindowFrameSizeX11(_GLFWwindow* window,
                               isFrameExtentsEvent,
                               (XPointer) window))
         {
-            if (!waitForX11Event(&timeout))
+            if (!waitForX11Event(deadline))
             {
                 _glfwInputError(GLFW_PLATFORM_ERROR,
                                 "X11: The window manager has a broken _NET_REQUEST_FRAME_EXTENTS implementation; please report this issue");

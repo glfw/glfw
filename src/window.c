@@ -430,6 +430,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_REFRESH_RATE:
             _glfw.hints.refreshRate = value;
             return;
+        case GLFW_X11_OVERRIDE_REDIRECT:
+            _glfw.hints.window.x11.overrideRedirect = value;
+            return;
     }
 
     _glfwInputError(GLFW_INVALID_ENUM, "Invalid window hint 0x%08X", hint);
@@ -1195,4 +1198,3 @@ GLFWAPI void glfwPostEmptyEvent(void)
     _GLFW_REQUIRE_INIT();
     _glfw.platform.postEmptyEvent();
 }
-

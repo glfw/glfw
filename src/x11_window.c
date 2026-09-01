@@ -597,11 +597,21 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
     window->x11.transparent = _glfwIsVisualTransparentX11(visual);
 
     XSetWindowAttributes wa = { 0 };
+
+    unsigned long wamask = CWBorderPixel | CWColormap | CWEventMask;
+
     wa.colormap = window->x11.colormap;
     wa.event_mask = StructureNotifyMask | KeyPressMask | KeyReleaseMask |
                     PointerMotionMask | ButtonPressMask | ButtonReleaseMask |
                     ExposureMask | FocusChangeMask | VisibilityChangeMask |
                     EnterWindowMask | LeaveWindowMask | PropertyChangeMask;
+
+    if (wndconfig->x11.overrideRedirect)
+    {
+        wa.override_redirect = True;
+        wamask |= CWOverrideRedirect;
+        window->x11.overrideRedirect = GLFW_TRUE;
+    }
 
     _glfwGrabErrorHandlerX11();
 
@@ -614,7 +624,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                                        depth,  // Color depth
                                        InputOutput,
                                        visual,
-                                       CWBorderPixel | CWColormap | CWEventMask,
+                                       wamask,
                                        &wa);
 
     _glfwReleaseErrorHandlerX11();
@@ -3384,4 +3394,3 @@ GLFWAPI const char* glfwGetX11SelectionString(void)
 }
 
 #endif // _GLFW_X11
-

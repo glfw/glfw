@@ -528,6 +528,8 @@ ASCII encoded class and instance parts of the ICCCM `WM_CLASS` window property. 
 hints need to be set to something other than an empty string for them to take effect.
 These are set with @ref glfwWindowHintString.
 
+@anchor GLFW_X11_OVERRIDE_REDIRECT_hint
+__GLFW_X11_OVERRIDE_REDIRECT__ bypasses the window manager's control for the created window (ICCCM override-redirect). This is set with @ref glfwWindowHint. Accepted values are `GLFW_TRUE` and `GLFW_FALSE`.
 
 #### Supported and default values {#window_hints_values}
 
@@ -580,6 +582,7 @@ GLFW_COCOA_GRAPHICS_SWITCHING | `GLFW_FALSE`                | `GLFW_TRUE` or `GL
 GLFW_WAYLAND_APP_ID           | `""`                        | An ASCII encoded Wayland `app_id` name
 GLFW_X11_CLASS_NAME           | `""`                        | An ASCII encoded `WM_CLASS` class name
 GLFW_X11_INSTANCE_NAME        | `""`                        | An ASCII encoded `WM_CLASS` instance name
+GLFW_X11_OVERRIDE_REDIRECT    | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 
 
 ## Window event processing {#window_events}
@@ -1539,4 +1542,3 @@ A context that supports either the `WGL_EXT_swap_control_tear` or the
 which allows the driver to swap immediately even if a frame arrives a little bit
 late.  This trades the risk of visible tears for greater framerate stability.
 You can check for these extensions with @ref glfwExtensionSupported.
-

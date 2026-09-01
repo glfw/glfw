@@ -5,6 +5,10 @@
 
 ## New features {#features}
 
+### X11 override redirect on window creation
+
+GLFW now provides the @ref GLFW_X11_OVERRIDE_REDIRECT_hint window hint to set override-redirect on window creation.
+
 ## Caveats {#caveats}
 
 ## Deprecations {#deprecations}
@@ -19,6 +23,8 @@
 
 ### New constants {#new_constants}
 
+- @ref GLFW_X11_OVERRIDE_REDIRECT_hint
+
 ## Release notes for earlier versions {#news_archive}
 
 - [Release notes for 3.5](https://www.glfw.org/docs/3.5/news.html)
@@ -27,4 +33,3 @@
 - [Release notes for 3.2](https://www.glfw.org/docs/3.2/news.html)
 - [Release notes for 3.1](https://www.glfw.org/docs/3.1/news.html)
 - [Release notes for 3.0](https://www.glfw.org/docs/3.0/news.html)
-

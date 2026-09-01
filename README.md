@@ -120,7 +120,7 @@ information on what to include when reporting a bug.
 
 ## Changelog since 3.5
 
-None.
+- Added the `GLFW_X11_OVERRIDE_REDIRECT` window hint to bypass window manager control of a window when needed.
 
 
 ## Contact
@@ -137,4 +137,3 @@ request, please file it in the
 
 Finally, if you're interested in helping out with the development of GLFW or
 porting it to your favorite platform, join us on the forum or GitHub.
-

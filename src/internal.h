@@ -421,6 +421,7 @@ struct _GLFWwndconfig
     struct {
         char      className[256];
         char      instanceName[256];
+        bool      overrideRedirect;
     } x11;
     struct {
         bool      keymenu;
@@ -1020,4 +1021,3 @@ int _glfw_max(int a, int b);
 void* _glfw_calloc(size_t count, size_t size);
 void* _glfw_realloc(void* pointer, size_t size);
 void _glfw_free(void* pointer);
-

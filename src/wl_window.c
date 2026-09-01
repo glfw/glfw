@@ -1300,6 +1300,10 @@ static void incrementCursorImage(void)
     if (window->wl.surface != _glfw.wl.pointerSurface)
         return;
 
+    if (window->cursorMode == GLFW_CURSOR_HIDDEN ||
+        window->cursorMode == GLFW_CURSOR_DISABLED)
+        return;
+
     _GLFWcursor* cursor = window->cursor;
     if (cursor && cursor->wl.cursor)
     {

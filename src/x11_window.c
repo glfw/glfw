@@ -1250,6 +1250,14 @@ static void processEvent(XEvent *event)
             const int mods = translateState(event->xkey.state);
             const int plain = !(mods & (GLFW_MOD_CONTROL | GLFW_MOD_ALT));
 
+            // HACK: If the control key modifier is applied, then X[utf8]LookupString()
+            //       will interpret the key press not as (part of) a unicode codepoint,
+            //       but instead as a (fake) ASCII control character.
+            //       We avoid this behaviour by removing the control key modifier before
+            //       handing the key press event to XLookupString().
+            XKeyEvent noctrlkey = event->xkey;
+            noctrlkey.state &= ~ControlMask;
+            
             if (window->x11.ic)
             {
                 // HACK: Do not report the key press events duplicated by XIM
@@ -1276,7 +1284,7 @@ static void processEvent(XEvent *event)
                     char* chars = buffer;
 
                     count = Xutf8LookupString(window->x11.ic,
-                                              &event->xkey,
+                                              &noctrlkey,
                                               buffer, sizeof(buffer) - 1,
                                               NULL, &status);
 
@@ -1284,7 +1292,7 @@ static void processEvent(XEvent *event)
                     {
                         chars = _glfw_calloc(count + 1, 1);
                         count = Xutf8LookupString(window->x11.ic,
-                                                  &event->xkey,
+                                                  &noctrlkey,
                                                   chars, count,
                                                   NULL, &status);
                     }
@@ -1304,7 +1312,7 @@ static void processEvent(XEvent *event)
             else
             {
                 KeySym keysym;
-                XLookupString(&event->xkey, NULL, 0, &keysym, NULL);
+                XLookupString(&noctrlkey, NULL, 0, &keysym, NULL);
 
                 _glfwInputKey(window, key, keycode, GLFW_PRESS, mods);
 

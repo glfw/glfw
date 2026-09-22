@@ -36,6 +36,11 @@
 #include <windowsx.h>
 #include <shellapi.h>
 
+// Some Windows SDKs targeted by GLFW builds omit this documented style.
+#ifndef WS_EX_NOREDIRECTIONBITMAP
+#define WS_EX_NOREDIRECTIONBITMAP 0x00200000L
+#endif
+
 // Returns the window style for the specified window
 //
 static DWORD getWindowStyle(const _GLFWwindow* window)
@@ -1278,6 +1283,11 @@ static int createNativeWindow(_GLFWwindow* window,
     WCHAR* wideTitle;
     DWORD style = getWindowStyle(window);
     DWORD exStyle = getWindowExStyle(window);
+
+    // This style must be present at CreateWindowExW time; setting it
+    // afterwards is rejected by Windows.
+    if (wndconfig->win32.noRedirectionBitmap)
+        exStyle |= WS_EX_NOREDIRECTIONBITMAP;
 
     if (!_glfw.win32.mainWindowClass)
     {
@@ -2581,4 +2591,3 @@ GLFWAPI HWND glfwGetWin32Window(GLFWwindow* handle)
 }
 
 #endif // _GLFW_WIN32
-

@@ -120,7 +120,7 @@ information on what to include when reporting a bug.
 
 ## Changelog since 3.5
 
-None.
+- Added `GLFW_WIN32_NO_REDIRECTION_BITMAP` window hint for Win32 window creation (#2904)
 
 
 ## Contact

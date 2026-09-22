@@ -486,7 +486,13 @@ window.  If this information was not specified when the program was started,
 GLFW behaves as if this hint was set to `GLFW_FALSE`.  Possible values are
 `GLFW_TRUE` and `GLFW_FALSE`.  This is ignored on other platforms.
 
-
+@anchor GLFW_WIN32_NO_REDIRECTION_BITMAP_hint
+__GLFW_WIN32_NO_REDIRECTION_BITMAP__ specifies whether to create the window
+without a DWM redirection bitmap.  This is intended for applications that
+provide their window content through DirectComposition.  A window created with
+this hint requires a rendering path that supports DirectComposition; GLFW does
+not validate this.  Possible values are `GLFW_TRUE` and `GLFW_FALSE`.  This is
+ignored on other platforms.
 #### macOS specific hints {#window_hints_osx}
 
 @anchor GLFW_COCOA_FRAME_NAME_hint
@@ -575,6 +581,7 @@ GLFW_CONTEXT_DEBUG            | `GLFW_FALSE`                | `GLFW_TRUE` or `GL
 GLFW_OPENGL_PROFILE           | `GLFW_OPENGL_ANY_PROFILE`   | `GLFW_OPENGL_ANY_PROFILE`, `GLFW_OPENGL_COMPAT_PROFILE` or `GLFW_OPENGL_CORE_PROFILE`
 GLFW_WIN32_KEYBOARD_MENU      | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_WIN32_SHOWDEFAULT        | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
+GLFW_WIN32_NO_REDIRECTION_BITMAP | `GLFW_FALSE`              | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_COCOA_FRAME_NAME         | `""`                        | A UTF-8 encoded frame autosave name
 GLFW_COCOA_GRAPHICS_SWITCHING | `GLFW_FALSE`                | `GLFW_TRUE` or `GLFW_FALSE`
 GLFW_WAYLAND_APP_ID           | `""`                        | An ASCII encoded Wayland `app_id` name

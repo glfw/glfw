@@ -378,6 +378,9 @@ GLFWAPI void glfwWindowHint(int hint, int value)
         case GLFW_WIN32_SHOWDEFAULT:
             _glfw.hints.window.win32.showDefault = value;
             return;
+        case GLFW_WIN32_NO_REDIRECTION_BITMAP:
+            _glfw.hints.window.win32.noRedirectionBitmap = value;
+            return;
         case GLFW_COCOA_GRAPHICS_SWITCHING:
             _glfw.hints.context.nsgl.offline = value;
             return;

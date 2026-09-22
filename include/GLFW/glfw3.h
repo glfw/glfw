@@ -1129,6 +1129,9 @@ extern "C" {
 /*! @brief Win32 specific [window hint](@ref GLFW_WIN32_SHOWDEFAULT_hint).
  */
 #define GLFW_WIN32_SHOWDEFAULT      0x00025002
+/*! @brief Win32 specific [window hint](@ref GLFW_WIN32_NO_REDIRECTION_BITMAP_hint).
+ */
+#define GLFW_WIN32_NO_REDIRECTION_BITMAP 0x00025003
 /*! @brief Wayland specific
  *  [window hint](@ref GLFW_WAYLAND_APP_ID_hint).
  *  

@@ -124,6 +124,8 @@ static _GLFWmapping* findValidMapping(const _GLFWjoystick* js)
 //
 static GLFWbool parseMapping(_GLFWmapping* mapping, const char* string)
 {
+    memset(mapping, 0, sizeof(*mapping));
+
     const char* c = string;
     size_t i, length;
     struct

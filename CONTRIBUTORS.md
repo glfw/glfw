@@ -274,6 +274,7 @@ video tutorials.
  - Elviss Strazdins
  - Paul Sultana
  - Nathan Sweet
+ - Ruben Sørensen
  - TTK-Bandit
  - Nuno Teixeira
  - Jared Tiala

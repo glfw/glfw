@@ -61,6 +61,7 @@ extern "C" {
  *  * `GLFW_EXPOSE_NATIVE_WIN32`
  *  * `GLFW_EXPOSE_NATIVE_COCOA`
  *  * `GLFW_EXPOSE_NATIVE_X11`
+ *  * `GLFW_EXPOSE_NATIVE_XCB`
  *  * `GLFW_EXPOSE_NATIVE_WAYLAND`
  *
  *  The available context API macros are:
@@ -117,6 +118,10 @@ extern "C" {
  #if defined(GLFW_EXPOSE_NATIVE_X11) || defined(GLFW_EXPOSE_NATIVE_GLX)
   #include <X11/Xlib.h>
   #include <X11/extensions/Xrandr.h>
+ #endif
+
+ #if defined(GLFW_EXPOSE_NATIVE_XCB)
+  #include <xcb/xcb.h>
  #endif
 
  #if defined(GLFW_EXPOSE_NATIVE_WAYLAND)
@@ -442,6 +447,72 @@ GLFWAPI void glfwSetX11SelectionString(const char* string);
  *  @ingroup native
  */
 GLFWAPI const char* glfwGetX11SelectionString(void);
+#endif
+
+#if defined(GLFW_EXPOSE_NATIVE_XCB)
+/*! @brief Returns the `xcb_connection_t` used by GLFW.
+ *
+ *  @return The `xcb_connection_t` used by GLFW, or `NULL` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED, @ref
+ *  GLFW_PLATFORM_UNAVAILABLE, @ref GLFW_FEATURE_UNAVAILABLE and @ref
+ *  GLFW_PLATFORM_ERROR.
+ *
+ *  @remark This function requires the X11-xcb library, which GLFW loads during
+ *  initialization only if the
+ *  [GLFW_X11_XCB_VULKAN_SURFACE](@ref GLFW_X11_XCB_VULKAN_SURFACE_hint) init
+ *  hint is set, as it is by default.  If the library or its `XGetXCBConnection`
+ *  function is not available, this function emits @ref
+ *  GLFW_FEATURE_UNAVAILABLE.
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @since Added in version 3.6.
+ *
+ *  @ingroup native
+ */
+GLFWAPI xcb_connection_t* glfwGetXCBConnection(void);
+
+/*! @brief Returns the `xcb_visualid_t` of the default visual of the screen.
+ *
+ *  Windows created with the [GLFW_CLIENT_API](@ref GLFW_CLIENT_API_hint) hint
+ *  set to `GLFW_NO_API` use this visual, and it is the visual @ref
+ *  glfwGetPhysicalDevicePresentationSupport queries.  Windows with an OpenGL or
+ *  OpenGL ES context may use a different visual.
+ *
+ *  @return The `xcb_visualid_t` of the default visual, or zero if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_UNAVAILABLE.
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @since Added in version 3.6.
+ *
+ *  @ingroup native
+ */
+GLFWAPI xcb_visualid_t glfwGetXCBVisualID(void);
+
+/*! @brief Returns the `xcb_window_t` of the specified window.
+ *
+ *  @return The `xcb_window_t` of the specified window, or `XCB_NONE` if an
+ *  [error](@ref error_handling) occurred.
+ *
+ *  @errors Possible errors include @ref GLFW_NOT_INITIALIZED and @ref
+ *  GLFW_PLATFORM_UNAVAILABLE.
+ *
+ *  @thread_safety This function may be called from any thread.  Access is not
+ *  synchronized.
+ *
+ *  @since Added in version 3.6.
+ *
+ *  @ingroup native
+ */
+GLFWAPI xcb_window_t glfwGetXCBWindow(GLFWwindow* window);
 #endif
 
 #if defined(GLFW_EXPOSE_NATIVE_GLX)

@@ -80,6 +80,7 @@
 #if defined(_GLFW_X11)
  #include "x11_platform.h"
  #define GLFW_EXPOSE_NATIVE_X11
+ #define GLFW_EXPOSE_NATIVE_XCB
  #define GLFW_EXPOSE_NATIVE_GLX
 #else
  #define GLFW_X11_WINDOW_STATE

@@ -354,8 +354,8 @@ typedef XineramaScreenInfo* (* PFN_XineramaQueryScreens)(Display*,int*);
 #define XineramaQueryExtension _glfw.x11.xinerama.QueryExtension
 #define XineramaQueryScreens _glfw.x11.xinerama.QueryScreens
 
-typedef XID xcb_window_t;
-typedef XID xcb_visualid_t;
+typedef uint32_t xcb_window_t;
+typedef uint32_t xcb_visualid_t;
 typedef struct xcb_connection_t xcb_connection_t;
 typedef xcb_connection_t* (* PFN_XGetXCBConnection)(Display*);
 #define XGetXCBConnection _glfw.x11.x11xcb.GetXCBConnection

@@ -5,6 +5,12 @@
 
 ## New features {#features}
 
+### Key translations with modifiers {#glfwGetKeyNameModifiers}
+
+GLFW now provides the @ref glfwGetKeyNameModifiers function to obtain the native
+key translation including active modifier sets in order to accurately display
+key state and handle key chords in the presence of shift and other modifiers.
+
 ## Caveats {#caveats}
 
 ## Deprecations {#deprecations}
@@ -14,6 +20,8 @@
 ## New symbols {#new_symbols}
 
 ### New functions {#new_functions}
+
+ - @ref glfwGetKeyNameModifiers
 
 ### New types {#new_types}
 

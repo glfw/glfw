@@ -691,7 +691,13 @@ int _glfwInitWayland(void)
     _glfw.wl.xkb.keymap_unref = (PFN_xkb_keymap_unref)
         _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_keymap_unref");
     _glfw.wl.xkb.keymap_mod_get_index = (PFN_xkb_keymap_mod_get_index)
-        _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_keymap_mod_get_index");
+      _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_keymap_mod_get_index");
+    _glfw.wl.xkb.keymap_mod_get_mask2 = (PFN_xkb_keymap_mod_get_mask2)
+      _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_keymap_mod_get_mask2");
+    _glfw.wl.xkb.keymap_key_get_mods_for_level = (PFN_xkb_keymap_key_get_mods_for_level)
+      _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_keymap_key_get_mods_for_level");
+    _glfw.wl.xkb.keymap_num_levels_for_key = (PFN_xkb_keymap_num_levels_for_key)
+      _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_keymap_num_levels_for_key");
     _glfw.wl.xkb.keymap_key_repeats = (PFN_xkb_keymap_key_repeats)
         _glfwPlatformGetModuleSymbol(_glfw.wl.xkb.handle, "xkb_keymap_key_repeats");
     _glfw.wl.xkb.keymap_key_get_syms_by_level = (PFN_xkb_keymap_key_get_syms_by_level)

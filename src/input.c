@@ -47,7 +47,8 @@
                        GLFW_MOD_ALT | \
                        GLFW_MOD_SUPER | \
                        GLFW_MOD_CAPS_LOCK | \
-                       GLFW_MOD_NUM_LOCK)
+                       GLFW_MOD_NUM_LOCK | \
+                       GLFW_MOD_ALT_GR)
 
 // Initializes the platform joystick API if it has not been already
 //
@@ -701,7 +702,7 @@ GLFWAPI int glfwRawMouseMotionSupported(void)
     return _glfw.platform.rawMouseMotionSupported();
 }
 
-GLFWAPI const char* glfwGetKeyName(int key, int scancode)
+GLFWAPI const char* glfwGetKeyNameModifiers(int key, int scancode, int modifiers)
 {
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
@@ -723,7 +724,12 @@ GLFWAPI const char* glfwGetKeyName(int key, int scancode)
         scancode = _glfw.platform.getKeyScancode(key);
     }
 
-    return _glfw.platform.getScancodeName(scancode);
+    return _glfw.platform.getScancodeName(scancode, modifiers);
+}
+
+GLFWAPI const char* glfwGetKeyName(int key, int scancode)
+{
+    return glfwGetKeyNameModifiers(key, scancode, 0);
 }
 
 GLFWAPI int glfwGetKeyScancode(int key)

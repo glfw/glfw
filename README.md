@@ -120,8 +120,9 @@ information on what to include when reporting a bug.
 
 ## Changelog since 3.5
 
-None.
-
+ - Added `glfwGetKeyNameModifiers` to obtain the native key translation including
+   active modifier sets in order to accurately display key state and handle key
+   chords in the presence of shift and other modifiers (#2685)
 
 ## Contact
 

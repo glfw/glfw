@@ -267,7 +267,7 @@ void _glfwDestroyCursorNull(_GLFWcursor* cursor);
 void _glfwSetCursorNull(_GLFWwindow* window, _GLFWcursor* cursor);
 void _glfwSetClipboardStringNull(const char* string);
 const char* _glfwGetClipboardStringNull(void);
-const char* _glfwGetScancodeNameNull(int scancode);
+const char* _glfwGetScancodeNameNull(int scancode, int modifiers);
 int _glfwGetKeyScancodeNull(int key);
 
 EGLenum _glfwGetEGLPlatformNull(EGLint** attribs);

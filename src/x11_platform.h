@@ -188,6 +188,7 @@ typedef XkbDescPtr (* PFN_XkbGetMap)(Display*,unsigned int,unsigned int);
 typedef Status (* PFN_XkbGetNames)(Display*,unsigned int,XkbDescPtr);
 typedef Status (* PFN_XkbGetState)(Display*,unsigned int,XkbStatePtr);
 typedef KeySym (* PFN_XkbKeycodeToKeysym)(Display*,KeyCode,int,int);
+typedef Bool (* PFN_XkbLookupKeysym)(Display*,KeyCode,unsigned int,unsigned int*,KeySym*);
 typedef Bool (* PFN_XkbQueryExtension)(Display*,int*,int*,int*,int*,int*);
 typedef Bool (* PFN_XkbSelectEventDetails)(Display*,unsigned int,unsigned int,unsigned long,unsigned long);
 typedef Bool (* PFN_XkbSetDetectableAutoRepeat)(Display*,Bool,Bool*);
@@ -288,6 +289,7 @@ typedef void (* PFN_Xutf8SetWMProperties)(Display*,Window,const char*,const char
 #define XkbGetNames _glfw.x11.xkb.GetNames
 #define XkbGetState _glfw.x11.xkb.GetState
 #define XkbKeycodeToKeysym _glfw.x11.xkb.KeycodeToKeysym
+#define XkbLookupKeysym _glfw.x11.xkb.LookupKeysym
 #define XkbQueryExtension _glfw.x11.xkb.QueryExtension
 #define XkbSelectEventDetails _glfw.x11.xkb.SelectEventDetails
 #define XkbSetDetectableAutoRepeat _glfw.x11.xkb.SetDetectableAutoRepeat
@@ -782,6 +784,7 @@ typedef struct _GLFWlibraryX11
         PFN_XkbGetNames GetNames;
         PFN_XkbGetState GetState;
         PFN_XkbKeycodeToKeysym KeycodeToKeysym;
+        PFN_XkbLookupKeysym LookupKeysym;
         PFN_XkbQueryExtension QueryExtension;
         PFN_XkbSelectEventDetails SelectEventDetails;
         PFN_XkbSetDetectableAutoRepeat SetDetectableAutoRepeat;
@@ -945,7 +948,7 @@ void _glfwPostEmptyEventX11(void);
 void _glfwGetCursorPosX11(_GLFWwindow* window, double* xpos, double* ypos);
 void _glfwSetCursorPosX11(_GLFWwindow* window, double xpos, double ypos);
 void _glfwSetCursorModeX11(_GLFWwindow* window, int mode);
-const char* _glfwGetScancodeNameX11(int scancode);
+const char* _glfwGetScancodeNameX11(int scancode, int modifiers);
 int _glfwGetKeyScancodeX11(int key);
 GLFWbool _glfwCreateCursorX11(_GLFWcursor* cursor, const GLFWimage* image, int xhot, int yhot);
 GLFWbool _glfwCreateStandardCursorX11(_GLFWcursor* cursor, int shape);

@@ -1887,10 +1887,15 @@ static void keyboardHandleKeymap(void* userData,
             xkb_compose_state_new(composeTable, XKB_COMPOSE_STATE_NO_FLAGS);
         xkb_compose_table_unref(composeTable);
         if (composeState)
-            _glfw.wl.xkb.composeState = composeState;
+		{
+            xkb_compose_state_unref(_glfw.wl.xkb.composeState);
+			_glfw.wl.xkb.composeState = composeState;
+		}
         else
+		{
             _glfwInputError(GLFW_PLATFORM_ERROR,
                             "Wayland: Failed to create XKB compose state");
+		}
     }
     else
     {

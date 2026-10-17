@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.5 OSMesa - www.glfw.org
+// GLFW 3.6 OSMesa - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2016 Google Inc.
 // Copyright (c) 2016-2017 Camilla Löwy <elmindreda@glfw.org>
@@ -180,11 +180,8 @@ GLFWbool _glfwInitOSMesa(void)
 
 void _glfwTerminateOSMesa(void)
 {
-    if (_glfw.osmesa.handle)
-    {
-        _glfwPlatformFreeModule(_glfw.osmesa.handle);
-        _glfw.osmesa.handle = NULL;
-    }
+    _glfwPlatformFreeModule(_glfw.osmesa.handle);
+    _glfw.osmesa.handle = NULL;
 }
 
 #define SET_ATTRIB(a, v) \

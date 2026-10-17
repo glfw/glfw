@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.5 - www.glfw.org
+// GLFW 3.6 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
@@ -467,14 +467,15 @@ GLFWAPI void glfwSetGamma(GLFWmonitor* handle, float gamma)
     unsigned short* values;
     GLFWgammaramp ramp;
     const GLFWgammaramp* original;
+
     assert(gamma > 0.f);
-    assert(gamma <= FLT_MAX);
+    assert(isfinite(gamma));
 
     _GLFW_REQUIRE_INIT();
 
     assert(handle != NULL);
 
-    if (gamma != gamma || gamma <= 0.f || gamma > FLT_MAX)
+    if (!isfinite(gamma) || gamma <= 0.f)
     {
         _glfwInputError(GLFW_INVALID_VALUE, "Invalid gamma value %f", gamma);
         return;

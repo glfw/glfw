@@ -36,6 +36,14 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+
+static bool needs_update;
+
+static void window_close_callback(GLFWwindow* window)
+{
+    needs_update = true;
+}
 
 static void error_callback(int error, const char* description)
 {
@@ -45,7 +53,15 @@ static void error_callback(int error, const char* description)
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+        needs_update = true;
+    }
+}
+
+static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    needs_update = true;
 }
 
 static float nrand(void)
@@ -72,8 +88,11 @@ int main(void)
     }
 
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(0);
     gladLoadGL(glfwGetProcAddress);
+    glfwSetWindowCloseCallback(window, window_close_callback);
     glfwSetKeyCallback(window, key_callback);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -87,8 +106,18 @@ int main(void)
         glClearColor(r / l, g / l, b / l, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
         glfwSwapBuffers(window);
+        needs_update = false;
 
-        glfwWaitEventsTimeout(1.0);
+        const double start = glfwGetTime();
+
+        while (!needs_update)
+        {
+            const double elapsed = glfwGetTime() - start;
+            if (elapsed >= 1.0)
+                needs_update = true;
+            else
+                glfwWaitEventsTimeout(1.0 - elapsed);
+        }
     }
 
     glfwDestroyWindow(window);

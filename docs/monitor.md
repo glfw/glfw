@@ -255,3 +255,7 @@ hardware gamma correction, which today is typically an approximation of sRGB
 gamma.  This means that setting a perfectly linear ramp, or gamma 1.0, will
 produce the default (usually sRGB-like) behavior.
 
+@note __Wayland:__ An application cannot read or modify the monitor gamma ramp.
+The @ref glfwGetGammaRamp, @ref glfwSetGammaRamp and @ref glfwSetGamma functions
+emit @ref GLFW_FEATURE_UNAVAILABLE.
+

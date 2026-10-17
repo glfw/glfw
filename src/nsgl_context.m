@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.5 macOS - www.glfw.org
+// GLFW 3.6 macOS - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2009-2019 Camilla Löwy <elmindreda@glfw.org>
 //
@@ -128,8 +128,6 @@ static void destroyContextNSGL(_GLFWwindow* window)
 //////                       GLFW internal API                      //////
 //////////////////////////////////////////////////////////////////////////
 
-// Initialize OpenGL support
-//
 GLFWbool _glfwInitNSGL(void)
 {
     if (_glfw.nsgl.framework)
@@ -147,14 +145,10 @@ GLFWbool _glfwInitNSGL(void)
     return GLFW_TRUE;
 }
 
-// Terminate OpenGL support
-//
 void _glfwTerminateNSGL(void)
 {
 }
 
-// Create the OpenGL context
-//
 GLFWbool _glfwCreateContextNSGL(_GLFWwindow* window,
                                 const _GLFWctxconfig* ctxconfig,
                                 const _GLFWfbconfig* fbconfig)

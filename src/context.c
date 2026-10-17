@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.5 - www.glfw.org
+// GLFW 3.6 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2016 Camilla Löwy <elmindreda@glfw.org>
@@ -195,7 +195,7 @@ const _GLFWfbconfig* _glfwChooseFBConfig(const _GLFWfbconfig* desired,
     {
         current = alternatives + i;
 
-        if (desired->stereo > 0 && current->stereo == 0)
+        if (desired->stereo && !current->stereo)
         {
             // Stereo is a hard constraint
             continue;
@@ -368,7 +368,12 @@ GLFWbool _glfwRefreshContextAttribs(_GLFWwindow* window,
         window->context.getProcAddress("glGetIntegerv");
     window->context.GetString = (PFNGLGETSTRINGPROC)
         window->context.getProcAddress("glGetString");
-    if (!window->context.GetIntegerv || !window->context.GetString)
+    window->context.Flush = (PFNGLFLUSHPROC)
+        window->context.getProcAddress("glFlush");
+
+    if (!window->context.GetIntegerv ||
+        !window->context.GetString ||
+        !window->context.Flush)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR, "Entry point retrieval is broken");
         glfwMakeContextCurrent((GLFWwindow*) previous);

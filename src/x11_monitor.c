@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.5 X11 - www.glfw.org
+// GLFW 3.6 X11 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
@@ -151,6 +151,12 @@ void _glfwPollMonitorsX11(void)
             }
 
             XRRCrtcInfo* ci = XRRGetCrtcInfo(_glfw.x11.display, sr, oi->crtc);
+            if (!ci)
+            {
+                XRRFreeOutputInfo(oi);
+                continue;
+            }
+
             if (ci->rotation == RR_Rotate_90 || ci->rotation == RR_Rotate_270)
             {
                 widthMM  = oi->mm_height;

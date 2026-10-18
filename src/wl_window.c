@@ -2980,6 +2980,9 @@ void _glfwSetCursorModeWayland(_GLFWwindow* window, int mode)
 
 const char* _glfwGetScancodeNameWayland(int scancode)
 {
+    if (!_glfw.wl.xkb.state || !_glfw.wl.xkb.keymap)
+        return NULL;
+
     if (scancode < 0 || scancode > 255)
     {
         _glfwInputError(GLFW_INVALID_VALUE,

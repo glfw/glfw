@@ -1248,6 +1248,9 @@ static GLFWbool createNativeSurface(_GLFWwindow* window,
 static void setCursorImage(_GLFWwindow* window,
                            _GLFWcursorWayland* cursorWayland)
 {
+    if (!_glfw.wl.pointer)
+        return;
+
     struct itimerspec timer = {0};
     struct wl_cursor* wlCursor = cursorWayland->cursor;
     struct wl_cursor_image* image;
@@ -2080,6 +2083,17 @@ static void seatHandleCapabilities(void* userData,
     }
     else if (!(caps & WL_SEAT_CAPABILITY_POINTER) && _glfw.wl.pointer)
     {
+        if (_glfw.wl.cursorTimerfd >= 0)
+        {
+            struct itimerspec timer = {0};
+            timerfd_settime(_glfw.wl.cursorTimerfd, 0, &timer, NULL);
+        }
+
+        if (_glfw.wl.pointerSurface)
+            processPointerLeaveSurface(_glfw.wl.pointerSurface);
+
+        memset(&_glfw.wl.pending, 0, sizeof(_glfw.wl.pending));
+
         if (wl_pointer_get_version(_glfw.wl.pointer) >= WL_POINTER_RELEASE_SINCE_VERSION)
             wl_pointer_release(_glfw.wl.pointer);
         else

@@ -1256,7 +1256,10 @@ static void setCursorImage(_GLFWwindow* window,
     int scale = 1;
 
     if (!wlCursor)
+    {
         buffer = cursorWayland->buffer;
+        scale = window->wl.bufferScale;
+    }
     else
     {
         if (window->wl.bufferScale > 1 && cursorWayland->cursorHiDPI)

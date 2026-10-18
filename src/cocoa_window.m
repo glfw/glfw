@@ -508,9 +508,12 @@ static const NSRange kEmptyRange = { NSNotFound, 0 };
 - (void)viewDidChangeBackingProperties
 {
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
-    const float xscale = fbRect.size.width / contentRect.size.width;
-    const float yscale = fbRect.size.height / contentRect.size.height;
+    const NSRect backingRect = [window->ns.view convertRectToBacking:contentRect];
+    const NSRect fbRect = window->ns.scaleFramebuffer
+                        ? backingRect
+                        : contentRect;
+    const float xscale = backingRect.size.width / contentRect.size.width;
+    const float yscale = backingRect.size.height / contentRect.size.height;
 
     if (xscale != window->ns.xscale || yscale != window->ns.yscale)
     {
@@ -1161,7 +1164,9 @@ void _glfwGetFramebufferSizeCocoa(_GLFWwindow* window, int* width, int* height)
     @autoreleasepool {
 
     const NSRect contentRect = [window->ns.view frame];
-    const NSRect fbRect = [window->ns.view convertRectToBacking:contentRect];
+    const NSRect fbRect = window->ns.scaleFramebuffer
+                        ? [window->ns.view convertRectToBacking:contentRect]
+                        : contentRect;
 
     if (width)
         *width = (int) fbRect.size.width;

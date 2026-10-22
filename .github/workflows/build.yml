@@ -98,3 +98,22 @@ jobs:
             - name: Build Win32 shared x64 library
               run: cmake --build build-win32-shared-x64 --parallel
 
+    build-windows-msvc-arm64:
+        name: Windows ARM64 (MSVC)
+        runs-on: windows-11-arm
+        timeout-minutes: 4
+        env:
+            CFLAGS: /WX
+        steps:
+            - uses: actions/checkout@v5
+
+            - name: Configure Win32 static ARM64 library
+              run: cmake -B build-win32-static-arm64 -A ARM64
+            - name: Build Win32 static ARM64 library
+              run: cmake --build build-win32-static-arm64 --parallel
+
+            - name: Configure Win32 shared ARM64 library
+              run: cmake -B build-win32-shared-arm64 -A ARM64 -D BUILD_SHARED_LIBS=ON
+            - name: Build Win32 shared ARM64 library
+              run: cmake --build build-win32-shared-arm64 --parallel
+

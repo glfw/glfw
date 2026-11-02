@@ -2073,6 +2073,8 @@ static void seatHandleCapabilities(void* userData,
                                    struct wl_seat* seat,
                                    enum wl_seat_capability caps)
 {
+    if (seat != _glfw.wl.seat) return;
+
     if ((caps & WL_SEAT_CAPABILITY_POINTER) && !_glfw.wl.pointer)
     {
         _glfw.wl.pointer = wl_seat_get_pointer(seat);
@@ -2115,6 +2117,38 @@ static void seatHandleName(void* userData,
                            struct wl_seat* seat,
                            const char* name)
 {
+
+    const char* chosen_name = getenv("GLFW_SEAT_NAME");
+    if (!chosen_name) return;
+    if (strcmp(chosen_name, name) != 0) return;
+
+    _glfw.wl.seat = seat;
+
+    if (_glfw.wl.keyboard){
+        if (wl_keyboard_get_version(_glfw.wl.keyboard) >= WL_KEYBOARD_RELEASE_SINCE_VERSION)
+            wl_keyboard_release(_glfw.wl.keyboard);
+        else
+            wl_keyboard_destroy(_glfw.wl.keyboard);
+
+        _glfw.wl.keyboard = NULL;
+    }
+
+    if (_glfw.wl.pointer) {
+        if (wl_pointer_get_version(_glfw.wl.pointer) >= WL_POINTER_RELEASE_SINCE_VERSION)
+            wl_pointer_release(_glfw.wl.pointer);
+        else
+            wl_pointer_destroy(_glfw.wl.pointer);
+
+        _glfw.wl.pointer = NULL;
+    }
+
+    if (_glfw.wl.dataDeviceManager) {
+        if (_glfw.wl.dataDevice) wl_data_device_destroy(_glfw.wl.dataDevice);
+        _glfw.wl.dataDevice =
+            wl_data_device_manager_get_data_device(_glfw.wl.dataDeviceManager,
+                                                   _glfw.wl.seat);
+        _glfwAddDataDeviceListenerWayland(_glfw.wl.dataDevice);
+    }
 }
 
 static const struct wl_seat_listener seatListener =

@@ -447,6 +447,7 @@ typedef struct _GLFWlibraryWayland
     struct wl_subcompositor*    subcompositor;
     struct wl_shm*              shm;
     struct wl_seat*             seat;
+    struct wl_seat**            seats;
     struct wl_pointer*          pointer;
     struct wl_keyboard*         keyboard;
     struct wl_data_device_manager*          dataDeviceManager;

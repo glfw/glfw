@@ -131,13 +131,19 @@ static void registryHandleGlobal(void* userData,
     }
     else if (strcmp(interface, "wl_seat") == 0)
     {
-        if (!_glfw.wl.seat)
-        {
-            _glfw.wl.seat =
-                wl_registry_bind(registry, name, &wl_seat_interface,
+
+        unsigned int len = 0;
+        if (_glfw.wl.seats != NULL) while (*(_glfw.wl.seats + len) != NULL) len++;
+
+        len++;
+
+        _glfw.wl.seats = reallocarray(_glfw.wl.seats, len + 1, sizeof(struct wl_seat*));
+        _glfw.wl.seats[len] = NULL;
+        _glfw.wl.seats[len - 1] = wl_registry_bind(registry, name, &wl_seat_interface,
                                  _glfw_min(8, version));
-            _glfwAddSeatListenerWayland(_glfw.wl.seat);
-        }
+        _glfwAddSeatListenerWayland(_glfw.wl.seats[len - 1]);
+
+        if (!_glfw.wl.seat) _glfw.wl.seat = _glfw.wl.seats[len - 1];
     }
     else if (strcmp(interface, "wl_data_device_manager") == 0)
     {
@@ -976,8 +982,12 @@ void _glfwTerminateWayland(void)
         wl_pointer_destroy(_glfw.wl.pointer);
     if (_glfw.wl.keyboard)
         wl_keyboard_destroy(_glfw.wl.keyboard);
-    if (_glfw.wl.seat)
-        wl_seat_destroy(_glfw.wl.seat);
+    if (_glfw.wl.seats) {
+        for (struct wl_seat** seat = _glfw.wl.seats; *seat; seat++) {
+            wl_seat_destroy(*seat);
+        }
+        free(_glfw.wl.seats);
+    }
     if (_glfw.wl.relativePointerManager)
         zwp_relative_pointer_manager_v1_destroy(_glfw.wl.relativePointerManager);
     if (_glfw.wl.pointerConstraints)

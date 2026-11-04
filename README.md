@@ -120,7 +120,8 @@ information on what to include when reporting a bug.
 
 ## Changelog since 3.5
 
-None.
+ - [Cocoa] Bugfix: Full screen switched a Retina display in a scaled mode to
+   another resolution and scale (#1264)
 
 
 ## Contact

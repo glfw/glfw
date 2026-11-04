@@ -122,6 +122,7 @@ video tutorials.
  - JannikGM
  - Erik S. V. Jansson
  - jjYBdx4IL
+ - Daniel Johansson
  - Peter Johnson
  - Toni Jovanoski
  - Arseny Kapoulkine

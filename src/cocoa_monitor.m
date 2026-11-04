@@ -151,6 +151,23 @@ static GLFWbool modeIsGood(CGDisplayModeRef mode)
     return GLFW_TRUE;
 }
 
+// Every display mode, the HiDPI ones included: without
+// kCGDisplayShowDuplicateLowResolutionModes a Retina display's scaled modes are only
+// listed at 1x, so its current mode (e.g. 1512x982 points at 2x) is missing and
+// setting the closest one switches the display to another resolution and scale
+//
+static CFArrayRef copyAllDisplayModes(CGDirectDisplayID displayID)
+{
+    const void* keys[] = { kCGDisplayShowDuplicateLowResolutionModes };
+    const void* values[] = { kCFBooleanTrue };
+    CFDictionaryRef options = CFDictionaryCreate(NULL, keys, values, 1,
+                                                 &kCFTypeDictionaryKeyCallBacks,
+                                                 &kCFTypeDictionaryValueCallBacks);
+    CFArrayRef modes = CGDisplayCopyAllDisplayModes(displayID, options);
+    CFRelease(options);
+    return modes;
+}
+
 // Convert Core Graphics display mode to GLFW video mode
 //
 static GLFWvidmode vidmodeFromCGDisplayMode(CGDisplayModeRef mode,
@@ -391,7 +408,7 @@ void _glfwSetVideoModeCocoa(_GLFWmonitor* monitor, const GLFWvidmode* desired)
     if (_glfwCompareVideoModes(&current, best) == 0)
         return;
 
-    CFArrayRef modes = CGDisplayCopyAllDisplayModes(monitor->ns.displayID, NULL);
+    CFArrayRef modes = copyAllDisplayModes(monitor->ns.displayID);
     const CFIndex count = CFArrayGetCount(modes);
     CGDisplayModeRef native = NULL;
 
@@ -403,10 +420,11 @@ void _glfwSetVideoModeCocoa(_GLFWmonitor* monitor, const GLFWvidmode* desired)
 
         const GLFWvidmode mode =
             vidmodeFromCGDisplayMode(dm, monitor->ns.fallbackRefreshRate);
-        if (_glfwCompareVideoModes(best, &mode) == 0)
+        // The HiDPI mode rather than its 1x duplicate of the same size in points
+        if (_glfwCompareVideoModes(best, &mode) == 0 &&
+            (!native || CGDisplayModeGetPixelWidth(dm) > CGDisplayModeGetPixelWidth(native)))
         {
             native = dm;
-            break;
         }
     }
 
@@ -516,7 +534,7 @@ GLFWvidmode* _glfwGetVideoModesCocoa(_GLFWmonitor* monitor, int* count)
 
     *count = 0;
 
-    CFArrayRef modes = CGDisplayCopyAllDisplayModes(monitor->ns.displayID, NULL);
+    CFArrayRef modes = copyAllDisplayModes(monitor->ns.displayID);
     const CFIndex found = CFArrayGetCount(modes);
     GLFWvidmode* result = _glfw_calloc(found, sizeof(GLFWvidmode));
 

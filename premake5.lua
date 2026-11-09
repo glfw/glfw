@@ -16,22 +16,31 @@ project "GLFW"
 
 	files
 	{
-		"include/GLFW/glfw3.h",
-		"include/GLFW/glfw3native.h",
-		"src/glfw_config.h",
-		"src/context.c",
-		"src/init.c",
-		"src/input.c",
-		"src/monitor.c",
+	    	"include/GLFW/glfw3.h",
+	    	"include/GLFW/glfw3native.h",
 
-		"src/null_init.c",
-		"src/null_joystick.c",
-		"src/null_monitor.c",
-		"src/null_window.c",
+	    	"src/internal.h",
+	    	"src/platform.h",
+	    	"src/mappings.h",
 
-		"src/platform.c",
-		"src/vulkan.c",
-		"src/window.c",
+	    	"src/context.c",
+	    	"src/init.c",
+	    	"src/input.c",
+	    	"src/monitor.c",
+	    	"src/platform.c",
+	    	"src/vulkan.c",
+	    	"src/window.c",
+
+	    	"src/egl_context.c",
+	    	"src/osmesa_context.c",
+
+	    	"src/null_init.c",
+	    	"src/null_monitor.c",
+	    	"src/null_window.c",
+	    	"src/null_joystick.c",
+
+		"src/null_platform.h",
+		"src/null_joystick.h",
 	}
 
 	filter "system:linux"
@@ -41,6 +50,7 @@ project "GLFW"
 		
 		files
 		{
+			"src/x11_platform.h",
 			"src/x11_init.c",
 			"src/x11_monitor.c",
 			"src/x11_window.c",
@@ -50,14 +60,13 @@ project "GLFW"
 			"src/posix_thread.c",
 			"src/posix_poll.c",
 			"src/glx_context.c",
-			"src/egl_context.c",
-			"src/osmesa_context.c",
 			"src/linux_joystick.c"
 		}
 
 		defines
 		{
-			"_GLFW_X11"
+			"_GLFW_X11",
+			"_DEFAULT_SOURCE"
 		}
 
 	filter "system:macosx"
@@ -65,16 +74,16 @@ project "GLFW"
 
 		files
 		{
+			"src/cocoa_platform.h",
+			"src/cocoa_joystick.h",
 			"src/cocoa_init.m",
 			"src/cocoa_monitor.m",
 			"src/cocoa_window.m",
 			"src/cocoa_joystick.m",
-			"src/cocoa_time.c",
+			"src/macos_time.c",
 			"src/nsgl_context.m",
 			"src/posix_thread.c",
 			"src/posix_module.c",
-			"src/osmesa_context.c",
-			"src/egl_context.c"
 		}
 
 		defines
@@ -87,6 +96,8 @@ project "GLFW"
 
 		files
 		{
+			"src/win32_platform.h",
+			"src/win32_joystick.h",
 			"src/win32_init.c",
 			"src/win32_joystick.c",
 			"src/win32_module.c",
@@ -95,14 +106,14 @@ project "GLFW"
 			"src/win32_thread.c",
 			"src/win32_window.c",
 			"src/wgl_context.c",
-			"src/egl_context.c",
-			"src/osmesa_context.c"
 		}
 
 		defines 
 		{ 
 			"_GLFW_WIN32",
-			"_CRT_SECURE_NO_WARNINGS"
+			"_CRT_SECURE_NO_WARNINGS",
+			"UNICODE",
+			"_UNICODE"
 		}
 
 	filter "configurations:Debug"
@@ -112,6 +123,7 @@ project "GLFW"
 	filter { "system:windows", "configurations:Debug-AS" }	
 		runtime "Debug"
 		symbols "on"
+		editandcontinue "off"
 		sanitize { "Address" }
 		incrementallink "off"
 		runtimechecks "off"
@@ -124,3 +136,5 @@ project "GLFW"
 	        runtime "Release"
 	        optimize "speed"
                 symbols "off"
+
+	filter {}

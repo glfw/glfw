@@ -1,11 +1,18 @@
 project "GLFW"
 	kind "StaticLib"
 	language "C"
+	cdialect "C99"
 	staticruntime "off"
 	warnings "off"
 
 	targetdir ("%{wks.location}/bin/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}")
 	objdir ("%{wks.location}/bin-int/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}")
+
+	includedirs
+	{
+		"include",
+		"src",
+	}
 
 	files
 	{
@@ -41,7 +48,7 @@ project "GLFW"
 			"src/posix_module.c",
 			"src/posix_time.c",
 			"src/posix_thread.c",
-			"src/posix_module.c",
+			"src/posix_poll.c",
 			"src/glx_context.c",
 			"src/egl_context.c",
 			"src/osmesa_context.c",

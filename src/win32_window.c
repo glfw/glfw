@@ -1139,6 +1139,25 @@ static LRESULT CALLBACK windowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
 
         case WM_PAINT:
         {
+            // The DWM redirection surface starts with undefined alpha.
+            // Clear to BLACKNESS which should zero out the alpha components as well.
+            // Report the damage only after the clear, as the refresh callback
+            // may present into this same surface.
+            if (window->win32.transparent)
+            {
+                PAINTSTRUCT ps;
+                HDC hdc = BeginPaint(hWnd, &ps);
+                PatBlt(hdc,
+                       ps.rcPaint.left,
+                       ps.rcPaint.top,
+                       ps.rcPaint.right  - ps.rcPaint.left,
+                       ps.rcPaint.bottom - ps.rcPaint.top,
+                       BLACKNESS);
+                EndPaint(hWnd, &ps);
+                _glfwInputWindowDamage(window);
+                return 0;
+            }
+
             _glfwInputWindowDamage(window);
             break;
         }

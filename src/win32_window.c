@@ -1482,9 +1482,14 @@ static int createNativeWindow(_GLFWwindow* window,
         //       through DXGI on hybrid or cross-adapter systems) cannot see it.
         //       The layered style is visible to it, and it must be in place
         //       before the context is created and first swapped
-        SetWindowLongW(window->win32.handle, GWL_EXSTYLE,
-                       GetWindowLongW(window->win32.handle, GWL_EXSTYLE) | WS_EX_LAYERED);
-        SetLayeredWindowAttributes(window->win32.handle, 0, 255, LWA_ALPHA);
+        // NOTE: Windows 7 shows layered transparent framebuffer windows as
+        //       fully invisible
+        if (IsWindows8OrGreater())
+        {
+            SetWindowLongW(window->win32.handle, GWL_EXSTYLE,
+                           GetWindowLongW(window->win32.handle, GWL_EXSTYLE) | WS_EX_LAYERED);
+            SetLayeredWindowAttributes(window->win32.handle, 0, 255, LWA_ALPHA);
+        }
     }
 
     _glfwGetWindowSizeWin32(window, &window->win32.width, &window->win32.height);
@@ -2073,7 +2078,7 @@ void _glfwSetWindowOpacityWin32(_GLFWwindow* window, float opacity)
     {
         SetLayeredWindowAttributes(window->win32.handle, 0, 0, 0);
     }
-    else if (window->win32.transparent)
+    else if (window->win32.transparent && IsWindows8OrGreater())
     {
         // Keep the layered style of transparent framebuffer windows, see
         // createNativeWindow

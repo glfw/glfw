@@ -1476,6 +1476,20 @@ static int createNativeWindow(_GLFWwindow* window,
     {
         updateFramebufferTransparency(window);
         window->win32.transparent = GLFW_TRUE;
+
+        // NOTE: Blur-behind is only visible inside DWM, so a graphics driver
+        //       deciding how to present (e.g. flip versus blit when it presents
+        //       through DXGI on hybrid or cross-adapter systems) cannot see it.
+        //       The layered style is visible to it, and it must be in place
+        //       before the context is created and first swapped
+        // NOTE: Windows 7 shows layered transparent framebuffer windows as
+        //       fully invisible
+        if (IsWindows8OrGreater())
+        {
+            SetWindowLongW(window->win32.handle, GWL_EXSTYLE,
+                           GetWindowLongW(window->win32.handle, GWL_EXSTYLE) | WS_EX_LAYERED);
+            SetLayeredWindowAttributes(window->win32.handle, 0, 255, LWA_ALPHA);
+        }
     }
 
     _glfwGetWindowSizeWin32(window, &window->win32.width, &window->win32.height);
@@ -2063,6 +2077,12 @@ void _glfwSetWindowOpacityWin32(_GLFWwindow* window, float opacity)
     else if (exStyle & WS_EX_TRANSPARENT)
     {
         SetLayeredWindowAttributes(window->win32.handle, 0, 0, 0);
+    }
+    else if (window->win32.transparent && IsWindows8OrGreater())
+    {
+        // Keep the layered style of transparent framebuffer windows, see
+        // createNativeWindow
+        SetLayeredWindowAttributes(window->win32.handle, 0, 255, LWA_ALPHA);
     }
     else
     {

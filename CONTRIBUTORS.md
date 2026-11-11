@@ -27,6 +27,7 @@ video tutorials.
  - Doug Binks
  - bitb4ker
  - blanco
+ - Sylvain Boilard
  - Waris Boonyasiriwat
  - Kyle Brenneman
  - Rok Breulj

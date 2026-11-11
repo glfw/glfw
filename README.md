@@ -120,7 +120,8 @@ information on what to include when reporting a bug.
 
 ## Changelog since 3.5
 
-None.
+ - [Null] Bugfix: `glfwGetClipboardString` did not generate an error when the
+   clipboard was empty
 
 
 ## Contact

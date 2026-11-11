@@ -548,6 +548,9 @@ void _glfwSetClipboardStringNull(const char* string)
 
 const char* _glfwGetClipboardStringNull(void)
 {
+    if (!_glfw.null.clipboardString)
+        _glfwInputError(GLFW_FORMAT_UNAVAILABLE,
+                "Null: No clipboard data available");
     return _glfw.null.clipboardString;
 }
 

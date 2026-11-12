@@ -120,8 +120,7 @@ information on what to include when reporting a bug.
 
 ## Changelog since 3.5
 
-None.
-
+- [Wayland] Implement `glfwSetCursorPos` using `pointer-warp-v1`
 
 ## Contact
 

@@ -5,6 +5,15 @@
 
 ## New features {#features}
 
+### Wayland glfwSetCursorPos support (#wayland_glfwsetcursorpos_support)
+
+Wayland now supports @ref glfwSetCursorPos, using the [pointer-warp-v1][] protocol.
+
+If the compositor does not support `pointer-warp-v1`, the function emits
+@ref GLFW_FEATURE_UNAVAILABLE.
+
+[pointer-warp-v1]: https://gitlab.freedesktop.org/wayland/wayland-protocols/-/blob/main/staging/pointer-warp/pointer-warp-v1.xml
+
 ## Caveats {#caveats}
 
 ## Deprecations {#deprecations}

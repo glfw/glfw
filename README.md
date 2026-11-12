@@ -120,7 +120,8 @@ information on what to include when reporting a bug.
 
 ## Changelog since 3.5
 
-None.
+ - [Cocoa] Bugfix: A monitor whose display ID changed kept the old ID, name and
+   cached modes, making video mode and position queries fail (#2160)
 
 
 ## Contact

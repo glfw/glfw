@@ -1265,7 +1265,10 @@ static void setCursorImage(_GLFWwindow* window,
             scale = 2;
         }
 
-        image = wlCursor->images[cursorWayland->currentImage];
+        if (!wlCursor->image_count)
+            return;
+
+        image = wlCursor->images[cursorWayland->currentImage % wlCursor->image_count];
         buffer = wl_cursor_image_get_buffer(image);
         if (!buffer)
             return;
@@ -1303,8 +1306,14 @@ static void incrementCursorImage(void)
     _GLFWcursor* cursor = window->cursor;
     if (cursor && cursor->wl.cursor)
     {
+        struct wl_cursor* wlCursor = cursor->wl.cursor;
+        if (window->wl.bufferScale > 1 && cursor->wl.cursorHiDPI)
+            wlCursor = cursor->wl.cursorHiDPI;
+        if (!wlCursor || !wlCursor->image_count)
+            return;
+
         cursor->wl.currentImage += 1;
-        cursor->wl.currentImage %= cursor->wl.cursor->image_count;
+        cursor->wl.currentImage %= wlCursor->image_count;
         setCursorImage(window, &cursor->wl);
     }
 }

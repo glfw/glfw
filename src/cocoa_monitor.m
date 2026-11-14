@@ -341,6 +341,41 @@ void _glfwPollMonitorsCocoa(void)
         {
             if (disconnected[j] && disconnected[j]->ns.unitNumber == unitNumber)
             {
+                // The same unit may come back with a new display ID, for
+                // example when switching between external and built-in
+                // displays, and the old ID is then no longer valid; it may
+                // even be a different display, such as the built-in one
+                // replacing the placeholder shown while no screen is active
+                if (disconnected[j]->ns.displayID != displays[i])
+                {
+                    _GLFWmonitor* monitor = disconnected[j];
+                    monitor->ns.displayID = displays[i];
+
+                    char* name = getMonitorName(displays[i], screen);
+                    if (name)
+                    {
+                        memset(monitor->name, 0, sizeof(monitor->name));
+                        strncpy(monitor->name, name, sizeof(monitor->name) - 1);
+                        _glfw_free(name);
+                    }
+
+                    const CGSize size = CGDisplayScreenSize(displays[i]);
+                    monitor->widthMM = size.width;
+                    monitor->heightMM = size.height;
+
+                    monitor->ns.fallbackRefreshRate = 0.0;
+                    CGDisplayModeRef mode = CGDisplayCopyDisplayMode(displays[i]);
+                    if (CGDisplayModeGetRefreshRate(mode) == 0.0)
+                        monitor->ns.fallbackRefreshRate = getFallbackRefreshRate(displays[i]);
+                    CGDisplayModeRelease(mode);
+
+                    // Drop state cached from the previous display
+                    _glfw_free(monitor->modes);
+                    monitor->modes = NULL;
+                    monitor->modeCount = 0;
+                    _glfwFreeGammaArrays(&monitor->originalRamp);
+                }
+
                 disconnected[j]->ns.screen = screen;
                 disconnected[j] = NULL;
                 break;

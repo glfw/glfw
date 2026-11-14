@@ -199,6 +199,7 @@ video tutorials.
  - Victor Nova
  - Kamil Nowakowski
  - onox
+ - Randall C. O'Reilly
  - Denis Ovod
  - Ozzy
  - Andri Pálsson
